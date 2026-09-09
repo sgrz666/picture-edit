@@ -1,0 +1,28 @@
+{
+  "kind": "quality",
+  "group": "Q0",
+  "task": "S0",
+  "seed": 42,
+  "resolution": 512,
+  "preprocess": "stretch",
+  "cfg": 4.5,
+  "steps": 35,
+  "negative_prompt": "blurry, low quality, low resolution, distorted, deformed, broken content, missing parts, damaged details, artifacts, glitch, noise, extra fingers, missing fingers, mutated hands, bad composition, wrong proportion, unfinished.",
+  "prompt": "Keep this photograph unchanged, including the same person, pose, sunglasses, hat, clothing, ski equipment and background.",
+  "control_injected": false,
+  "id": "Q0_S0_42_stretch_35_4.5",
+  "input_sha256": "83981537a7baeafbeb9c8cb67b3484dc26433f574b3685d021fa537e277e4726",
+  "input_path": "/home/shangguanrz/project/pic-edit/inputs/person1.jpg",
+  "original_size": [
+    640,
+    425
+  ],
+  "content_box": [
+    0,
+    0,
+    512,
+    512
+  ],
+  "model_revision": "85c2ed257b9406d8531965c68e140dc7fdb81382",
+  "pipeline_sha256": "41e0f263d9ad55940426a4b2092688a74711395499c12a71ee69dc378ec9d3a9"
+}

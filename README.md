@@ -16,7 +16,8 @@
 ├── vram_lab/               # 显存实验包（run/analysis/acceptance/report）
 ├── tests/                  # 自动化测试
 ├── research/               # 调研文档（DeepGen 评估、第三阶段显存预算）
-├── results/                # 实验结果与可视化 Demo（review_20260908_v2）
+├── results/                # 实验结果与可视化 Demo（review_20260908 初版、review_20260908_v2 正式版）
+├── QWEN_EDIT_20B_MEMORY_ANALYSIS.md  # Qwen-Image-Edit 20B 显存可行性分析
 ├── demooutput/             # 演示输出（对比图、控制图、演示报告）
 ├── inputs/                 # 样例输入照片
 ├── train_adapter.py        # 适配器训练入口
