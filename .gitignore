@@ -2,17 +2,24 @@
 __pycache__/
 *.pyc
 
-# 模型权重与大型张量
-models/
+# 模型权重与大型张量（目录内仅保留 README 下载说明）
+/models/*
+!/models/README.md
 *.pt
 *.npy
 *.bin
 *.safetensors
 
-# 实验运行数据（服务器端保留）
-data/
-experiments/
+# 实验运行数据（服务器端保留，目录内仅保留 README 说明）
+/data/*
+!/data/README.md
+/experiments/*
+!/experiments/README.md
 evidence.zip
+
+# 上游官方仓库（目录内仅保留 README 说明）
+/deepgen/*
+!/deepgen/README.md
 
 # 日志与临时文件
 *.log

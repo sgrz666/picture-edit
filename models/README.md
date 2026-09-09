@@ -1,0 +1,86 @@
+# models/ —— 模型权重目录（不纳入 Git）
+
+本目录存放生成主干 **DeepGen-1.0-diffusers** 的权重文件，完整约 **14 GB**，体积过大不纳入仓库，需要自行下载。
+
+## 模型来源
+
+- Hugging Face 官方仓库：[`deepgenteam/DeepGen-1.0-diffusers`](https://huggingface.co/deepgenteam/DeepGen-1.0-diffusers)
+- 国内镜像（推荐）：https://hf-mirror.com/deepgenteam/DeepGen-1.0-diffusers
+- 模型主页（非 diffusers 版）：https://huggingface.co/deepgenteam/DeepGen-1.0
+- License：Apache-2.0；基座：Qwen/Qwen2.5-VL-3B-Instruct
+
+## 下载后的目录结构
+
+```
+models/DeepGen-1.0-diffusers/
+├── model_index.json
+├── prompt_template.json
+├── deepgen_pipeline.py          # 自包含 pipeline（trust_remote_code=True 加载）
+├── scheduler/scheduler_config.json
+├── tokenizer/                   # tokenizer.json / vocab / merges / chat_template 等
+├── connector/model.safetensors  # 约 1.7 GB
+├── vlm/                         # Qwen2.5-VL 文本/视觉编码器，共约 7.5 GB
+│   ├── config.json
+│   ├── model.safetensors.index.json
+│   ├── model-00001-of-00002.safetensors   # 约 4.9 GB
+│   └── model-00002-of-00002.safetensors   # 约 2.6 GB
+├── transformer/
+│   ├── config.json
+│   └── diffusion_pytorch_model.safetensors  # DiT 主干，约 4.9 GB（存储张量元素约 2.47B）
+└── vae/
+    ├── config.json
+    └── diffusion_pytorch_model.safetensors
+```
+
+## 下载方式
+
+### 方式一：项目自带脚本（服务器端，已配置国内镜像）
+
+```bash
+export HF_ENDPOINT=https://hf-mirror.com
+python download_model.py        # snapshot_download 全量下载（脚本内路径需改为本机路径）
+# 或只下载大权重分片，带断点续传与重试：
+python download_weights.py
+# 或 shell 版（huggingface-cli 循环重试）：
+bash master_download_and_run.sh
+```
+
+> 注意：上述脚本中的目标路径写死为 `/home/shangguanrz/project/pic-edit/models/DeepGen-1.0-diffusers`，在其他机器上运行前请改为本机对应路径。
+
+### 方式二：huggingface-cli
+
+```bash
+pip install -U huggingface_hub
+export HF_ENDPOINT=https://hf-mirror.com   # 国内加速，海外可省略
+huggingface-cli download deepgenteam/DeepGen-1.0-diffusers \
+  --local-dir models/DeepGen-1.0-diffusers --resume-download
+```
+
+### 方式三：Python API
+
+```python
+import os
+os.environ.setdefault("HF_ENDPOINT", "https://hf-mirror.com")
+from huggingface_hub import snapshot_download
+snapshot_download(
+    repo_id="deepgenteam/DeepGen-1.0-diffusers",
+    local_dir="models/DeepGen-1.0-diffusers",
+    resume_download=True,
+)
+```
+
+## 加载验证
+
+```python
+import torch
+from diffusers import DiffusionPipeline
+
+pipe = DiffusionPipeline.from_pretrained(
+    "models/DeepGen-1.0-diffusers",   # 或直接写 repo_id 在线加载
+    torch_dtype=torch.bfloat16,
+    trust_remote_code=True,
+)
+pipe.to("cuda")
+```
+
+下载完成后可运行 `python check_system.py`、`python verify_weights.py` 检查权重完整性（分片齐全、无全零张量）。
