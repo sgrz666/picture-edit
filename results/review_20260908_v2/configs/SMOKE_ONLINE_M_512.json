@@ -1,0 +1,16 @@
+{
+  "id": "SMOKE_ONLINE_M_512",
+  "kind": "train",
+  "group": "smoke",
+  "resolution": 512,
+  "encoding": "online",
+  "checkpointing": true,
+  "task": "S0",
+  "adapter_size": "M",
+  "seed": 42,
+  "preprocess": "letterbox",
+  "prompt": "Keep this photograph unchanged, including the same person, pose, sunglasses, hat, clothing, ski equipment and background.",
+  "warmup": 0,
+  "updates": 3,
+  "control_injected": true
+}

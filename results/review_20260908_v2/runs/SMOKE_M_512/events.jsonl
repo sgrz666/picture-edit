@@ -1,0 +1,15 @@
+{"elapsed_seconds": 4.262045635958202, "stage": "load_cached_training_backbone", "event": "start", "allocated_gib": 0.0, "reserved_gib": 0.0}
+{"elapsed_seconds": 6.102972046006471, "stage": "load_cached_training_backbone", "event": "end", "seconds": 1.840750343981199, "allocated_gib": 4.633842945098877, "reserved_gib": 4.783203125, "peak_allocated_gib": 4.633842945098877, "peak_reserved_gib": 4.783203125}
+{"elapsed_seconds": 6.103476868011057, "stage": "adapter_optimizer_setup", "event": "start", "allocated_gib": 4.633842945098877, "reserved_gib": 4.783203125}
+{"elapsed_seconds": 6.892430588020943, "stage": "adapter_optimizer_setup", "event": "end", "seconds": 0.7888160069705918, "allocated_gib": 5.119652271270752, "reserved_gib": 5.271484375, "peak_allocated_gib": 5.119652271270752, "peak_reserved_gib": 5.271484375}
+{"elapsed_seconds": 13.709703405038454, "stage": "zero_equivalence_validation", "event": "start", "allocated_gib": 5.127464771270752, "reserved_gib": 5.291015625}
+{"elapsed_seconds": 14.359956127009355, "stage": "zero_equivalence_validation", "event": "end", "seconds": 0.6501944499323145, "allocated_gib": 5.135521411895752, "reserved_gib": 6.421875, "peak_allocated_gib": 6.136902809143066, "peak_reserved_gib": 6.421875}
+{"elapsed_seconds": 14.542455628048629, "stage": "first_update", "event": "start", "allocated_gib": 5.135521411895752, "reserved_gib": 5.544921875}
+{"elapsed_seconds": 14.551647839020006, "stage": "first_forward", "event": "start"}
+{"elapsed_seconds": 14.683670465019532, "stage": "first_backward", "event": "start", "allocated_gib": 5.580982685089111}
+{"elapsed_seconds": 15.230663291993551, "stage": "first_optimizer", "event": "start", "allocated_gib": 5.671383857727051}
+{"elapsed_seconds": 15.244979755021632, "stage": "first_update", "event": "end", "seconds": 0.7018533750670031, "allocated_gib": 6.604790687561035, "reserved_gib": 8.44921875, "peak_allocated_gib": 7.824143409729004, "peak_reserved_gib": 8.44921875}
+{"elapsed_seconds": 15.24535000603646, "stage": "steady_train", "event": "start", "allocated_gib": 6.604790687561035, "reserved_gib": 8.44921875}
+{"elapsed_seconds": 15.59956357604824, "stage": "steady_train", "event": "end", "seconds": 0.35372226091567427, "allocated_gib": 6.604302406311035, "reserved_gib": 9.076171875, "peak_allocated_gib": 8.798203945159912, "peak_reserved_gib": 9.076171875}
+{"elapsed_seconds": 15.599902387941256, "stage": "steady_train", "event": "start", "allocated_gib": 6.604302406311035, "reserved_gib": 9.076171875}
+{"elapsed_seconds": 15.957482983940281, "stage": "steady_train", "event": "end", "seconds": 0.35700958501547575, "allocated_gib": 6.604058265686035, "reserved_gib": 9.328125, "peak_allocated_gib": 8.797715663909912, "peak_reserved_gib": 9.328125}

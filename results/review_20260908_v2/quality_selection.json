@@ -1,0 +1,172 @@
+{
+  "parameters": {
+    "cfg": 6.0,
+    "steps": 35,
+    "negative_prompt": "blurry, low quality, low resolution, distorted, deformed, broken content, missing parts, damaged details, artifacts, glitch, noise, extra fingers, missing fingers, mutated hands, bad composition, wrong proportion, unfinished."
+  },
+  "policy": "min hard-failure images, then max action/identity/clothing/background/anatomy sums; fewer steps/lower CFG ties",
+  "identity_na_handling": "0 contribution; inspect unjudgeable identity counts in scores, not identity failure rate",
+  "source_ids": [
+    "Q2_D1_1024_letterbox_35_6.0",
+    "Q2_D1_42_letterbox_35_6.0",
+    "Q2_S2_1024_letterbox_35_6.0",
+    "Q2_S2_42_letterbox_35_6.0"
+  ],
+  "ineligible": [],
+  "ranking": [
+    {
+      "rank": [
+        2,
+        -6,
+        0,
+        -6,
+        -6,
+        -8,
+        35,
+        6.0,
+        "blurry, low quality, low resolution, distorted, deformed, broken content, missing parts, damaged details, artifacts, glitch, noise, extra fingers, missing fingers, mutated hands, bad composition, wrong proportion, unfinished."
+      ],
+      "cfg": 6.0,
+      "steps": 35,
+      "negative_prompt": "blurry, low quality, low resolution, distorted, deformed, broken content, missing parts, damaged details, artifacts, glitch, noise, extra fingers, missing fingers, mutated hands, bad composition, wrong proportion, unfinished.",
+      "ids": [
+        "Q2_D1_1024_letterbox_35_6.0",
+        "Q2_D1_42_letterbox_35_6.0",
+        "Q2_S2_1024_letterbox_35_6.0",
+        "Q2_S2_42_letterbox_35_6.0"
+      ]
+    },
+    {
+      "rank": [
+        2,
+        -6,
+        0,
+        -6,
+        -6,
+        -8,
+        50,
+        4.5,
+        "blurry, low quality, low resolution, distorted, deformed, broken content, missing parts, damaged details, artifacts, glitch, noise, extra fingers, missing fingers, mutated hands, bad composition, wrong proportion, unfinished."
+      ],
+      "cfg": 4.5,
+      "steps": 50,
+      "negative_prompt": "blurry, low quality, low resolution, distorted, deformed, broken content, missing parts, damaged details, artifacts, glitch, noise, extra fingers, missing fingers, mutated hands, bad composition, wrong proportion, unfinished.",
+      "ids": [
+        "Q2_D1_1024_letterbox_50_4.5",
+        "Q2_D1_42_letterbox_50_4.5",
+        "Q2_S2_1024_letterbox_50_4.5",
+        "Q2_S2_42_letterbox_50_4.5"
+      ]
+    },
+    {
+      "rank": [
+        2,
+        -6,
+        0,
+        -6,
+        -6,
+        -8,
+        50,
+        6.0,
+        "blurry, low quality, low resolution, distorted, deformed, broken content, missing parts, damaged details, artifacts, glitch, noise, extra fingers, missing fingers, mutated hands, bad composition, wrong proportion, unfinished."
+      ],
+      "cfg": 6.0,
+      "steps": 50,
+      "negative_prompt": "blurry, low quality, low resolution, distorted, deformed, broken content, missing parts, damaged details, artifacts, glitch, noise, extra fingers, missing fingers, mutated hands, bad composition, wrong proportion, unfinished.",
+      "ids": [
+        "Q2_D1_1024_letterbox_50_6.0",
+        "Q2_D1_42_letterbox_50_6.0",
+        "Q2_S2_1024_letterbox_50_6.0",
+        "Q2_S2_42_letterbox_50_6.0"
+      ]
+    },
+    {
+      "rank": [
+        2,
+        -6,
+        0,
+        -6,
+        -6,
+        -6,
+        35,
+        2.5,
+        "blurry, low quality, low resolution, distorted, deformed, broken content, missing parts, damaged details, artifacts, glitch, noise, extra fingers, missing fingers, mutated hands, bad composition, wrong proportion, unfinished."
+      ],
+      "cfg": 2.5,
+      "steps": 35,
+      "negative_prompt": "blurry, low quality, low resolution, distorted, deformed, broken content, missing parts, damaged details, artifacts, glitch, noise, extra fingers, missing fingers, mutated hands, bad composition, wrong proportion, unfinished.",
+      "ids": [
+        "Q2_D1_1024_letterbox_35_2.5",
+        "Q2_D1_42_letterbox_35_2.5",
+        "Q2_S2_1024_letterbox_35_2.5",
+        "Q2_S2_42_letterbox_35_2.5"
+      ]
+    },
+    {
+      "rank": [
+        2,
+        -6,
+        0,
+        -6,
+        -6,
+        -6,
+        50,
+        2.5,
+        "blurry, low quality, low resolution, distorted, deformed, broken content, missing parts, damaged details, artifacts, glitch, noise, extra fingers, missing fingers, mutated hands, bad composition, wrong proportion, unfinished."
+      ],
+      "cfg": 2.5,
+      "steps": 50,
+      "negative_prompt": "blurry, low quality, low resolution, distorted, deformed, broken content, missing parts, damaged details, artifacts, glitch, noise, extra fingers, missing fingers, mutated hands, bad composition, wrong proportion, unfinished.",
+      "ids": [
+        "Q2_D1_1024_letterbox_50_2.5",
+        "Q2_D1_42_letterbox_50_2.5",
+        "Q2_S2_1024_letterbox_50_2.5",
+        "Q2_S2_42_letterbox_50_2.5"
+      ]
+    },
+    {
+      "rank": [
+        2,
+        -6,
+        0,
+        -6,
+        -6,
+        -5,
+        35,
+        4.5,
+        "blurry, low quality, low resolution, distorted, deformed, broken content, missing parts, damaged details, artifacts, glitch, noise, extra fingers, missing fingers, mutated hands, bad composition, wrong proportion, unfinished."
+      ],
+      "cfg": 4.5,
+      "steps": 35,
+      "negative_prompt": "blurry, low quality, low resolution, distorted, deformed, broken content, missing parts, damaged details, artifacts, glitch, noise, extra fingers, missing fingers, mutated hands, bad composition, wrong proportion, unfinished.",
+      "ids": [
+        "Q0_D1_1024_letterbox_35_4.5",
+        "Q0_D1_42_letterbox_35_4.5",
+        "Q0_S2_1024_letterbox_35_4.5",
+        "Q0_S2_42_letterbox_35_4.5"
+      ]
+    },
+    {
+      "rank": [
+        2,
+        -6,
+        0,
+        -5,
+        -5,
+        -8,
+        35,
+        4.5,
+        ""
+      ],
+      "cfg": 4.5,
+      "steps": 35,
+      "negative_prompt": "",
+      "ids": [
+        "Q3_D1_1024_letterbox_35_4.5",
+        "Q3_D1_42_letterbox_35_4.5",
+        "Q3_S2_1024_letterbox_35_4.5",
+        "Q3_S2_42_letterbox_35_4.5"
+      ]
+    }
+  ]
+}

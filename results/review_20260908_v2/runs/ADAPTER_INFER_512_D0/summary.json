@@ -1,0 +1,53 @@
+{
+  "component_cuda_ms": {
+    "visual_encoder": 241.85740661621094,
+    "vae_encoder": 104.71218872070312,
+    "vlm": 79.0433578491211,
+    "connector_proj1": 0.158720001578331,
+    "connector": 8.644160270690918,
+    "connector_proj2": 0.018464000895619392,
+    "connector_proj3": 0.07942400127649307,
+    "dit": 4249.591705322266,
+    "vae_decoder": 76.2465591430664
+  },
+  "file_save_seconds": 0.1939306459389627,
+  "interpretation": "Reconstruction-trained adapter with simulated controls; not pose-transfer validation.",
+  "wall_seconds": 21.285201787017286,
+  "peak_nvml_gib": 15.96148681640625,
+  "peak_allocated_gib": 14.201069355010986,
+  "peak_reserved_gib": 14.798828125,
+  "stages": [
+    {
+      "stage": "load_complete_pipeline",
+      "event": "end",
+      "seconds": 9.892851344891824,
+      "allocated_gib": 12.704115390777588,
+      "reserved_gib": 13.123046875,
+      "peak_allocated_gib": 12.704115390777588,
+      "peak_reserved_gib": 13.123046875
+    },
+    {
+      "stage": "load_trained_adapter",
+      "event": "end",
+      "seconds": 2.0040170130087063,
+      "allocated_gib": 13.225155353546143,
+      "reserved_gib": 14.759765625,
+      "peak_allocated_gib": 14.201069355010986,
+      "peak_reserved_gib": 14.759765625
+    },
+    {
+      "stage": "edit_end_to_end_no_file_io",
+      "event": "end",
+      "seconds": 4.8518659430556,
+      "allocated_gib": 13.233090877532959,
+      "reserved_gib": 14.798828125,
+      "peak_allocated_gib": 14.032371520996094,
+      "peak_reserved_gib": 14.798828125
+    }
+  ],
+  "nvml_sample_interval_ms": 50,
+  "nvml_error": null,
+  "nvml_sample_count": 405,
+  "status": "PASS",
+  "process_wall_seconds": 22.409429085091688
+}

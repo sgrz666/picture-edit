@@ -1,0 +1,16 @@
+{
+  "id": "T_M_1024_online_0_D0",
+  "kind": "train",
+  "group": "main",
+  "resolution": 1024,
+  "encoding": "online",
+  "checkpointing": false,
+  "task": "D0",
+  "adapter_size": "M",
+  "seed": 42,
+  "preprocess": "letterbox",
+  "prompt": "Keep this photograph unchanged. Preserve every existing person, their faces, clothing, poses and all background objects.",
+  "warmup": 5,
+  "updates": 20,
+  "control_injected": true
+}

@@ -1,0 +1,32 @@
+{
+  "files": [
+    {
+      "file": "transformer/diffusion_pytorch_model.safetensors",
+      "stored_tensor_elements": 2469663936,
+      "bytes": 4939433672
+    },
+    {
+      "file": "connector/model.safetensors",
+      "stored_tensor_elements": 432449532,
+      "bytes": 1729809448
+    },
+    {
+      "file": "vae/diffusion_pytorch_model.safetensors",
+      "stored_tensor_elements": 83819683,
+      "bytes": 167666902
+    },
+    {
+      "file": "vlm/model-00001-of-00002.safetensors",
+      "stored_tensor_elements": 2498840576,
+      "bytes": 4997750760
+    },
+    {
+      "file": "vlm/model-00002-of-00002.safetensors",
+      "stored_tensor_elements": 1255782400,
+      "bytes": 2511587184
+    }
+  ],
+  "total_stored_tensor_elements": 6740556127,
+  "backbone_under_6b": true,
+  "interpretation": "Checkpoint stored tensor elements; total is not a deduplicated runtime parameter count. DeepGen is not certified as Qwen-Image-Edit family."
+}

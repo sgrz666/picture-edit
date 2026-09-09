@@ -1,0 +1,45 @@
+{
+  "id": "T_M_768_cache_0_S0",
+  "kind": "train",
+  "group": "main",
+  "resolution": 768,
+  "encoding": "cache",
+  "checkpointing": false,
+  "task": "S0",
+  "adapter_size": "M",
+  "seed": 42,
+  "preprocess": "letterbox",
+  "prompt": "Keep this photograph unchanged, including the same person, pose, sunglasses, hat, clothing, ski equipment and background.",
+  "warmup": 5,
+  "updates": 20,
+  "control_injected": true,
+  "source_hashes": {
+    "analysis.py": "6e9082a622d5819e6359dbcd5a9d1456fffd138cfa10c30fe367719ad8afb513",
+    "worker.py": "8f16be96987d50b8e3257a0cea9dba46fe09b894f1ce7244a573f0335301b84d",
+    "common.py": "87cf0458f3dea8d04d6ecdd64aba792ef5d8e65d8895c1d49254a725cf5cf21c",
+    "run.py": "56a283834cbee2c0fb2a80fba5b9dfb7afb51e101a909760a2eb19515a6c9583",
+    "__init__.py": "7b244b6f72a808b9c688c5309934c8aa454beb7b4ad927482838b7a82a273386",
+    "package.py": "e100194748fdcea89858f7be2620cae28a9d26c10010da944a6ebc53849aaca8",
+    "report.py": "35f1536fb41b57ab3e5c24e1b0313f9297a25cd57dc875f47ef57f9454df2713"
+  },
+  "adapter_source_sha256": "bb6e2df5118abea7c05c52dc41723e9fefc26ce0e0d3c7b451d79e4e84b36d57",
+  "scheduler_config_sha256": "3d0ec27d3bf788b49b2ced5bc0f0999881e80d06e7e2e06550148b13b374b8cc",
+  "input_sha256": "83981537a7baeafbeb9c8cb67b3484dc26433f574b3685d021fa537e277e4726",
+  "input_path": "/home/shangguanrz/project/pic-edit/inputs/person1.jpg",
+  "original_size": [
+    640,
+    425
+  ],
+  "content_box": [
+    0,
+    129,
+    768,
+    639
+  ],
+  "model_revision": "85c2ed257b9406d8531965c68e140dc7fdb81382",
+  "pipeline_sha256": "41e0f263d9ad55940426a4b2092688a74711395499c12a71ee69dc378ec9d3a9",
+  "training_tasks": [
+    "S0"
+  ],
+  "task_evidence": {}
+}

@@ -1,0 +1,15 @@
+{
+  "id": "ADAPTER_INFER_768_S0",
+  "kind": "adapter_infer",
+  "group": "adapter_infer",
+  "task": "S0",
+  "seed": 42,
+  "resolution": 768,
+  "preprocess": "letterbox",
+  "prompt": "Keep this photograph unchanged, including the same person, pose, sunglasses, hat, clothing, ski equipment and background.",
+  "negative_prompt": "",
+  "cfg": 4.5,
+  "steps": 35,
+  "adapter_checkpoint": "/home/shangguanrz/project/pic-edit/experiments/review_20260908_v2/runs/STABLE_M_768_0/adapter.pt",
+  "control_injected": true
+}

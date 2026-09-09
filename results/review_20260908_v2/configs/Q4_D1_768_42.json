@@ -1,0 +1,14 @@
+{
+  "id": "Q4_D1_768_42",
+  "kind": "quality",
+  "group": "Q4",
+  "task": "D1",
+  "seed": 42,
+  "resolution": 768,
+  "preprocess": "letterbox",
+  "prompt": "The man sitting on the left in a light-colored graphic T-shirt stands up and shakes hands with the existing standing man in a dark plaid short-sleeved shirt. These are the two people who interact. Keep both men's original faces and respective clothing. Keep all other people and the room unchanged. Do not add, duplicate, replace or remove anyone.",
+  "control_injected": false,
+  "cfg": 6.0,
+  "steps": 35,
+  "negative_prompt": "blurry, low quality, low resolution, distorted, deformed, broken content, missing parts, damaged details, artifacts, glitch, noise, extra fingers, missing fingers, mutated hands, bad composition, wrong proportion, unfinished."
+}

@@ -1,0 +1,249 @@
+{
+  "accessed_at": "2026-09-08T06:16:11.152305+00:00",
+  "method": "Public safetensors header shape products; no model or training run",
+  "caveats": "Stored tensors may include buffers; tied parameters require live model verification. Root alternative weights are excluded when a transformer component exists. Other repository layouts/variants require manual review.",
+  "repositories": [
+    {
+      "repo": "deepgenteam/DeepGen-1.0-diffusers",
+      "revision": "85c2ed257b9406d8531965c68e140dc7fdb81382",
+      "components": {
+        "connector": 432449532,
+        "transformer": 2469663936,
+        "vae": 83819683,
+        "vlm": 3754622976
+      },
+      "excluded_root_alternative_weights": [],
+      "total_tensor_elements": 6740556127,
+      "bf16_equivalent_GiB": 12.555264173075557,
+      "stored_tensor_bytes": 14346011318,
+      "files": [
+        {
+          "file": "connector/model.safetensors",
+          "url": "https://huggingface.co/deepgenteam/DeepGen-1.0-diffusers/resolve/85c2ed257b9406d8531965c68e140dc7fdb81382/connector/model.safetensors",
+          "tensor_elements": 432449532,
+          "tensors": 103,
+          "dtype_elements": {
+            "F32": 432449532
+          },
+          "stored_tensor_bytes": 1729798128,
+          "header_bytes": 11312,
+          "header_sha256": "99f00d02204fe52619e61dc9eb9d87f3bc642520dfdbf0464481e998df8aee17"
+        },
+        {
+          "file": "transformer/diffusion_pytorch_model.safetensors",
+          "url": "https://huggingface.co/deepgenteam/DeepGen-1.0-diffusers/resolve/85c2ed257b9406d8531965c68e140dc7fdb81382/transformer/diffusion_pytorch_model.safetensors",
+          "tensor_elements": 2469663936,
+          "tensors": 909,
+          "dtype_elements": {
+            "BF16": 2469663936
+          },
+          "stored_tensor_bytes": 4939327872,
+          "header_bytes": 105792,
+          "header_sha256": "071695ce7b402c53333fa87801753ba48b38f1c85936084c93dc8bf9771f6191"
+        },
+        {
+          "file": "vae/diffusion_pytorch_model.safetensors",
+          "url": "https://huggingface.co/deepgenteam/DeepGen-1.0-diffusers/resolve/85c2ed257b9406d8531965c68e140dc7fdb81382/vae/diffusion_pytorch_model.safetensors",
+          "tensor_elements": 83819683,
+          "tensors": 244,
+          "dtype_elements": {
+            "BF16": 83819683
+          },
+          "stored_tensor_bytes": 167639366,
+          "header_bytes": 27528,
+          "header_sha256": "5be8bba15152c70dc21d2068cc0f62b8cc9a437af6b2b5c596db0ccb07de6571"
+        },
+        {
+          "file": "vlm/model-00001-of-00002.safetensors",
+          "url": "https://huggingface.co/deepgenteam/DeepGen-1.0-diffusers/resolve/85c2ed257b9406d8531965c68e140dc7fdb81382/vlm/model-00001-of-00002.safetensors",
+          "tensor_elements": 2498840576,
+          "tensors": 628,
+          "dtype_elements": {
+            "BF16": 2498840576
+          },
+          "stored_tensor_bytes": 4997681152,
+          "header_bytes": 69600,
+          "header_sha256": "f145a24b9ee8a515446c6270cb301b7cf2e996c7ffaa82ec64060166fd509252"
+        },
+        {
+          "file": "vlm/model-00002-of-00002.safetensors",
+          "url": "https://huggingface.co/deepgenteam/DeepGen-1.0-diffusers/resolve/85c2ed257b9406d8531965c68e140dc7fdb81382/vlm/model-00002-of-00002.safetensors",
+          "tensor_elements": 1255782400,
+          "tensors": 196,
+          "dtype_elements": {
+            "BF16": 1255782400
+          },
+          "stored_tensor_bytes": 2511564800,
+          "header_bytes": 22376,
+          "header_sha256": "379ff487b433d2f871418a5923263d13ac951fc6733e53e2258e8a609dc2b341"
+        }
+      ]
+    },
+    {
+      "repo": "black-forest-labs/FLUX.2-klein-base-4B",
+      "revision": "a3b4f4849157f664bdbc776fd7453c2783562f4d",
+      "components": {
+        "text_encoder": 4022468096,
+        "transformer": 3875544576,
+        "vae": 84046372
+      },
+      "excluded_root_alternative_weights": [
+        "flux-2-klein-base-4b.safetensors"
+      ],
+      "total_tensor_elements": 7982059044,
+      "bf16_equivalent_GiB": 14.86774355918169,
+      "stored_tensor_bytes": 15964118094,
+      "files": [
+        {
+          "file": "text_encoder/model-00001-of-00002.safetensors",
+          "url": "https://huggingface.co/black-forest-labs/FLUX.2-klein-base-4B/resolve/a3b4f4849157f664bdbc776fd7453c2783562f4d/text_encoder/model-00001-of-00002.safetensors",
+          "tensor_elements": 2483594496,
+          "tensors": 229,
+          "dtype_elements": {
+            "BF16": 2483594496
+          },
+          "stored_tensor_bytes": 4967188992,
+          "header_bytes": 26360,
+          "header_sha256": "8d1a2170cadc1eb2e68cb60f5610c304d263f29de260584fd4fadc73d40b56ec"
+        },
+        {
+          "file": "text_encoder/model-00002-of-00002.safetensors",
+          "url": "https://huggingface.co/black-forest-labs/FLUX.2-klein-base-4B/resolve/a3b4f4849157f664bdbc776fd7453c2783562f4d/text_encoder/model-00002-of-00002.safetensors",
+          "tensor_elements": 1538873600,
+          "tensors": 169,
+          "dtype_elements": {
+            "BF16": 1538873600
+          },
+          "stored_tensor_bytes": 3077747200,
+          "header_bytes": 19424,
+          "header_sha256": "17ee7543a170d3b70ae33b3e1ba4f67d4d3c30135db986cc53a99b2d06a008de"
+        },
+        {
+          "file": "transformer/diffusion_pytorch_model.safetensors",
+          "url": "https://huggingface.co/black-forest-labs/FLUX.2-klein-base-4B/resolve/a3b4f4849157f664bdbc776fd7453c2783562f4d/transformer/diffusion_pytorch_model.safetensors",
+          "tensor_elements": 3875544576,
+          "tensors": 169,
+          "dtype_elements": {
+            "BF16": 3875544576
+          },
+          "stored_tensor_bytes": 7751089152,
+          "header_bytes": 20584,
+          "header_sha256": "012278fec8c5203622e33f14a7da845b344c5dcd869980b04692348ff02420f6"
+        },
+        {
+          "file": "vae/diffusion_pytorch_model.safetensors",
+          "url": "https://huggingface.co/black-forest-labs/FLUX.2-klein-base-4B/resolve/a3b4f4849157f664bdbc776fd7453c2783562f4d/vae/diffusion_pytorch_model.safetensors",
+          "tensor_elements": 84046372,
+          "tensors": 251,
+          "dtype_elements": {
+            "I64": 1,
+            "BF16": 84046371
+          },
+          "stored_tensor_bytes": 168092750,
+          "header_bytes": 28120,
+          "header_sha256": "c1ba5cc25ab7a306fc9b5c43c70243df8fd3c29e81dd931bef2086ac8e0b61ea"
+        }
+      ]
+    },
+    {
+      "repo": "meituan-longcat/LongCat-Image-Edit",
+      "revision": "7b54ef423aa7854be7861600024be5c56ab7875a",
+      "components": {
+        "text_encoder": 8292166656,
+        "transformer": 6270668864,
+        "vae": 83819683
+      },
+      "excluded_root_alternative_weights": [],
+      "total_tensor_elements": 14646655203,
+      "bf16_equivalent_GiB": 27.28152126632631,
+      "stored_tensor_bytes": 29293310406,
+      "files": [
+        {
+          "file": "text_encoder/model-00001-of-00005.safetensors",
+          "url": "https://huggingface.co/meituan-longcat/LongCat-Image-Edit/resolve/7b54ef423aa7854be7861600024be5c56ab7875a/text_encoder/model-00001-of-00005.safetensors",
+          "tensor_elements": 1950092800,
+          "tensors": 436,
+          "dtype_elements": {
+            "BF16": 1950092800
+          },
+          "stored_tensor_bytes": 3900185600,
+          "header_bytes": 47648,
+          "header_sha256": "9b8af80923d85776ed1b7c9c2231dc32a66287705f91bacc6398f57970ad18a0"
+        },
+        {
+          "file": "text_encoder/model-00002-of-00005.safetensors",
+          "url": "https://huggingface.co/meituan-longcat/LongCat-Image-Edit/resolve/7b54ef423aa7854be7861600024be5c56ab7875a/text_encoder/model-00002-of-00005.safetensors",
+          "tensor_elements": 1932357632,
+          "tensors": 97,
+          "dtype_elements": {
+            "BF16": 1932357632
+          },
+          "stored_tensor_bytes": 3864715264,
+          "header_bytes": 11048,
+          "header_sha256": "22642924f119f376df06d50cea3db7489f8250ad2cdfcfbae850ca7f08865309"
+        },
+        {
+          "file": "text_encoder/model-00003-of-00005.safetensors",
+          "url": "https://huggingface.co/meituan-longcat/LongCat-Image-Edit/resolve/7b54ef423aa7854be7861600024be5c56ab7875a/text_encoder/model-00003-of-00005.safetensors",
+          "tensor_elements": 1932357632,
+          "tensors": 97,
+          "dtype_elements": {
+            "BF16": 1932357632
+          },
+          "stored_tensor_bytes": 3864715264,
+          "header_bytes": 11152,
+          "header_sha256": "ef4612053f44d6e6598fae0a797e12374c13099a4da426eb4d2513124fb7fd94"
+        },
+        {
+          "file": "text_encoder/model-00004-of-00005.safetensors",
+          "url": "https://huggingface.co/meituan-longcat/LongCat-Image-Edit/resolve/7b54ef423aa7854be7861600024be5c56ab7875a/text_encoder/model-00004-of-00005.safetensors",
+          "tensor_elements": 1932361216,
+          "tensors": 98,
+          "dtype_elements": {
+            "BF16": 1932361216
+          },
+          "stored_tensor_bytes": 3864722432,
+          "header_bytes": 11240,
+          "header_sha256": "6369f8e1d1a9bf111d8f7071c775c9908c62530df6df43201d9d7e3465a31fd2"
+        },
+        {
+          "file": "text_encoder/model-00005-of-00005.safetensors",
+          "url": "https://huggingface.co/meituan-longcat/LongCat-Image-Edit/resolve/7b54ef423aa7854be7861600024be5c56ab7875a/text_encoder/model-00005-of-00005.safetensors",
+          "tensor_elements": 544997376,
+          "tensors": 1,
+          "dtype_elements": {
+            "BF16": 544997376
+          },
+          "stored_tensor_bytes": 1089994752,
+          "header_bytes": 120,
+          "header_sha256": "db8d2dd53b59eb138b5232f4c9aa3242303bae47a14486465b5341590cc7d969"
+        },
+        {
+          "file": "transformer/diffusion_pytorch_model.safetensors",
+          "url": "https://huggingface.co/meituan-longcat/LongCat-Image-Edit/resolve/7b54ef423aa7854be7861600024be5c56ab7875a/transformer/diffusion_pytorch_model.safetensors",
+          "tensor_elements": 6270668864,
+          "tensors": 612,
+          "dtype_elements": {
+            "BF16": 6270668864
+          },
+          "stored_tensor_bytes": 12541337728,
+          "header_bytes": 72416,
+          "header_sha256": "fd0075dd4b39beab685aba5de24b77ec04b2a2602f047f453b75386e89c9d638"
+        },
+        {
+          "file": "vae/diffusion_pytorch_model.safetensors",
+          "url": "https://huggingface.co/meituan-longcat/LongCat-Image-Edit/resolve/7b54ef423aa7854be7861600024be5c56ab7875a/vae/diffusion_pytorch_model.safetensors",
+          "tensor_elements": 83819683,
+          "tensors": 244,
+          "dtype_elements": {
+            "BF16": 83819683
+          },
+          "stored_tensor_bytes": 167639366,
+          "header_bytes": 27528,
+          "header_sha256": "5be8bba15152c70dc21d2068cc0f62b8cc9a437af6b2b5c596db0ccb07de6571"
+        }
+      ]
+    }
+  ],
+  "errors": []
+}

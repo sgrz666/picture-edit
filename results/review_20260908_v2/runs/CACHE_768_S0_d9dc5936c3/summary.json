@@ -1,0 +1,56 @@
+{
+  "cache_key": "d9dc5936c3a94a240d13a2988bfcf4dcba1bc84ab4a55c50f347e35af35f84a0",
+  "shapes": {
+    "seq": [
+      1,
+      738,
+      4096
+    ],
+    "pooled": [
+      1,
+      2048
+    ],
+    "ref": [
+      1,
+      16,
+      96,
+      96
+    ],
+    "target": [
+      1,
+      16,
+      96,
+      96
+    ]
+  },
+  "cache_roundtrip_exact": true,
+  "wall_seconds": 15.436731363995932,
+  "peak_nvml_gib": 15.68023681640625,
+  "peak_allocated_gib": 13.717100143432617,
+  "peak_reserved_gib": 14.517578125,
+  "stages": [
+    {
+      "stage": "load_complete_pipeline",
+      "event": "end",
+      "seconds": 10.13634068297688,
+      "allocated_gib": 12.704115390777588,
+      "reserved_gib": 13.123046875,
+      "peak_allocated_gib": 12.704115390777588,
+      "peak_reserved_gib": 13.123046875
+    },
+    {
+      "stage": "cache_encode",
+      "event": "end",
+      "seconds": 0.7728989109164104,
+      "allocated_gib": 12.718233585357666,
+      "reserved_gib": 14.517578125,
+      "peak_allocated_gib": 13.717100143432617,
+      "peak_reserved_gib": 14.517578125
+    }
+  ],
+  "nvml_sample_interval_ms": 50,
+  "nvml_error": null,
+  "nvml_sample_count": 287,
+  "status": "PASS",
+  "process_wall_seconds": 16.59182914206758
+}

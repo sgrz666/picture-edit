@@ -1,0 +1,297 @@
+{
+  "adapter_parameters": 92520448,
+  "validation_passed": true,
+  "train_steps": 25,
+  "steady_steps": 20,
+  "step_p50_seconds": 0.8699806664371863,
+  "step_p95_seconds": 0.8721989216457586,
+  "semantic_shapes": {
+    "D0": {
+      "seq": [
+        1,
+        736,
+        4096
+      ],
+      "pooled": [
+        1,
+        2048
+      ],
+      "ref": [
+        1,
+        16,
+        96,
+        96
+      ],
+      "target": [
+        1,
+        16,
+        96,
+        96
+      ]
+    }
+  },
+  "interpretation": "Real image reconstruction with simulated controls; not pose-edit quality training.",
+  "wall_seconds": 44.01377077808138,
+  "peak_nvml_gib": 13.10015869140625,
+  "peak_allocated_gib": 10.983140468597412,
+  "peak_reserved_gib": 11.921875,
+  "stages": [
+    {
+      "stage": "load_cached_training_backbone",
+      "event": "end",
+      "seconds": 2.0022833079565316,
+      "allocated_gib": 4.633842945098877,
+      "reserved_gib": 4.783203125,
+      "peak_allocated_gib": 4.633842945098877,
+      "peak_reserved_gib": 4.783203125
+    },
+    {
+      "stage": "adapter_optimizer_setup",
+      "event": "end",
+      "seconds": 0.5500274769729003,
+      "allocated_gib": 4.978996753692627,
+      "reserved_gib": 5.130859375,
+      "peak_allocated_gib": 4.978996753692627,
+      "peak_reserved_gib": 5.130859375
+    },
+    {
+      "stage": "zero_equivalence_validation",
+      "event": "end",
+      "seconds": 0.8878089879872277,
+      "allocated_gib": 5.004784107208252,
+      "reserved_gib": 7.7265625,
+      "peak_allocated_gib": 7.257935523986816,
+      "peak_reserved_gib": 7.7265625
+    },
+    {
+      "stage": "first_update",
+      "event": "end",
+      "seconds": 1.1419278510147706,
+      "allocated_gib": 6.04708194732666,
+      "reserved_gib": 11.076171875,
+      "peak_allocated_gib": 10.293931007385254,
+      "peak_reserved_gib": 11.076171875
+    },
+    {
+      "stage": "warmup",
+      "event": "end",
+      "seconds": 0.8732987769180909,
+      "allocated_gib": 6.04744815826416,
+      "reserved_gib": 11.921875,
+      "peak_allocated_gib": 10.983140468597412,
+      "peak_reserved_gib": 11.921875
+    },
+    {
+      "stage": "warmup",
+      "event": "end",
+      "seconds": 0.8747648629359901,
+      "allocated_gib": 6.04744815826416,
+      "reserved_gib": 11.921875,
+      "peak_allocated_gib": 10.983140468597412,
+      "peak_reserved_gib": 11.921875
+    },
+    {
+      "stage": "warmup",
+      "event": "end",
+      "seconds": 0.8695840360596776,
+      "allocated_gib": 6.04744815826416,
+      "reserved_gib": 11.921875,
+      "peak_allocated_gib": 10.983140468597412,
+      "peak_reserved_gib": 11.921875
+    },
+    {
+      "stage": "warmup",
+      "event": "end",
+      "seconds": 0.8745914349565282,
+      "allocated_gib": 6.04744815826416,
+      "reserved_gib": 11.921875,
+      "peak_allocated_gib": 10.983140468597412,
+      "peak_reserved_gib": 11.921875
+    },
+    {
+      "stage": "steady_train",
+      "event": "end",
+      "seconds": 0.8683030479587615,
+      "allocated_gib": 6.04744815826416,
+      "reserved_gib": 11.921875,
+      "peak_allocated_gib": 10.983140468597412,
+      "peak_reserved_gib": 11.921875
+    },
+    {
+      "stage": "steady_train",
+      "event": "end",
+      "seconds": 0.8715663520852104,
+      "allocated_gib": 6.04744815826416,
+      "reserved_gib": 11.921875,
+      "peak_allocated_gib": 10.983140468597412,
+      "peak_reserved_gib": 11.921875
+    },
+    {
+      "stage": "steady_train",
+      "event": "end",
+      "seconds": 0.8723907769890502,
+      "allocated_gib": 6.04744815826416,
+      "reserved_gib": 11.921875,
+      "peak_allocated_gib": 10.983140468597412,
+      "peak_reserved_gib": 11.921875
+    },
+    {
+      "stage": "steady_train",
+      "event": "end",
+      "seconds": 0.87121190095786,
+      "allocated_gib": 6.04744815826416,
+      "reserved_gib": 11.921875,
+      "peak_allocated_gib": 10.983140468597412,
+      "peak_reserved_gib": 11.921875
+    },
+    {
+      "stage": "steady_train",
+      "event": "end",
+      "seconds": 0.8692556360037997,
+      "allocated_gib": 6.04744815826416,
+      "reserved_gib": 11.921875,
+      "peak_allocated_gib": 10.983140468597412,
+      "peak_reserved_gib": 11.921875
+    },
+    {
+      "stage": "steady_train",
+      "event": "end",
+      "seconds": 0.8699172949418426,
+      "allocated_gib": 6.04744815826416,
+      "reserved_gib": 11.921875,
+      "peak_allocated_gib": 10.983140468597412,
+      "peak_reserved_gib": 11.921875
+    },
+    {
+      "stage": "steady_train",
+      "event": "end",
+      "seconds": 0.871026425040327,
+      "allocated_gib": 6.04744815826416,
+      "reserved_gib": 11.921875,
+      "peak_allocated_gib": 10.983140468597412,
+      "peak_reserved_gib": 11.921875
+    },
+    {
+      "stage": "steady_train",
+      "event": "end",
+      "seconds": 0.8701737840892747,
+      "allocated_gib": 6.04744815826416,
+      "reserved_gib": 11.921875,
+      "peak_allocated_gib": 10.983140468597412,
+      "peak_reserved_gib": 11.921875
+    },
+    {
+      "stage": "steady_train",
+      "event": "end",
+      "seconds": 0.8686317560495809,
+      "allocated_gib": 6.04744815826416,
+      "reserved_gib": 11.921875,
+      "peak_allocated_gib": 10.983140468597412,
+      "peak_reserved_gib": 11.921875
+    },
+    {
+      "stage": "steady_train",
+      "event": "end",
+      "seconds": 0.8678379569901153,
+      "allocated_gib": 6.04744815826416,
+      "reserved_gib": 11.921875,
+      "peak_allocated_gib": 10.983140468597412,
+      "peak_reserved_gib": 11.921875
+    },
+    {
+      "stage": "steady_train",
+      "event": "end",
+      "seconds": 0.8698153190780431,
+      "allocated_gib": 6.04744815826416,
+      "reserved_gib": 11.921875,
+      "peak_allocated_gib": 10.983140468597412,
+      "peak_reserved_gib": 11.921875
+    },
+    {
+      "stage": "steady_train",
+      "event": "end",
+      "seconds": 0.8702899059280753,
+      "allocated_gib": 6.04744815826416,
+      "reserved_gib": 11.921875,
+      "peak_allocated_gib": 10.983140468597412,
+      "peak_reserved_gib": 11.921875
+    },
+    {
+      "stage": "steady_train",
+      "event": "end",
+      "seconds": 0.8698303969576955,
+      "allocated_gib": 6.04744815826416,
+      "reserved_gib": 11.921875,
+      "peak_allocated_gib": 10.983140468597412,
+      "peak_reserved_gib": 11.921875
+    },
+    {
+      "stage": "steady_train",
+      "event": "end",
+      "seconds": 0.8703802929958329,
+      "allocated_gib": 6.04744815826416,
+      "reserved_gib": 11.921875,
+      "peak_allocated_gib": 10.983140468597412,
+      "peak_reserved_gib": 11.921875
+    },
+    {
+      "stage": "steady_train",
+      "event": "end",
+      "seconds": 0.8713759439997375,
+      "allocated_gib": 6.04744815826416,
+      "reserved_gib": 11.921875,
+      "peak_allocated_gib": 10.983140468597412,
+      "peak_reserved_gib": 11.921875
+    },
+    {
+      "stage": "steady_train",
+      "event": "end",
+      "seconds": 0.8721888239961118,
+      "allocated_gib": 6.04744815826416,
+      "reserved_gib": 11.921875,
+      "peak_allocated_gib": 10.983140468597412,
+      "peak_reserved_gib": 11.921875
+    },
+    {
+      "stage": "steady_train",
+      "event": "end",
+      "seconds": 0.8681587630417198,
+      "allocated_gib": 6.04744815826416,
+      "reserved_gib": 11.921875,
+      "peak_allocated_gib": 10.983140468597412,
+      "peak_reserved_gib": 11.921875
+    },
+    {
+      "stage": "steady_train",
+      "event": "end",
+      "seconds": 0.8659060330828652,
+      "allocated_gib": 6.04744815826416,
+      "reserved_gib": 11.921875,
+      "peak_allocated_gib": 10.983140468597412,
+      "peak_reserved_gib": 11.921875
+    },
+    {
+      "stage": "steady_train",
+      "event": "end",
+      "seconds": 0.8698910570237786,
+      "allocated_gib": 6.04744815826416,
+      "reserved_gib": 11.921875,
+      "peak_allocated_gib": 10.983140468597412,
+      "peak_reserved_gib": 11.921875
+    },
+    {
+      "stage": "steady_train",
+      "event": "end",
+      "seconds": 0.87004403793253,
+      "allocated_gib": 6.04744815826416,
+      "reserved_gib": 11.921875,
+      "peak_allocated_gib": 10.983140468597412,
+      "peak_reserved_gib": 11.921875
+    }
+  ],
+  "nvml_sample_interval_ms": 50,
+  "nvml_error": null,
+  "nvml_sample_count": 850,
+  "status": "PASS",
+  "process_wall_seconds": 45.163596917991526
+}

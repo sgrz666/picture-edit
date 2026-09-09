@@ -1,0 +1,44 @@
+{
+  "id": "ADAPTER_INFER_512_S0",
+  "kind": "adapter_infer",
+  "group": "adapter_infer",
+  "task": "S0",
+  "seed": 42,
+  "resolution": 512,
+  "preprocess": "letterbox",
+  "prompt": "Keep this photograph unchanged, including the same person, pose, sunglasses, hat, clothing, ski equipment and background.",
+  "negative_prompt": "",
+  "cfg": 4.5,
+  "steps": 35,
+  "adapter_checkpoint": "/home/shangguanrz/project/pic-edit/experiments/review_20260908_v2/runs/STABLE_M_512_0/adapter.pt",
+  "control_injected": true,
+  "source_hashes": {
+    "analysis.py": "105bf9fc7dd586932a3557b44bcce1a50b2807ffc3708df88db014b8881a01e8",
+    "acceptance.py": "7a3cf674bb79e6c2d292b69bf78afc14adecc5594d8c81a269a9d966c0bb7ea7",
+    "worker.py": "8f16be96987d50b8e3257a0cea9dba46fe09b894f1ce7244a573f0335301b84d",
+    "common.py": "87cf0458f3dea8d04d6ecdd64aba792ef5d8e65d8895c1d49254a725cf5cf21c",
+    "run.py": "56a283834cbee2c0fb2a80fba5b9dfb7afb51e101a909760a2eb19515a6c9583",
+    "__init__.py": "7b244b6f72a808b9c688c5309934c8aa454beb7b4ad927482838b7a82a273386",
+    "package.py": "e100194748fdcea89858f7be2620cae28a9d26c10010da944a6ebc53849aaca8",
+    "report.py": "233024b0bff7775e2ef79db37e5bdb0efc8b6ecff5b2b17ceff441b6860de355",
+    "contact_sheet.py": "142dfd0cfd3ede28369d3d24fa352f3b104cc7ddc8ba6effb0680728cb74234d"
+  },
+  "adapter_source_sha256": "bb6e2df5118abea7c05c52dc41723e9fefc26ce0e0d3c7b451d79e4e84b36d57",
+  "scheduler_config_sha256": "3d0ec27d3bf788b49b2ced5bc0f0999881e80d06e7e2e06550148b13b374b8cc",
+  "input_sha256": "83981537a7baeafbeb9c8cb67b3484dc26433f574b3685d021fa537e277e4726",
+  "input_path": "/home/shangguanrz/project/pic-edit/inputs/person1.jpg",
+  "original_size": [
+    640,
+    425
+  ],
+  "content_box": [
+    0,
+    86,
+    512,
+    426
+  ],
+  "model_revision": "85c2ed257b9406d8531965c68e140dc7fdb81382",
+  "pipeline_sha256": "41e0f263d9ad55940426a4b2092688a74711395499c12a71ee69dc378ec9d3a9",
+  "adapter_checkpoint_sha256": "c68e7a57cf20ed06c3bdd36cd488190efff563f6165c96970bad68a6dfdec8f3",
+  "rng_policy": "global_cpu_cuda_and_denoising_generator_same_seed"
+}

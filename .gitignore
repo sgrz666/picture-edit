@@ -1,0 +1,23 @@
+# Python
+__pycache__/
+*.pyc
+
+# 模型权重与大型张量
+models/
+*.pt
+*.npy
+*.bin
+*.safetensors
+
+# 实验运行数据（服务器端保留）
+data/
+experiments/
+evidence.zip
+
+# 日志与临时文件
+*.log
+~$*
+*.lock
+.vscode/
+.idea/
+.workbuddy/

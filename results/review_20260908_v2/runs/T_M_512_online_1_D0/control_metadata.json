@@ -1,0 +1,49 @@
+{
+  "source": "artificial skeleton and pointcloud; not SMPL-X ground truth",
+  "channel_order": [
+    "normal_r",
+    "normal_g",
+    "normal_b",
+    "depth",
+    "skeleton_r",
+    "skeleton_g",
+    "skeleton_b",
+    "contact"
+  ],
+  "shape": [
+    512,
+    512,
+    8
+  ],
+  "channel_min": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+  ],
+  "channel_max": [
+    0.8117647171020508,
+    0.8117647171020508,
+    0.9607843160629272,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    0.9999990463256836
+  ],
+  "contact_table": [
+    {
+      "person_a_id": 0,
+      "person_b_id": 1,
+      "contact_points_count": 4760,
+      "min_distance_cm": 0.03,
+      "confidence": 0.994,
+      "visible": true
+    }
+  ],
+  "aligned_to_photo": false
+}
