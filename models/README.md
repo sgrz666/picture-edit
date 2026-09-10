@@ -34,20 +34,7 @@ models/DeepGen-1.0-diffusers/
 
 ## 下载方式
 
-### 方式一：项目自带脚本（服务器端，已配置国内镜像）
-
-```bash
-export HF_ENDPOINT=https://hf-mirror.com
-python download_model.py        # snapshot_download 全量下载（脚本内路径需改为本机路径）
-# 或只下载大权重分片，带断点续传与重试：
-python download_weights.py
-# 或 shell 版（huggingface-cli 循环重试）：
-bash master_download_and_run.sh
-```
-
-> 注意：上述脚本中的目标路径写死为 `/home/shangguanrz/project/pic-edit/models/DeepGen-1.0-diffusers`，在其他机器上运行前请改为本机对应路径。
-
-### 方式二：huggingface-cli
+### 方式一：huggingface-cli（推荐）
 
 ```bash
 pip install -U huggingface_hub
@@ -56,7 +43,7 @@ huggingface-cli download deepgenteam/DeepGen-1.0-diffusers \
   --local-dir models/DeepGen-1.0-diffusers --resume-download
 ```
 
-### 方式三：Python API
+### 方式二：Python API
 
 ```python
 import os
@@ -83,4 +70,4 @@ pipe = DiffusionPipeline.from_pretrained(
 pipe.to("cuda")
 ```
 
-下载完成后可运行 `python check_system.py`、`python verify_weights.py` 检查权重完整性（分片齐全、无全零张量）。
+下载完成后可检查各分片大小是否与上文目录结构一致，并尝试用上面的加载代码实例化 pipeline，以确认权重完整、无损坏。
