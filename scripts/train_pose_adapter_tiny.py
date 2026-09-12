@@ -1,4 +1,5 @@
 import argparse
+import csv
 import json
 import math
 import random
@@ -7,6 +8,7 @@ from pathlib import Path
 
 import numpy as np
 import torch
+import torch.nn.functional as F
 from PIL import Image
 from diffusers import DiffusionPipeline
 from diffusers.training_utils import (
@@ -14,12 +16,10 @@ from diffusers.training_utils import (
     compute_loss_weighting_for_sd3,
 )
 
-
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
-from pose_control.deepgen_pose_adapter import DeepGenPoseAdapter
-
+from pose_control.deepgen_pose_adapter_v2 import DeepGenPoseAdapterV2
 
 # 用户侧不使用文本控制。
 # 固定中性 prompt 只用于保留 DeepGen 原生 image-editing 条件路径。
@@ -180,248 +180,154 @@ def capture_source_conditioning(
     )
 
     return {
-        "encoder_hidden_states":
-            encoder_hidden_states,
-
-        "pooled_projections":
-            pooled_projections,
-
-        "cond_hidden_states":
-            cond_hidden_states,
+        "encoder_hidden_states": encoder_hidden_states,
+        "pooled_projections": pooled_projections,
+        "cond_hidden_states": cond_hidden_states,
     }
 
 
-def calculate_shift(
-    image_seq_len,
-    base_seq_len=256,
-    max_seq_len=4096,
-    base_shift=0.5,
-    max_shift=1.15,
+
+def build_pose_region_weight(
+    pose_map: torch.Tensor,
+    spatial_size,
+    pose_weight: float = 4.0,
+    region_kernel: int = 61,
 ):
     """
-    Diffusers FlowMatch scheduler 使用的标准动态 shift。
-    只有 scheduler 开启 dynamic shifting 时才会进入此分支。
+    根据 Target Skeleton 构造姿态区域权重。
+
+    思路来自 HumanSD 的 heatmap-guided denoising loss
+    和 MimicMotion 的 regional loss amplification。
+
+    DeepGen 适配：
+        Skeleton 512x512
+            ↓
+        二值姿态区域
+            ↓
+        膨胀，覆盖骨架附近人体区域
+            ↓
+        下采样到 DeepGen flow prediction 空间
+            ↓
+        背景权重 1，姿态区域权重 pose_weight
+
+    最后将空间权重归一化到 mean=1，
+    只改变 loss 的空间关注分布，
+    不整体放大 loss 或有效学习率。
     """
-    slope = (
-        max_shift - base_shift
-    ) / (
-        max_seq_len - base_seq_len
-    )
-
-    intercept = (
-        base_shift
-        - slope * base_seq_len
-    )
-
-    return (
-        image_seq_len * slope
-        + intercept
-    )
-
-
-def get_sigmas(
-    scheduler,
-    timesteps,
-    n_dim,
-    device,
-    dtype,
-):
-    """
-    与 DeepGen 官方训练代码保持一致，
-    从 scheduler 中取当前 timestep 对应 sigma。
-    """
-    sigmas = scheduler.sigmas.to(
-        device=device,
-        dtype=dtype,
-    )
-
-    schedule_timesteps = (
-        scheduler.timesteps.to(device)
-    )
-
-    timesteps = timesteps.to(device)
-
-    step_indices = [
-        (
-            schedule_timesteps == timestep
+    if pose_weight < 1.0:
+        raise ValueError(
+            "pose_weight 必须 >= 1"
         )
-        .nonzero()
-        .item()
-        for timestep in timesteps
-    ]
 
-    sigma = sigmas[
-        step_indices
-    ].flatten()
+    if (
+        region_kernel < 1
+        or region_kernel % 2 == 0
+    ):
+        raise ValueError(
+            "region_kernel 必须是正奇数"
+        )
 
-    while sigma.ndim < n_dim:
-        sigma = sigma.unsqueeze(-1)
+    # 彩色 Skeleton → 单通道。
+    pose_strength = pose_map.float().amax(
+        dim=1,
+        keepdim=True,
+    )
 
-    return sigma
+    # 黑背景为 0；
+    # skeleton 像素构成初始姿态区域。
+    region = (
+        pose_strength > 0.05
+    ).float()
+
+    # Skeleton 本身过于稀疏。
+    # 将骨架附近扩展成连续人体姿态区域。
+    region = F.max_pool2d(
+        region,
+        kernel_size=region_kernel,
+        stride=1,
+        padding=region_kernel // 2,
+    )
+
+    # DeepGen 的 loss 工作在 latent/flow 空间，
+    # 因此把 512x512 区域映射到 model_pred 尺寸。
+    region = F.interpolate(
+        region,
+        size=spatial_size,
+        mode="area",
+    )
+
+    region = region.clamp(
+        0.0,
+        1.0,
+    )
+
+    spatial_weight = (
+        1.0
+        + (pose_weight - 1.0) * region
+    )
+
+    # 保持每张图的平均 loss scale 不变。
+    spatial_weight = spatial_weight / (
+        spatial_weight.mean(
+            dim=(-2, -1),
+            keepdim=True,
+        ).clamp_min(1e-6)
+    )
+
+    return spatial_weight, region
 
 
 def make_flow_match_sample(
     pipe,
-    x0,
+    x0: torch.Tensor,
 ):
-    """
-    完全按 DeepGen 官方 diff_loss 构造：
-
-        z_t = (1-sigma) * x0 + sigma * noise
-
-    监督目标：
-
-        velocity = noise - x0
-    """
-    scheduler = pipe.scheduler
-
     batch_size = x0.shape[0]
-
-    use_dynamic_shifting = bool(
-        getattr(
-            scheduler,
-            "use_dynamic_shifting",
-            False,
-        )
-    )
-
-    weighting_scheme = (
-        "logit_normal"
-        if use_dynamic_shifting
-        else "none"
-    )
-
-    u = compute_density_for_timestep_sampling(
-        weighting_scheme=weighting_scheme,
-        batch_size=batch_size,
-        logit_mean=0.0,
-        logit_std=1.0,
-    )
-
-    if use_dynamic_shifting:
-        patch_size = (
-            pipe.transformer.config.patch_size
-        )
-
-        image_seq_len = (
-            math.prod(x0.shape[-2:])
-            // patch_size**2
-        )
-
-        config = scheduler.config
-
-        mu = calculate_shift(
-            image_seq_len=image_seq_len,
-            base_seq_len=config.get(
-                "base_image_seq_len",
-                256,
-            ),
-            max_seq_len=config.get(
-                "max_image_seq_len",
-                4096,
-            ),
-            base_shift=config.get(
-                "base_shift",
-                0.5,
-            ),
-            max_shift=config.get(
-                "max_shift",
-                1.15,
-            ),
-        )
-
-        if config.get(
-            "time_shift_type",
-            "exponential",
-        ) == "exponential":
-            shift = math.exp(mu)
-
-        elif config.get(
-            "time_shift_type"
-        ) == "linear":
-            shift = mu
-
-        else:
-            raise ValueError(
-                "不支持的 time_shift_type："
-                f"{config.get('time_shift_type')}"
-            )
-
-        sigmas = u.to(
-            device=x0.device,
-            dtype=x0.dtype,
-        )
-
-        sigmas = (
-            shift * sigmas
-            / (
-                1.0
-                + (shift - 1.0) * sigmas
-            )
-        )
-
-        num_train_timesteps = (
-            scheduler.config.num_train_timesteps
-        )
-
-        timesteps = (
-            sigmas
-            * num_train_timesteps
-        )
-
-        sigmas = sigmas.view(
-            batch_size,
-            1,
-            1,
-            1,
-        )
-
-    else:
-        num_train_timesteps = (
-            scheduler.config.num_train_timesteps
-        )
-
-        indices = (
-            u
-            * num_train_timesteps
-        ).long()
-
-        indices = indices.clamp(
-            0,
-            len(scheduler.timesteps) - 1,
-        )
-
-        timesteps = (
-            scheduler.timesteps[
-                indices
-            ]
-            .to(x0.device)
-        )
-
-        sigmas = get_sigmas(
-            scheduler=scheduler,
-            timesteps=timesteps,
-            n_dim=x0.ndim,
-            device=x0.device,
-            dtype=x0.dtype,
-        )
+    device = x0.device
+    dtype = x0.dtype
 
     noise = torch.randn_like(x0)
+
+    timestep_sampling = compute_density_for_timestep_sampling(
+        weighting_scheme="logit_normal",
+        batch_size=batch_size,
+        device=device,
+        logit_mean=0.0,
+        logit_std=1.0,
+        mode_scale=1.29,
+    )
+
+    indices = (
+        timestep_sampling
+        * pipe.scheduler.config.num_train_timesteps
+    ).long().clamp(
+        0,
+        pipe.scheduler.config.num_train_timesteps - 1,
+    )
+
+    timesteps = pipe.scheduler.timesteps[
+        indices
+    ].to(device=device)
+
+    sigmas = pipe.scheduler.sigmas[
+        indices
+    ].to(
+        device=device,
+        dtype=dtype,
+    )
+
+    while sigmas.ndim < x0.ndim:
+        sigmas = sigmas.unsqueeze(-1)
 
     noisy_latents = (
         (1.0 - sigmas) * x0
         + sigmas * noise
     )
 
-    target_velocity = (
-        noise - x0
-    )
+    target_velocity = noise - x0
 
-    weighting = (
-        compute_loss_weighting_for_sd3(
-            weighting_scheme=weighting_scheme,
-            sigmas=sigmas,
-        )
+    weighting = compute_loss_weighting_for_sd3(
+        weighting_scheme="cosmap",
+        sigmas=sigmas,
     )
 
     return (
@@ -538,6 +444,26 @@ def main():
     )
 
     parser.add_argument(
+        "--pose-loss-weight",
+        type=float,
+        default=4.0,
+        help=(
+            "Target Skeleton 附近区域的相对 loss 权重；"
+            "1.0 等价于原始全图 loss"
+        ),
+    )
+
+    parser.add_argument(
+        "--pose-region-kernel",
+        type=int,
+        default=61,
+        help=(
+            "512x512 Skeleton 区域膨胀核大小，"
+            "必须为奇数"
+        ),
+    )
+
+    parser.add_argument(
         "--grad-clip",
         type=float,
         default=1.0,
@@ -564,6 +490,13 @@ def main():
         ),
     )
 
+    parser.add_argument(
+        "--print-every",
+        type=int,
+        default=10,
+        help="控制台打印间隔；CSV 仍然每步记录",
+    )
+
     args = parser.parse_args()
 
     if not torch.cuda.is_available():
@@ -573,7 +506,6 @@ def main():
 
     device = torch.device("cuda")
 
-    # 从这里开始记录模型加载和 Source condition 缓存的显存峰值。
     torch.cuda.empty_cache()
     torch.cuda.reset_peak_memory_stats(device)
 
@@ -653,7 +585,6 @@ def main():
 
     # --------------------------------------------------
     # Source condition cache
-    #
     # 一个 identity 的所有 target 共用同一个 source，
     # 所以没有理由每个训练 step 都重新跑 VLM。
     # --------------------------------------------------
@@ -730,6 +661,43 @@ def main():
         f"{init_peak_reserved:.2f} GB"
     )
 
+    # --------------------------------------------------
+    # 恢复训练 scheduler
+    #
+    # Source condition cache 会调用一次 DeepGen 推理，
+    # num_inference_steps=1 会修改 scheduler.timesteps。
+    #
+    # 后续 flow-matching 训练需要完整训练时间表，
+    # 因此这里从原配置重新创建 scheduler，
+    # 避免 timestep/sigma 索引越界。
+    # --------------------------------------------------
+    pipe.scheduler = (
+        pipe.scheduler.__class__.from_config(
+            pipe.scheduler.config
+        )
+    )
+
+    # scheduler 重新创建后默认在 CPU。
+    # 训练中的 timestep index 位于 GPU，
+    # 因此将训练所需的时间表放到同一设备。
+    pipe.scheduler.timesteps = (
+        pipe.scheduler.timesteps.to(device)
+    )
+
+    pipe.scheduler.sigmas = (
+        pipe.scheduler.sigmas.to(device)
+    )
+
+    print(
+        "Training scheduler timesteps:",
+        len(pipe.scheduler.timesteps),
+    )
+
+    print(
+        "Training scheduler sigmas:",
+        len(pipe.scheduler.sigmas),
+    )
+
     # 从这里重新统计真正训练阶段的显存峰值。
     torch.cuda.reset_peak_memory_stats(device)
 
@@ -737,11 +705,9 @@ def main():
     # 训练开始前重新固定 seed。
     set_seed(args.seed)
 
-    # --------------------------------------------------
     # Pose Adapter
-    # --------------------------------------------------
 
-    adapter = DeepGenPoseAdapter(
+    adapter = DeepGenPoseAdapterV2(
         input_channels=3,
         hidden_dim=hidden_dim,
         num_residual_heads=6,
@@ -772,6 +738,21 @@ def main():
         args.output_dir
         / args.identity
     )
+    output_dir.mkdir(
+        parents=True,
+        exist_ok=True,
+    )
+
+    metrics_csv = output_dir / "train_metrics.csv"
+    with metrics_csv.open("w", newline="", encoding="utf-8") as f:
+        writer = csv.writer(f)
+        writer.writerow([
+            "step",
+            "identity",
+            "target",
+            "loss",
+            "grad_norm",
+        ])
 
     adapter.train()
 
@@ -799,6 +780,8 @@ def main():
             / sample["pose"]
         )
 
+        target_name = Path(sample["target"]).stem
+
         # Target RGB → VAE 输入 [-1,1]
         target_pixels = load_rgb_tensor(
             path=target_path,
@@ -809,7 +792,7 @@ def main():
         )
 
         # Pose map 保持 [0,1]，
-        # Adapter 本身使用 FP32 参数训练。
+        # Adapter 本身使用 FP32 参数训练
         pose_map = load_rgb_tensor(
             path=pose_path,
             device=device,
@@ -818,7 +801,7 @@ def main():
             dtype=torch.float32
         )
 
-        # VAE 冻结，不需要构建梯度图。
+        # VAE 冻结
         with torch.inference_mode():
             x0 = pipe.pixels_to_latents(
                 target_pixels
@@ -842,13 +825,7 @@ def main():
             set_to_none=True
         )
 
-        # --------------------------------------------------
-        # Pose Adapter
-        #
         # residual 只作用在 Target tokens；
-        # Source/reference token 区严格补 0。
-        # --------------------------------------------------
-
         residuals = adapter(
             pose_map=pose_map,
             target_latents=noisy_latents,
@@ -860,7 +837,6 @@ def main():
 
         # Transformer 是 BF16，
         # Adapter 保持 FP32 优化；
-        # 这里只在接口处 cast，不切断梯度。
         residuals = [
             residual.to(
                 dtype=transformer_dtype
@@ -868,17 +844,7 @@ def main():
             for residual in residuals
         ]
 
-        # --------------------------------------------------
-        # DeepGen Transformer
-        #
-        # 注意：
-        # Transformer 参数虽然冻结，
-        # 这里绝不能使用 torch.no_grad()。
-        #
-        # loss 必须经过 Transformer 运算
-        # 回传到 Pose residual 和 Adapter。
-        # --------------------------------------------------
-
+        # Transformer 参数冻结
         model_pred = pipe.transformer(
             hidden_states=noisy_latents,
             cond_hidden_states=condition[
@@ -895,13 +861,66 @@ def main():
             return_dict=False,
         )[0]
 
+        if model_pred.ndim != 4:
+            raise RuntimeError(
+                "Pose-region loss 当前要求 "
+                "model_pred 为 [B,C,H,W]，实际为 "
+                f"{tuple(model_pred.shape)}"
+            )
+
+        # --------------------------------------------------
+        # Pose-region weighted flow-matching loss
+        #
+        # DeepGen 原始 flow target / timestep / sigma
+        # 全部保持不变。
+        #
+        # 只借鉴 HumanSD / MimicMotion：
+        # 提高 Target Skeleton 附近区域的监督权重。
+        # --------------------------------------------------
+        pose_region_weight, pose_region = (
+            build_pose_region_weight(
+                pose_map=pose_map,
+                spatial_size=model_pred.shape[-2:],
+                pose_weight=args.pose_loss_weight,
+                region_kernel=args.pose_region_kernel,
+            )
+        )
+
+        pose_region_weight = (
+            pose_region_weight.to(
+                device=model_pred.device,
+                dtype=torch.float32,
+            )
+        )
+
+        squared_error = (
+            model_pred.float()
+            - target_velocity.float()
+        ) ** 2
+
         loss = (
             weighting.float()
-            * (
-                model_pred.float()
-                - target_velocity.float()
-            ) ** 2
+            * pose_region_weight
+            * squared_error
         ).mean()
+
+        if step == 1:
+            print(
+                "model_pred shape:",
+                tuple(model_pred.shape),
+            )
+
+            print(
+                "pose region coverage:",
+                f"{pose_region.mean().item():.4f}",
+            )
+
+            print(
+                "pose spatial weight:"
+                f" min={pose_region_weight.min().item():.4f}"
+                f" max={pose_region_weight.max().item():.4f}"
+                f" mean={pose_region_weight.mean().item():.4f}"
+            )
 
         if not torch.isfinite(loss):
             raise RuntimeError(
@@ -920,23 +939,32 @@ def main():
 
         optimizer.step()
 
+        # 每一步都写 CSV：后续画密集曲线/统计表用这个
+        with metrics_csv.open("a", newline="", encoding="utf-8") as f:
+            writer = csv.writer(f)
+            writer.writerow([
+                step,
+                identity,
+                target_name,
+                float(loss.item()),
+                float(grad_norm.item() if torch.is_tensor(grad_norm) else grad_norm),
+            ])
+
+        # 控制台按间隔打印，避免太吵
         if (
             step == 1
-            or step % 10 == 0
+            or step % args.print_every == 0
             or step == args.max_steps
         ):
             print(
                 f"step={step:04d} "
                 f"identity={identity} "
-                f"target={sample['target_frame']} "
+                f"target={target_name} "
                 f"loss={loss.item():.6f} "
                 f"grad={float(grad_norm):.6f}"
             )
 
-        if (
-            step % args.save_every == 0
-            or step == args.max_steps
-        ):
+        if step % args.save_every == 0:
             save_checkpoint(
                 adapter=adapter,
                 optimizer=optimizer,
@@ -953,7 +981,6 @@ def main():
         torch.cuda.max_memory_reserved(device)
         / 1024**3
     )
-
     final_allocated = (
         torch.cuda.memory_allocated(device)
         / 1024**3
@@ -991,9 +1018,7 @@ def main():
         f"{final_reserved:.2f} GB"
     )
 
-    print(
-        "\nTraining finished: PASS"
-    )
+    print("\nTraining finished: PASS")
 
 
 if __name__ == "__main__":
