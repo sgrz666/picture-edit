@@ -1,0 +1,102 @@
+diff --git a/models/DeepGen-1.0-diffusers/deepgen_pipeline.py b/models/DeepGen-1.0-diffusers/deepgen_pipeline.py
+index 89feebc..e57807b 100644
+--- a/models/DeepGen-1.0-diffusers/deepgen_pipeline.py
++++ b/models/DeepGen-1.0-diffusers/deepgen_pipeline.py
+@@ -790,10 +790,12 @@ class _SD3Pipeline(DiffusionPipeline, SD3LoraLoaderMixin, FromSingleFileMixin, S
+         height=None, width=None, num_inference_steps=28, sigmas=None,
+         guidance_scale=7.0,
+         negative_prompt=None, negative_prompt_2=None, negative_prompt_3=None,
+         num_images_per_prompt=1, generator=None, latents=None,
+         cond_latents=None,
++        block_controlnet_hidden_states=None,
++        control_scale: float = 1.0,
+         prompt_embeds=None, negative_prompt_embeds=None,
+         pooled_prompt_embeds=None, negative_pooled_prompt_embeds=None,
+         output_type="pil", return_dict=True,
+         joint_attention_kwargs=None, callback_on_step_end=None,
+         callback_on_step_end_tensor_inputs=["latents"],
+@@ -831,10 +833,33 @@ class _SD3Pipeline(DiffusionPipeline, SD3LoraLoaderMixin, FromSingleFileMixin, S
+         num_channels_latents = self.transformer.config.in_channels
+         latents = self.prepare_latents(
+             batch_size * num_images_per_prompt, num_channels_latents, height, width,
+             prompt_embeds.dtype, device, generator, latents)
+ 
++        control_states = None
++        if block_controlnet_hidden_states is not None:
++            control_states = []
++            base_control_batch = batch_size * num_images_per_prompt
++            expected_control_batch = base_control_batch * (
++                2 if self.do_classifier_free_guidance else 1)
++            for index, state in enumerate(block_controlnet_hidden_states):
++                if state.ndim != 3:
++                    raise ValueError(
++                        f"control layer {index}: expected [B,N,D], got {tuple(state.shape)}")
++                state = state.to(device=device, dtype=prompt_embeds.dtype)
++                state = state * float(control_scale)
++                if (state.shape[0] == base_control_batch
++                        and self.do_classifier_free_guidance):
++                    state = torch.cat([state, state], dim=0)
++                if state.shape[0] != expected_control_batch:
++                    raise ValueError(
++                        f"control layer {index}: batch {state.shape[0]} does not match "
++                        f"denoising batch {expected_control_batch}")
++                if not torch.isfinite(state).all():
++                    raise ValueError(f"control layer {index} contains NaN or Inf")
++                control_states.append(state)
++
+         scheduler_kwargs = {}
+         if self.scheduler.config.get("use_dynamic_shifting", None) and mu is None:
+             _, _, h, w = latents.shape
+             image_seq_len = (h // self.transformer.config.patch_size) * (w // self.transformer.config.patch_size)
+             mu = calculate_shift(
+@@ -864,10 +889,11 @@ class _SD3Pipeline(DiffusionPipeline, SD3LoraLoaderMixin, FromSingleFileMixin, S
+                 noise_pred = self.transformer(
+                     hidden_states=latent_model_input, cond_hidden_states=cond_latents,
+                     timestep=timestep, encoder_hidden_states=prompt_embeds,
+                     pooled_projections=pooled_prompt_embeds,
+                     joint_attention_kwargs=self.joint_attention_kwargs,
++                    block_controlnet_hidden_states=control_states,
+                     return_dict=False)[0]
+ 
+                 if self.do_classifier_free_guidance:
+                     noise_pred_uncond, noise_pred_text = noise_pred.chunk(2)
+                     noise_pred = noise_pred_uncond + self.guidance_scale * (noise_pred_text - noise_pred_uncond)
+@@ -1255,10 +1281,12 @@ class DeepGenPipeline(DiffusionPipeline):
+         width: int = 512,
+         num_inference_steps: int = 50,
+         guidance_scale: float = 4.0,
+         seed: Optional[int] = None,
+         num_images_per_prompt: int = 1,
++        block_controlnet_hidden_states: Optional[List[torch.Tensor]] = None,
++        control_scale: float = 1.0,
+     ):
+         """
+         Generate or edit images.
+ 
+         Args:
+@@ -1269,10 +1297,12 @@ class DeepGenPipeline(DiffusionPipeline):
+             width: Output image width.
+             num_inference_steps: Number of denoising steps.
+             guidance_scale: CFG guidance scale.
+             seed: Random seed for reproducibility.
+             num_images_per_prompt: Number of images to generate per prompt.
++            block_controlnet_hidden_states: Per-layer pose-control token residuals.
++            control_scale: Multiplier applied once to all pose-control residuals.
+ 
+         Returns:
+             SimpleNamespace with .images attribute (list of PIL Images).
+         """
+         from types import SimpleNamespace
+@@ -1368,10 +1398,12 @@ class DeepGenPipeline(DiffusionPipeline):
+             negative_prompt_embeds=seq_out[b:],
+             negative_pooled_prompt_embeds=pooled_out[b:],
+             generator=generator,
+             output_type='latent',
+             cond_latents=cond_latents,
++            block_controlnet_hidden_states=block_controlnet_hidden_states,
++            control_scale=control_scale,
+         ).images.to(self.transformer.dtype)
+ 
+         if offload:
+             self._offload_to(self.transformer, "cpu")
+ 
