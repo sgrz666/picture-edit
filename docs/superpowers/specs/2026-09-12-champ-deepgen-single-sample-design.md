@@ -53,8 +53,6 @@ PoseConditionAdapter 接收 `[B, 8, H, W]`，输出 6 组 `[B, N_target, 1536]` 
 
 - 验证 `N_target = (H / 16) * (W / 16)`。
 - 将参考图 token 对应区域补零，形成 `[B, N_target + N_reference, 1536]`。
-- CFG 开启时，将残差按无条件/有条件批次复制到 `2B`。
-- 应用显式 `control_scale`，默认 `1.0`。
 - 在进入 Transformer 前验证层数、batch、token 数、hidden size、dtype 与 device。
 
 零初始化 Adapter 的所有注入残差必须严格为 0，从而保证 Step 0 等价于原生 DeepGen 基线。
@@ -68,7 +66,7 @@ block_controlnet_hidden_states: Optional[list[torch.Tensor]] = None
 control_scale: float = 1.0
 ```
 
-内层 `_SD3Pipeline.__call__` 接收同样的参数，在 CFG 扩展完成后，将已对齐残差传给每一步 Transformer。Pipeline 不负责读取 CHAMP 文件，也不持有 Adapter；它只消费已经验证和对齐的残差，以保持职责清晰。
+内层 `_SD3Pipeline.__call__` 接收同样的参数，统一应用 `control_scale`；CFG 开启时，将 `B` 批次控制残差复制到无条件/有条件的 `2B` 批次，然后传给每一步 Transformer。Pipeline 不负责读取 CHAMP 文件，也不持有 Adapter；它只消费已经完成 token 对齐的残差，以保持职责清晰，并避免在调用端和 Pipeline 内重复缩放。
 
 ### 单样本训练与推理
 
@@ -97,7 +95,7 @@ control_scale: float = 1.0
 1. CHAMP 加载器能按固定顺序组成 8 通道，并拒绝 mask 冒充目标 RGB。
 2. 零初始化 Adapter 的 6 层输出严格为 0。
 3. 残差对齐正确补齐参考 token，参考区保持为 0。
-4. CFG 时控制残差从 `B` 正确扩展为 `2B`。
+4. 内层 Pipeline 在 CFG 时将控制残差从 `B` 正确扩展为 `2B`，且只应用一次 `control_scale`。
 5. 内层 Pipeline 确实在每个去噪步向 Transformer 传递控制残差。
 6. `control_scale=0` 与无控制调用等价。
 7. 现有 17 项单元测试与 111 项实验验收继续通过。
