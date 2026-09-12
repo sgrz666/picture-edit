@@ -6,6 +6,7 @@ import numpy as np
 from PIL import Image
 import torch
 
+import src.integration.champ_deepgen as integration
 from src.integration.champ_deepgen import (
     align_control_residuals,
     image_diagnostics,
@@ -132,6 +133,58 @@ class ImageDiagnosticsTests(unittest.TestCase):
 
     self.assertTrue(result["valid"])
     self.assertGreater(result["std"], 5.0)
+
+
+class NoControlInvocationTests(unittest.TestCase):
+
+  def test_calls_pipeline_without_control_arguments(self):
+    self.assertTrue(
+        hasattr(integration, "call_deepgen_without_control"),
+        "call_deepgen_without_control is missing",
+    )
+    received = {}
+
+    def pipeline(**kwargs):
+      received.update(kwargs)
+      return "result"
+
+    result = integration.call_deepgen_without_control(
+        pipeline, prompt="heart pose", image="source", seed=42
+    )
+
+    self.assertEqual(result, "result")
+    self.assertEqual(
+        received,
+        {"prompt": "heart pose", "image": "source", "seed": 42},
+    )
+
+  def test_rejects_control_arguments(self):
+    self.assertTrue(
+        hasattr(integration, "call_deepgen_without_control"),
+        "call_deepgen_without_control is missing",
+    )
+    for name in ("block_controlnet_hidden_states", "control_scale"):
+      with self.subTest(name=name), self.assertRaisesRegex(
+          ValueError, "pure DeepGen ablation"
+      ):
+        integration.call_deepgen_without_control(lambda **_: None, **{name: 0})
+
+
+class ImageErrorMetricTests(unittest.TestCase):
+
+  def test_reports_exact_error_for_black_and_white_images(self):
+    self.assertTrue(
+        hasattr(integration, "image_error_metrics"),
+        "image_error_metrics is missing",
+    )
+    black = Image.fromarray(np.zeros((4, 4, 3), dtype=np.uint8))
+    white = Image.fromarray(np.full((4, 4, 3), 255, dtype=np.uint8))
+
+    result = integration.image_error_metrics(black, white)
+
+    self.assertEqual(result["mae"], 255.0)
+    self.assertEqual(result["mse"], 65025.0)
+    self.assertEqual(result["psnr"], 0.0)
 
 
 class RunnerContractTests(unittest.TestCase):

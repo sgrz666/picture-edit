@@ -21,6 +21,11 @@ CONTROL_CHANNELS = (
     "semantic",
 )
 
+CONTROL_PIPELINE_ARGUMENTS = frozenset({
+    "block_controlnet_hidden_states",
+    "control_scale",
+})
+
 
 @dataclass(frozen=True)
 class ChampSample:
@@ -167,3 +172,35 @@ def image_diagnostics(image: Image.Image) -> dict[str, float | bool]:
       "finite": finite,
       "valid": valid,
   }
+
+
+def call_deepgen_without_control(pipeline, **kwargs):
+  """Call DeepGen while making control injection structurally impossible."""
+  forbidden = sorted(CONTROL_PIPELINE_ARGUMENTS.intersection(kwargs))
+  if forbidden:
+    raise ValueError(
+        "pure DeepGen ablation forbids control arguments: " + ", ".join(forbidden)
+    )
+  return pipeline(**kwargs)
+
+
+def image_error_metrics(
+    image: Image.Image,
+    target: Image.Image,
+) -> dict[str, float]:
+  """Return full-image MAE, MSE, and PSNR against an aligned RGB target."""
+  actual = np.asarray(image.convert("RGB"), dtype=np.float32)
+  expected = np.asarray(target.convert("RGB"), dtype=np.float32)
+  if actual.shape != expected.shape:
+    raise ValueError(
+        f"image and target shapes must match, got {actual.shape} and {expected.shape}"
+    )
+  difference = actual - expected
+  mae = float(np.mean(np.abs(difference)))
+  mse = float(np.mean(np.square(difference)))
+  psnr = (
+      float("inf")
+      if mse == 0.0
+      else float(-10.0 * np.log10(mse / (255.0**2)))
+  )
+  return {"mae": mae, "mse": mse, "psnr": psnr}
