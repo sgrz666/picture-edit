@@ -134,5 +134,30 @@ class ImageDiagnosticsTests(unittest.TestCase):
     self.assertGreater(result["std"], 5.0)
 
 
+class RunnerContractTests(unittest.TestCase):
+
+  def test_runner_uses_formal_pipeline_control_interface(self):
+    source = Path("run_champ_single_overfit.py").read_text(encoding="utf-8")
+
+    self.assertNotIn("transformer.forward =", source)
+    self.assertIn("block_controlnet_hidden_states=aligned_residuals", source)
+    self.assertIn("load_champ_sample", source)
+    self.assertIn("align_control_residuals", source)
+
+  def test_runner_supports_validation_without_loading_model(self):
+    source = Path("run_champ_single_overfit.py").read_text(encoding="utf-8")
+
+    validation_guard = source.index("if args.validate_only:")
+    model_load = source.index("DiffusionPipeline.from_pretrained")
+    self.assertLess(validation_guard, model_load)
+
+  def test_runner_records_numerical_output_diagnostics(self):
+    source = Path("run_champ_single_overfit.py").read_text(encoding="utf-8")
+
+    self.assertIn("diagnostics.json", source)
+    self.assertIn("image_diagnostics", source)
+    self.assertIn("residual_rms", source)
+
+
 if __name__ == "__main__":
   unittest.main()
