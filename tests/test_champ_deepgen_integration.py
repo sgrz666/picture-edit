@@ -17,11 +17,11 @@ def _write_rgb(path: Path, channels: tuple[int, int, int], size: int = 16) -> No
   array = np.zeros((size, size, 3), dtype=np.uint8)
   for index, value in enumerate(channels):
     array[:, :, index] = value
-  Image.fromarray(array, mode="RGB").save(path)
+  Image.fromarray(array).save(path)
 
 
 def _write_gray(path: Path, value: int, size: int = 16) -> None:
-  Image.fromarray(np.full((size, size), value, dtype=np.uint8), mode="L").save(path)
+  Image.fromarray(np.full((size, size), value, dtype=np.uint8)).save(path)
 
 
 def _write_natural_rgb(path: Path, size: int = 16) -> None:
@@ -34,7 +34,7 @@ def _write_natural_rgb(path: Path, size: int = 16) -> None:
       ],
       axis=-1,
   ).astype(np.uint8)
-  Image.fromarray(array, mode="RGB").save(path)
+  Image.fromarray(array).save(path)
 
 
 class ChampSampleTests(unittest.TestCase):
@@ -65,7 +65,7 @@ class ChampSampleTests(unittest.TestCase):
   def test_rejects_binary_mask_as_target_rgb(self):
     mask = np.zeros((16, 16, 3), dtype=np.uint8)
     mask[:, 8:, :] = 255
-    Image.fromarray(mask, mode="RGB").save(self.root / "real_tgt_frame_60.png")
+    Image.fromarray(mask).save(self.root / "real_tgt_frame_60.png")
 
     with self.assertRaisesRegex(ValueError, "target RGB looks like a mask"):
       load_champ_sample(self.root, resolution=16)
@@ -117,7 +117,7 @@ class ResidualAlignmentTests(unittest.TestCase):
 class ImageDiagnosticsTests(unittest.TestCase):
 
   def test_flags_near_white_output_as_invalid(self):
-    image = Image.fromarray(np.full((16, 16, 3), 255, dtype=np.uint8), mode="RGB")
+    image = Image.fromarray(np.full((16, 16, 3), 255, dtype=np.uint8))
 
     result = image_diagnostics(image)
 
@@ -128,7 +128,7 @@ class ImageDiagnosticsTests(unittest.TestCase):
     yy, xx = np.mgrid[:16, :16]
     array = np.stack([xx * 16, yy * 16, (xx + yy) * 8], axis=-1).astype(np.uint8)
 
-    result = image_diagnostics(Image.fromarray(array, mode="RGB"))
+    result = image_diagnostics(Image.fromarray(array))
 
     self.assertTrue(result["valid"])
     self.assertGreater(result["std"], 5.0)

@@ -82,7 +82,7 @@ def _control_image(control: torch.Tensor, channels: slice | int) -> Image.Image:
   if array.ndim == 2:
     array = np.repeat(array[None], 3, axis=0)
   array = np.transpose(array, (1, 2, 0))
-  return Image.fromarray(np.clip(array * 255.0, 0, 255).astype(np.uint8), mode="RGB")
+  return Image.fromarray(np.clip(array * 255.0, 0, 255).astype(np.uint8))
 
 
 def _banner(image: Image.Image, title: str, color: tuple[int, int, int]) -> Image.Image:
