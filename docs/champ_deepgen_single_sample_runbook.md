@@ -92,6 +92,34 @@ export DEEPGEN_PROJECT=/home/shangguanrz/project/pic-edit
   --seed 42
 ```
 
+## DeepGen 无控制消融
+
+该消融保持源图、文本、分辨率、推理步数、CFG 和 seed 与受控实验一致，但不创建或加载 Adapter，也不向 DeepGen 传入控制参数：
+
+```bash
+cd /home/shangguanrz/project/pic-edit
+export DEEPGEN_PROJECT=/home/shangguanrz/project/pic-edit
+/home/shangguanrz/miniconda3/envs/deepgen/bin/python \
+  run_deepgen_no_control_ablation.py \
+  --data_dir inputs/champ_sample \
+  --controlled_dir experiments/champ_deepgen_formal_v1 \
+  --output_dir experiments/deepgen_no_control_ablation_v1 \
+  --inference_steps 30 \
+  --guidance_scale 4.5 \
+  --seed 42
+```
+
+`config.json` 中的 `adapter_created` 和 `control_arguments_passed` 必须均为 `false`。输出文件：
+
+```text
+01_INPUT_SOURCE_IMAGE.png          图片 A
+02_GROUND_TRUTH_TARGET_IMAGE.png   对齐的真实目标，仅用于评估
+03_DEEPGEN_NO_CONTROL.png          纯 DeepGen 输出
+04_ABLATION_COMPARISON_GRID.png    源图/目标/无控制/Step 90/Step 120 对比
+diagnostics.json                   三组输出的有效性、MAE、MSE 和 PSNR
+summary.json                       耗时、有效性和最高 PSNR 组
+```
+
 ## 输出解释
 
 ```text
