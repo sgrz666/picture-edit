@@ -399,7 +399,7 @@ scp -r src/integration sg:/home/shangguanrz/project/pic-edit/src/
 scp run_champ_single_overfit.py sg:/home/shangguanrz/project/pic-edit/run_champ_single_overfit.py
 scp tests/test_champ_deepgen_integration.py tests/test_deepgen_pose_patch.py sg:/home/shangguanrz/project/pic-edit/tests/
 scp docs/champ_deepgen_single_sample_runbook.md sg:/home/shangguanrz/project/pic-edit/docs/champ_deepgen_single_sample_runbook.md
-ssh sg "cd /home/shangguanrz/project/pic-edit && /home/shangguanrz/miniconda3/envs/deepgen/bin/python run_champ_single_overfit.py --data_dir data/champ_overfit --validate_only"
+ssh sg "cd /home/shangguanrz/project/pic-edit && /home/shangguanrz/miniconda3/envs/deepgen/bin/python run_champ_single_overfit.py --data_dir inputs/champ_sample --validate_only"
 ```
 
 Expected: remote validation passes before model loading.
@@ -418,7 +418,7 @@ Run:
 ssh sg 'cd /home/shangguanrz/project/pic-edit && \
   /home/shangguanrz/miniconda3/envs/deepgen/bin/python \
   run_champ_single_overfit.py \
-  --data_dir data/champ_overfit \
+  --data_dir inputs/champ_sample \
   --output_dir experiments/champ_deepgen_formal_v1 \
   --max_steps 120 \
   --learning_rate 5e-5 \

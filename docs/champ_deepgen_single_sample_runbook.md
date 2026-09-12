@@ -81,7 +81,7 @@ cd /home/shangguanrz/project/pic-edit
 export DEEPGEN_PROJECT=/home/shangguanrz/project/pic-edit
 /home/shangguanrz/miniconda3/envs/deepgen/bin/python \
   run_champ_single_overfit.py \
-  --data_dir data/champ_overfit \
+  --data_dir inputs/champ_sample \
   --output_dir experiments/champ_deepgen_formal_v1 \
   --max_steps 120 \
   --learning_rate 5e-5 \
