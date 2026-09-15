@@ -22,6 +22,8 @@
 ├── inputs/                 # 样例输入照片
 ├── train_adapter.py        # 适配器训练入口
 ├── run_demo_pose_edit.py   # Demo 推理入口
+├── create_debug_samples.py # 合成调试样本生成（data/ 目录说明）
+├── test_control_signals.py # 合成 SMPL-X 人体工具（被 vram_lab.worker 依赖，非一次性测试）
 ├── build_*_docx.py         # 文档生成脚本
 └── *.docx                  # 任务书 / 架构设计 / 进展简报等文档
 ```
