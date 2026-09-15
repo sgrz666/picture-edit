@@ -71,3 +71,36 @@ def test_identity_condition_is_separate_and_validated_against_bundle() -> None:
     selected = identity.index_select(torch.tensor([1]))
     assert selected.source_person_latents.shape == (1, 2, 16, 8, 8)
     assert selected.source_indices.shape == (1, 2)
+
+
+def test_condition_dataclass_to_preserves_discrete_dtypes_with_positional_dtype() -> None:
+    conditions = importlib.import_module("src.pose_control.v6.conditions")
+    bundle = _make_bundle()
+    converted_bundle = bundle.to(torch.float16)
+    converted_bundle.validate()
+    assert converted_bundle.person_a_spatial.dtype == torch.float16
+    assert converted_bundle.person_valid.dtype == torch.bool
+    assert converted_bundle.person_count.dtype == torch.long
+    assert converted_bundle.contact_mask.dtype == torch.bool
+
+    relations = conditions.ContactRelationBatch(
+        src_person=torch.zeros(2, 8, dtype=torch.long),
+        src_part=torch.zeros(2, 8, dtype=torch.long),
+        dst_person=torch.ones(2, 8, dtype=torch.long),
+        dst_part=torch.ones(2, 8, dtype=torch.long),
+        contact_type=torch.zeros(2, 8, dtype=torch.long),
+        distance=torch.zeros(2, 8, 1),
+        valid_mask=torch.zeros(2, 8, dtype=torch.bool),
+    ).to(torch.float16)
+    relations.validate(batch_size=2)
+    assert relations.distance.dtype == torch.float16
+    assert relations.src_person.dtype == torch.long
+    assert relations.valid_mask.dtype == torch.bool
+
+    identity = conditions.AdapterIdentityCondition(
+        source_person_latents=torch.randn(2, 2, 16, 8, 8),
+        source_indices=torch.tensor([[0, 1], [0, 1]]),
+    ).to(torch.float16)
+    identity.validate(converted_bundle)
+    assert identity.source_person_latents.dtype == torch.float16
+    assert identity.source_indices.dtype == torch.long
