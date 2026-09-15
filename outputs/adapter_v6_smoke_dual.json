@@ -1,10 +1,20 @@
 {
   "status": "PASS",
   "mode": "dual",
+  "condition_backend": "native",
+  "use_depth": false,
   "route_num_people": [
     2
   ],
-  "adapter_trainable_parameters": 150457376,
+  "adapter_trainable_parameters": 153585514,
+  "parameters_by_module": {
+    "condition_injector": 7154762,
+    "condition_bridge": 444160,
+    "single_expert": 0,
+    "dual_expert": 11149952,
+    "appearance_and_binding": 2414624,
+    "control_core": 132422016
+  },
   "residual_shapes": [
     [
       1,

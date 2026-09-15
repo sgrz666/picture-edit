@@ -22,8 +22,8 @@ core.
 - [x] Add `ConditionBundleBridge` and move raw-condition access out of experts.
 - [x] Preserve source appearance, deterministic routing and zero residual heads.
 - [x] Add the fixed-commit, MIT-licensed CHAMP single-frame optional backend.
-- [ ] Update smoke commands and architecture documentation.
-- [ ] Run unit, full-suite and real DeepGen smoke verification.
+- [x] Update smoke commands and architecture documentation.
+- [x] Run unit, full-suite and real DeepGen smoke verification.
 - [ ] Create final tag and atomically push `main` plus rollback tags.
 
 Rollback baseline: `rollback/adapter-v6-condition-injection-v1-pre` at merged

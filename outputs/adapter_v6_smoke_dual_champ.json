@@ -1,14 +1,14 @@
 {
   "status": "PASS",
-  "mode": "single",
-  "condition_backend": "native",
-  "use_depth": false,
+  "mode": "dual",
+  "condition_backend": "champ",
+  "use_depth": true,
   "route_num_people": [
-    1
+    2
   ],
-  "adapter_trainable_parameters": 153585514,
+  "adapter_trainable_parameters": 155737802,
   "parameters_by_module": {
-    "condition_injector": 7154762,
+    "condition_injector": 9307050,
     "condition_bridge": 444160,
     "single_expert": 0,
     "dual_expert": 11149952,
@@ -48,7 +48,7 @@
     ]
   ],
   "max_zero_residual": 0.0,
-  "max_deepgen_equivalence_error": 0.0,
+  "max_deepgen_equivalence_error": null,
   "backbone_frozen": true,
   "training_started": false
 }
