@@ -15,17 +15,33 @@ def _to_preserving_discrete_dtype(
     if value.is_floating_point():
         return value.to(*args, **kwargs)
     device = kwargs.get("device")
+    non_blocking = bool(kwargs.get("non_blocking", False))
+    copy = bool(kwargs.get("copy", False))
+    positional_flags = 0
     if args:
         target = args[0]
         if isinstance(target, torch.Tensor):
             device = target.device
+            positional_flags = 1
+        elif isinstance(target, torch.dtype):
+            positional_flags = 1
         elif isinstance(target, (torch.device, str, int)):
             device = target
-    return value.to(
+            positional_flags = (
+                2 if len(args) > 1 and (args[1] is None or isinstance(args[1], torch.dtype)) else 1
+            )
+        if len(args) > positional_flags:
+            non_blocking = bool(args[positional_flags])
+        if len(args) > positional_flags + 1:
+            copy = bool(args[positional_flags + 1])
+    conversion = dict(
         device=value.device if device is None else device,
-        non_blocking=bool(kwargs.get("non_blocking", False)),
-        copy=bool(kwargs.get("copy", False)),
+        non_blocking=non_blocking,
+        copy=copy,
     )
+    if "memory_format" in kwargs:
+        conversion["memory_format"] = kwargs["memory_format"]
+    return value.to(**conversion)
 
 
 PART_NAMES = (
