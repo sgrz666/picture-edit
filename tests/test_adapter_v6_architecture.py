@@ -10,7 +10,8 @@ import torch
 
 from src.pose_control.v6.conditions import AdapterIdentityCondition, ContactRelationBatch, TaskType
 from src.pose_control.v6.deepgen_adapter import UnifiedSMPLXAdapterV6
-from src.pose_control.v6.experts import DualPersonExpert, TaskRouter
+from src.pose_control.v6.experts import TaskRouter
+from src.pose_control.v6.reasoning import InternalControlState, SMPLXAdapterReasoner
 
 
 def test_smoke_report_names_preserve_backend_results() -> None:
@@ -96,8 +97,11 @@ def test_adapter_public_boundary_consumes_bundle_and_separate_identity() -> None
     assert "condition" not in parameters
     bundle, identity = make_runtime(model, num_people=1)
     prepared = model.prepare_conditioning(bundle, identity)
-    assert prepared.scene_feature.shape == (1, 16, 4, 4)
+    assert prepared.scene_feature.shape == (1, 16, 2, 2)
     assert prepared.route.num_people.tolist() == [1]
+    assert isinstance(prepared.control_state, InternalControlState)
+    assert isinstance(model.reasoner, SMPLXAdapterReasoner)
+    assert model.reason_conditions(bundle) is not None
 
 
 def test_legacy_raw_condition_contract_is_removed() -> None:
@@ -117,36 +121,12 @@ def test_router_uses_only_bundle_person_count() -> None:
     assert route.dual_mask.tolist() == [False, True]
 
 
-def test_dual_expert_remains_swap_equivariant_and_uses_encoded_contact() -> None:
-    torch.manual_seed(3)
-    expert = DualPersonExpert(
-        feature_channels=16,
-        cross_attention_dim=32,
-        token_dim=32,
-        num_heads=4,
-        contact_token_count=8,
-    ).eval()
-    features = torch.randn(1, 2, 16, 8, 8)
-    masks = torch.ones(1, 2, 1, 8, 8)
-    tokens = torch.randn(1, 2, 12, 32)
-    contact_spatial = torch.randn(1, 16, 8, 8)
-    contact_tokens = torch.randn(1, 8, 32)
-    contact_mask = torch.tensor([[True, True, False, False, False, False, False, False]])
-    output = expert(features, tokens, masks, contact_spatial, contact_tokens, contact_mask)
-    swapped = expert(
-        features[:, [1, 0]], tokens[:, [1, 0]], masks[:, [1, 0]],
-        contact_spatial, contact_tokens, contact_mask,
-    )
-    torch.testing.assert_close(
-        output.person_features[:, [1, 0]], swapped.person_features, atol=1e-5, rtol=1e-5
-    )
-    torch.testing.assert_close(output.scene_feature, swapped.scene_feature, atol=1e-5, rtol=1e-5)
-    no_contact = expert(
-        features, tokens, masks, torch.zeros_like(contact_spatial),
-        torch.zeros_like(contact_tokens), torch.zeros_like(contact_mask),
-    )
-    assert not torch.allclose(output.scene_feature, no_contact.scene_feature)
-    assert not torch.allclose(output.contact_tokens, no_contact.contact_tokens)
+def test_old_experts_and_raw_condition_bridge_are_removed() -> None:
+    from src.pose_control.v6 import condition_bridge, experts
+
+    assert not hasattr(experts, "SinglePersonExpert")
+    assert not hasattr(experts, "DualPersonExpert")
+    assert not hasattr(condition_bridge, "ConditionBundleBridge")
 
 
 def test_single_route_ignores_invalid_person_b_contact_and_appearance() -> None:
@@ -169,6 +149,7 @@ def test_single_route_ignores_invalid_person_b_contact_and_appearance() -> None:
     torch.testing.assert_close(first.scene_feature, second.scene_feature)
     torch.testing.assert_close(first.adapter_tokens, second.adapter_tokens)
     assert torch.count_nonzero(first.contact_token_mask) == 0
+    assert torch.count_nonzero(first.control_state.interaction_feature) == 0
 
 
 def test_source_appearance_remains_condition_sensitive() -> None:
@@ -180,6 +161,18 @@ def test_source_appearance_remains_condition_sensitive() -> None:
     first = model.prepare_conditioning(bundle, identity)
     second = model.prepare_conditioning(bundle, changed)
     assert not torch.allclose(first.adapter_tokens, second.adapter_tokens)
+    torch.testing.assert_close(
+        first.control_state.person_tokens, second.control_state.person_tokens
+    )
+
+
+def test_control_core_context_contains_only_bound_person_tokens() -> None:
+    model = build_tiny()
+    bundle, identity = make_runtime(model, num_people=2)
+    prepared = model.prepare_conditioning(bundle, identity)
+    assert prepared.adapter_tokens.shape == (1, 24, 32)
+    assert prepared.adapter_token_mask.shape == (1, 24)
+    assert prepared.adapter_token_mask.all()
 
 
 def test_zero_heads_emit_six_target_only_residuals_and_alignment_is_exact() -> None:
