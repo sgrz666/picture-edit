@@ -209,6 +209,51 @@ def test_zero_heads_emit_six_target_only_residuals_and_alignment_is_exact() -> N
     assert torch.count_nonzero(residuals[0][:, target_tokens:]) == 0
 
 
+def test_contact_padding_mask_does_not_couple_batch_rows() -> None:
+    torch.manual_seed(71)
+    model = build_tiny()
+    raw = make_raw_conditions(batch_size=2, num_people=2)
+    raw["contact_relations"].valid_mask[0, 1:] = False
+    raw["contact_relations"].valid_mask[1] = True
+    bundle = model.condition_injector(**raw)
+    identity = AdapterIdentityCondition(
+        source_person_latents=torch.randn(2, 2, 16, 8, 8),
+        source_indices=torch.tensor([[0, 1], [0, 1]]),
+    )
+    target = torch.randn(2, 16, 8, 8)
+    source_scene = torch.randn(2, 16, 8, 8)
+    text = torch.randn(2, 5, 24)
+    pooled = torch.randn(2, 20)
+    timestep = torch.tensor([500, 500])
+    with torch.no_grad():
+        model.control_core.zero_heads[0].weight.copy_(torch.eye(32))
+        model.control_core.zero_heads[0].bias.zero_()
+
+    batched = model(
+        target_latents=target,
+        condition_bundle=bundle,
+        identity_condition=identity,
+        source_scene_latents=source_scene,
+        cond_hidden_states=None,
+        encoder_hidden_states=text,
+        pooled_projections=pooled,
+        timestep=timestep,
+    )[0][0]
+    first = torch.tensor([0])
+    standalone = model(
+        target_latents=target.index_select(0, first),
+        condition_bundle=bundle.index_select(first),
+        identity_condition=identity.index_select(first),
+        source_scene_latents=source_scene.index_select(0, first),
+        cond_hidden_states=None,
+        encoder_hidden_states=text.index_select(0, first),
+        pooled_projections=pooled.index_select(0, first),
+        timestep=timestep.index_select(0, first),
+    )[0][0]
+
+    torch.testing.assert_close(batched, standalone, atol=1e-5, rtol=1e-5)
+
+
 def test_architecture_config_reports_parameters_without_a_size_gate() -> None:
     config_path = Path(__file__).parents[1] / "configs" / "adapter_v6_architecture.json"
     payload = json.loads(config_path.read_text(encoding="utf-8"))
