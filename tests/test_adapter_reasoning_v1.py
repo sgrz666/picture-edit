@@ -210,6 +210,29 @@ def test_dual_person_and_relative_changes_do_not_affect_single_rows() -> None:
     assert not torch.allclose(first.person_tokens[1], second.person_tokens[1])
 
 
+def test_mixed_batch_rows_match_standalone_reasoning() -> None:
+    torch.manual_seed(9)
+    reasoner = _build_reasoner()
+    bundle = _make_bundle((1, 2, 1))
+    batched = reasoner(bundle)
+    for row in range(bundle.batch_size):
+        index = torch.tensor([row])
+        standalone = reasoner(bundle.index_select(index))
+        selected = batched.index_select(index)
+        torch.testing.assert_close(
+            selected.geometry_feature, standalone.geometry_feature, atol=1e-5, rtol=1e-5
+        )
+        torch.testing.assert_close(
+            selected.interaction_feature,
+            standalone.interaction_feature,
+            atol=1e-5,
+            rtol=1e-5,
+        )
+        torch.testing.assert_close(
+            selected.person_tokens, standalone.person_tokens, atol=1e-5, rtol=1e-5
+        )
+
+
 def test_contact_gate_and_relation_mask_behavior() -> None:
     torch.manual_seed(11)
     reasoner = _build_reasoner()
@@ -226,9 +249,17 @@ def test_contact_gate_and_relation_mask_behavior() -> None:
     torch.testing.assert_close(first.interaction_feature, second.interaction_feature)
     assert torch.isfinite(first.interaction_feature).all()
 
-    active = _make_bundle((2,), with_contact=True)
-    active_state = reasoner(active)
-    assert not torch.allclose(first.interaction_feature, active_state.interaction_feature)
+    spatial_only = copy.deepcopy(empty)
+    spatial_only.contact_spatial[..., 4, 4] = 1
+    spatial_state = reasoner(spatial_only)
+    assert not torch.allclose(first.interaction_feature, spatial_state.interaction_feature)
+
+    relation_only = copy.deepcopy(empty)
+    relation_only.contact_tokens[:, 0].normal_()
+    relation_only.contact_mask[:, 0] = True
+    relation_state = reasoner(relation_only)
+    assert not torch.allclose(first.interaction_feature, relation_state.interaction_feature)
+    assert spatial_state.geometry_feature.data_ptr() != spatial_state.interaction_feature.data_ptr()
 
 
 def test_relation_padding_does_not_couple_batch_rows() -> None:
