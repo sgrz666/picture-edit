@@ -117,7 +117,9 @@ class ContactRasterEncoder(nn.Module):
 
     def forward(self, value: torch.Tensor, valid: torch.Tensor) -> torch.Tensor:
         output = self.network(value)
-        return output * valid.to(output.dtype)[:, None, None, None]
+        present = value.abs().flatten(1).sum(dim=1) > 0
+        active = valid & present
+        return output * active.to(output.dtype)[:, None, None, None]
 
 
 class StructuredContactRelationEncoder(nn.Module):

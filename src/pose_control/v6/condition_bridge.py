@@ -72,7 +72,9 @@ class ConditionBundleBridge(nn.Module):
             )
         else:
             contact_spatial = self.contact_projection(bundle.contact_spatial)
-            contact_spatial = contact_spatial * valid[:, 1, None, None, None].to(
+            contact_present = bundle.contact_spatial.abs().flatten(1).sum(dim=1) > 0
+            contact_active = valid[:, 1] & contact_present
+            contact_spatial = contact_spatial * contact_active[:, None, None, None].to(
                 contact_spatial.dtype
             )
 
