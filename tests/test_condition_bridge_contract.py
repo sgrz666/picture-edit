@@ -55,7 +55,10 @@ def test_interaction_projection_has_no_bias_and_single_rows_ignore_interaction()
     assert bridge.interaction_projection.bias is None
     single = _make_state().index_select(torch.tensor([1]))
     output = bridge(single)
-    expected = bridge.geometry_projection(single.geometry_feature)
+    expected = bridge.geometry_projection(
+        single.geometry_feature
+        + bridge.geometry_high_downsample(single.geometry_highres)
+    )
     torch.testing.assert_close(output.scene_feature, expected)
 
 
@@ -75,3 +78,29 @@ def test_mask_aware_pooling_ignores_invalid_spatial_tokens() -> None:
     changed.person_tokens[:, :, 1::2].normal_(mean=100, std=10)
     second = bridge(changed)
     torch.testing.assert_close(first.geometry_tokens, second.geometry_tokens)
+
+
+def test_bridge_consumes_both_high_resolution_control_paths() -> None:
+    bridge_module = importlib.import_module("src.pose_control.v6.condition_bridge")
+    bridge = bridge_module.ReasonerControlBridge(
+        reasoning_dim=32, geometry_channels=16, token_dim=24
+    ).eval()
+    state = _make_state()
+    geometry_changed = _make_state()
+    interaction_changed = _make_state()
+    for changed in (geometry_changed, interaction_changed):
+        changed.geometry_feature.copy_(state.geometry_feature)
+        changed.interaction_feature.copy_(state.interaction_feature)
+        changed.geometry_highres.copy_(state.geometry_highres)
+        changed.interaction_highres.copy_(state.interaction_highres)
+        changed.person_tokens.copy_(state.person_tokens)
+        changed.person_token_mask.copy_(state.person_token_mask)
+    geometry_changed.geometry_highres.add_(10)
+    interaction_changed.interaction_highres[0].sub_(10)
+    baseline = bridge(state)
+    assert not torch.allclose(
+        baseline.scene_feature, bridge(geometry_changed).scene_feature
+    )
+    assert not torch.allclose(
+        baseline.scene_feature[0], bridge(interaction_changed).scene_feature[0]
+    )

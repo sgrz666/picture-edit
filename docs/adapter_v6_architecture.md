@@ -66,8 +66,10 @@ interaction reasoning only on those rows, then scattering them back.
 reasoning output. The unchanged `forward(...)` path then uses
 `ReasonerControlBridge`:
 
-- low-resolution geometry and masked interaction features are independently
-  projected to the existing control-condition width;
+- high-resolution geometry/interaction features are learned-downsampled and
+  added to their low-resolution counterparts, then independently projected to
+  the existing control-condition width; this keeps both declared scales on the
+  end-to-end DeepGen gradient path;
 - each person's masked spatial tokens are pooled into four summary tokens;
 - those summaries are projected to the DeepGen width and bound to the existing
   eight appearance tokens using slot and source-index embeddings;

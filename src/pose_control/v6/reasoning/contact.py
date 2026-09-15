@@ -135,4 +135,10 @@ class ContactConditionReasoner(nn.Module):
             contact_tokens,
             contact_mask,
         )
-        return ContactReasoningOutput(person_a, person_b, contact_low, contact_high)
+        fusion_gate = gates.mean()
+        return ContactReasoningOutput(
+            person_a,
+            person_b,
+            contact_low * fusion_gate,
+            contact_high * fusion_gate,
+        )

@@ -261,6 +261,17 @@ def test_contact_gate_and_relation_mask_behavior() -> None:
     assert not torch.allclose(first.interaction_feature, relation_state.interaction_feature)
     assert spatial_state.geometry_feature.data_ptr() != spatial_state.interaction_feature.data_ptr()
 
+    with torch.no_grad():
+        reasoner.contact_reasoner.contact_gate.fill_(-100)
+    gated_empty = reasoner(empty)
+    gated_spatial = reasoner(spatial_only)
+    torch.testing.assert_close(
+        gated_empty.interaction_feature, gated_spatial.interaction_feature
+    )
+    torch.testing.assert_close(
+        gated_empty.interaction_highres, gated_spatial.interaction_highres
+    )
+
 
 def test_relation_padding_does_not_couple_batch_rows() -> None:
     torch.manual_seed(13)
@@ -309,3 +320,24 @@ def test_reasoning_smoke_and_v62_config_are_declared() -> None:
     assert payload["reasoning"]["downsample_factor"] == 2
     assert payload["reasoning"]["cross_person_layers"] == 2
     assert payload["reasoning"]["contact_gate_init"] == -4.0
+
+
+def test_both_high_resolution_paths_receive_integrated_gradients() -> None:
+    from src.pose_control.v6.condition_bridge import ReasonerControlBridge
+
+    torch.manual_seed(17)
+    reasoner = _build_reasoner()
+    bridge = ReasonerControlBridge(
+        reasoning_dim=32, geometry_channels=16, token_dim=24
+    )
+    scene = bridge(reasoner(_make_bundle((1, 2)))).scene_feature
+    parameters = (
+        reasoner.single_high_projection.weight,
+        reasoner.dual_fusion.geometry_high_projection.weight,
+        reasoner.dual_fusion.interaction_high_projection.weight,
+    )
+    gradients = torch.autograd.grad(scene.square().mean(), parameters)
+    for gradient in gradients:
+        assert gradient is not None
+        assert torch.isfinite(gradient).all()
+        assert torch.count_nonzero(gradient) > 0

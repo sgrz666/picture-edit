@@ -34,6 +34,12 @@ class ReasonerControlBridge(nn.Module):
         self.interaction_projection = nn.Conv2d(
             reasoning_dim, geometry_channels, 1, bias=False
         )
+        self.geometry_high_downsample = nn.Conv2d(
+            reasoning_dim, reasoning_dim, 3, stride=2, padding=1, bias=False
+        )
+        self.interaction_high_downsample = nn.Conv2d(
+            reasoning_dim, reasoning_dim, 3, stride=2, padding=1, bias=False
+        )
         self.token_projection = nn.Linear(reasoning_dim, token_dim)
 
     @staticmethod
@@ -67,8 +73,14 @@ class ReasonerControlBridge(nn.Module):
         interaction_valid = state.interaction_valid[:, None, None, None].to(
             state.interaction_feature.dtype
         )
-        interaction = state.interaction_feature * interaction_valid
-        scene = self.geometry_projection(state.geometry_feature)
+        geometry = state.geometry_feature + self.geometry_high_downsample(
+            state.geometry_highres
+        )
+        interaction = state.interaction_feature + self.interaction_high_downsample(
+            state.interaction_highres
+        )
+        interaction = interaction * interaction_valid
+        scene = self.geometry_projection(geometry)
         scene = scene + self.interaction_projection(interaction)
         pooled, pooled_mask = self._pool_person_tokens(state)
         geometry_tokens = self.token_projection(pooled)
