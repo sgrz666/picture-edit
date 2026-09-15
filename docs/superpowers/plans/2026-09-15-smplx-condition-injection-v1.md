@@ -24,7 +24,7 @@ core.
 - [x] Add the fixed-commit, MIT-licensed CHAMP single-frame optional backend.
 - [x] Update smoke commands and architecture documentation.
 - [x] Run unit, full-suite and real DeepGen smoke verification.
-- [ ] Create final tag and atomically push `main` plus rollback tags.
+- [x] Create final tag and atomically push `main` plus rollback tags.
 
 Rollback baseline: `rollback/adapter-v6-condition-injection-v1-pre` at merged
 main commit `9804541b107a02f3b30be38a57db5123ebd5ff92`.
