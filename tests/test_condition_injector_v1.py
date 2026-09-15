@@ -170,6 +170,27 @@ def test_depth_is_ignored_when_disabled_and_jointly_normalized_when_enabled() ->
     assert not torch.allclose(encoded.person_a_spatial, encoded.person_b_spatial)
 
 
+def test_joint_depth_normalization_excludes_a_missing_modality() -> None:
+    geometry = importlib.import_module("src.pose_control.v6.geometry_encoder")
+    mask_a = torch.ones(1, 1, 2, 2)
+    mask_b = torch.ones(1, 1, 2, 2)
+    depth_b = torch.tensor([[[[2.0, 4.0], [6.0, 8.0]]]])
+
+    normalized_a, normalized_b = geometry.normalize_scene_depth(
+        None,
+        depth_b,
+        mask_a,
+        mask_b,
+        torch.tensor([True]),
+    )
+
+    assert normalized_a is None
+    torch.testing.assert_close(
+        normalized_b,
+        torch.tensor([[[[-1.0, -1.0 / 3.0], [1.0 / 3.0, 1.0]]]]),
+    )
+
+
 def test_invalid_contracts_fail_loudly() -> None:
     _, TaskType, Injector = _api()
     person = _person(batch_size=1)
@@ -199,6 +220,9 @@ def test_invalid_contracts_fail_loudly() -> None:
             }
         )
 
+    with pytest.raises(ValueError, match="fixed public contract"):
+        Injector(token_dim=128)
+
 
 def test_contact_padding_and_global_task_sensitivity() -> None:
     _, TaskType, Injector = _api()
@@ -227,6 +251,36 @@ def test_contact_padding_and_global_task_sensitivity() -> None:
     assert not torch.allclose(first.task_token, second.task_token)
     assert first.contact_mask.tolist() == [[True, True, False, False, False, False, False, False]]
     assert torch.count_nonzero(first.contact_tokens[:, 2:]) == 0
+
+
+def test_contact_padding_may_use_negative_sentinel_indices() -> None:
+    _, TaskType, Injector = _api()
+    a = _person(batch_size=1)
+    b = _person(batch_size=1, offset=1.0)
+    relations = _relations(batch_size=1)
+    invalid = ~relations.valid_mask
+    for name in ("src_person", "src_part", "dst_person", "dst_part", "contact_type"):
+        getattr(relations, name)[invalid] = -1
+
+    bundle = Injector().eval()(
+        normal_a=a["normal"],
+        pose_heatmap_a=a["pose_heatmap"],
+        part_onehot_a=a["part_onehot"],
+        smplx_global_a=a["smplx_global"],
+        human_mask_a=a["human_mask"],
+        normal_b=b["normal"],
+        pose_heatmap_b=b["pose_heatmap"],
+        part_onehot_b=b["part_onehot"],
+        smplx_global_b=b["smplx_global"],
+        human_mask_b=b["human_mask"],
+        contact_relations=relations,
+        task_id=torch.tensor([int(TaskType.DUAL)]),
+    )
+
+    assert bundle.contact_mask.tolist() == [
+        [True, True, False, False, False, False, False, False]
+    ]
+    assert torch.count_nonzero(bundle.contact_tokens[:, 2:]) == 0
 
 
 def test_champ_backend_is_opt_in_and_runs_without_weights_or_video_dependencies() -> None:
