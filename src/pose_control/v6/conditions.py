@@ -123,6 +123,59 @@ class ConditionBundle:
     def device(self) -> torch.device:
         return self.person_a_spatial.device
 
+    def validate(self) -> "ConditionBundle":
+        batch_size = self.batch_size
+        if tuple(self.person_valid.shape) != (batch_size, 2) or self.person_valid.dtype != torch.bool:
+            raise ValueError("person_valid must have shape [B,2] and dtype bool")
+        if not torch.all(self.person_valid[:, 0]):
+            raise ValueError("person A must be valid in every sample")
+        expected_count = self.person_valid.sum(dim=1).long()
+        if tuple(self.person_count.shape) != (batch_size,) or not torch.equal(
+            self.person_count.long(), expected_count
+        ):
+            raise ValueError("person_count must equal person_valid.sum(dim=1)")
+        height, width = self.person_a_spatial.shape[-2:]
+        shapes = {
+            "person_a_spatial": ((batch_size, 256, height, width), self.person_a_spatial),
+            "person_a_mask": ((batch_size, 1, height, width), self.person_a_mask),
+            "person_a_global_tokens": ((batch_size, 4, 256), self.person_a_global_tokens),
+            "task_token": ((batch_size, 1, 256), self.task_token),
+        }
+        for name, (expected, value) in shapes.items():
+            if tuple(value.shape) != expected:
+                raise ValueError(f"{name} must have shape {expected}")
+        b_values = (self.person_b_spatial, self.person_b_mask, self.person_b_global_tokens)
+        if any(value is not None for value in b_values) != all(value is not None for value in b_values):
+            raise ValueError("person-B bundle fields must be all present or all absent")
+        if self.person_b_spatial is None and torch.any(self.person_valid[:, 1]):
+            raise ValueError("valid person B requires person-B bundle fields")
+        if self.person_b_spatial is not None:
+            expected_b = (
+                (batch_size, 256, height, width),
+                (batch_size, 1, height, width),
+                (batch_size, 4, 256),
+            )
+            for value, expected in zip(b_values, expected_b):
+                if tuple(value.shape) != expected:
+                    raise ValueError(f"invalid person-B bundle shape; expected {expected}")
+        if self.relative_tokens is not None and tuple(self.relative_tokens.shape) != (batch_size, 2, 256):
+            raise ValueError("relative_tokens must have shape [B,2,256]")
+        if self.contact_spatial is not None and tuple(self.contact_spatial.shape) != (
+            batch_size,
+            128,
+            height,
+            width,
+        ):
+            raise ValueError("contact_spatial must have shape [B,128,h,w]")
+        if (self.contact_tokens is None) != (self.contact_mask is None):
+            raise ValueError("contact_tokens and contact_mask must be provided together")
+        if self.contact_tokens is not None:
+            if tuple(self.contact_tokens.shape) != (batch_size, 8, 256):
+                raise ValueError("contact_tokens must have shape [B,8,256]")
+            if tuple(self.contact_mask.shape) != (batch_size, 8) or self.contact_mask.dtype != torch.bool:
+                raise ValueError("contact_mask must have shape [B,8] and dtype bool")
+        return self
+
     def index_select(self, indices: torch.Tensor) -> "ConditionBundle":
         return type(self)(
             **{
@@ -147,6 +200,62 @@ class ConditionBundle:
                 tensor_kwargs.pop("dtype", None)
             values[item.name] = value.to(*args, **tensor_kwargs)
         return type(self)(**values)
+
+
+@dataclass
+class AdapterIdentityCondition:
+    """Source-appearance inputs intentionally kept outside ConditionBundle."""
+
+    source_person_latents: torch.Tensor
+    source_indices: Optional[torch.Tensor] = None
+
+    def effective_source_indices(self) -> torch.Tensor:
+        if self.source_indices is not None:
+            return self.source_indices.long()
+        return torch.arange(2, device=self.source_person_latents.device).expand(
+            self.source_person_latents.shape[0], -1
+        )
+
+    def validate(self, bundle: ConditionBundle) -> "AdapterIdentityCondition":
+        if self.source_person_latents.ndim != 5 or self.source_person_latents.shape[:3] != (
+            bundle.batch_size,
+            2,
+            16,
+        ):
+            raise ValueError("source_person_latents must have shape [B,2,16,h,w]")
+        if self.source_indices is not None and tuple(self.source_indices.shape) != (
+            bundle.batch_size,
+            2,
+        ):
+            raise ValueError("source_indices must have shape [B,2]")
+        if self.source_indices is not None and self.source_indices.device != bundle.device:
+            raise ValueError("source_indices and ConditionBundle must be on the same device")
+        if self.source_person_latents.device != bundle.device:
+            raise ValueError("source_person_latents and ConditionBundle must be on the same device")
+        return self
+
+    def index_select(self, indices: torch.Tensor) -> "AdapterIdentityCondition":
+        return type(self)(
+            source_person_latents=self.source_person_latents.index_select(0, indices),
+            source_indices=(
+                None
+                if self.source_indices is None
+                else self.source_indices.index_select(0, indices)
+            ),
+        )
+
+    def to(self, *args, **kwargs) -> "AdapterIdentityCondition":
+        float_kwargs = dict(kwargs)
+        index_kwargs = dict(kwargs)
+        index_kwargs.pop("dtype", None)
+        return type(self)(
+            source_person_latents=self.source_person_latents.to(*args, **float_kwargs),
+            source_indices=(
+                None
+                if self.source_indices is None
+                else self.source_indices.to(*args, **index_kwargs)
+            ),
+        )
 
 
 @dataclass
