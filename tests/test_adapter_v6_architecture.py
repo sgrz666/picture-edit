@@ -13,6 +13,14 @@ from src.pose_control.v6.deepgen_adapter import UnifiedSMPLXAdapterV6
 from src.pose_control.v6.experts import DualPersonExpert, TaskRouter
 
 
+def test_smoke_report_names_preserve_backend_results() -> None:
+    from scripts.smoke_adapter_v6 import default_report_name
+
+    assert default_report_name("single", "native", False) == "adapter_v6_smoke_single.json"
+    assert default_report_name("dual", "native", False) == "adapter_v6_smoke_dual.json"
+    assert default_report_name("dual", "champ", True) == "adapter_v6_smoke_dual_champ.json"
+
+
 def build_tiny() -> UnifiedSMPLXAdapterV6:
     return UnifiedSMPLXAdapterV6.build_tiny(
         hidden_dim=32,
