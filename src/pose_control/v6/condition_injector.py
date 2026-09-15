@@ -38,6 +38,17 @@ class SMPLXConditionInjector(nn.Module):
         super().__init__()
         if use_full_pose_tokens:
             raise ValueError("full pose tokens are reserved but disabled in condition injection V1")
+        public_contract = {
+            "spatial_dim": (spatial_dim, 256),
+            "token_dim": (token_dim, 256),
+            "contact_channels": (contact_channels, 128),
+            "max_contact_relations": (max_contact_relations, 8),
+        }
+        for name, (actual, expected) in public_contract.items():
+            if actual != expected:
+                raise ValueError(
+                    f"{name}={actual} violates the fixed public contract; expected {expected}"
+                )
         for name, backend in (("normal", normal_backend), ("depth", depth_backend)):
             if backend not in {"native", "champ"}:
                 raise ValueError(f"unsupported {name} backend: {backend}")

@@ -196,28 +196,41 @@ def normalize_scene_depth(
 
     if depth_a is None and depth_b is None:
         return None, None
+    has_depth_a = depth_a is not None
+    has_depth_b = depth_b is not None
     template = depth_a if depth_a is not None else depth_b
-    depth_a = torch.zeros_like(template) if depth_a is None else depth_a
-    depth_b = torch.zeros_like(template) if depth_b is None else depth_b
+    work_depth_a = torch.zeros_like(template) if depth_a is None else depth_a
+    work_depth_b = torch.zeros_like(template) if depth_b is None else depth_b
     if mask_b is None:
         mask_b = torch.zeros_like(mask_a)
+    if not has_depth_a:
+        mask_a = torch.zeros_like(mask_a)
+    if not has_depth_b:
+        mask_b = torch.zeros_like(mask_b)
     valid_b = person_b_valid[:, None, None, None]
     mask_b = mask_b * valid_b.to(mask_b.dtype)
-    result_a = torch.zeros_like(depth_a)
-    result_b = torch.zeros_like(depth_b)
-    for index in range(depth_a.shape[0]):
+    result_a = torch.zeros_like(work_depth_a) if has_depth_a else None
+    result_b = torch.zeros_like(work_depth_b) if has_depth_b else None
+    for index in range(template.shape[0]):
         values = []
         if mask_a[index].bool().any():
-            values.append(depth_a[index][mask_a[index].bool()])
+            values.append(work_depth_a[index][mask_a[index].bool()])
         if mask_b[index].bool().any():
-            values.append(depth_b[index][mask_b[index].bool()])
+            values.append(work_depth_b[index][mask_b[index].bool()])
         if not values:
             continue
         joined = torch.cat(values)
         minimum, maximum = joined.amin(), joined.amax()
         span = maximum - minimum
         if span > eps:
-            result_a[index] = ((depth_a[index] - minimum) / span * 2 - 1) * mask_a[index]
-            result_b[index] = ((depth_b[index] - minimum) / span * 2 - 1) * mask_b[index]
-    result_b = result_b * valid_b.to(result_b.dtype)
+            if result_a is not None:
+                result_a[index] = (
+                    (work_depth_a[index] - minimum) / span * 2 - 1
+                ) * mask_a[index]
+            if result_b is not None:
+                result_b[index] = (
+                    (work_depth_b[index] - minimum) / span * 2 - 1
+                ) * mask_b[index]
+    if result_b is not None:
+        result_b = result_b * valid_b.to(result_b.dtype)
     return result_a, result_b

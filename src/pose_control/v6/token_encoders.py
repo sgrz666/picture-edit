@@ -151,12 +151,16 @@ class StructuredContactRelationEncoder(nn.Module):
             max_relations=self.max_relations,
             contact_type_count=self.contact_type_count,
         )
+        # Padding is outside the semantic contract. Replace sentinel values
+        # before embedding lookup, then zero the projected tokens with mask.
+        padding_mask = relations.valid_mask
+        safe = lambda value: torch.where(padding_mask, value, torch.zeros_like(value))
         token = (
-            self.person_embedding(relations.src_person)
-            + self.part_embedding(relations.src_part)
-            + self.person_embedding(relations.dst_person)
-            + self.part_embedding(relations.dst_part)
-            + self.type_embedding(relations.contact_type)
+            self.person_embedding(safe(relations.src_person))
+            + self.part_embedding(safe(relations.src_part))
+            + self.person_embedding(safe(relations.dst_person))
+            + self.part_embedding(safe(relations.dst_part))
+            + self.type_embedding(safe(relations.contact_type))
             + self.distance_mlp(relations.distance)
         )
         mask = relations.valid_mask & person_b_valid[:, None]
