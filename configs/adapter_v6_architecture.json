@@ -1,0 +1,53 @@
+{
+  "version": "6.0",
+  "scope": "architecture-and-forward-only-no-training",
+  "max_people": 2,
+  "person_axis_is_fixed": true,
+  "modalities": [
+    "normal",
+    "depth",
+    "skeleton",
+    "silhouette",
+    "part_ids"
+  ],
+  "geometry_encoder": {
+    "input_resolution": 512,
+    "pyramid_resolutions": [256, 128, 64],
+    "output_channels": 128,
+    "shared_across_people": true,
+    "missing_modality_policy": "explicit-modality-valid-mask"
+  },
+  "tokens": {
+    "hidden_dim": 1536,
+    "geometry_per_person": 8,
+    "appearance_per_person": 8,
+    "contact": 8,
+    "task": 1,
+    "tokenizer_is_modified": false
+  },
+  "dual_person_expert": {
+    "cross_attention_resolution": 32,
+    "cross_attention_dim": 512,
+    "bidirectional": true,
+    "depth_aware_scene_fusion": true,
+    "directional_contact_maps": true,
+    "contact_pair_tokens": true
+  },
+  "control_core": {
+    "shared_full_width_blocks": 1,
+    "stages": 6,
+    "rank": 64,
+    "cross_norm": true,
+    "zero_residual_heads": 6
+  },
+  "deepgen_injection": {
+    "transformer_layers": 24,
+    "block_ranges": [[0, 3], [4, 7], [8, 11], [12, 15], [16, 19], [20, 22]],
+    "last_block_injected": false,
+    "token_layout": ["target-residual", "source-zeros", "padding-zeros"]
+  },
+  "parameter_policy": {
+    "limit": null,
+    "report_trainable_count": true
+  }
+}
