@@ -157,7 +157,7 @@ def test_source_appearance_remains_condition_sensitive() -> None:
     model = build_tiny()
     bundle, identity = make_runtime(model, num_people=1)
     changed = copy.deepcopy(identity)
-    changed.source_person_latents[:, 0].add_(3)
+    changed.source_person_latents[:, 0, 0].add_(3)
     first = model.prepare_conditioning(bundle, identity)
     second = model.prepare_conditioning(bundle, changed)
     assert not torch.allclose(first.adapter_tokens, second.adapter_tokens)
@@ -172,7 +172,9 @@ def test_control_core_context_contains_only_bound_person_tokens() -> None:
     prepared = model.prepare_conditioning(bundle, identity)
     assert prepared.adapter_tokens.shape == (1, 24, 32)
     assert prepared.adapter_token_mask.shape == (1, 24)
-    assert prepared.adapter_token_mask.all()
+    per_person_mask = prepared.adapter_token_mask.reshape(1, 2, 12)
+    assert per_person_mask[..., 4:].all()
+    assert per_person_mask[..., :4].any(dim=-1).all()
 
 
 def test_zero_heads_emit_six_target_only_residuals_and_alignment_is_exact() -> None:

@@ -44,18 +44,29 @@ class PersonTokenBinder(nn.Module):
         self,
         geometry_tokens: torch.Tensor,
         appearance_tokens: torch.Tensor,
-        task_token: torch.Tensor,
         person_valid: torch.Tensor,
         source_indices: torch.Tensor,
+        task_token: torch.Tensor | None = None,
+        geometry_token_mask: torch.Tensor | None = None,
     ) -> tuple[torch.Tensor, torch.Tensor]:
         batch_size = geometry_tokens.shape[0]
         slots = torch.arange(2, device=geometry_tokens.device).expand(batch_size, -1)
         binding = self.slot_embedding(slots) + self.source_embedding(
             source_indices.clamp(0, self.source_embedding.num_embeddings - 1)
         )
-        binding = binding[:, :, None] + task_token[:, None]
+        binding = binding[:, :, None]
+        if task_token is not None:
+            binding = binding + task_token[:, None]
+        geometry_count = geometry_tokens.shape[2]
+        appearance_count = appearance_tokens.shape[2]
+        geometry_valid = person_valid[..., None].expand(-1, -1, geometry_count)
+        if geometry_token_mask is not None:
+            if geometry_token_mask.shape != geometry_valid.shape:
+                raise ValueError("geometry_token_mask must match geometry tokens")
+            geometry_valid = geometry_valid & geometry_token_mask
+        appearance_valid = person_valid[..., None].expand(-1, -1, appearance_count)
         tokens = torch.cat((geometry_tokens + binding, appearance_tokens + binding), dim=2)
-        valid = person_valid[..., None].expand(-1, -1, tokens.shape[2])
+        valid = torch.cat((geometry_valid, appearance_valid), dim=2)
         tokens = tokens * valid[..., None].to(tokens.dtype)
         return tokens, valid
 

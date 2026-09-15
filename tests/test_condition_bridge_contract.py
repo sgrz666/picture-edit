@@ -53,15 +53,10 @@ def test_interaction_projection_has_no_bias_and_single_rows_ignore_interaction()
         reasoning_dim=32, geometry_channels=16, token_dim=24
     ).eval()
     assert bridge.interaction_projection.bias is None
-    state = _make_state()
-    first = bridge(state)
-    changed = _make_state()
-    changed.geometry_feature.copy_(state.geometry_feature)
-    changed.person_tokens.copy_(state.person_tokens)
-    changed.person_token_mask.copy_(state.person_token_mask)
-    changed.interaction_feature[1].normal_(mean=100, std=20)
-    second = bridge(changed)
-    torch.testing.assert_close(first.scene_feature[1], second.scene_feature[1])
+    single = _make_state().index_select(torch.tensor([1]))
+    output = bridge(single)
+    expected = bridge.geometry_projection(single.geometry_feature)
+    torch.testing.assert_close(output.scene_feature, expected)
 
 
 def test_mask_aware_pooling_ignores_invalid_spatial_tokens() -> None:

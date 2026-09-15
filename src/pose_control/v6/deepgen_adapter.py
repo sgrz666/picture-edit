@@ -7,11 +7,16 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-from .condition_bridge import ConditionBundleBridge
+from .condition_bridge import ReasonerControlBridge
 from .condition_injector import SMPLXConditionInjector
 from .conditions import AdapterIdentityCondition, ConditionBundle
 from .control_core import SharedRecurrentControlCore
-from .experts import DualPersonExpert, RoutingDecision, SinglePersonExpert, TaskRouter
+from .experts import RoutingDecision, TaskRouter
+from .reasoning import (
+    AdapterReasoningConfig,
+    InternalControlState,
+    SMPLXAdapterReasoner,
+)
 from .token_encoders import AppearanceTokenEncoder, PersonTokenBinder
 
 
@@ -22,6 +27,7 @@ class PreparedAdapterConditioning:
     adapter_token_mask: torch.Tensor
     contact_token_mask: torch.Tensor
     route: RoutingDecision
+    control_state: InternalControlState
 
 
 def latent_token_count(latent: torch.Tensor, patch_size: int) -> int:
@@ -87,6 +93,7 @@ class UnifiedSMPLXAdapterV6(nn.Module):
         condition_use_depth: bool = False,
         normal_backend: str = "native",
         depth_backend: str = "native",
+        reasoning_config: AdapterReasoningConfig | None = None,
     ) -> None:
         super().__init__()
         self.control_core = control_core
@@ -96,22 +103,25 @@ class UnifiedSMPLXAdapterV6(nn.Module):
             normal_backend=normal_backend,
             depth_backend=depth_backend,
         )
-        self.condition_bridge = ConditionBundleBridge(
-            geometry_channels=geometry_channels, token_dim=token_dim
+        if reasoning_config is None:
+            reasoning_config = AdapterReasoningConfig(
+                hidden_dim=cross_attention_dim,
+                global_attention_heads=expert_heads,
+                cross_person_heads=expert_heads,
+                contact_attention_heads=expert_heads,
+            )
+        self.reasoner = SMPLXAdapterReasoner(reasoning_config)
+        self.condition_bridge = ReasonerControlBridge(
+            reasoning_dim=reasoning_config.hidden_dim,
+            geometry_channels=geometry_channels,
+            token_dim=token_dim,
         )
         self.appearance_token_encoder = AppearanceTokenEncoder(token_dim=token_dim)
         self.person_token_binder = PersonTokenBinder(token_dim=token_dim)
         self.router = TaskRouter()
-        self.single_expert = SinglePersonExpert(contact_token_count=contact_token_count)
-        self.dual_expert = DualPersonExpert(
-            feature_channels=geometry_channels,
-            cross_attention_dim=cross_attention_dim,
-            token_dim=token_dim,
-            num_heads=expert_heads,
-            contact_token_count=contact_token_count,
-        )
         self.geometry_channels = geometry_channels
         self.contact_token_count = contact_token_count
+        self.reasoning_config = reasoning_config
 
     @staticmethod
     def _freeze_backbone(backbone: nn.Module | None) -> None:
@@ -141,6 +151,7 @@ class UnifiedSMPLXAdapterV6(nn.Module):
         condition_use_depth: bool = False,
         normal_backend: str = "native",
         depth_backend: str = "native",
+        reasoning_config: AdapterReasoningConfig | None = None,
     ) -> "UnifiedSMPLXAdapterV6":
         cls._freeze_backbone(deepgen_backbone)
         core = SharedRecurrentControlCore.build_tiny(
@@ -158,6 +169,7 @@ class UnifiedSMPLXAdapterV6(nn.Module):
             condition_use_depth=condition_use_depth,
             normal_backend=normal_backend,
             depth_backend=depth_backend,
+            reasoning_config=reasoning_config,
         )
 
     @classmethod
@@ -168,6 +180,7 @@ class UnifiedSMPLXAdapterV6(nn.Module):
         condition_use_depth: bool = False,
         normal_backend: str = "native",
         depth_backend: str = "native",
+        reasoning_config: AdapterReasoningConfig | None = None,
     ) -> "UnifiedSMPLXAdapterV6":
         core = SharedRecurrentControlCore.from_deepgen_config(config)
         return cls(
@@ -175,6 +188,7 @@ class UnifiedSMPLXAdapterV6(nn.Module):
             condition_use_depth=condition_use_depth,
             normal_backend=normal_backend,
             depth_backend=depth_backend,
+            reasoning_config=reasoning_config,
         )
 
     @classmethod
@@ -185,6 +199,7 @@ class UnifiedSMPLXAdapterV6(nn.Module):
         condition_use_depth: bool = False,
         normal_backend: str = "native",
         depth_backend: str = "native",
+        reasoning_config: AdapterReasoningConfig | None = None,
     ) -> "UnifiedSMPLXAdapterV6":
         cls._freeze_backbone(deepgen_transformer)
         core = SharedRecurrentControlCore.from_deepgen(deepgen_transformer)
@@ -193,6 +208,7 @@ class UnifiedSMPLXAdapterV6(nn.Module):
             condition_use_depth=condition_use_depth,
             normal_backend=normal_backend,
             depth_backend=depth_backend,
+            reasoning_config=reasoning_config,
         )
 
     @classmethod
@@ -203,6 +219,7 @@ class UnifiedSMPLXAdapterV6(nn.Module):
         condition_use_depth: bool = False,
         normal_backend: str = "native",
         depth_backend: str = "native",
+        reasoning_config: AdapterReasoningConfig | None = None,
     ) -> "UnifiedSMPLXAdapterV6":
         cls.freeze_deepgen_pipeline_components(pipeline)
         return cls.from_deepgen(
@@ -210,11 +227,17 @@ class UnifiedSMPLXAdapterV6(nn.Module):
             condition_use_depth=condition_use_depth,
             normal_backend=normal_backend,
             depth_backend=depth_backend,
+            reasoning_config=reasoning_config,
         )
 
     @property
     def trainable_parameter_count(self) -> int:
         return sum(parameter.numel() for parameter in self.parameters() if parameter.requires_grad)
+
+    def reason_conditions(self, condition_bundle: ConditionBundle) -> InternalControlState:
+        """Expose the standalone Adapter reasoning boundary."""
+
+        return self.reasoner(condition_bundle)
 
     def prepare_conditioning(
         self,
@@ -223,29 +246,21 @@ class UnifiedSMPLXAdapterV6(nn.Module):
     ) -> PreparedAdapterConditioning:
         condition_bundle.validate()
         identity_condition.validate(condition_bundle)
-        bridged = self.condition_bridge(condition_bundle)
+        control_state = self.reason_conditions(condition_bundle)
+        bridged = self.condition_bridge(control_state)
         appearance_tokens = self.appearance_token_encoder(
             identity_condition.source_person_latents, condition_bundle.person_valid
         )
         route = self.router.resolve(condition_bundle.person_count)
         person_tokens, person_token_mask = self.person_token_binder(
-            bridged.global_tokens,
+            bridged.geometry_tokens,
             appearance_tokens,
-            bridged.task_token,
             condition_bundle.person_valid,
             identity_condition.effective_source_indices(),
+            geometry_token_mask=bridged.geometry_token_mask,
         )
 
         batch_size = condition_bundle.batch_size
-        scene = bridged.person_features.new_zeros(
-            batch_size,
-            bridged.person_features.shape[2],
-            *bridged.person_features.shape[-2:],
-        )
-        routed_person_tokens = person_tokens.new_zeros(person_tokens.shape)
-        contact_tokens = person_tokens.new_zeros(
-            batch_size, self.contact_token_count, person_tokens.shape[-1]
-        )
         contact_mask = torch.zeros(
             batch_size,
             self.contact_token_count,
@@ -253,61 +268,18 @@ class UnifiedSMPLXAdapterV6(nn.Module):
             device=condition_bundle.device,
         )
 
-        for active_mask, expert in (
-            (route.single_mask, self.single_expert),
-            (route.dual_mask, self.dual_expert),
-        ):
-            indices = active_mask.nonzero(as_tuple=False).flatten()
-            if indices.numel() == 0:
-                continue
-            selected_features = bridged.person_features.index_select(0, indices)
-            selected_tokens = person_tokens.index_select(0, indices)
-            if expert is self.single_expert:
-                output = expert(selected_features, selected_tokens)
-            else:
-                output = expert(
-                    selected_features,
-                    selected_tokens,
-                    bridged.person_masks.index_select(0, indices),
-                    bridged.contact_spatial.index_select(0, indices),
-                    bridged.contact_tokens.index_select(0, indices),
-                    bridged.contact_mask.index_select(0, indices),
-                )
-            scene = scene.index_copy(0, indices, output.scene_feature)
-            routed_person_tokens = routed_person_tokens.index_copy(0, indices, output.person_tokens)
-            contact_tokens = contact_tokens.index_copy(0, indices, output.contact_tokens)
-            contact_mask = contact_mask.index_copy(0, indices, output.contact_token_mask)
-
-        flat_person_tokens = routed_person_tokens.flatten(1, 2)
+        flat_person_tokens = person_tokens.flatten(1, 2)
         flat_person_mask = person_token_mask.flatten(1, 2)
-        task_mask = torch.ones(
-            batch_size, 1, dtype=torch.bool, device=condition_bundle.device
-        )
-        adapter_tokens = torch.cat(
-            (
-                flat_person_tokens,
-                bridged.task_token,
-                bridged.relative_tokens,
-                contact_tokens,
-            ),
-            dim=1,
-        )
-        adapter_mask = torch.cat(
-            (
-                flat_person_mask,
-                task_mask,
-                bridged.relative_token_mask,
-                contact_mask,
-            ),
-            dim=1,
-        )
+        adapter_tokens = flat_person_tokens
+        adapter_mask = flat_person_mask
         adapter_tokens = adapter_tokens * adapter_mask[..., None].to(adapter_tokens.dtype)
         return PreparedAdapterConditioning(
-            scene_feature=scene,
+            scene_feature=bridged.scene_feature,
             adapter_tokens=adapter_tokens,
             adapter_token_mask=adapter_mask,
             contact_token_mask=contact_mask,
             route=route,
+            control_state=control_state,
         )
 
     def forward(
