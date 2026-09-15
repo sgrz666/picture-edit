@@ -109,12 +109,11 @@ class SMPLXAdapterReasoner(nn.Module):
         batch_size, token_count, hidden_dim = person_a.tokens.shape
         interaction = geometry.new_zeros(geometry.shape)
         interaction_high = geometry_high.new_zeros(geometry_high.shape)
-        person_tokens = person_a.tokens.new_zeros(batch_size, 2, token_count, hidden_dim)
-        person_token_mask = torch.zeros(
-            batch_size, 2, token_count, dtype=torch.bool, device=bundle.device
+        person_a_tokens = person_a.tokens
+        person_b_tokens = person_a.tokens.new_zeros(batch_size, token_count, hidden_dim)
+        person_b_token_mask = torch.zeros(
+            batch_size, token_count, dtype=torch.bool, device=bundle.device
         )
-        person_tokens[:, 0] = person_a.tokens
-        person_token_mask[:, 0] = person_a.token_mask
 
         dual_indices = (bundle.person_count == 2).nonzero(as_tuple=False).flatten()
         if dual_indices.numel():
@@ -162,13 +161,13 @@ class SMPLXAdapterReasoner(nn.Module):
             interaction_high = interaction_high.index_copy(
                 0, dual_indices, dual.interaction_highres
             )
-            person_tokens[:, 0] = person_tokens[:, 0].index_copy(
+            person_a_tokens = person_a_tokens.index_copy(
                 0, dual_indices, contact.person_a
             )
-            person_tokens[:, 1] = person_tokens[:, 1].index_copy(
+            person_b_tokens = person_b_tokens.index_copy(
                 0, dual_indices, contact.person_b
             )
-            person_token_mask[:, 1] = person_token_mask[:, 1].index_copy(
+            person_b_token_mask = person_b_token_mask.index_copy(
                 0, dual_indices, dual_b.token_mask
             )
 
@@ -178,6 +177,10 @@ class SMPLXAdapterReasoner(nn.Module):
         )
         interaction_high = interaction_high * interaction_valid[:, None, None, None].to(
             interaction_high.dtype
+        )
+        person_tokens = torch.stack((person_a_tokens, person_b_tokens), dim=1)
+        person_token_mask = torch.stack(
+            (person_a.token_mask, person_b_token_mask), dim=1
         )
         state = InternalControlState(
             geometry_feature=geometry,
