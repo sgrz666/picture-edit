@@ -39,13 +39,16 @@ class SMPLXConditionInjector(nn.Module):
         if use_full_pose_tokens:
             raise ValueError("full pose tokens are reserved but disabled in condition injection V1")
         for name, backend in (("normal", normal_backend), ("depth", depth_backend)):
-            if backend not in {"native"}:
+            if backend not in {"native", "champ"}:
                 raise ValueError(f"unsupported {name} backend: {backend}")
         self.use_depth = use_depth
         self.normal_backend = normal_backend
         self.depth_backend = depth_backend
         self.spatial_encoder = SpatialConditionEncoder(
-            use_depth=use_depth, output_channels=spatial_dim
+            use_depth=use_depth,
+            output_channels=spatial_dim,
+            normal_backend=normal_backend,
+            depth_backend=depth_backend,
         )
         self.global_encoder = GlobalConditionTokenEncoder(token_dim=token_dim)
         self.relative_encoder = RelativeGeometryTokenEncoder(token_dim=token_dim)

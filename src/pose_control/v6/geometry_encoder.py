@@ -240,18 +240,56 @@ class RoleFiLM(nn.Module):
         return value * (1 + scale[..., None, None]) + shift[..., None, None]
 
 
+class ChampConditionStemAdapter(nn.Module):
+    """Adapt Normal or scalar Depth to the vendored single-frame CHAMP stem."""
+
+    def __init__(self, in_channels: int, output_channels: int = 128) -> None:
+        super().__init__()
+        if in_channels not in (1, 3):
+            raise ValueError("CHAMP condition stem supports 1-channel depth or 3-channel normal")
+        from third_party.champ_guidance import ChampGuidanceEncoder
+
+        self.in_channels = in_channels
+        self.encoder = ChampGuidanceEncoder(
+            guidance_embedding_channels=output_channels,
+            guidance_input_channels=3,
+        )
+
+    def forward(self, value: torch.Tensor) -> torch.Tensor:
+        if self.in_channels == 1:
+            value = value.expand(-1, 3, -1, -1)
+        return self.encoder(value)
+
+
 class SpatialConditionEncoder(nn.Module):
     """Independent stems followed by mid-level fusion and role binding."""
 
-    def __init__(self, *, use_depth: bool = False, output_channels: int = 256) -> None:
+    def __init__(
+        self,
+        *,
+        use_depth: bool = False,
+        output_channels: int = 256,
+        normal_backend: str = "native",
+        depth_backend: str = "native",
+    ) -> None:
         super().__init__()
         self.use_depth = use_depth
-        self.normal_stem = NativeConditionStem(3, (32, 64, 128))
+        self.normal_stem = (
+            NativeConditionStem(3, (32, 64, 128))
+            if normal_backend == "native"
+            else ChampConditionStemAdapter(3)
+        )
         self.pose_stem = NativeConditionStem(
             25, (64, 96, 128), project_to=32, sparse_init=True
         )
         self.part_stem = NativeConditionStem(14, (64, 96, 128), project_to=32)
-        self.depth_stem = NativeConditionStem(1, (32, 64, 128)) if use_depth else None
+        self.depth_stem = None
+        if use_depth:
+            self.depth_stem = (
+                NativeConditionStem(1, (32, 64, 128))
+                if depth_backend == "native"
+                else ChampConditionStemAdapter(1)
+            )
         fusion_input = 128 * (4 if use_depth else 3)
         self.fusion = nn.Sequential(
             nn.Conv2d(fusion_input, output_channels, 1),
