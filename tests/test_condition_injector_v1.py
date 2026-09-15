@@ -227,3 +227,26 @@ def test_contact_padding_and_global_task_sensitivity() -> None:
     assert not torch.allclose(first.task_token, second.task_token)
     assert first.contact_mask.tolist() == [[True, True, False, False, False, False, False, False]]
     assert torch.count_nonzero(first.contact_tokens[:, 2:]) == 0
+
+
+def test_champ_backend_is_opt_in_and_runs_without_weights_or_video_dependencies() -> None:
+    _, TaskType, Injector = _api()
+    person = _person(batch_size=1)
+    injector = Injector(
+        use_depth=True,
+        normal_backend="champ",
+        depth_backend="champ",
+    ).eval()
+    bundle = injector(
+        normal_a=person["normal"],
+        pose_heatmap_a=person["pose_heatmap"],
+        part_onehot_a=person["part_onehot"],
+        smplx_global_a=person["smplx_global"],
+        human_mask_a=person["human_mask"],
+        depth_a=person["human_mask"].clone(),
+        task_id=torch.tensor([int(TaskType.SINGLE)]),
+    )
+    assert bundle.person_a_spatial.shape == (1, 256, 4, 4)
+    assert injector.spatial_encoder.normal_stem.encoder.__class__.__module__.startswith(
+        "third_party.champ_guidance"
+    )
