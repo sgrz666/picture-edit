@@ -7,6 +7,27 @@ from typing import Optional
 import torch
 
 
+def _to_preserving_discrete_dtype(
+    value: torch.Tensor, *args, **kwargs
+) -> torch.Tensor:
+    """Apply Tensor.to while ignoring dtype requests for masks and indices."""
+
+    if value.is_floating_point():
+        return value.to(*args, **kwargs)
+    device = kwargs.get("device")
+    if args:
+        target = args[0]
+        if isinstance(target, torch.Tensor):
+            device = target.device
+        elif isinstance(target, (torch.device, str, int)):
+            device = target
+    return value.to(
+        device=value.device if device is None else device,
+        non_blocking=bool(kwargs.get("non_blocking", False)),
+        copy=bool(kwargs.get("copy", False)),
+    )
+
+
 PART_NAMES = (
     "head",
     "torso",
@@ -87,13 +108,12 @@ class ContactRelationBatch:
         return self
 
     def to(self, *args, **kwargs) -> "ContactRelationBatch":
-        values = {}
-        for item in fields(self):
-            value = getattr(self, item.name)
-            tensor_kwargs = dict(kwargs)
-            if not value.is_floating_point():
-                tensor_kwargs.pop("dtype", None)
-            values[item.name] = value.to(*args, **tensor_kwargs)
+        values = {
+            item.name: _to_preserving_discrete_dtype(
+                getattr(self, item.name), *args, **kwargs
+            )
+            for item in fields(self)
+        }
         return type(self)(**values)
 
 
@@ -199,10 +219,7 @@ class ConditionBundle:
             if value is None:
                 values[item.name] = None
                 continue
-            tensor_kwargs = dict(kwargs)
-            if not value.is_floating_point():
-                tensor_kwargs.pop("dtype", None)
-            values[item.name] = value.to(*args, **tensor_kwargs)
+            values[item.name] = _to_preserving_discrete_dtype(value, *args, **kwargs)
         return type(self)(**values)
 
 
@@ -249,13 +266,13 @@ class AdapterIdentityCondition:
         )
 
     def to(self, *args, **kwargs) -> "AdapterIdentityCondition":
-        index_kwargs = dict(kwargs)
-        index_kwargs.pop("dtype", None)
         return type(self)(
-            source_person_latents=self.source_person_latents.to(*args, **kwargs),
+            source_person_latents=_to_preserving_discrete_dtype(
+                self.source_person_latents, *args, **kwargs
+            ),
             source_indices=(
                 None
                 if self.source_indices is None
-                else self.source_indices.to(*args, **index_kwargs)
+                else _to_preserving_discrete_dtype(self.source_indices, *args, **kwargs)
             ),
         )
