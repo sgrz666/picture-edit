@@ -104,3 +104,7 @@ def test_condition_dataclass_to_preserves_discrete_dtypes_with_positional_dtype(
     identity.validate(converted_bundle)
     assert identity.source_person_latents.dtype == torch.float16
     assert identity.source_indices.dtype == torch.long
+
+    copied_bundle = bundle.to(torch.float16, False, True)
+    assert copied_bundle.person_valid.data_ptr() != bundle.person_valid.data_ptr()
+    assert copied_bundle.person_count.data_ptr() != bundle.person_count.data_ptr()
