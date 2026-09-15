@@ -138,6 +138,9 @@ class UnifiedSMPLXAdapterV6(nn.Module):
         pooled_input_dim: int = 20,
         num_heads: int = 4,
         deepgen_backbone: nn.Module | None = None,
+        condition_use_depth: bool = False,
+        normal_backend: str = "native",
+        depth_backend: str = "native",
     ) -> "UnifiedSMPLXAdapterV6":
         cls._freeze_backbone(deepgen_backbone)
         core = SharedRecurrentControlCore.build_tiny(
@@ -152,23 +155,62 @@ class UnifiedSMPLXAdapterV6(nn.Module):
             geometry_channels=geometry_channels,
             cross_attention_dim=max(hidden_dim, geometry_channels),
             expert_heads=num_heads,
+            condition_use_depth=condition_use_depth,
+            normal_backend=normal_backend,
+            depth_backend=depth_backend,
         )
 
     @classmethod
-    def from_deepgen_config(cls, config) -> "UnifiedSMPLXAdapterV6":
+    def from_deepgen_config(
+        cls,
+        config,
+        *,
+        condition_use_depth: bool = False,
+        normal_backend: str = "native",
+        depth_backend: str = "native",
+    ) -> "UnifiedSMPLXAdapterV6":
         core = SharedRecurrentControlCore.from_deepgen_config(config)
-        return cls(core)
+        return cls(
+            core,
+            condition_use_depth=condition_use_depth,
+            normal_backend=normal_backend,
+            depth_backend=depth_backend,
+        )
 
     @classmethod
-    def from_deepgen(cls, deepgen_transformer: nn.Module) -> "UnifiedSMPLXAdapterV6":
+    def from_deepgen(
+        cls,
+        deepgen_transformer: nn.Module,
+        *,
+        condition_use_depth: bool = False,
+        normal_backend: str = "native",
+        depth_backend: str = "native",
+    ) -> "UnifiedSMPLXAdapterV6":
         cls._freeze_backbone(deepgen_transformer)
         core = SharedRecurrentControlCore.from_deepgen(deepgen_transformer)
-        return cls(core)
+        return cls(
+            core,
+            condition_use_depth=condition_use_depth,
+            normal_backend=normal_backend,
+            depth_backend=depth_backend,
+        )
 
     @classmethod
-    def from_deepgen_pipeline(cls, pipeline) -> "UnifiedSMPLXAdapterV6":
+    def from_deepgen_pipeline(
+        cls,
+        pipeline,
+        *,
+        condition_use_depth: bool = False,
+        normal_backend: str = "native",
+        depth_backend: str = "native",
+    ) -> "UnifiedSMPLXAdapterV6":
         cls.freeze_deepgen_pipeline_components(pipeline)
-        return cls.from_deepgen(pipeline.transformer)
+        return cls.from_deepgen(
+            pipeline.transformer,
+            condition_use_depth=condition_use_depth,
+            normal_backend=normal_backend,
+            depth_backend=depth_backend,
+        )
 
     @property
     def trainable_parameter_count(self) -> int:
