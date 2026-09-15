@@ -25,6 +25,13 @@ Source-person latents remain in a separate `AdapterIdentityCondition`. The
 `ConditionBundleBridge` projects public 256-dimensional conditions to the
 current DeepGen Adapter widths before the existing single/dual experts.
 
+In this condition-injection V1, optional Depth participates in each person's
+shared spatial encoding after joint scene normalization. Explicit front/back
+occlusion ordering is intentionally deferred to the second-stage interaction
+reasoning redesign: raw depth maps are not exposed through `ConditionBundle`,
+and the current dual expert uses mask-weighted overlap fusion. The architecture
+config records this boundary instead of claiming depth-aware scene fusion.
+
 ## Backends and provenance
 
 The default `native` backend preserves explicit heatmap and part channels. An

@@ -38,7 +38,8 @@
     "cross_attention_resolution": 32,
     "cross_attention_dim": 512,
     "bidirectional": true,
-    "depth_aware_scene_fusion": true,
+    "depth_aware_scene_fusion": false,
+    "depth_order_fusion_stage": "deferred-v2",
     "directional_contact_maps": true,
     "contact_pair_tokens": true
   },
