@@ -5,6 +5,7 @@ from .contact import ContactConditionReasoner, ContactReasoningOutput
 from .cross_person import BidirectionalCrossPersonReasoner
 from .fusion import DualFeatureFusion, DualFusionOutput
 from .person_geometry import PersonGeometryReasoner, PersonReasoningOutput
+from .reasoner import SMPLXAdapterReasoner
 from .state import InternalControlState
 
 __all__ = [
@@ -17,4 +18,5 @@ __all__ = [
     "InternalControlState",
     "PersonGeometryReasoner",
     "PersonReasoningOutput",
+    "SMPLXAdapterReasoner",
 ]
