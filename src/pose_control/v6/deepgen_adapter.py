@@ -7,16 +7,12 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-from .conditions import UnifiedAdapterCondition
+from .condition_bridge import ConditionBundleBridge
+from .condition_injector import SMPLXConditionInjector
+from .conditions import AdapterIdentityCondition, ConditionBundle
 from .control_core import SharedRecurrentControlCore
 from .experts import DualPersonExpert, RoutingDecision, SinglePersonExpert, TaskRouter
-from .geometry_encoder import SharedGeometryEncoder
-from .token_encoders import (
-    AppearanceTokenEncoder,
-    GlobalGeometryTokenEncoder,
-    PersonTokenBinder,
-    TaskTokenEncoder,
-)
+from .token_encoders import AppearanceTokenEncoder, PersonTokenBinder
 
 
 @dataclass
@@ -85,24 +81,25 @@ class UnifiedSMPLXAdapterV6(nn.Module):
         control_core: SharedRecurrentControlCore,
         *,
         geometry_channels: int = 128,
-        geometry_base_channels: int = 24,
         cross_attention_dim: int = 512,
         expert_heads: int = 8,
-        num_parts: int = 24,
-        contact_pair_dim: int = 4,
         contact_token_count: int = 8,
+        condition_use_depth: bool = False,
+        normal_backend: str = "native",
+        depth_backend: str = "native",
     ) -> None:
         super().__init__()
         self.control_core = control_core
         token_dim = control_core.hidden_dim
-        self.geometry_encoder = SharedGeometryEncoder(
-            base_channels=geometry_base_channels,
-            output_channels=geometry_channels,
-            num_parts=num_parts,
+        self.condition_injector = SMPLXConditionInjector(
+            use_depth=condition_use_depth,
+            normal_backend=normal_backend,
+            depth_backend=depth_backend,
         )
-        self.geometry_token_encoder = GlobalGeometryTokenEncoder(token_dim=token_dim)
+        self.condition_bridge = ConditionBundleBridge(
+            geometry_channels=geometry_channels, token_dim=token_dim
+        )
         self.appearance_token_encoder = AppearanceTokenEncoder(token_dim=token_dim)
-        self.task_token_encoder = TaskTokenEncoder(token_dim=token_dim)
         self.person_token_binder = PersonTokenBinder(token_dim=token_dim)
         self.router = TaskRouter()
         self.single_expert = SinglePersonExpert(contact_token_count=contact_token_count)
@@ -111,7 +108,6 @@ class UnifiedSMPLXAdapterV6(nn.Module):
             cross_attention_dim=cross_attention_dim,
             token_dim=token_dim,
             num_heads=expert_heads,
-            contact_pair_dim=contact_pair_dim,
             contact_token_count=contact_token_count,
         )
         self.geometry_channels = geometry_channels
@@ -154,7 +150,6 @@ class UnifiedSMPLXAdapterV6(nn.Module):
         return cls(
             core,
             geometry_channels=geometry_channels,
-            geometry_base_channels=max(4, geometry_channels // 2),
             cross_attention_dim=max(hidden_dim, geometry_channels),
             expert_heads=num_heads,
         )
@@ -179,32 +174,41 @@ class UnifiedSMPLXAdapterV6(nn.Module):
     def trainable_parameter_count(self) -> int:
         return sum(parameter.numel() for parameter in self.parameters() if parameter.requires_grad)
 
-    def prepare_conditioning(self, condition: UnifiedAdapterCondition) -> PreparedAdapterConditioning:
-        condition.validate()
-        pyramid = self.geometry_encoder(condition)
-        geometry_tokens = self.geometry_token_encoder(condition)
+    def prepare_conditioning(
+        self,
+        condition_bundle: ConditionBundle,
+        identity_condition: AdapterIdentityCondition,
+    ) -> PreparedAdapterConditioning:
+        condition_bundle.validate()
+        identity_condition.validate(condition_bundle)
+        bridged = self.condition_bridge(condition_bundle)
         appearance_tokens = self.appearance_token_encoder(
-            condition.source_person_latents, condition.person_valid
+            identity_condition.source_person_latents, condition_bundle.person_valid
         )
-        route = self.router.resolve(condition.person_valid, condition.task_spec)
-        task_token = self.task_token_encoder(route.num_people, route.interaction_ids)
+        route = self.router.resolve(condition_bundle.person_count)
         person_tokens, person_token_mask = self.person_token_binder(
-            geometry_tokens,
+            bridged.global_tokens,
             appearance_tokens,
-            task_token,
-            condition.person_valid,
-            condition.effective_source_indices(),
+            bridged.task_token,
+            condition_bundle.person_valid,
+            identity_condition.effective_source_indices(),
         )
 
-        batch_size = condition.batch_size
-        spatial_shape = pyramid.level_64.shape[2:]
-        scene = pyramid.level_64.new_zeros(batch_size, *spatial_shape)
+        batch_size = condition_bundle.batch_size
+        scene = bridged.person_features.new_zeros(
+            batch_size,
+            bridged.person_features.shape[2],
+            *bridged.person_features.shape[-2:],
+        )
         routed_person_tokens = person_tokens.new_zeros(person_tokens.shape)
         contact_tokens = person_tokens.new_zeros(
             batch_size, self.contact_token_count, person_tokens.shape[-1]
         )
         contact_mask = torch.zeros(
-            batch_size, self.contact_token_count, dtype=torch.bool, device=condition.device
+            batch_size,
+            self.contact_token_count,
+            dtype=torch.bool,
+            device=condition_bundle.device,
         )
 
         for active_mask, expert in (
@@ -214,11 +218,19 @@ class UnifiedSMPLXAdapterV6(nn.Module):
             indices = active_mask.nonzero(as_tuple=False).flatten()
             if indices.numel() == 0:
                 continue
-            output = expert(
-                pyramid.level_64.index_select(0, indices),
-                person_tokens.index_select(0, indices),
-                condition.index_select(indices),
-            )
+            selected_features = bridged.person_features.index_select(0, indices)
+            selected_tokens = person_tokens.index_select(0, indices)
+            if expert is self.single_expert:
+                output = expert(selected_features, selected_tokens)
+            else:
+                output = expert(
+                    selected_features,
+                    selected_tokens,
+                    bridged.person_masks.index_select(0, indices),
+                    bridged.contact_spatial.index_select(0, indices),
+                    bridged.contact_tokens.index_select(0, indices),
+                    bridged.contact_mask.index_select(0, indices),
+                )
             scene = scene.index_copy(0, indices, output.scene_feature)
             routed_person_tokens = routed_person_tokens.index_copy(0, indices, output.person_tokens)
             contact_tokens = contact_tokens.index_copy(0, indices, output.contact_tokens)
@@ -226,9 +238,27 @@ class UnifiedSMPLXAdapterV6(nn.Module):
 
         flat_person_tokens = routed_person_tokens.flatten(1, 2)
         flat_person_mask = person_token_mask.flatten(1, 2)
-        task_mask = torch.ones(batch_size, 1, dtype=torch.bool, device=condition.device)
-        adapter_tokens = torch.cat((flat_person_tokens, task_token, contact_tokens), dim=1)
-        adapter_mask = torch.cat((flat_person_mask, task_mask, contact_mask), dim=1)
+        task_mask = torch.ones(
+            batch_size, 1, dtype=torch.bool, device=condition_bundle.device
+        )
+        adapter_tokens = torch.cat(
+            (
+                flat_person_tokens,
+                bridged.task_token,
+                bridged.relative_tokens,
+                contact_tokens,
+            ),
+            dim=1,
+        )
+        adapter_mask = torch.cat(
+            (
+                flat_person_mask,
+                task_mask,
+                bridged.relative_token_mask,
+                contact_mask,
+            ),
+            dim=1,
+        )
         adapter_tokens = adapter_tokens * adapter_mask[..., None].to(adapter_tokens.dtype)
         return PreparedAdapterConditioning(
             scene_feature=scene,
@@ -242,7 +272,8 @@ class UnifiedSMPLXAdapterV6(nn.Module):
         self,
         *,
         target_latents: torch.Tensor,
-        condition: UnifiedAdapterCondition,
+        condition_bundle: ConditionBundle,
+        identity_condition: AdapterIdentityCondition,
         source_scene_latents: torch.Tensor,
         cond_hidden_states: Optional[Sequence[Sequence[torch.Tensor]]],
         encoder_hidden_states: torch.Tensor,
@@ -253,8 +284,9 @@ class UnifiedSMPLXAdapterV6(nn.Module):
     ) -> list[torch.Tensor]:
         parameter = next(self.parameters())
         device, dtype = target_latents.device, parameter.dtype
-        condition = condition.to(device=device, dtype=dtype)
-        prepared = self.prepare_conditioning(condition)
+        condition_bundle = condition_bundle.to(device=device, dtype=dtype)
+        identity_condition = identity_condition.to(device=device, dtype=dtype)
+        prepared = self.prepare_conditioning(condition_bundle, identity_condition)
         target_size = target_latents.shape[-2:]
         scene = F.interpolate(
             prepared.scene_feature, size=target_size, mode="bilinear", align_corners=False

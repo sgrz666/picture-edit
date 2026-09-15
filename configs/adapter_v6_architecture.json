@@ -1,26 +1,35 @@
 {
-  "version": "6.0",
+  "version": "6.1-condition-injection-v1",
   "scope": "architecture-and-forward-only-no-training",
   "max_people": 2,
-  "person_axis_is_fixed": true,
-  "modalities": [
-    "normal",
-    "depth",
-    "skeleton",
-    "silhouette",
-    "part_ids"
-  ],
-  "geometry_encoder": {
+  "person_axis_is_fixed": false,
+  "condition_injection": {
     "input_resolution": 512,
-    "pyramid_resolutions": [256, 128, 64],
-    "output_channels": 128,
+    "output_resolution_divisor": 8,
+    "normal_channels": 3,
+    "pose_channels": 25,
+    "part_channels": 14,
+    "global_parameter_dim": 26,
+    "relative_geometry_dim": 11,
+    "spatial_channels": 256,
+    "contact_spatial_channels": 128,
+    "token_dim": 256,
+    "global_tokens_per_person": 4,
+    "relative_tokens": 2,
+    "contact_tokens": 8,
+    "use_depth": false,
+    "normal_backend": "native",
+    "depth_backend": "native",
+    "use_full_pose_tokens": false,
     "shared_across_people": true,
-    "missing_modality_policy": "explicit-modality-valid-mask"
+    "role_binding": "film",
+    "missing_human_mask_policy": "derive-from-part-onehot"
   },
   "tokens": {
     "hidden_dim": 1536,
-    "geometry_per_person": 8,
+    "geometry_per_person": 4,
     "appearance_per_person": 8,
+    "relative": 2,
     "contact": 8,
     "task": 1,
     "tokenizer_is_modified": false
