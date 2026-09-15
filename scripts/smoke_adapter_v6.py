@@ -139,9 +139,8 @@ def make_conditions(
 def parameter_report(adapter: UnifiedSMPLXAdapterV6) -> dict[str, int]:
     modules = {
         "condition_injector": adapter.condition_injector,
-        "condition_bridge": adapter.condition_bridge,
-        "single_expert": adapter.single_expert,
-        "dual_expert": adapter.dual_expert,
+        "reasoner": adapter.reasoner,
+        "reasoner_control_bridge": adapter.condition_bridge,
         "appearance_and_binding": torch.nn.ModuleList(
             [adapter.appearance_token_encoder, adapter.person_token_binder]
         ),

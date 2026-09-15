@@ -1,5 +1,5 @@
 {
-  "version": "6.1-condition-injection-v1",
+  "version": "6.2-adapter-reasoning-v1",
   "scope": "architecture-and-forward-only-no-training",
   "max_people": 2,
   "person_axis_is_fixed": false,
@@ -34,7 +34,24 @@
     "task": 1,
     "tokenizer_is_modified": false
   },
-  "dual_person_expert": {
+  "reasoning": {
+    "condition_dim": 256,
+    "hidden_dim": 512,
+    "downsample_factor": 2,
+    "global_attention_heads": 8,
+    "global_attention_layers": 1,
+    "cross_person_heads": 8,
+    "cross_person_layers": 2,
+    "contact_attention_heads": 8,
+    "contact_attention_layers": 1,
+    "ffn_ratio": 4,
+    "dropout": 0.0,
+    "contact_gate_init": -4.0,
+    "outputs": ["geometry-low", "geometry-high", "interaction-low", "interaction-high"],
+    "mixed_batch_routing": "gather-dual-scatter",
+    "appearance_is_separate": true
+  },
+  "dual_person_reasoner": {
     "cross_attention_resolution": 32,
     "cross_attention_dim": 512,
     "bidirectional": true,
