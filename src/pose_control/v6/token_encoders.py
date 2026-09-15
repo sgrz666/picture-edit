@@ -6,7 +6,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-from .conditions import UnifiedAdapterCondition
+from .conditions import ContactRelationBatch, PART_NAMES, TaskType, UnifiedAdapterCondition
 
 
 class GlobalGeometryTokenEncoder(nn.Module):
@@ -187,3 +187,116 @@ class ContactRelationEncoder(nn.Module):
             dim=1,
         )
         return spatial, tokens, token_mask
+
+
+class GlobalConditionTokenEncoder(nn.Module):
+    """Tokenize beta, root rotation, translation and normalized camera only."""
+
+    def __init__(self, token_dim: int = 256, token_count: int = 4) -> None:
+        super().__init__()
+        self.token_dim = token_dim
+        self.token_count = token_count
+        self.network = nn.Sequential(
+            nn.LayerNorm(26),
+            nn.Linear(26, 512),
+            nn.SiLU(),
+            nn.Linear(512, 1024),
+            nn.SiLU(),
+            nn.Linear(1024, token_count * token_dim),
+        )
+
+    def forward(self, value: torch.Tensor, valid: torch.Tensor | None = None) -> torch.Tensor:
+        tokens = self.network(value).reshape(value.shape[0], self.token_count, self.token_dim)
+        if valid is not None:
+            tokens = tokens * valid.to(tokens.dtype)[:, None, None]
+        return tokens
+
+
+class RelativeGeometryTokenEncoder(nn.Module):
+    def __init__(self, token_dim: int = 256, token_count: int = 2) -> None:
+        super().__init__()
+        self.token_dim = token_dim
+        self.token_count = token_count
+        self.network = nn.Sequential(
+            nn.LayerNorm(11),
+            nn.Linear(11, 512),
+            nn.SiLU(),
+            nn.Linear(512, token_count * token_dim),
+        )
+
+    def forward(self, value: torch.Tensor, valid: torch.Tensor) -> torch.Tensor:
+        tokens = self.network(value).reshape(value.shape[0], self.token_count, self.token_dim)
+        return tokens * valid.to(tokens.dtype)[:, None, None]
+
+
+class ContactRasterEncoder(nn.Module):
+    def __init__(self, output_channels: int = 128) -> None:
+        super().__init__()
+        self.network = nn.Sequential(
+            nn.Conv2d(2, 32, 3, stride=2, padding=1),
+            nn.GroupNorm(8, 32),
+            nn.SiLU(),
+            nn.Conv2d(32, 64, 3, stride=2, padding=1),
+            nn.GroupNorm(8, 64),
+            nn.SiLU(),
+            nn.Conv2d(64, output_channels, 3, stride=2, padding=1),
+            nn.GroupNorm(8, output_channels),
+            nn.SiLU(),
+        )
+
+    def forward(self, value: torch.Tensor, valid: torch.Tensor) -> torch.Tensor:
+        output = self.network(value)
+        return output * valid.to(output.dtype)[:, None, None, None]
+
+
+class StructuredContactRelationEncoder(nn.Module):
+    def __init__(
+        self,
+        *,
+        token_dim: int = 256,
+        max_relations: int = 8,
+        contact_type_count: int = 16,
+    ) -> None:
+        super().__init__()
+        self.max_relations = max_relations
+        self.contact_type_count = contact_type_count
+        self.person_embedding = nn.Embedding(2, token_dim)
+        self.part_embedding = nn.Embedding(len(PART_NAMES), token_dim)
+        self.type_embedding = nn.Embedding(contact_type_count, token_dim)
+        self.distance_mlp = nn.Sequential(
+            nn.Linear(1, token_dim),
+            nn.SiLU(),
+            nn.Linear(token_dim, token_dim),
+        )
+        self.output = nn.Sequential(nn.LayerNorm(token_dim), nn.Linear(token_dim, token_dim))
+
+    def forward(
+        self,
+        relations: ContactRelationBatch,
+        person_b_valid: torch.Tensor,
+    ) -> tuple[torch.Tensor, torch.Tensor]:
+        relations.validate(
+            batch_size=person_b_valid.shape[0],
+            max_relations=self.max_relations,
+            contact_type_count=self.contact_type_count,
+        )
+        token = (
+            self.person_embedding(relations.src_person)
+            + self.part_embedding(relations.src_part)
+            + self.person_embedding(relations.dst_person)
+            + self.part_embedding(relations.dst_part)
+            + self.type_embedding(relations.contact_type)
+            + self.distance_mlp(relations.distance)
+        )
+        mask = relations.valid_mask & person_b_valid[:, None]
+        token = self.output(token) * mask[..., None].to(token.dtype)
+        return token, mask
+
+
+class ExplicitTaskTokenEncoder(nn.Module):
+    def __init__(self, token_dim: int = 256) -> None:
+        super().__init__()
+        self.embedding = nn.Embedding(len(TaskType), token_dim)
+
+    def forward(self, task_id: torch.Tensor) -> torch.Tensor:
+        return self.embedding(task_id).unsqueeze(1)

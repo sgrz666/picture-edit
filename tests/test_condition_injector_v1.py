@@ -127,7 +127,7 @@ def test_human_mask_blocks_background_changes() -> None:
     person = _person(batch_size=1)
     changed = copy.deepcopy(person)
     outside = 1 - changed["human_mask"]
-    changed["normal"] = changed["normal"] + outside * 100
+    changed["normal"] = changed["normal"] + outside
     injector = Injector().eval()
 
     def encode(values: dict):
