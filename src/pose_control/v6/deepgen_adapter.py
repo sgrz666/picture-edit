@@ -352,32 +352,42 @@ class UnifiedSMPLXAdapterV6(nn.Module):
             for _ in range(self.control_core.num_stages)
         ]
         for route_mask in (prepared.route.single_mask, prepared.route.dual_mask):
-            indices = route_mask.nonzero(as_tuple=False).flatten()
-            if indices.numel() == 0:
+            route_indices = route_mask.nonzero(as_tuple=False).flatten()
+            if route_indices.numel() == 0:
                 continue
-            group_mask = prepared.adapter_token_mask.index_select(0, indices)
-            retained_columns = group_mask.any(dim=0)
-            group_residuals = self.control_core(
-                target_latents=target_latents.index_select(0, indices).to(dtype=dtype),
-                control_condition=control_condition.index_select(0, indices),
-                adapter_tokens=prepared.adapter_tokens.index_select(0, indices)[:, retained_columns].to(
-                    dtype=dtype
-                ),
-                adapter_token_mask=group_mask[:, retained_columns],
-                encoder_hidden_states=encoder_hidden_states.index_select(0, indices).to(
-                    device=device, dtype=dtype
-                ),
-                pooled_projections=pooled_projections.index_select(0, indices).to(
-                    device=device, dtype=dtype
-                ),
-                timestep=timestep.index_select(0, indices).to(device=device),
-                conditioning_scale=conditioning_scale,
-                joint_attention_kwargs=joint_attention_kwargs,
-            )
-            residuals = [
-                current.index_copy(0, indices, group)
-                for current, group in zip(residuals, group_residuals)
-            ]
+            route_token_masks = prepared.adapter_token_mask.index_select(0, route_indices)
+            # DeepGen's joint block does not accept a per-token attention mask.
+            # Run rows with identical compact token layouts together so padded
+            # zeros never enter attention and batch composition cannot change a
+            # sample's result.
+            for token_pattern in torch.unique(route_token_masks, dim=0):
+                members = (route_token_masks == token_pattern).all(dim=1)
+                indices = route_indices.index_select(
+                    0, members.nonzero(as_tuple=False).flatten()
+                )
+                group_residuals = self.control_core(
+                    target_latents=target_latents.index_select(0, indices).to(dtype=dtype),
+                    control_condition=control_condition.index_select(0, indices),
+                    adapter_tokens=prepared.adapter_tokens.index_select(0, indices)[
+                        :, token_pattern
+                    ].to(dtype=dtype),
+                    adapter_token_mask=prepared.adapter_token_mask.index_select(0, indices)[
+                        :, token_pattern
+                    ],
+                    encoder_hidden_states=encoder_hidden_states.index_select(0, indices).to(
+                        device=device, dtype=dtype
+                    ),
+                    pooled_projections=pooled_projections.index_select(0, indices).to(
+                        device=device, dtype=dtype
+                    ),
+                    timestep=timestep.index_select(0, indices).to(device=device),
+                    conditioning_scale=conditioning_scale,
+                    joint_attention_kwargs=joint_attention_kwargs,
+                )
+                residuals = [
+                    current.index_copy(0, indices, group)
+                    for current, group in zip(residuals, group_residuals)
+                ]
         return align_target_residuals(
             residuals,
             target_latents=target_latents,
