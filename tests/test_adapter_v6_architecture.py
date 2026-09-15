@@ -92,6 +92,16 @@ def test_adapter_public_boundary_consumes_bundle_and_separate_identity() -> None
     assert prepared.route.num_people.tolist() == [1]
 
 
+def test_legacy_raw_condition_contract_is_removed() -> None:
+    from src.pose_control.v6 import conditions, geometry_encoder, token_encoders
+
+    assert not hasattr(conditions, "UnifiedAdapterCondition")
+    assert not hasattr(conditions, "TaskSpec")
+    assert not hasattr(geometry_encoder, "SharedGeometryEncoder")
+    assert not hasattr(token_encoders, "GlobalGeometryTokenEncoder")
+    assert not hasattr(token_encoders, "ContactRelationEncoder")
+
+
 def test_router_uses_only_bundle_person_count() -> None:
     route = TaskRouter().resolve(torch.tensor([1, 2]))
     assert route.num_people.tolist() == [1, 2]
