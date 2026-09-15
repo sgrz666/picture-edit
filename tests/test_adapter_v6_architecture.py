@@ -220,6 +220,22 @@ def test_from_deepgen_freezes_backbone() -> None:
     assert all(parameter.requires_grad for parameter in model.parameters())
 
 
+def test_builders_forward_condition_backend_options() -> None:
+    model = UnifiedSMPLXAdapterV6.build_tiny(
+        hidden_dim=32,
+        geometry_channels=16,
+        context_input_dim=24,
+        pooled_input_dim=20,
+        num_heads=4,
+        condition_use_depth=True,
+        normal_backend="champ",
+        depth_backend="champ",
+    )
+    assert model.condition_injector.normal_backend == "champ"
+    assert model.condition_injector.depth_backend == "champ"
+    assert model.condition_injector.use_depth
+
+
 def test_pipeline_freeze_helper_covers_vae_vlm_and_connector() -> None:
     pipeline = SimpleNamespace(
         transformer=torch.nn.Linear(4, 4), vae=torch.nn.Linear(4, 4),
