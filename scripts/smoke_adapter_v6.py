@@ -43,6 +43,17 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
+def default_report_name(mode: str, condition_backend: str, use_depth: bool) -> str:
+    """Keep optional-backend smoke evidence separate from the native baseline."""
+
+    suffix = mode
+    if condition_backend != "native":
+        suffix = f"{suffix}_{condition_backend}"
+    elif use_depth:
+        suffix = f"{suffix}_depth"
+    return f"adapter_v6_smoke_{suffix}.json"
+
+
 def load_deepgen_transformer(model_path: Path, device: torch.device):
     module_path = model_path / "deepgen_pipeline.py"
     spec = importlib.util.spec_from_file_location("deepgen_v6_smoke_runtime", module_path)
@@ -220,7 +231,9 @@ def main() -> None:
         "backbone_frozen": all(not parameter.requires_grad for parameter in transformer.parameters()),
         "training_started": False,
     }
-    output = args.output or ROOT / "outputs" / f"adapter_v6_smoke_{args.mode}.json"
+    output = args.output or ROOT / "outputs" / default_report_name(
+        args.mode, args.condition_backend, args.use_depth
+    )
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(json.dumps(report, indent=2), encoding="utf-8")
     print(json.dumps(report, indent=2))
