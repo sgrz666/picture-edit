@@ -49,6 +49,17 @@ def test_bridge_projects_bundle_without_reopening_raw_conditions() -> None:
     assert torch.count_nonzero(output.contact_tokens[1]) == 0
 
 
+def test_bridge_projection_preserves_zero_contact_rows() -> None:
+    bridge_module = importlib.import_module("src.pose_control.v6.condition_bridge")
+    bundle = _make_bundle()
+    bundle.contact_spatial.zero_()
+    bridge = bridge_module.ConditionBundleBridge(geometry_channels=16, token_dim=32)
+
+    output = bridge(bundle)
+
+    assert torch.count_nonzero(output.contact_spatial) == 0
+
+
 def test_identity_condition_is_separate_and_validated_against_bundle() -> None:
     conditions = importlib.import_module("src.pose_control.v6.conditions")
     bundle = _make_bundle()

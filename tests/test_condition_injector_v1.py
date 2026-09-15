@@ -283,6 +283,32 @@ def test_contact_padding_may_use_negative_sentinel_indices() -> None:
     assert torch.count_nonzero(bundle.contact_tokens[:, 2:]) == 0
 
 
+def test_zero_contact_raster_stays_zero_per_batch_row() -> None:
+    _, TaskType, Injector = _api()
+    a = _person()
+    b = _person(offset=1.0)
+    contact_raster = torch.zeros(2, 2, 32, 32)
+    contact_raster[1, :, 14:18, 14:18] = 1
+
+    bundle = Injector().eval()(
+        normal_a=a["normal"],
+        pose_heatmap_a=a["pose_heatmap"],
+        part_onehot_a=a["part_onehot"],
+        smplx_global_a=a["smplx_global"],
+        human_mask_a=a["human_mask"],
+        normal_b=b["normal"],
+        pose_heatmap_b=b["pose_heatmap"],
+        part_onehot_b=b["part_onehot"],
+        smplx_global_b=b["smplx_global"],
+        human_mask_b=b["human_mask"],
+        contact_raster=contact_raster,
+        task_id=torch.full((2,), int(TaskType.DUAL)),
+    )
+
+    assert torch.count_nonzero(bundle.contact_spatial[0]) == 0
+    assert torch.count_nonzero(bundle.contact_spatial[1]) > 0
+
+
 def test_champ_backend_is_opt_in_and_runs_without_weights_or_video_dependencies() -> None:
     _, TaskType, Injector = _api()
     person = _person(batch_size=1)
