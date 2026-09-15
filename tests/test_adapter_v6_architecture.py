@@ -262,6 +262,8 @@ def test_architecture_config_reports_parameters_without_a_size_gate() -> None:
     assert payload["parameter_policy"]["limit"] is None
     assert payload["condition_injection"]["pose_channels"] == 25
     assert payload["condition_injection"]["part_channels"] == 14
+    assert payload["dual_person_expert"]["depth_aware_scene_fusion"] is False
+    assert payload["dual_person_expert"]["depth_order_fusion_stage"] == "deferred-v2"
     deepgen_config = SimpleNamespace(
         sample_size=128, patch_size=2, in_channels=16, num_layers=24,
         attention_head_dim=64, num_attention_heads=24, joint_attention_dim=4096,
