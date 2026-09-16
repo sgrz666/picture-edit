@@ -94,11 +94,15 @@ def test_adapter_public_boundary_consumes_bundle_and_separate_identity() -> None
     parameters = inspect.signature(model.prepare_conditioning).parameters
     assert "condition_bundle" in parameters
     assert "identity_condition" in parameters
+    assert "source_scene_latents" in parameters
+    assert "target_latent_hw" in parameters
     assert "condition" not in parameters
     bundle, identity = make_runtime(model, num_people=1)
-    prepared = model.prepare_conditioning(bundle, identity)
-    assert prepared.scene_feature.shape == (1, 16, 2, 2)
-    assert prepared.route.num_people.tolist() == [1]
+    prepared = model.prepare_conditioning(
+        bundle, identity, torch.randn(1, 16, 8, 8), (8, 8)
+    )
+    assert prepared.geometry_condition.shape == (1, 32, 8, 8)
+    assert prepared.person_count.tolist() == [1]
     assert isinstance(prepared.control_state, InternalControlState)
     assert isinstance(model.reasoner, SMPLXAdapterReasoner)
     assert model.reason_conditions(bundle) is not None
@@ -144,11 +148,16 @@ def test_single_route_ignores_invalid_person_b_contact_and_appearance() -> None:
     first_identity = AdapterIdentityCondition(torch.randn(1, 2, 16, 8, 8))
     changed_identity = copy.deepcopy(first_identity)
     changed_identity.source_person_latents[:, 1].normal_(mean=100, std=20)
-    first = model.prepare_conditioning(first_bundle, first_identity)
-    second = model.prepare_conditioning(changed_bundle, changed_identity)
-    torch.testing.assert_close(first.scene_feature, second.scene_feature)
+    source_scene = torch.randn(1, 16, 8, 8)
+    first = model.prepare_conditioning(
+        first_bundle, first_identity, source_scene, (8, 8)
+    )
+    second = model.prepare_conditioning(
+        changed_bundle, changed_identity, source_scene, (8, 8)
+    )
+    torch.testing.assert_close(first.geometry_condition, second.geometry_condition)
+    torch.testing.assert_close(first.interaction_condition, second.interaction_condition)
     torch.testing.assert_close(first.adapter_tokens, second.adapter_tokens)
-    assert torch.count_nonzero(first.contact_token_mask) == 0
     assert torch.count_nonzero(first.control_state.interaction_feature) == 0
 
 
@@ -158,8 +167,9 @@ def test_source_appearance_remains_condition_sensitive() -> None:
     bundle, identity = make_runtime(model, num_people=1)
     changed = copy.deepcopy(identity)
     changed.source_person_latents[:, 0, 0].add_(3)
-    first = model.prepare_conditioning(bundle, identity)
-    second = model.prepare_conditioning(bundle, changed)
+    source_scene = torch.randn(1, 16, 8, 8)
+    first = model.prepare_conditioning(bundle, identity, source_scene, (8, 8))
+    second = model.prepare_conditioning(bundle, changed, source_scene, (8, 8))
     assert not torch.allclose(first.adapter_tokens, second.adapter_tokens)
     torch.testing.assert_close(
         first.control_state.person_tokens, second.control_state.person_tokens
@@ -169,7 +179,9 @@ def test_source_appearance_remains_condition_sensitive() -> None:
 def test_control_core_context_contains_only_bound_person_tokens() -> None:
     model = build_tiny()
     bundle, identity = make_runtime(model, num_people=2)
-    prepared = model.prepare_conditioning(bundle, identity)
+    prepared = model.prepare_conditioning(
+        bundle, identity, torch.randn(1, 16, 8, 8), (8, 8)
+    )
     assert prepared.adapter_tokens.shape == (1, 24, 32)
     assert prepared.adapter_token_mask.shape == (1, 24)
     per_person_mask = prepared.adapter_token_mask.reshape(1, 2, 12)
@@ -184,22 +196,28 @@ def test_zero_heads_emit_six_target_only_residuals_and_alignment_is_exact() -> N
     target = torch.randn(1, 16, 8, 8)
     source_scene = torch.randn(1, 16, 8, 8)
     references = [[torch.randn(16, 8, 8), torch.randn(16, 4, 4)]]
+    prepared = model.prepare_conditioning(bundle, identity, source_scene, (8, 8))
     kwargs = dict(
-        target_latents=target, condition_bundle=bundle, identity_condition=identity,
-        source_scene_latents=source_scene, cond_hidden_states=references,
+        target_latents=target, prepared=prepared, cond_hidden_states=references,
         encoder_hidden_states=torch.randn(1, 5, 24),
         pooled_projections=torch.randn(1, 20), timestep=torch.tensor([500]),
+        denoise_progress=0.0,
     )
-    residuals = model(**kwargs)
+    output = model(**kwargs)
+    residuals = output.block_controlnet_hidden_states
     target_tokens = (8 // 2) ** 2
     full_tokens = target_tokens + (8 // 2) ** 2 + (4 // 2) ** 2
     assert len(residuals) == 6
     assert all(item.shape == (1, full_tokens, 32) for item in residuals)
     assert all(torch.count_nonzero(item) == 0 for item in residuals)
-    assert all(torch.count_nonzero(head.weight) == 0 for head in model.control_core.zero_heads)
+    all_heads = [
+        *model.control_core.geometry_zero_heads,
+        *model.control_core.interaction_zero_heads,
+    ]
+    assert all(torch.count_nonzero(head.weight) == 0 for head in all_heads)
     with torch.no_grad():
-        model.control_core.zero_heads[0].weight.fill_(0.01)
-    residuals = model(**kwargs)
+        model.control_core.geometry_zero_heads[0].weight.fill_(0.01)
+    residuals = model(**kwargs).block_controlnet_hidden_states
     assert torch.count_nonzero(residuals[0][:, :target_tokens]) > 0
     assert torch.count_nonzero(residuals[0][:, target_tokens:]) == 0
 
@@ -221,30 +239,30 @@ def test_contact_padding_mask_does_not_couple_batch_rows() -> None:
     pooled = torch.randn(2, 20)
     timestep = torch.tensor([500, 500])
     with torch.no_grad():
-        model.control_core.zero_heads[0].weight.copy_(torch.eye(32))
-        model.control_core.zero_heads[0].bias.zero_()
+        model.control_core.geometry_zero_heads[0].weight.copy_(torch.eye(32))
+        model.control_core.geometry_zero_heads[0].bias.zero_()
+
+    prepared = model.prepare_conditioning(bundle, identity, source_scene, (8, 8))
 
     batched = model(
         target_latents=target,
-        condition_bundle=bundle,
-        identity_condition=identity,
-        source_scene_latents=source_scene,
+        prepared=prepared,
         cond_hidden_states=None,
         encoder_hidden_states=text,
         pooled_projections=pooled,
         timestep=timestep,
-    )[0][0]
+        denoise_progress=0.0,
+    ).block_controlnet_hidden_states[0][0]
     first = torch.tensor([0])
     standalone = model(
         target_latents=target.index_select(0, first),
-        condition_bundle=bundle.index_select(first),
-        identity_condition=identity.index_select(first),
-        source_scene_latents=source_scene.index_select(0, first),
+        prepared=prepared.index_select(first),
         cond_hidden_states=None,
         encoder_hidden_states=text.index_select(0, first),
         pooled_projections=pooled.index_select(0, first),
         timestep=timestep.index_select(0, first),
-    )[0][0]
+        denoise_progress=0.0,
+    ).block_controlnet_hidden_states[0][0]
 
     torch.testing.assert_close(batched, standalone, atol=1e-5, rtol=1e-5)
 

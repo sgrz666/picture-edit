@@ -330,7 +330,8 @@ def test_both_high_resolution_paths_receive_integrated_gradients() -> None:
     bridge = ReasonerControlBridge(
         reasoning_dim=32, geometry_channels=16, token_dim=24
     )
-    scene = bridge(reasoner(_make_bundle((1, 2)))).scene_feature
+    bridged = bridge(reasoner(_make_bundle((1, 2))))
+    scene = bridged.geometry_scene + bridged.interaction_scene
     parameters = (
         reasoner.single_high_projection.weight,
         reasoner.dual_fusion.geometry_high_projection.weight,

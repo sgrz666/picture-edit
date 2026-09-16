@@ -5,6 +5,8 @@ import math
 import pytest
 import torch
 
+from src.pose_control.v6.conditions import AdapterIdentityCondition
+from src.pose_control.v6.deepgen_adapter import UnifiedSMPLXAdapterV6
 from src.pose_control.v6.interface import (
     BranchControlResiduals,
     ControlStrengthController,
@@ -269,3 +271,85 @@ def test_prepared_control_conditioning_expands_in_cfg_order() -> None:
     torch.testing.assert_close(expanded.geometry_condition[:2], prepared.geometry_condition)
     torch.testing.assert_close(expanded.geometry_condition[2:], prepared.geometry_condition)
     assert expanded.person_count.tolist() == [2, 2, 2, 2]
+
+
+def _tiny_adapter() -> UnifiedSMPLXAdapterV6:
+    return UnifiedSMPLXAdapterV6.build_tiny(
+        hidden_dim=32,
+        geometry_channels=16,
+        context_input_dim=24,
+        pooled_input_dim=20,
+        num_heads=4,
+    ).eval()
+
+
+def test_unified_adapter_prepares_static_identity_bound_control() -> None:
+    torch.manual_seed(31)
+    adapter = _tiny_adapter()
+    state = _control_state(dual=True)
+    identity = AdapterIdentityCondition(
+        source_person_latents=torch.randn(1, 2, 16, 8, 12),
+        source_indices=torch.tensor([[2, 5]]),
+    )
+    prepared = adapter.prepare_control(
+        state=state,
+        identity_condition=identity,
+        source_scene_latents=torch.randn(1, 16, 8, 12),
+        target_latent_hw=(8, 12),
+    )
+    assert prepared.geometry_condition.shape == (1, 32, 8, 12)
+    assert prepared.interaction_condition.shape == (1, 32, 8, 12)
+    assert prepared.adapter_tokens.shape == (1, 24, 32)
+    assert prepared.adapter_token_mask.shape == (1, 24)
+    assert prepared.adapter_token_mask.all()
+
+    changed_identity = AdapterIdentityCondition(
+        source_person_latents=identity.source_person_latents + 2,
+        source_indices=identity.source_indices,
+    )
+    changed = adapter.prepare_control(
+        state=state,
+        identity_condition=changed_identity,
+        source_scene_latents=torch.randn(1, 16, 8, 12),
+        target_latent_hw=(8, 12),
+    )
+    assert not torch.allclose(prepared.adapter_tokens, changed.adapter_tokens)
+    torch.testing.assert_close(prepared.control_state.person_tokens, state.person_tokens)
+
+
+def test_unified_adapter_single_preparation_has_exact_zero_interaction() -> None:
+    adapter = _tiny_adapter()
+    state = _control_state(dual=False)
+    prepared = adapter.prepare_control(
+        state=state,
+        identity_condition=AdapterIdentityCondition(
+            source_person_latents=torch.randn(1, 2, 16, 8, 12)
+        ),
+        source_scene_latents=torch.randn(1, 16, 8, 12),
+        target_latent_hw=(8, 12),
+    )
+    assert torch.count_nonzero(prepared.interaction_condition) == 0
+    assert not prepared.adapter_token_mask.reshape(1, 2, 12)[:, 1].any()
+
+
+def test_unified_adapter_forward_returns_control_output() -> None:
+    adapter = _tiny_adapter()
+    prepared = adapter.prepare_control(
+        state=_control_state(dual=True),
+        identity_condition=AdapterIdentityCondition(
+            source_person_latents=torch.randn(1, 2, 16, 8, 12)
+        ),
+        source_scene_latents=torch.randn(1, 16, 8, 12),
+        target_latent_hw=(8, 12),
+    )
+    output = adapter(
+        target_latents=torch.randn(1, 16, 8, 12),
+        prepared=prepared,
+        cond_hidden_states=None,
+        encoder_hidden_states=torch.randn(1, 7, 24),
+        pooled_projections=torch.randn(1, 20),
+        timestep=torch.tensor([500]),
+        denoise_progress=0.0,
+    )
+    assert isinstance(output, DeepGenControlOutput)
+    assert len(output.block_controlnet_hidden_states) == 6
