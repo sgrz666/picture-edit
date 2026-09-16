@@ -1,10 +1,13 @@
 from __future__ import annotations
 
+import copy
 from typing import Optional
 
 import torch
 import torch.nn as nn
 from diffusers.models import SD3ControlNetModel
+
+from .interface.outputs import BranchControlResiduals
 
 
 class CrossNorm(nn.Module):
@@ -91,14 +94,48 @@ class _TinyJointBlock(nn.Module):
         return encoder_hidden_states, hidden_states
 
 
+class _RecurrentControlBranch(nn.Module):
+    def __init__(
+        self,
+        *,
+        condition_embed: nn.Module,
+        hidden_dim: int,
+        num_stages: int,
+        rank: int,
+        first_zero_head: nn.Module | None = None,
+    ) -> None:
+        super().__init__()
+        self.condition_embed = condition_embed
+        self.stage_embeddings = nn.Parameter(
+            torch.randn(num_stages, hidden_dim) * 0.02
+        )
+        self.stage_adapters = nn.ModuleList(
+            LowRankStageAdapter(hidden_dim, rank) for _ in range(num_stages)
+        )
+        self.cross_norms = nn.ModuleList(CrossNorm() for _ in range(num_stages))
+        heads = []
+        for stage in range(num_stages):
+            head = (
+                first_zero_head
+                if stage == 0 and first_zero_head is not None
+                else nn.Linear(hidden_dim, hidden_dim)
+            )
+            nn.init.zeros_(head.weight)
+            if head.bias is not None:
+                nn.init.zeros_(head.bias)
+            heads.append(head)
+        self.zero_heads = nn.ModuleList(heads)
+
+
 class SharedRecurrentControlCore(nn.Module):
-    """One full-width joint block recurrently unrolled into six control stages."""
+    """A shared DeepGen block with independent dynamic geometry/interaction states."""
 
     def __init__(
         self,
         *,
         pos_embed: nn.Module,
-        condition_embed: nn.Module,
+        geometry_condition_embed: nn.Module,
+        interaction_condition_embed: nn.Module,
         time_text_embed: nn.Module,
         context_embedder: nn.Module,
         shared_block: nn.Module,
@@ -106,30 +143,39 @@ class SharedRecurrentControlCore(nn.Module):
         patch_size: int,
         num_stages: int = 6,
         rank: int = 64,
-        first_zero_head: nn.Module | None = None,
+        first_geometry_zero_head: nn.Module | None = None,
+        first_interaction_zero_head: nn.Module | None = None,
     ) -> None:
         super().__init__()
         self.pos_embed = pos_embed
-        self.condition_embed = condition_embed
         self.time_text_embed = time_text_embed
         self.context_embedder = context_embedder
         self.shared_block = shared_block
         self.hidden_dim = hidden_dim
         self.patch_size = patch_size
         self.num_stages = num_stages
-        self.stage_embeddings = nn.Parameter(torch.randn(num_stages, hidden_dim) * 0.02)
-        self.stage_adapters = nn.ModuleList(
-            LowRankStageAdapter(hidden_dim, rank) for _ in range(num_stages)
+        self.geometry_branch = _RecurrentControlBranch(
+            condition_embed=geometry_condition_embed,
+            hidden_dim=hidden_dim,
+            num_stages=num_stages,
+            rank=rank,
+            first_zero_head=first_geometry_zero_head,
         )
-        self.cross_norms = nn.ModuleList(CrossNorm() for _ in range(num_stages))
-        heads = []
-        for stage in range(num_stages):
-            head = first_zero_head if stage == 0 and first_zero_head is not None else nn.Linear(hidden_dim, hidden_dim)
-            nn.init.zeros_(head.weight)
-            if head.bias is not None:
-                nn.init.zeros_(head.bias)
-            heads.append(head)
-        self.zero_heads = nn.ModuleList(heads)
+        self.interaction_branch = _RecurrentControlBranch(
+            condition_embed=interaction_condition_embed,
+            hidden_dim=hidden_dim,
+            num_stages=num_stages,
+            rank=rank,
+            first_zero_head=first_interaction_zero_head,
+        )
+
+    @property
+    def geometry_zero_heads(self) -> nn.ModuleList:
+        return self.geometry_branch.zero_heads
+
+    @property
+    def interaction_zero_heads(self) -> nn.ModuleList:
+        return self.interaction_branch.zero_heads
 
     @classmethod
     def build_tiny(
@@ -145,7 +191,12 @@ class SharedRecurrentControlCore(nn.Module):
     ) -> "SharedRecurrentControlCore":
         return cls(
             pos_embed=_TinyPatchEmbed(16, hidden_dim, patch_size),
-            condition_embed=_TinyPatchEmbed(condition_channels, hidden_dim, patch_size),
+            geometry_condition_embed=_TinyPatchEmbed(
+                condition_channels, hidden_dim, patch_size
+            ),
+            interaction_condition_embed=_TinyPatchEmbed(
+                condition_channels, hidden_dim, patch_size
+            ),
             time_text_embed=_TinyTimeTextEmbed(pooled_input_dim, hidden_dim),
             context_embedder=nn.Linear(context_input_dim, hidden_dim),
             shared_block=_TinyJointBlock(hidden_dim),
@@ -191,7 +242,8 @@ class SharedRecurrentControlCore(nn.Module):
         inner_dim = config.num_attention_heads * config.attention_head_dim
         return cls(
             pos_embed=base.pos_embed,
-            condition_embed=base.pos_embed_input,
+            geometry_condition_embed=base.pos_embed_input,
+            interaction_condition_embed=copy.deepcopy(base.pos_embed_input),
             time_text_embed=base.time_text_embed,
             context_embedder=base.context_embedder,
             shared_block=base.transformer_blocks[0],
@@ -199,7 +251,8 @@ class SharedRecurrentControlCore(nn.Module):
             patch_size=config.patch_size,
             num_stages=num_stages,
             rank=rank,
-            first_zero_head=base.controlnet_blocks[0],
+            first_geometry_zero_head=base.controlnet_blocks[0],
+            first_interaction_zero_head=copy.deepcopy(base.controlnet_blocks[0]),
         )
 
     @classmethod
@@ -231,36 +284,90 @@ class SharedRecurrentControlCore(nn.Module):
             )
         return core
 
+    def _run_branch(
+        self,
+        *,
+        branch: _RecurrentControlBranch,
+        target_hidden: torch.Tensor,
+        control_condition: torch.Tensor,
+        context: torch.Tensor,
+        temb: torch.Tensor,
+        joint_attention_kwargs: Optional[dict],
+    ) -> tuple[torch.Tensor, ...]:
+        hidden_states = target_hidden + branch.condition_embed(control_condition)
+        branch_context = context
+        residuals = []
+        for stage_index in range(self.num_stages):
+            hidden_states = (
+                hidden_states + branch.stage_embeddings[stage_index][None, None]
+            )
+            branch_context, hidden_states = self.shared_block(
+                hidden_states=hidden_states,
+                encoder_hidden_states=branch_context,
+                temb=temb,
+                joint_attention_kwargs=joint_attention_kwargs,
+            )
+            hidden_states = hidden_states + branch.stage_adapters[stage_index](
+                hidden_states
+            )
+            aligned = branch.cross_norms[stage_index](hidden_states, target_hidden)
+            residuals.append(branch.zero_heads[stage_index](aligned))
+        return tuple(residuals)
+
     def forward(
         self,
         *,
         target_latents: torch.Tensor,
-        control_condition: torch.Tensor,
+        geometry_condition: torch.Tensor,
+        interaction_condition: torch.Tensor,
+        interaction_valid: torch.Tensor,
         adapter_tokens: torch.Tensor,
         adapter_token_mask: torch.Tensor,
         encoder_hidden_states: torch.Tensor,
         pooled_projections: torch.Tensor,
         timestep: torch.Tensor,
-        conditioning_scale: float = 1.0,
         joint_attention_kwargs: Optional[dict] = None,
-    ) -> list[torch.Tensor]:
+    ) -> BranchControlResiduals:
+        if target_latents.shape[-2] % self.patch_size or target_latents.shape[-1] % self.patch_size:
+            raise ValueError("target latent size must be divisible by patch_size")
+        batch_size = target_latents.shape[0]
+        if interaction_valid.shape != (batch_size,) or interaction_valid.dtype != torch.bool:
+            raise ValueError("interaction_valid must have shape [B] and dtype bool")
         target_hidden = self.pos_embed(target_latents)
-        hidden_states = target_hidden + self.condition_embed(control_condition)
         temb = self.time_text_embed(timestep, pooled_projections)
         context = self.context_embedder(encoder_hidden_states)
         adapter_tokens = adapter_tokens * adapter_token_mask[..., None].to(adapter_tokens.dtype)
         context = torch.cat((context, adapter_tokens), dim=1)
-
-        residuals = []
-        for stage_index in range(self.num_stages):
-            hidden_states = hidden_states + self.stage_embeddings[stage_index][None, None]
-            context, hidden_states = self.shared_block(
-                hidden_states=hidden_states,
-                encoder_hidden_states=context,
-                temb=temb,
+        geometry = self._run_branch(
+            branch=self.geometry_branch,
+            target_hidden=target_hidden,
+            control_condition=geometry_condition,
+            context=context,
+            temb=temb,
+            joint_attention_kwargs=joint_attention_kwargs,
+        )
+        interaction = tuple(torch.zeros_like(item) for item in geometry)
+        dual_indices = interaction_valid.nonzero(as_tuple=False).flatten()
+        if dual_indices.numel():
+            dual = self._run_branch(
+                branch=self.interaction_branch,
+                target_hidden=target_hidden.index_select(0, dual_indices),
+                control_condition=interaction_condition.index_select(
+                    0, dual_indices
+                ),
+                context=context.index_select(0, dual_indices),
+                temb=temb.index_select(0, dual_indices),
                 joint_attention_kwargs=joint_attention_kwargs,
             )
-            hidden_states = hidden_states + self.stage_adapters[stage_index](hidden_states)
-            aligned = self.cross_norms[stage_index](hidden_states, target_hidden)
-            residuals.append(self.zero_heads[stage_index](aligned) * conditioning_scale)
-        return residuals
+            interaction = tuple(
+                current.index_copy(0, dual_indices, update)
+                for current, update in zip(interaction, dual)
+            )
+        return BranchControlResiduals(
+            geometry=geometry,
+            interaction=interaction,
+            target_token_hw=(
+                target_latents.shape[-2] // self.patch_size,
+                target_latents.shape[-1] // self.patch_size,
+            ),
+        ).validate()

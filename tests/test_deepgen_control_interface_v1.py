@@ -11,6 +11,7 @@ from src.pose_control.v6.interface import (
     DeepGenControlOutput,
     StrengthScheduleConfig,
 )
+from src.pose_control.v6.control_core import SharedRecurrentControlCore
 
 
 def _branch_residuals(
@@ -105,3 +106,73 @@ def test_deepgen_control_output_requires_six_aligned_residuals() -> None:
     assert len(output.block_controlnet_hidden_states) == 6
     with pytest.raises(ValueError, match="six"):
         DeepGenControlOutput(residuals[:-1], {}).validate()
+
+
+def _tiny_core() -> SharedRecurrentControlCore:
+    return SharedRecurrentControlCore.build_tiny(
+        hidden_dim=32,
+        condition_channels=32,
+        context_input_dim=24,
+        pooled_input_dim=20,
+        patch_size=2,
+        num_stages=6,
+        rank=8,
+    )
+
+
+def _core_inputs(*, batch_size: int = 2) -> dict[str, torch.Tensor]:
+    return {
+        "target_latents": torch.randn(batch_size, 16, 8, 12),
+        "geometry_condition": torch.randn(batch_size, 32, 8, 12),
+        "interaction_condition": torch.randn(batch_size, 32, 8, 12),
+        "interaction_valid": torch.tensor([True, False])[:batch_size],
+        "adapter_tokens": torch.randn(batch_size, 5, 32),
+        "adapter_token_mask": torch.ones(batch_size, 5, dtype=torch.bool),
+        "encoder_hidden_states": torch.randn(batch_size, 7, 24),
+        "pooled_projections": torch.randn(batch_size, 20),
+        "timestep": torch.full((batch_size,), 500),
+    }
+
+
+def test_dynamic_core_has_independent_zero_heads_per_branch() -> None:
+    core = _tiny_core()
+    assert len(core.geometry_zero_heads) == 6
+    assert len(core.interaction_zero_heads) == 6
+    all_heads = [*core.geometry_zero_heads, *core.interaction_zero_heads]
+    assert len({id(head) for head in all_heads}) == 12
+    assert all(torch.count_nonzero(head.weight) == 0 for head in all_heads)
+    assert all(torch.count_nonzero(head.bias) == 0 for head in all_heads)
+
+    residuals = core(**_core_inputs())
+    assert residuals.target_token_hw == (4, 6)
+    assert all(torch.count_nonzero(value) == 0 for value in residuals.geometry)
+    assert all(torch.count_nonzero(value) == 0 for value in residuals.interaction)
+
+
+def test_dynamic_core_runs_interaction_only_for_valid_dual_rows() -> None:
+    torch.manual_seed(19)
+    core = _tiny_core().eval()
+    with torch.no_grad():
+        core.geometry_zero_heads[0].weight.copy_(torch.eye(32))
+        core.interaction_zero_heads[0].weight.copy_(torch.eye(32))
+    residuals = core(**_core_inputs())
+    assert torch.count_nonzero(residuals.geometry[0]) > 0
+    assert torch.count_nonzero(residuals.interaction[0][0]) > 0
+    assert torch.count_nonzero(residuals.interaction[0][1]) == 0
+
+
+def test_dynamic_core_is_sensitive_to_latent_text_and_timestep() -> None:
+    torch.manual_seed(23)
+    core = _tiny_core().eval()
+    with torch.no_grad():
+        core.geometry_zero_heads[0].weight.copy_(torch.eye(32))
+    baseline_inputs = _core_inputs(batch_size=1)
+    baseline_inputs["interaction_valid"] = torch.tensor([False])
+    baseline = core(**baseline_inputs).geometry[0]
+    for field in ("target_latents", "encoder_hidden_states", "timestep"):
+        changed = {key: value.clone() for key, value in baseline_inputs.items()}
+        if field == "timestep":
+            changed[field] = changed[field] + 100
+        else:
+            changed[field] = changed[field] + 1
+        assert not torch.allclose(baseline, core(**changed).geometry[0])
