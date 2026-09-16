@@ -4,20 +4,18 @@ from dataclasses import dataclass
 
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
 
 from .reasoning import InternalControlState
 
 
 @dataclass
 class ReasonerBridgedCondition:
-    scene_feature: torch.Tensor
-    geometry_tokens: torch.Tensor
-    geometry_token_mask: torch.Tensor
+    geometry_scene: torch.Tensor
+    interaction_scene: torch.Tensor
 
 
 class ReasonerControlBridge(nn.Module):
-    """Project InternalControlState to the unchanged DeepGen control widths."""
+    """Keep geometry and interaction paths independent for DeepGen control."""
 
     def __init__(
         self,
@@ -40,34 +38,6 @@ class ReasonerControlBridge(nn.Module):
         self.interaction_high_downsample = nn.Conv2d(
             reasoning_dim, reasoning_dim, 3, stride=2, padding=1, bias=False
         )
-        self.token_projection = nn.Linear(reasoning_dim, token_dim)
-
-    @staticmethod
-    def _pool_person_tokens(
-        state: InternalControlState,
-    ) -> tuple[torch.Tensor, torch.Tensor]:
-        batch_size, people, token_count, channels = state.person_tokens.shape
-        height, width = state.geometry_feature.shape[-2:]
-        if token_count != height * width:
-            raise ValueError("person token count must match reasoning feature size")
-        features = state.person_tokens.reshape(
-            batch_size * people, height, width, channels
-        ).permute(0, 3, 1, 2)
-        mask = state.person_token_mask.reshape(
-            batch_size * people, 1, height, width
-        )
-        weights = mask.to(features.dtype)
-        numerator = F.adaptive_avg_pool2d(features * weights, (2, 2))
-        denominator = F.adaptive_avg_pool2d(weights, (2, 2))
-        pooled = numerator / denominator.clamp_min(1e-6)
-        pooled_mask = denominator > 0
-        pooled = pooled * pooled_mask.to(pooled.dtype)
-        pooled = pooled.flatten(2).transpose(1, 2).reshape(
-            batch_size, people, 4, channels
-        )
-        pooled_mask = pooled_mask.flatten(1).reshape(batch_size, people, 4)
-        return pooled, pooled_mask
-
     def forward(self, state: InternalControlState) -> ReasonerBridgedCondition:
         state.validate()
         interaction_valid = state.interaction_valid[:, None, None, None].to(
@@ -80,11 +50,7 @@ class ReasonerControlBridge(nn.Module):
             state.interaction_highres
         )
         interaction = interaction * interaction_valid
-        scene = self.geometry_projection(geometry)
-        scene = scene + self.interaction_projection(interaction)
-        pooled, pooled_mask = self._pool_person_tokens(state)
-        geometry_tokens = self.token_projection(pooled)
-        geometry_tokens = geometry_tokens * pooled_mask[..., None].to(
-            geometry_tokens.dtype
-        )
-        return ReasonerBridgedCondition(scene, geometry_tokens, pooled_mask)
+        geometry_scene = self.geometry_projection(geometry)
+        interaction_scene = self.interaction_projection(interaction)
+        interaction_scene = interaction_scene * interaction_valid
+        return ReasonerBridgedCondition(geometry_scene, interaction_scene)

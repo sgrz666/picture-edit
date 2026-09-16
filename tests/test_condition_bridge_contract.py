@@ -32,7 +32,7 @@ def _make_state(batch_size: int = 2) -> InternalControlState:
     ).validate()
 
 
-def test_reasoner_bridge_projects_state_and_pools_four_tokens_per_person() -> None:
+def test_reasoner_bridge_projects_independent_geometry_and_interaction_scenes() -> None:
     bridge_module = importlib.import_module("src.pose_control.v6.condition_bridge")
     assert hasattr(bridge_module, "ReasonerControlBridge")
     assert not hasattr(bridge_module, "ConditionBundleBridge")
@@ -40,11 +40,10 @@ def test_reasoner_bridge_projects_state_and_pools_four_tokens_per_person() -> No
         reasoning_dim=32, geometry_channels=16, token_dim=24
     )
     output = bridge(_make_state())
-    assert output.scene_feature.shape == (2, 16, 4, 4)
-    assert output.geometry_tokens.shape == (2, 2, 4, 24)
-    assert output.geometry_token_mask.shape == (2, 2, 4)
-    assert torch.count_nonzero(output.geometry_tokens[1, 1]) == 0
-    assert not output.geometry_token_mask[1, 1].any()
+    assert output.geometry_scene.shape == (2, 16, 4, 4)
+    assert output.interaction_scene.shape == (2, 16, 4, 4)
+    assert not hasattr(output, "scene_feature")
+    assert torch.count_nonzero(output.interaction_scene[1]) == 0
 
 
 def test_interaction_projection_has_no_bias_and_single_rows_ignore_interaction() -> None:
@@ -55,29 +54,7 @@ def test_interaction_projection_has_no_bias_and_single_rows_ignore_interaction()
     assert bridge.interaction_projection.bias is None
     single = _make_state().index_select(torch.tensor([1]))
     output = bridge(single)
-    expected = bridge.geometry_projection(
-        single.geometry_feature
-        + bridge.geometry_high_downsample(single.geometry_highres)
-    )
-    torch.testing.assert_close(output.scene_feature, expected)
-
-
-def test_mask_aware_pooling_ignores_invalid_spatial_tokens() -> None:
-    bridge_module = importlib.import_module("src.pose_control.v6.condition_bridge")
-    bridge = bridge_module.ReasonerControlBridge(
-        reasoning_dim=32, geometry_channels=16, token_dim=24
-    ).eval()
-    state = _make_state(batch_size=1)
-    state.person_token_mask[:, :, 1::2] = False
-    first = bridge(state)
-    changed = _make_state(batch_size=1)
-    changed.geometry_feature.copy_(state.geometry_feature)
-    changed.interaction_feature.copy_(state.interaction_feature)
-    changed.person_token_mask.copy_(state.person_token_mask)
-    changed.person_tokens.copy_(state.person_tokens)
-    changed.person_tokens[:, :, 1::2].normal_(mean=100, std=10)
-    second = bridge(changed)
-    torch.testing.assert_close(first.geometry_tokens, second.geometry_tokens)
+    assert torch.count_nonzero(output.interaction_scene) == 0
 
 
 def test_bridge_consumes_both_high_resolution_control_paths() -> None:
@@ -98,9 +75,43 @@ def test_bridge_consumes_both_high_resolution_control_paths() -> None:
     geometry_changed.geometry_highres.add_(10)
     interaction_changed.interaction_highres[0].sub_(10)
     baseline = bridge(state)
-    assert not torch.allclose(
-        baseline.scene_feature, bridge(geometry_changed).scene_feature
+    geometry_output = bridge(geometry_changed)
+    interaction_output = bridge(interaction_changed)
+    assert not torch.allclose(baseline.geometry_scene, geometry_output.geometry_scene)
+    torch.testing.assert_close(
+        baseline.interaction_scene, geometry_output.interaction_scene
+    )
+    torch.testing.assert_close(
+        baseline.geometry_scene, interaction_output.geometry_scene
     )
     assert not torch.allclose(
-        baseline.scene_feature[0], bridge(interaction_changed).scene_feature[0]
+        baseline.interaction_scene[0], interaction_output.interaction_scene[0]
     )
+
+
+def test_bridge_keeps_all_four_reasoner_paths_on_the_gradient_graph() -> None:
+    bridge_module = importlib.import_module("src.pose_control.v6.condition_bridge")
+    bridge = bridge_module.ReasonerControlBridge(
+        reasoning_dim=32, geometry_channels=16, token_dim=24
+    )
+    state = _make_state()
+    for value in (
+        state.geometry_feature,
+        state.geometry_highres,
+        state.interaction_feature,
+        state.interaction_highres,
+    ):
+        value.requires_grad_(True)
+    output = bridge(state)
+    loss = output.geometry_scene.square().mean() + output.interaction_scene.square().mean()
+    gradients = torch.autograd.grad(
+        loss,
+        (
+            state.geometry_feature,
+            state.geometry_highres,
+            state.interaction_feature,
+            state.interaction_highres,
+        ),
+    )
+    assert all(gradient is not None for gradient in gradients)
+    assert all(torch.isfinite(gradient).all() for gradient in gradients)
