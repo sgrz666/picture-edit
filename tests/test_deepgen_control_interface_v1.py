@@ -1,12 +1,14 @@
 from __future__ import annotations
 
 import math
+from types import SimpleNamespace
 
 import pytest
 import torch
 
 from src.pose_control.v6.conditions import AdapterIdentityCondition
 from src.pose_control.v6.deepgen_adapter import UnifiedSMPLXAdapterV6
+from src.pose_control.v6.controlled_pipeline import ControlledDeepGenPipeline
 from src.pose_control.v6.interface import (
     BranchControlResiduals,
     ControlStrengthController,
@@ -353,3 +355,97 @@ def test_unified_adapter_forward_returns_control_output() -> None:
     )
     assert isinstance(output, DeepGenControlOutput)
     assert len(output.block_controlnet_hidden_states) == 6
+
+
+class _RecordingTransformer(torch.nn.Module):
+    def __init__(self) -> None:
+        super().__init__()
+        self.controls: list[tuple[torch.Tensor, ...] | None] = []
+
+    def forward(
+        self,
+        *,
+        hidden_states: torch.Tensor,
+        encoder_hidden_states: torch.Tensor,
+        cond_hidden_states,
+        pooled_projections: torch.Tensor,
+        timestep: torch.Tensor,
+        block_controlnet_hidden_states=None,
+        joint_attention_kwargs=None,
+        return_dict: bool = False,
+    ):
+        del encoder_hidden_states, cond_hidden_states, pooled_projections, timestep
+        del joint_attention_kwargs, return_dict
+        self.controls.append(block_controlnet_hidden_states)
+        return (hidden_states,)
+
+
+class _RecordingPipeline:
+    def __init__(self, *, fail_after_first: bool = False) -> None:
+        self.transformer = _RecordingTransformer()
+        self.fail_after_first = fail_after_first
+        self.received_control_scale = None
+        self.vae_scale_factor = 8
+
+    def __call__(self, *, num_inference_steps: int, **kwargs):
+        self.received_control_scale = kwargs.pop("control_scale")
+        external = kwargs.pop("block_controlnet_hidden_states")
+        assert external is None
+        target = torch.randn(1, 16, 8, 12)
+        text = torch.randn(1, 7, 24)
+        pooled = torch.randn(1, 20)
+        for index in range(num_inference_steps):
+            self.transformer(
+                hidden_states=target,
+                encoder_hidden_states=text,
+                cond_hidden_states=None,
+                pooled_projections=pooled,
+                timestep=torch.tensor([1000 - index * 100]),
+                block_controlnet_hidden_states=None,
+                return_dict=False,
+            )
+            if self.fail_after_first:
+                raise RuntimeError("synthetic pipeline failure")
+        return SimpleNamespace(images=target)
+
+
+def test_controlled_pipeline_injects_each_step_and_restores_hook() -> None:
+    adapter = _tiny_adapter()
+    pipeline = _RecordingPipeline()
+    controlled = ControlledDeepGenPipeline(pipeline=pipeline, adapter=adapter)
+    result = controlled(
+        prepared_control=_prepared(dual=True),
+        num_inference_steps=3,
+    )
+    assert result.images.shape == (1, 16, 8, 12)
+    assert pipeline.received_control_scale == 1.0
+    assert len(pipeline.transformer.controls) == 3
+    assert all(control is not None and len(control) == 6 for control in pipeline.transformer.controls)
+    assert [item["denoise_progress"] for item in result.control_diagnostics] == [
+        0.0,
+        0.5,
+        1.0,
+    ]
+    assert len(pipeline.transformer._forward_pre_hooks) == 0
+
+
+def test_controlled_pipeline_restores_hook_after_failure() -> None:
+    controlled = ControlledDeepGenPipeline(
+        pipeline=_RecordingPipeline(fail_after_first=True), adapter=_tiny_adapter()
+    )
+    with pytest.raises(RuntimeError, match="synthetic pipeline failure"):
+        controlled(prepared_control=_prepared(), num_inference_steps=2)
+    assert len(controlled.pipeline.transformer._forward_pre_hooks) == 0
+    assert not controlled.is_active
+
+
+def test_controlled_pipeline_rejects_duplicate_external_control() -> None:
+    controlled = ControlledDeepGenPipeline(
+        pipeline=_RecordingPipeline(), adapter=_tiny_adapter()
+    )
+    with pytest.raises(ValueError, match="external block_controlnet"):
+        controlled(
+            prepared_control=_prepared(),
+            num_inference_steps=1,
+            block_controlnet_hidden_states=[torch.zeros(1, 1, 1)],
+        )
