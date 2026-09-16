@@ -8,10 +8,13 @@ import torch
 from src.pose_control.v6.interface import (
     BranchControlResiduals,
     ControlStrengthController,
+    DeepGenControlInterface,
     DeepGenControlOutput,
+    PreparedControlConditioning,
     StrengthScheduleConfig,
 )
 from src.pose_control.v6.control_core import SharedRecurrentControlCore
+from src.pose_control.v6.reasoning import InternalControlState
 
 
 def _branch_residuals(
@@ -176,3 +179,93 @@ def test_dynamic_core_is_sensitive_to_latent_text_and_timestep() -> None:
         else:
             changed[field] = changed[field] + 1
         assert not torch.allclose(baseline, core(**changed).geometry[0])
+
+
+def _control_state(*, batch_size: int = 1, dual: bool = True) -> InternalControlState:
+    person_valid = torch.ones(batch_size, 2, dtype=torch.bool)
+    if not dual:
+        person_valid[:, 1] = False
+    interaction_valid = person_valid[:, 1].clone()
+    person_tokens = torch.randn(batch_size, 2, 24, 32)
+    person_mask = torch.ones(batch_size, 2, 24, dtype=torch.bool)
+    person_tokens[:, 1] *= interaction_valid[:, None, None]
+    person_mask[:, 1] &= interaction_valid[:, None]
+    interaction = torch.randn(batch_size, 32, 4, 6)
+    interaction_high = torch.randn(batch_size, 32, 8, 12)
+    interaction *= interaction_valid[:, None, None, None]
+    interaction_high *= interaction_valid[:, None, None, None]
+    return InternalControlState(
+        geometry_feature=torch.randn(batch_size, 32, 4, 6),
+        geometry_highres=torch.randn(batch_size, 32, 8, 12),
+        interaction_feature=interaction,
+        interaction_highres=interaction_high,
+        person_tokens=person_tokens,
+        person_token_mask=person_mask,
+        person_valid=person_valid,
+        person_count=person_valid.sum(dim=1).long(),
+        interaction_valid=interaction_valid,
+    ).validate()
+
+
+def _prepared(*, batch_size: int = 1, dual: bool = True) -> PreparedControlConditioning:
+    state = _control_state(batch_size=batch_size, dual=dual)
+    token_mask = torch.ones(batch_size, 5, dtype=torch.bool)
+    if not dual:
+        token_mask[:, -1] = False
+    return PreparedControlConditioning(
+        geometry_condition=torch.randn(batch_size, 32, 8, 12),
+        interaction_condition=torch.randn(batch_size, 32, 8, 12)
+        * state.interaction_valid[:, None, None, None],
+        adapter_tokens=torch.randn(batch_size, 5, 32)
+        * token_mask[..., None],
+        adapter_token_mask=token_mask,
+        person_count=state.person_count,
+        interaction_valid=state.interaction_valid,
+        control_state=state,
+    ).validate()
+
+
+def test_deepgen_interface_aligns_target_source_and_padding_tokens() -> None:
+    torch.manual_seed(29)
+    core = _tiny_core().eval()
+    with torch.no_grad():
+        core.geometry_zero_heads[0].weight.copy_(torch.eye(32))
+    interface = DeepGenControlInterface(core, num_transformer_layers=24).eval()
+    target = torch.randn(1, 16, 8, 12)
+    references = [[torch.randn(16, 8, 12), torch.randn(16, 4, 4)]]
+    output = interface(
+        target_latents=target,
+        prepared=_prepared(),
+        cond_hidden_states=references,
+        encoder_hidden_states=torch.randn(1, 7, 24),
+        pooled_projections=torch.randn(1, 20),
+        timestep=torch.tensor([500]),
+        denoise_progress=0.25,
+    )
+    assert len(output.block_controlnet_hidden_states) == 6
+    assert output.block_controlnet_hidden_states[0].shape == (1, 52, 32)
+    assert torch.count_nonzero(output.block_controlnet_hidden_states[0][:, :24]) > 0
+    assert torch.count_nonzero(output.block_controlnet_hidden_states[0][:, 24:]) == 0
+    assert output.diagnostics["target_token_hw"] == [4, 6]
+    assert output.diagnostics["target_token_count"] == 24
+    assert output.diagnostics["full_token_count"] == 52
+
+
+def test_deepgen_interface_reports_native_group_mapping_and_skips_last_block() -> None:
+    interface = DeepGenControlInterface(_tiny_core(), num_transformer_layers=24)
+    assert interface.active_block_mapping == (
+        (0, 1, 2, 3),
+        (4, 5, 6, 7),
+        (8, 9, 10, 11),
+        (12, 13, 14, 15),
+        (16, 17, 18, 19),
+        (20, 21, 22),
+    )
+
+
+def test_prepared_control_conditioning_expands_in_cfg_order() -> None:
+    prepared = _prepared(batch_size=2)
+    expanded = prepared.expand_to_batch(4)
+    torch.testing.assert_close(expanded.geometry_condition[:2], prepared.geometry_condition)
+    torch.testing.assert_close(expanded.geometry_condition[2:], prepared.geometry_condition)
+    assert expanded.person_count.tolist() == [2, 2, 2, 2]
