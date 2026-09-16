@@ -1,5 +1,5 @@
 {
-  "version": "6.2-adapter-reasoning-v1",
+  "version": "6.3-dynamic-deepgen-interface-v1",
   "scope": "architecture-and-forward-only-no-training",
   "max_people": 2,
   "person_axis_is_fixed": false,
@@ -62,10 +62,23 @@
   },
   "control_core": {
     "shared_full_width_blocks": 1,
+    "branches": ["geometry", "interaction"],
     "stages": 6,
     "rank": 64,
     "cross_norm": true,
-    "zero_residual_heads": 6
+    "zero_residual_heads": 12,
+    "dynamic_per_timestep": true,
+    "interaction_dual_only": true
+  },
+  "control_strength": {
+    "geometry_default": 1.0,
+    "interaction_default": 0.8,
+    "curves": ["constant", "linear", "cosine"],
+    "positive_group_gates": 6
+  },
+  "inference_cache": {
+    "static_conditioning": true,
+    "dynamic_residuals": false
   },
   "deepgen_injection": {
     "transformer_layers": 24,

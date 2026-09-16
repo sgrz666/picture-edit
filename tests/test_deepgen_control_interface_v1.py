@@ -449,3 +449,30 @@ def test_controlled_pipeline_rejects_duplicate_external_control() -> None:
             num_inference_steps=1,
             block_controlnet_hidden_states=[torch.zeros(1, 1, 1)],
         )
+
+
+def test_controlled_pipeline_resets_active_state_if_hook_registration_fails() -> None:
+    pipeline = _RecordingPipeline()
+
+    def fail_registration(*args, **kwargs):
+        del args, kwargs
+        raise RuntimeError("synthetic hook registration failure")
+
+    pipeline.transformer.register_forward_pre_hook = fail_registration
+    controlled = ControlledDeepGenPipeline(pipeline=pipeline, adapter=_tiny_adapter())
+    with pytest.raises(RuntimeError, match="synthetic hook registration failure"):
+        controlled(prepared_control=_prepared(), num_inference_steps=1)
+    assert not controlled.is_active
+
+
+def test_controlled_pipeline_rejects_nested_or_concurrent_call() -> None:
+    controlled = ControlledDeepGenPipeline(
+        pipeline=_RecordingPipeline(), adapter=_tiny_adapter()
+    )
+    controlled._enter()
+    try:
+        with pytest.raises(RuntimeError, match="nested or concurrent"):
+            controlled(prepared_control=_prepared(), num_inference_steps=1)
+    finally:
+        controlled._exit()
+    assert not controlled.is_active

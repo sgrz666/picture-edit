@@ -142,9 +142,14 @@ def parameter_report(adapter: UnifiedSMPLXAdapterV6) -> dict[str, int]:
         "reasoner": adapter.reasoner,
         "reasoner_control_bridge": adapter.condition_bridge,
         "appearance_and_binding": torch.nn.ModuleList(
-            [adapter.appearance_token_encoder, adapter.person_token_binder]
+            [
+                adapter.geometry_token_projection,
+                adapter.appearance_token_encoder,
+                adapter.person_token_binder,
+            ]
         ),
-        "control_core": adapter.control_core,
+        "dynamic_control_core": adapter.control_core,
+        "control_strength": adapter.control_interface.strength_controller,
     }
     return {
         name: sum(parameter.numel() for parameter in module.parameters() if parameter.requires_grad)
@@ -179,19 +184,24 @@ def main() -> None:
     text = torch.randn(1, 12, transformer.config.joint_attention_dim, device=device, dtype=dtype)
     pooled = torch.randn(1, transformer.config.pooled_projection_dim, device=device, dtype=dtype)
     timestep = torch.tensor([500], device=device)
-    adapter_kwargs = dict(
-        target_latents=target,
-        condition_bundle=condition_bundle,
-        identity_condition=identity_condition,
-        source_scene_latents=source,
-        cond_hidden_states=references,
-        encoder_hidden_states=text,
-        pooled_projections=pooled,
-        timestep=timestep,
-    )
     with torch.inference_mode():
-        prepared = adapter.prepare_conditioning(condition_bundle, identity_condition)
-        residuals = adapter(**adapter_kwargs)
+        prepared = adapter.prepare_conditioning(
+            condition_bundle,
+            identity_condition,
+            source,
+            target.shape[-2:],
+        )
+        adapter_kwargs = dict(
+            target_latents=target,
+            prepared=prepared,
+            cond_hidden_states=references,
+            encoder_hidden_states=text,
+            pooled_projections=pooled,
+            timestep=timestep,
+            denoise_progress=0.0,
+        )
+        control_output = adapter(**adapter_kwargs)
+        residuals = control_output.block_controlnet_hidden_states
         max_residual = max(float(value.abs().max().item()) for value in residuals)
         max_equivalence_error = None
         if not args.skip_deepgen_equivalence:
@@ -221,10 +231,11 @@ def main() -> None:
         "mode": args.mode,
         "condition_backend": args.condition_backend,
         "use_depth": args.use_depth,
-        "route_num_people": prepared.route.num_people.tolist(),
+        "route_num_people": prepared.person_count.tolist(),
         "adapter_trainable_parameters": adapter.trainable_parameter_count,
         "parameters_by_module": parameter_report(adapter),
         "residual_shapes": [list(value.shape) for value in residuals],
+        "control_diagnostics": control_output.diagnostics,
         "max_zero_residual": max_residual,
         "max_deepgen_equivalence_error": max_equivalence_error,
         "backbone_frozen": all(not parameter.requires_grad for parameter in transformer.parameters()),

@@ -307,7 +307,7 @@ def test_internal_control_state_to_and_index_select_preserve_discrete_dtypes() -
     assert selected.validate() is selected
 
 
-def test_reasoning_smoke_and_v62_config_are_declared() -> None:
+def test_reasoning_smoke_and_current_config_are_declared() -> None:
     from scripts.smoke_adapter_reasoner import default_report_name
 
     assert default_report_name("single") == "adapter_reasoner_smoke_single.json"
@@ -315,7 +315,7 @@ def test_reasoning_smoke_and_v62_config_are_declared() -> None:
     assert default_report_name("mixed") == "adapter_reasoner_smoke_mixed.json"
     config_path = Path(__file__).parents[1] / "configs" / "adapter_v6_architecture.json"
     payload = json.loads(config_path.read_text(encoding="utf-8"))
-    assert payload["version"] == "6.2-adapter-reasoning-v1"
+    assert payload["version"] == "6.3-dynamic-deepgen-interface-v1"
     assert payload["reasoning"]["hidden_dim"] == 512
     assert payload["reasoning"]["downsample_factor"] == 2
     assert payload["reasoning"]["cross_person_layers"] == 2

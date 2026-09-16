@@ -1,142 +1,139 @@
-# DeepGen Unified SMPL-X Adapter V6.2
+# DeepGen Unified SMPL-X Adapter V6.3
 
-V6.2 adds a standalone Adapter-internal reasoning boundary after the V6.1
-condition injector:
+V6.3 keeps the context-aware recurrent control block introduced by the V6
+architecture and makes the DeepGen boundary explicit:
 
 ```text
-prepared SMPL-X maps/parameters
-        -> SMPLXConditionInjector
-        -> ConditionBundle
-        -> SMPLXAdapterReasoner
-        -> InternalControlState
-        -> ReasonerControlBridge
-        -> SharedRecurrentControlCore
-        -> six zero-initialized DeepGen residual groups
+SMPL-X maps/parameters
+    -> SMPLXConditionInjector
+    -> ConditionBundle
+    -> SMPLXAdapterReasoner
+    -> InternalControlState
+    -> independent Geometry / Interaction bridge
+    -> PreparedControlConditioning (static per image)
+    -> dynamic dual-branch SharedRecurrentControlCore (per denoising step)
+    -> ControlStrengthController
+    -> six native grouped DeepGen residuals
 ```
 
-This phase contains no body estimator, renderer, data preprocessing, training
-loop, optimizer, loss, checkpoint writer, external model weight, or schedule
-change.
+No body estimator, renderer, dataset preprocessing, optimizer, training loop,
+checkpoint writer, external weight download, QKV injection, or exact-block
+Transformer modification is part of this phase.
 
-## Condition and identity boundaries
+## Static conditioning
 
-`SMPLXConditionInjector` retains the V6.1 public contract: per-person world
-normal, 25-channel pose heatmaps, 14-channel part maps, masks, optional depth,
-26 global SMPL-X/camera values, and optional dual-person relative/contact
-conditions. It outputs 256-channel spatial conditions plus 256-dimensional
-tokens in `ConditionBundle`.
-
-Source appearance remains deliberately separate in `AdapterIdentityCondition`.
-The Reasoner accepts only `ConditionBundle`; appearance enters later through
-the DeepGen compatibility bridge. This keeps “how/where the body moves” apart
-from “which referenced person moves.”
-
-## Internal reasoning
-
-`PersonGeometryReasoner` is shared by A and B. It projects each 256-channel
-condition to 512 channels, applies two masked residual blocks, downsamples by
-two, and fuses four global tokens plus the task token through pre-norm
-cross-attention. A/B role embeddings are applied after this shared path.
-
-Only rows with two valid people enter the interaction branch. Two
-bidirectional cross-person layers update A and B simultaneously from the
-previous layer state and include relative-geometry tokens in each direction.
-Contact rasters are projected at both reasoning resolutions and enter through
-two gates initialized to `sigmoid(-4)`. Typed contact relations use their true
-padding mask; rows without a valid relation bypass attention, avoiding
-all-masked softmax NaNs.
-
-The Reasoner produces independent low/high geometry and interaction features:
+`prepare_conditioning()` runs condition injection, SMPL-X reasoning, the
+high/low-resolution bridge, and identity binding once per image. Geometry and
+interaction stay separate:
 
 ```python
-state.geometry_feature       # [B,512,Hc/2,Wc/2]
-state.geometry_highres       # [B,512,Hc,Wc]
-state.interaction_feature    # [B,512,Hc/2,Wc/2]
-state.interaction_highres    # [B,512,Hc,Wc]
-state.person_tokens          # [B,2,(Hc/2)*(Wc/2),512]
+prepared.geometry_condition      # [B, 16 + 128, H_latent, W_latent]
+prepared.interaction_condition   # [B, 16 + 128, H_latent, W_latent]
+prepared.adapter_tokens          # bound geometry + appearance tokens
+prepared.adapter_token_mask      # valid compact context tokens
 ```
 
-Single-person rows keep Person-B tokens and both interaction features exactly
-zero. Mixed single/dual batches are supported by gathering dual rows, running
-interaction reasoning only on those rows, then scattering them back.
+Geometry concatenates the source-scene latent with the fused geometry feature.
+Interaction concatenates a zero 16-channel prefix with the interaction feature,
+so source-scene information is not counted twice. Single-person interaction
+conditions are exactly zero. Both high-resolution Reasoner paths are learned-
+downsampled and remain connected to the final loss graph.
 
-## DeepGen compatibility
+Each person's masked spatial tokens are pooled to four geometry summaries and
+bound to eight appearance tokens through slot and source-index embeddings.
+Appearance remains outside `ConditionBundle`; the Reasoner still receives only
+geometric and task conditions.
 
-`UnifiedSMPLXAdapterV6.reason_conditions(bundle)` exposes the standalone
-reasoning output. The unchanged `forward(...)` path then uses
-`ReasonerControlBridge`:
+## Dynamic control core
 
-- high-resolution geometry/interaction features are learned-downsampled and
-  added to their low-resolution counterparts, then independently projected to
-  the existing control-condition width; this keeps both declared scales on the
-  end-to-end DeepGen gradient path;
-- each person's masked spatial tokens are pooled into four summary tokens;
-- those summaries are projected to the DeepGen width and bound to the existing
-  eight appearance tokens using slot and source-index embeddings;
-- raw task, relative, and contact tokens are not appended again because they
-  have already participated in reasoning.
+Geometry and Interaction have independent condition patch embeddings, stage
+embeddings, rank-64 stage adapters, CrossNorm modules, and six zero-initialized
+heads. They share one full-width joint Transformer block initialized from
+DeepGen block 0, along with target patch, timestep/text, and context projections.
 
-`SharedRecurrentControlCore`, six Zero Heads, the 24-layer DiT mapping,
-timestep handling, and target/source/padding residual layout are unchanged.
-Consequently an untrained V6.2 Adapter still emits exact-zero residuals and
-must match no-Adapter DeepGen within `1e-6`.
+Every denoising step therefore sees the current noisy target, timestep, text,
+pooled text, and bound identity tokens. Geometry runs for every row. Interaction
+gathers only dual-person rows and scatters its outputs back; single-person rows
+remain exactly zero. Mixed single/dual batches are compacted by token-mask
+pattern so invalid padding tokens never enter joint attention.
 
-## Minimal API
+## Strength and DeepGen injection
+
+For group `l`, V6.3 applies:
+
+```text
+delta_l =
+    geometry_strength * exp(g_geo_l) * w_geo(progress) * R_geo_l
+  + interaction_strength * exp(g_int_l) * w_int(progress) * R_int_l
+```
+
+Defaults are Geometry `1.0`, Interaction `0.8`, and a constant full-denoise
+window. Linear and cosine windows are also available. The six positive group
+gates initialize to one.
+
+Residuals are produced for target tokens only, then aligned to DeepGen's actual
+`[target | source reference | padding]` sequence. Source and padding residuals
+are always zero. Token height and width are derived from the current latent and
+DeepGen patch size; 32x32 is not hard-coded.
+
+DeepGen has 24 blocks and six native residual groups. Its existing interval
+logic maps the groups to blocks 0-3, 4-7, 8-11, 12-15, 16-19, and 20-22. Block
+23 is `context_pre_only` and does not receive a residual. The official
+Transformer source is not modified.
+
+## Controlled pipeline
+
+`ControlledDeepGenPipeline` wraps a loaded DeepGen pipeline. It registers a
+temporary Transformer forward pre-hook, computes dynamic controls once per
+denoising step, and removes the hook in `finally`. Nested/concurrent calls and
+simultaneous external `block_controlnet_hidden_states` are rejected. The base
+pipeline always receives `control_scale=1.0`; branch strengths are applied only
+by `ControlStrengthController`.
 
 ```python
-adapter = UnifiedSMPLXAdapterV6.from_deepgen(transformer)
-bundle = adapter.condition_injector(
-    normal_a=normal,
-    pose_heatmap_a=pose_heatmaps,
-    part_onehot_a=part_onehot,
-    smplx_global_a=global_vector,
-    task_id=task_id,
-)
-
-state = adapter.reason_conditions(bundle)
-identity = AdapterIdentityCondition(source_person_latents, source_indices)
-residuals = adapter(
-    target_latents=target_latents,
+controlled = ControlledDeepGenPipeline(pipeline=pipe, adapter=adapter)
+result = controlled(
+    prompt=prompt,
+    image=image,
     condition_bundle=bundle,
     identity_condition=identity,
-    source_scene_latents=source_scene_latents,
-    cond_hidden_states=reference_latents,
-    encoder_hidden_states=text_tokens,
-    pooled_projections=pooled_text,
-    timestep=timestep,
+    source_scene_latents=scene_latent,
+    geometry_strength=1.0,
+    interaction_strength=0.8,
+    num_inference_steps=28,
 )
 ```
+
+The static `PreparedControlConditioning` may be supplied directly for reuse.
+Dynamic residuals are never cached across timesteps.
+
+## Freezing and gradients
+
+DeepGen Transformer, VAE, VLM, and connector parameters are frozen with
+`requires_grad=False`. Training code must still call the frozen Transformer
+without `torch.no_grad()` so loss gradients can pass through the added residuals
+to the Adapter. The controlled pipeline is an inference wrapper; training uses
+the Adapter and Transformer APIs directly.
+
+At initialization all twelve residual heads are exactly zero. Consequently,
+DeepGen with the Adapter must match the no-Adapter result within `1e-6`. This is
+an interface invariant, not evidence of pose-control quality before training.
 
 ## Verification
 
 ```bash
 cd /home/shangguanrz/project/pic-edit-main-v6
-
 /home/shangguanrz/miniconda3/envs/deepgen/bin/python -m pytest -q
 
 /home/shangguanrz/miniconda3/envs/deepgen/bin/python \
-  scripts/smoke_adapter_reasoner.py --mode single --image-size 512 --device cuda
+  scripts/smoke_deepgen_control_interface.py \
+  --mode single --image-size 512 --steps 2 --device cuda
+
 /home/shangguanrz/miniconda3/envs/deepgen/bin/python \
-  scripts/smoke_adapter_reasoner.py --mode dual --image-size 512 --device cuda
+  scripts/smoke_deepgen_control_interface.py \
+  --mode dual --image-size 512 --steps 2 --device cuda
+
 /home/shangguanrz/miniconda3/envs/deepgen/bin/python \
-  scripts/smoke_adapter_reasoner.py --mode mixed --image-size 512 --device cuda
+  scripts/smoke_deepgen_control_interface.py \
+  --mode mixed --image-size 512 --steps 2 --device cuda
 ```
-
-Then rerun the existing Native single, Native dual, and CHAMP+Depth dual
-DeepGen smokes from `scripts/smoke_adapter_v6.py`. Both smoke scripts report
-parameters by module without enforcing a parameter ceiling.
-
-## Design references
-
-No external source or weight is copied in V6.2. The design records these
-architectural references only:
-
-- [MultiAnimate](https://github.com/hyc001/MultiAnimate)
-- [T2I-Adapter](https://github.com/TencentARC/T2I-Adapter)
-- [Multi-HumanVid](https://github.com/zhenzhiwang/Multi-HumanVid)
-- [HumanInteraction](https://github.com/boycehbz/HumanInteraction)
-- [BUDDI](https://github.com/muelea/buddi)
-
-The CHAMP guidance source already vendored for the optional V6.1 Normal/Depth
-backend remains covered by `THIRD_PARTY_NOTICES.md`; V6.2 adds no new vendored
-third-party code.

@@ -159,10 +159,11 @@ class ControlledDeepGenPipeline:
             step_index += 1
             return args, kwargs
 
-        handle = self.pipeline.transformer.register_forward_pre_hook(
-            inject_control, with_kwargs=True
-        )
+        handle = None
         try:
+            handle = self.pipeline.transformer.register_forward_pre_hook(
+                inject_control, with_kwargs=True
+            )
             result = self.pipeline(
                 num_inference_steps=num_inference_steps,
                 block_controlnet_hidden_states=None,
@@ -176,7 +177,8 @@ class ControlledDeepGenPipeline:
                 pass
             return result
         finally:
-            handle.remove()
+            if handle is not None:
+                handle.remove()
             self._exit()
 
 

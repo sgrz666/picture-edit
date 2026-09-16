@@ -270,8 +270,15 @@ def test_contact_padding_mask_does_not_couple_batch_rows() -> None:
 def test_architecture_config_reports_parameters_without_a_size_gate() -> None:
     config_path = Path(__file__).parents[1] / "configs" / "adapter_v6_architecture.json"
     payload = json.loads(config_path.read_text(encoding="utf-8"))
+    assert payload["version"] == "6.3-dynamic-deepgen-interface-v1"
     assert payload["control_core"]["stages"] == 6
     assert payload["control_core"]["rank"] == 64
+    assert payload["control_core"]["branches"] == ["geometry", "interaction"]
+    assert payload["control_core"]["zero_residual_heads"] == 12
+    assert payload["control_strength"]["geometry_default"] == 1.0
+    assert payload["control_strength"]["interaction_default"] == 0.8
+    assert payload["inference_cache"]["static_conditioning"] is True
+    assert payload["inference_cache"]["dynamic_residuals"] is False
     assert payload["parameter_policy"]["limit"] is None
     assert payload["condition_injection"]["pose_channels"] == 25
     assert payload["condition_injection"]["part_channels"] == 14
@@ -294,6 +301,8 @@ def test_smoke_parameter_report_uses_reasoner_instead_of_removed_experts() -> No
     report = parameter_report(build_tiny())
     assert report["reasoner"] > 0
     assert report["reasoner_control_bridge"] > 0
+    assert report["dynamic_control_core"] > 0
+    assert report["control_strength"] == 12
     assert "single_expert" not in report
     assert "dual_expert" not in report
 
@@ -334,3 +343,43 @@ def test_pipeline_freeze_helper_covers_vae_vlm_and_connector() -> None:
         component = getattr(pipeline, name)
         assert not component.training
         assert all(not parameter.requires_grad for parameter in component.parameters())
+
+
+def test_frozen_consumer_preserves_gradients_to_reasoner_and_identity_path() -> None:
+    torch.manual_seed(91)
+    model = build_tiny().train()
+    bundle, identity = make_runtime(model, num_people=2)
+    prepared = model.prepare_conditioning(
+        bundle,
+        identity,
+        torch.randn(1, 16, 8, 8),
+        (8, 8),
+    )
+    with torch.no_grad():
+        model.control_core.geometry_zero_heads[0].weight.copy_(torch.eye(32))
+        model.control_core.geometry_zero_heads[0].bias.zero_()
+    output = model(
+        target_latents=torch.randn(1, 16, 8, 8),
+        prepared=prepared,
+        cond_hidden_states=None,
+        encoder_hidden_states=torch.randn(1, 5, 24),
+        pooled_projections=torch.randn(1, 20),
+        timestep=torch.tensor([500]),
+        denoise_progress=0.5,
+    )
+    frozen_consumer = torch.nn.Linear(32, 1, bias=False)
+    frozen_consumer.requires_grad_(False)
+    loss = frozen_consumer(
+        output.block_controlnet_hidden_states[0]
+    ).square().mean()
+    loss.backward()
+
+    assert all(parameter.grad is None for parameter in frozen_consumer.parameters())
+    assert any(
+        parameter.grad is not None and torch.count_nonzero(parameter.grad) > 0
+        for parameter in model.reasoner.parameters()
+    )
+    assert any(
+        parameter.grad is not None and torch.count_nonzero(parameter.grad) > 0
+        for parameter in model.appearance_token_encoder.parameters()
+    )
