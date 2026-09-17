@@ -1,0 +1,128 @@
+{
+  "status": "PASS",
+  "mode": "single",
+  "condition_backend": "native",
+  "use_depth": false,
+  "route_num_people": [
+    1
+  ],
+  "adapter_trainable_parameters": 227980664,
+  "parameters_by_module": {
+    "condition_injector": 7154762,
+    "reasoner": 64092930,
+    "reasoner_control_bridge": 4849792,
+    "appearance_and_binding": 3202592,
+    "dynamic_control_core": 148680576,
+    "control_strength": 12
+  },
+  "residual_shapes": [
+    [
+      1,
+      32,
+      1536
+    ],
+    [
+      1,
+      32,
+      1536
+    ],
+    [
+      1,
+      32,
+      1536
+    ],
+    [
+      1,
+      32,
+      1536
+    ],
+    [
+      1,
+      32,
+      1536
+    ],
+    [
+      1,
+      32,
+      1536
+    ]
+  ],
+  "control_diagnostics": {
+    "denoise_progress": 0.0,
+    "geometry_schedule_multiplier": 1.0,
+    "interaction_schedule_multiplier": 1.0,
+    "geometry_group_scales": [
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0
+    ],
+    "interaction_group_scales": [
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0
+    ],
+    "target_token_hw": [
+      4,
+      4
+    ],
+    "target_token_count": 16,
+    "full_token_count": 32,
+    "dtype": "torch.bfloat16",
+    "device": "cuda:0",
+    "active_block_mapping": [
+      [
+        0,
+        1,
+        2,
+        3
+      ],
+      [
+        4,
+        5,
+        6,
+        7
+      ],
+      [
+        8,
+        9,
+        10,
+        11
+      ],
+      [
+        12,
+        13,
+        14,
+        15
+      ],
+      [
+        16,
+        17,
+        18,
+        19
+      ],
+      [
+        20,
+        21,
+        22
+      ]
+    ],
+    "residual_rms": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ]
+  },
+  "max_zero_residual": 0.0,
+  "max_deepgen_equivalence_error": 0.0,
+  "backbone_frozen": true,
+  "training_started": false
+}

@@ -1,0 +1,93 @@
+{
+  "version": "6.3-dynamic-deepgen-interface-v1",
+  "scope": "architecture-and-forward-only-no-training",
+  "max_people": 2,
+  "person_axis_is_fixed": false,
+  "condition_injection": {
+    "input_resolution": 512,
+    "output_resolution_divisor": 8,
+    "normal_channels": 3,
+    "pose_channels": 25,
+    "part_channels": 14,
+    "global_parameter_dim": 26,
+    "relative_geometry_dim": 11,
+    "spatial_channels": 256,
+    "contact_spatial_channels": 128,
+    "token_dim": 256,
+    "global_tokens_per_person": 4,
+    "relative_tokens": 2,
+    "contact_tokens": 8,
+    "use_depth": false,
+    "normal_backend": "native",
+    "depth_backend": "native",
+    "use_full_pose_tokens": false,
+    "shared_across_people": true,
+    "role_binding": "film",
+    "missing_human_mask_policy": "derive-from-part-onehot"
+  },
+  "tokens": {
+    "hidden_dim": 1536,
+    "geometry_per_person": 4,
+    "appearance_per_person": 8,
+    "relative": 2,
+    "contact": 8,
+    "task": 1,
+    "tokenizer_is_modified": false
+  },
+  "reasoning": {
+    "condition_dim": 256,
+    "hidden_dim": 512,
+    "downsample_factor": 2,
+    "global_attention_heads": 8,
+    "global_attention_layers": 1,
+    "cross_person_heads": 8,
+    "cross_person_layers": 2,
+    "contact_attention_heads": 8,
+    "contact_attention_layers": 1,
+    "ffn_ratio": 4,
+    "dropout": 0.0,
+    "contact_gate_init": -4.0,
+    "outputs": ["geometry-low", "geometry-high", "interaction-low", "interaction-high"],
+    "mixed_batch_routing": "gather-dual-scatter",
+    "appearance_is_separate": true
+  },
+  "dual_person_reasoner": {
+    "cross_attention_resolution": 32,
+    "cross_attention_dim": 512,
+    "bidirectional": true,
+    "depth_aware_scene_fusion": false,
+    "depth_order_fusion_stage": "deferred-v2",
+    "directional_contact_maps": true,
+    "contact_pair_tokens": true
+  },
+  "control_core": {
+    "shared_full_width_blocks": 1,
+    "branches": ["geometry", "interaction"],
+    "stages": 6,
+    "rank": 64,
+    "cross_norm": true,
+    "zero_residual_heads": 12,
+    "dynamic_per_timestep": true,
+    "interaction_dual_only": true
+  },
+  "control_strength": {
+    "geometry_default": 1.0,
+    "interaction_default": 0.8,
+    "curves": ["constant", "linear", "cosine"],
+    "positive_group_gates": 6
+  },
+  "inference_cache": {
+    "static_conditioning": true,
+    "dynamic_residuals": false
+  },
+  "deepgen_injection": {
+    "transformer_layers": 24,
+    "block_ranges": [[0, 3], [4, 7], [8, 11], [12, 15], [16, 19], [20, 22]],
+    "last_block_injected": false,
+    "token_layout": ["target-residual", "source-zeros", "padding-zeros"]
+  },
+  "parameter_policy": {
+    "limit": null,
+    "report_trainable_count": true
+  }
+}
