@@ -122,7 +122,7 @@ an interface invariant, not evidence of pose-control quality before training.
 ## Verification
 
 ```bash
-cd /home/shangguanrz/project/pic-edit-main-v6
+cd /home/shangguanrz/project/pic-edit
 /home/shangguanrz/miniconda3/envs/deepgen/bin/python -m pytest -q
 
 /home/shangguanrz/miniconda3/envs/deepgen/bin/python \
