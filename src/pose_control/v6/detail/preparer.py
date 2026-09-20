@@ -175,7 +175,7 @@ class FaceHandDetailPreparer(nn.Module):
                 source_latents, condition, latent_masks
             )
         detail_valid = condition.region_valid.flatten(1).any(dim=1)
-        detail_condition = torch.cat((geometry, source_canvas), dim=1)
+        detail_condition = torch.cat((source_canvas, geometry), dim=1)
         detail_condition = detail_condition * detail_valid[:, None, None, None].to(
             detail_condition.dtype
         )

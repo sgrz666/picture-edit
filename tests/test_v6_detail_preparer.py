@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from dataclasses import fields
+
 import torch
 
 from src.pose_control.v6.detail import (
@@ -58,7 +60,12 @@ def test_preparer_emits_exact_shapes_masks_and_zero_optional_canvas() -> None:
     assert prepared.region_masks.shape == (2, 2, 3, 3, 4)
     assert prepared.region_valid.shape == (2, 2, 3)
     assert prepared.detail_valid.tolist() == [True, True]
-    assert torch.count_nonzero(prepared.detail_condition[:, 128:]) == 0
+    assert torch.count_nonzero(prepared.detail_condition[:, :16]) == 0
+    assert torch.count_nonzero(prepared.detail_condition[:, 16:]) > 0
+    assert all(
+        getattr(prepared, item.name).device == condition.device
+        for item in fields(prepared)
+    )
     assert prepared.region_masks.min() >= 0
     assert prepared.region_masks.max() <= 1
 
@@ -84,7 +91,7 @@ def test_source_canvas_is_gated_and_overlap_does_not_additively_amplify() -> Non
     condition, references = make_inputs()
     source_latents = torch.ones(2, 16, 5, 7)
     prepared = build_preparer()(condition, references, (6, 5), (3, 4), source_latents)
-    canvas = prepared.detail_condition[:, 128:]
+    canvas = prepared.detail_condition[:, :16]
     assert torch.count_nonzero(canvas) > 0
     assert canvas.min() >= 0
     assert canvas.max() <= 1.0 + 1e-6
@@ -98,6 +105,13 @@ def test_prepared_to_index_select_and_cfg_expansion_preserve_order() -> None:
     assert converted.detail_tokens.dtype == torch.float64
     assert converted.detail_token_mask.dtype == torch.bool
     assert converted.region_valid.dtype == torch.bool
+    moved = converted.to(device=torch.device("cpu"))
+    assert all(
+        getattr(moved, item.name).device.type == "cpu" for item in fields(moved)
+    )
+    assert moved.detail_token_mask.dtype == torch.bool
+    assert moved.region_valid.dtype == torch.bool
+    assert moved.detail_valid.dtype == torch.bool
     selected = converted.index_select(torch.tensor([1, 0]))
     torch.testing.assert_close(selected.detail_condition[0], converted.detail_condition[1])
 

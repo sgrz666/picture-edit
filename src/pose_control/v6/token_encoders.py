@@ -60,7 +60,7 @@ class PersonTokenBinder(nn.Module):
         if person_valid.device != source_indices.device:
             raise ValueError("person_valid and source_indices must be on the same device")
         valid_indices = source_indices[person_valid]
-        maximum = self.source_embedding.num_embeddings - 1
+        maximum = min(self.source_embedding.num_embeddings - 1, 15)
         if valid_indices.numel() and torch.any(
             (valid_indices < 0) | (valid_indices > maximum)
         ):

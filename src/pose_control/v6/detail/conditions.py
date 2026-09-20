@@ -127,7 +127,7 @@ class FaceHandDetailCondition:
 
 @dataclass
 class DetailReferenceBatch:
-    """Up to three local appearance references per person and detail region."""
+    """One to three local appearance references per person and detail region."""
 
     images: torch.Tensor
     reference_valid: torch.Tensor
@@ -151,7 +151,7 @@ class DetailReferenceBatch:
         if (people, regions, channels, height, width) != (2, 3, 3, 224, 224):
             raise ValueError("images must have shape [B,2,3,R,3,224,224]")
         if not 1 <= reference_count <= 3:
-            raise ValueError("detail references must contain at most 3 images and at least 1")
+            raise ValueError("detail reference count must be between 1 and 3")
         expected = (batch_size, 2, 3, reference_count)
         if tuple(self.reference_valid.shape) != expected or self.reference_valid.dtype != torch.bool:
             raise ValueError(f"reference_valid must have shape {expected} and dtype bool")

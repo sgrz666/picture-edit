@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from dataclasses import replace
+from dataclasses import fields, replace
 
 import pytest
 import torch
@@ -54,6 +54,10 @@ def test_detail_condition_contract_to_and_index_select_preserve_discrete_dtypes(
     assert converted.smplx_detail.dtype == torch.float64
     assert converted.region_valid.dtype == torch.bool
     assert converted.source_indices.dtype == torch.long
+    moved = converted.to(device=torch.device("cpu"))
+    assert all(getattr(moved, item.name).device.type == "cpu" for item in fields(moved))
+    assert moved.region_valid.dtype == torch.bool
+    assert moved.source_indices.dtype == torch.long
 
     selected = converted.index_select(torch.tensor([1, 0, 1]))
     assert selected.face_keypoints.shape == (3, 2, 68, 3)
@@ -65,6 +69,9 @@ def test_reference_contract_to_and_index_select() -> None:
     converted = references.to(dtype=torch.float64)
     assert converted.images.dtype == torch.float64
     assert converted.reference_valid.dtype == torch.bool
+    moved = converted.to(device=torch.device("cpu"))
+    assert all(getattr(moved, item.name).device.type == "cpu" for item in fields(moved))
+    assert moved.reference_valid.dtype == torch.bool
     selected = converted.index_select(torch.tensor([1, 0]))
     torch.testing.assert_close(selected.images[0], converted.images[1])
 
@@ -96,8 +103,10 @@ def test_detail_condition_rejects_invalid_inputs(changed, message: str) -> None:
 
 
 def test_reference_contract_rejects_invalid_count_shape_and_mask_dtype() -> None:
-    with pytest.raises(ValueError, match="at most 3"):
+    with pytest.raises(ValueError, match="between 1 and 3"):
         make_references(reference_count=4).validate()
+    with pytest.raises(ValueError, match="between 1 and 3"):
+        make_references(reference_count=0).validate()
     references = make_references()
     with pytest.raises(ValueError, match="reference_valid"):
         replace(references, reference_valid=references.reference_valid.float()).validate()
@@ -126,6 +135,11 @@ def test_person_binding_validates_source_range_and_uniqueness_without_state_key_
     assert binding.shape == (2, 2, 4)
     with pytest.raises(ValueError, match=r"\[0, 15\]"):
         binder.binding_for(torch.tensor([[2, 16]]), torch.ones(1, 2, dtype=torch.bool))
+    oversized_binder = PersonTokenBinder(token_dim=4, max_sources=32)
+    with pytest.raises(ValueError, match=r"\[0, 15\]"):
+        oversized_binder.binding_for(
+            torch.tensor([[2, 16]]), torch.ones(1, 2, dtype=torch.bool)
+        )
     with pytest.raises(ValueError, match="unique"):
         binder.binding_for(torch.tensor([[3, 3]]), torch.ones(1, 2, dtype=torch.bool))
 
