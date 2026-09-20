@@ -160,6 +160,13 @@ def configure_scheme_a_parameters(adapter: UnifiedSMPLXAdapterV6) -> None:
     # 5. Strength Controller: freeze interaction log group scales
     adapter.control_interface.strength_controller.interaction_log_group_scale.requires_grad_(False)
 
+    # V6.3 Scheme A remains a legacy geometry-only recipe. V6.4 detail tuning
+    # uses freeze_for_detail_training instead and is intentionally not mixed in.
+    if hasattr(adapter, "detail_preparer"):
+        adapter.detail_preparer.requires_grad_(False)
+        adapter.control_core.detail_branch.requires_grad_(False)
+        adapter.control_interface.strength_controller.detail_log_group_scale.requires_grad_(False)
+
 
 def build_scheme_a_optimizer(
     adapter: UnifiedSMPLXAdapterV6,

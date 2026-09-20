@@ -75,6 +75,7 @@ class DeepGenControlInterface(nn.Module):
         context_pre_only_blocks: tuple[int, ...] | None = None,
         geometry_schedule: StrengthScheduleConfig | None = None,
         interaction_schedule: StrengthScheduleConfig | None = None,
+        detail_schedule: StrengthScheduleConfig | None = None,
     ) -> None:
         super().__init__()
         if num_transformer_layers <= 0 or num_transformer_layers % control_core.num_stages:
@@ -90,6 +91,7 @@ class DeepGenControlInterface(nn.Module):
             num_control_groups=control_core.num_stages,
             geometry_schedule=geometry_schedule,
             interaction_schedule=interaction_schedule,
+            detail_schedule=detail_schedule,
         )
 
     @property
@@ -139,6 +141,20 @@ class DeepGenControlInterface(nn.Module):
             for _ in range(self.control_core.num_stages)
         )
         interaction = tuple(torch.zeros_like(value) for value in geometry)
+        detail = (
+            None
+            if prepared.detail is None
+            else tuple(torch.zeros_like(value) for value in geometry)
+        )
+
+        detail_condition = None
+        if prepared.detail is not None:
+            detail_condition = F.interpolate(
+                prepared.detail.detail_condition,
+                size=target_size,
+                mode="bilinear",
+                align_corners=False,
+            )
 
         for token_pattern in torch.unique(prepared.adapter_token_mask, dim=0):
             indices = (
@@ -162,6 +178,10 @@ class DeepGenControlInterface(nn.Module):
                 pooled_projections=pooled_projections.index_select(0, indices),
                 timestep=timestep.index_select(0, indices),
                 joint_attention_kwargs=joint_attention_kwargs,
+                detail_condition=None if detail_condition is None else detail_condition.index_select(0, indices),
+                detail_tokens=None if prepared.detail is None else prepared.detail.detail_tokens.index_select(0, indices),
+                detail_token_mask=None if prepared.detail is None else prepared.detail.detail_token_mask.index_select(0, indices),
+                detail_valid=None if prepared.detail is None else prepared.detail.detail_valid.index_select(0, indices),
             )
             geometry = tuple(
                 current.index_copy(0, indices, update)
@@ -171,10 +191,17 @@ class DeepGenControlInterface(nn.Module):
                 current.index_copy(0, indices, update)
                 for current, update in zip(interaction, group.interaction)
             )
+            if detail is not None:
+                assert group.detail is not None
+                detail = tuple(
+                    current.index_copy(0, indices, update)
+                    for current, update in zip(detail, group.detail)
+                )
         return BranchControlResiduals(
             geometry=geometry,
             interaction=interaction,
             target_token_hw=target_hw,
+            detail=detail,
         ).validate()
 
     def forward(
@@ -186,9 +213,12 @@ class DeepGenControlInterface(nn.Module):
         encoder_hidden_states: torch.Tensor,
         pooled_projections: torch.Tensor,
         timestep: torch.Tensor,
-        denoise_progress: float,
-        geometry_strength: float = 1.0,
-        interaction_strength: float = 0.8,
+        denoise_progress: float | torch.Tensor,
+        geometry_strength: float | torch.Tensor = 1.0,
+        interaction_strength: float | torch.Tensor = 0.8,
+        detail_strength: float | torch.Tensor = 1.0,
+        face_strength: float | torch.Tensor = 1.0,
+        hand_strength: float | torch.Tensor = 1.0,
         joint_attention_kwargs: Optional[dict] = None,
     ) -> DeepGenControlOutput:
         raw = self.build_raw_residuals(
@@ -199,11 +229,29 @@ class DeepGenControlInterface(nn.Module):
             timestep=timestep,
             joint_attention_kwargs=joint_attention_kwargs,
         )
+        detail_region_masks = None
+        if prepared.detail is not None:
+            expanded_detail = prepared.validate().expand_to_batch(target_latents.shape[0]).detail
+            assert expanded_detail is not None
+            masks = expanded_detail.region_masks.flatten(0, 2)[:, None]
+            masks = F.interpolate(
+                masks,
+                size=raw.target_token_hw,
+                mode="bilinear",
+                align_corners=False,
+            )
+            detail_region_masks = masks[:, 0].reshape(
+                target_latents.shape[0], 2, 3, *raw.target_token_hw
+            )
         scaled, diagnostics = self.strength_controller(
             raw,
             denoise_progress=denoise_progress,
             geometry_strength=geometry_strength,
             interaction_strength=interaction_strength,
+            detail_strength=detail_strength,
+            face_strength=face_strength,
+            hand_strength=hand_strength,
+            detail_region_masks=detail_region_masks,
         )
         aligned = align_target_residuals(
             scaled,

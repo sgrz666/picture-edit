@@ -302,7 +302,7 @@ def test_smoke_parameter_report_uses_reasoner_instead_of_removed_experts() -> No
     assert report["reasoner"] > 0
     assert report["reasoner_control_bridge"] > 0
     assert report["dynamic_control_core"] > 0
-    assert report["control_strength"] == 12
+    assert report["control_strength"] == 18
     assert "single_expert" not in report
     assert "dual_expert" not in report
 

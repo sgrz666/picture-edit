@@ -11,6 +11,11 @@ from .condition_bridge import ReasonerControlBridge
 from .condition_injector import SMPLXConditionInjector
 from .conditions import AdapterIdentityCondition, ConditionBundle
 from .control_core import SharedRecurrentControlCore
+from .detail import (
+    DetailReferenceBatch,
+    FaceHandDetailCondition,
+    FaceHandDetailPreparer,
+)
 from .interface import (
     DeepGenControlInterface,
     DeepGenControlOutput,
@@ -41,6 +46,7 @@ class UnifiedSMPLXAdapterV6(nn.Module):
         context_pre_only_blocks: tuple[int, ...] | None = None,
         geometry_schedule: StrengthScheduleConfig | None = None,
         interaction_schedule: StrengthScheduleConfig | None = None,
+        detail_schedule: StrengthScheduleConfig | None = None,
     ) -> None:
         super().__init__()
         token_dim = control_core.hidden_dim
@@ -67,12 +73,14 @@ class UnifiedSMPLXAdapterV6(nn.Module):
         )
         self.appearance_token_encoder = AppearanceTokenEncoder(token_dim=token_dim)
         self.person_token_binder = PersonTokenBinder(token_dim=token_dim)
+        self.detail_preparer = FaceHandDetailPreparer(token_dim=token_dim)
         self.control_interface = DeepGenControlInterface(
             control_core,
             num_transformer_layers=num_transformer_layers,
             context_pre_only_blocks=context_pre_only_blocks,
             geometry_schedule=geometry_schedule,
             interaction_schedule=interaction_schedule,
+            detail_schedule=detail_schedule,
         )
         self.geometry_channels = geometry_channels
         self.reasoning_config = reasoning_config
@@ -250,6 +258,8 @@ class UnifiedSMPLXAdapterV6(nn.Module):
         identity_condition: AdapterIdentityCondition,
         source_scene_latents: torch.Tensor,
         target_latent_hw: tuple[int, int],
+        detail_condition: FaceHandDetailCondition | None = None,
+        detail_references: DetailReferenceBatch | None = None,
     ) -> PreparedControlConditioning:
         state.validate()
         batch_size = state.batch_size
@@ -273,6 +283,24 @@ class UnifiedSMPLXAdapterV6(nn.Module):
         state = state.to(device=device, dtype=dtype)
         identity_condition = identity_condition.to(device=device, dtype=dtype)
         source_scene_latents = source_scene_latents.to(device=device, dtype=dtype)
+        if detail_condition is not None:
+            detail_condition = detail_condition.to(device=device, dtype=dtype)
+            if detail_condition.batch_size != batch_size:
+                raise ValueError("detail condition batch does not match control state")
+            if detail_references is None:
+                detail_references = DetailReferenceBatch(
+                    images=torch.zeros(
+                        batch_size, 2, 3, 1, 3, 224, 224,
+                        device=device, dtype=dtype,
+                    ),
+                    reference_valid=torch.zeros(
+                        batch_size, 2, 3, 1, device=device, dtype=torch.bool
+                    ),
+                )
+            else:
+                detail_references = detail_references.to(device=device, dtype=dtype)
+        elif detail_references is not None:
+            raise ValueError("detail references require a detail condition")
         bridged = self.condition_bridge(state)
         geometry_scene = F.interpolate(
             bridged.geometry_scene,
@@ -308,18 +336,38 @@ class UnifiedSMPLXAdapterV6(nn.Module):
         appearance_tokens = self.appearance_token_encoder(
             identity_condition.source_person_latents, state.person_valid
         )
+        person_binding = self.person_token_binder.binding_for(
+            identity_condition.effective_source_indices(), state.person_valid
+        )
         person_tokens, person_token_mask = self.person_token_binder(
             geometry_tokens,
             appearance_tokens,
             state.person_valid,
             identity_condition.effective_source_indices(),
             geometry_token_mask=pooled_mask,
+            person_binding=person_binding,
         )
         adapter_tokens = person_tokens.flatten(1, 2)
         adapter_token_mask = person_token_mask.flatten(1, 2)
         adapter_tokens = adapter_tokens * adapter_token_mask[..., None].to(
             adapter_tokens.dtype
         )
+        prepared_detail = None
+        if detail_condition is not None:
+            if target_latent_hw[0] % self.control_core.patch_size or target_latent_hw[1] % self.control_core.patch_size:
+                raise ValueError("target latent size must be divisible by control patch_size")
+            assert detail_references is not None
+            prepared_detail = self.detail_preparer(
+                detail_condition,
+                detail_references,
+                target_latent_hw,
+                (
+                    target_latent_hw[0] // self.control_core.patch_size,
+                    target_latent_hw[1] // self.control_core.patch_size,
+                ),
+                identity_condition.source_person_latents,
+                person_binding=person_binding,
+            )
         return PreparedControlConditioning(
             geometry_condition=geometry_condition,
             interaction_condition=interaction_condition,
@@ -328,6 +376,7 @@ class UnifiedSMPLXAdapterV6(nn.Module):
             person_count=state.person_count,
             interaction_valid=state.interaction_valid,
             control_state=state,
+            detail=prepared_detail,
         ).validate()
 
     def prepare_conditioning(
@@ -336,6 +385,8 @@ class UnifiedSMPLXAdapterV6(nn.Module):
         identity_condition: AdapterIdentityCondition,
         source_scene_latents: torch.Tensor,
         target_latent_hw: tuple[int, int],
+        detail_condition: FaceHandDetailCondition | None = None,
+        detail_references: DetailReferenceBatch | None = None,
     ) -> PreparedControlConditioning:
         condition_bundle.validate()
         identity_condition.validate(condition_bundle)
@@ -344,6 +395,8 @@ class UnifiedSMPLXAdapterV6(nn.Module):
             identity_condition=identity_condition,
             source_scene_latents=source_scene_latents,
             target_latent_hw=target_latent_hw,
+            detail_condition=detail_condition,
+            detail_references=detail_references,
         )
 
     def forward(
@@ -355,9 +408,12 @@ class UnifiedSMPLXAdapterV6(nn.Module):
         encoder_hidden_states: torch.Tensor,
         pooled_projections: torch.Tensor,
         timestep: torch.Tensor,
-        denoise_progress: float,
-        geometry_strength: float = 1.0,
-        interaction_strength: float = 0.8,
+        denoise_progress: float | torch.Tensor,
+        geometry_strength: float | torch.Tensor = 1.0,
+        interaction_strength: float | torch.Tensor = 0.8,
+        detail_strength: float | torch.Tensor = 1.0,
+        face_strength: float | torch.Tensor = 1.0,
+        hand_strength: float | torch.Tensor = 1.0,
         joint_attention_kwargs: Optional[dict] = None,
     ) -> DeepGenControlOutput:
         parameter = next(self.parameters())
@@ -377,6 +433,9 @@ class UnifiedSMPLXAdapterV6(nn.Module):
             denoise_progress=denoise_progress,
             geometry_strength=geometry_strength,
             interaction_strength=interaction_strength,
+            detail_strength=detail_strength,
+            face_strength=face_strength,
+            hand_strength=hand_strength,
             joint_attention_kwargs=joint_attention_kwargs,
         )
 

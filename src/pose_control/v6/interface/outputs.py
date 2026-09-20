@@ -7,6 +7,7 @@ import torch
 
 from ..conditions import _to_preserving_discrete_dtype
 from ..control_core import BranchControlResiduals
+from ..detail import PreparedFaceHandDetailConditioning
 from ..reasoning import InternalControlState
 
 
@@ -21,6 +22,7 @@ class PreparedControlConditioning:
     person_count: torch.Tensor
     interaction_valid: torch.Tensor
     control_state: InternalControlState
+    detail: PreparedFaceHandDetailConditioning | None = None
 
     @property
     def batch_size(self) -> int:
@@ -50,6 +52,10 @@ class PreparedControlConditioning:
             raise ValueError("interaction_valid must identify exactly the dual-person rows")
         if self.control_state.batch_size != batch_size:
             raise ValueError("control_state batch does not match prepared conditions")
+        if self.detail is not None:
+            self.detail.validate()
+            if self.detail.batch_size != batch_size:
+                raise ValueError("detail batch does not match prepared conditions")
         invalid = ~self.interaction_valid
         if invalid.any() and torch.count_nonzero(self.interaction_condition[invalid]) != 0:
             raise ValueError("single-person interaction_condition must be exactly zero")
@@ -68,6 +74,7 @@ class PreparedControlConditioning:
             person_count=self.person_count.index_select(0, indices),
             interaction_valid=self.interaction_valid.index_select(0, indices),
             control_state=self.control_state.index_select(indices),
+            detail=None if self.detail is None else self.detail.index_select(indices),
         )
 
     def expand_to_batch(self, batch_size: int) -> "PreparedControlConditioning":
@@ -94,6 +101,7 @@ class PreparedControlConditioning:
                 self.interaction_valid, *args, **kwargs
             ),
             control_state=self.control_state.to(*args, **kwargs),
+            detail=None if self.detail is None else self.detail.to(*args, **kwargs),
         )
 
 

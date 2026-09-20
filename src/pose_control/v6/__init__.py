@@ -9,6 +9,14 @@ from .conditions import (
     TaskType,
 )
 from .deepgen_adapter import UnifiedSMPLXAdapterV6
+from .checkpoint import (
+    DETAIL_SCHEMA_VERSION,
+    PREPROCESSING_SCHEMA_VERSION,
+    build_v64_checkpoint,
+    freeze_for_detail_training,
+    load_v63_checkpoint,
+    load_v64_checkpoint,
+)
 from .interface import (
     BranchControlResiduals,
     DeepGenControlInterface,
@@ -34,4 +42,10 @@ __all__ = [
     "StrengthScheduleConfig",
     "UnifiedSMPLXAdapterV6",
     "InternalControlState",
+    "DETAIL_SCHEMA_VERSION",
+    "PREPROCESSING_SCHEMA_VERSION",
+    "build_v64_checkpoint",
+    "freeze_for_detail_training",
+    "load_v63_checkpoint",
+    "load_v64_checkpoint",
 ]

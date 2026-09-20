@@ -65,11 +65,15 @@ class FaceHandDetailPreparer(nn.Module):
         source_latents: torch.Tensor,
         condition: FaceHandDetailCondition,
     ) -> None:
-        if (
-            source_latents.ndim != 4
-            or source_latents.shape[:2] != (condition.batch_size, 16)
-        ):
-            raise ValueError("source_latents must have shape [B,16,H,W]")
+        valid_shape = (
+            source_latents.ndim == 4
+            and source_latents.shape[:2] == (condition.batch_size, 16)
+        ) or (
+            source_latents.ndim == 5
+            and source_latents.shape[:3] == (condition.batch_size, 2, 16)
+        )
+        if not valid_shape:
+            raise ValueError("source_latents must have shape [B,16,H,W] or [B,2,16,H,W]")
         if not source_latents.is_floating_point():
             raise ValueError("source_latents must use a floating dtype")
         if source_latents.device != condition.device:
@@ -108,8 +112,13 @@ class FaceHandDetailPreparer(nn.Module):
                     source[:, 3] - source[:, 1]
                 )[:, None, None]
                 grid = torch.stack((source_x * 2 - 1, source_y * 2 - 1), dim=-1)
+                person_source = (
+                    source_latents
+                    if source_latents.ndim == 4
+                    else source_latents[:, person]
+                )
                 warped = F.grid_sample(
-                    source_latents,
+                    person_source,
                     grid,
                     mode="bilinear",
                     padding_mode="zeros",

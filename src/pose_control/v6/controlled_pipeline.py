@@ -7,6 +7,7 @@ import torch
 
 from .conditions import AdapterIdentityCondition, ConditionBundle
 from .deepgen_adapter import UnifiedSMPLXAdapterV6
+from .detail import DetailReferenceBatch, FaceHandDetailCondition
 from .interface import PreparedControlConditioning
 
 
@@ -54,6 +55,8 @@ class ControlledDeepGenPipeline:
         source_scene_latents: torch.Tensor,
         height: int,
         width: int,
+        detail_condition: FaceHandDetailCondition | None = None,
+        detail_references: DetailReferenceBatch | None = None,
     ) -> PreparedControlConditioning:
         scale = self._vae_scale_factor()
         if height % scale or width % scale:
@@ -63,6 +66,8 @@ class ControlledDeepGenPipeline:
             identity_condition,
             source_scene_latents,
             (height // scale, width // scale),
+            detail_condition=detail_condition,
+            detail_references=detail_references,
         )
 
     def __call__(
@@ -74,6 +79,11 @@ class ControlledDeepGenPipeline:
         prepared_control: PreparedControlConditioning | None = None,
         geometry_strength: float = 1.0,
         interaction_strength: float = 0.8,
+        detail_strength: float = 1.0,
+        face_strength: float = 1.0,
+        hand_strength: float = 1.0,
+        detail_condition: FaceHandDetailCondition | None = None,
+        detail_references: DetailReferenceBatch | None = None,
         cache_adapter_outputs: bool = True,
         num_inference_steps: int = 28,
         **pipeline_kwargs,
@@ -101,6 +111,8 @@ class ControlledDeepGenPipeline:
                     source_scene_latents=source_scene_latents,
                     height=height,
                     width=width,
+                    detail_condition=detail_condition,
+                    detail_references=detail_references,
                 )
         else:
             prepared_control.validate()
@@ -121,6 +133,8 @@ class ControlledDeepGenPipeline:
                 source_scene_latents=source_scene_latents,
                 height=height,
                 width=width,
+                detail_condition=detail_condition,
+                detail_references=detail_references,
             )
 
         def inject_control(module, args, kwargs):
@@ -150,6 +164,9 @@ class ControlledDeepGenPipeline:
                 denoise_progress=progress,
                 geometry_strength=geometry_strength,
                 interaction_strength=interaction_strength,
+                detail_strength=detail_strength,
+                face_strength=face_strength,
+                hand_strength=hand_strength,
                 joint_attention_kwargs=kwargs.get("joint_attention_kwargs"),
             )
             kwargs["block_controlnet_hidden_states"] = (

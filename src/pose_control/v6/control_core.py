@@ -17,6 +17,7 @@ class BranchControlResiduals:
     geometry: tuple[torch.Tensor, ...]
     interaction: tuple[torch.Tensor, ...]
     target_token_hw: tuple[int, int]
+    detail: tuple[torch.Tensor, ...] | None = None
 
     @property
     def target_token_count(self) -> int:
@@ -33,13 +34,15 @@ class BranchControlResiduals:
     def validate(self) -> "BranchControlResiduals":
         if len(self.geometry) != 6 or len(self.interaction) != 6:
             raise ValueError("geometry and interaction must each contain six residuals")
+        if self.detail is not None and len(self.detail) != 6:
+            raise ValueError("detail must contain six residuals when provided")
         if len(self.target_token_hw) != 2 or min(self.target_token_hw) <= 0:
             raise ValueError("target_token_hw must contain two positive dimensions")
         expected = None
-        for branch_name, branch in (
-            ("geometry", self.geometry),
-            ("interaction", self.interaction),
-        ):
+        branches = [("geometry", self.geometry), ("interaction", self.interaction)]
+        if self.detail is not None:
+            branches.append(("detail", self.detail))
+        for branch_name, branch in branches:
             for index, residual in enumerate(branch):
                 if residual.ndim != 3:
                     raise ValueError(
@@ -182,6 +185,7 @@ class SharedRecurrentControlCore(nn.Module):
         pos_embed: nn.Module,
         geometry_condition_embed: nn.Module,
         interaction_condition_embed: nn.Module,
+        detail_condition_embed: nn.Module | None = None,
         time_text_embed: nn.Module,
         context_embedder: nn.Module,
         shared_block: nn.Module,
@@ -214,6 +218,16 @@ class SharedRecurrentControlCore(nn.Module):
             rank=rank,
             first_zero_head=first_interaction_zero_head,
         )
+        self.detail_branch = _RecurrentControlBranch(
+            condition_embed=(
+                copy.deepcopy(geometry_condition_embed)
+                if detail_condition_embed is None
+                else detail_condition_embed
+            ),
+            hidden_dim=hidden_dim,
+            num_stages=num_stages,
+            rank=rank,
+        )
 
     @property
     def geometry_zero_heads(self) -> nn.ModuleList:
@@ -222,6 +236,10 @@ class SharedRecurrentControlCore(nn.Module):
     @property
     def interaction_zero_heads(self) -> nn.ModuleList:
         return self.interaction_branch.zero_heads
+
+    @property
+    def detail_zero_heads(self) -> nn.ModuleList:
+        return self.detail_branch.zero_heads
 
     @classmethod
     def build_tiny(
@@ -243,6 +261,7 @@ class SharedRecurrentControlCore(nn.Module):
             interaction_condition_embed=_TinyPatchEmbed(
                 condition_channels, hidden_dim, patch_size
             ),
+            detail_condition_embed=_TinyPatchEmbed(144, hidden_dim, patch_size),
             time_text_embed=_TinyTimeTextEmbed(pooled_input_dim, hidden_dim),
             context_embedder=nn.Linear(context_input_dim, hidden_dim),
             shared_block=_TinyJointBlock(hidden_dim),
@@ -286,10 +305,22 @@ class SharedRecurrentControlCore(nn.Module):
             ),
         )
         inner_dim = config.num_attention_heads * config.attention_head_dim
+        detail_condition_embed = copy.deepcopy(base.pos_embed_input)
+        detail_projection = detail_condition_embed.proj
+        if detail_projection.in_channels != 144:
+            detail_condition_embed.proj = nn.Conv2d(
+                144,
+                detail_projection.out_channels,
+                kernel_size=detail_projection.kernel_size,
+                stride=detail_projection.stride,
+                padding=detail_projection.padding,
+                bias=detail_projection.bias is not None,
+            )
         return cls(
             pos_embed=base.pos_embed,
             geometry_condition_embed=base.pos_embed_input,
             interaction_condition_embed=copy.deepcopy(base.pos_embed_input),
+            detail_condition_embed=detail_condition_embed,
             time_text_embed=base.time_text_embed,
             context_embedder=base.context_embedder,
             shared_block=base.transformer_blocks[0],
@@ -373,6 +404,10 @@ class SharedRecurrentControlCore(nn.Module):
         pooled_projections: torch.Tensor,
         timestep: torch.Tensor,
         joint_attention_kwargs: Optional[dict] = None,
+        detail_condition: torch.Tensor | None = None,
+        detail_tokens: torch.Tensor | None = None,
+        detail_token_mask: torch.Tensor | None = None,
+        detail_valid: torch.Tensor | None = None,
     ) -> BranchControlResiduals:
         if target_latents.shape[-2] % self.patch_size or target_latents.shape[-1] % self.patch_size:
             raise ValueError("target latent size must be divisible by patch_size")
@@ -381,9 +416,9 @@ class SharedRecurrentControlCore(nn.Module):
             raise ValueError("interaction_valid must have shape [B] and dtype bool")
         target_hidden = self.pos_embed(target_latents)
         temb = self.time_text_embed(timestep, pooled_projections)
-        context = self.context_embedder(encoder_hidden_states)
+        text_context = self.context_embedder(encoder_hidden_states)
         adapter_tokens = adapter_tokens * adapter_token_mask[..., None].to(adapter_tokens.dtype)
-        context = torch.cat((context, adapter_tokens), dim=1)
+        context = torch.cat((text_context, adapter_tokens), dim=1)
         geometry = self._run_branch(
             branch=self.geometry_branch,
             target_hidden=target_hidden,
@@ -409,6 +444,41 @@ class SharedRecurrentControlCore(nn.Module):
                 current.index_copy(0, dual_indices, update)
                 for current, update in zip(interaction, dual)
             )
+        detail = None
+        provided = (detail_condition, detail_tokens, detail_token_mask, detail_valid)
+        if any(value is not None for value in provided):
+            if any(value is None for value in provided):
+                raise ValueError("all detail branch inputs must be provided together")
+            assert detail_condition is not None
+            assert detail_tokens is not None
+            assert detail_token_mask is not None
+            assert detail_valid is not None
+            if detail_valid.shape != (batch_size,) or detail_valid.dtype != torch.bool:
+                raise ValueError("detail_valid must have shape [B] and dtype bool")
+            if (
+                detail_token_mask.shape != detail_tokens.shape[:2]
+                or detail_token_mask.dtype != torch.bool
+            ):
+                raise ValueError("detail_token_mask must match detail_tokens and use bool")
+            detail = tuple(torch.zeros_like(item) for item in geometry)
+            detail_indices = detail_valid.nonzero(as_tuple=False).flatten()
+            if detail_indices.numel():
+                masked_tokens = detail_tokens * detail_token_mask[..., None].to(
+                    detail_tokens.dtype
+                )
+                detail_context = torch.cat((text_context, masked_tokens), dim=1)
+                valid_detail = self._run_branch(
+                    branch=self.detail_branch,
+                    target_hidden=target_hidden.index_select(0, detail_indices),
+                    control_condition=detail_condition.index_select(0, detail_indices),
+                    context=detail_context.index_select(0, detail_indices),
+                    temb=temb.index_select(0, detail_indices),
+                    joint_attention_kwargs=joint_attention_kwargs,
+                )
+                detail = tuple(
+                    current.index_copy(0, detail_indices, update)
+                    for current, update in zip(detail, valid_detail)
+                )
         return BranchControlResiduals(
             geometry=geometry,
             interaction=interaction,
@@ -416,4 +486,5 @@ class SharedRecurrentControlCore(nn.Module):
                 target_latents.shape[-2] // self.patch_size,
                 target_latents.shape[-1] // self.patch_size,
             ),
+            detail=detail,
         ).validate()

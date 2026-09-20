@@ -92,11 +92,14 @@ class PersonTokenBinder(nn.Module):
         source_indices: torch.Tensor,
         task_token: torch.Tensor | None = None,
         geometry_token_mask: torch.Tensor | None = None,
+        person_binding: torch.Tensor | None = None,
     ) -> tuple[torch.Tensor, torch.Tensor]:
         batch_size = geometry_tokens.shape[0]
-        binding = self.binding_for(
-            source_indices, person_valid, task_token
-        )[:, :, None]
+        if person_binding is None:
+            person_binding = self.binding_for(source_indices, person_valid, task_token)
+        elif tuple(person_binding.shape) != (batch_size, 2, geometry_tokens.shape[-1]):
+            raise ValueError("person_binding must have shape [B,2,D]")
+        binding = person_binding[:, :, None]
         geometry_count = geometry_tokens.shape[2]
         appearance_count = appearance_tokens.shape[2]
         geometry_valid = person_valid[..., None].expand(-1, -1, geometry_count)
