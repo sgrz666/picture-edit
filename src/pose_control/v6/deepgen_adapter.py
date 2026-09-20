@@ -285,8 +285,22 @@ class UnifiedSMPLXAdapterV6(nn.Module):
         source_scene_latents = source_scene_latents.to(device=device, dtype=dtype)
         if detail_condition is not None:
             detail_condition = detail_condition.to(device=device, dtype=dtype)
+            detail_condition.validate()
             if detail_condition.batch_size != batch_size:
                 raise ValueError("detail condition batch does not match control state")
+            detail_person_valid = detail_condition.person_valid
+            if torch.any(detail_person_valid & ~state.person_valid):
+                raise ValueError(
+                    "each detail-valid person must be valid in the control state"
+                )
+            expected_source_indices = identity_condition.effective_source_indices()
+            if torch.any(
+                detail_person_valid
+                & (detail_condition.source_indices != expected_source_indices)
+            ):
+                raise ValueError(
+                    "detail source_indices must match identity source_indices for every detail-valid person"
+                )
             if detail_references is None:
                 detail_references = DetailReferenceBatch(
                     images=torch.zeros(

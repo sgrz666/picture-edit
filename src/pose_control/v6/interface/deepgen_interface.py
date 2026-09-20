@@ -115,8 +115,13 @@ class DeepGenControlInterface(nn.Module):
         pooled_projections: torch.Tensor,
         timestep: torch.Tensor,
         joint_attention_kwargs: Optional[dict] = None,
+        detail_active: torch.Tensor | None = None,
     ) -> BranchControlResiduals:
         prepared = prepared.validate().expand_to_batch(target_latents.shape[0])
+        if detail_active is not None:
+            if detail_active.shape != (target_latents.shape[0],) or detail_active.dtype != torch.bool:
+                raise ValueError("detail_active must have shape [B] and dtype bool")
+            detail_active = detail_active.to(device=target_latents.device)
         target_size = target_latents.shape[-2:]
         geometry_condition = F.interpolate(
             prepared.geometry_condition,
@@ -181,7 +186,15 @@ class DeepGenControlInterface(nn.Module):
                 detail_condition=None if detail_condition is None else detail_condition.index_select(0, indices),
                 detail_tokens=None if prepared.detail is None else prepared.detail.detail_tokens.index_select(0, indices),
                 detail_token_mask=None if prepared.detail is None else prepared.detail.detail_token_mask.index_select(0, indices),
-                detail_valid=None if prepared.detail is None else prepared.detail.detail_valid.index_select(0, indices),
+                detail_valid=(
+                    None
+                    if prepared.detail is None
+                    else (
+                        prepared.detail.detail_valid
+                        if detail_active is None
+                        else prepared.detail.detail_valid & detail_active
+                    ).index_select(0, indices)
+                ),
             )
             geometry = tuple(
                 current.index_copy(0, indices, update)
@@ -221,17 +234,52 @@ class DeepGenControlInterface(nn.Module):
         hand_strength: float | torch.Tensor = 1.0,
         joint_attention_kwargs: Optional[dict] = None,
     ) -> DeepGenControlOutput:
+        expanded = prepared.validate().expand_to_batch(target_latents.shape[0])
+        detail_active = target_latents.new_zeros(
+            target_latents.shape[0], dtype=torch.bool
+        )
+        if expanded.detail is not None:
+            reference = target_latents.new_empty(target_latents.shape[0], 1, 1)
+
+            def per_sample(value) -> torch.Tensor:
+                gate = self.strength_controller._sample_gate(value, reference)
+                if not torch.is_tensor(gate):
+                    return reference.new_full((reference.shape[0],), gate)
+                if gate.ndim == 0:
+                    return gate.expand(reference.shape[0])
+                return gate[:, 0, 0]
+
+            schedule = per_sample(
+                self.strength_controller.detail_schedule.multiplier(
+                    denoise_progress
+                )
+            )
+            detail_gate = per_sample(detail_strength)
+            face_gate = per_sample(face_strength)
+            hand_gate = per_sample(hand_strength)
+            face_valid = expanded.detail.region_valid[:, :, 0].any(dim=1)
+            hand_valid = expanded.detail.region_valid[:, :, 1:].any(dim=(1, 2))
+            region_active = (face_valid & (face_gate != 0)) | (
+                hand_valid & (hand_gate != 0)
+            )
+            detail_active = (
+                expanded.detail.detail_valid
+                & (schedule != 0)
+                & (detail_gate != 0)
+                & region_active
+            )
         raw = self.build_raw_residuals(
             target_latents=target_latents,
-            prepared=prepared,
+            prepared=expanded,
             encoder_hidden_states=encoder_hidden_states,
             pooled_projections=pooled_projections,
             timestep=timestep,
             joint_attention_kwargs=joint_attention_kwargs,
+            detail_active=detail_active,
         )
         detail_region_masks = None
-        if prepared.detail is not None:
-            expanded_detail = prepared.validate().expand_to_batch(target_latents.shape[0]).detail
+        if expanded.detail is not None:
+            expanded_detail = expanded.detail
             assert expanded_detail is not None
             masks = expanded_detail.region_masks.flatten(0, 2)[:, None]
             masks = F.interpolate(
@@ -261,6 +309,8 @@ class DeepGenControlInterface(nn.Module):
         )
         diagnostics.update(
             {
+                "detail_active_rows": int(detail_active.sum().item()),
+                "detail_executed": bool(detail_active.any().item()),
                 "target_token_hw": list(raw.target_token_hw),
                 "target_token_count": raw.target_token_count,
                 "full_token_count": int(aligned[0].shape[1]),

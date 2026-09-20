@@ -463,22 +463,34 @@ class SharedRecurrentControlCore(nn.Module):
             detail = tuple(torch.zeros_like(item) for item in geometry)
             detail_indices = detail_valid.nonzero(as_tuple=False).flatten()
             if detail_indices.numel():
-                masked_tokens = detail_tokens * detail_token_mask[..., None].to(
-                    detail_tokens.dtype
-                )
-                detail_context = torch.cat((text_context, masked_tokens), dim=1)
-                valid_detail = self._run_branch(
-                    branch=self.detail_branch,
-                    target_hidden=target_hidden.index_select(0, detail_indices),
-                    control_condition=detail_condition.index_select(0, detail_indices),
-                    context=detail_context.index_select(0, detail_indices),
-                    temb=temb.index_select(0, detail_indices),
-                    joint_attention_kwargs=joint_attention_kwargs,
-                )
-                detail = tuple(
-                    current.index_copy(0, detail_indices, update)
-                    for current, update in zip(detail, valid_detail)
-                )
+                active_masks = detail_token_mask.index_select(0, detail_indices)
+                for token_pattern in torch.unique(active_masks, dim=0):
+                    local_indices = (
+                        (active_masks == token_pattern)
+                        .all(dim=1)
+                        .nonzero(as_tuple=False)
+                        .flatten()
+                    )
+                    group_indices = detail_indices.index_select(0, local_indices)
+                    detail_context = torch.cat(
+                        (
+                            text_context.index_select(0, group_indices),
+                            detail_tokens.index_select(0, group_indices)[:, token_pattern],
+                        ),
+                        dim=1,
+                    )
+                    valid_detail = self._run_branch(
+                        branch=self.detail_branch,
+                        target_hidden=target_hidden.index_select(0, group_indices),
+                        control_condition=detail_condition.index_select(0, group_indices),
+                        context=detail_context,
+                        temb=temb.index_select(0, group_indices),
+                        joint_attention_kwargs=joint_attention_kwargs,
+                    )
+                    detail = tuple(
+                        current.index_copy(0, group_indices, update)
+                        for current, update in zip(detail, valid_detail)
+                    )
         return BranchControlResiduals(
             geometry=geometry,
             interaction=interaction,

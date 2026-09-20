@@ -30,6 +30,8 @@ class StrengthScheduleConfig:
         if torch.is_tensor(progress):
             if progress.ndim > 1 or not progress.is_floating_point():
                 raise ValueError("denoise progress tensor must be scalar or have shape [B]")
+            if not torch.isfinite(progress).all():
+                raise ValueError("denoise progress tensor must contain only finite values")
             if torch.any((progress < 0) | (progress > 1)):
                 raise ValueError("denoise progress must lie within [0,1]")
             active = (progress >= self.start_progress) & (progress <= self.end_progress)
@@ -119,6 +121,18 @@ class ControlStrengthController(nn.Module):
         int_gates = self.interaction_log_group_scale.exp()
         detail_gates = self.detail_log_group_scale.exp()
         reference = residuals.geometry[0]
+        if detail_region_masks is not None:
+            expected = (reference.shape[0], 2, 3, *residuals.target_token_hw)
+            if tuple(detail_region_masks.shape) != expected:
+                raise ValueError(f"detail_region_masks must have shape {expected}")
+            if not detail_region_masks.is_floating_point():
+                raise ValueError("detail_region_masks must use a floating dtype")
+            if detail_region_masks.device != reference.device:
+                raise ValueError("detail_region_masks must be on the residual device")
+            if not torch.isfinite(detail_region_masks).all():
+                raise ValueError("detail_region_masks must contain only finite values")
+            if torch.any((detail_region_masks < 0) | (detail_region_masks > 1)):
+                raise ValueError("detail_region_masks must be bounded in [0,1]")
         geo_schedule = self._sample_gate(geo_schedule, reference)
         int_schedule = self._sample_gate(int_schedule, reference)
         detail_schedule = self._sample_gate(detail_schedule, reference)
@@ -142,9 +156,6 @@ class ControlStrengthController(nn.Module):
         if not detail_is_disabled:
             if detail_region_masks is None:
                 raise ValueError("detail_region_masks are required when detail residuals are active")
-            expected = (reference.shape[0], 2, 3, *residuals.target_token_hw)
-            if tuple(detail_region_masks.shape) != expected:
-                raise ValueError(f"detail_region_masks must have shape {expected}")
             face = detail_region_masks[:, :, 0].amax(dim=1).flatten(1)
             hands = detail_region_masks[:, :, 1:].amax(dim=(1, 2)).flatten(1)
             face_strength = self._sample_gate(face_strength, reference)

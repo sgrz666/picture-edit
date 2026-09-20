@@ -26,6 +26,30 @@ def _adapter_state(checkpoint: Mapping[str, Any]) -> Mapping[str, torch.Tensor]:
     return state
 
 
+def _preflight_state(
+    model: nn.Module,
+    state: Mapping[str, Any],
+    expected_keys: set[str],
+) -> None:
+    provided_keys = set(state)
+    unexpected = sorted(provided_keys - expected_keys)
+    missing = sorted(expected_keys - provided_keys)
+    if unexpected:
+        raise RuntimeError(f"unexpected checkpoint keys: {unexpected}")
+    if missing:
+        raise RuntimeError(f"checkpoint is missing keys: {missing}")
+    expected_state = model.state_dict()
+    for key in sorted(expected_keys):
+        value = state[key]
+        if not torch.is_tensor(value):
+            raise RuntimeError(f"checkpoint value for {key!r} must be a tensor")
+        if value.shape != expected_state[key].shape:
+            raise RuntimeError(
+                f"checkpoint tensor {key!r} has shape {tuple(value.shape)}; "
+                f"expected {tuple(expected_state[key].shape)}"
+            )
+
+
 def load_v63_checkpoint(
     model: nn.Module, checkpoint: Mapping[str, Any]
 ) -> torch.nn.modules.module._IncompatibleKeys:
@@ -35,18 +59,25 @@ def load_v63_checkpoint(
         raise RuntimeError(
             "V6.3 optimizer state is incompatible with V6.4 and must not be restored"
         )
-    result = model.load_state_dict(_adapter_state(checkpoint), strict=False)
-    if result.unexpected_keys:
-        raise RuntimeError(
-            f"unexpected legacy checkpoint keys: {result.unexpected_keys}"
-        )
-    rejected = [
+    metadata = checkpoint.get("metadata")
+    if isinstance(metadata, Mapping) and metadata.get("architecture_version") == "v6.4":
+        raise RuntimeError("V6.3 loader rejects V6.4 metadata")
+    state = _adapter_state(checkpoint)
+    detail_keys = sorted(
         key
-        for key in result.missing_keys
+        for key in state
+        if any(key.startswith(prefix) for prefix in DETAIL_ONLY_PREFIXES)
+    )
+    if detail_keys:
+        raise RuntimeError(f"V6.3 checkpoint contains detail-only keys: {detail_keys}")
+    model_keys = set(model.state_dict())
+    expected_keys = {
+        key
+        for key in model_keys
         if not any(key.startswith(prefix) for prefix in DETAIL_ONLY_PREFIXES)
-    ]
-    if rejected:
-        raise RuntimeError(f"legacy checkpoint is missing non-detail keys: {rejected}")
+    }
+    _preflight_state(model, state, expected_keys)
+    result = model.load_state_dict(state, strict=False)
     detail_branch = model.get_submodule("control_interface.control_core.detail_branch")
     with torch.no_grad():
         for head in detail_branch.zero_heads:
@@ -68,8 +99,13 @@ def v64_checkpoint_metadata() -> dict[str, object]:
 def build_v64_checkpoint(
     model: nn.Module, **extra: Any
 ) -> dict[str, Any]:
+    reserved = {"metadata", "adapter_state_dict"} & set(extra)
+    if reserved:
+        raise ValueError(f"checkpoint extra keys are reserved: {sorted(reserved)}")
     checkpoint = {
-        "adapter_state_dict": model.state_dict(),
+        "adapter_state_dict": {
+            key: value.detach().clone() for key, value in model.state_dict().items()
+        },
         "metadata": v64_checkpoint_metadata(),
     }
     checkpoint.update(extra)
@@ -84,7 +120,9 @@ def load_v64_checkpoint(model: nn.Module, checkpoint: Mapping[str, Any]) -> None
     for key, value in expected.items():
         if metadata.get(key) != value:
             raise RuntimeError(f"invalid V6.4 checkpoint metadata field {key!r}")
-    model.load_state_dict(_adapter_state(checkpoint), strict=True)
+    state = _adapter_state(checkpoint)
+    _preflight_state(model, state, set(model.state_dict()))
+    model.load_state_dict(state, strict=True)
 
 
 def freeze_for_detail_training(model: nn.Module) -> tuple[nn.Parameter, ...]:

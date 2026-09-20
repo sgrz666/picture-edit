@@ -277,3 +277,211 @@ def test_adapter_prepares_null_references_without_duplicate_person_binder() -> N
     assert prepared.detail.detail_condition.shape == (1, 144, 8, 12)
     assert prepared.detail.detail_tokens.shape == (1, 48, 32)
     assert len([key for key in model.state_dict() if "person_token_binder" in key]) == 2
+
+
+def _state_snapshot(model):
+    return {key: value.detach().clone() for key, value in model.state_dict().items()}
+
+
+def _assert_state_unchanged(model, snapshot) -> None:
+    assert snapshot.keys() == model.state_dict().keys()
+    for key, value in model.state_dict().items():
+        assert torch.equal(value, snapshot[key]), key
+
+
+@pytest.mark.parametrize("corruption", ("unexpected", "missing", "shape", "non_tensor"))
+def test_v63_loader_preflight_failures_are_atomic(corruption: str) -> None:
+    from src.pose_control.v6.deepgen_adapter import UnifiedSMPLXAdapterV6
+
+    source = UnifiedSMPLXAdapterV6.build_tiny(hidden_dim=16, geometry_channels=4)
+    state = {
+        key: value.detach().clone()
+        for key, value in source.state_dict().items()
+        if "detail" not in key
+    }
+    key = next(iter(state))
+    if corruption == "unexpected":
+        state["unexpected.key"] = torch.zeros(1)
+    elif corruption == "missing":
+        state.pop(key)
+    elif corruption == "shape":
+        state[key] = torch.zeros(1)
+    else:
+        state[key] = "not-a-tensor"
+    target = UnifiedSMPLXAdapterV6.build_tiny(hidden_dim=16, geometry_channels=4)
+    snapshot = _state_snapshot(target)
+    with pytest.raises(RuntimeError):
+        load_v63_checkpoint(target, {"adapter_state_dict": state})
+    _assert_state_unchanged(target, snapshot)
+
+
+@pytest.mark.parametrize("corruption", ("unexpected", "missing", "shape", "non_tensor"))
+def test_v64_loader_preflight_failures_are_atomic(corruption: str) -> None:
+    from src.pose_control.v6.deepgen_adapter import UnifiedSMPLXAdapterV6
+
+    source = UnifiedSMPLXAdapterV6.build_tiny(hidden_dim=16, geometry_channels=4)
+    checkpoint = build_v64_checkpoint(source)
+    state = dict(checkpoint["adapter_state_dict"])
+    key = next(iter(state))
+    if corruption == "unexpected":
+        state["unexpected.key"] = torch.zeros(1)
+    elif corruption == "missing":
+        state.pop(key)
+    elif corruption == "shape":
+        state[key] = torch.zeros(1)
+    else:
+        state[key] = "not-a-tensor"
+    checkpoint["adapter_state_dict"] = state
+    target = UnifiedSMPLXAdapterV6.build_tiny(hidden_dim=16, geometry_channels=4)
+    snapshot = _state_snapshot(target)
+    with pytest.raises(RuntimeError):
+        load_v64_checkpoint(target, checkpoint)
+    _assert_state_unchanged(target, snapshot)
+
+
+def test_v63_loader_rejects_v64_metadata_and_detail_keys() -> None:
+    from src.pose_control.v6.deepgen_adapter import UnifiedSMPLXAdapterV6
+
+    model = UnifiedSMPLXAdapterV6.build_tiny(hidden_dim=16, geometry_channels=4)
+    legacy = {key: value for key, value in model.state_dict().items() if "detail" not in key}
+    with pytest.raises(RuntimeError, match="V6.4 metadata"):
+        load_v63_checkpoint(
+            model,
+            {"adapter_state_dict": legacy, "metadata": {"architecture_version": "v6.4"}},
+        )
+    contaminated = dict(legacy)
+    detail_key = next(key for key in model.state_dict() if "detail" in key)
+    contaminated[detail_key] = model.state_dict()[detail_key]
+    with pytest.raises(RuntimeError, match="detail-only"):
+        load_v63_checkpoint(model, contaminated)
+
+
+def test_v64_checkpoint_clones_tensors_and_rejects_reserved_extras() -> None:
+    from src.pose_control.v6.deepgen_adapter import UnifiedSMPLXAdapterV6
+
+    model = UnifiedSMPLXAdapterV6.build_tiny(hidden_dim=16, geometry_channels=4)
+    checkpoint = build_v64_checkpoint(model)
+    key, saved = next(iter(checkpoint["adapter_state_dict"].items()))
+    before = saved.clone()
+    with torch.no_grad():
+        model.state_dict()[key].add_(1)
+    assert torch.equal(saved, before)
+    for reserved in ("metadata", "adapter_state_dict"):
+        with pytest.raises(ValueError, match="reserved"):
+            build_v64_checkpoint(model, **{reserved: {}})
+
+
+def test_detail_context_physically_omits_masked_tokens() -> None:
+    torch.manual_seed(23)
+    core = _core()
+    _activate_heads(core)
+    inputs = _core_inputs()
+    valid_tokens = inputs["detail_tokens"][:, :2].clone()
+    omitted = dict(inputs)
+    omitted["detail_tokens"] = valid_tokens
+    omitted["detail_token_mask"] = torch.ones(2, 2, dtype=torch.bool)
+    padded = dict(inputs)
+    padded["detail_tokens"] = torch.cat(
+        (valid_tokens, torch.full((2, 3, 16), 1e6)), dim=1
+    )
+    padded["detail_token_mask"] = torch.tensor(
+        [[True, True, False, False, False], [True, True, False, False, False]]
+    )
+    expected = core(**omitted)
+    actual = core(**padded)
+    assert expected.detail is not None and actual.detail is not None
+    assert all(torch.equal(a, b) for a, b in zip(expected.detail, actual.detail))
+
+
+@pytest.mark.parametrize("progress", (torch.tensor(float("nan")), torch.tensor(float("inf"))))
+def test_tensor_progress_must_be_finite(progress) -> None:
+    with pytest.raises(ValueError, match="finite"):
+        ControlStrengthController()(_residuals(), denoise_progress=progress)
+
+
+def test_detail_region_mask_validation_is_explicit() -> None:
+    controller = ControlStrengthController()
+    base = torch.ones(2, 2, 3, 2, 2)
+    invalid = (
+        base.bool(),
+        base.clone().index_put_((torch.tensor([0]),) * 5, torch.tensor(float("nan"))),
+        base * 2,
+        torch.empty(2, 2, 3, 2, 2, device="meta"),
+    )
+    for masks in invalid:
+        with pytest.raises(ValueError):
+            controller(
+                _residuals(),
+                denoise_progress=1.0,
+                detail_region_masks=masks,
+            )
+
+
+def test_detail_identity_must_match_state_and_identity_condition() -> None:
+    from src.pose_control.v6.conditions import AdapterIdentityCondition
+    from src.pose_control.v6.deepgen_adapter import UnifiedSMPLXAdapterV6
+    from tests.test_deepgen_control_interface_v1 import _control_state
+    from tests.test_v6_detail_contracts import make_condition
+
+    model = UnifiedSMPLXAdapterV6.build_tiny(hidden_dim=32, geometry_channels=16)
+    identity = AdapterIdentityCondition(
+        source_person_latents=torch.randn(1, 2, 16, 8, 12),
+        source_indices=torch.tensor([[2, 5]]),
+    )
+    mismatch = make_condition(1)
+    mismatch.source_indices[0, 1] = 6
+    with pytest.raises(ValueError, match="source_indices"):
+        model.prepare_control(
+            state=_control_state(dual=True),
+            identity_condition=identity,
+            source_scene_latents=torch.randn(1, 16, 8, 12),
+            target_latent_hw=(8, 12),
+            detail_condition=mismatch,
+        )
+    with pytest.raises(ValueError, match="detail-valid person"):
+        model.prepare_control(
+            state=_control_state(dual=False),
+            identity_condition=identity,
+            source_scene_latents=torch.randn(1, 16, 8, 12),
+            target_latent_hw=(8, 12),
+            detail_condition=make_condition(1),
+        )
+
+
+def test_detail_compute_fast_path_reports_only_active_rows() -> None:
+    from src.pose_control.v6.conditions import AdapterIdentityCondition
+    from src.pose_control.v6.deepgen_adapter import UnifiedSMPLXAdapterV6
+    from tests.test_deepgen_control_interface_v1 import _control_state
+    from tests.test_v6_detail_contracts import make_condition
+
+    model = UnifiedSMPLXAdapterV6.build_tiny(hidden_dim=32, geometry_channels=16).eval()
+    prepared = model.prepare_control(
+        state=_control_state(dual=True),
+        identity_condition=AdapterIdentityCondition(
+            source_person_latents=torch.randn(1, 2, 16, 8, 12),
+            source_indices=torch.tensor([[2, 5]]),
+        ),
+        source_scene_latents=torch.randn(1, 16, 8, 12),
+        target_latent_hw=(8, 12),
+        detail_condition=make_condition(1),
+    )
+
+    def run(batch: int, progress, strength):
+        output = model(
+            target_latents=torch.randn(batch, 16, 8, 12),
+            prepared=prepared,
+            cond_hidden_states=None,
+            encoder_hidden_states=torch.randn(batch, 5, 24),
+            pooled_projections=torch.randn(batch, 20),
+            timestep=torch.full((batch,), 500.0),
+            denoise_progress=progress,
+            detail_strength=strength,
+        )
+        return output.diagnostics
+
+    assert run(1, 0.2, 1.0)["detail_active_rows"] == 0
+    assert run(1, 1.0, 0.0)["detail_executed"] is False
+    assert run(2, 1.0, torch.zeros(2))["detail_active_rows"] == 0
+    mixed = run(2, 1.0, torch.tensor([0.0, 1.0]))
+    assert mixed["detail_active_rows"] == 1
+    assert mixed["detail_executed"] is True
