@@ -41,13 +41,47 @@ def _preflight_state(
     expected_state = model.state_dict()
     for key in sorted(expected_keys):
         value = state[key]
+        expected = expected_state[key]
         if not torch.is_tensor(value):
             raise RuntimeError(f"checkpoint value for {key!r} must be a tensor")
-        if value.shape != expected_state[key].shape:
+        if value.shape != expected.shape:
             raise RuntimeError(
                 f"checkpoint tensor {key!r} has shape {tuple(value.shape)}; "
-                f"expected {tuple(expected_state[key].shape)}"
+                f"expected {tuple(expected.shape)}"
             )
+        if value.dtype != expected.dtype:
+            raise RuntimeError(
+                f"checkpoint tensor {key!r} has dtype {value.dtype}; "
+                f"expected {expected.dtype}"
+            )
+        if value.layout != torch.strided or value.layout != expected.layout:
+            raise RuntimeError(
+                f"checkpoint tensor {key!r} has layout {value.layout}; "
+                f"expected strided layout {expected.layout}"
+            )
+
+
+def _transactional_load(
+    model: nn.Module,
+    state: Mapping[str, torch.Tensor],
+    *,
+    strict: bool,
+    after_load=None,
+):
+    snapshot = {
+        key: value.detach().clone() for key, value in model.state_dict().items()
+    }
+    try:
+        result = model.load_state_dict(state, strict=strict)
+        if after_load is not None:
+            after_load()
+        return result
+    except Exception:
+        current = model.state_dict()
+        with torch.no_grad():
+            for key, value in snapshot.items():
+                current[key].copy_(value)
+        raise
 
 
 def load_v63_checkpoint(
@@ -77,13 +111,21 @@ def load_v63_checkpoint(
         if not any(key.startswith(prefix) for prefix in DETAIL_ONLY_PREFIXES)
     }
     _preflight_state(model, state, expected_keys)
-    result = model.load_state_dict(state, strict=False)
     detail_branch = model.get_submodule("control_interface.control_core.detail_branch")
-    with torch.no_grad():
-        for head in detail_branch.zero_heads:
-            nn.init.zeros_(head.weight)
-            if head.bias is not None:
-                nn.init.zeros_(head.bias)
+
+    def rezero_detail_heads() -> None:
+        with torch.no_grad():
+            for head in detail_branch.zero_heads:
+                nn.init.zeros_(head.weight)
+                if head.bias is not None:
+                    nn.init.zeros_(head.bias)
+
+    result = _transactional_load(
+        model,
+        state,
+        strict=False,
+        after_load=rezero_detail_heads,
+    )
     return result
 
 
@@ -122,7 +164,7 @@ def load_v64_checkpoint(model: nn.Module, checkpoint: Mapping[str, Any]) -> None
             raise RuntimeError(f"invalid V6.4 checkpoint metadata field {key!r}")
     state = _adapter_state(checkpoint)
     _preflight_state(model, state, set(model.state_dict()))
-    model.load_state_dict(state, strict=True)
+    _transactional_load(model, state, strict=True)
 
 
 def freeze_for_detail_training(model: nn.Module) -> tuple[nn.Parameter, ...]:

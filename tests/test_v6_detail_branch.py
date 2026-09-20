@@ -371,26 +371,53 @@ def test_v64_checkpoint_clones_tensors_and_rejects_reserved_extras() -> None:
             build_v64_checkpoint(model, **{reserved: {}})
 
 
-def test_detail_context_physically_omits_masked_tokens() -> None:
+def test_detail_context_groups_distinct_masks_and_omits_masked_token_gradients(
+    monkeypatch,
+) -> None:
     torch.manual_seed(23)
     core = _core()
     _activate_heads(core)
     inputs = _core_inputs()
-    valid_tokens = inputs["detail_tokens"][:, :2].clone()
-    omitted = dict(inputs)
-    omitted["detail_tokens"] = valid_tokens
-    omitted["detail_token_mask"] = torch.ones(2, 2, dtype=torch.bool)
-    padded = dict(inputs)
-    padded["detail_tokens"] = torch.cat(
-        (valid_tokens, torch.full((2, 3, 16), 1e6)), dim=1
+    tokens = torch.randn(2, 5, 16, requires_grad=True)
+    masks = torch.tensor(
+        [[True, True, False, False, False], [True, False, True, False, False]]
     )
-    padded["detail_token_mask"] = torch.tensor(
-        [[True, True, False, False, False], [True, True, False, False, False]]
-    )
-    expected = core(**omitted)
-    actual = core(**padded)
-    assert expected.detail is not None and actual.detail is not None
-    assert all(torch.equal(a, b) for a, b in zip(expected.detail, actual.detail))
+    inputs["detail_tokens"] = tokens
+    inputs["detail_token_mask"] = masks
+    inputs["detail_valid"] = torch.ones(2, dtype=torch.bool)
+    detail_calls = 0
+    original_run_branch = core._run_branch
+
+    def counted_run_branch(*, branch, **kwargs):
+        nonlocal detail_calls
+        if branch is core.detail_branch:
+            detail_calls += 1
+        return original_run_branch(branch=branch, **kwargs)
+
+    monkeypatch.setattr(core, "_run_branch", counted_run_branch)
+    actual = core(**inputs)
+    assert detail_calls == 2
+    assert actual.detail is not None
+
+    for row in range(2):
+        selected = torch.tensor([row])
+        omitted = {
+            key: value.index_select(0, selected)
+            for key, value in inputs.items()
+        }
+        omitted["detail_tokens"] = tokens[row : row + 1, masks[row]]
+        omitted["detail_token_mask"] = torch.ones(
+            1, int(masks[row].sum()), dtype=torch.bool
+        )
+        expected = core(**omitted)
+        assert expected.detail is not None
+        for batched, standalone in zip(actual.detail, expected.detail):
+            torch.testing.assert_close(batched[row], standalone[0])
+
+    sum(value.square().mean() for value in actual.detail).backward()
+    assert tokens.grad is not None
+    assert torch.count_nonzero(tokens.grad[~masks]) == 0
+    assert torch.count_nonzero(tokens.grad[masks]) > 0
 
 
 @pytest.mark.parametrize("progress", (torch.tensor(float("nan")), torch.tensor(float("inf"))))
@@ -485,3 +512,76 @@ def test_detail_compute_fast_path_reports_only_active_rows() -> None:
     mixed = run(2, 1.0, torch.tensor([0.0, 1.0]))
     assert mixed["detail_active_rows"] == 1
     assert mixed["detail_executed"] is True
+
+
+def _legacy_state_for(model):
+    return {
+        key: value.detach().clone()
+        for key, value in model.state_dict().items()
+        if not key.startswith("detail_preparer.")
+        and not key.startswith("control_interface.control_core.detail_branch.")
+        and key != "control_interface.strength_controller.detail_log_group_scale"
+    }
+
+
+@pytest.mark.parametrize("version", ("v63", "v64"))
+@pytest.mark.parametrize("corruption", ("layout", "dtype"))
+def test_checkpoint_dtype_and_layout_preflight_is_atomic(
+    version: str, corruption: str
+) -> None:
+    from src.pose_control.v6.deepgen_adapter import UnifiedSMPLXAdapterV6
+
+    source = UnifiedSMPLXAdapterV6.build_tiny(hidden_dim=16, geometry_channels=4)
+    state = (
+        _legacy_state_for(source)
+        if version == "v63"
+        else {key: value.detach().clone() for key, value in source.state_dict().items()}
+    )
+    candidates = [
+        key
+        for key, value in state.items()
+        if value.is_floating_point() and value.ndim > 0 and value.numel() > 1
+    ]
+    early, late = candidates[0], candidates[-1]
+    state[early] = state[early] + 7
+    state[late] = (
+        state[late].to_sparse()
+        if corruption == "layout"
+        else state[late].to(torch.float64)
+    )
+    target = UnifiedSMPLXAdapterV6.build_tiny(hidden_dim=16, geometry_channels=4)
+    snapshot = _state_snapshot(target)
+    with pytest.raises(RuntimeError):
+        if version == "v63":
+            load_v63_checkpoint(target, {"adapter_state_dict": state})
+        else:
+            checkpoint = build_v64_checkpoint(source)
+            checkpoint["adapter_state_dict"] = state
+            load_v64_checkpoint(target, checkpoint)
+    _assert_state_unchanged(target, snapshot)
+
+
+@pytest.mark.parametrize("version", ("v63", "v64"))
+def test_checkpoint_runtime_copy_failure_rolls_back_every_tensor(
+    version: str, monkeypatch
+) -> None:
+    from src.pose_control.v6.deepgen_adapter import UnifiedSMPLXAdapterV6
+
+    source = UnifiedSMPLXAdapterV6.build_tiny(hidden_dim=16, geometry_channels=4)
+    target = UnifiedSMPLXAdapterV6.build_tiny(hidden_dim=16, geometry_channels=4)
+    snapshot = _state_snapshot(target)
+    state = _legacy_state_for(source) if version == "v63" else source.state_dict()
+    early = next(iter(state))
+
+    def partial_then_fail(provided, strict):
+        with torch.no_grad():
+            target.state_dict()[early].copy_(provided[early])
+        raise RuntimeError("synthetic copy failure")
+
+    monkeypatch.setattr(target, "load_state_dict", partial_then_fail)
+    with pytest.raises(RuntimeError, match="synthetic copy failure"):
+        if version == "v63":
+            load_v63_checkpoint(target, {"adapter_state_dict": state})
+        else:
+            load_v64_checkpoint(target, build_v64_checkpoint(source))
+    _assert_state_unchanged(target, snapshot)
