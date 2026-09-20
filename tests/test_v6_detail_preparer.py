@@ -1,0 +1,118 @@
+from __future__ import annotations
+
+import torch
+
+from src.pose_control.v6.detail import (
+    DetailReferenceBatch,
+    FaceHandDetailCondition,
+    FaceHandDetailPreparer,
+)
+from src.pose_control.v6.token_encoders import PersonTokenBinder
+
+
+def make_inputs() -> tuple[FaceHandDetailCondition, DetailReferenceBatch]:
+    batch_size = 2
+    face = torch.rand(batch_size, 2, 68, 3)
+    hands = torch.rand(batch_size, 2, 2, 21, 3)
+    boxes = torch.tensor(
+        [[0.05, 0.05, 0.95, 0.95], [0.05, 0.05, 0.95, 0.95], [0.05, 0.05, 0.95, 0.95]]
+    ).expand(batch_size, 2, -1, -1).clone()
+    valid = torch.tensor(
+        [
+            [[True, True, True], [True, True, True]],
+            [[True, False, True], [False, False, False]],
+        ]
+    )
+    condition = FaceHandDetailCondition(
+        face_keypoints=face,
+        hand_keypoints=hands,
+        smplx_detail=torch.randn(batch_size, 2, 103),
+        source_boxes=boxes.clone(),
+        target_boxes=boxes.clone(),
+        region_valid=valid,
+        source_indices=torch.tensor([[0, 1], [3, -1]]),
+    )
+    reference_valid = torch.ones(batch_size, 2, 3, 2, dtype=torch.bool)
+    reference_valid[0, 0, 0] = False
+    references = DetailReferenceBatch(
+        images=torch.randn(batch_size, 2, 3, 2, 3, 224, 224),
+        reference_valid=reference_valid,
+    )
+    return condition, references
+
+
+def build_preparer(token_dim: int = 12) -> FaceHandDetailPreparer:
+    return FaceHandDetailPreparer(
+        token_dim=token_dim,
+        person_binder=PersonTokenBinder(token_dim=token_dim),
+        hidden_dim=24,
+    ).eval()
+
+
+def test_preparer_emits_exact_shapes_masks_and_zero_optional_canvas() -> None:
+    condition, references = make_inputs()
+    prepared = build_preparer()(condition, references, (6, 5), (3, 4))
+    assert prepared.detail_condition.shape == (2, 144, 6, 5)
+    assert prepared.detail_tokens.shape == (2, 48, 12)
+    assert prepared.detail_token_mask.shape == (2, 48)
+    assert prepared.region_masks.shape == (2, 2, 3, 3, 4)
+    assert prepared.region_valid.shape == (2, 2, 3)
+    assert prepared.detail_valid.tolist() == [True, True]
+    assert torch.count_nonzero(prepared.detail_condition[:, 128:]) == 0
+    assert prepared.region_masks.min() >= 0
+    assert prepared.region_masks.max() <= 1
+
+    expected_mask = condition.region_valid[..., None].expand(-1, -1, -1, 8).reshape(2, 48)
+    assert torch.equal(prepared.detail_token_mask, expected_mask)
+    invalid_tokens = prepared.detail_tokens[~prepared.detail_token_mask]
+    assert torch.count_nonzero(invalid_tokens) == 0
+    invalid_masks = prepared.region_masks[~condition.region_valid]
+    assert torch.count_nonzero(invalid_masks) == 0
+
+
+def test_missing_references_use_null_appearance_but_target_invalid_tokens_stay_zero() -> None:
+    condition, references = make_inputs()
+    preparer = build_preparer()
+    prepared = preparer(condition, references, (4, 4), (4, 4))
+    face_tokens = prepared.detail_tokens.reshape(2, 2, 3, 8, 12)[0, 0, 0]
+    assert torch.count_nonzero(face_tokens) > 0
+    invalid = prepared.detail_tokens.reshape(2, 2, 3, 8, 12)[1, 0, 1]
+    assert torch.count_nonzero(invalid) == 0
+
+
+def test_source_canvas_is_gated_and_overlap_does_not_additively_amplify() -> None:
+    condition, references = make_inputs()
+    source_latents = torch.ones(2, 16, 5, 7)
+    prepared = build_preparer()(condition, references, (6, 5), (3, 4), source_latents)
+    canvas = prepared.detail_condition[:, 128:]
+    assert torch.count_nonzero(canvas) > 0
+    assert canvas.min() >= 0
+    assert canvas.max() <= 1.0 + 1e-6
+
+
+def test_prepared_to_index_select_and_cfg_expansion_preserve_order() -> None:
+    condition, references = make_inputs()
+    prepared = build_preparer()(condition, references, (4, 5), (2, 3))
+    converted = prepared.to(dtype=torch.float64)
+    assert converted.detail_condition.dtype == torch.float64
+    assert converted.detail_tokens.dtype == torch.float64
+    assert converted.detail_token_mask.dtype == torch.bool
+    assert converted.region_valid.dtype == torch.bool
+    selected = converted.index_select(torch.tensor([1, 0]))
+    torch.testing.assert_close(selected.detail_condition[0], converted.detail_condition[1])
+
+    expanded = converted.expand_to_batch(4)
+    assert expanded.detail_condition.shape[0] == 4
+    torch.testing.assert_close(expanded.detail_condition[:2], converted.detail_condition)
+    torch.testing.assert_close(expanded.detail_condition[2:], converted.detail_condition)
+    assert expanded.detail_valid.tolist() == [True, True, True, True]
+
+
+def test_empty_sample_is_exactly_zero_and_marked_invalid() -> None:
+    condition, references = make_inputs()
+    condition.region_valid[1] = False
+    prepared = build_preparer()(condition, references, (4, 4), (2, 2))
+    assert not prepared.detail_valid[1]
+    assert torch.count_nonzero(prepared.detail_condition[1]) == 0
+    assert torch.count_nonzero(prepared.detail_tokens[1]) == 0
+    assert torch.count_nonzero(prepared.region_masks[1]) == 0

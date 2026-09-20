@@ -40,6 +40,50 @@ class PersonTokenBinder(nn.Module):
         self.slot_embedding = nn.Embedding(2, token_dim)
         self.source_embedding = nn.Embedding(max_sources, token_dim)
 
+    def binding_for(
+        self,
+        source_indices: torch.Tensor,
+        person_valid: torch.Tensor | None = None,
+        task_token: torch.Tensor | None = None,
+    ) -> torch.Tensor:
+        """Return validated person/source bindings without adding new state."""
+
+        if source_indices.ndim != 2 or source_indices.shape[1] != 2:
+            raise ValueError("source_indices must have shape [B,2]")
+        if source_indices.dtype != torch.long:
+            raise ValueError("source_indices must have dtype int64")
+        batch_size = source_indices.shape[0]
+        if person_valid is None:
+            person_valid = torch.ones_like(source_indices, dtype=torch.bool)
+        if tuple(person_valid.shape) != (batch_size, 2) or person_valid.dtype != torch.bool:
+            raise ValueError("person_valid must have shape [B,2] and dtype bool")
+        if person_valid.device != source_indices.device:
+            raise ValueError("person_valid and source_indices must be on the same device")
+        valid_indices = source_indices[person_valid]
+        maximum = self.source_embedding.num_embeddings - 1
+        if valid_indices.numel() and torch.any(
+            (valid_indices < 0) | (valid_indices > maximum)
+        ):
+            raise ValueError(f"valid source_indices must be in [0, {maximum}]")
+        both_valid = person_valid.all(dim=1)
+        if torch.any(
+            both_valid & (source_indices[:, 0] == source_indices[:, 1])
+        ):
+            raise ValueError("valid persons must use unique source_indices within each sample")
+
+        safe_indices = torch.where(
+            person_valid, source_indices, torch.zeros_like(source_indices)
+        )
+        slots = torch.arange(2, device=source_indices.device).expand(batch_size, -1)
+        binding = self.slot_embedding(slots) + self.source_embedding(safe_indices)
+        if task_token is not None:
+            if tuple(task_token.shape) == (batch_size, binding.shape[-1]):
+                task_token = task_token[:, None]
+            if tuple(task_token.shape) != (batch_size, 1, binding.shape[-1]):
+                raise ValueError("task_token must have shape [B,D] or [B,1,D]")
+            binding = binding + task_token
+        return binding
+
     def forward(
         self,
         geometry_tokens: torch.Tensor,
@@ -50,13 +94,9 @@ class PersonTokenBinder(nn.Module):
         geometry_token_mask: torch.Tensor | None = None,
     ) -> tuple[torch.Tensor, torch.Tensor]:
         batch_size = geometry_tokens.shape[0]
-        slots = torch.arange(2, device=geometry_tokens.device).expand(batch_size, -1)
-        binding = self.slot_embedding(slots) + self.source_embedding(
-            source_indices.clamp(0, self.source_embedding.num_embeddings - 1)
-        )
-        binding = binding[:, :, None]
-        if task_token is not None:
-            binding = binding + task_token[:, None]
+        binding = self.binding_for(
+            source_indices, person_valid, task_token
+        )[:, :, None]
         geometry_count = geometry_tokens.shape[2]
         appearance_count = appearance_tokens.shape[2]
         geometry_valid = person_valid[..., None].expand(-1, -1, geometry_count)
