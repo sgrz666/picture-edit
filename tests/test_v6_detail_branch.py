@@ -104,13 +104,43 @@ def test_per_sample_late_cosine_and_separate_region_strengths() -> None:
     assert diagnostics["detail_schedule_multiplier"] == [0.0, 1.0]
 
 
-def test_detail_strength_zero_and_missing_detail_are_exact_old_parity() -> None:
+@pytest.mark.parametrize(
+    "detail_strength",
+    (0.0, torch.tensor(0.0), torch.zeros(2)),
+)
+def test_detail_strength_zero_and_missing_detail_are_exact_old_parity(
+    detail_strength,
+) -> None:
     controller = ControlStrengthController()
     old = _residuals()
     no_detail = BranchControlResiduals(old.geometry, old.interaction, old.target_token_hw)
     expected, _ = controller(no_detail, denoise_progress=0.8)
-    disabled, _ = controller(old, denoise_progress=0.8, detail_strength=0.0)
+    disabled, _ = controller(
+        old, denoise_progress=0.8, detail_strength=detail_strength
+    )
     assert all(torch.equal(a, b) for a, b in zip(expected, disabled))
+
+
+def test_mixed_batch_detail_strength_requires_masks_and_applies_per_sample() -> None:
+    controller = ControlStrengthController()
+    residuals = _residuals()
+    strength = torch.tensor([0.0, 1.0])
+    with pytest.raises(ValueError, match="detail_region_masks"):
+        controller(residuals, denoise_progress=1.0, detail_strength=strength)
+    expected, _ = controller(
+        BranchControlResiduals(
+            residuals.geometry, residuals.interaction, residuals.target_token_hw
+        ),
+        denoise_progress=1.0,
+    )
+    actual, _ = controller(
+        residuals,
+        denoise_progress=1.0,
+        detail_strength=strength,
+        detail_region_masks=torch.ones(2, 2, 3, 2, 2),
+    )
+    assert all(torch.equal(before[0], after[0]) for before, after in zip(expected, actual))
+    assert all(not torch.equal(before[1], after[1]) for before, after in zip(expected, actual))
 
 
 def test_prepared_control_preserves_optional_detail_and_cfg_order() -> None:
@@ -141,9 +171,15 @@ def test_legacy_allowlist_strict_roundtrip_and_detail_only_freeze() -> None:
         and key != "control_interface.strength_controller.detail_log_group_scale"
     }
     loaded = UnifiedSMPLXAdapterV6.build_tiny(hidden_dim=16, geometry_channels=4)
-    result = load_v63_checkpoint(
-        loaded, {"adapter_state_dict": v63_state, "optimizer_state_dict": {"bad": True}}
-    )
+    with pytest.raises(
+        RuntimeError,
+        match="V6.3 optimizer state is incompatible.*must not be restored",
+    ):
+        load_v63_checkpoint(
+            loaded,
+            {"adapter_state_dict": v63_state, "optimizer_state_dict": {"bad": True}},
+        )
+    result = load_v63_checkpoint(loaded, {"adapter_state_dict": v63_state})
     assert result.missing_keys and all("detail" in key for key in result.missing_keys)
     assert all(torch.count_nonzero(head.weight) == 0 for head in loaded.control_core.detail_zero_heads)
     corrupted = dict(v63_state)

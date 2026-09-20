@@ -133,10 +133,11 @@ class ControlStrengthController(nn.Module):
                 zip(residuals.geometry, residuals.interaction)
             )
         )
-        detail_is_disabled = (
-            residuals.detail is None
-            or (not torch.is_tensor(detail_strength) and float(detail_strength) == 0.0)
-        )
+        if torch.is_tensor(detail_strength):
+            zero_detail_strength = bool(torch.count_nonzero(detail_strength) == 0)
+        else:
+            zero_detail_strength = float(detail_strength) == 0.0
+        detail_is_disabled = residuals.detail is None or zero_detail_strength
         if not detail_is_disabled:
             if detail_region_masks is None:
                 raise ValueError("detail_region_masks are required when detail residuals are active")

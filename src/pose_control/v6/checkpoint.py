@@ -31,6 +31,10 @@ def load_v63_checkpoint(
 ) -> torch.nn.modules.module._IncompatibleKeys:
     """Load V6.3 adapter weights while allowing only newly introduced detail keys."""
 
+    if "optimizer_state_dict" in checkpoint:
+        raise RuntimeError(
+            "V6.3 optimizer state is incompatible with V6.4 and must not be restored"
+        )
     result = model.load_state_dict(_adapter_state(checkpoint), strict=False)
     if result.unexpected_keys:
         raise RuntimeError(
