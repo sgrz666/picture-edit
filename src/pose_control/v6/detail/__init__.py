@@ -12,7 +12,9 @@ from .encoders import (
     DetailSpatialEncoder,
     ReferenceFeatureProvider,
     canonicalize_left_hand_keypoints,
+    canonicalize_left_hand_pose,
     restore_left_hand_keypoints,
+    restore_left_hand_pose,
 )
 from .preparer import FaceHandDetailPreparer, soft_box_masks
 
@@ -27,6 +29,8 @@ __all__ = [
     "PreparedFaceHandDetailConditioning",
     "ReferenceFeatureProvider",
     "canonicalize_left_hand_keypoints",
+    "canonicalize_left_hand_pose",
     "restore_left_hand_keypoints",
+    "restore_left_hand_pose",
     "soft_box_masks",
 ]

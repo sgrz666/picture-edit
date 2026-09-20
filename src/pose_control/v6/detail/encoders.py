@@ -30,6 +30,26 @@ def restore_left_hand_keypoints(keypoints: torch.Tensor) -> torch.Tensor:
 
     return canonicalize_left_hand_keypoints(keypoints)
 
+def canonicalize_left_hand_pose(pose: torch.Tensor) -> torch.Tensor:
+    """Reflect SMPL-X/MANO local axis-angle triplets into right-hand space.
+
+    SMPL-X stores the 15 MANO joint rotations as consecutive local axis-angle
+    triplets [rx, ry, rz]. Under horizontal reflection an axial vector
+    transforms as [rx, -ry, -rz].
+    """
+
+    if pose.shape[-1] != 45 or not pose.is_floating_point():
+        raise ValueError("left-hand pose must end with 45 floating axis-angle values")
+    canonical = pose.reshape(*pose.shape[:-1], 15, 3).clone()
+    canonical[..., 1:] = -canonical[..., 1:]
+    return canonical.reshape_as(pose)
+
+
+def restore_left_hand_pose(pose: torch.Tensor) -> torch.Tensor:
+    """Invert left-hand SMPL-X/MANO axis-angle canonicalization."""
+
+    return canonicalize_left_hand_pose(pose)
+
 
 class DetailSpatialEncoder(nn.Module):
     """Trainable local encoder for landmarks plus SMPL-X detail parameters."""
@@ -63,10 +83,13 @@ class DetailSpatialEncoder(nn.Module):
         left_keypoints = canonicalize_left_hand_keypoints(
             condition.hand_keypoints[:, :, 0]
         )
+        left_pose = canonicalize_left_hand_pose(
+            condition.smplx_detail[..., 13:58]
+        )
         left_input = torch.cat(
             (
                 left_keypoints.reshape(batch_size, 2, -1),
-                condition.smplx_detail[..., 13:58],
+                left_pose,
             ),
             dim=-1,
         )
@@ -133,7 +156,7 @@ class DetailAppearanceEncoder(nn.Module):
     def local_image_features(images: torch.Tensor) -> torch.Tensor:
         mean = images.mean(dim=(-1, -2))
         variance = images.var(dim=(-1, -2), unbiased=False)
-        return torch.cat((mean, variance.sqrt()), dim=-1)
+        return torch.cat((mean, torch.sqrt(variance + 1e-6)), dim=-1)
 
     def forward(
         self,
@@ -156,6 +179,12 @@ class DetailAppearanceEncoder(nn.Module):
             or reference_features.device != references.device
         ):
             raise ValueError("reference_features must be floating and colocated with references")
+        feature_valid = references.reference_valid[..., None]
+        reference_features = torch.where(
+            feature_valid, reference_features, torch.zeros_like(reference_features)
+        )
+        if not torch.isfinite(reference_features).all():
+            raise ValueError("valid reference_features must contain only finite values")
         projected = self.projection(reference_features).reshape(
             references.batch_size,
             2,

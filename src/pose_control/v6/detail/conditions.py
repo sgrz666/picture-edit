@@ -191,6 +191,8 @@ class PreparedFaceHandDetailConditioning:
 
     def validate(self) -> "PreparedFaceHandDetailConditioning":
         batch_size = self.batch_size
+        if batch_size == 0:
+            raise ValueError("prepared detail batch must be non-empty")
         if self.detail_condition.ndim != 4 or self.detail_condition.shape[1] != 144:
             raise ValueError("detail_condition must have shape [B,144,Hlat,Wlat]")
         if self.detail_tokens.ndim != 3 or self.detail_tokens.shape[:2] != (batch_size, 48):
@@ -238,8 +240,12 @@ class PreparedFaceHandDetailConditioning:
         return _moved(self, *args, **kwargs)
 
     def expand_to_batch(self, batch_size: int) -> "PreparedFaceHandDetailConditioning":
+        if self.batch_size == 0:
+            raise ValueError("prepared detail batch must be non-empty")
         if batch_size <= 0 or batch_size % self.batch_size:
-            raise ValueError("expanded batch size must be a positive multiple of the current batch")
+            raise ValueError(
+                "expanded batch size must be a positive multiple of the current batch"
+            )
         repeats = batch_size // self.batch_size
         values = {}
         for item in fields(self):

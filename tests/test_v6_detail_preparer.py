@@ -1,7 +1,8 @@
 from __future__ import annotations
 
-from dataclasses import fields
+from dataclasses import fields, replace
 
+import pytest
 import torch
 
 from src.pose_control.v6.detail import (
@@ -46,14 +47,37 @@ def make_inputs() -> tuple[FaceHandDetailCondition, DetailReferenceBatch]:
 def build_preparer(token_dim: int = 12) -> FaceHandDetailPreparer:
     return FaceHandDetailPreparer(
         token_dim=token_dim,
-        person_binder=PersonTokenBinder(token_dim=token_dim),
         hidden_dim=24,
     ).eval()
 
 
+def prepare_detail(
+    preparer: FaceHandDetailPreparer,
+    condition: FaceHandDetailCondition,
+    references: DetailReferenceBatch,
+    latent_spatial_size: tuple[int, int],
+    token_spatial_size: tuple[int, int],
+    source_latents: torch.Tensor | None = None,
+):
+    person_binder = PersonTokenBinder(token_dim=12)
+    person_binding = person_binder.binding_for(
+        condition.source_indices, condition.person_valid
+    )
+    return preparer(
+        condition,
+        references,
+        latent_spatial_size,
+        token_spatial_size,
+        source_latents,
+        person_binding=person_binding,
+    )
+
+
 def test_preparer_emits_exact_shapes_masks_and_zero_optional_canvas() -> None:
     condition, references = make_inputs()
-    prepared = build_preparer()(condition, references, (6, 5), (3, 4))
+    prepared = prepare_detail(
+        build_preparer(), condition, references, (6, 5), (3, 4)
+    )
     assert prepared.detail_condition.shape == (2, 144, 6, 5)
     assert prepared.detail_tokens.shape == (2, 48, 12)
     assert prepared.detail_token_mask.shape == (2, 48)
@@ -80,7 +104,7 @@ def test_preparer_emits_exact_shapes_masks_and_zero_optional_canvas() -> None:
 def test_missing_references_use_null_appearance_but_target_invalid_tokens_stay_zero() -> None:
     condition, references = make_inputs()
     preparer = build_preparer()
-    prepared = preparer(condition, references, (4, 4), (4, 4))
+    prepared = prepare_detail(preparer, condition, references, (4, 4), (4, 4))
     face_tokens = prepared.detail_tokens.reshape(2, 2, 3, 8, 12)[0, 0, 0]
     assert torch.count_nonzero(face_tokens) > 0
     invalid = prepared.detail_tokens.reshape(2, 2, 3, 8, 12)[1, 0, 1]
@@ -89,17 +113,49 @@ def test_missing_references_use_null_appearance_but_target_invalid_tokens_stay_z
 
 def test_source_canvas_is_gated_and_overlap_does_not_additively_amplify() -> None:
     condition, references = make_inputs()
-    source_latents = torch.ones(2, 16, 5, 7)
-    prepared = build_preparer()(condition, references, (6, 5), (3, 4), source_latents)
+    index = torch.tensor([0])
+    condition = condition.index_select(index)
+    references = references.index_select(index)
+    source_boxes = torch.tensor(
+        [[
+            [[0.05, 0.05, 0.40, 0.40], [0.60, 0.05, 0.95, 0.40], [0.05, 0.60, 0.40, 0.95]],
+            [[0.60, 0.60, 0.95, 0.95], [0.30, 0.05, 0.65, 0.40], [0.30, 0.60, 0.65, 0.95]],
+        ]],
+        requires_grad=True,
+    )
+    target_boxes = torch.tensor(
+        [[
+            [[0.10, 0.10, 0.80, 0.80], [0.20, 0.15, 0.90, 0.85], [0.15, 0.20, 0.85, 0.90]],
+            [[0.10, 0.15, 0.80, 0.85], [0.20, 0.10, 0.90, 0.80], [0.15, 0.15, 0.85, 0.85]],
+        ]],
+        requires_grad=True,
+    )
+    condition = replace(
+        condition, source_boxes=source_boxes, target_boxes=target_boxes
+    )
+    source_latents = torch.linspace(0, 1, 16 * 8 * 8).reshape(
+        1, 16, 8, 8
+    ).requires_grad_()
+    prepared = prepare_detail(
+        build_preparer(), condition, references, (8, 8), (4, 4), source_latents
+    )
     canvas = prepared.detail_condition[:, :16]
     assert torch.count_nonzero(canvas) > 0
     assert canvas.min() >= 0
-    assert canvas.max() <= 1.0 + 1e-6
+    assert canvas.max() <= source_latents.max() + 1e-6
+
+    gradients = torch.autograd.grad(
+        canvas.square().mean(), (source_latents, source_boxes, target_boxes)
+    )
+    assert all(torch.isfinite(gradient).all() for gradient in gradients)
+    assert all(torch.count_nonzero(gradient) > 0 for gradient in gradients)
 
 
 def test_prepared_to_index_select_and_cfg_expansion_preserve_order() -> None:
     condition, references = make_inputs()
-    prepared = build_preparer()(condition, references, (4, 5), (2, 3))
+    prepared = prepare_detail(
+        build_preparer(), condition, references, (4, 5), (2, 3)
+    )
     converted = prepared.to(dtype=torch.float64)
     assert converted.detail_condition.dtype == torch.float64
     assert converted.detail_tokens.dtype == torch.float64
@@ -125,8 +181,22 @@ def test_prepared_to_index_select_and_cfg_expansion_preserve_order() -> None:
 def test_empty_sample_is_exactly_zero_and_marked_invalid() -> None:
     condition, references = make_inputs()
     condition.region_valid[1] = False
-    prepared = build_preparer()(condition, references, (4, 4), (2, 2))
+    prepared = prepare_detail(
+        build_preparer(), condition, references, (4, 4), (2, 2)
+    )
     assert not prepared.detail_valid[1]
     assert torch.count_nonzero(prepared.detail_condition[1]) == 0
     assert torch.count_nonzero(prepared.detail_tokens[1]) == 0
     assert torch.count_nonzero(prepared.region_masks[1]) == 0
+
+
+def test_zero_sized_prepared_batches_are_rejected_before_expansion() -> None:
+    condition, references = make_inputs()
+    prepared = prepare_detail(
+        build_preparer(), condition, references, (4, 4), (2, 2)
+    )
+    empty = prepared.index_select(torch.empty(0, dtype=torch.long))
+    with pytest.raises(ValueError, match="non-empty"):
+        empty.validate()
+    with pytest.raises(ValueError, match="non-empty"):
+        empty.expand_to_batch(2)

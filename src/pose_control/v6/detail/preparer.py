@@ -4,7 +4,6 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-from ..token_encoders import PersonTokenBinder
 from .conditions import (
     DetailReferenceBatch,
     FaceHandDetailCondition,
@@ -52,19 +51,14 @@ class FaceHandDetailPreparer(nn.Module):
         self,
         *,
         token_dim: int,
-        person_binder: PersonTokenBinder | None = None,
         hidden_dim: int = 256,
     ) -> None:
         super().__init__()
-        if person_binder is None:
-            person_binder = PersonTokenBinder(token_dim=token_dim)
         self.spatial_encoder = DetailSpatialEncoder(hidden_dim=hidden_dim)
         self.appearance_encoder = DetailAppearanceEncoder(
             token_dim=token_dim, hidden_dim=hidden_dim
         )
-        self.token_binder = DetailTokenBinder(
-            token_dim=token_dim, person_binder=person_binder
-        )
+        self.token_binder = DetailTokenBinder(token_dim=token_dim)
 
     @staticmethod
     def _validate_source_latents(
@@ -135,6 +129,7 @@ class FaceHandDetailPreparer(nn.Module):
         source_latents: torch.Tensor | None = None,
         *,
         reference_features: torch.Tensor | None = None,
+        person_binding: torch.Tensor,
     ) -> PreparedFaceHandDetailConditioning:
         condition.validate()
         references.validate()
@@ -144,12 +139,23 @@ class FaceHandDetailPreparer(nn.Module):
             raise ValueError("condition and references must be on the same device")
         if references.images.dtype != condition.face_keypoints.dtype:
             raise ValueError("condition and reference images must use the same dtype")
+        if person_binding.ndim != 3 or person_binding.shape[:2] != (
+            condition.batch_size,
+            2,
+        ):
+            raise ValueError("person_binding must have shape [B,2,D]")
+        if not person_binding.is_floating_point() or person_binding.device != condition.device:
+            raise ValueError("person_binding must be floating and colocated with condition")
+
         if source_latents is not None:
             self._validate_source_latents(source_latents, condition)
 
         parameter = next(self.parameters())
         condition = condition.to(device=parameter.device, dtype=parameter.dtype)
         references = references.to(device=parameter.device, dtype=parameter.dtype)
+        person_binding = person_binding.to(
+            device=parameter.device, dtype=parameter.dtype
+        )
         if reference_features is not None:
             reference_features = reference_features.to(
                 device=parameter.device, dtype=parameter.dtype
@@ -184,7 +190,7 @@ class FaceHandDetailPreparer(nn.Module):
             references, reference_features=reference_features
         )
         detail_tokens, detail_token_mask = self.token_binder(
-            region_tokens, condition.region_valid, condition.source_indices
+            region_tokens, condition.region_valid, person_binding
         )
         return PreparedFaceHandDetailConditioning(
             detail_condition=detail_condition,
