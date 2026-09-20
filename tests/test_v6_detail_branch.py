@@ -121,6 +121,21 @@ def test_detail_strength_zero_and_missing_detail_are_exact_old_parity(
     assert all(torch.equal(a, b) for a, b in zip(expected, disabled))
 
 
+@pytest.mark.parametrize(
+    "invalid_strength",
+    (torch.zeros(3), torch.zeros(2, 1), torch.empty(0)),
+)
+def test_all_zero_detail_strength_rejects_unsupported_tensor_shapes(
+    invalid_strength,
+) -> None:
+    with pytest.raises(ValueError, match=r"shape \[B\]"):
+        ControlStrengthController()(
+            _residuals(),
+            denoise_progress=0.8,
+            detail_strength=invalid_strength,
+        )
+
+
 def test_mixed_batch_detail_strength_requires_masks_and_applies_per_sample() -> None:
     controller = ControlStrengthController()
     residuals = _residuals()

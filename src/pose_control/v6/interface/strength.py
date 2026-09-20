@@ -133,6 +133,7 @@ class ControlStrengthController(nn.Module):
                 zip(residuals.geometry, residuals.interaction)
             )
         )
+        detail_strength = self._sample_gate(detail_strength, reference)
         if torch.is_tensor(detail_strength):
             zero_detail_strength = bool(torch.count_nonzero(detail_strength) == 0)
         else:
@@ -151,7 +152,6 @@ class ControlStrengthController(nn.Module):
             face_gate = face[:, :, None] * face_strength
             hand_gate = hands[:, :, None] * hand_strength
             region_gate = torch.maximum(face_gate, hand_gate)
-            detail_strength = self._sample_gate(detail_strength, reference)
             output = tuple(
                 current + detail * region_gate * detail_strength * detail_schedule * detail_gates[index]
                 for index, (current, detail) in enumerate(zip(output, residuals.detail))
