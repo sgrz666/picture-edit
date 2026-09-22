@@ -7,6 +7,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 from ..control_core import SharedRecurrentControlCore
+from ..face.adapter import FaceControlAdapter
 from .outputs import (
     BranchControlResiduals,
     DeepGenControlOutput,
@@ -76,11 +77,16 @@ class DeepGenControlInterface(nn.Module):
         geometry_schedule: StrengthScheduleConfig | None = None,
         interaction_schedule: StrengthScheduleConfig | None = None,
         detail_schedule: StrengthScheduleConfig | None = None,
+        face_schedule: StrengthScheduleConfig | None = None,
+        face_texture_schedule: StrengthScheduleConfig | None = None,
+        face_adapter: FaceControlAdapter | None = None,
+        enable_face_controller: bool = False,
     ) -> None:
         super().__init__()
         if num_transformer_layers <= 0 or num_transformer_layers % control_core.num_stages:
             raise ValueError("transformer layers must divide evenly across control groups")
         self.control_core = control_core
+        self.face_adapter = face_adapter
         self.num_transformer_layers = num_transformer_layers
         self.context_pre_only_blocks = (
             (num_transformer_layers - 1,)
@@ -92,6 +98,9 @@ class DeepGenControlInterface(nn.Module):
             geometry_schedule=geometry_schedule,
             interaction_schedule=interaction_schedule,
             detail_schedule=detail_schedule,
+            face_schedule=face_schedule,
+            face_texture_schedule=face_texture_schedule,
+            enable_face=enable_face_controller or face_adapter is not None,
         )
 
     @property
@@ -116,12 +125,18 @@ class DeepGenControlInterface(nn.Module):
         timestep: torch.Tensor,
         joint_attention_kwargs: Optional[dict] = None,
         detail_active: torch.Tensor | None = None,
+        face_active: torch.Tensor | None = None,
+        face_texture_scale: float | torch.Tensor = 1.0,
     ) -> BranchControlResiduals:
         prepared = prepared.validate().expand_to_batch(target_latents.shape[0])
         if detail_active is not None:
             if detail_active.shape != (target_latents.shape[0],) or detail_active.dtype != torch.bool:
                 raise ValueError("detail_active must have shape [B] and dtype bool")
             detail_active = detail_active.to(device=target_latents.device)
+        if face_active is not None:
+            if face_active.shape != (target_latents.shape[0],) or face_active.dtype != torch.bool:
+                raise ValueError("face_active must have shape [B] and dtype bool")
+            face_active = face_active.to(device=target_latents.device)
         target_size = target_latents.shape[-2:]
         geometry_condition = F.interpolate(
             prepared.geometry_condition,
@@ -151,6 +166,7 @@ class DeepGenControlInterface(nn.Module):
             if prepared.detail is None
             else tuple(torch.zeros_like(value) for value in geometry)
         )
+        face = None
 
         detail_condition = None
         if prepared.detail is not None:
@@ -210,11 +226,25 @@ class DeepGenControlInterface(nn.Module):
                     current.index_copy(0, indices, update)
                     for current, update in zip(detail, group.detail)
                 )
+        if prepared.face is not None:
+            if self.face_adapter is None:
+                raise ValueError("prepared face conditioning requires an enabled face adapter")
+            if face_active is not None and not bool(face_active.any().item()):
+                face = tuple(torch.zeros_like(value) for value in geometry)
+            else:
+                face = self.face_adapter(
+                    prepared.face,
+                    target_token_hw=target_hw,
+                    timestep=timestep,
+                    texture_scale=face_texture_scale,
+                    face_active=face_active,
+                )
         return BranchControlResiduals(
             geometry=geometry,
             interaction=interaction,
             target_token_hw=target_hw,
             detail=detail,
+            face=face,
         ).validate()
 
     def forward(
@@ -238,17 +268,21 @@ class DeepGenControlInterface(nn.Module):
         detail_active = target_latents.new_zeros(
             target_latents.shape[0], dtype=torch.bool
         )
+        face_active = target_latents.new_zeros(
+            target_latents.shape[0], dtype=torch.bool
+        )
+
+        reference = target_latents.new_empty(target_latents.shape[0], 1, 1)
+
+        def per_sample(value) -> torch.Tensor:
+            gate = self.strength_controller._sample_gate(value, reference)
+            if not torch.is_tensor(gate):
+                return reference.new_full((reference.shape[0],), gate)
+            if gate.ndim == 0:
+                return gate.expand(reference.shape[0])
+            return gate[:, 0, 0]
+
         if expanded.detail is not None:
-            reference = target_latents.new_empty(target_latents.shape[0], 1, 1)
-
-            def per_sample(value) -> torch.Tensor:
-                gate = self.strength_controller._sample_gate(value, reference)
-                if not torch.is_tensor(gate):
-                    return reference.new_full((reference.shape[0],), gate)
-                if gate.ndim == 0:
-                    return gate.expand(reference.shape[0])
-                return gate[:, 0, 0]
-
             schedule = per_sample(
                 self.strength_controller.detail_schedule.multiplier(
                     denoise_progress
@@ -268,6 +302,29 @@ class DeepGenControlInterface(nn.Module):
                 & (detail_gate != 0)
                 & region_active
             )
+        if expanded.face is not None:
+            face_schedule = per_sample(
+                self.strength_controller.face_schedule.multiplier(
+                    denoise_progress
+                )
+            )
+            face_active = (
+                expanded.face.face_valid.any(dim=1)
+                & (face_schedule != 0)
+                & (per_sample(detail_strength) != 0)
+                & (per_sample(face_strength) != 0)
+            )
+        texture_scale = self.strength_controller.face_texture_schedule.multiplier(
+            denoise_progress
+        )
+        face_active_people = 0
+        if expanded.face is not None:
+            face_active_people = int(
+                (
+                    expanded.face.face_valid
+                    & face_active[:, None]
+                ).sum().item()
+            )
         raw = self.build_raw_residuals(
             target_latents=target_latents,
             prepared=expanded,
@@ -276,6 +333,8 @@ class DeepGenControlInterface(nn.Module):
             timestep=timestep,
             joint_attention_kwargs=joint_attention_kwargs,
             detail_active=detail_active,
+            face_active=face_active,
+            face_texture_scale=texture_scale,
         )
         detail_region_masks = None
         if expanded.detail is not None:
@@ -311,6 +370,9 @@ class DeepGenControlInterface(nn.Module):
             {
                 "detail_active_rows": int(detail_active.sum().item()),
                 "detail_executed": bool(detail_active.any().item()),
+                "face_active_rows": int(face_active.sum().item()),
+                "face_active_people": face_active_people,
+                "face_executed": bool(face_active.any().item()),
                 "target_token_hw": list(raw.target_token_hw),
                 "target_token_count": raw.target_token_count,
                 "full_token_count": int(aligned[0].shape[1]),

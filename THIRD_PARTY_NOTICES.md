@@ -45,3 +45,16 @@ included:
   its inflated 3D convolutions are converted to 2D, the input is expanded to 73
   face channels, and the final projection uses ordinary initialization:
   https://github.com/jqliu09/mcld/blob/6279ff7/src/models/pose_guider.py
+- `src/pose_control/v6/face/adapter.py` adapts the independent image-prompt
+  key/value projection and PyTorch 2.0 scaled-dot-product attention pattern
+  from Visual Persona `model/visual_persona/attention_processor.py` at commit
+  `d393d09`. It is rewritten as a recurrent ROI-local DiT adapter with six
+  low-rank stages, timestep FiLM, zero residual heads, and overlap-normalized
+  scatter for DeepGen target tokens:
+  https://github.com/cvlab-kaist/Visual-Persona/blob/d393d09/model/visual_persona/attention_processor.py
+- The optional face-control execution, classifier-free-guidance batch
+  expansion, and same-level addition of body/hand/face residuals follow the
+  pipeline organization in X-Dyna `animatediff/pipelines/pipeline_xdyna.py`
+  at commit `9a54f8e`; its SD1.5 UNet and ControlNet implementation are not
+  copied:
+  https://github.com/bytedance/X-Dyna/blob/9a54f8e/animatediff/pipelines/pipeline_xdyna.py

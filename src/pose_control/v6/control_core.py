@@ -18,6 +18,7 @@ class BranchControlResiduals:
     interaction: tuple[torch.Tensor, ...]
     target_token_hw: tuple[int, int]
     detail: tuple[torch.Tensor, ...] | None = None
+    face: tuple[torch.Tensor, ...] | None = None
 
     @property
     def target_token_count(self) -> int:
@@ -36,12 +37,16 @@ class BranchControlResiduals:
             raise ValueError("geometry and interaction must each contain six residuals")
         if self.detail is not None and len(self.detail) != 6:
             raise ValueError("detail must contain six residuals when provided")
+        if self.face is not None and len(self.face) != 6:
+            raise ValueError("face must contain six residuals when provided")
         if len(self.target_token_hw) != 2 or min(self.target_token_hw) <= 0:
             raise ValueError("target_token_hw must contain two positive dimensions")
         expected = None
         branches = [("geometry", self.geometry), ("interaction", self.interaction)]
         if self.detail is not None:
             branches.append(("detail", self.detail))
+        if self.face is not None:
+            branches.append(("face", self.face))
         for branch_name, branch in branches:
             for index, residual in enumerate(branch):
                 if residual.ndim != 3:

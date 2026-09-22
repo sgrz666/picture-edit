@@ -72,6 +72,9 @@ class ControlStrengthController(nn.Module):
         geometry_schedule: StrengthScheduleConfig | None = None,
         interaction_schedule: StrengthScheduleConfig | None = None,
         detail_schedule: StrengthScheduleConfig | None = None,
+        face_schedule: StrengthScheduleConfig | None = None,
+        face_texture_schedule: StrengthScheduleConfig | None = None,
+        enable_face: bool = False,
     ) -> None:
         super().__init__()
         if num_control_groups != 6:
@@ -86,9 +89,32 @@ class ControlStrengthController(nn.Module):
             start_multiplier=0.0,
             end_multiplier=1.0,
         )
+        self.face_schedule = face_schedule or StrengthScheduleConfig(
+            curve="cosine",
+            start_progress=0.35,
+            end_progress=1.0,
+            start_multiplier=0.0,
+            end_multiplier=1.0,
+        )
+        self.face_texture_schedule = face_texture_schedule or StrengthScheduleConfig(
+            curve="cosine",
+            start_progress=0.65,
+            end_progress=1.0,
+            start_multiplier=0.0,
+            end_multiplier=1.0,
+        )
         self.geometry_log_group_scale = nn.Parameter(torch.zeros(num_control_groups))
         self.interaction_log_group_scale = nn.Parameter(torch.zeros(num_control_groups))
         self.detail_log_group_scale = nn.Parameter(torch.zeros(num_control_groups))
+        if enable_face:
+            self.face_log_group_scale = nn.Parameter(torch.zeros(num_control_groups))
+            self.register_buffer(
+                "face_group_prior",
+                torch.tensor([0.1, 0.2, 0.5, 0.8, 1.0, 1.0]),
+            )
+        else:
+            self.register_parameter("face_log_group_scale", None)
+            self.register_buffer("face_group_prior", None)
 
     @staticmethod
     def _sample_gate(value, reference: torch.Tensor) -> torch.Tensor | float:
@@ -117,10 +143,18 @@ class ControlStrengthController(nn.Module):
         geo_schedule = self.geometry_schedule.multiplier(denoise_progress)
         int_schedule = self.interaction_schedule.multiplier(denoise_progress)
         detail_schedule = self.detail_schedule.multiplier(denoise_progress)
+        face_schedule = self.face_schedule.multiplier(denoise_progress)
+        face_texture_schedule = self.face_texture_schedule.multiplier(
+            denoise_progress
+        )
         geo_gates = self.geometry_log_group_scale.exp()
         int_gates = self.interaction_log_group_scale.exp()
         detail_gates = self.detail_log_group_scale.exp()
         reference = residuals.geometry[0]
+        if self.face_log_group_scale is None or self.face_group_prior is None:
+            face_gates = reference.new_zeros(self.num_control_groups)
+        else:
+            face_gates = self.face_log_group_scale.exp() * self.face_group_prior
         if detail_region_masks is not None:
             expected = (reference.shape[0], 2, 3, *residuals.target_token_hw)
             if tuple(detail_region_masks.shape) != expected:
@@ -136,6 +170,7 @@ class ControlStrengthController(nn.Module):
         geo_schedule = self._sample_gate(geo_schedule, reference)
         int_schedule = self._sample_gate(int_schedule, reference)
         detail_schedule = self._sample_gate(detail_schedule, reference)
+        face_schedule = self._sample_gate(face_schedule, reference)
         geometry_strength = self._sample_gate(geometry_strength, reference)
         interaction_strength = self._sample_gate(interaction_strength, reference)
         output = tuple(
@@ -148,6 +183,8 @@ class ControlStrengthController(nn.Module):
             )
         )
         detail_strength = self._sample_gate(detail_strength, reference)
+        face_strength = self._sample_gate(face_strength, reference)
+        hand_strength = self._sample_gate(hand_strength, reference)
         if torch.is_tensor(detail_strength):
             zero_detail_strength = bool(torch.count_nonzero(detail_strength) == 0)
         else:
@@ -158,14 +195,24 @@ class ControlStrengthController(nn.Module):
                 raise ValueError("detail_region_masks are required when detail residuals are active")
             face = detail_region_masks[:, :, 0].amax(dim=1).flatten(1)
             hands = detail_region_masks[:, :, 1:].amax(dim=(1, 2)).flatten(1)
-            face_strength = self._sample_gate(face_strength, reference)
-            hand_strength = self._sample_gate(hand_strength, reference)
             face_gate = face[:, :, None] * face_strength
             hand_gate = hands[:, :, None] * hand_strength
             region_gate = torch.maximum(face_gate, hand_gate)
             output = tuple(
                 current + detail * region_gate * detail_strength * detail_schedule * detail_gates[index]
                 for index, (current, detail) in enumerate(zip(output, residuals.detail))
+            )
+        if residuals.face is not None and not zero_detail_strength:
+            if self.face_log_group_scale is None:
+                raise ValueError("face residuals require a face-enabled strength controller")
+            output = tuple(
+                current
+                + face
+                * detail_strength
+                * face_strength
+                * face_schedule
+                * face_gates[index]
+                for index, (current, face) in enumerate(zip(output, residuals.face))
             )
 
         def diagnostic(value):
@@ -180,8 +227,11 @@ class ControlStrengthController(nn.Module):
             "geometry_schedule_multiplier": diagnostic(geo_schedule),
             "interaction_schedule_multiplier": diagnostic(int_schedule),
             "detail_schedule_multiplier": diagnostic(detail_schedule),
+            "face_schedule_multiplier": diagnostic(face_schedule),
+            "face_texture_schedule_multiplier": diagnostic(face_texture_schedule),
             "geometry_group_scales": geo_gates.detach().cpu().tolist(),
             "interaction_group_scales": int_gates.detach().cpu().tolist(),
             "detail_group_scales": detail_gates.detach().cpu().tolist(),
+            "face_group_scales": face_gates.detach().cpu().tolist(),
         }
         return output, diagnostics

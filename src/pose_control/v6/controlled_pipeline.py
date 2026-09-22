@@ -7,7 +7,8 @@ import torch
 
 from .conditions import AdapterIdentityCondition, ConditionBundle
 from .deepgen_adapter import UnifiedSMPLXAdapterV6
-from .detail import DetailReferenceBatch, FaceHandDetailCondition
+from .detail import DetailReferenceBatch, FaceHandDetailCondition, HandDetailCondition
+from .face import FaceFineCondition, FaceReferenceFeatures
 from .interface import PreparedControlConditioning
 
 
@@ -57,6 +58,10 @@ class ControlledDeepGenPipeline:
         width: int,
         detail_condition: FaceHandDetailCondition | None = None,
         detail_references: DetailReferenceBatch | None = None,
+        hand_condition: HandDetailCondition | None = None,
+        hand_references: DetailReferenceBatch | None = None,
+        face_condition: FaceFineCondition | None = None,
+        face_references: FaceReferenceFeatures | None = None,
     ) -> PreparedControlConditioning:
         scale = self._vae_scale_factor()
         if height % scale or width % scale:
@@ -68,6 +73,10 @@ class ControlledDeepGenPipeline:
             (height // scale, width // scale),
             detail_condition=detail_condition,
             detail_references=detail_references,
+            hand_condition=hand_condition,
+            hand_references=hand_references,
+            face_condition=face_condition,
+            face_references=face_references,
         )
 
     def __call__(
@@ -84,6 +93,10 @@ class ControlledDeepGenPipeline:
         hand_strength: float = 1.0,
         detail_condition: FaceHandDetailCondition | None = None,
         detail_references: DetailReferenceBatch | None = None,
+        hand_condition: HandDetailCondition | None = None,
+        hand_references: DetailReferenceBatch | None = None,
+        face_condition: FaceFineCondition | None = None,
+        face_references: FaceReferenceFeatures | None = None,
         cache_adapter_outputs: bool = True,
         num_inference_steps: int = 28,
         **pipeline_kwargs,
@@ -113,6 +126,10 @@ class ControlledDeepGenPipeline:
                     width=width,
                     detail_condition=detail_condition,
                     detail_references=detail_references,
+                    hand_condition=hand_condition,
+                    hand_references=hand_references,
+                    face_condition=face_condition,
+                    face_references=face_references,
                 )
         else:
             prepared_control.validate()
@@ -135,6 +152,10 @@ class ControlledDeepGenPipeline:
                 width=width,
                 detail_condition=detail_condition,
                 detail_references=detail_references,
+                hand_condition=hand_condition,
+                hand_references=hand_references,
+                face_condition=face_condition,
+                face_references=face_references,
             )
 
         def inject_control(module, args, kwargs):

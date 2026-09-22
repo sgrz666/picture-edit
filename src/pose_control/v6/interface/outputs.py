@@ -6,8 +6,9 @@ from typing import Any
 import torch
 
 from ..conditions import _to_preserving_discrete_dtype
-from ..control_core import BranchControlResiduals
+from ..control_core import BranchControlResiduals  # noqa: F401 - public re-export
 from ..detail import PreparedFaceHandDetailConditioning
+from ..face.conditions import PreparedFaceConditioning
 from ..reasoning import InternalControlState
 
 
@@ -23,6 +24,7 @@ class PreparedControlConditioning:
     interaction_valid: torch.Tensor
     control_state: InternalControlState
     detail: PreparedFaceHandDetailConditioning | None = None
+    face: PreparedFaceConditioning | None = None
 
     @property
     def batch_size(self) -> int:
@@ -56,6 +58,10 @@ class PreparedControlConditioning:
             self.detail.validate()
             if self.detail.batch_size != batch_size:
                 raise ValueError("detail batch does not match prepared conditions")
+        if self.face is not None:
+            self.face.validate()
+            if self.face.batch_size != batch_size:
+                raise ValueError("face batch does not match prepared conditions")
         invalid = ~self.interaction_valid
         if invalid.any() and torch.count_nonzero(self.interaction_condition[invalid]) != 0:
             raise ValueError("single-person interaction_condition must be exactly zero")
@@ -75,6 +81,7 @@ class PreparedControlConditioning:
             interaction_valid=self.interaction_valid.index_select(0, indices),
             control_state=self.control_state.index_select(indices),
             detail=None if self.detail is None else self.detail.index_select(indices),
+            face=None if self.face is None else self.face.index_select(indices),
         )
 
     def expand_to_batch(self, batch_size: int) -> "PreparedControlConditioning":
@@ -102,6 +109,7 @@ class PreparedControlConditioning:
             ),
             control_state=self.control_state.to(*args, **kwargs),
             detail=None if self.detail is None else self.detail.to(*args, **kwargs),
+            face=None if self.face is None else self.face.to(*args, **kwargs),
         )
 
 

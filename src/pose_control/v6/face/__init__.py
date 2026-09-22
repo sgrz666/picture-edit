@@ -28,6 +28,7 @@ from .spatial import (
     face_landmarks_to_heatmaps,
     render_face_landmark_heatmaps,
 )
+from .adapter import FaceAttentionBlock, FaceControlAdapter, scatter_face_roi_residuals
 
 __all__ = [
     "FaceFineCondition",
@@ -50,4 +51,7 @@ __all__ = [
     "FaceConditioningPreparer",
     "FaceConditionPreparer",
     "FacePreparer",
+    "FaceAttentionBlock",
+    "FaceControlAdapter",
+    "scatter_face_roi_residuals",
 ]

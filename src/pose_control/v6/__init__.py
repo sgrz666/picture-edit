@@ -10,13 +10,21 @@ from .conditions import (
 )
 from .deepgen_adapter import UnifiedSMPLXAdapterV6
 from .checkpoint import (
+    ARCHITECTURE_VERSION,
+    BRANCH_NAMES,
     DETAIL_SCHEMA_VERSION,
+    FACE_SCHEMA_VERSION,
     PREPROCESSING_SCHEMA_VERSION,
     build_v64_checkpoint,
+    build_v65_checkpoint,
     freeze_for_detail_training,
+    freeze_for_face_training,
     load_v63_checkpoint,
     load_v64_checkpoint,
+    load_v65_checkpoint,
 )
+from .detail import HandDetailCondition
+from .face import FaceFineCondition, FaceReferenceFeatures, PreparedFaceConditioning
 from .interface import (
     BranchControlResiduals,
     DeepGenControlInterface,
@@ -43,9 +51,19 @@ __all__ = [
     "UnifiedSMPLXAdapterV6",
     "InternalControlState",
     "DETAIL_SCHEMA_VERSION",
+    "FACE_SCHEMA_VERSION",
+    "ARCHITECTURE_VERSION",
+    "BRANCH_NAMES",
     "PREPROCESSING_SCHEMA_VERSION",
     "build_v64_checkpoint",
+    "build_v65_checkpoint",
     "freeze_for_detail_training",
+    "freeze_for_face_training",
     "load_v63_checkpoint",
     "load_v64_checkpoint",
+    "load_v65_checkpoint",
+    "FaceFineCondition",
+    "FaceReferenceFeatures",
+    "PreparedFaceConditioning",
+    "HandDetailCondition",
 ]

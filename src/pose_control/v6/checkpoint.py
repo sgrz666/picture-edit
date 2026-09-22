@@ -7,16 +7,28 @@ import torch
 import torch.nn as nn
 
 
-ARCHITECTURE_VERSION = "v6.4"
+ARCHITECTURE_VERSION = "v6.5"
 DETAIL_SCHEMA_VERSION = "1"
 PREPROCESSING_SCHEMA_VERSION = "1"
-BRANCH_NAMES = ["geometry", "interaction", "detail"]
+FACE_SCHEMA_VERSION = "1"
+BRANCH_NAMES = ["geometry", "interaction", "hand", "face"]
+V64_BRANCH_NAMES = ["geometry", "interaction", "detail"]
 
 DETAIL_ONLY_PREFIXES = (
     "detail_preparer.",
     "control_interface.control_core.detail_branch.",
     "control_interface.strength_controller.detail_log_group_scale",
 )
+
+FACE_ONLY_PREFIXES = (
+    "face_preparer.",
+    "control_interface.face_adapter.",
+    "control_interface.strength_controller.face_",
+)
+
+
+def _has_prefix(key: str, prefixes: tuple[str, ...]) -> bool:
+    return any(key.startswith(prefix) for prefix in prefixes)
 
 
 def _adapter_state(checkpoint: Mapping[str, Any]) -> Mapping[str, torch.Tensor]:
@@ -94,45 +106,55 @@ def load_v63_checkpoint(
             "V6.3 optimizer state is incompatible with V6.4 and must not be restored"
         )
     metadata = checkpoint.get("metadata")
-    if isinstance(metadata, Mapping) and metadata.get("architecture_version") == "v6.4":
-        raise RuntimeError("V6.3 loader rejects V6.4 metadata")
+    if isinstance(metadata, Mapping) and metadata.get("architecture_version") in {
+        "v6.4",
+        "v6.5",
+    }:
+        version = metadata.get("architecture_version")
+        raise RuntimeError(f"V6.3 loader rejects {version.upper()} metadata")
     state = _adapter_state(checkpoint)
     detail_keys = sorted(
         key
         for key in state
-        if any(key.startswith(prefix) for prefix in DETAIL_ONLY_PREFIXES)
+        if _has_prefix(key, DETAIL_ONLY_PREFIXES)
     )
     if detail_keys:
         raise RuntimeError(f"V6.3 checkpoint contains detail-only keys: {detail_keys}")
+    face_keys = sorted(
+        key for key in state if _has_prefix(key, FACE_ONLY_PREFIXES)
+    )
+    if face_keys:
+        raise RuntimeError(f"V6.3 checkpoint contains face-only keys: {face_keys}")
     model_keys = set(model.state_dict())
     expected_keys = {
         key
         for key in model_keys
-        if not any(key.startswith(prefix) for prefix in DETAIL_ONLY_PREFIXES)
+        if not _has_prefix(key, DETAIL_ONLY_PREFIXES + FACE_ONLY_PREFIXES)
     }
     _preflight_state(model, state, expected_keys)
     detail_branch = model.get_submodule("control_interface.control_core.detail_branch")
 
-    def rezero_detail_heads() -> None:
+    def rezero_new_heads() -> None:
         with torch.no_grad():
             for head in detail_branch.zero_heads:
                 nn.init.zeros_(head.weight)
                 if head.bias is not None:
                     nn.init.zeros_(head.bias)
+        _rezero_face_heads(model)
 
     result = _transactional_load(
         model,
         state,
         strict=False,
-        after_load=rezero_detail_heads,
+        after_load=rezero_new_heads,
     )
     return result
 
 
 def v64_checkpoint_metadata() -> dict[str, object]:
     return {
-        "architecture_version": ARCHITECTURE_VERSION,
-        "branch_names": list(BRANCH_NAMES),
+        "architecture_version": "v6.4",
+        "branch_names": list(V64_BRANCH_NAMES),
         "detail_schema_version": DETAIL_SCHEMA_VERSION,
         "preprocessing_schema_version": PREPROCESSING_SCHEMA_VERSION,
     }
@@ -146,7 +168,9 @@ def build_v64_checkpoint(
         raise ValueError(f"checkpoint extra keys are reserved: {sorted(reserved)}")
     checkpoint = {
         "adapter_state_dict": {
-            key: value.detach().clone() for key, value in model.state_dict().items()
+            key: value.detach().clone()
+            for key, value in model.state_dict().items()
+            if not _has_prefix(key, FACE_ONLY_PREFIXES)
         },
         "metadata": v64_checkpoint_metadata(),
     }
@@ -154,7 +178,25 @@ def build_v64_checkpoint(
     return checkpoint
 
 
-def load_v64_checkpoint(model: nn.Module, checkpoint: Mapping[str, Any]) -> None:
+def _rezero_face_heads(model: nn.Module) -> None:
+    interface = getattr(model, "control_interface", None)
+    face_adapter = getattr(interface, "face_adapter", None)
+    if face_adapter is None:
+        return
+    with torch.no_grad():
+        for head in face_adapter.zero_heads:
+            nn.init.zeros_(head.weight)
+            if head.bias is not None:
+                nn.init.zeros_(head.bias)
+
+
+def load_v64_checkpoint(
+    model: nn.Module, checkpoint: Mapping[str, Any]
+) -> torch.nn.modules.module._IncompatibleKeys:
+    if "optimizer_state_dict" in checkpoint:
+        raise RuntimeError(
+            "V6.4 optimizer state is incompatible with V6.5 and must not be restored"
+        )
     metadata = checkpoint.get("metadata")
     if not isinstance(metadata, Mapping):
         raise RuntimeError("V6.4 checkpoint metadata is missing")
@@ -162,6 +204,63 @@ def load_v64_checkpoint(model: nn.Module, checkpoint: Mapping[str, Any]) -> None
     for key, value in expected.items():
         if metadata.get(key) != value:
             raise RuntimeError(f"invalid V6.4 checkpoint metadata field {key!r}")
+    state = _adapter_state(checkpoint)
+    expected_keys = {
+        key for key in model.state_dict() if not _has_prefix(key, FACE_ONLY_PREFIXES)
+    }
+    _preflight_state(model, state, expected_keys)
+    return _transactional_load(
+        model,
+        state,
+        strict=expected_keys == set(model.state_dict()),
+        after_load=lambda: _rezero_face_heads(model),
+    )
+
+
+def v65_checkpoint_metadata(
+    *, feature_cache_fingerprint: str | None = None
+) -> dict[str, object]:
+    return {
+        "architecture_version": ARCHITECTURE_VERSION,
+        "branch_names": list(BRANCH_NAMES),
+        "detail_schema_version": DETAIL_SCHEMA_VERSION,
+        "face_schema_version": FACE_SCHEMA_VERSION,
+        "preprocessing_schema_version": PREPROCESSING_SCHEMA_VERSION,
+        "feature_cache_fingerprint": feature_cache_fingerprint,
+    }
+
+
+def build_v65_checkpoint(
+    model: nn.Module,
+    *,
+    feature_cache_fingerprint: str | None = None,
+    **extra: Any,
+) -> dict[str, Any]:
+    reserved = {"metadata", "adapter_state_dict"} & set(extra)
+    if reserved:
+        raise ValueError(f"checkpoint extra keys are reserved: {sorted(reserved)}")
+    checkpoint = {
+        "adapter_state_dict": {
+            key: value.detach().clone() for key, value in model.state_dict().items()
+        },
+        "metadata": v65_checkpoint_metadata(
+            feature_cache_fingerprint=feature_cache_fingerprint
+        ),
+    }
+    checkpoint.update(extra)
+    return checkpoint
+
+
+def load_v65_checkpoint(model: nn.Module, checkpoint: Mapping[str, Any]) -> None:
+    metadata = checkpoint.get("metadata")
+    if not isinstance(metadata, Mapping):
+        raise RuntimeError("V6.5 checkpoint metadata is missing")
+    expected = v65_checkpoint_metadata(
+        feature_cache_fingerprint=metadata.get("feature_cache_fingerprint")
+    )
+    for key, value in expected.items():
+        if metadata.get(key) != value:
+            raise RuntimeError(f"invalid V6.5 checkpoint metadata field {key!r}")
     state = _adapter_state(checkpoint)
     _preflight_state(model, state, set(model.state_dict()))
     _transactional_load(model, state, strict=True)
@@ -185,15 +284,34 @@ def freeze_for_detail_training(model: nn.Module) -> tuple[nn.Parameter, ...]:
     return tuple(selected)
 
 
+def freeze_for_face_training(model: nn.Module) -> tuple[nn.Parameter, ...]:
+    """Freeze every old branch and expose only the independent V6.5 face path."""
+
+    for parameter in model.parameters():
+        parameter.requires_grad_(False)
+    selected = []
+    for name, parameter in model.named_parameters():
+        if _has_prefix(name, FACE_ONLY_PREFIXES):
+            parameter.requires_grad_(True)
+            selected.append(parameter)
+    return tuple(selected)
+
+
 __all__ = [
     "ARCHITECTURE_VERSION",
     "BRANCH_NAMES",
     "DETAIL_ONLY_PREFIXES",
     "DETAIL_SCHEMA_VERSION",
+    "FACE_ONLY_PREFIXES",
+    "FACE_SCHEMA_VERSION",
     "PREPROCESSING_SCHEMA_VERSION",
     "build_v64_checkpoint",
+    "build_v65_checkpoint",
     "freeze_for_detail_training",
+    "freeze_for_face_training",
     "load_v63_checkpoint",
     "load_v64_checkpoint",
+    "load_v65_checkpoint",
     "v64_checkpoint_metadata",
+    "v65_checkpoint_metadata",
 ]

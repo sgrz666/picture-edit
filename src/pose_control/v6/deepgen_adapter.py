@@ -15,7 +15,13 @@ from .detail import (
     DetailReferenceBatch,
     FaceHandDetailCondition,
     FaceHandDetailPreparer,
+    HandDetailCondition,
+    hand_to_legacy_detail,
+    legacy_to_face_and_hand,
+    references_to_hand_only,
 )
+from .face import FaceConditioningPreparer, FaceFineCondition, FaceReferenceFeatures
+from .face.adapter import FaceControlAdapter
 from .interface import (
     DeepGenControlInterface,
     DeepGenControlOutput,
@@ -47,6 +53,14 @@ class UnifiedSMPLXAdapterV6(nn.Module):
         geometry_schedule: StrengthScheduleConfig | None = None,
         interaction_schedule: StrengthScheduleConfig | None = None,
         detail_schedule: StrengthScheduleConfig | None = None,
+        face_schedule: StrengthScheduleConfig | None = None,
+        face_texture_schedule: StrengthScheduleConfig | None = None,
+        enable_face_adapter: bool = False,
+        face_dim: int = 512,
+        face_rank: int = 64,
+        face_heads: int = 8,
+        face_resampler_depth: int = 4,
+        face_perceiver_depth: int = 4,
     ) -> None:
         super().__init__()
         token_dim = control_core.hidden_dim
@@ -81,7 +95,22 @@ class UnifiedSMPLXAdapterV6(nn.Module):
             geometry_schedule=geometry_schedule,
             interaction_schedule=interaction_schedule,
             detail_schedule=detail_schedule,
+            face_schedule=face_schedule,
+            face_texture_schedule=face_texture_schedule,
+            enable_face_controller=enable_face_adapter,
         )
+        self.face_preparer: FaceConditioningPreparer | None = None
+        if enable_face_adapter:
+            self.face_preparer = FaceConditioningPreparer(
+                resampler_depth=face_resampler_depth,
+                perceiver_depth=face_perceiver_depth,
+            )
+            self.control_interface.face_adapter = FaceControlAdapter(
+                face_dim=face_dim,
+                deepgen_dim=token_dim,
+                rank=face_rank,
+                heads=face_heads,
+            )
         self.geometry_channels = geometry_channels
         self.reasoning_config = reasoning_config
 
@@ -123,6 +152,8 @@ class UnifiedSMPLXAdapterV6(nn.Module):
         normal_backend: str = "native",
         depth_backend: str = "native",
         reasoning_config: AdapterReasoningConfig | None = None,
+        enable_face_adapter: bool = False,
+        face_dim: int = 32,
     ) -> "UnifiedSMPLXAdapterV6":
         cls._freeze_backbone(deepgen_backbone)
         core = SharedRecurrentControlCore.build_tiny(
@@ -141,6 +172,12 @@ class UnifiedSMPLXAdapterV6(nn.Module):
             normal_backend=normal_backend,
             depth_backend=depth_backend,
             reasoning_config=reasoning_config,
+            enable_face_adapter=enable_face_adapter,
+            face_dim=face_dim,
+            face_rank=max(4, face_dim // 4),
+            face_heads=num_heads,
+            face_resampler_depth=1,
+            face_perceiver_depth=1,
         )
 
     @classmethod
@@ -152,6 +189,7 @@ class UnifiedSMPLXAdapterV6(nn.Module):
         normal_backend: str = "native",
         depth_backend: str = "native",
         reasoning_config: AdapterReasoningConfig | None = None,
+        enable_face_adapter: bool = True,
     ) -> "UnifiedSMPLXAdapterV6":
         core = SharedRecurrentControlCore.from_deepgen_config(config)
         return cls(
@@ -160,6 +198,7 @@ class UnifiedSMPLXAdapterV6(nn.Module):
             normal_backend=normal_backend,
             depth_backend=depth_backend,
             reasoning_config=reasoning_config,
+            enable_face_adapter=enable_face_adapter,
             num_transformer_layers=config.num_layers,
             context_pre_only_blocks=(config.num_layers - 1,),
         )
@@ -173,6 +212,7 @@ class UnifiedSMPLXAdapterV6(nn.Module):
         normal_backend: str = "native",
         depth_backend: str = "native",
         reasoning_config: AdapterReasoningConfig | None = None,
+        enable_face_adapter: bool = True,
     ) -> "UnifiedSMPLXAdapterV6":
         if "block_controlnet_hidden_states" not in inspect.signature(
             deepgen_transformer.forward
@@ -193,6 +233,7 @@ class UnifiedSMPLXAdapterV6(nn.Module):
             normal_backend=normal_backend,
             depth_backend=depth_backend,
             reasoning_config=reasoning_config,
+            enable_face_adapter=enable_face_adapter,
             num_transformer_layers=len(deepgen_transformer.transformer_blocks),
             context_pre_only_blocks=pre_only,
         )
@@ -206,6 +247,7 @@ class UnifiedSMPLXAdapterV6(nn.Module):
         normal_backend: str = "native",
         depth_backend: str = "native",
         reasoning_config: AdapterReasoningConfig | None = None,
+        enable_face_adapter: bool = True,
     ) -> "UnifiedSMPLXAdapterV6":
         cls.freeze_deepgen_pipeline_components(pipeline)
         return cls.from_deepgen(
@@ -214,6 +256,7 @@ class UnifiedSMPLXAdapterV6(nn.Module):
             normal_backend=normal_backend,
             depth_backend=depth_backend,
             reasoning_config=reasoning_config,
+            enable_face_adapter=enable_face_adapter,
         )
 
     @property
@@ -260,6 +303,10 @@ class UnifiedSMPLXAdapterV6(nn.Module):
         target_latent_hw: tuple[int, int],
         detail_condition: FaceHandDetailCondition | None = None,
         detail_references: DetailReferenceBatch | None = None,
+        hand_condition: HandDetailCondition | None = None,
+        hand_references: DetailReferenceBatch | None = None,
+        face_condition: FaceFineCondition | None = None,
+        face_references: FaceReferenceFeatures | None = None,
     ) -> PreparedControlConditioning:
         state.validate()
         batch_size = state.batch_size
@@ -283,38 +330,83 @@ class UnifiedSMPLXAdapterV6(nn.Module):
         state = state.to(device=device, dtype=dtype)
         identity_condition = identity_condition.to(device=device, dtype=dtype)
         source_scene_latents = source_scene_latents.to(device=device, dtype=dtype)
+
+        if detail_condition is not None and hand_condition is not None:
+            raise ValueError("use either legacy detail_condition or hand_condition, not both")
+        if detail_references is not None and hand_references is not None:
+            raise ValueError("use either legacy detail_references or hand_references, not both")
+        legacy_face_condition = None
         if detail_condition is not None:
             detail_condition = detail_condition.to(device=device, dtype=dtype)
-            detail_condition.validate()
-            if detail_condition.batch_size != batch_size:
-                raise ValueError("detail condition batch does not match control state")
-            detail_person_valid = detail_condition.person_valid
-            if torch.any(detail_person_valid & ~state.person_valid):
-                raise ValueError(
-                    "each detail-valid person must be valid in the control state"
+            legacy_face_condition, hand_condition = legacy_to_face_and_hand(
+                detail_condition
+            )
+            if detail_references is not None:
+                hand_references = references_to_hand_only(
+                    detail_references.to(device=device, dtype=dtype)
                 )
-            expected_source_indices = identity_condition.effective_source_indices()
+        elif detail_references is not None:
+            raise ValueError("detail references require a detail condition")
+        if face_condition is None and face_references is not None:
+            face_condition = legacy_face_condition
+        if (face_condition is None) != (face_references is None):
+            raise ValueError("face_condition and face_references must be provided together")
+
+        expected_source_indices = identity_condition.effective_source_indices()
+
+        def validate_binding(name, condition, person_valid) -> None:
+            condition.validate()
+            if condition.batch_size != batch_size:
+                raise ValueError(f"{name} condition batch does not match control state")
+            if torch.any(person_valid & ~state.person_valid):
+                raise ValueError(
+                    f"each {name}-valid person must be valid in the control state"
+                )
             if torch.any(
-                detail_person_valid
-                & (detail_condition.source_indices != expected_source_indices)
+                person_valid & (condition.source_indices != expected_source_indices)
             ):
                 raise ValueError(
-                    "detail source_indices must match identity source_indices for every detail-valid person"
+                    f"{name} source_indices must match identity source_indices for every valid person"
                 )
-            if detail_references is None:
-                detail_references = DetailReferenceBatch(
+
+        if hand_condition is not None:
+            hand_condition = hand_condition.to(device=device, dtype=dtype)
+            validate_binding("detail", hand_condition, hand_condition.person_valid)
+            detail_condition = hand_to_legacy_detail(hand_condition).validate()
+            if hand_references is None:
+                hand_references = DetailReferenceBatch(
                     images=torch.zeros(
-                        batch_size, 2, 3, 1, 3, 224, 224,
-                        device=device, dtype=dtype,
+                        batch_size,
+                        2,
+                        3,
+                        1,
+                        3,
+                        224,
+                        224,
+                        device=device,
+                        dtype=dtype,
                     ),
                     reference_valid=torch.zeros(
                         batch_size, 2, 3, 1, device=device, dtype=torch.bool
                     ),
                 )
             else:
-                detail_references = detail_references.to(device=device, dtype=dtype)
-        elif detail_references is not None:
-            raise ValueError("detail references require a detail condition")
+                hand_references = references_to_hand_only(
+                    hand_references.to(device=device, dtype=dtype)
+                )
+        elif hand_references is not None:
+            raise ValueError("hand references require a hand condition")
+
+        if face_condition is not None:
+            if self.face_preparer is None or self.control_interface.face_adapter is None:
+                raise ValueError("face conditioning requires an enabled face adapter")
+            face_condition = face_condition.to(device=device, dtype=dtype)
+            assert face_references is not None
+            face_references = face_references.to(device=device, dtype=dtype)
+            validate_binding("face", face_condition, face_condition.face_valid)
+            face_references.validate()
+            if face_references.batch_size != batch_size:
+                raise ValueError("face reference batch does not match control state")
         bridged = self.condition_bridge(state)
         geometry_scene = F.interpolate(
             bridged.geometry_scene,
@@ -370,10 +462,10 @@ class UnifiedSMPLXAdapterV6(nn.Module):
         if detail_condition is not None:
             if target_latent_hw[0] % self.control_core.patch_size or target_latent_hw[1] % self.control_core.patch_size:
                 raise ValueError("target latent size must be divisible by control patch_size")
-            assert detail_references is not None
+            assert hand_references is not None
             prepared_detail = self.detail_preparer(
                 detail_condition,
-                detail_references,
+                hand_references,
                 target_latent_hw,
                 (
                     target_latent_hw[0] // self.control_core.patch_size,
@@ -382,6 +474,11 @@ class UnifiedSMPLXAdapterV6(nn.Module):
                 identity_condition.source_person_latents,
                 person_binding=person_binding,
             )
+        prepared_face = None
+        if face_condition is not None:
+            assert self.face_preparer is not None
+            assert face_references is not None
+            prepared_face = self.face_preparer(face_condition, face_references)
         return PreparedControlConditioning(
             geometry_condition=geometry_condition,
             interaction_condition=interaction_condition,
@@ -391,6 +488,7 @@ class UnifiedSMPLXAdapterV6(nn.Module):
             interaction_valid=state.interaction_valid,
             control_state=state,
             detail=prepared_detail,
+            face=prepared_face,
         ).validate()
 
     def prepare_conditioning(
@@ -401,6 +499,10 @@ class UnifiedSMPLXAdapterV6(nn.Module):
         target_latent_hw: tuple[int, int],
         detail_condition: FaceHandDetailCondition | None = None,
         detail_references: DetailReferenceBatch | None = None,
+        hand_condition: HandDetailCondition | None = None,
+        hand_references: DetailReferenceBatch | None = None,
+        face_condition: FaceFineCondition | None = None,
+        face_references: FaceReferenceFeatures | None = None,
     ) -> PreparedControlConditioning:
         condition_bundle.validate()
         identity_condition.validate(condition_bundle)
@@ -411,6 +513,10 @@ class UnifiedSMPLXAdapterV6(nn.Module):
             target_latent_hw=target_latent_hw,
             detail_condition=detail_condition,
             detail_references=detail_references,
+            hand_condition=hand_condition,
+            hand_references=hand_references,
+            face_condition=face_condition,
+            face_references=face_references,
         )
 
     def forward(
