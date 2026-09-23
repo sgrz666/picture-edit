@@ -34,7 +34,7 @@ def build_hand_inputs(cache: Mapping, source_index: int, target_index: int, lega
     valid = torch.zeros(1, 2, 2, 1, dtype=torch.bool)
     patches[0, 0, :, 0] = cache["dino_patches"][source_index].float()
     valid[0, 0, :, 0] = cache["reference_valid"][source_index]
-    return fine.validate(), HandReferenceFeatures(patches, valid).validate()
+    return fine.validate(), HandReferenceFeatures(patches, valid, fine.source_indices.clone()).validate()
 
 
 def frozen_digest(model) -> str:

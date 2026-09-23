@@ -66,6 +66,7 @@ class HandReferenceFeatures:
 
     dino_patches: torch.Tensor
     reference_valid: torch.Tensor
+    source_indices: torch.Tensor
 
     @property
     def batch_size(self):
@@ -77,7 +78,9 @@ class HandReferenceFeatures:
             raise ValueError("dino_patches must have shape [B,2,2,R,N,1536], R<=3")
         if self.reference_valid.shape != patches.shape[:4] or self.reference_valid.dtype != torch.bool:
             raise ValueError("reference_valid must be bool [B,2,2,R]")
-        if patches.device != self.reference_valid.device or not torch.isfinite(patches).all():
+        if self.source_indices.shape != (patches.shape[0], 2) or self.source_indices.dtype != torch.long:
+            raise ValueError("source_indices must be int64 [B,2]")
+        if patches.device != self.reference_valid.device or patches.device != self.source_indices.device or not torch.isfinite(patches).all():
             raise ValueError("reference tensors must be finite and colocated")
         return self
 

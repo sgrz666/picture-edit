@@ -53,6 +53,7 @@ def _inputs():
     references = HandReferenceFeatures(
         dino_patches=patches,
         reference_valid=torch.tensor([[[[True], [False]], [[False], [False]]]]),
+        source_indices=torch.tensor([[3, 0]]),
     )
     return condition, references
 
@@ -74,6 +75,15 @@ def test_hand_branch_zero_init_and_invalid_gradients():
     out = adapter(prepared, target_token_hw=(8, 8), timestep=torch.tensor([500.]))
     out[0].sum().backward()
     assert torch.count_nonzero(references.dino_patches.grad[~references.reference_valid[..., None, None].expand_as(references.dino_patches)]) == 0
+
+
+def test_source_index_binding_rejects_cross_person_reference():
+    condition, references = _inputs()
+    references.source_indices = torch.tensor([[4, 0]])
+    preparer = HandConditioningPreparer(dim=32, resampler_depth=1)
+    import pytest
+    with pytest.raises(ValueError, match="binding"):
+        preparer(condition, references)
 
 
 def test_mode_fusion_is_exclusive_and_preserves_global():

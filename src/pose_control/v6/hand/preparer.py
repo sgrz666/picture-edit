@@ -33,6 +33,8 @@ class HandConditioningPreparer(nn.Module):
         references.validate()
         if condition.batch_size != references.batch_size or condition.device != references.dino_patches.device:
             raise ValueError("condition/references batch and device must match")
+        if torch.any(condition.person_valid & (condition.source_indices != references.source_indices)):
+            raise ValueError("source-hand appearance binding does not match condition source_indices")
         parameter = next(self.parameters())
         condition = condition.to(device=parameter.device, dtype=parameter.dtype)
         references = references.to(device=parameter.device, dtype=parameter.dtype)
