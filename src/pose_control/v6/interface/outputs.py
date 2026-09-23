@@ -5,6 +5,8 @@ from typing import Any
 
 import torch
 
+from third_party.v65_face.xdyna import repeat_condition_batch
+
 from ..conditions import _to_preserving_discrete_dtype
 from ..control_core import BranchControlResiduals  # noqa: F401 - public re-export
 from ..detail import PreparedFaceHandDetailConditioning
@@ -88,8 +90,9 @@ class PreparedControlConditioning:
         if batch_size % self.batch_size:
             raise ValueError("prepared batch cannot be expanded to transformer batch")
         factor = batch_size // self.batch_size
-        indices = torch.arange(self.batch_size, device=self.geometry_condition.device).repeat(
-            factor
+        indices = repeat_condition_batch(
+            torch.arange(self.batch_size, device=self.geometry_condition.device),
+            factor,
         )
         return self.index_select(indices).validate()
 

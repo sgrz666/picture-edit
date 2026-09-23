@@ -7,6 +7,8 @@ from typing import Literal
 import torch
 import torch.nn as nn
 
+from third_party.v65_face.xdyna import add_optional_face_residual
+
 from .outputs import BranchControlResiduals
 
 
@@ -206,12 +208,14 @@ class ControlStrengthController(nn.Module):
             if self.face_log_group_scale is None:
                 raise ValueError("face residuals require a face-enabled strength controller")
             output = tuple(
-                current
-                + face
-                * detail_strength
-                * face_strength
-                * face_schedule
-                * face_gates[index]
+                add_optional_face_residual(
+                    current,
+                    face
+                    * detail_strength
+                    * face_strength
+                    * face_schedule
+                    * face_gates[index],
+                )
                 for index, (current, face) in enumerate(zip(output, residuals.face))
             )
 

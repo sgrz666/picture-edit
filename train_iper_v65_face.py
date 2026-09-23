@@ -145,12 +145,87 @@ def _optimizer_group_for_name(name: str) -> int:
     raise ValueError(f"unclassified Face parameter: {name}")
 
 
+class FP32MasterAdamW:
+    """AdamW with FP32 master weights for low-learning-rate BF16 training."""
+
+    def __init__(
+        self,
+        param_groups: Sequence[Mapping[str, Any]],
+        *,
+        weight_decay: float,
+    ) -> None:
+        master_groups: list[dict[str, Any]] = []
+        self._pairs: list[tuple[nn.Parameter, nn.Parameter]] = []
+        for group in param_groups:
+            model_parameters = list(group["params"])
+            masters: list[nn.Parameter] = []
+            for parameter in model_parameters:
+                if not isinstance(parameter, nn.Parameter):
+                    raise TypeError("optimizer parameters must be nn.Parameter instances")
+                master = nn.Parameter(
+                    parameter.detach().float().clone(),
+                    requires_grad=True,
+                )
+                masters.append(master)
+                self._pairs.append((parameter, master))
+            master_group = dict(group)
+            master_group["params"] = masters
+            master_groups.append(master_group)
+        if not self._pairs:
+            raise ValueError("FP32MasterAdamW requires at least one parameter")
+        self._optimizer = torch.optim.AdamW(
+            master_groups,
+            weight_decay=weight_decay,
+        )
+
+    @property
+    def param_groups(self) -> list[dict[str, Any]]:
+        return self._optimizer.param_groups
+
+    @property
+    def state(self):
+        return self._optimizer.state
+
+    @property
+    def master_parameters(self) -> tuple[nn.Parameter, ...]:
+        return tuple(master for _, master in self._pairs)
+
+    def zero_grad(self, set_to_none: bool = True) -> None:
+        for parameter, _ in self._pairs:
+            if set_to_none:
+                parameter.grad = None
+            elif parameter.grad is not None:
+                parameter.grad.zero_()
+        self._optimizer.zero_grad(set_to_none=set_to_none)
+
+    @torch.no_grad()
+    def step(self) -> None:
+        for parameter, master in self._pairs:
+            if parameter.grad is None:
+                master.grad = None
+            else:
+                gradient = parameter.grad.detach().float()
+                if master.grad is None:
+                    master.grad = gradient.clone()
+                else:
+                    master.grad.copy_(gradient)
+        self._optimizer.step()
+        for parameter, master in self._pairs:
+            parameter.copy_(master.to(dtype=parameter.dtype))
+
+    def state_dict(self) -> dict[str, Any]:
+        return self._optimizer.state_dict()
+
+    def load_state_dict(self, state_dict: Mapping[str, Any]) -> None:
+        self._optimizer.load_state_dict(dict(state_dict))
+
+
 def build_face_optimizer(
     model: nn.Module,
     *,
     phase: str,
     weight_decay: float = 0.01,
-) -> tuple[torch.optim.Optimizer, dict[str, list[str]]]:
+) -> tuple[FP32MasterAdamW, dict[str, list[str]]]:
     selected = select_face_trainable_parameters(model, phase=phase)
     grouped_parameters: list[list[nn.Parameter]] = [[], [], []]
     grouped_names = {
@@ -166,7 +241,7 @@ def build_face_optimizer(
     assigned = sum(len(values) for values in grouped_names.values())
     if assigned != len(selected) or len(set().union(*map(set, grouped_names.values()))) != len(selected):
         raise AssertionError("Face optimizer groups must cover each trainable parameter exactly once")
-    optimizer = torch.optim.AdamW(
+    optimizer = FP32MasterAdamW(
         [
             {"params": grouped_parameters[0], "lr": 1e-4, "name": labels[0]},
             {"params": grouped_parameters[1], "lr": 0.0, "name": labels[1]},
@@ -178,7 +253,7 @@ def build_face_optimizer(
 
 
 def update_face_optimizer_lrs(
-    optimizer: torch.optim.Optimizer,
+    optimizer: FP32MasterAdamW,
     *,
     step: int,
     warmup_steps: int = 1000,
@@ -253,6 +328,7 @@ def make_fixed_training_state(
     *,
     seed: int,
     max_timestep: int,
+    fixed_timestep: int | None = None,
     device: torch.device | str = "cpu",
     dtype: torch.dtype = torch.float32,
 ) -> dict[str, torch.Tensor]:
@@ -262,11 +338,22 @@ def make_fixed_training_state(
         raise ValueError("latent_shape must be [B,C,H,W]")
     if max_timestep < 0:
         raise ValueError("max_timestep must be non-negative")
+    if fixed_timestep is not None and not 0 <= fixed_timestep <= max_timestep:
+        raise ValueError("fixed_timestep must lie in [0,max_timestep]")
     generator = torch.Generator(device="cpu").manual_seed(int(seed))
     noise = torch.randn(tuple(latent_shape), generator=generator, dtype=torch.float32)
-    timestep = torch.randint(
-        0, max_timestep + 1, (int(latent_shape[0]),), generator=generator, dtype=torch.long
-    )
+    if fixed_timestep is None:
+        timestep = torch.randint(
+            0,
+            max_timestep + 1,
+            (int(latent_shape[0]),),
+            generator=generator,
+            dtype=torch.long,
+        )
+    else:
+        timestep = torch.full(
+            (int(latent_shape[0]),), int(fixed_timestep), dtype=torch.long
+        )
     return {
         "noise": noise.to(device=device, dtype=dtype),
         "timestep": timestep.to(device=device),
@@ -301,6 +388,25 @@ def compute_non_face_sha256(model: nn.Module) -> str:
     return hasher.hexdigest()
 
 
+def checkpoint_float_dtype(checkpoint: Mapping[str, Any]) -> torch.dtype:
+    """Infer the single floating dtype required by strict legacy migration."""
+
+    state = checkpoint.get("adapter_state_dict", checkpoint)
+    if not isinstance(state, Mapping):
+        raise RuntimeError("checkpoint adapter_state_dict must be a mapping")
+    dtypes = {
+        value.dtype
+        for value in state.values()
+        if torch.is_tensor(value) and value.is_floating_point()
+    }
+    if not dtypes:
+        raise RuntimeError("checkpoint contains no floating adapter tensors")
+    if len(dtypes) != 1:
+        names = ", ".join(sorted(str(value) for value in dtypes))
+        raise RuntimeError(f"checkpoint uses multiple floating dtypes: {names}")
+    return next(iter(dtypes))
+
+
 def _crop_batch(images: torch.Tensor, boxes: torch.Tensor, size: int = 112) -> torch.Tensor:
     """Differentiably crop one normalized face box per batch with grid_sample."""
 
@@ -332,6 +438,94 @@ def _feature_distance(
     return (predicted_features - target_features).square().mean(dim=-1)
 
 
+def _landmark_tensor(evaluator: nn.Module, crop: torch.Tensor) -> torch.Tensor:
+    landmarks = evaluator(crop.float())
+    if isinstance(landmarks, (tuple, list)):
+        landmarks = landmarks[-1]
+    if not torch.is_tensor(landmarks):
+        raise ValueError("landmark evaluator must return a tensor")
+    if landmarks.ndim == 2 and landmarks.shape[1] % 2 == 0:
+        landmarks = landmarks.reshape(landmarks.shape[0], -1, 2)
+    if landmarks.ndim != 3 or landmarks.shape[-1] < 2:
+        raise ValueError("landmark evaluator must return [B,K,2+] or [B,2K]")
+    return landmarks[..., :2]
+
+
+def _landmark_nme(
+    evaluator: nn.Module,
+    predicted_crop: torch.Tensor,
+    target_crop: torch.Tensor,
+) -> torch.Tensor:
+    predicted = _landmark_tensor(evaluator, predicted_crop)
+    target = _landmark_tensor(evaluator, target_crop)
+    if predicted.shape != target.shape:
+        raise ValueError("predicted and target landmark outputs must have the same shape")
+    diagonal = (target.amax(dim=1) - target.amin(dim=1)).norm(dim=-1).clamp_min(1e-6)
+    return (predicted - target).norm(dim=-1).mean(dim=-1) / diagonal
+
+
+def _pairwise_distance(
+    evaluator: nn.Module,
+    predicted_crop: torch.Tensor,
+    target_crop: torch.Tensor,
+) -> torch.Tensor:
+    distance = evaluator(predicted_crop.float(), target_crop.float())
+    if isinstance(distance, (tuple, list)):
+        distance = distance[-1]
+    if not torch.is_tensor(distance):
+        raise ValueError("pairwise evaluator must return a tensor")
+    if distance.ndim == 0:
+        return distance.expand(predicted_crop.shape[0])
+    if distance.shape[0] != predicted_crop.shape[0]:
+        raise ValueError("pairwise evaluator batch dimension does not match inputs")
+    return distance.reshape(distance.shape[0], -1).mean(dim=1)
+
+
+@torch.no_grad()
+def compute_face_validation_metrics(
+    face_on_pixels: torch.Tensor,
+    face_off_pixels: torch.Tensor,
+    target_pixels: torch.Tensor,
+    boxes: torch.Tensor,
+    *,
+    identity_evaluator: nn.Module | None = None,
+    lpips_evaluator: nn.Module | None = None,
+    landmark_evaluator: nn.Module | None = None,
+) -> dict[str, float]:
+    """Measure fixed-pair FaceSim, face perceptual distance, and landmark NME."""
+
+    if face_on_pixels.shape != target_pixels.shape or face_off_pixels.shape != target_pixels.shape:
+        raise ValueError("Face ON/OFF and target pixels must have identical shapes")
+    on_crop = _crop_batch(face_on_pixels.float(), boxes.float())
+    off_crop = _crop_batch(face_off_pixels.float(), boxes.float())
+    target_crop = _crop_batch(target_pixels.float(), boxes.float())
+    metrics: dict[str, float] = {}
+    if identity_evaluator is not None:
+        on_distance = _feature_distance(
+            identity_evaluator, on_crop, target_crop, cosine=True
+        )
+        off_distance = _feature_distance(
+            identity_evaluator, off_crop, target_crop, cosine=True
+        )
+        metrics["face_on_similarity"] = float((1.0 - on_distance).mean().cpu())
+        metrics["face_off_similarity"] = float((1.0 - off_distance).mean().cpu())
+    if lpips_evaluator is not None:
+        metrics["face_on_lpips"] = float(
+            _pairwise_distance(lpips_evaluator, on_crop, target_crop).mean().cpu()
+        )
+        metrics["face_off_lpips"] = float(
+            _pairwise_distance(lpips_evaluator, off_crop, target_crop).mean().cpu()
+        )
+    if landmark_evaluator is not None:
+        metrics["face_on_landmark_nme"] = float(
+            _landmark_nme(landmark_evaluator, on_crop, target_crop).mean().cpu()
+        )
+        metrics["face_off_landmark_nme"] = float(
+            _landmark_nme(landmark_evaluator, off_crop, target_crop).mean().cpu()
+        )
+    return metrics
+
+
 def _load_torchscript_evaluator(path: str | None, *, label: str, device: torch.device) -> nn.Module:
     if not path:
         raise RuntimeError(
@@ -347,14 +541,20 @@ def _load_torchscript_evaluator(path: str | None, *, label: str, device: torch.d
     return evaluator
 
 
-def decode_latents_to_pixels(pipe: Any, latents: torch.Tensor) -> torch.Tensor:
-    """Decode DeepGen latents to [-1,1], supporting custom and Diffusers VAEs."""
+def decode_latents_to_pixels(
+    pipe: Any,
+    latents: torch.Tensor,
+    *,
+    differentiable: bool = False,
+) -> torch.Tensor:
+    """Decode latents, bypassing no-grad pipeline wrappers during training."""
 
-    if hasattr(pipe, "latents_to_pixels"):
+    if not differentiable and hasattr(pipe, "latents_to_pixels"):
         return pipe.latents_to_pixels(latents)
     vae = getattr(pipe, "vae", None)
     if vae is None or not hasattr(vae, "decode"):
-        raise RuntimeError("DeepGen pipeline exposes neither latents_to_pixels nor vae.decode")
+        mode = "differentiable vae.decode" if differentiable else "latent decoder"
+        raise RuntimeError(f"DeepGen pipeline exposes no {mode}")
     config = getattr(vae, "config", None)
     scaling = float(getattr(config, "scaling_factor", 1.0))
     shift = float(getattr(config, "shift_factor", 0.0) or 0.0)
@@ -364,7 +564,7 @@ def decode_latents_to_pixels(pipe: Any, latents: torch.Tensor) -> torch.Tensor:
 
 def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Train the V6.5 independent iPER Face Adapter")
-    parser.add_argument("--stage", choices=("overfit", "face"), default="overfit")
+    parser.add_argument("--stage", choices=("overfit",), default="overfit")
     parser.add_argument("--appearance", required=True)
     source = parser.add_mutually_exclusive_group(required=True)
     source.add_argument("--source-index")
@@ -397,6 +597,12 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--max-steps", type=int, default=1500)
     parser.add_argument("--warmup-steps", type=int, default=1000)
     parser.add_argument("--max-timestep", type=int, default=650)
+    parser.add_argument(
+        "--fixed-timestep",
+        type=int,
+        default=150,
+        help="Low-noise overfit timestep; 150 keeps the late texture path active.",
+    )
     parser.add_argument("--auxiliary-fraction", type=float, default=0.25)
     parser.add_argument("--resolution", type=int, default=512)
     parser.add_argument("--weight-decay", type=float, default=0.01)
@@ -415,8 +621,18 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
         "--face-perceptual-evaluator",
         default="/home/shangguanrz/project/pic-edit/models/face_eval/perceptual_encoder.ts",
     )
+    parser.add_argument(
+        "--face-lpips-evaluator",
+        default="/home/shangguanrz/project/pic-edit/models/face_eval/lpips.ts",
+    )
+    parser.add_argument(
+        "--face-landmark-evaluator",
+        default="/home/shangguanrz/project/pic-edit/models/face_eval/landmark_encoder.ts",
+    )
     parser.add_argument("--disable-face-id-loss", action="store_true")
     parser.add_argument("--disable-face-perceptual-loss", action="store_true")
+    parser.add_argument("--disable-face-lpips-metric", action="store_true")
+    parser.add_argument("--disable-face-landmark-metric", action="store_true")
     parser.add_argument("--checkpoint-every", type=int, default=250)
     parser.add_argument("--preview-every", type=int, default=250)
     return parser.parse_args(argv)
@@ -454,7 +670,6 @@ def run_training(args: argparse.Namespace) -> None:
     except ImportError as exc:
         raise RuntimeError("V6.5 training requires the project Diffusers environment") from exc
     try:
-        from src.data.iper_detail_dataset import IPERDetailDataset
         from src.pose_control.v6.checkpoint import (
             build_v65_checkpoint,
             freeze_for_face_training,
@@ -462,6 +677,7 @@ def run_training(args: argparse.Namespace) -> None:
         )
         from src.pose_control.v6.conditions import AdapterIdentityCondition
         from src.pose_control.v6.deepgen_adapter import UnifiedSMPLXAdapterV6
+        from src.pose_control.v6.face.iper_dataset import IPERV65FaceOverfitLoader
         from train_iper_v6_native import get_cached_conditions
     except (ImportError, AttributeError) as exc:
         raise RuntimeError(
@@ -496,23 +712,17 @@ def run_training(args: argparse.Namespace) -> None:
         raise RuntimeError("source and target frames must both be valid in v65_face_features.pt")
     roles = _frame_roles(Path(args.sampled_root) / args.appearance)
 
-    dataset = IPERDetailDataset(
+    overfit_inputs = IPERV65FaceOverfitLoader(
         sampled_root=args.sampled_root,
         assets_root=args.assets_root,
-        single_sample={
-            "appearance": args.appearance,
-            "source": {"stem": source_stem, "role": roles[source_stem]},
-            "target": {"stem": target_stem, "role": roles[target_stem]},
-        },
+        appearance=args.appearance,
+        source_stem=source_stem,
+        source_role=roles[source_stem],
+        target_stem=target_stem,
+        target_role=roles[target_stem],
         resolution=args.resolution,
-        augment=False,
-    )
-    batch = dataset[0]
-    # Add the batch dimension expected by the existing iPER training helpers.
-    batch = {
-        key: (value.unsqueeze(0) if torch.is_tensor(value) else [value])
-        for key, value in batch.items()
-    }
+    ).load()
+    batch = overfit_inputs.batch
 
     pipe = DiffusionPipeline.from_pretrained(
         args.model_path, torch_dtype=dtype, trust_remote_code=True
@@ -523,7 +733,7 @@ def run_training(args: argparse.Namespace) -> None:
     UnifiedSMPLXAdapterV6.freeze_deepgen_pipeline_components(pipe)
     adapter = UnifiedSMPLXAdapterV6.from_deepgen_pipeline(
         pipe, condition_use_depth=False
-    ).to(device=device, dtype=dtype)
+    ).to(device=device)
     if not args.v64_checkpoint:
         raise RuntimeError("--v64-checkpoint is required to migrate trained Body/Interaction/Hand weights")
     checkpoint = torch.load(args.v64_checkpoint, map_location="cpu", weights_only=False)
@@ -533,7 +743,10 @@ def run_training(args: argparse.Namespace) -> None:
     discarded_old_optimizer = checkpoint_for_migration.pop("optimizer_state_dict", None) is not None
     if discarded_old_optimizer:
         print("discarding incompatible V6.4 optimizer_state_dict before V6.5 migration")
+    migration_dtype = checkpoint_float_dtype(checkpoint_for_migration)
+    adapter.to(device=device, dtype=migration_dtype)
     load_v64_checkpoint(adapter, checkpoint_for_migration)
+    adapter.to(device=device, dtype=dtype)
     # Assert that the central helper agrees with our strict prefix-based selector.
     freeze_for_face_training(adapter)
     non_face_before = compute_non_face_sha256(adapter)
@@ -549,9 +762,8 @@ def run_training(args: argparse.Namespace) -> None:
     )
     face_condition = face_condition.to(device=device, dtype=dtype)
     face_references = face_references.to(device=device, dtype=dtype)
-    detail_condition, detail_references = dataset.get_detail_condition_and_reference(
-        args.appearance, source_stem, target_stem
-    )
+    detail_condition = overfit_inputs.hand_detail_condition
+    detail_references = overfit_inputs.hand_detail_references
     detail_condition = detail_condition.to(device=device, dtype=dtype)
     detail_references = detail_references.to(device=device, dtype=dtype)
 
@@ -590,6 +802,7 @@ def run_training(args: argparse.Namespace) -> None:
         target_latent.shape,
         seed=args.seed,
         max_timestep=args.max_timestep,
+        fixed_timestep=args.fixed_timestep,
         device=device,
         dtype=dtype,
     )
@@ -609,6 +822,16 @@ def run_training(args: argparse.Namespace) -> None:
     if not args.disable_face_perceptual_loss:
         perceptual_evaluator = _load_torchscript_evaluator(
             args.face_perceptual_evaluator, label="face_perceptual", device=device
+        )
+    lpips_evaluator = None
+    if not args.disable_face_lpips_metric:
+        lpips_evaluator = _load_torchscript_evaluator(
+            args.face_lpips_evaluator, label="face_lpips", device=device
+        )
+    landmark_evaluator = None
+    if not args.disable_face_landmark_metric:
+        landmark_evaluator = _load_torchscript_evaluator(
+            args.face_landmark_evaluator, label="face_landmark", device=device
         )
 
     metrics: list[dict[str, Any]] = []
@@ -661,7 +884,7 @@ def run_training(args: argparse.Namespace) -> None:
 
     @torch.no_grad()
     def save_fixed_comparison(label: str) -> None:
-        """Persist fair OFF/ON previews and flow metrics with identical stochastic state."""
+        """Persist fair OFF/ON previews and face metrics with identical stochastic state."""
 
         was_training = adapter.training
         adapter.eval()
@@ -678,20 +901,31 @@ def run_training(args: argparse.Namespace) -> None:
         outside = 1.0 - face_mask.float()
         on_error = (on.float() - target_velocity.float()).square()
         off_error = (off.float() - target_velocity.float()).square()
-        comparison_history.append(
-            {
-                "label": label,
-                "seed": args.seed,
-                "timestep": int(timestep[0]),
-                "face_on_flow_mse": float(on_error.mean()),
-                "face_off_flow_mse": float(off_error.mean()),
-                "on_off_prediction_mse": float((on.float() - off.float()).square().mean()),
-                "outside_on_off_mse": float(
-                    ((on.float() - off.float()).square() * outside).sum()
-                    / (outside.sum() * on.shape[1]).clamp_min(1.0)
-                ),
-            }
+        record = {
+            "label": label,
+            "seed": args.seed,
+            "timestep": int(timestep[0]),
+            "face_on_flow_mse": float(on_error.mean()),
+            "face_off_flow_mse": float(off_error.mean()),
+            "on_off_prediction_mse": float((on.float() - off.float()).square().mean()),
+            "outside_on_off_mse": float(
+                ((on.float() - off.float()).square() * outside).sum()
+                / (outside.sum() * on.shape[1]).clamp_min(1.0)
+            ),
+        }
+        target_01 = (target_pixels.float() * 0.5 + 0.5).clamp(0, 1)
+        record.update(
+            compute_face_validation_metrics(
+                on_pixels,
+                off_pixels,
+                target_01,
+                face_condition.target_boxes[:, 0].float(),
+                identity_evaluator=id_evaluator,
+                lpips_evaluator=lpips_evaluator,
+                landmark_evaluator=landmark_evaluator,
+            )
         )
+        comparison_history.append(record)
         if was_training:
             adapter.train()
 
@@ -717,7 +951,15 @@ def run_training(args: argparse.Namespace) -> None:
         predicted_pixels = None
         if use_auxiliary and (id_evaluator is not None or perceptual_evaluator is not None):
             predicted_x0 = noisy_latent - sigma * prediction
-            predicted_pixels = (decode_latents_to_pixels(pipe, predicted_x0) * 0.5 + 0.5).clamp(0, 1)
+            predicted_pixels = (
+                decode_latents_to_pixels(
+                    pipe,
+                    predicted_x0,
+                    differentiable=True,
+                )
+                * 0.5
+                + 0.5
+            ).clamp(0, 1)
             target_01 = (target_pixels * 0.5 + 0.5).clamp(0, 1)
             boxes = face_condition.target_boxes[:, 0].float()
             predicted_crop = _crop_batch(predicted_pixels.float(), boxes)

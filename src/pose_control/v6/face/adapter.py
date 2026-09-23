@@ -4,6 +4,8 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
+from third_party.v65_face.visual_persona import IPAttnProcessor2_0
+
 from .conditions import PreparedFaceConditioning
 
 
@@ -102,23 +104,20 @@ class _LowRankStageAdapter(nn.Module):
         return self.up(F.silu(self.down(self.norm(hidden_states))))
 
 
-class FaceAttentionBlock(nn.Module):
+class FaceAttentionBlock(IPAttnProcessor2_0):
     """ROI self-attention plus an independent face-token K/V path."""
 
     def __init__(self, dim: int, heads: int, ff_mult: int = 4) -> None:
-        super().__init__()
-        if dim % heads:
-            raise ValueError("face_dim must be divisible by heads")
-        self.heads = heads
-        self.head_dim = dim // heads
+        super().__init__(
+            hidden_size=dim,
+            cross_attention_dim=dim,
+            scale=1.0,
+            heads=heads,
+        )
         self.self_norm = nn.LayerNorm(dim)
         self.self_attention = nn.MultiheadAttention(dim, heads, batch_first=True)
         self.cross_norm = nn.LayerNorm(dim)
         self.context_norm = nn.LayerNorm(dim)
-        self.to_q_face = nn.Linear(dim, dim, bias=False)
-        self.to_k_face = nn.Linear(dim, dim, bias=False)
-        self.to_v_face = nn.Linear(dim, dim, bias=False)
-        self.to_out_face = nn.Linear(dim, dim, bias=False)
         self.ffn = nn.Sequential(
             nn.LayerNorm(dim),
             nn.Linear(dim, dim * ff_mult),
@@ -126,23 +125,16 @@ class FaceAttentionBlock(nn.Module):
             nn.Linear(dim * ff_mult, dim),
         )
 
-    def _split_heads(self, value: torch.Tensor) -> torch.Tensor:
-        batch, tokens, _ = value.shape
-        return value.reshape(batch, tokens, self.heads, self.head_dim).transpose(1, 2)
-
     def forward(self, hidden_states: torch.Tensor, face_tokens: torch.Tensor) -> torch.Tensor:
         normalized = self.self_norm(hidden_states)
         update, _ = self.self_attention(
             normalized, normalized, normalized, need_weights=False
         )
         hidden_states = hidden_states + update
-        query = self._split_heads(self.to_q_face(self.cross_norm(hidden_states)))
         context = self.context_norm(face_tokens)
-        key = self._split_heads(self.to_k_face(context))
-        value = self._split_heads(self.to_v_face(context))
-        attended = F.scaled_dot_product_attention(query, key, value)
-        attended = attended.transpose(1, 2).reshape_as(hidden_states)
-        hidden_states = hidden_states + self.to_out_face(attended)
+        hidden_states = hidden_states + self.face_attention(
+            self.cross_norm(hidden_states), context
+        )
         return hidden_states + self.ffn(hidden_states)
 
 

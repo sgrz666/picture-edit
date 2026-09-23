@@ -141,19 +141,39 @@ class FaceGeometryTokenizer(nn.Module):
         if landmarks.shape[-1] == 2:
             confidence = torch.ones_like(landmarks[..., :1])
             landmarks = torch.cat((landmarks, confidence), dim=-1)
+        landmark_confidence = landmarks[..., 2].clamp(0, 1)
         indices = torch.arange(72, device=landmarks.device)
         index_features = self.landmark_index(indices).to(dtype=landmarks.dtype)
         index_features = index_features.expand(*leading, -1, -1)
         points = self.point_encoder(torch.cat((landmarks, index_features), dim=-1))
+        points = points * landmark_confidence[..., None]
         parameters = self.parameter_encoder(
             torch.cat((jaw_pose, expression), dim=-1)
         )
         context = torch.cat((points, parameters[..., None, :]), dim=-2)
         flat_context = context.reshape(-1, 73, self.dim)
+        padding_mask = torch.cat(
+            (
+                landmark_confidence <= 0,
+                torch.zeros(
+                    *leading,
+                    1,
+                    dtype=torch.bool,
+                    device=landmarks.device,
+                ),
+            ),
+            dim=-1,
+        ).reshape(-1, 73)
         queries = self.queries.to(dtype=landmarks.dtype).expand(
             flat_context.shape[0], -1, -1
         )
-        attended, _ = self.attention(queries, flat_context, flat_context, need_weights=False)
+        attended, _ = self.attention(
+            queries,
+            flat_context,
+            flat_context,
+            key_padding_mask=padding_mask,
+            need_weights=False,
+        )
         tokens = queries + attended
         tokens = self.output_norm(tokens + self.feed_forward(tokens))
         tokens = tokens.reshape(*leading, self.token_count, self.dim)

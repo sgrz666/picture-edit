@@ -19,6 +19,9 @@ from typing import Any, Callable, Mapping, Protocol, Sequence
 import numpy as np
 import torch
 
+from third_party.v65_face.mcld import safe_square_crop_normalized
+from third_party.v65_face.stableanimator import InsightFaceArcFaceExtractor
+
 
 CACHE_SCHEMA_VERSION = 1
 SMPLX_FACE_START = 65
@@ -153,40 +156,14 @@ def safe_expanded_crop(
     scale: float = 1.0,
     pad_value: int = 0,
 ) -> np.ndarray:
-    """Crop normalized xyxy with a square expansion and explicit OOB padding."""
+    """Crop normalized xyxy through the pinned MCLD safe-crop adaptation."""
 
-    array = np.asarray(image)
-    if array.ndim != 3 or array.shape[2] != 3:
-        raise ValueError("image must have shape [H,W,3]")
-    if scale <= 0:
-        raise ValueError("scale must be positive")
-    coords = np.asarray(torch.as_tensor(box, dtype=torch.float32).cpu(), dtype=np.float64)
-    if coords.shape != (4,) or not np.isfinite(coords).all():
-        raise ValueError("box must be a finite xyxy vector")
-    height, width = array.shape[:2]
-    cx = (coords[0] + coords[2]) * 0.5 * width
-    cy = (coords[1] + coords[3]) * 0.5 * height
-    side = max((coords[2] - coords[0]) * width, (coords[3] - coords[1]) * height) * scale
-    if side <= 0:
-        raise ValueError("box must have positive area")
-    x0 = int(np.floor(cx - side * 0.5))
-    y0 = int(np.floor(cy - side * 0.5))
-    x1 = int(np.ceil(cx + side * 0.5))
-    y1 = int(np.ceil(cy + side * 0.5))
-    output_side = max(x1 - x0, y1 - y0, 1)
-    # Preserve a square even when floating point rounding differs by one pixel.
-    x1 = x0 + output_side
-    y1 = y0 + output_side
-    crop = np.full((output_side, output_side, 3), pad_value, dtype=array.dtype)
-    src_x0, src_y0 = max(x0, 0), max(y0, 0)
-    src_x1, src_y1 = min(x1, width), min(y1, height)
-    if src_x1 > src_x0 and src_y1 > src_y0:
-        dst_x0, dst_y0 = src_x0 - x0, src_y0 - y0
-        crop[
-            dst_y0 : dst_y0 + (src_y1 - src_y0),
-            dst_x0 : dst_x0 + (src_x1 - src_x0),
-        ] = array[src_y0:src_y1, src_x0:src_x1]
-    return crop
+    return safe_square_crop_normalized(
+        image,
+        box,
+        scale=scale,
+        pad_value=pad_value,
+    )
 
 
 def _hash_bytes(hasher: "hashlib._Hash", value: bytes) -> None:
@@ -448,21 +425,25 @@ class LocalFaceFeatureExtractor:
                 f"no InsightFace ONNX weights found in exact model directory: {model_directory}"
             )
         try:
-            from insightface.app import FaceAnalysis
-        except ImportError as exc:
-            raise RuntimeError(
-                "InsightFace extraction requires `pip install insightface onnxruntime-gpu` "
-                "(or onnxruntime for CPU)."
-            ) from exc
-        try:
             from transformers import AutoImageProcessor, AutoModel
         except ImportError as exc:
             raise RuntimeError(
                 "DINO extraction requires a transformers installation with AutoModel support."
             ) from exc
         providers = ["CUDAExecutionProvider", "CPUExecutionProvider"] if device.startswith("cuda") else ["CPUExecutionProvider"]
-        self._face_app = FaceAnalysis(name=name, root=str(root), providers=providers)
-        self._face_app.prepare(ctx_id=0 if device.startswith("cuda") else -1, det_size=(640, 640))
+        try:
+            self._arcface = InsightFaceArcFaceExtractor(
+                name=name,
+                root=str(root),
+                providers=providers,
+                ctx_id=0 if device.startswith("cuda") else -1,
+                det_size=(640, 640),
+            )
+        except RuntimeError as exc:
+            raise RuntimeError(
+                "InsightFace extraction requires `pip install insightface onnxruntime-gpu` "
+                "(or onnxruntime for CPU)."
+            ) from exc
         self._processor = AutoImageProcessor.from_pretrained(
             str(dino_model), local_files_only=True
         )
@@ -483,17 +464,9 @@ class LocalFaceFeatureExtractor:
     ) -> tuple[torch.Tensor, torch.Tensor]:
         from PIL import Image
 
-        faces = self._face_app.get(np.ascontiguousarray(tight_crop[..., ::-1]))
-        if not faces:
-            raise RuntimeError("InsightFace found no face in the tight crop")
-        face = max(
-            faces,
-            key=lambda item: float(
-                (item.bbox[2] - item.bbox[0]) * (item.bbox[3] - item.bbox[1])
-            ),
+        arcface = self._arcface.extract_bgr(
+            np.ascontiguousarray(tight_crop[..., ::-1])
         )
-        arcface = torch.as_tensor(face.embedding, dtype=torch.float32)
-        arcface = torch.nn.functional.normalize(arcface, dim=0)
         inputs = self._processor(
             images=Image.fromarray(expanded_crop), return_tensors="pt"
         )

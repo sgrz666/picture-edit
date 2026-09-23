@@ -1,7 +1,8 @@
 from __future__ import annotations
 
 import torch
-import torch.nn as nn
+
+from third_party.v65_face.mcld import FacePoseGuider2D
 
 
 def render_face_landmark_heatmaps(
@@ -70,26 +71,17 @@ face_landmarks_to_heatmaps = render_face_landmark_heatmaps
 build_face_heatmaps_and_mask = render_face_landmark_heatmaps
 
 
-class FaceSpatialEncoder(nn.Module):
+class FaceSpatialEncoder(FacePoseGuider2D):
     """MCLD PoseGuider-style 2D stem for 72 heatmaps plus a feather mask."""
 
     output_channels = 512
 
     def __init__(self) -> None:
-        super().__init__()
-        self.stem = nn.Conv2d(73, 16, kernel_size=3, padding=1)
-        self.blocks = nn.ModuleList(
-            [
-                nn.Conv2d(16, 16, kernel_size=3, padding=1),
-                nn.Conv2d(16, 32, kernel_size=3, stride=2, padding=1),
-                nn.Conv2d(32, 32, kernel_size=3, padding=1),
-                nn.Conv2d(32, 64, kernel_size=3, stride=2, padding=1),
-                nn.Conv2d(64, 64, kernel_size=3, padding=1),
-                nn.Conv2d(64, 128, kernel_size=3, stride=2, padding=1),
-            ]
+        super().__init__(
+            conditioning_embedding_channels=self.output_channels,
+            conditioning_channels=73,
+            block_out_channels=(16, 32, 64, 128),
         )
-        self.output = nn.Conv2d(128, self.output_channels, kernel_size=3, padding=1)
-        self.activation = nn.SiLU()
 
     def forward(
         self,
@@ -118,10 +110,7 @@ class FaceSpatialEncoder(nn.Module):
         height, width = heatmaps.shape[-2:]
         hidden_states = torch.cat((heatmaps, feather_mask[..., None, :, :]), dim=-3)
         hidden_states = hidden_states.reshape(-1, 73, height, width)
-        hidden_states = self.activation(self.stem(hidden_states))
-        for block in self.blocks:
-            hidden_states = self.activation(block(hidden_states))
-        hidden_states = self.output(hidden_states)
+        hidden_states = super().forward(hidden_states)
         hidden_states = hidden_states.reshape(
             *leading,
             self.output_channels,

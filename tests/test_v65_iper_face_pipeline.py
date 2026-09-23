@@ -10,6 +10,7 @@ import numpy as np
 import pytest
 import torch
 import torch.nn as nn
+from PIL import Image
 
 
 if "diffusers" in sys.modules:
@@ -64,6 +65,7 @@ from train_iper_v65_face import (
     select_face_trainable_parameters,
     update_face_optimizer_lrs,
 )
+from src.pose_control.v6.face.iper_dataset import IPERV65FaceOverfitLoader
 
 
 def _camera_params(frame_count: int = 2) -> dict[str, torch.Tensor]:
@@ -229,6 +231,95 @@ def test_single_reference_two_person_face_inputs_have_invalid_zero_slot() -> Non
     assert torch.count_nonzero(condition.expression[0, 1]) == 0
     assert torch.count_nonzero(references.arcface[0, 1]) == 0
     assert torch.count_nonzero(references.dino_patches[0, 1]) == 0
+
+
+def _write_rgb(path: Path, value: int, *, size: int = 12) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    Image.fromarray(np.full((size, size, 3), value, dtype=np.uint8)).save(path)
+
+
+def _write_gray(path: Path, value: int, *, size: int = 12) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    Image.fromarray(np.full((size, size), value, dtype=np.uint8)).save(path)
+
+
+def test_v65_overfit_loader_is_self_contained_and_emits_hand_only_legacy_inputs(
+    tmp_path: Path,
+) -> None:
+    appearance = "024_6"
+    source_stem, target_stem = "source_f000001", "target_f000002"
+    sampled = tmp_path / "sampled"
+    assets = tmp_path / "assets"
+    app_sampled = sampled / appearance
+    app_assets = assets / appearance
+    _write_rgb(app_sampled / "rgb_1024" / "source_motion" / f"{source_stem}.png", 64)
+    _write_rgb(app_sampled / "rgb_1024" / "target" / f"{target_stem}.png", 192)
+    _write_rgb(app_assets / "normal_512" / "target" / f"{target_stem}.png", 128)
+    _write_gray(app_assets / "mask_512" / "target" / f"{target_stem}.png", 255)
+    _write_gray(app_assets / "part_512" / "target" / f"{target_stem}.png", 3)
+
+    kps = torch.zeros(2, 25, 3)
+    kps[1, 0] = torch.tensor([0.5, 0.5, 1.0])
+    torch.save(
+        {
+            "stem_to_idx": {source_stem: 0, target_stem: 1},
+            "smplx_global": torch.arange(52, dtype=torch.float32).reshape(2, 26),
+            "kps_25_coords": kps,
+        },
+        app_assets / "v6_conditions.pt",
+    )
+    detail = {
+        "stem_to_idx": {source_stem: 0, target_stem: 1},
+        # Non-zero face values deliberately prove that the V6.5 loader cannot
+        # leak the deprecated shared Face payload into the retained Hand branch.
+        "face_keypoints": torch.ones(2, 68, 3),
+        "hand_keypoints": torch.zeros(2, 2, 21, 3),
+        "smplx_detail": torch.zeros(2, 103),
+        "boxes": torch.tensor(
+            [
+                [[0.1, 0.1, 0.4, 0.4], [0.1, 0.2, 0.3, 0.5], [0.6, 0.2, 0.8, 0.5]],
+                [[0.2, 0.1, 0.5, 0.4], [0.2, 0.2, 0.4, 0.5], [0.5, 0.2, 0.7, 0.5]],
+            ],
+            dtype=torch.float32,
+        ),
+        "region_valid": torch.ones(2, 3, dtype=torch.bool),
+        "reference_crops": torch.ones(2, 3, 3, 224, 224),
+    }
+    detail["hand_keypoints"][1, :, :, :2] = 0.5
+    detail["hand_keypoints"][1, :, :, 2] = 1.0
+    detail["smplx_detail"][1, 13:103] = torch.arange(90, dtype=torch.float32)
+    torch.save(detail, app_assets / "v6_detail_conditions.pt")
+
+    loaded = IPERV65FaceOverfitLoader(
+        sampled_root=sampled,
+        assets_root=assets,
+        appearance=appearance,
+        source_stem=source_stem,
+        source_role="source_motion",
+        target_stem=target_stem,
+        target_role="target",
+        resolution=16,
+    ).load()
+
+    assert set(loaded.batch) == {
+        "src_image", "tgt_image", "normal", "part_onehot", "pose_heatmap",
+        "smplx_global", "human_mask", "task_id", "appearance", "source_stem",
+        "target_stem",
+    }
+    assert loaded.batch["src_image"].shape == (1, 3, 16, 16)
+    assert loaded.batch["pose_heatmap"].shape == (1, 25, 16, 16)
+    assert loaded.batch["part_onehot"].shape == (1, 14, 16, 16)
+    assert loaded.batch["appearance"] == [appearance]
+    condition = loaded.hand_detail_condition.validate()
+    references = loaded.hand_detail_references.validate()
+    assert condition.region_valid.tolist() == [[[False, True, True], [False, False, False]]]
+    assert torch.count_nonzero(condition.face_keypoints) == 0
+    assert torch.count_nonzero(condition.smplx_detail[..., :13]) == 0
+    assert torch.count_nonzero(condition.source_boxes[:, :, 0]) == 0
+    assert torch.count_nonzero(condition.target_boxes[:, :, 0]) == 0
+    assert not references.reference_valid[:, :, 0].any()
+    assert torch.count_nonzero(references.images[:, :, 0]) == 0
+    torch.testing.assert_close(condition.smplx_detail[0, 0, 13:103], torch.arange(90.0))
 
 
 def test_frame_selector_supports_index_and_stem_and_cli_aliases() -> None:

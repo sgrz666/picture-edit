@@ -210,6 +210,26 @@ def test_geometry_tokenizer_zeros_invalid_people_and_their_gradients() -> None:
     assert torch.count_nonzero(expression.grad[0, 1]) == 0
 
 
+def test_geometry_tokenizer_ignores_zero_confidence_landmark_slots() -> None:
+    torch.manual_seed(31)
+    tokenizer = FaceGeometryTokenizer().eval()
+    landmarks = torch.rand(1, 2, 72, 3)
+    landmarks[..., :4, 2] = 0
+    changed = landmarks.clone()
+    changed[..., :4, :2] = torch.rand_like(changed[..., :4, :2])
+    changed.requires_grad_(True)
+    jaw = torch.randn(1, 2, 3)
+    expression = torch.randn(1, 2, 10)
+    valid = torch.ones(1, 2, dtype=torch.bool)
+
+    expected = tokenizer(landmarks, jaw, expression, valid)
+    actual = tokenizer(changed, jaw, expression, valid)
+
+    torch.testing.assert_close(actual, expected)
+    actual.square().mean().backward()
+    assert torch.count_nonzero(changed.grad[..., :4, :]) == 0
+
+
 def test_resampler_outputs_eight_tokens_and_honors_context_mask() -> None:
     torch.manual_seed(7)
     model = Resampler(depth=1)
