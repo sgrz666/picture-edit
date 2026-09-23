@@ -22,6 +22,7 @@ from .detail import (
 )
 from .face import FaceConditioningPreparer, FaceFineCondition, FaceReferenceFeatures
 from .face.adapter import FaceControlAdapter
+from .hand import HandConditioningPreparer, HandControlAdapter, HandFineCondition, HandReferenceFeatures
 from .interface import (
     DeepGenControlInterface,
     DeepGenControlOutput,
@@ -56,6 +57,7 @@ class UnifiedSMPLXAdapterV6(nn.Module):
         face_schedule: StrengthScheduleConfig | None = None,
         face_texture_schedule: StrengthScheduleConfig | None = None,
         enable_face_adapter: bool = False,
+        enable_hand_adapter: bool = False,
         face_dim: int = 512,
         face_rank: int = 64,
         face_heads: int = 8,
@@ -99,6 +101,12 @@ class UnifiedSMPLXAdapterV6(nn.Module):
             face_texture_schedule=face_texture_schedule,
             enable_face_controller=enable_face_adapter,
         )
+        self.hand_preparer: HandConditioningPreparer | None = None
+        if enable_hand_adapter:
+            hand_dim = face_dim if token_dim != 1536 else 512
+            self.hand_preparer = HandConditioningPreparer(dim=hand_dim, resampler_depth=1 if token_dim != 1536 else 2, heads=face_heads)
+            self.control_interface.hand_adapter = HandControlAdapter(dim=hand_dim, deepgen_dim=token_dim, rank=face_rank if token_dim != 1536 else 64, heads=face_heads)
+            self.control_interface.strength_controller.enable_v66_hand()
         self.face_preparer: FaceConditioningPreparer | None = None
         if enable_face_adapter:
             self.face_preparer = FaceConditioningPreparer(
@@ -153,6 +161,7 @@ class UnifiedSMPLXAdapterV6(nn.Module):
         depth_backend: str = "native",
         reasoning_config: AdapterReasoningConfig | None = None,
         enable_face_adapter: bool = False,
+        enable_hand_adapter: bool = False,
         face_dim: int = 32,
     ) -> "UnifiedSMPLXAdapterV6":
         cls._freeze_backbone(deepgen_backbone)
@@ -173,6 +182,7 @@ class UnifiedSMPLXAdapterV6(nn.Module):
             depth_backend=depth_backend,
             reasoning_config=reasoning_config,
             enable_face_adapter=enable_face_adapter,
+            enable_hand_adapter=enable_hand_adapter,
             face_dim=face_dim,
             face_rank=max(4, face_dim // 4),
             face_heads=num_heads,
@@ -190,6 +200,7 @@ class UnifiedSMPLXAdapterV6(nn.Module):
         depth_backend: str = "native",
         reasoning_config: AdapterReasoningConfig | None = None,
         enable_face_adapter: bool = True,
+        enable_hand_adapter: bool = False,
     ) -> "UnifiedSMPLXAdapterV6":
         core = SharedRecurrentControlCore.from_deepgen_config(config)
         return cls(
@@ -199,6 +210,7 @@ class UnifiedSMPLXAdapterV6(nn.Module):
             depth_backend=depth_backend,
             reasoning_config=reasoning_config,
             enable_face_adapter=enable_face_adapter,
+            enable_hand_adapter=enable_hand_adapter,
             num_transformer_layers=config.num_layers,
             context_pre_only_blocks=(config.num_layers - 1,),
         )
@@ -213,6 +225,7 @@ class UnifiedSMPLXAdapterV6(nn.Module):
         depth_backend: str = "native",
         reasoning_config: AdapterReasoningConfig | None = None,
         enable_face_adapter: bool = True,
+        enable_hand_adapter: bool = False,
     ) -> "UnifiedSMPLXAdapterV6":
         if "block_controlnet_hidden_states" not in inspect.signature(
             deepgen_transformer.forward
@@ -234,6 +247,7 @@ class UnifiedSMPLXAdapterV6(nn.Module):
             depth_backend=depth_backend,
             reasoning_config=reasoning_config,
             enable_face_adapter=enable_face_adapter,
+            enable_hand_adapter=enable_hand_adapter,
             num_transformer_layers=len(deepgen_transformer.transformer_blocks),
             context_pre_only_blocks=pre_only,
         )
@@ -248,6 +262,7 @@ class UnifiedSMPLXAdapterV6(nn.Module):
         depth_backend: str = "native",
         reasoning_config: AdapterReasoningConfig | None = None,
         enable_face_adapter: bool = True,
+        enable_hand_adapter: bool = False,
     ) -> "UnifiedSMPLXAdapterV6":
         cls.freeze_deepgen_pipeline_components(pipeline)
         return cls.from_deepgen(
@@ -257,6 +272,7 @@ class UnifiedSMPLXAdapterV6(nn.Module):
             depth_backend=depth_backend,
             reasoning_config=reasoning_config,
             enable_face_adapter=enable_face_adapter,
+            enable_hand_adapter=enable_hand_adapter,
         )
 
     @property
@@ -305,6 +321,7 @@ class UnifiedSMPLXAdapterV6(nn.Module):
         detail_references: DetailReferenceBatch | None = None,
         hand_condition: HandDetailCondition | None = None,
         hand_references: DetailReferenceBatch | None = None,
+        hand_features: HandReferenceFeatures | None = None,
         face_condition: FaceFineCondition | None = None,
         face_references: FaceReferenceFeatures | None = None,
     ) -> PreparedControlConditioning:
@@ -396,6 +413,8 @@ class UnifiedSMPLXAdapterV6(nn.Module):
                 )
         elif hand_references is not None:
             raise ValueError("hand references require a hand condition")
+        if hand_features is not None and hand_condition is None:
+            raise ValueError("hand_features require a hand condition")
 
         if face_condition is not None:
             if self.face_preparer is None or self.control_interface.face_adapter is None:
@@ -479,6 +498,13 @@ class UnifiedSMPLXAdapterV6(nn.Module):
             assert self.face_preparer is not None
             assert face_references is not None
             prepared_face = self.face_preparer(face_condition, face_references)
+        prepared_hand = None
+        if hand_features is not None:
+            if self.hand_preparer is None or self.control_interface.hand_adapter is None:
+                raise ValueError("hand features require an enabled v66 adapter")
+            hand_features = hand_features.to(device=device, dtype=dtype)
+            fine = hand_condition if isinstance(hand_condition, HandFineCondition) else HandFineCondition.from_legacy(hand_condition)
+            prepared_hand = self.hand_preparer(fine, hand_features)
         return PreparedControlConditioning(
             geometry_condition=geometry_condition,
             interaction_condition=interaction_condition,
@@ -489,6 +515,7 @@ class UnifiedSMPLXAdapterV6(nn.Module):
             control_state=state,
             detail=prepared_detail,
             face=prepared_face,
+            hand=prepared_hand,
         ).validate()
 
     def prepare_conditioning(
@@ -501,6 +528,7 @@ class UnifiedSMPLXAdapterV6(nn.Module):
         detail_references: DetailReferenceBatch | None = None,
         hand_condition: HandDetailCondition | None = None,
         hand_references: DetailReferenceBatch | None = None,
+        hand_features: HandReferenceFeatures | None = None,
         face_condition: FaceFineCondition | None = None,
         face_references: FaceReferenceFeatures | None = None,
     ) -> PreparedControlConditioning:
@@ -515,6 +543,7 @@ class UnifiedSMPLXAdapterV6(nn.Module):
             detail_references=detail_references,
             hand_condition=hand_condition,
             hand_references=hand_references,
+            hand_features=hand_features,
             face_condition=face_condition,
             face_references=face_references,
         )
@@ -534,6 +563,7 @@ class UnifiedSMPLXAdapterV6(nn.Module):
         detail_strength: float | torch.Tensor = 1.0,
         face_strength: float | torch.Tensor = 1.0,
         hand_strength: float | torch.Tensor = 1.0,
+        hand_mode: str = "legacy",
         joint_attention_kwargs: Optional[dict] = None,
     ) -> DeepGenControlOutput:
         parameter = next(self.parameters())
@@ -556,6 +586,7 @@ class UnifiedSMPLXAdapterV6(nn.Module):
             detail_strength=detail_strength,
             face_strength=face_strength,
             hand_strength=hand_strength,
+            hand_mode=hand_mode,
             joint_attention_kwargs=joint_attention_kwargs,
         )
 

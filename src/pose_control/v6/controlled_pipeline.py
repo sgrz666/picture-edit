@@ -9,6 +9,7 @@ from .conditions import AdapterIdentityCondition, ConditionBundle
 from .deepgen_adapter import UnifiedSMPLXAdapterV6
 from .detail import DetailReferenceBatch, FaceHandDetailCondition, HandDetailCondition
 from .face import FaceFineCondition, FaceReferenceFeatures
+from .hand import HandReferenceFeatures
 from .interface import PreparedControlConditioning
 
 
@@ -60,6 +61,7 @@ class ControlledDeepGenPipeline:
         detail_references: DetailReferenceBatch | None = None,
         hand_condition: HandDetailCondition | None = None,
         hand_references: DetailReferenceBatch | None = None,
+        hand_features: HandReferenceFeatures | None = None,
         face_condition: FaceFineCondition | None = None,
         face_references: FaceReferenceFeatures | None = None,
     ) -> PreparedControlConditioning:
@@ -75,6 +77,7 @@ class ControlledDeepGenPipeline:
             detail_references=detail_references,
             hand_condition=hand_condition,
             hand_references=hand_references,
+            hand_features=hand_features,
             face_condition=face_condition,
             face_references=face_references,
         )
@@ -91,10 +94,12 @@ class ControlledDeepGenPipeline:
         detail_strength: float = 1.0,
         face_strength: float = 1.0,
         hand_strength: float = 1.0,
+        hand_mode: str = "legacy",
         detail_condition: FaceHandDetailCondition | None = None,
         detail_references: DetailReferenceBatch | None = None,
         hand_condition: HandDetailCondition | None = None,
         hand_references: DetailReferenceBatch | None = None,
+        hand_features: HandReferenceFeatures | None = None,
         face_condition: FaceFineCondition | None = None,
         face_references: FaceReferenceFeatures | None = None,
         cache_adapter_outputs: bool = True,
@@ -128,6 +133,7 @@ class ControlledDeepGenPipeline:
                     detail_references=detail_references,
                     hand_condition=hand_condition,
                     hand_references=hand_references,
+                    hand_features=hand_features,
                     face_condition=face_condition,
                     face_references=face_references,
                 )
@@ -154,6 +160,7 @@ class ControlledDeepGenPipeline:
                 detail_references=detail_references,
                 hand_condition=hand_condition,
                 hand_references=hand_references,
+                hand_features=hand_features,
                 face_condition=face_condition,
                 face_references=face_references,
             )
@@ -188,6 +195,7 @@ class ControlledDeepGenPipeline:
                 detail_strength=detail_strength,
                 face_strength=face_strength,
                 hand_strength=hand_strength,
+                hand_mode=hand_mode,
                 joint_attention_kwargs=kwargs.get("joint_attention_kwargs"),
             )
             kwargs["block_controlnet_hidden_states"] = (

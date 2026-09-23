@@ -8,6 +8,7 @@ import torch.nn.functional as F
 
 from ..control_core import SharedRecurrentControlCore
 from ..face.adapter import FaceControlAdapter
+from ..hand.adapter import HandControlAdapter
 from .outputs import (
     BranchControlResiduals,
     DeepGenControlOutput,
@@ -80,6 +81,7 @@ class DeepGenControlInterface(nn.Module):
         face_schedule: StrengthScheduleConfig | None = None,
         face_texture_schedule: StrengthScheduleConfig | None = None,
         face_adapter: FaceControlAdapter | None = None,
+        hand_adapter: HandControlAdapter | None = None,
         enable_face_controller: bool = False,
     ) -> None:
         super().__init__()
@@ -87,6 +89,7 @@ class DeepGenControlInterface(nn.Module):
             raise ValueError("transformer layers must divide evenly across control groups")
         self.control_core = control_core
         self.face_adapter = face_adapter
+        self.hand_adapter = hand_adapter
         self.num_transformer_layers = num_transformer_layers
         self.context_pre_only_blocks = (
             (num_transformer_layers - 1,)
@@ -101,6 +104,7 @@ class DeepGenControlInterface(nn.Module):
             face_schedule=face_schedule,
             face_texture_schedule=face_texture_schedule,
             enable_face=enable_face_controller or face_adapter is not None,
+            enable_hand=hand_adapter is not None,
         )
 
     @property
@@ -127,6 +131,9 @@ class DeepGenControlInterface(nn.Module):
         detail_active: torch.Tensor | None = None,
         face_active: torch.Tensor | None = None,
         face_texture_scale: float | torch.Tensor = 1.0,
+        hand_active: torch.Tensor | None = None,
+        hand_texture_scale: float | torch.Tensor = 1.0,
+        hand_mode: str = "legacy",
     ) -> BranchControlResiduals:
         prepared = prepared.validate().expand_to_batch(target_latents.shape[0])
         if detail_active is not None:
@@ -137,6 +144,8 @@ class DeepGenControlInterface(nn.Module):
             if face_active.shape != (target_latents.shape[0],) or face_active.dtype != torch.bool:
                 raise ValueError("face_active must have shape [B] and dtype bool")
             face_active = face_active.to(device=target_latents.device)
+        if hand_mode not in {"legacy", "v66", "off"}:
+            raise ValueError("invalid hand_mode")
         target_size = target_latents.shape[-2:]
         geometry_condition = F.interpolate(
             prepared.geometry_condition,
@@ -167,6 +176,7 @@ class DeepGenControlInterface(nn.Module):
             else tuple(torch.zeros_like(value) for value in geometry)
         )
         face = None
+        hand = None
 
         detail_condition = None
         if prepared.detail is not None:
@@ -239,12 +249,26 @@ class DeepGenControlInterface(nn.Module):
                     texture_scale=face_texture_scale,
                     face_active=face_active,
                 )
+        if hand_mode == "v66":
+            if prepared.hand is None or self.hand_adapter is None:
+                raise ValueError("v66 hand mode requires prepared hand features and enabled hand adapter")
+            if hand_active is not None and not bool(hand_active.any().item()):
+                hand = tuple(torch.zeros_like(value) for value in geometry)
+            else:
+                hand = self.hand_adapter(
+                    prepared.hand,
+                    target_token_hw=target_hw,
+                    timestep=timestep,
+                    texture_scale=hand_texture_scale,
+                    hand_active=hand_active,
+                )
         return BranchControlResiduals(
             geometry=geometry,
             interaction=interaction,
             target_token_hw=target_hw,
             detail=detail,
             face=face,
+            hand=hand,
         ).validate()
 
     def forward(
@@ -263,8 +287,11 @@ class DeepGenControlInterface(nn.Module):
         face_strength: float | torch.Tensor = 1.0,
         hand_strength: float | torch.Tensor = 1.0,
         joint_attention_kwargs: Optional[dict] = None,
+        hand_mode: str = "legacy",
     ) -> DeepGenControlOutput:
         expanded = prepared.validate().expand_to_batch(target_latents.shape[0])
+        if hand_mode not in {"legacy", "v66", "off"}:
+            raise ValueError("hand_mode must be legacy, v66 or off")
         detail_active = target_latents.new_zeros(
             target_latents.shape[0], dtype=torch.bool
         )
@@ -282,7 +309,7 @@ class DeepGenControlInterface(nn.Module):
                 return gate.expand(reference.shape[0])
             return gate[:, 0, 0]
 
-        if expanded.detail is not None:
+        if expanded.detail is not None and hand_mode == "legacy":
             schedule = per_sample(
                 self.strength_controller.detail_schedule.multiplier(
                     denoise_progress
@@ -317,6 +344,15 @@ class DeepGenControlInterface(nn.Module):
         texture_scale = self.strength_controller.face_texture_schedule.multiplier(
             denoise_progress
         )
+        hand_active = target_latents.new_zeros(target_latents.shape[0], dtype=torch.bool)
+        if hand_mode == "v66":
+            if expanded.hand is None:
+                raise ValueError("v66 hand mode requires prepared hand conditioning")
+            hand_schedule = per_sample(self.strength_controller.hand_schedule.multiplier(denoise_progress))
+            hand_active = (expanded.hand.hand_valid.any(dim=(1, 2)) &
+                           (hand_schedule != 0) & (per_sample(detail_strength) != 0) &
+                           (per_sample(hand_strength) != 0))
+        hand_texture_scale = self.strength_controller.hand_texture_schedule.multiplier(denoise_progress)
         face_active_people = 0
         if expanded.face is not None:
             face_active_people = int(
@@ -335,6 +371,9 @@ class DeepGenControlInterface(nn.Module):
             detail_active=detail_active,
             face_active=face_active,
             face_texture_scale=texture_scale,
+            hand_active=hand_active,
+            hand_texture_scale=hand_texture_scale,
+            hand_mode=hand_mode,
         )
         detail_region_masks = None
         if expanded.detail is not None:
@@ -359,6 +398,7 @@ class DeepGenControlInterface(nn.Module):
             face_strength=face_strength,
             hand_strength=hand_strength,
             detail_region_masks=detail_region_masks,
+            hand_mode=hand_mode,
         )
         aligned = align_target_residuals(
             scaled,
@@ -373,6 +413,8 @@ class DeepGenControlInterface(nn.Module):
                 "face_active_rows": int(face_active.sum().item()),
                 "face_active_people": face_active_people,
                 "face_executed": bool(face_active.any().item()),
+                "hand_active_rows": int(hand_active.sum().item()),
+                "hand_executed": bool(hand_active.any().item()),
                 "target_token_hw": list(raw.target_token_hw),
                 "target_token_count": raw.target_token_count,
                 "full_token_count": int(aligned[0].shape[1]),

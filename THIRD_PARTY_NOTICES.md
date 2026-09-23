@@ -66,3 +66,24 @@ StableAnimator's MIT license and X-Dyna's Apache-2.0 license are reproduced in
 `third_party/v65_face/licenses/`. Visual Persona and MCLD had no repository-level
 license file at the pinned commits; that status is explicitly recorded rather
 than inferred.
+
+## V6.6 hand-conditioning adaptations
+
+`src/pose_control/v6/hand/vton_layers.py` adapts the independent structure
+embedders, DINO projection and latent-query Perceiver Resampler from
+[VTON-HandFit](https://github.com/VTON-HandFit/VTON-HandFit) commit
+`e69aaacc8285c2bd248ff9b1b6d8e9b92b1f8b5a`, original files
+`HandFit/pose_guider.py` and `HandFit/ip_adapter/resampler.py`. Projection
+dimensions are parameterized for DeepGen, source appearance is kept separate
+from target geometry, and no Try-on UNet/ControlNet code or weights are bundled.
+
+`src/pose_control/v6/hand/adapter.py` adapts the independent K/V pattern from
+the same upstream `HandFit/ip_adapter/attention_processor.py`; hard-coded UNet
+sequence sizes, CUDA calls, and dtype casts are replaced by dynamic token-grid
+SDPA and ROI scatter. `src/pose_control/v6/hand/geometry.py` adapts the
+Gaussian keypoint representation from [FoundHand](https://github.com/arthurchen0518/FoundHand)
+commit `ae0e9808ef1300820d499e707ec4d655da158e6d`, original
+`utils/utils.py`; confidence and invalid-point gates are added. ViTPose and
+HaMeR are optional external offline preprocessors whose exported tensors can
+be merged by `scripts/precompute_iper_hand_features_v66.py`. HandRefiner is
+not bundled or invoked; only an interchange payload is provided.
