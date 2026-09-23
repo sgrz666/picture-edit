@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import json
 import importlib.util
 from importlib.machinery import ModuleSpec
 from pathlib import Path
