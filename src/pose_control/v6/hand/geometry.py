@@ -3,6 +3,13 @@ from __future__ import annotations
 import torch
 
 
+def split_iper_134_hand_points(points: torch.Tensor) -> torch.Tensor:
+    """iPER/SMPL-X whole-body layout: left 92:113, right 113:134."""
+    if points.shape[-2:] != (134, 3):
+        raise ValueError("iPER whole-body keypoints must end in [134,3]")
+    return torch.stack((points[..., 92:113, :], points[..., 113:134, :]), dim=-3)
+
+
 def axis_angle45_to_6d96(pose: torch.Tensor) -> torch.Tensor:
     """VTON's 16 rotations: canonical wrist followed by 15 SMPL-X finger joints."""
     if pose.shape[-1] != 45:

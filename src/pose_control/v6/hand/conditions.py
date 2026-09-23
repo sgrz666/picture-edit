@@ -97,6 +97,7 @@ class PreparedHandConditioning:
     target_boxes: torch.Tensor
     hand_valid: torch.Tensor
     visibility: torch.Tensor
+    depth: torch.Tensor  # [B,2,2,1,16,16], smaller is closer
 
     @property
     def batch_size(self):
@@ -115,6 +116,7 @@ class PreparedHandConditioning:
             "hand_masks": (b, 2, 2, 16, 16),
             "target_boxes": (b, 2, 2, 4),
             "visibility": (b, 2, 2),
+            "depth": (b, 2, 2, 1, 16, 16),
         }.items():
             if getattr(self, name).shape != shape:
                 raise ValueError(f"{name} must have shape {shape}")

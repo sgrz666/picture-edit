@@ -1,9 +1,10 @@
 import torch
 
-from src.pose_control.v6.hand.geometry import axis_angle45_to_6d96, hand_heatmaps
+from src.pose_control.v6.hand.geometry import axis_angle45_to_6d96, hand_heatmaps, split_iper_134_hand_points
 from src.pose_control.v6.hand.conditions import HandFineCondition, HandReferenceFeatures
 from src.pose_control.v6.hand.preparer import HandConditioningPreparer
 from src.pose_control.v6.hand.adapter import HandControlAdapter
+from src.pose_control.v6.hand.adapter import scatter_hand_roi_residuals
 from src.pose_control.v6.checkpoint import build_v65_checkpoint, build_v66_checkpoint, load_v65_checkpoint, load_v66_checkpoint, freeze_for_hand_training
 from src.pose_control.v6.deepgen_adapter import UnifiedSMPLXAdapterV6
 from src.pose_control.v6.control_core import BranchControlResiduals
@@ -25,6 +26,10 @@ def test_hand_pose_and_confident_heatmap():
     heatmaps = hand_heatmaps(points, size=16)
     assert heatmaps.shape == (1, 2, 2, 21, 16, 16)
     assert torch.count_nonzero(heatmaps[..., 1:, :, :]) == 0
+    whole = torch.arange(134).float()[None, :, None].expand(1, 134, 3)
+    sliced = split_iper_134_hand_points(whole)
+    assert sliced.shape == (1, 2, 21, 3)
+    assert sliced[0, 0, 0, 0] == 92 and sliced[0, 1, 0, 0] == 113
 
 
 def _inputs():
@@ -175,3 +180,20 @@ def test_optional_refiner_export_never_modifies_image():
     assert payload["image"] is image
     assert payload["hand_masks"].shape == (1, 2, 2, 32, 32)
     assert torch.count_nonzero(payload["hand_masks"][~condition.region_valid]) == 0
+
+
+def test_overlap_blends_by_visibility_and_depth_without_double_strength():
+    local = torch.zeros(1, 2, 2, 4, 4, 1)
+    local[0, 0, 0] = 1
+    local[0, 0, 1] = 3
+    masks = torch.ones(1, 2, 2, 4, 4)
+    boxes = torch.tensor([0., 0., 1., 1.]).expand(1, 2, 2, 4).clone()
+    valid = torch.tensor([[[True, True], [False, False]]])
+    visibility = torch.ones(1, 2, 2)
+    depth = torch.zeros(1, 2, 2, 1, 4, 4)
+    equal = scatter_hand_roi_residuals(local, masks, boxes, valid, visibility, (4, 4), depth)
+    assert torch.allclose(equal, torch.full_like(equal, 2.))
+    depth[0, 0, 1] = 1
+    front = scatter_hand_roi_residuals(local, masks, boxes, valid, visibility, (4, 4), depth)
+    assert torch.all(front < equal)
+    assert torch.all(front >= 1.)

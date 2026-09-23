@@ -7,7 +7,7 @@ import torch.nn.functional as F
 from .conditions import PreparedHandConditioning
 
 
-def scatter_hand_roi_residuals(local, masks, boxes, valid, visibility, target_hw):
+def scatter_hand_roi_residuals(local, masks, boxes, valid, visibility, target_hw, depth=None):
     """Inverse-warp four hand ROIs; depth/visibility weighted overlap never doubles."""
     b, people, sides, h, w, dim = local.shape
     if (people, sides) != (2, 2) or masks.shape != (b, 2, 2, h, w):
@@ -24,7 +24,13 @@ def scatter_hand_roi_residuals(local, masks, boxes, valid, visibility, target_hw
     weight = F.grid_sample(masks.reshape(b * 4, 1, h, w), sample_grid, align_corners=False).reshape(b, 4, th, tw)
     weight = weight * (valid * visibility).reshape(b, 4, 1, 1)
     maximum = weight.amax(1)
-    blended = (sample * weight[..., None]).sum(1) / weight.sum(1).clamp_min(1e-6)[..., None]
+    if depth is not None:
+        sampled_depth = F.grid_sample(depth.reshape(b * 4, 1, h, w), sample_grid, align_corners=False).reshape(b, 4, th, tw)
+        # Depth changes relative ownership only; a single hand retains its mask strength.
+        blend_weight = weight * torch.exp(-4 * sampled_depth.clamp(-1, 1))
+    else:
+        blend_weight = weight
+    blended = (sample * blend_weight[..., None]).sum(1) / blend_weight.sum(1).clamp_min(1e-6)[..., None]
     return (blended * maximum[..., None]).reshape(b, th * tw, dim)
 
 
@@ -136,5 +142,5 @@ class HandControlAdapter(nn.Module):
             hidden = hidden * valid.reshape(b * 4, 1, 1)
             local = self.zero_heads[stage](hidden).reshape(b, 2, 2, 16, 16, self.deepgen_dim)
             local = local * valid[..., None, None, None]
-            result.append(scatter_hand_roi_residuals(local, prepared.hand_masks, prepared.target_boxes, valid, prepared.visibility, target_token_hw))
+            result.append(scatter_hand_roi_residuals(local, prepared.hand_masks, prepared.target_boxes, valid, prepared.visibility, target_token_hw, prepared.depth))
         return tuple(result)

@@ -81,4 +81,5 @@ class HandConditioningPreparer(nn.Module):
             target_boxes=condition.target_boxes * valid[..., None],
             hand_valid=valid,
             visibility=condition.visibility * valid,
+            depth=condition.depth * valid[..., None, None, None],
         ).validate()
