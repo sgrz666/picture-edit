@@ -3,6 +3,7 @@ from __future__ import annotations
 import importlib.util
 from importlib.machinery import ModuleSpec
 from pathlib import Path
+import subprocess
 import sys
 import types
 
@@ -66,6 +67,24 @@ from train_iper_v65_face import (
     update_face_optimizer_lrs,
 )
 from src.pose_control.v6.face.iper_dataset import IPERV65FaceOverfitLoader
+
+
+def test_precompute_cli_can_run_directly_from_repository_root() -> None:
+    repository_root = Path(__file__).resolve().parents[1]
+    result = subprocess.run(
+        [
+            sys.executable,
+            str(repository_root / "scripts" / "precompute_iper_face_features_v65.py"),
+            "--help",
+        ],
+        cwd=repository_root,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert result.returncode == 0, result.stderr
+    assert "Precompute V6.5 iPER face features" in result.stdout
 
 
 def _camera_params(frame_count: int = 2) -> dict[str, torch.Tensor]:

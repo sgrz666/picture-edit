@@ -12,6 +12,7 @@ import argparse
 import hashlib
 import json
 import os
+import sys
 import tempfile
 from pathlib import Path
 from typing import Any, Callable, Mapping, Protocol, Sequence
@@ -19,8 +20,12 @@ from typing import Any, Callable, Mapping, Protocol, Sequence
 import numpy as np
 import torch
 
-from third_party.v65_face.mcld import safe_square_crop_normalized
-from third_party.v65_face.stableanimator import InsightFaceArcFaceExtractor
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+
+from third_party.v65_face.mcld import safe_square_crop_normalized  # noqa: E402
+from third_party.v65_face.stableanimator import InsightFaceArcFaceExtractor  # noqa: E402
 
 
 CACHE_SCHEMA_VERSION = 1
