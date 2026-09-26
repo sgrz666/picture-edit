@@ -1,0 +1,28 @@
+{
+  "dataset": "Hi4D",
+  "root": "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/raw",
+  "total_frames": 2385,
+  "mask_found_count": 0,
+  "face_detected_count": 0,
+  "low_res_lt512_count": 0,
+  "short_side": {
+    "min": 940,
+    "p50": 940.0,
+    "max": 940
+  },
+  "primary_lap": {
+    "p5": 186.48120241031324,
+    "p10": 193.52757671530185,
+    "p50": 243.08339905717247,
+    "p90": 451.28388934920633
+  },
+  "primary_ten": {
+    "p5": 3300.5058718417554,
+    "p10": 3448.4388277094417,
+    "p50": 4378.111619015957,
+    "p90": 5566.333757895612
+  },
+  "severe_suspect_count": 78,
+  "suspect_blur_count": 183,
+  "note": "suspect_blur 是数据集内部相对低清晰候选：Laplacian 和 Tenengrad 同时 <= P10；severe_suspect 同时 <= P5。不要据此直接删除，先看 worst_100。"
+}

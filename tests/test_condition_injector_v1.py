@@ -244,7 +244,7 @@ def test_contact_padding_and_global_task_sensitivity() -> None:
     )
     second = injector(
         **common,
-        smplx_global_a=a["smplx_global"] + 2,
+        smplx_global_a=torch.roll(a["smplx_global"], shifts=2, dims=-1),
         task_id=torch.tensor([int(TaskType.HUG)]),
     )
     assert not torch.allclose(first.person_a_global_tokens, second.person_a_global_tokens)

@@ -198,9 +198,14 @@ class FaceHandDetailPreparer(nn.Module):
         region_tokens = self.appearance_encoder(
             references, reference_features=reference_features
         )
+        person_binding = person_binding.to(
+            device=region_tokens.device, dtype=region_tokens.dtype
+        )
         detail_tokens, detail_token_mask = self.token_binder(
             region_tokens, condition.region_valid, person_binding
         )
+        detail_tokens = detail_tokens.to(dtype=detail_condition.dtype)
+        region_masks = region_masks.to(dtype=detail_condition.dtype)
         return PreparedFaceHandDetailConditioning(
             detail_condition=detail_condition,
             detail_tokens=detail_tokens,

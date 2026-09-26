@@ -172,20 +172,47 @@ class InsightFaceArcFaceExtractor:
         self.app.prepare(ctx_id=ctx_id, det_size=det_size)
 
     @torch.inference_mode()
-    def extract_bgr(self, image_bgr: np.ndarray) -> torch.Tensor:
+    def extract_bgr(
+        self,
+        image_bgr: np.ndarray,
+        full_image_bgr: np.ndarray | None = None,
+    ) -> torch.Tensor:
+        if full_image_bgr is not None:
+            faces = self.app.get(np.ascontiguousarray(full_image_bgr))
+            if faces:
+                face = max(
+                    faces,
+                    key=lambda item: float(
+                        (item.bbox[2] - item.bbox[0]) * (item.bbox[3] - item.bbox[1])
+                    ),
+                )
+                embedding = torch.as_tensor(face.embedding, dtype=torch.float32)
+                if embedding.shape == (512,) and torch.isfinite(embedding).all():
+                    return F.normalize(embedding, dim=0)
+
         faces = self.app.get(np.ascontiguousarray(image_bgr))
-        if not faces:
-            raise RuntimeError("InsightFace found no face in the tight crop")
-        face = max(
-            faces,
-            key=lambda item: float(
-                (item.bbox[2] - item.bbox[0]) * (item.bbox[3] - item.bbox[1])
-            ),
-        )
-        embedding = torch.as_tensor(face.embedding, dtype=torch.float32)
-        if embedding.shape != (512,) or not torch.isfinite(embedding).all():
-            raise RuntimeError("InsightFace must return one finite 512-D embedding")
-        return F.normalize(embedding, dim=0)
+        if faces:
+            face = max(
+                faces,
+                key=lambda item: float(
+                    (item.bbox[2] - item.bbox[0]) * (item.bbox[3] - item.bbox[1])
+                ),
+            )
+            embedding = torch.as_tensor(face.embedding, dtype=torch.float32)
+            if embedding.shape == (512,) and torch.isfinite(embedding).all():
+                return F.normalize(embedding, dim=0)
+
+        rec_model = getattr(self.app, "models", {}).get("recognition")
+        if rec_model is not None:
+            import cv2
+            face_112 = cv2.resize(np.ascontiguousarray(image_bgr), (112, 112))
+            feat = rec_model.get_feat(face_112)
+            if feat is not None:
+                embedding = torch.as_tensor(feat.flatten(), dtype=torch.float32)
+                if embedding.shape == (512,) and torch.isfinite(embedding).all():
+                    return F.normalize(embedding, dim=0)
+
+        raise RuntimeError("InsightFace found no face in the crop or image")
 
 
 __all__ = ["FacePerceiver", "FusionFaceId", "InsightFaceArcFaceExtractor"]

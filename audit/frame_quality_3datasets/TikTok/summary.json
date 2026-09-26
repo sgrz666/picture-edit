@@ -1,0 +1,28 @@
+{
+  "dataset": "TikTok",
+  "root": "/home/shangguanrz/project/pic-edit/datasets/TikTokDataset/TikTok_dataset/TikTok_dataset",
+  "total_frames": 92961,
+  "mask_found_count": 92961,
+  "face_detected_count": 0,
+  "low_res_lt512_count": 0,
+  "short_side": {
+    "min": 604,
+    "p50": 604.0,
+    "max": 604
+  },
+  "primary_lap": {
+    "p5": 27.130386745319957,
+    "p10": 36.303045702510374,
+    "p50": 101.3989690678353,
+    "p90": 258.74210409403
+  },
+  "primary_ten": {
+    "p5": 1931.8353453116226,
+    "p10": 2371.8584646275654,
+    "p50": 4655.524346516548,
+    "p90": 8657.971124703809
+  },
+  "severe_suspect_count": 3282,
+  "suspect_blur_count": 6540,
+  "note": "suspect_blur 是数据集内部相对低清晰候选：Laplacian 和 Tenengrad 同时 <= P10；severe_suspect 同时 <= P5。不要据此直接删除，先看 worst_100。"
+}

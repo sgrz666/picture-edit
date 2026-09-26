@@ -1,0 +1,28 @@
+{
+  "dataset": "iPER",
+  "root": "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_sampled_6src64tgt",
+  "total_frames": 6930,
+  "mask_found_count": 0,
+  "face_detected_count": 0,
+  "low_res_lt512_count": 0,
+  "short_side": {
+    "min": 1024,
+    "p50": 1024.0,
+    "max": 1024
+  },
+  "primary_lap": {
+    "p5": 115.5429835926021,
+    "p10": 128.54212550280934,
+    "p50": 199.4838848887448,
+    "p90": 297.0340502914667
+  },
+  "primary_ten": {
+    "p5": 3914.935977935791,
+    "p10": 4199.803924560547,
+    "p50": 6072.972061157227,
+    "p90": 8365.485134124756
+  },
+  "severe_suspect_count": 273,
+  "suspect_blur_count": 543,
+  "note": "Recovered from existing frame_quality_report.csv. No image reprocessing."
+}

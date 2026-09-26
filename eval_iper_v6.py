@@ -179,8 +179,11 @@ def main() -> None:
         torch_dtype=dtype,
         trust_remote_code=True,
     ).to(device)
+    pipe.vae.to(device, dtype=dtype)
+    pipe.transformer.to(device, dtype=dtype)
     pipe._load_extras(attn_implementation="sdpa")
 
+    UnifiedSMPLXAdapterV6.freeze_deepgen_pipeline_components(pipe)
     adapter = UnifiedSMPLXAdapterV6.from_deepgen_pipeline(
         pipe,
         condition_use_depth=args.condition_use_depth,
@@ -310,6 +313,11 @@ def main() -> None:
         )
         strip_path = images_dir / f"eval_{idx:03d}_{app}_{src_stem}_{tgt_stem}.png"
         strip.save(strip_path)
+
+        # Also save standalone images
+        gen_on.save(images_dir / f"pred_{idx:03d}_{app}_{tgt_stem}.png")
+        tgt_pil.save(images_dir / f"gt_{idx:03d}_{app}_{tgt_stem}.png")
+        src_pil.save(images_dir / f"src_{idx:03d}_{app}_{src_stem}.png")
 
     # Average metrics
     def avg_dict(items: List[Dict[str, float]]) -> Dict[str, float]:
