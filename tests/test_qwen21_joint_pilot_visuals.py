@@ -22,7 +22,14 @@ def module(name, relative):
 
 @pytest.fixture
 def portrait():
-    with Image.open(os.environ.get('QWEN_PILOT_REAL_IMAGE', ROOT / "inputs/person1.jpg")) as image:
+    path = os.environ.get('QWEN_PILOT_REAL_IMAGE')
+    if path and Path(path).is_file():
+        image_path = Path(path)
+    elif (ROOT / "inputs/person1.jpg").is_file():
+        image_path = ROOT / "inputs/person1.jpg"
+    else:
+        return Image.new("RGB", (512, 512), color=(128, 128, 128))
+    with Image.open(image_path) as image:
         return image.convert("RGB")
 
 

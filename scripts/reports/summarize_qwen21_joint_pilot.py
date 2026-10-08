@@ -116,9 +116,19 @@ def indexed(rows, errors, path):
 
 def discover_runs(root, errors):
     result, profiles, excluded = {}, {}, []
-    for config_path in sorted(root.rglob('config.json')):
+    eval_dirs = [root / name for name in ('evaluation', 'evaluations') if (root / name).is_dir()]
+    candidates = []
+    if eval_dirs:
+        for ed in eval_dirs:
+            candidates.extend(sorted(ed.rglob('config.json')))
+    else:
+        candidates = sorted(root.glob('*/config.json'))
+    for config_path in candidates:
         directory = config_path.parent
-        if directory.is_relative_to(root / 'diagnostic_failures'):
+        rel_parts = directory.relative_to(root).parts
+        if any('archive' in part.lower() for part in rel_parts):
+            continue
+        if (root / 'diagnostic_failures').is_dir() and directory.is_relative_to(root / 'diagnostic_failures'):
             continue
         if not (directory / 'per_sample.jsonl').is_file() and not (directory / 'per_sample.json').is_file():
             continue
