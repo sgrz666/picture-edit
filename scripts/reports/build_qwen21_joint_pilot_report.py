@@ -65,9 +65,19 @@ def open_image(path):
 
 def discover_runs(root, allow_empty=False):
     runs = []
-    for records in sorted(root.rglob('per_sample.jsonl')):
+    eval_dirs = [root / name for name in ('evaluation', 'evaluations') if (root / name).is_dir()]
+    candidates = []
+    if eval_dirs:
+        for ed in eval_dirs:
+            candidates.extend(sorted(ed.rglob('per_sample.jsonl')))
+    else:
+        candidates = sorted(root.glob('*/per_sample.jsonl'))
+    for records in candidates:
         directory = records.parent
-        if directory.is_relative_to(root / 'diagnostic_failures'):
+        rel_parts = directory.relative_to(root).parts
+        if any('archive' in part.lower() for part in rel_parts):
+            continue
+        if (root / 'diagnostic_failures').is_dir() and directory.is_relative_to(root / 'diagnostic_failures'):
             continue
         config_path = directory / 'config.json'
         if not config_path.is_file():

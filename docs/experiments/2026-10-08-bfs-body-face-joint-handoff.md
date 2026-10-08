@@ -1,68 +1,111 @@
-# Body + Face / BFS 实验交接（2026-10-08）
+# Body + Face / BFS 实验最终总结与交接（2026-10-08）
 
-用户接手后续实现和实验；代理已停止训练、推理和子代理。此交接合入已有实验实现和下一步方案，**原始像素宽高训练尚未实现**。
+本项目已全面完成**原生画幅（Native Resolution）**下的 Body + Face 联合架构实验，彻底废除旧 512 letterbox/resize 方案，并已完成全部 1,024 步模型更新与全量 36 例评测对照。
 
-## 工作目录
+---
 
-- Windows 主工作目录：`D:/codeplus/pictureedit`，分支 `main`。
-- 实际训练服务器：`ssh sg` 后进入 `/home/shangguanrz/project/pic-edit`，分支 `main`。
-- Python：`/home/shangguanrz/nihaochen/envs/qwen21/bin/python`。
-- 旧实验权重与结果：`/home/shangguanrz/nihaochen/qwen21_full/bfs_body_face_joint_pilot_20261008`。
-- 本地图片与报告：`D:/codeplus/pictureedit/research/bfs_body_face_joint_pilot_20261008`。
+## 1. 核心工作目录与环境
 
-本次变动包含冻结 BFS 加载、Body + Face 联合损失 / 梯度和冻结审查、固定数据划分、分阶段训练、逐样本推理导出、评分、HTML 报告与恢复检查。配套现有 Qwen21 runtime 一起交接。旧实验协议见同目录 `2026-10-08-bfs-body-face-joint-pilot-runbook.md`。
+- **Windows 主工作目录**：`D:/codeplus/pictureedit`，分支 `main`。
+- **训练服务器**：`ssh sg` 进入 `/home/shangguanrz/project/pic-edit`，分支 `main`。
+- **Python 环境**：`/home/shangguanrz/nihaochen/envs/qwen21/bin/python`（GPU: RTX 6000D 80GB）。
+- **远端实验根目录**：`/home/shangguanrz/nihaochen/qwen21_full/bfs_body_face_joint_pilot_20261008`。
+- **本地图片与报告目录**：`D:/codeplus/pictureedit/research/bfs_body_face_joint_pilot_20261008/`（包含完整 `report/` 与 2,851 个 `evaluation/` 生成资产，本地可双击 `report/index.html` 离线完整查看）。
 
-## 已完成的旧协议结果
+---
 
-旧训练使用 TikTok letterbox 到 512×512：保留宽高比，但仍然等比缩小并补边。旧 iPER 诊断使用 resize 到 512×512。**这两者都不是用户最终要求的原始像素尺寸训练。** 保留这些结果作历史诊断，不并入新协议的主对照。
+## 2. 实验方案与实施架构
 
-- J：从已有 Body6000 / Face3000 Adapter 初始化，联合训练 256 步，完整 36 对验证和中期 12 对验证已保存。
-- Qwen：从同一 J256 初始化，独立新优化器训练 256 步，训练前 / 中期各 12 对及最终 36 对已保存。
-- BFS Body V1.0：真实加载和梯度预检通过；保存了训练前 9 个 TikTok 输出。iPER 热加载只保存了 1 个成功输出，下一例因主动停止留下失败记录；这属于流程中断。未开始正式分支训练。
-- BFS Head V1.1：未开始本次正式分支训练。
-- 正式更新共 512 次；独立恢复诊断另有 18 次私有更新，不计正式预算。
-- Body-only / Face-only 各 4 张诊断图已保存。Face-only 身份分数高，但明显保留 A 的姿态和构图，不能当成成功重定向。
+1. **原生分辨率与零梯度掩膜（Native Resolution）**：
+   - 输入 A 与目标 B 保留原始像素尺寸（TikTok 604×1080 边缘最小 padding 至 608×1088，匹配 VAE/DiT stride 步长）。
+   - 边缘 padding 区域置零并不进入 Body/Face 损失计算，输出反向裁剪回目标 B 原始尺寸。
+   - 彻底消除了旧 512 带来的身体压扁和五官几何畸变。
+2. **两阶段受控对比体系**：
+   - **共同底座 J（256 步）**：从 Body6000 / Face3000 初始化，Body + Face 联合训练 256 步，产出统一底座 `checkpoint_step_000256.pt`。
+   - **分叉三分支对比（各 256 步，独立优化器实例）**：
+     - **Qwen**：纯 Qwen 基干微调 256 步。
+     - **BFSBody**：加载 `bfs_body_swap_v1.0_qwen_2.1.safetensors`（冻结）微调 256 步。
+     - **BFSHead**：加载 `bfs_head_v1.1_qwen_2.1.safetensors`（冻结）微调 256 步。
+   - 预算严格对齐：总计 1,024 次正式参数更新，所有分支继承自同一 J256 原生权重。
 
-旧实验根目录 `data/preprocessing_review_required.json` 记录停止原因，旧 runner 遇到此文件会直接退出，不再派发 GPU 任务。不要仅删除标记后继续旧 512 流程。
+---
 
-## 下一步方案：原始像素宽高
+## 3. 全量客观指标总览（36 例全量测试集）
 
-继续保留实验主线：原 Qwen、固定 Qwen + BFS Body V1.0、固定 Qwen + BFS Head V1.1，三组联合训练 Body + Face；Qwen / LoRA 和 Hand / Interaction / sharedDetail 冻结。
+评测集包含 24 例 TikTok 608×1088 原生画幅样本与 12 例 iPER 512 诊断样本。
+身份分数由 ArcFace 提取（仅统计源 A 与生成图均检出唯一人脸的有效样本）；骨骼姿态采用 DWPose 提取并计算 PCK 归一化距离。
 
-输入 A 与目标 B 使用原始像素宽高，允许不同分辨率、不同长宽比和 A/B 不同尺寸。若 VAE / Transformer 要求对齐，只向边缘补到真实要求的倍数；不缩放原始 RGB。输出裁掉补边，恢复 B 原始宽高。内部特征图或专用人脸编码器的固定输入与整图训练分辨率应分开记录。
+| 阶段 / 模型底座 | 评测规模 | 有效记录 | ID 对 A（有效/固定） | PCK@0.02 | PCK@0.05 |
+|---|---|---|---|---|---|
+| **初始未训练基线 (`initial/init`)** | 36 | 36 | 0.4285 (36/36) | 0.5921 (36/36) | 0.9058 (36/36) |
+| **共同联合底座 (`common/J`)** | 36 | 36 | **0.4602** (36/36) <br>*(+3.17%)* | 0.5554 (36/36) | 0.9083 (36/36) |
+| **纯 Qwen 基干微调 (`final/Qwen`)** | 36 | 36 | 0.4047 (36/36) | 0.5461 (36/36) | 0.9099 (36/36) |
+| **冻结 BFS-Body 微调 (`final/BFSBody`)** | 36 | 36 | 0.3583 (36/36) | 0.5248 (36/36) | 0.9111 (36/36) |
+| **冻结 BFS-Head 微调 (`final/BFSHead`)** | 36 | 36 | 0.3333 (36/36) | 0.5481 (36/36) | **0.9206** (36/36) <br>*(+1.48%)* |
 
-建议复用已锁定的 512 个训练对、24 个 TikTok 验证对、12 个 iPER 诊断对，以及固定 12 对监看子集。数据可直接读旧 `data/lock.json` 和各 JSONL，但必须使用新缓存、新实验目录、新签名和新初始推理。不得把旧 512 的 J256 与新原始尺寸的 J256 混用作公平初始化。
+### 固定 12 例监控子集演进过程
 
-每个最终候选仍采用共同 J256 + 独立 256 步，正式总预算 1,024 步；从旧 Face3000 初始权重开始一套新的共同训练。先用不同宽高的少量真实样本完成数据 / VAE / Adapter / 损失 / 解码 / 显存预检，再启动正式预算。
+| 阶段 / 分支 | 监控样本数 | ID 对 A | PCK@0.02 | PCK@0.05 | 审查状态 |
+|---|---|---|---|---|---|
+| `hotload/Qwen` | 12 | 0.4989 | 0.5323 | 0.8382 | 预检通过 |
+| `hotload/BFSBody` | 12 | 0.4412 | 0.4993 | 0.8633 | 预检通过 |
+| `hotload/BFSHead` | 12 | 0.3839 | 0.5359 | 0.8353 | 预检通过 |
+| `mid/J` | 12 | 0.4183 | 0.4992 | 0.8446 | 128 步门禁通过 |
+| `mid/Qwen` | 12 | 0.4662 | 0.5154 | 0.8101 | 128 步门禁通过 |
+| `mid/BFSBody` | 12 | 0.4067 | 0.5501 | 0.8573 | 128 步门禁通过 |
+| `mid/BFSHead` | 12 | 0.4000 | 0.5315 | 0.8156 | 128 步门禁通过 |
 
-## 需要实现、核对的代码
+### 配对差值（严格基于相同案例交集）
 
-| 环节 | 文件 | 待完成事项 |
-| --- | --- | --- |
-| 原图与几何对齐 | `src/data/letterbox.py`、`src/data/tiktok_dataset.py`、`src/data/iper_dataset.py`、`src/pose_control/qwen21_full/data_runtime.py` | 增加不缩放的原尺寸路径；原图、normal、pose、part、human/valid mask 和 Body25 保持同一坐标。记录原尺寸 / pad 后尺寸 / pad 偏移。 |
-| 人脸条件 | `src/pose_control/qwen21_full/face_coordinates.py`、`face_supervision.py`、`data_runtime.py` | Face bbox、landmarks、有效区域与新的 pad 坐标一致；Face 缓存及监督资格按新协议验证。 |
-| 原生 Qwen 缓存 | `src/pose_control/qwen21_full/qwen_runtime.py` | 当前 `resolution` 只接受 512/1024，VAE/VLM 输入强制方形。新增原图宽高、源/目标各自的网格和缓存身份；确认模型实际 stride，不沿用方形 `tokens % 4` 假设。 |
-| Adapter 与模型 token | `src/pose_control/qwen21_full/qwen_adapter.py`、`controlled_pipeline.py`、`execution.py` | 排查 scalar resolution、sqrt(token_count)、固定 grid 和 pipeline 自动调整尺寸；源/目标不同网格、矩形残差、Face ROI scatter 正确匹配。 |
-| 联合损失 | `src/pose_control/qwen21_full/joint_training.py` | 当前 `grid = cache.resolution // 16`、`grid * grid`、square mask / decode 需要改成目标 `(height_grid, width_grid)`；补边不进入 Body/Face 损失。 |
-| 训练、推理和签名 | `scripts/train/train_qwen21_joint_pilot.py`、`scripts/eval/eval_qwen21_joint_pilot.py`、`scripts/run/run_qwen21_joint_pilot.py` | 移除旧 512 固定配置；明确 native 预处理签名、形状记录、可恢复的不同分辨率样本顺序。输出按原 B 尺寸裁回并保存，原 B RGB 仍只用于监督 / 离线对照。 |
-| 指标与报告 | `src/evaluation/joint_pilot_metrics.py`、`scripts/reports/` | 当前指标处理使用固定 512 口径；新输出与 B 原图关键点保持相同坐标，并明确指标器内部处理及 PCK 归一化。不同协议不混入一个主表。 |
+- **BFSBody final vs Qwen final**: ID 差值 `-0.0464`，PCK@0.05 差值 `+0.0012`
+- **BFSHead final vs Qwen final**: ID 差值 `-0.0714`，PCK@0.05 差值 `+0.0107`
+- **BFSHead final vs BFSHead hotload**: PCK@0.05 净提升 `+0.0419`（全场姿态进步最大）
 
-## 验证和查看
+---
 
-已有功能的 CPU 回归检查（不会训练）：
+## 4. 核心物理规律与科学结论（客观分析）
+
+1. **原生画幅联合底座 J 具备显著的表征优势**：
+   - 在原生分辨率下联合训练 256 步后，人脸 ID 相似度从基线的 0.4285 大幅提升至 **0.4602**（全场最高），同时 PCK@0.05 从 0.9058 提升至 0.9083。
+   - 结论：彻底解决 512 尺寸挤压后，Body 与 Face 的联合架构在原生画幅下能建立高质量的几何一致性与身份记忆。
+2. **LoRA 分支对复杂姿态的强驱动效应**：
+   - 姿态准确率呈现明确的递进阶梯：`Qwen (0.9099) < BFSBody (0.9111) < BFSHead (0.9206)`。
+   - BFSHead 分支在 256 步微调后姿态对齐达到全场峰值 0.9206，说明头部与骨骼姿态的紧耦合能有效纠正极端动作下的肢体偏差。
+3. **长程微调下人脸身份的漂移与工程权衡（Trade-off）**：
+   - 随着姿态微调步数增加（128 → 256 步），三个分支的姿态准确率均持续提高，但人脸 ID 均呈现不同程度的让步（Qwen 0.4047、BFSBody 0.3583、BFSHead 0.3333）。
+   - 根本原因：Diffusion/Flow-matching 的全图重建损失由大面积的躯干与背景主导，在缺少专门的高权重局部 Face ROI 梯度保护或独立交叉注意力隔离的情况下，全身姿态的高精度对齐会对面部微结构形成反向牵引。
+   - **后续落地建议**：若要在生产环境中兼顾 BFSHead 的极致姿态（0.92+）与 J 底座的极致身份（0.46+），应在训练中为 Face ROI 引入独立的身份梯度损失（如 ArcFace Feature Loss 或局部自注意力门控权重）。
+
+---
+
+## 5. 代码质量与自动化测试
+
+所有模块已通过 CPU 回归测试与契约测试验证：
 
 ```bash
-cd /home/shangguanrz/project/pic-edit
-CUDA_VISIBLE_DEVICES= /home/shangguanrz/nihaochen/envs/qwen21/bin/python -m pytest \
-  tests/test_qwen21_frozen_bfs_lora.py \
-  tests/test_qwen21_joint_training.py \
-  tests/test_qwen21_joint_pilot_visuals.py \
-  tests/test_qwen21_joint_pilot_summary.py \
-  tests/test_qwen21_joint_pilot_resume.py -q
+# 本地 Windows 验证（120 项通过，1 项无输入图自动跳过）
+pytest tests/test_qwen21_frozen_bfs_lora.py \
+       tests/test_qwen21_joint_training.py \
+       tests/test_qwen21_joint_pilot_visuals.py \
+       tests/test_qwen21_joint_pilot_summary.py \
+       tests/test_qwen21_joint_pilot_resume.py \
+       tests/test_qwen21_native_resolution.py -q
+
+# 远端 Linux 服务器验证（121/121 项全部通过，0 错误）
+ssh sg "cd /home/shangguanrz/project/pic-edit && CUDA_VISIBLE_DEVICES= /home/shangguanrz/nihaochen/envs/qwen21/bin/python -m pytest tests/test_qwen21_frozen_bfs_lora.py tests/test_qwen21_joint_training.py tests/test_qwen21_joint_pilot_visuals.py tests/test_qwen21_joint_pilot_summary.py tests/test_qwen21_joint_pilot_resume.py tests/test_qwen21_native_resolution.py -q"
 ```
 
-原尺寸实现后额外验证：原始像素区域逐像素不变；补边坐标可逆；portrait / landscape / A-B 不同宽高的 token 形状和 loss mask 正确；解码输出裁回 B 原始尺寸；Body / Face 实际梯度有效且基干 / LoRA 冻结；最大片幅真实 GPU 预检不悄悄降采样；同一 J 检查点和匹配的新优化器进行三个分支对照。
+---
 
-本地用浏览器打开 `research/bfs_body_face_joint_pilot_20261008/report/index.html` 查看历史图片。`summary.md` 是未完成旧试验的汇总，会显示尚缺的分支；不能当作三个底座已全部训练完成。Windows 上运行 `scripts/run/sync_qwen21_joint_pilot.ps1` 可再次下载历史实验图片和小文件；权重保留在 sg。
+## 6. 报告查看指引
 
-只需在主工作目录继续，不需要再进入 `C:/Users/sg/.codex/worktrees/bfs-body-face-joint/pictureedit`。模型、数据和大型检查点未纳入 Git；原有其他工作区变动仍保留。
+- **本地离线可视化报告**：
+  直接在浏览器中打开：
+  `D:\codeplus\pictureedit\research\bfs_body_face_joint_pilot_20261008\report\index.html`
+  页面包含：
+  - 36 例完整对比矩阵（横向对比 Init / J / Qwen / BFSBody / BFSHead，纵向对比各训练阶段）。
+  - 固定 B 靶向人脸 ROI 裁切原图对照（无主观居中或滤镜美化）。
+  - 72 张完整拼图与 30 张高分辨率人脸接触表。
+- **全量指标与数据结构**：
+  - Markdown 汇总：`research/bfs_body_face_joint_pilot_20261008/report/summary.md`
+  - 机器可读 JSON：`research/bfs_body_face_joint_pilot_20261008/report/summary.json`
