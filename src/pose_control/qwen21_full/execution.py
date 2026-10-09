@@ -19,8 +19,8 @@ import numpy as np
 import torch
 import torch.nn.functional as F
 
-from .checkpoint import FACE_ONLY_PREFIXES
-from .data_runtime import FaceConditionStore, QwenFullDataset, build_condition_bundle, pair_metadata
+from .checkpoint import FACE_ONLY_PREFIXES, HAND_ONLY_PREFIXES
+from .data_runtime import FaceConditionStore, HandConditionStore, QwenFullDataset, build_condition_bundle, pair_metadata
 from .face.adapter import scatter_face_roi_residuals
 from .qwen_adapter import Qwen21FullAdapter, Qwen21FullControlContext
 from .qwen_runtime import MODEL_REVISION, PROMPT, Qwen21IPERCache, dataset_image_to_pil, transformer_inputs
@@ -364,23 +364,44 @@ def precompute(pipe, cache, datasets, *, should_stop=None):
         print(f'Native Qwen cache ready: {len(dataset)} pairs at {cache.resolution}', flush=True)
 
 
-def prepare(adapter, batch, pair, metadata, store, *, with_face):
+def prepare(adapter, batch, pair, metadata, store, *, with_face, with_hand=False, hand_store=None):
     device = next(adapter.parameters()).device
-    grid = int(pair['resolution']) // 16
+    if pair.get('target_token_hw') is not None:
+        target_token_hw = tuple(pair['target_token_hw'])
+    elif str(pair.get('resolution')) == 'native' and 'tgt_image' in batch:
+        target_token_hw = (batch['tgt_image'].shape[2] // 16, batch['tgt_image'].shape[3] // 16)
+    else:
+        grid = int(pair['resolution']) // 16
+        target_token_hw = (grid, grid)
+    if pair.get('source_token_hw') is not None:
+        source_token_hw = tuple(pair['source_token_hw'])
+    elif str(pair.get('resolution')) == 'native' and 'src_image' in batch:
+        source_token_hw = (batch['src_image'].shape[2] // 16, batch['src_image'].shape[3] // 16)
+    else:
+        source_token_hw = target_token_hw
     # Original typed condition records require one dtype across geometry/tokens.
     # Preserve those contracts by preparing in FP32; the dynamic core uses AMP.
     with torch.autocast(device.type, enabled=False):
         bundle = build_condition_bundle(adapter.legacy, batch, device=device, dtype=torch.float32)
+        meta = [row if 'source_appearance' in row and 'target_appearance' in row else pair_metadata(row) for row in metadata]
         kwargs = {}
         if with_face:
-            meta = [row if 'source_appearance' in row and 'target_appearance' in row else pair_metadata(row) for row in metadata]
             from .face_coordinates import batch_alignment_records
             face_condition, references = store.for_pairs(meta, device=device, dtype=torch.float32,
                                                         alignments=batch_alignment_records(batch, len(meta)))
             kwargs = dict(face_condition=face_condition, face_references=references)
-        return adapter.prepare_conditioning(
+        if with_hand:
+            if hand_store is None:
+                raise ValueError('with_hand=True requires hand_store')
+            hand_condition, hand_references = hand_store.for_pairs(meta, device=device, dtype=torch.float32)
+            kwargs['hand_condition'] = hand_condition
+            kwargs['hand_features'] = hand_references
+        prepared = adapter.prepare_conditioning(
             condition_bundle=bundle, source_latent=pair['source_latent'],
-            target_token_hw=(grid, grid), **kwargs)
+            target_token_hw=target_token_hw, source_token_hw=source_token_hw, **kwargs)
+        if with_hand and prepared.detail is not None:
+            prepared.detail = None
+        return prepared
 
 
 BODY_PREFIXES = (
@@ -401,19 +422,27 @@ def parameter_groups(adapter, branch, *, lr_scale=1.0):
         raise ValueError('lr_scale must be positive and finite')
     groups = {'heads_and_interface': [], 'encoders': [], 'control_core': []}
     names = {key: [] for key in groups}
+    bridge_branch = "geometry" if branch == "body" else ("face" if branch == "face" else "hand")
     for name, parameter in adapter.named_parameters():
-        if name.startswith(f'output_bridges.{"geometry" if branch == "body" else "face"}.'):
+        if name.startswith(f'output_bridges.{bridge_branch}.'):
             group = 'heads_and_interface'
         elif branch == 'body' and name.startswith(('latent_bridge.', 'text_bridge.', 'pooled_bridge.')):
             group = 'heads_and_interface'
         elif name.startswith('legacy.'):
             short = name[len('legacy.'):]
-            allowed = BODY_PREFIXES if branch == 'body' else FACE_ONLY_PREFIXES
+            if branch == 'body':
+                allowed = BODY_PREFIXES
+            elif branch == 'face':
+                allowed = FACE_ONLY_PREFIXES
+            elif branch == 'hand':
+                allowed = HAND_ONLY_PREFIXES
+            else:
+                continue
             if not short.startswith(allowed):
                 continue
-            if '.zero_heads.' in short or '_log_group_scale' in short:
+            if '.zero_heads.' in short or '_log_group_scale' in short or '_group_prior' in short:
                 group = 'heads_and_interface'
-            elif short.startswith(('control_interface.control_core.', 'control_interface.face_adapter.')):
+            elif short.startswith(('control_interface.control_core.', 'control_interface.face_adapter.', 'control_interface.hand_adapter.')):
                 group = 'control_core'
             else:
                 group = 'encoders'
@@ -424,7 +453,7 @@ def parameter_groups(adapter, branch, *, lr_scale=1.0):
     rates = {'heads_and_interface': 1e-4, 'encoders': 5e-5, 'control_core': 1e-5}
     result = [{'params': groups[key], 'lr': rates[key] * lr_scale, 'name': key} for key in groups if groups[key]]
     if not result:
-        raise ValueError('No trainable parameters selected')
+        raise ValueError(f'No trainable parameters selected for branch {branch}')
     return result, names
 
 
@@ -432,7 +461,8 @@ def set_training_phase(adapter, branch, *, warmup):
     adapter.requires_grad_(False)
     _, names = parameter_groups(adapter, branch)
     allowed = {name for group in names.values() for name in group}
-    head_prefix = f'output_bridges.{"geometry" if branch == "body" else "face"}.'
+    bridge_branch = "geometry" if branch == "body" else ("face" if branch == "face" else "hand")
+    head_prefix = f'output_bridges.{bridge_branch}.'
     for name, parameter in adapter.named_parameters():
         parameter.requires_grad_(name.startswith(head_prefix) if warmup else name in allowed)
     return {name: sum(p.numel() for n, p in adapter.named_parameters() if p.requires_grad and n in group)
@@ -488,14 +518,18 @@ def face_loss_mask(prepared, grid):
         raise ValueError('Face loss requires full face conditioning')
     # Preserve train_iper_v65_face.rasterize_box_mask for the outside loss.
     # The Adapter itself still scatters its original feathered face residuals.
+    if isinstance(grid, (tuple, list)):
+        gh, gw = int(grid[0]), int(grid[1])
+    else:
+        gh = gw = int(grid)
     boxes = face.target_boxes[:, 0].float()
-    yy = (torch.arange(grid, device=boxes.device, dtype=boxes.dtype) + .5) / grid
-    xx = (torch.arange(grid, device=boxes.device, dtype=boxes.dtype) + .5) / grid
+    yy = (torch.arange(gh, device=boxes.device, dtype=boxes.dtype) + .5) / gh
+    xx = (torch.arange(gw, device=boxes.device, dtype=boxes.dtype) + .5) / gw
     mask = ((xx[None, None, :] >= boxes[:, 0, None, None])
             & (xx[None, None, :] <= boxes[:, 2, None, None])
             & (yy[None, :, None] >= boxes[:, 1, None, None])
             & (yy[None, :, None] <= boxes[:, 3, None, None]))
-    return mask.to(boxes.dtype).reshape(face.batch_size, grid * grid, 1).detach()
+    return mask.to(boxes.dtype).reshape(face.batch_size, gh * gw, 1).detach()
 
 
 def crop_batch(images, boxes, side=112):
@@ -509,7 +543,11 @@ def crop_batch(images, boxes, side=112):
 
 
 def decode_tokens(pipe, tokens, resolution):
-    latents = pipe._unpack_latents(tokens, resolution, resolution, pipe.vae_scale_factor).to(pipe.vae.dtype)
+    if isinstance(resolution, (tuple, list)):
+        h, w = int(resolution[0]), int(resolution[1])
+    else:
+        h = w = int(resolution)
+    latents = pipe._unpack_latents(tokens, h, w, pipe.vae_scale_factor).to(pipe.vae.dtype)
     mean = torch.tensor(pipe.vae.config.latents_mean, device=latents.device, dtype=latents.dtype).view(1, -1, 1, 1, 1)
     std = torch.tensor(pipe.vae.config.latents_std, device=latents.device, dtype=latents.dtype).view(1, -1, 1, 1, 1)
     pixels = (pipe.vae.decode(latents * std + mean, return_dict=False)[0][:, :, 0].float() * .5 + .5).clamp(0, 1)
@@ -552,8 +590,12 @@ def run_loss(pipe, adapter, cache, dataset, store, index, branch, *, seed,
     metadata = [dataset.samples[index]]
     pair = cache.pair(pipe, batch, device)
     target = pair['target_latent']
-    grid = cache.resolution // 16
-    tokens = grid * grid
+    if pair.get('target_token_hw') is not None:
+        target_token_hw = tuple(pair['target_token_hw'])
+    else:
+        grid_dim = int(cache.resolution) // 16
+        target_token_hw = (grid_dim, grid_dim)
+    tokens = target_token_hw[0] * target_token_hw[1]
     generator = torch.Generator(device=device).manual_seed(seed)
     sigma = torch.rand((1,), device=device, dtype=target.dtype, generator=generator)
     if branch == 'face':
@@ -579,6 +621,8 @@ def run_loss(pipe, adapter, cache, dataset, store, index, branch, *, seed,
     noisy = (1 - sigma[:, None, None]) * target + sigma[:, None, None] * noise
     velocity = noise - target
     prepared = prepare(adapter, batch, pair, metadata, store, with_face=branch == 'face')
+    from .face_coordinates import valid_image_tokens
+    valid_tokens = valid_image_tokens(batch, target_token_hw, device)
     inputs = transformer_inputs(pair, noisy, sigma)
     outside_reference = None
     if branch == 'face':
@@ -586,9 +630,13 @@ def run_loss(pipe, adapter, cache, dataset, store, index, branch, *, seed,
         # Do not cache no-grad autocast weights for the following train pass.
         with torch.no_grad(), torch.autocast(device.type, dtype=torch.bfloat16, cache_enabled=False):
             with Qwen21FullControlContext(pipe.transformer, adapter, prepared,
+                                         target_token_hw=target_token_hw,
+                                         target_valid_mask=valid_tokens,
                                          face_strength=0, hand_strength=0, hand_mode='off'):
                 outside_reference = pipe.transformer(**inputs)[0][:, -tokens:]
     with Qwen21FullControlContext(pipe.transformer, adapter, prepared,
+                                 target_token_hw=target_token_hw,
+                                 target_valid_mask=valid_tokens,
                                  face_strength=1 if branch == 'face' else 0,
                                  hand_strength=0, hand_mode='off') as context:
         prediction = pipe.transformer(**inputs)[0][:, -tokens:]
@@ -596,16 +644,11 @@ def run_loss(pipe, adapter, cache, dataset, store, index, branch, *, seed,
         identity = perceptual = outside = squared.new_zeros(())
         if branch == 'body':
             human = F.interpolate(batch['human_mask'].to(device=device, dtype=torch.float32),
-                                  size=(grid, grid), mode='bilinear', align_corners=False)
+                                  size=target_token_hw, mode='bilinear', align_corners=False)
             from src.data.letterbox import valid_body_velocity_loss
-            valid = batch.get('valid_image_mask')
-            if valid is not None:
-                valid = F.interpolate(valid.to(device=device,dtype=torch.float32), size=(grid,grid),mode='area').flatten(2).transpose(1,2)
-            flow = valid_body_velocity_loss(squared, human.flatten(2).transpose(1,2), valid)
+            flow = valid_body_velocity_loss(squared, human.flatten(2).transpose(1, 2), valid_tokens)
         else:
-            from .face_coordinates import valid_image_tokens
-            mask = face_loss_mask(prepared, grid).to(device)
-            valid_tokens = valid_image_tokens(batch, grid, device)
+            mask = face_loss_mask(prepared, target_token_hw).to(device)
             if valid_tokens is not None:
                 mask = mask * valid_tokens
             flow, global_flow, face_flow, nonface_flow = face_velocity_loss(squared, mask, face_flow_loss)
@@ -622,7 +665,8 @@ def run_loss(pipe, adapter, cache, dataset, store, index, branch, *, seed,
                 if valid.any():
                     x0 = noisy - sigma[:, None, None] * prediction
                     boxes = prepared.face.target_boxes[:, 0].float()
-                    decoded = decode_tokens(pipe, x0, cache.resolution)
+                    res_hw = (batch['tgt_image'].shape[2], batch['tgt_image'].shape[3]) if cache.resolution == 'native' else cache.resolution
+                    decoded = decode_tokens(pipe, x0, res_hw)
                     target_pixels = (batch['tgt_image'].to(device).float() * .5 + .5).clamp(0, 1)
                     if face_aux_alignment == 'five_point':
                         from .face_loss_alignment import build_arcface_alignment_grid, align_face_rgb
@@ -631,18 +675,26 @@ def run_loss(pipe, adapter, cache, dataset, store, index, branch, *, seed,
                             if not keep:
                                 continue
                             record = supervision.record(item)
-                            eligibility = record['by_resolution'][str(cache.resolution)]
-                            selected = eligibility['selected_detection']
+                            res_key = str(cache.resolution)
+                            by_res = record['by_resolution']
+                            eligibility = by_res.get(res_key, by_res.get('512', {}))
+                            selected = eligibility.get('selected_detection', 0)
                             keypoints = record['detections'][selected]['landmarks5_original_px']
                             if keypoints is None:
                                 raise ValueError('Valid aligned face supervision is missing its five points')
-                            output_points = record['detections'][selected].get('landmarks5_output_px', {}).get(str(cache.resolution))
-                            value = torch.tensor(output_points if output_points is not None else keypoints, dtype=torch.float32)
-                            if output_points is None:
-                                if getattr(dataset, 'align_mode', 'resize') != 'resize':
-                                    raise ValueError('Letterbox supervision is missing transformed five points')
-                                value *= value.new_tensor([cache.resolution / record['original_width'],
-                                                           cache.resolution / record['original_height']])
+                            output_points = record['detections'][selected].get('landmarks5_output_px', {}).get(res_key)
+                            if output_points is not None:
+                                value = torch.tensor(output_points, dtype=torch.float32)
+                            elif getattr(dataset, 'align_mode', 'resize') == 'native':
+                                from src.data.letterbox import NativePad
+                                transform = NativePad.from_size((record['original_width'], record['original_height']))
+                                pts_norm = torch.as_tensor(np.asarray(keypoints), dtype=torch.float32) / torch.tensor([record['original_width'], record['original_height']])
+                                value = transform.points(pts_norm) * torch.tensor([transform.padded_width, transform.padded_height])
+                            elif getattr(dataset, 'align_mode', 'resize') == 'resize':
+                                value = torch.tensor(keypoints, dtype=torch.float32) * torch.tensor([int(cache.resolution) / record['original_width'],
+                                                                                                      int(cache.resolution) / record['original_height']])
+                            else:
+                                raise ValueError('Supervision is missing transformed five points')
                             points.append(value)
                         grid = build_arcface_alignment_grid(torch.stack(points), decoded.shape[-2:],
                                                             device=device)

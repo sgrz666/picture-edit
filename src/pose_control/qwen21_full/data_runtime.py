@@ -9,6 +9,7 @@ import json
 from pathlib import Path
 from typing import Any, Mapping, Sequence
 
+import numpy as np
 import torch
 from torch.utils.data._utils.collate import default_collate
 
@@ -61,7 +62,7 @@ class QwenFullDataset(torch.utils.data.Dataset):
     Cross-person B RGB is available only as offline inspection data and is not
     a paired reconstruction target. Training callers must reject such rows.
     """
-    def __init__(self, pairs_jsonl: str | Path, resolution: int = 512,
+    def __init__(self, pairs_jsonl: str | Path, resolution: int | tuple[int, int] | str = 512,
                  sampled_root: str | Path = SAMPLED, assets_root: str | Path = ASSETS,
                  dataset_type: str = "auto", tiktok_raw_root: str | Path = TIKTOK_RAW,
                  tiktok_assets_root: str | Path = TIKTOK_ASSETS, align_mode: str = "resize"):
@@ -71,8 +72,8 @@ class QwenFullDataset(torch.utils.data.Dataset):
         self.dataset_type = ("tiktok_v3" if is_tiktok_v3_manifest(pairs_jsonl) else "iper") if dataset_type == "auto" else dataset_type
         self.sampled_root = Path(sampled_root)
         if self.dataset_type == "tiktok_v3":
-            if align_mode not in ("resize", "letterbox"):
-                raise ValueError("Full TikTok conditioning requires resize or letterbox with shared RGB/geometry coordinates")
+            if align_mode not in ("resize", "letterbox", "native"):
+                raise ValueError("Full TikTok conditioning requires resize, letterbox, or native with shared RGB/geometry coordinates")
             self.base = TikTokV3PoseDataset(pairs_jsonl, raw_root=tiktok_raw_root,
                                            assets_root=tiktok_assets_root, resolution=resolution,
                                            align_mode=align_mode, strict_conditions=True)
@@ -189,3 +190,168 @@ class FaceConditionStore:
         condition = transform_face_condition(condition, alignments)
         return (condition.to(device=device, dtype=dtype).validate(),
                 references.to(device=device, dtype=dtype).validate())
+
+
+class HandConditionStore:
+    def __init__(self, raw_root=None, assets_root=None, align_mode="native"):
+        self.raw_root = Path(raw_root or "/home/shangguanrz/project/pic-edit")
+        self.assets_root = Path(assets_root or "/data/shangguanrz/pic-edit-datasets/TikTokDataset/TikTok_3d_assets_native")
+        self.align_mode = align_mode
+        self._smpl_cache: dict[str, tuple[Any, dict[str, int]]] = {}
+        self._dw_cache: dict[tuple[str, str], dict[str, Any]] = {}
+
+    def _get_dwpose(self, seq_id: str, stem: str, default_path: str | None = None) -> dict[str, Any] | None:
+        key = (seq_id, stem)
+        if key not in self._dw_cache:
+            p = None
+            if default_path and Path(default_path).exists():
+                p = Path(default_path)
+            else:
+                for candidate in (
+                    self.assets_root.parent / f"TikTok_v3/dwpose_v1/{seq_id}/dwpose_json/{stem}.json",
+                    self.raw_root.parents[2] / f"TikTok_v3/dwpose_v1/{seq_id}/dwpose_json/{stem}.json",
+                    Path(f"/home/shangguanrz/project/pic-edit/datasets/TikTokDataset/TikTok_v3/dwpose_v1/{seq_id}/dwpose_json/{stem}.json"),
+                    Path(f"/data/shangguanrz/pic-edit-datasets/TikTokDataset/TikTok_v3/dwpose_v1/{seq_id}/dwpose_json/{stem}.json"),
+                ):
+                    if candidate.exists():
+                        p = candidate
+                        break
+            if p is None or not p.exists():
+                return None
+            self._dw_cache[key] = json.loads(p.read_text(encoding="utf-8"))
+        return self._dw_cache[key]
+
+    def _get_smpl(self, seq_id: str):
+        if seq_id not in self._smpl_cache:
+            smpl_dir = self.assets_root / seq_id / "smplestx"
+            params_p = smpl_dir / "params.pt"
+            map_p = smpl_dir / "frame_map.json"
+            if not params_p.exists() or not map_p.exists():
+                return None, None
+            params = torch.load(params_p, map_location="cpu", weights_only=False)
+            frame_map = json.loads(map_p.read_text(encoding="utf-8"))
+            stem_to_idx = {item['stem']: item['index'] for item in frame_map.get('frames', [])}
+            self._smpl_cache[seq_id] = (params, stem_to_idx)
+        return self._smpl_cache[seq_id]
+
+    def for_pairs(self, pairs: Sequence[Mapping[str, Any]], *, device="cpu", dtype=torch.float32):
+        count = len(pairs)
+        hand_keypoints = torch.zeros(count, 2, 2, 21, 3, dtype=torch.float32)
+        hand_pose = torch.zeros(count, 2, 2, 45, dtype=torch.float32)
+        source_boxes = torch.zeros(count, 2, 2, 4, dtype=torch.float32)
+        target_boxes = torch.zeros(count, 2, 2, 4, dtype=torch.float32)
+        region_valid = torch.zeros(count, 2, 2, dtype=torch.bool)
+        source_indices = torch.arange(2, dtype=torch.long)[None].expand(count, -1).clone()
+
+        dummy_box = torch.tensor([0.0, 0.0, 0.1, 0.1], dtype=torch.float32)
+        source_boxes[...] = dummy_box
+        target_boxes[...] = dummy_box
+
+        from src.data.letterbox import NativePad
+        from .hand.geometry import split_iper_134_hand_points
+        pad = NativePad.from_size((604, 1080))
+
+        for i, row in enumerate(pairs):
+            seq_id = str(row.get("sequence_id") or row.get("source_appearance") or row.get("appearance") or "")
+            src_stem = str(row.get("source_stem", ""))
+            tgt_stem = str(row.get("target_stem", ""))
+            dw_src = self._get_dwpose(seq_id, src_stem, row.get("source_dwpose_json"))
+            dw_tgt = self._get_dwpose(seq_id, tgt_stem, row.get("target_dwpose_json"))
+            if dw_src is None or dw_tgt is None:
+                continue
+
+            src_kps = np.array(dw_src.get('keypoints_norm', []), dtype=np.float32)
+            src_sc = np.array(dw_src.get('scores', []), dtype=np.float32)
+            tgt_kps = np.array(dw_tgt.get('keypoints_norm', []), dtype=np.float32)
+            tgt_sc = np.array(dw_tgt.get('scores', []), dtype=np.float32)
+
+            if len(src_kps) != 134 or len(tgt_kps) != 134:
+                continue
+
+            src_pts134 = torch.from_numpy(np.concatenate([src_kps, src_sc[:, None]], axis=-1))
+            tgt_pts134 = torch.from_numpy(np.concatenate([tgt_kps, tgt_sc[:, None]], axis=-1))
+
+            if self.align_mode == "native":
+                src_pts134 = pad.points(src_pts134)
+                tgt_pts134 = pad.points(tgt_pts134)
+
+            src_hands = split_iper_134_hand_points(src_pts134).clamp(0.0, 1.0)
+            tgt_hands = split_iper_134_hand_points(tgt_pts134).clamp(0.0, 1.0)
+
+            hand_keypoints[i, 0] = tgt_hands
+
+            def get_boxes(hands: torch.Tensor):
+                boxes = torch.zeros(2, 4, dtype=torch.float32)
+                valid = torch.zeros(2, dtype=torch.bool)
+                for side in range(2):
+                    pts = hands[side]
+                    vis = pts[:, 2] > 0.15
+                    if int(vis.sum()) >= 3:
+                        xy = pts[vis, :2]
+                        lo = xy.amin(dim=0)
+                        hi = xy.amax(dim=0)
+                        span = (hi - lo).clamp_min(1e-3)
+                        margin = span * 0.2 + 0.01
+                        b = torch.cat([(lo - margin).clamp(0, 1), (hi + margin).clamp(0, 1)])
+                        min_dim = 0.06
+                        w = b[2] - b[0]
+                        h = b[3] - b[1]
+                        if w < min_dim:
+                            cx = (b[0] + b[2]) / 2
+                            b[0] = max(0.0, float(cx - min_dim / 2))
+                            b[2] = min(1.0, float(cx + min_dim / 2))
+                            if b[0] == 0.0:
+                                b[2] = min(1.0, min_dim)
+                            if b[2] == 1.0:
+                                b[0] = max(0.0, 1.0 - min_dim)
+                        if h < min_dim:
+                            cy = (b[1] + b[3]) / 2
+                            b[1] = max(0.0, float(cy - min_dim / 2))
+                            b[3] = min(1.0, float(cy + min_dim / 2))
+                            if b[1] == 0.0:
+                                b[3] = min(1.0, min_dim)
+                            if b[3] == 1.0:
+                                b[1] = max(0.0, 1.0 - min_dim)
+                        if bool((b[2:] > b[:2]).all()):
+                            boxes[side] = b
+                            valid[side] = True
+                    if not valid[side]:
+                        boxes[side] = dummy_box
+                return boxes, valid
+
+            s_boxes, s_valid = get_boxes(src_hands)
+            t_boxes, t_valid = get_boxes(tgt_hands)
+            s_boxes = torch.where(s_valid[:, None], s_boxes, t_boxes)
+
+            source_boxes[i, 0] = s_boxes
+            target_boxes[i, 0] = t_boxes
+            region_valid[i, 0] = t_valid
+
+            smpl_params, stem_to_idx = self._get_smpl(seq_id)
+            if smpl_params is not None and tgt_stem in stem_to_idx:
+                ti = stem_to_idx[tgt_stem]
+                hand_pose[i, 0, 0] = smpl_params['left_hand_pose'][ti].float().reshape(-1)
+                hand_pose[i, 0, 1] = smpl_params['right_hand_pose'][ti].float().reshape(-1)
+
+        from .hand.conditions import HandFineCondition, HandReferenceFeatures
+        condition = HandFineCondition(
+            hand_keypoints=hand_keypoints.to(device=device, dtype=dtype),
+            hand_pose=hand_pose.to(device=device, dtype=dtype),
+            source_boxes=source_boxes.to(device=device, dtype=dtype),
+            target_boxes=target_boxes.to(device=device, dtype=dtype),
+            region_valid=region_valid.to(device=device),
+            source_indices=source_indices.to(device=device),
+            mesh_bps=torch.zeros(count, 2, 2, 1024, device=device, dtype=dtype),
+            mesh_valid=torch.zeros(count, 2, 2, device=device, dtype=torch.bool),
+            depth=torch.zeros(count, 2, 2, 1, 16, 16, device=device, dtype=dtype),
+            visibility=region_valid.to(device=device, dtype=dtype),
+        ).validate()
+
+        references = HandReferenceFeatures(
+            dino_patches=torch.zeros(count, 2, 2, 1, 16, 1536, device=device, dtype=dtype),
+            reference_valid=torch.zeros(count, 2, 2, 1, device=device, dtype=torch.bool),
+            source_indices=source_indices.to(device=device),
+        ).validate()
+
+        return condition, references
+

@@ -18,6 +18,7 @@ import time
 import traceback
 from pathlib import Path
 
+import torch
 from PIL import Image, ImageDraw, ImageOps
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -85,11 +86,13 @@ def image_strip(images, labels, side=256, missing='Unavailable'):
 
 
 def save_case_artifacts(output, stem, *, source, target, generated, normal, pose,
-                        source_box, target_box, failure=None):
+                        source_box, target_box,
+                        source_hand_box=None, target_hand_box=None,
+                        target_lh_box=None, target_rh_box=None, failure=None):
     """Export original aligned RGBs, controls, whole panels and fixed-ROI crops."""
     output = Path(output)
     paths = {}
-    for folder in ('images', 'panels', 'faces'):
+    for folder in ('images', 'panels', 'faces', 'hands'):
         (output / folder).mkdir(parents=True, exist_ok=True)
     for key, image, suffix in (('source', source, 'source'), ('target', target, 'target'),
                                ('image', generated, 'on'), ('normal', normal, 'normal'), ('pose', pose, 'pose')):
@@ -111,6 +114,22 @@ def save_case_artifacts(output, stem, *, source, target, generated, normal, pose
     paths['face_comparison'] = f'panels/{stem}_face.jpg'
     image_strip(crops, ['A source ROI', 'B target ROI (offline)', 'Output at B target ROI'],
                 missing=failure or 'No valid face ROI').save(output / paths['face_comparison'], quality=92)
+
+    # Hand crops
+    hand_box = target_hand_box or target_lh_box or target_rh_box
+    if hand_box is not None:
+        hand_crops = []
+        for key, image, b in (('source', source, source_hand_box or hand_box),
+                              ('target', target, hand_box),
+                              ('output', generated, hand_box)):
+            hc = crop_normalized(image, b)[0] if image is not None else None
+            paths[f'hand_{key}'] = f'hands/{stem}_{key}.png' if hc is not None else None
+            if hc is not None:
+                hc.save(output / paths[f'hand_{key}'])
+            hand_crops.append(hc)
+        paths['hand_comparison'] = f'panels/{stem}_hand.jpg'
+        image_strip(hand_crops, ['A source hand ROI', 'B target hand ROI (offline)', 'Output at B target hand ROI'],
+                    missing=failure or 'No valid hand ROI').save(output / paths['hand_comparison'], quality=92)
     return paths
 
 
@@ -119,7 +138,7 @@ def arguments(argv=None):
     parser.add_argument('--checkpoint', type=Path)
     parser.add_argument('--pairs', type=Path)
     parser.add_argument('--dataset-type', choices=('tiktok_v3', 'iper'))
-    parser.add_argument('--align-mode', choices=('letterbox', 'resize'), default='letterbox')
+    parser.add_argument('--align-mode', choices=('letterbox', 'resize', 'native'), default='letterbox')
     parser.add_argument('--cache', type=Path)
     parser.add_argument('--features', type=Path, help='Fingerprint-validated FaceConditionStore cache')
     parser.add_argument('--output', type=Path, required=True)
@@ -128,7 +147,7 @@ def arguments(argv=None):
     parser.add_argument('--variant', help='Report column: init, J, Qwen, BFSBody, BFSHead, or a named ablation')
     parser.add_argument('--stage', choices=('initial', 'common', 'hotload', 'mid', 'final'))
     parser.add_argument('--indices', help='Zero-based indices, e.g. 0,2,4-11. No outcome-based replacement.')
-    parser.add_argument('--resolution', type=int, choices=(512,), default=512)
+    parser.add_argument('--resolution', default='512', help='512, 1024, or native')
     parser.add_argument('--seed', type=int, default=42)
     parser.add_argument('--steps', type=int, default=30)
     parser.add_argument('--geometry-strength', type=float, default=1.0, help='Set 0 for Face-only diagnosis')
@@ -139,18 +158,23 @@ def arguments(argv=None):
     parser.add_argument('--sampled-root', type=Path, default=ROOT / 'datasets/iPER/iper_sampled_6src64tgt')
     parser.add_argument('--assets-root', type=Path, default=ROOT / 'datasets/iPER/iper_assets_512_nvdiffrast')
     parser.add_argument('--progress-mode', choices=('step', 'sigma'), default='step')
+    parser.add_argument('--with-hand', action='store_true', help='Enable Hand branch joint conditioning')
+    parser.add_argument('--hand-strength', type=float, default=1.0, help='Set 0 for Hand-off diagnosis')
+    parser.add_argument('--hand-mode', default='v66', choices=('v66', 'off'))
     parser.add_argument('--use-kv-cache', action=argparse.BooleanOptionalAction, default=True)
     parser.add_argument('--score-only', action='store_true', help='CPU trusted IdentityMetric/PoseMetric on saved outputs; no pipeline load')
     parser.add_argument('--metric-models-root', type=Path, help='Optional directory containing DWPose/ and antelopev2/ for CPU scoring')
     args = parser.parse_args(argv)
+    res_str = str(args.resolution).strip()
+    args.resolution = int(res_str) if res_str.isdigit() else res_str
     if not args.score_only:
         missing = [name for name in ('checkpoint', 'pairs', 'dataset_type', 'cache', 'features', 'label') if getattr(args, name) is None]
         if missing:
             parser.error('Generation requires ' + ', '.join('--' + name.replace('_', '-') for name in missing))
     if args.steps < 1:
         parser.error('--steps must be positive')
-    if any(not math.isfinite(value) or value < 0 for value in (args.geometry_strength, args.face_strength)):
-        parser.error('Body/Face strengths must be finite and nonnegative')
+    if any(not math.isfinite(value) or value < 0 for value in (args.geometry_strength, args.face_strength, args.hand_strength)):
+        parser.error('Body/Face/Hand strengths must be finite and nonnegative')
     if args.dataset_type == 'iper' and args.align_mode == 'letterbox':
         parser.error('QwenFullDataset iPER implements resize only; pass --align-mode resize explicitly')
     return args
@@ -158,10 +182,10 @@ def arguments(argv=None):
 
 def infer_variant_stage(label, lora):
     normalized = label.lower().replace('-', '').replace('_', '')
-    variant = 'BFSBody' if 'bfsbody' in normalized else 'BFSHead' if 'bfshead' in normalized else 'init' if 'init' in normalized else 'J' if normalized == 'j' or normalized.startswith(('common', 'j256')) else 'Qwen'
-    if lora is not None and variant in ('init', 'J', 'Qwen'):
+    variant = 'BFH' if 'bfh' in normalized else 'BFSBody' if 'bfsbody' in normalized else 'BFSHead' if 'bfshead' in normalized else 'init' if 'init' in normalized else 'J' if normalized == 'j' or normalized.startswith(('common', 'j256')) else 'Qwen'
+    if lora is not None and variant in ('init', 'J', 'Qwen', 'BFH'):
         raise ValueError('For LoRA runs, label must name BFSBody/BFSHead or pass --variant explicitly')
-    stage = 'hotload' if 'hotload' in normalized else 'mid' if 'mid' in normalized or '128' in normalized else 'initial' if variant == 'init' else 'common' if variant == 'J' else 'final'
+    stage = 'hotload' if 'hotload' in normalized else 'mid' if 'mid' in normalized or '128' in normalized else 'initial' if variant == 'init' else 'common' if variant in ('J', 'BFH') else 'final'
     return variant, stage
 
 
@@ -169,21 +193,27 @@ def controller_strengths(args):
     # Shared Detail is disabled by absent prepared.detail. This legacy gate must
     # remain enabled because the separate Face branch also reads it.
     return {'geometry_strength': args.geometry_strength, 'face_strength': args.face_strength,
-            'interaction_strength': 0, 'detail_strength': 1.0, 'hand_strength': 0, 'hand_mode': 'off'}
+            'interaction_strength': 0, 'detail_strength': 1.0,
+            'hand_strength': args.hand_strength if getattr(args, 'with_hand', False) else 0,
+            'hand_mode': getattr(args, 'hand_mode', 'v66') if getattr(args, 'with_hand', False) else 'off'}
 
 
-def generation_arguments(source, args, *, prompt, generator):
-    return {'prompt': prompt, 'image': [source], 'width': args.resolution, 'height': args.resolution,
-            'output_resolution': args.resolution, 'num_inference_steps': args.steps, 'true_cfg_scale': 1.0,
+def generation_arguments(source, args, *, prompt, generator, target_size=None):
+    if args.resolution == 'native' or args.align_mode == 'native':
+        width, height = target_size if target_size is not None else source.size
+    else:
+        width = height = int(args.resolution)
+    return {'prompt': prompt, 'image': [source], 'width': width, 'height': height,
+            'num_inference_steps': args.steps, 'true_cfg_scale': 1.0,
             'use_kv_cache': args.use_kv_cache, 'generator': generator}
 
 
 def validate_base_provenance(variant, stage, lora_sha256, checkpoint):
     """Reject mislabeled bases and unintended prior changes after adaptation."""
     names = {'init': 'init', 'initial': 'init', 'j': 'J', 'common': 'J', 'qwen': 'Qwen',
-             'bfsbody': 'BFSBody', 'bfshead': 'BFSHead'}
+             'bfsbody': 'BFSBody', 'bfshead': 'BFSHead', 'bfh': 'BFH'}
     canonical = names.get(re.sub(r'[-_ ]', '', variant).lower())
-    if canonical in ('init', 'J', 'Qwen') and lora_sha256 is not None:
+    if canonical in ('init', 'J', 'Qwen', 'BFH') and lora_sha256 is not None:
         raise ValueError(f'Canonical {canonical} requires plain Qwen without LoRA')
     if canonical in ('BFSBody', 'BFSHead') and lora_sha256 is None:
         raise ValueError(f'Canonical {canonical} requires a loaded BFS LoRA')
@@ -248,12 +278,14 @@ def target_keypoints(dataset, sample):
         return None
     index = bundle['stem_to_idx'][meta['target_stem']]
     points = bundle['kps_25_coords'][index].float().clone()
+    visible = (points[:, 2] > .05) & ((points[:, :2] >= 0) & (points[:, :2] <= 1)).all(-1)
     if 'alignment_meta' in sample:
         from src.pose_control.qwen21_full.face_coordinates import transform_from_record
         record = json.loads(sample['alignment_meta'])
-        visible = (points[:, 2] > .05) & ((points[:, :2] >= 0) & (points[:, :2] <= 1)).all(-1)
-        points = transform_from_record(record['target']).points(points)
-        points[:, 2] = points[:, 2].where(visible, 0)
+        target_meta = record['target']
+        if target_meta.get('version') != 'native_pad_v1':
+            points = transform_from_record(target_meta).points(points)
+    points[:, 2] = torch.where(visible, points[:, 2], torch.zeros_like(points[:, 2]))
     return points.tolist()
 
 
@@ -272,16 +304,21 @@ def score_saved_outputs(output, models_root=None):
         try:
             if row['status'] == 'complete':
                 with Image.open(output / row['image']) as saved:
-                    generated = saved.convert('RGB').resize((512, 512), Image.Resampling.BILINEAR)
+                    generated = saved.convert('RGB')
                 with Image.open(output / row['source']) as saved:
-                    source = saved.convert('RGB').resize((512, 512), Image.Resampling.BILINEAR)
+                    source = saved.convert('RGB')
+                if row.get('resolution') not in ('native', None):
+                    res = int(row['resolution'])
+                    generated = generated.resize((res, res), Image.Resampling.BILINEAR)
+                    source = source.resize((res, res), Image.Resampling.BILINEAR)
                 source_boxes, _ = identity.det.detect(cv2.cvtColor(np.asarray(source), cv2.COLOR_RGB2BGR))
                 boxes, _ = identity.det.detect(cv2.cvtColor(np.asarray(generated), cv2.COLOR_RGB2BGR))
                 score.update(source_face_count=len(source_boxes), face_count=len(boxes), face_unique=len(boxes) == 1)
                 if len(source_boxes) == 1 and len(boxes) == 1:
                     score['identity_A'] = identity.cosine(identity.embedding(source), identity.embedding(generated))
                 if row.get('target_body25') is not None:
-                    score.update(pose.compare(pose.detect(generated), np.asarray(row['target_body25'], dtype=np.float32)))
+                    score.update(pose.compare(pose.detect(generated), np.asarray(row['target_body25'], dtype=np.float32),
+                                              image_size=(generated.width, generated.height)))
                 else:
                     score['pose_failure'] = 'Missing original target Body25 geometry; no heatmap-derived substitute'
         except Exception as exc:
@@ -323,7 +360,9 @@ def main(argv=None):
                   indices=indices, pairs_sha256=digest_file(args.pairs), checkpoint_sha256=digest_file(args.checkpoint),
                   lora_sha256=digest_file(args.lora) if args.lora else None, lora_strength=1.0 if args.lora else None,
                   prompt=PROMPT, true_cfg_scale=1.0, generation_rgb_inputs=['Source A'], target_B_rgb='offline only',
-                  geometry_strength=args.geometry_strength, face_strength=args.face_strength, hand_strength=0, interaction_strength=0,
+                  geometry_strength=args.geometry_strength, face_strength=args.face_strength,
+                  hand_strength=args.hand_strength if getattr(args, 'with_hand', False) else 0,
+                  with_hand=getattr(args, 'with_hand', False), interaction_strength=0,
                   shared_detail_condition=False, legacy_detail_gate=1.0, runner_sha256=digest_file(__file__),
                   model_revision=MODEL_REVISION, model_config_sha256=digest_file(args.model / 'transformer/config.json'),
                   process_isolation='one base and one adapter checkpoint per invocation')
@@ -366,8 +405,14 @@ def main(argv=None):
               'checkpoint_sha256': config['checkpoint_sha256'], 'checkpoint': str(args.checkpoint)})
     del payload
     store = FaceConditionStore(args.features)
+    from src.pose_control.qwen21_full.data_runtime import HandConditionStore
+    hand_store = HandConditionStore(
+        raw_root=args.tiktok_raw_root,
+        assets_root=args.tiktok_assets_root,
+        align_mode=args.align_mode,
+    ) if args.with_hand else None
     cache = Qwen21IPERCache(args.cache, resolution=args.resolution, prompt=PROMPT,
-                           preprocessing='letterbox_v1' if args.align_mode == 'letterbox' else 'resize_v1')
+                           preprocessing='native_v1' if args.align_mode == 'native' else ('letterbox_v1' if args.align_mode == 'letterbox' else 'resize_v1'))
     rows = []
     for index in indices:
         if index in completed:
@@ -384,6 +429,7 @@ def main(argv=None):
                'source': None, 'target': None, 'target_body25': None, 'metrics': None, 'metadata': initial_metadata}
         source = target = normal = pose = generated = None
         prepared = context = result = None
+        target_hand_box = target_lh_box = target_rh_box = source_hand_box = None
         stem = case_stem(index, initial_metadata)
         phase = 'dataset'
         start = time.perf_counter()
@@ -401,12 +447,23 @@ def main(argv=None):
             phase = 'conditioning'
             with torch.inference_mode():
                 entry = cache.source(pipe, source)
-                pair = {'source_latent': entry['reference_latent'].to('cuda'), 'resolution': args.resolution}
-                prepared = prepare(adapter, batch, pair, [meta], store, with_face=True)
+                if args.resolution == 'native':
+                    tgt_hw = (sample['tgt_image'].shape[1] // 16, sample['tgt_image'].shape[2] // 16)
+                    src_hw = entry.get('token_hw', (sample['src_image'].shape[1] // 16, sample['src_image'].shape[2] // 16))
+                    pair = {'source_latent': entry['reference_latent'].to('cuda'), 'resolution': args.resolution,
+                            'target_token_hw': tgt_hw, 'source_token_hw': src_hw}
+                else:
+                    pair = {'source_latent': entry['reference_latent'].to('cuda'), 'resolution': args.resolution}
+                prepared = prepare(adapter, batch, pair, [meta], store, with_face=True,
+                                   with_hand=args.with_hand, hand_store=hand_store)
                 if prepared.face is None:
                     raise AssertionError('Joint inference requires prepared Face conditioning')
-                if prepared.detail is not None or prepared.hand is not None:
-                    raise AssertionError('Joint pilot does not allow shared Detail or Hand conditioning')
+                if prepared.detail is not None:
+                    raise AssertionError('Joint pilot does not allow shared Detail conditioning')
+                if not args.with_hand and prepared.hand is not None:
+                    raise AssertionError('Joint Body/Face pilot must not prepare Hand conditioning')
+                if args.with_hand and prepared.hand is None:
+                    raise AssertionError('Joint Body/Face/Hand pilot requires prepared Hand conditioning')
                 row['face_valid'] = bool(prepared.face.face_valid.any())
                 row['face_slots_valid'] = prepared.face.face_valid.detach().cpu().tolist()[0]
                 # Store boxes independently of source identity validity: a missing
@@ -423,6 +480,23 @@ def main(argv=None):
                     if box is not None and 'alignment_meta' in sample:
                         box = transform_from_record(meta['alignment'][name]).points(box.reshape(2, 2)).reshape(4)
                     row[f'{name}_face_box'] = box.tolist() if box is not None else None
+                if args.with_hand and prepared.hand is not None:
+                    lh_valid = bool(prepared.hand.hand_valid[0, 0, 0])
+                    rh_valid = bool(prepared.hand.hand_valid[0, 0, 1])
+                    row['left_hand_valid'] = lh_valid
+                    row['right_hand_valid'] = rh_valid
+                    if lh_valid:
+                        target_lh_box = prepared.hand.target_boxes[0, 0, 0].detach().cpu().tolist()
+                        row['target_left_hand_box'] = target_lh_box
+                    if rh_valid:
+                        target_rh_box = prepared.hand.target_boxes[0, 0, 1].detach().cpu().tolist()
+                        row['target_right_hand_box'] = target_rh_box
+                    target_hand_box = target_lh_box or target_rh_box
+                    row['target_hand_box'] = target_hand_box
+                    if target_hand_box is not None and hand_store is not None:
+                        hand_cond, _ = hand_store.for_pairs([meta], device='cpu')
+                        source_hand_box = hand_cond.source_boxes[0, 0, 0 if lh_valid else 1].detach().cpu().tolist()
+                        row['source_hand_box'] = source_hand_box
             torch.cuda.synchronize()
             torch.cuda.reset_peak_memory_stats()
             phase = 'generation'
@@ -430,8 +504,10 @@ def main(argv=None):
             with torch.inference_mode(), torch.autocast('cuda', dtype=torch.bfloat16):
                 with Qwen21FullControlContext(pipe.transformer, adapter, prepared, **controller_strengths(args), progress_mode=args.progress_mode,
                                              num_inference_steps=args.steps) as context:
+                    target_size = (sample['tgt_image'].shape[2], sample['tgt_image'].shape[1]) if args.resolution == 'native' else None
                     result = pipe(**generation_arguments(source, args, prompt=PROMPT,
-                                  generator=torch.Generator(device='cuda').manual_seed(args.seed)))
+                                  generator=torch.Generator(device='cuda').manual_seed(args.seed),
+                                  target_size=target_size))
             torch.cuda.synchronize()
             row.update(seconds=time.perf_counter() - start, peak_cuda_gib=torch.cuda.max_memory_allocated() / 1024**3,
                        control_forwards=context.forward_count, block_calls=context.call_counts,
@@ -439,9 +515,24 @@ def main(argv=None):
             if context.forward_count != args.steps or any(value != args.steps for value in context.call_counts.values()):
                 raise AssertionError('Incomplete sampling or missing layer injection')
             diagnostics = context.output.diagnostics
-            if diagnostics.get('detail_active_rows', 0) or diagnostics.get('hand_active_rows', 0):
-                raise AssertionError('Disabled Detail/Hand branch was activated')
+            if diagnostics.get('detail_active_rows', 0):
+                raise AssertionError('Disabled Detail branch was activated')
+            if not args.with_hand and diagnostics.get('hand_active_rows', 0):
+                raise AssertionError('Disabled Hand branch was activated')
             generated = Image.alpha_composite(Image.new('RGBA', result.images[0].size, 'white'), result.images[0].convert('RGBA')).convert('RGB')
+            if 'alignment' in meta and 'target' in meta['alignment']:
+                from src.pose_control.qwen21_full.face_coordinates import transform_from_record
+                target_tf = transform_from_record(meta['alignment']['target'])
+                generated = target_tf.unpad(generated)
+                target = target_tf.unpad(target)
+                if normal is not None:
+                    normal = target_tf.unpad(normal)
+                if pose is not None:
+                    pose = target_tf.unpad(pose)
+            if 'alignment' in meta and 'source' in meta['alignment']:
+                from src.pose_control.qwen21_full.face_coordinates import transform_from_record
+                source_tf = transform_from_record(meta['alignment']['source'])
+                source = source_tf.unpad(source)
             row['status'] = 'complete'
         except Exception as exc:
             row.update(failure=f'{type(exc).__name__}: {exc}', failure_phase=phase,
@@ -453,9 +544,12 @@ def main(argv=None):
         finally:
             row.setdefault('image_stem', stem)
             if source is not None and target is not None:
-                row.update(save_case_artifacts(args.output, stem, source=source, target=target, generated=generated,
-                            normal=normal, pose=pose, source_box=row['source_face_box'], target_box=row['target_face_box'],
-                            failure=row['failure']))
+                row.update(save_case_artifacts(
+                    args.output, stem, source=source, target=target, generated=generated,
+                    normal=normal, pose=pose, source_box=row['source_face_box'], target_box=row['target_face_box'],
+                    source_hand_box=source_hand_box, target_hand_box=target_hand_box,
+                    target_lh_box=target_lh_box, target_rh_box=target_rh_box,
+                    failure=row['failure']))
             with records.open('a', encoding='utf-8') as stream:
                 stream.write(json.dumps(row, ensure_ascii=False, default=str) + '\n')
             rows.append(row)
