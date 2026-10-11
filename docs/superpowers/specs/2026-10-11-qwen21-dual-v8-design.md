@@ -1,8 +1,8 @@
 # Qwen-Image-2.1 双人分支升级设计
 
-日期：2026-10-11。设计版本：`dual_v8` 候选。状态：**已完成源码审查的设计，待用户审阅后实施**。
+日期：2026-10-11。设计版本：`dual_v8`。状态：**用户已确认，模块实现与300步单样本验证已完成，完整双人质量尚未验收通过**。
 
-本规格依据 `ssh sg:/home/shangguanrz/project/pic-edit` 的实际 Qwen 2.1 和 adapter 源码。研究证据与论文对应见 [审查报告](D:/codeplus/pictureedit/reports/Qwen21_双人Adapter论文与代码审查_20261011.md)。本文件中的模块和 CLI 是计划接口，尚不可运行。
+本规格依据 `ssh sg:/home/shangguanrz/project/pic-edit` 的实际 Qwen 2.1 和 adapter 源码。研究证据与论文对应见 [审查报告](C:/Users/sg/.codex/worktrees/qwen21-dual-v8/pictureedit/reports/Qwen21_双人Adapter论文与代码审查_20261011.md)。以下保留确认时的设计目标；实际接口和验证范围以 [运行文档](C:/Users/sg/.codex/worktrees/qwen21-dual-v8/pictureedit/docs/experiments/2026-10-11-qwen21-dual-v8-pilot.md) 与 [实验报告](C:/Users/sg/.codex/worktrees/qwen21-dual-v8/pictureedit/reports/Qwen21_dual_v8_pilot_20261011.md) 为准。
 
 ## 1. 本阶段目标与约束
 
@@ -390,7 +390,7 @@ L=L_{FM}+\lambda_{bg}L_{bg}+\lambda_{budget}L_{budget}.
 
 ## 11. 实施位置与交付
 
-以下是计划新增/改动文件，尚未实施：
+以下是确认设计中的新增/改动文件；本轮实现已提供这些入口：
 
 | 文件 | 职责 |
 |---|---|
@@ -417,6 +417,6 @@ L=L_{FM}+\lambda_{bg}L_{bg}+\lambda_{budget}L_{budget}.
 
 已完成：Qwen 源码/配置核查、旧双人和 full 差异映射、七篇研究与相关公开实现检查、VideoX-Fun 2.1 接口核实、SMPL-X 两帧数据可用性检查、完整计算图与验证门槛设计。
 
-未完成：V8 模块代码、真实 V8 前后向、单样本新训练和质量评测。本设计经过维度、坐标、初始化、缓存、梯度与数据边界的自审；所有性能收益仍需实验。
+实施进展：V8 模块代码、真实 V8 前后向、300步单样本训练、12张生成对照、数据边界审计与独立重评分已完成。姿态/外观漏检、接触覆盖仅1/3及控制切换伪影见实验报告；尚不能声称完整双人质量或跨样本泛化达标。
 
-需要审阅的核心选择是：**保留旧单人 full，在新双人分支中采用部位关系 + 独立外观 bank + 六处 Qwen hidden 查询控制**。按 brainstorming 的设计审阅要求，用户确认这一具体设计后再进入实施计划和单样本验证。
+用户已确认的核心选择是：**保留旧单人 full，在新双人分支中采用部位关系 + 独立外观 bank + 六处 Qwen hidden 查询控制**。本轮只实施一个单样本实验，没有扩大到全量训练。

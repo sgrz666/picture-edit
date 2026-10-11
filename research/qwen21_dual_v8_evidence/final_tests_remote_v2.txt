@@ -1,0 +1,23 @@
+........................................................................ [ 33%]
+........................................................................ [ 66%]
+........................................................................ [ 99%]
+..                                                                       [100%]
+=============================== warnings summary ===============================
+<frozen importlib._bootstrap>:488
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute
+
+<frozen importlib._bootstrap>:488
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute
+
+../../../../../nihaochen/envs/qwen21/lib/python3.12/site-packages/torch/cuda/__init__.py:829
+  /home/shangguanrz/nihaochen/envs/qwen21/lib/python3.12/site-packages/torch/cuda/__init__.py:829: UserWarning: Can't initialize NVML
+    warnings.warn("Can't initialize NVML")
+
+research/qwen21_dual_upgrade_20261011/implementation/tests/test_qwen21_dual_v8_core.py::test_residual_diagnostics_measure_only_active_roi
+  /home/shangguanrz/project/pic-edit/research/qwen21_dual_upgrade_20261011/implementation/tests/test_qwen21_dual_v8_core.py:166: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+  Consider using tensor.detach() first. (Triggered internally at /pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:835.)
+    expected = float(output[:,0].square().mean().sqrt())
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+218 passed, 4 warnings in 26.78s
+sys:1: DeprecationWarning: builtin type swigvarlink has no __module__ attribute

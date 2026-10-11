@@ -1,0 +1,3860 @@
+{
+  "configuration_sha256": "c2c609d938d38e0c005ad60fa3c5546132a4c56ae9c3fbe926189060daa7cca9",
+  "configuration": {
+    "common": {
+      "steps": 40,
+      "cfg": 1.0,
+      "use_kv_cache": true
+    },
+    "code_sha256": "0fa5f89c34cdc4d86f0cbffe2bdbe3bbf66aec7d78a9da7e3a93abbf875528ef",
+    "checkpoint_sha256": "6a74ca71f755d466cf979fa57311014e7c5e7febfc2bbda88839d6b46a1c8eb9",
+    "dependencies": {
+      "generation_sha256": "5390d1ee56b12af351e5a90749f1e9887964f68208210ae03056e9ab820af29e",
+      "source_rgb_sha256": "d16fc287147433db12130a5a3dbe0b60af49edb66346bbf81331aae769813c98",
+      "source_masks_sha256": [
+        "2e678f78f9c7e5c55dcc9e4d87f13d5b17421a806d7facd1ad661262c6f5c694",
+        "6884cf9006441c06c171fbbe2ce2ba9368143de5e304fbc1f03931618db76cf0"
+      ],
+      "source_features_sha256": "142888cb7e22b15ffdba1b28844b9739c16cd7219d4d46ecd7da5f3da4fad440",
+      "geometry_sha256": "07a6149c4fa8a2cdb93cd1912f7a9969f896807e410f80a5922e26514328a1da",
+      "code_sha256": "0fa5f89c34cdc4d86f0cbffe2bdbe3bbf66aec7d78a9da7e3a93abbf875528ef",
+      "model_id": "/data/shangguanrz/pic-edit-models/Qwen-Image-2.1",
+      "resolution": 512,
+      "precision_policy": {
+        "name": "qwen21_bf16_full_precision_reduction_v1",
+        "allow_bf16_reduced_precision_reduction": false
+      },
+      "backbone_sha256": "4b40da9b51ddcb44bc4cae009242f7f29936883bbd9fd05b16da789519848d5e",
+      "runtime_versions": {
+        "torch": "2.8.0",
+        "torchvision": "0.23.0",
+        "diffusers": "0.41.0.dev0",
+        "transformers": "5.17.0",
+        "numpy": "2.1.2",
+        "scipy": "1.16.2",
+        "pillow": "11.3.0"
+      },
+      "native_code_sha256": {
+        "pipeline": "6985b2f1f25e8dd09ef85c867ebcad184b981f10c0b4f80757ca9cc135b8fa5e",
+        "transformer": "0eb0555e21ca93195e1fe9389113cafbf0e8822f6454c3001cebb3d21521ebd7",
+        "vae": "afb341db5e9d081e568ae4703119d1141d124aaf2fa9c061b3d4eb80ce73c15b",
+        "text_encoder": "e96511fa034bd734fa06639611bc6cbdf1da12d02104785a9bc265baa764af8a"
+      }
+    },
+    "probe_seed": 42,
+    "strengths": {
+      "geometry": 1.0,
+      "appearance": 1.0,
+      "contact": 1.0,
+      "max_ratio": null
+    },
+    "evaluator_target_sha256": "f0cb6be2dbe31117f88a5b2781560bc3dc720373c1210306caaf56db400b2f08",
+    "probe_steps": 4,
+    "cfg_probes": [
+      1.0,
+      4.0
+    ],
+    "switch_generation_sha256": "f597e61e5711af8792b0e1552e198a382a30894d710bb3929289c1c4736bd56c"
+  },
+  "results": {
+    "target_replacement": {
+      "pixel_exact": true,
+      "max_absolute_channel_error": 0,
+      "mean_absolute_channel_error": 0.0,
+      "different_pixels": 0,
+      "evaluator_target_before_sha256": "f0cb6be2dbe31117f88a5b2781560bc3dc720373c1210306caaf56db400b2f08",
+      "evaluator_target_after_sha256": "c7f45987ca41d85ac48dd8dd08f2507212f1079c43b61a0fd2dd260678407042",
+      "evaluator_rgb_and_masks_changed": true,
+      "fresh_generation_calls": 1,
+      "generation_object_reused": true,
+      "target_object_passed_to_generate": false,
+      "output": "/home/shangguanrz/project/pic-edit/experiments/qwen21_dual_v8/eval_pair14_v8_300_v1/probe_target_replacement.png",
+      "output_sha256": "8a05273623b2da828534858f829703110a3902def6af62810c40b2e243889115",
+      "steps": 40,
+      "seed": 42
+    },
+    "geometry_switch": {
+      "pixel_exact": false,
+      "max_absolute_channel_error": 233,
+      "mean_absolute_channel_error": 11.465474446614584,
+      "different_pixels": 193940,
+      "geometry_bank_changed": true,
+      "geometry_bank_sha256": [
+        "2fc1e01810048a93186c6fe69e42dc6adca9bb84826212ab6be28016ceaeaeba",
+        "c9ffa6c01ff64a8c2dfde75b2e3e8030ff872e4e7948f40e3940eeeb8bff9000"
+      ],
+      "original_geometry_sha256": "07a6149c4fa8a2cdb93cd1912f7a9969f896807e410f80a5922e26514328a1da",
+      "switched_geometry_sha256": "902aaa1e9b5bf0bd23286341fea8bdce50fbdf229677f9a59f6c733b8dbb9915",
+      "switch_manifest": "/home/shangguanrz/project/pic-edit/research/qwen21_dual_upgrade_20261011/pilot_controls_v3/generation_talk_control.json",
+      "switched_output": "/home/shangguanrz/project/pic-edit/experiments/qwen21_dual_v8/eval_pair14_v8_300_v1/probe_actual_talk32_geometry.png",
+      "switched_condition": "actual_fitted_talk32_geometry_not_hug34",
+      "same_source_prompt_seed": true
+    },
+    "all_controls_zero": {
+      "pixel_exact": true,
+      "max_absolute_channel_error": 0,
+      "mean_absolute_channel_error": 0.0,
+      "different_pixels": 0,
+      "steps": 4,
+      "native_output": "/home/shangguanrz/project/pic-edit/experiments/qwen21_dual_v8/eval_pair14_v8_300_v1/probe_native_control_zero.png",
+      "adapter_zero_output": "/home/shangguanrz/project/pic-edit/experiments/qwen21_dual_v8/eval_pair14_v8_300_v1/probe_adapter_control_zero.png"
+    },
+    "cache_on_off": {
+      "pixel_exact": false,
+      "max_absolute_channel_error": 15,
+      "mean_absolute_channel_error": 0.19277445475260416,
+      "different_pixels": 95906,
+      "steps": 4,
+      "cache_on_output": "/home/shangguanrz/project/pic-edit/experiments/qwen21_dual_v8/eval_pair14_v8_300_v1/probe_cache_on.png",
+      "cache_off_output": "/home/shangguanrz/project/pic-edit/experiments/qwen21_dual_v8/eval_pair14_v8_300_v1/probe_cache_off.png",
+      "interpretation": "decoded_pixel_error_reported_no_unverified_bf16_tolerance_claim"
+    },
+    "cfg_1": {
+      "output": "/home/shangguanrz/project/pic-edit/experiments/qwen21_dual_v8/eval_pair14_v8_300_v1/probe_cfg_1.png",
+      "cfg": 1.0,
+      "steps": 4,
+      "decoded_rgb_finite": true,
+      "diagnostics": {
+        "3": {
+          "geometry": {
+            "rms": 0.29068541526794434,
+            "hidden_rms": 9.99019718170166,
+            "ratio": 0.029097064850769145,
+            "max": 2.610691547393799,
+            "count": 124,
+            "nonzero_tokens": 124,
+            "cumulative": 0.29068541526794434,
+            "cumulative_ratio": 0.029097064850769145
+          },
+          "appearance": {
+            "rms": 0.24420179426670074,
+            "hidden_rms": 10.05330753326416,
+            "ratio": 0.02429069174087148,
+            "max": 1.6953125,
+            "count": 98,
+            "nonzero_tokens": 98,
+            "cumulative": 0.24420179426670074,
+            "cumulative_ratio": 0.02429069174087148
+          },
+          "contact": {
+            "rms": 0.05689442157745361,
+            "hidden_rms": 10.051243782043457,
+            "ratio": 0.00566043594317108,
+            "max": 0.7295639514923096,
+            "count": 88,
+            "nonzero_tokens": 88,
+            "cumulative": 0.05689442157745361,
+            "cumulative_ratio": 0.00566043594317108
+          },
+          "total": {
+            "rms": 0.4531095623970032,
+            "hidden_rms": 9.99019718170166,
+            "ratio": 0.04535541733119462,
+            "max": 3.6094090938568115,
+            "count": 124,
+            "nonzero_tokens": 124,
+            "cumulative": 0.4531095623970032,
+            "cumulative_ratio": 0.04535541733119462
+          }
+        },
+        "8": {
+          "geometry": {
+            "rms": 0.29283466935157776,
+            "hidden_rms": 6.0512542724609375,
+            "ratio": 0.048392392083779864,
+            "max": 2.14357328414917,
+            "count": 124,
+            "nonzero_tokens": 124,
+            "cumulative": 0.3968244791030884,
+            "cumulative_ratio": 0.03972138606332253
+          },
+          "appearance": {
+            "rms": 0.17754486203193665,
+            "hidden_rms": 6.104283809661865,
+            "ratio": 0.029085289538949434,
+            "max": 1.453125,
+            "count": 98,
+            "nonzero_tokens": 98,
+            "cumulative": 0.296115517616272,
+            "cumulative_ratio": 0.029454536891116833
+          },
+          "contact": {
+            "rms": 0.16997414827346802,
+            "hidden_rms": 6.091122150421143,
+            "ratio": 0.027905227325266485,
+            "max": 1.9905709028244019,
+            "count": 88,
+            "nonzero_tokens": 88,
+            "cumulative": 0.18067766726016998,
+            "cumulative_ratio": 0.01797565268319833
+          },
+          "total": {
+            "rms": 0.4315805435180664,
+            "hidden_rms": 6.0512542724609375,
+            "ratio": 0.07132084095063985,
+            "max": 2.793989658355713,
+            "count": 124,
+            "nonzero_tokens": 124,
+            "cumulative": 0.5976487994194031,
+            "cumulative_ratio": 0.05982352385537237
+          }
+        },
+        "13": {
+          "geometry": {
+            "rms": 0.4203508496284485,
+            "hidden_rms": 5.4785284996032715,
+            "ratio": 0.07672696229633345,
+            "max": 3.1991374492645264,
+            "count": 124,
+            "nonzero_tokens": 124,
+            "cumulative": 0.5125911235809326,
+            "cumulative_ratio": 0.051309410040455423
+          },
+          "appearance": {
+            "rms": 0.2680721879005432,
+            "hidden_rms": 5.600492000579834,
+            "ratio": 0.04786582819380672,
+            "max": 1.8515625,
+            "count": 98,
+            "nonzero_tokens": 98,
+            "cumulative": 0.35562950372695923,
+            "cumulative_ratio": 0.03537437828796744
+          },
+          "contact": {
+            "rms": 0.17557479441165924,
+            "hidden_rms": 5.609053611755371,
+            "ratio": 0.03130203534580098,
+            "max": 2.1541848182678223,
+            "count": 88,
+            "nonzero_tokens": 88,
+            "cumulative": 0.23793496191501617,
+            "cumulative_ratio": 0.02367219093223934
+          },
+          "total": {
+            "rms": 0.5805973410606384,
+            "hidden_rms": 5.4785284996032715,
+            "ratio": 0.10597687702139041,
+            "max": 3.984375,
+            "count": 124,
+            "nonzero_tokens": 124,
+            "cumulative": 0.7224029302597046,
+            "cumulative_ratio": 0.07231117836021086
+          }
+        },
+        "18": {
+          "geometry": {
+            "rms": 0.5310654044151306,
+            "hidden_rms": 4.666282653808594,
+            "ratio": 0.11380909469375543,
+            "max": 4.125,
+            "count": 124,
+            "nonzero_tokens": 124,
+            "cumulative": 0.587483823299408,
+            "cumulative_ratio": 0.058806028811469374
+          },
+          "appearance": {
+            "rms": 0.36629894375801086,
+            "hidden_rms": 4.706267356872559,
+            "ratio": 0.07783215784014157,
+            "max": 2.375,
+            "count": 98,
+            "nonzero_tokens": 98,
+            "cumulative": 0.4200435280799866,
+            "cumulative_ratio": 0.04178162527010697
+          },
+          "contact": {
+            "rms": 0.2563602030277252,
+            "hidden_rms": 4.700236797332764,
+            "ratio": 0.0545419760921836,
+            "max": 3.235746383666992,
+            "count": 88,
+            "nonzero_tokens": 88,
+            "cumulative": 0.2939436137676239,
+            "cumulative_ratio": 0.029244501490726358
+          },
+          "total": {
+            "rms": 0.7268862128257751,
+            "hidden_rms": 4.666282653808594,
+            "ratio": 0.15577414973619197,
+            "max": 4.55322265625,
+            "count": 124,
+            "nonzero_tokens": 124,
+            "cumulative": 0.7912139296531677,
+            "cumulative_ratio": 0.07919903033569532
+          }
+        },
+        "23": {
+          "geometry": {
+            "rms": 0.5430196523666382,
+            "hidden_rms": 6.71734094619751,
+            "ratio": 0.08083848307179134,
+            "max": 4.691737174987793,
+            "count": 124,
+            "nonzero_tokens": 124,
+            "cumulative": 0.6529991626739502,
+            "cumulative_ratio": 0.06536399140049035
+          },
+          "appearance": {
+            "rms": 0.38204434514045715,
+            "hidden_rms": 6.752366542816162,
+            "ratio": 0.05657932559169405,
+            "max": 2.75,
+            "count": 98,
+            "nonzero_tokens": 98,
+            "cumulative": 0.48688778281211853,
+            "cumulative_ratio": 0.04843060666363931
+          },
+          "contact": {
+            "rms": 0.30643850564956665,
+            "hidden_rms": 6.761585235595703,
+            "ratio": 0.045320512124339005,
+            "max": 3.6327617168426514,
+            "count": 88,
+            "nonzero_tokens": 88,
+            "cumulative": 0.35149073600769043,
+            "cumulative_ratio": 0.03496987473685879
+          },
+          "total": {
+            "rms": 0.7481715083122253,
+            "hidden_rms": 6.71734094619751,
+            "ratio": 0.11137911776470767,
+            "max": 4.671454906463623,
+            "count": 124,
+            "nonzero_tokens": 124,
+            "cumulative": 0.8565974831581116,
+            "cumulative_ratio": 0.0857438014063507
+          }
+        },
+        "28": {
+          "geometry": {
+            "rms": 0.5522333979606628,
+            "hidden_rms": 6.61206579208374,
+            "ratio": 0.08351904160146459,
+            "max": 5.8134765625,
+            "count": 124,
+            "nonzero_tokens": 124,
+            "cumulative": 0.7981551885604858,
+            "cumulative_ratio": 0.07989383733310193
+          },
+          "appearance": {
+            "rms": 0.4337630867958069,
+            "hidden_rms": 6.61161994934082,
+            "ratio": 0.06560617369409642,
+            "max": 3.734375,
+            "count": 98,
+            "nonzero_tokens": 98,
+            "cumulative": 0.632736086845398,
+            "cumulative_ratio": 0.06293810119225089
+          },
+          "contact": {
+            "rms": 0.2638492286205292,
+            "hidden_rms": 6.594118118286133,
+            "ratio": 0.04001281504024769,
+            "max": 3.2158873081207275,
+            "count": 88,
+            "nonzero_tokens": 88,
+            "cumulative": 0.42045411467552185,
+            "cumulative_ratio": 0.041831053329605135
+          },
+          "total": {
+            "rms": 0.7817380428314209,
+            "hidden_rms": 6.61206579208374,
+            "ratio": 0.11822901758892848,
+            "max": 5.965827941894531,
+            "count": 124,
+            "nonzero_tokens": 124,
+            "cumulative": 1.063881516456604,
+            "cumulative_ratio": 0.10649254435190136
+          }
+        }
+      },
+      "actual_velocity_diagnostics": {
+        "observer_version": "native_cfg_velocity_v1",
+        "cfg": 1.0,
+        "steps": [
+          {
+            "step": 0,
+            "timestep": 1000.0,
+            "cfg": 1.0,
+            "cond": {
+              "rms": 1.6959145069122314,
+              "max_abs": 7.875,
+              "finite": true,
+              "residuals": {
+                "3": {
+                  "geometry": {
+                    "rms": 0.3262407183647156,
+                    "hidden_rms": 7.937384605407715,
+                    "ratio": 0.041101790398621836,
+                    "max": 2.734110116958618,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 0.3262407183647156,
+                    "cumulative_ratio": 0.041101790398621836
+                  },
+                  "appearance": {
+                    "rms": 0.24695420265197754,
+                    "hidden_rms": 7.932937145233154,
+                    "ratio": 0.031130235640448832,
+                    "max": 1.6953125,
+                    "count": 98,
+                    "nonzero_tokens": 98,
+                    "cumulative": 0.24695420265197754,
+                    "cumulative_ratio": 0.031130235640448832
+                  },
+                  "contact": {
+                    "rms": 0.05656256154179573,
+                    "hidden_rms": 7.950366020202637,
+                    "ratio": 0.007114460063607748,
+                    "max": 0.7250041961669922,
+                    "count": 88,
+                    "nonzero_tokens": 88,
+                    "cumulative": 0.05656256154179573,
+                    "cumulative_ratio": 0.007114460063607748
+                  },
+                  "total": {
+                    "rms": 0.49051958322525024,
+                    "hidden_rms": 7.937384605407715,
+                    "ratio": 0.061798641191087154,
+                    "max": 3.7952466011047363,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 0.49051958322525024,
+                    "cumulative_ratio": 0.061798641191087154
+                  }
+                },
+                "8": {
+                  "geometry": {
+                    "rms": 0.3537028133869171,
+                    "hidden_rms": 5.148103713989258,
+                    "ratio": 0.06870545603535119,
+                    "max": 2.493544340133667,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 0.4629274606704712,
+                    "cumulative_ratio": 0.0583224177338062
+                  },
+                  "appearance": {
+                    "rms": 0.25816887617111206,
+                    "hidden_rms": 5.202744960784912,
+                    "ratio": 0.04962166666193136,
+                    "max": 1.7421875,
+                    "count": 98,
+                    "nonzero_tokens": 98,
+                    "cumulative": 0.35050898790359497,
+                    "cumulative_ratio": 0.044184011733184266
+                  },
+                  "contact": {
+                    "rms": 0.19369545578956604,
+                    "hidden_rms": 5.207241535186768,
+                    "ratio": 0.037197325009933266,
+                    "max": 2.3254852294921875,
+                    "count": 88,
+                    "nonzero_tokens": 88,
+                    "cumulative": 0.20322562754154205,
+                    "cumulative_ratio": 0.025561795145673343
+                  },
+                  "total": {
+                    "rms": 0.5646167397499084,
+                    "hidden_rms": 5.148103713989258,
+                    "ratio": 0.1096747018160572,
+                    "max": 3.349587917327881,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 0.7154343128204346,
+                    "cumulative_ratio": 0.09013476710363909
+                  }
+                },
+                "13": {
+                  "geometry": {
+                    "rms": 0.4119054973125458,
+                    "hidden_rms": 4.539599895477295,
+                    "ratio": 0.09073607956571642,
+                    "max": 2.8974475860595703,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 0.5469475984573364,
+                    "cumulative_ratio": 0.06890778583221263
+                  },
+                  "appearance": {
+                    "rms": 0.27745649218559265,
+                    "hidden_rms": 4.565212249755859,
+                    "ratio": 0.0607762524514453,
+                    "max": 1.859375,
+                    "count": 98,
+                    "nonzero_tokens": 98,
+                    "cumulative": 0.40082305669784546,
+                    "cumulative_ratio": 0.05052643798377971
+                  },
+                  "contact": {
+                    "rms": 0.19577066600322723,
+                    "hidden_rms": 4.567505836486816,
+                    "ratio": 0.04286161266381828,
+                    "max": 2.576033115386963,
+                    "count": 88,
+                    "nonzero_tokens": 88,
+                    "cumulative": 0.266751229763031,
+                    "cumulative_ratio": 0.03355206906011506
+                  },
+                  "total": {
+                    "rms": 0.5955864191055298,
+                    "hidden_rms": 4.539599895477295,
+                    "ratio": 0.13119799824184938,
+                    "max": 3.8828125,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 0.8082273006439209,
+                    "cumulative_ratio": 0.10182539221965863
+                  }
+                },
+                "18": {
+                  "geometry": {
+                    "rms": 0.5222691297531128,
+                    "hidden_rms": 3.913667917251587,
+                    "ratio": 0.1334474822074024,
+                    "max": 3.65625,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 0.5925589203834534,
+                    "cumulative_ratio": 0.07465417764684665
+                  },
+                  "appearance": {
+                    "rms": 0.3361824154853821,
+                    "hidden_rms": 3.9102892875671387,
+                    "ratio": 0.08597379650510319,
+                    "max": 2.1875,
+                    "count": 98,
+                    "nonzero_tokens": 98,
+                    "cumulative": 0.4278516173362732,
+                    "cumulative_ratio": 0.05393356955984029
+                  },
+                  "contact": {
+                    "rms": 0.26022636890411377,
+                    "hidden_rms": 3.8948974609375,
+                    "ratio": 0.06681212317242298,
+                    "max": 3.319516181945801,
+                    "count": 88,
+                    "nonzero_tokens": 88,
+                    "cumulative": 0.313456267118454,
+                    "cumulative_ratio": 0.039426646059053355
+                  },
+                  "total": {
+                    "rms": 0.7191063165664673,
+                    "hidden_rms": 3.913667917251587,
+                    "ratio": 0.1837422928492786,
+                    "max": 4.628509521484375,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 0.8260780572891235,
+                    "cumulative_ratio": 0.10407433913764481
+                  }
+                },
+                "23": {
+                  "geometry": {
+                    "rms": 0.6193896532058716,
+                    "hidden_rms": 6.3997321128845215,
+                    "ratio": 0.09678368442311204,
+                    "max": 4.5,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 0.680662989616394,
+                    "cumulative_ratio": 0.08575406427359719
+                  },
+                  "appearance": {
+                    "rms": 0.3428870737552643,
+                    "hidden_rms": 6.3861188888549805,
+                    "ratio": 0.053692560336399145,
+                    "max": 2.59375,
+                    "count": 98,
+                    "nonzero_tokens": 98,
+                    "cumulative": 0.4645269513130188,
+                    "cumulative_ratio": 0.05855674169713418
+                  },
+                  "contact": {
+                    "rms": 0.3388955593109131,
+                    "hidden_rms": 6.379209995269775,
+                    "ratio": 0.053125004438199445,
+                    "max": 3.7025372982025146,
+                    "count": 88,
+                    "nonzero_tokens": 88,
+                    "cumulative": 0.37987083196640015,
+                    "cumulative_ratio": 0.04778029476895934
+                  },
+                  "total": {
+                    "rms": 0.8227619528770447,
+                    "hidden_rms": 6.3997321128845215,
+                    "ratio": 0.12856193640052302,
+                    "max": 5.139181137084961,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 0.8932183980941772,
+                    "cumulative_ratio": 0.11253308772333274
+                  }
+                },
+                "28": {
+                  "geometry": {
+                    "rms": 0.6585978269577026,
+                    "hidden_rms": 4.642277240753174,
+                    "ratio": 0.1418695594429535,
+                    "max": 6.15625,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 0.8738911747932434,
+                    "cumulative_ratio": 0.11009812655391099
+                  },
+                  "appearance": {
+                    "rms": 0.3438970148563385,
+                    "hidden_rms": 4.612557888031006,
+                    "ratio": 0.07455668269198464,
+                    "max": 2.921875,
+                    "count": 98,
+                    "nonzero_tokens": 98,
+                    "cumulative": 0.5554637312889099,
+                    "cumulative_ratio": 0.07001993348991604
+                  },
+                  "contact": {
+                    "rms": 0.2561977207660675,
+                    "hidden_rms": 4.610197067260742,
+                    "ratio": 0.05557196732119164,
+                    "max": 2.8585665225982666,
+                    "count": 88,
+                    "nonzero_tokens": 88,
+                    "cumulative": 0.43906962871551514,
+                    "cumulative_ratio": 0.05522634147909636
+                  },
+                  "total": {
+                    "rms": 0.8403228521347046,
+                    "hidden_rms": 4.642277240753174,
+                    "ratio": 0.18101522346786178,
+                    "max": 6.4676513671875,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 1.1063932180404663,
+                    "cumulative_ratio": 0.1393901483980862
+                  }
+                }
+              }
+            },
+            "uncond": null,
+            "combined": {
+              "rms": 1.6959145069122314,
+              "max_abs": 7.875,
+              "finite": true
+            },
+            "combined_matches_native_formula": true,
+            "combined_formula_max_abs": 0.0
+          },
+          {
+            "step": 1,
+            "timestep": 749.2682495117188,
+            "cfg": 1.0,
+            "cond": {
+              "rms": 1.5134425163269043,
+              "max_abs": 6.6875,
+              "finite": true,
+              "residuals": {
+                "3": {
+                  "geometry": {
+                    "rms": 0.3179452121257782,
+                    "hidden_rms": 8.36416244506836,
+                    "ratio": 0.038012797361825945,
+                    "max": 2.70729398727417,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 0.3179452121257782,
+                    "cumulative_ratio": 0.038012797361825945
+                  },
+                  "appearance": {
+                    "rms": 0.24534301459789276,
+                    "hidden_rms": 8.389089584350586,
+                    "ratio": 0.029245487502668647,
+                    "max": 1.6875,
+                    "count": 98,
+                    "nonzero_tokens": 98,
+                    "cumulative": 0.24534301459789276,
+                    "cumulative_ratio": 0.029245487502668647
+                  },
+                  "contact": {
+                    "rms": 0.056634362787008286,
+                    "hidden_rms": 8.395273208618164,
+                    "ratio": 0.006745982099649873,
+                    "max": 0.7295639514923096,
+                    "count": 88,
+                    "nonzero_tokens": 88,
+                    "cumulative": 0.056634362787008286,
+                    "cumulative_ratio": 0.006745982099649873
+                  },
+                  "total": {
+                    "rms": 0.4791562855243683,
+                    "hidden_rms": 8.36416244506836,
+                    "ratio": 0.057286822042401424,
+                    "max": 3.7514967918395996,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 0.4791562855243683,
+                    "cumulative_ratio": 0.057286822042401424
+                  }
+                },
+                "8": {
+                  "geometry": {
+                    "rms": 0.33372342586517334,
+                    "hidden_rms": 5.499266147613525,
+                    "ratio": 0.06068508359247111,
+                    "max": 2.4206337928771973,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 0.44322195649147034,
+                    "cumulative_ratio": 0.0529905964168356
+                  },
+                  "appearance": {
+                    "rms": 0.2130640298128128,
+                    "hidden_rms": 5.519211292266846,
+                    "ratio": 0.038604071946175364,
+                    "max": 1.53125,
+                    "count": 98,
+                    "nonzero_tokens": 98,
+                    "cumulative": 0.31868797540664673,
+                    "cumulative_ratio": 0.03798838624886575
+                  },
+                  "contact": {
+                    "rms": 0.18367606401443481,
+                    "hidden_rms": 5.518617153167725,
+                    "ratio": 0.03328298718982589,
+                    "max": 2.1978116035461426,
+                    "count": 88,
+                    "nonzero_tokens": 88,
+                    "cumulative": 0.1936463564634323,
+                    "cumulative_ratio": 0.02306611728426476
+                  },
+                  "total": {
+                    "rms": 0.5011414289474487,
+                    "hidden_rms": 5.499266147613525,
+                    "ratio": 0.09112878254945439,
+                    "max": 3.174626350402832,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 0.6623966693878174,
+                    "cumulative_ratio": 0.07919462035058594
+                  }
+                },
+                "13": {
+                  "geometry": {
+                    "rms": 0.4141504168510437,
+                    "hidden_rms": 4.860827445983887,
+                    "ratio": 0.085201629034008,
+                    "max": 3.063864231109619,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 0.5357787609100342,
+                    "cumulative_ratio": 0.06405647480291797
+                  },
+                  "appearance": {
+                    "rms": 0.26217931509017944,
+                    "hidden_rms": 4.944870948791504,
+                    "ratio": 0.05302045651044836,
+                    "max": 1.875,
+                    "count": 98,
+                    "nonzero_tokens": 98,
+                    "cumulative": 0.3688347339630127,
+                    "cumulative_ratio": 0.043966002538708714
+                  },
+                  "contact": {
+                    "rms": 0.18181097507476807,
+                    "hidden_rms": 4.949673652648926,
+                    "ratio": 0.03673191160339793,
+                    "max": 2.2798874378204346,
+                    "count": 88,
+                    "nonzero_tokens": 88,
+                    "cumulative": 0.2510266602039337,
+                    "cumulative_ratio": 0.02990095187685404
+                  },
+                  "total": {
+                    "rms": 0.5757205486297607,
+                    "hidden_rms": 4.860827445983887,
+                    "ratio": 0.11844085292627135,
+                    "max": 3.837890625,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 0.7612175941467285,
+                    "cumulative_ratio": 0.0910094225388406
+                  }
+                },
+                "18": {
+                  "geometry": {
+                    "rms": 0.5329182147979736,
+                    "hidden_rms": 4.2766852378845215,
+                    "ratio": 0.1246101092680797,
+                    "max": 3.859375,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 0.5932180881500244,
+                    "cumulative_ratio": 0.07092378848999939
+                  },
+                  "appearance": {
+                    "rms": 0.3296928107738495,
+                    "hidden_rms": 4.290746688842773,
+                    "ratio": 0.07683809711515936,
+                    "max": 2.15625,
+                    "count": 98,
+                    "nonzero_tokens": 98,
+                    "cumulative": 0.40615934133529663,
+                    "cumulative_ratio": 0.04841518704162678
+                  },
+                  "contact": {
+                    "rms": 0.2572740912437439,
+                    "hidden_rms": 4.278412342071533,
+                    "ratio": 0.06013307523303755,
+                    "max": 3.301276922225952,
+                    "count": 88,
+                    "nonzero_tokens": 88,
+                    "cumulative": 0.3021507263183594,
+                    "cumulative_ratio": 0.03599057693657744
+                  },
+                  "total": {
+                    "rms": 0.7128359079360962,
+                    "hidden_rms": 4.2766852378845215,
+                    "ratio": 0.16667953526752957,
+                    "max": 4.647000789642334,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 0.7983459830284119,
+                    "cumulative_ratio": 0.09544840721011212
+                  }
+                },
+                "23": {
+                  "geometry": {
+                    "rms": 0.5871530175209045,
+                    "hidden_rms": 6.696619987487793,
+                    "ratio": 0.08767901099628805,
+                    "max": 4.52717924118042,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 0.6664960980415344,
+                    "cumulative_ratio": 0.07968473859979978
+                  },
+                  "appearance": {
+                    "rms": 0.33140823245048523,
+                    "hidden_rms": 6.692972183227539,
+                    "ratio": 0.04951585385054908,
+                    "max": 2.65625,
+                    "count": 98,
+                    "nonzero_tokens": 98,
+                    "cumulative": 0.4458872377872467,
+                    "cumulative_ratio": 0.053150849481811036
+                  },
+                  "contact": {
+                    "rms": 0.32068106532096863,
+                    "hidden_rms": 6.701393127441406,
+                    "ratio": 0.04785289554313981,
+                    "max": 3.6476500034332275,
+                    "count": 88,
+                    "nonzero_tokens": 88,
+                    "cumulative": 0.36350417137145996,
+                    "cumulative_ratio": 0.04329867085186756
+                  },
+                  "total": {
+                    "rms": 0.7713924050331116,
+                    "hidden_rms": 6.696619987487793,
+                    "ratio": 0.11519130643136523,
+                    "max": 5.021481513977051,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 0.857725203037262,
+                    "cumulative_ratio": 0.10254765000923555
+                  }
+                },
+                "28": {
+                  "geometry": {
+                    "rms": 0.5585291385650635,
+                    "hidden_rms": 5.363980293273926,
+                    "ratio": 0.10412587444913282,
+                    "max": 5.0487060546875,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 0.8017581701278687,
+                    "cumulative_ratio": 0.09585636044175562
+                  },
+                  "appearance": {
+                    "rms": 0.3353685140609741,
+                    "hidden_rms": 5.317534446716309,
+                    "ratio": 0.06306842342470792,
+                    "max": 3.0,
+                    "count": 98,
+                    "nonzero_tokens": 98,
+                    "cumulative": 0.5371305346488953,
+                    "cumulative_ratio": 0.0640272736687524
+                  },
+                  "contact": {
+                    "rms": 0.24295619130134583,
+                    "hidden_rms": 5.31552791595459,
+                    "ratio": 0.04570687900483249,
+                    "max": 3.037226915359497,
+                    "count": 88,
+                    "nonzero_tokens": 88,
+                    "cumulative": 0.4188995063304901,
+                    "cumulative_ratio": 0.049897066589860234
+                  },
+                  "total": {
+                    "rms": 0.7316999435424805,
+                    "hidden_rms": 5.363980293273926,
+                    "ratio": 0.1364098866023023,
+                    "max": 5.240715026855469,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 1.0208431482315063,
+                    "cumulative_ratio": 0.12204965589034099
+                  }
+                }
+              }
+            },
+            "uncond": null,
+            "combined": {
+              "rms": 1.5134425163269043,
+              "max_abs": 6.6875,
+              "finite": true
+            },
+            "combined_matches_native_formula": true,
+            "combined_formula_max_abs": 0.0
+          },
+          {
+            "step": 2,
+            "timestep": 432.5879211425781,
+            "cfg": 1.0,
+            "cond": {
+              "rms": 1.5035828351974487,
+              "max_abs": 6.65625,
+              "finite": true,
+              "residuals": {
+                "3": {
+                  "geometry": {
+                    "rms": 0.31796589493751526,
+                    "hidden_rms": 8.56230354309082,
+                    "ratio": 0.037135555091841084,
+                    "max": 2.7484335899353027,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 0.31796589493751526,
+                    "cumulative_ratio": 0.037135555091841084
+                  },
+                  "appearance": {
+                    "rms": 0.24545828998088837,
+                    "hidden_rms": 8.591287612915039,
+                    "ratio": 0.028570605599549232,
+                    "max": 1.6953125,
+                    "count": 98,
+                    "nonzero_tokens": 98,
+                    "cumulative": 0.24545828998088837,
+                    "cumulative_ratio": 0.028570605599549232
+                  },
+                  "contact": {
+                    "rms": 0.05670151486992836,
+                    "hidden_rms": 8.59821891784668,
+                    "ratio": 0.0065945651549110095,
+                    "max": 0.7295639514923096,
+                    "count": 88,
+                    "nonzero_tokens": 88,
+                    "cumulative": 0.05670151486992836,
+                    "cumulative_ratio": 0.0065945651549110095
+                  },
+                  "total": {
+                    "rms": 0.47891414165496826,
+                    "hidden_rms": 8.56230354309082,
+                    "ratio": 0.055932861903899504,
+                    "max": 3.7298903465270996,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 0.47891414165496826,
+                    "cumulative_ratio": 0.055932861903899504
+                  }
+                },
+                "8": {
+                  "geometry": {
+                    "rms": 0.3316229283809662,
+                    "hidden_rms": 5.6218061447143555,
+                    "ratio": 0.05898868083396283,
+                    "max": 2.376887321472168,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 0.4416384994983673,
+                    "cumulative_ratio": 0.05157940235075392
+                  },
+                  "appearance": {
+                    "rms": 0.19174452126026154,
+                    "hidden_rms": 5.647850513458252,
+                    "ratio": 0.03394999934990381,
+                    "max": 1.40625,
+                    "count": 98,
+                    "nonzero_tokens": 98,
+                    "cumulative": 0.3053407073020935,
+                    "cumulative_ratio": 0.03554073860163679
+                  },
+                  "contact": {
+                    "rms": 0.1788577139377594,
+                    "hidden_rms": 5.642289638519287,
+                    "ratio": 0.03169949176602307,
+                    "max": 2.1248550415039062,
+                    "count": 88,
+                    "nonzero_tokens": 88,
+                    "cumulative": 0.18906669318675995,
+                    "cumulative_ratio": 0.021989053197323038
+                  },
+                  "total": {
+                    "rms": 0.4813084006309509,
+                    "hidden_rms": 5.6218061447143555,
+                    "ratio": 0.08561454953111092,
+                    "max": 3.0927276611328125,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 0.6481813192367554,
+                    "cumulative_ratio": 0.07570174497723715
+                  }
+                },
+                "13": {
+                  "geometry": {
+                    "rms": 0.4309847354888916,
+                    "hidden_rms": 5.046105861663818,
+                    "ratio": 0.08540937255461896,
+                    "max": 3.1991374492645264,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 0.5449806451797485,
+                    "cumulative_ratio": 0.06364883497029368
+                  },
+                  "appearance": {
+                    "rms": 0.2625736892223358,
+                    "hidden_rms": 5.137870788574219,
+                    "ratio": 0.05110554547347835,
+                    "max": 1.859375,
+                    "count": 98,
+                    "nonzero_tokens": 98,
+                    "cumulative": 0.35887566208839417,
+                    "cumulative_ratio": 0.04177204608409414
+                  },
+                  "contact": {
+                    "rms": 0.1813650131225586,
+                    "hidden_rms": 5.141820907592773,
+                    "ratio": 0.035272526286308864,
+                    "max": 2.261648416519165,
+                    "count": 88,
+                    "nonzero_tokens": 88,
+                    "cumulative": 0.24753305315971375,
+                    "cumulative_ratio": 0.02878887540836253
+                  },
+                  "total": {
+                    "rms": 0.5896610021591187,
+                    "hidden_rms": 5.046105861663818,
+                    "ratio": 0.11685466344233486,
+                    "max": 3.869140625,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 0.75895094871521,
+                    "cumulative_ratio": 0.08863864086290543
+                  }
+                },
+                "18": {
+                  "geometry": {
+                    "rms": 0.5571761131286621,
+                    "hidden_rms": 4.428367614746094,
+                    "ratio": 0.12581975156563613,
+                    "max": 4.007909774780273,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 0.612112820148468,
+                    "cumulative_ratio": 0.07148926887115561
+                  },
+                  "appearance": {
+                    "rms": 0.34192633628845215,
+                    "hidden_rms": 4.4445037841796875,
+                    "ratio": 0.07693239850656595,
+                    "max": 2.25,
+                    "count": 98,
+                    "nonzero_tokens": 98,
+                    "cumulative": 0.4074397683143616,
+                    "cumulative_ratio": 0.047424761767010215
+                  },
+                  "contact": {
+                    "rms": 0.25674208998680115,
+                    "hidden_rms": 4.435195446014404,
+                    "ratio": 0.057887435426891294,
+                    "max": 3.301276922225952,
+                    "count": 88,
+                    "nonzero_tokens": 88,
+                    "cumulative": 0.29975786805152893,
+                    "cumulative_ratio": 0.034862786225336034
+                  },
+                  "total": {
+                    "rms": 0.7395308613777161,
+                    "hidden_rms": 4.428367614746094,
+                    "ratio": 0.1669985253516759,
+                    "max": 4.7198872566223145,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 0.8107150197029114,
+                    "cumulative_ratio": 0.09468421851933778
+                  }
+                },
+                "23": {
+                  "geometry": {
+                    "rms": 0.5941672921180725,
+                    "hidden_rms": 6.753463268280029,
+                    "ratio": 0.08797964370499863,
+                    "max": 4.71855354309082,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 0.6837228536605835,
+                    "cumulative_ratio": 0.07985267635276724
+                  },
+                  "appearance": {
+                    "rms": 0.3482101261615753,
+                    "hidden_rms": 6.75970458984375,
+                    "ratio": 0.05151262478019386,
+                    "max": 2.75,
+                    "count": 98,
+                    "nonzero_tokens": 98,
+                    "cumulative": 0.4571797251701355,
+                    "cumulative_ratio": 0.05321434292141147
+                  },
+                  "contact": {
+                    "rms": 0.31709760427474976,
+                    "hidden_rms": 6.767970085144043,
+                    "ratio": 0.04685268999205409,
+                    "max": 3.6476500034332275,
+                    "count": 88,
+                    "nonzero_tokens": 88,
+                    "cumulative": 0.3603399395942688,
+                    "cumulative_ratio": 0.04190867237008099
+                  },
+                  "total": {
+                    "rms": 0.7834583520889282,
+                    "hidden_rms": 6.753463268280029,
+                    "ratio": 0.11600838280541344,
+                    "max": 4.989652633666992,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 0.8741769194602966,
+                    "cumulative_ratio": 0.10209599730503553
+                  }
+                },
+                "28": {
+                  "geometry": {
+                    "rms": 0.5690487623214722,
+                    "hidden_rms": 5.698050498962402,
+                    "ratio": 0.0998672725742066,
+                    "max": 5.35186767578125,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 0.8208419680595398,
+                    "cumulative_ratio": 0.09586695495301634
+                  },
+                  "appearance": {
+                    "rms": 0.35513734817504883,
+                    "hidden_rms": 5.6533050537109375,
+                    "ratio": 0.06281942063995466,
+                    "max": 3.03125,
+                    "count": 98,
+                    "nonzero_tokens": 98,
+                    "cumulative": 0.5589006543159485,
+                    "cumulative_ratio": 0.06505435267651487
+                  },
+                  "contact": {
+                    "rms": 0.2486426681280136,
+                    "hidden_rms": 5.650183200836182,
+                    "ratio": 0.0440061249856848,
+                    "max": 3.111668825149536,
+                    "count": 88,
+                    "nonzero_tokens": 88,
+                    "cumulative": 0.4192725121974945,
+                    "cumulative_ratio": 0.0487627165815983
+                  },
+                  "total": {
+                    "rms": 0.7502148747444153,
+                    "hidden_rms": 5.698050498962402,
+                    "ratio": 0.13166167531878264,
+                    "max": 5.5361480712890625,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 1.0447652339935303,
+                    "cumulative_ratio": 0.12201917728513406
+                  }
+                }
+              }
+            },
+            "uncond": null,
+            "combined": {
+              "rms": 1.5035828351974487,
+              "max_abs": 6.65625,
+              "finite": true
+            },
+            "combined_matches_native_formula": true,
+            "combined_formula_max_abs": 0.0
+          },
+          {
+            "step": 3,
+            "timestep": 19.999921798706055,
+            "cfg": 1.0,
+            "cond": {
+              "rms": 1.297438621520996,
+              "max_abs": 5.75,
+              "finite": true,
+              "residuals": {
+                "3": {
+                  "geometry": {
+                    "rms": 0.29068541526794434,
+                    "hidden_rms": 9.99019718170166,
+                    "ratio": 0.029097064850769145,
+                    "max": 2.610691547393799,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 0.29068541526794434,
+                    "cumulative_ratio": 0.029097064850769145
+                  },
+                  "appearance": {
+                    "rms": 0.24420179426670074,
+                    "hidden_rms": 10.05330753326416,
+                    "ratio": 0.02429069174087148,
+                    "max": 1.6953125,
+                    "count": 98,
+                    "nonzero_tokens": 98,
+                    "cumulative": 0.24420179426670074,
+                    "cumulative_ratio": 0.02429069174087148
+                  },
+                  "contact": {
+                    "rms": 0.05689442157745361,
+                    "hidden_rms": 10.051243782043457,
+                    "ratio": 0.00566043594317108,
+                    "max": 0.7295639514923096,
+                    "count": 88,
+                    "nonzero_tokens": 88,
+                    "cumulative": 0.05689442157745361,
+                    "cumulative_ratio": 0.00566043594317108
+                  },
+                  "total": {
+                    "rms": 0.4531095623970032,
+                    "hidden_rms": 9.99019718170166,
+                    "ratio": 0.04535541733119462,
+                    "max": 3.6094090938568115,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 0.4531095623970032,
+                    "cumulative_ratio": 0.04535541733119462
+                  }
+                },
+                "8": {
+                  "geometry": {
+                    "rms": 0.29283466935157776,
+                    "hidden_rms": 6.0512542724609375,
+                    "ratio": 0.048392392083779864,
+                    "max": 2.14357328414917,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 0.3968244791030884,
+                    "cumulative_ratio": 0.03972138606332253
+                  },
+                  "appearance": {
+                    "rms": 0.17754486203193665,
+                    "hidden_rms": 6.104283809661865,
+                    "ratio": 0.029085289538949434,
+                    "max": 1.453125,
+                    "count": 98,
+                    "nonzero_tokens": 98,
+                    "cumulative": 0.296115517616272,
+                    "cumulative_ratio": 0.029454536891116833
+                  },
+                  "contact": {
+                    "rms": 0.16997414827346802,
+                    "hidden_rms": 6.091122150421143,
+                    "ratio": 0.027905227325266485,
+                    "max": 1.9905709028244019,
+                    "count": 88,
+                    "nonzero_tokens": 88,
+                    "cumulative": 0.18067766726016998,
+                    "cumulative_ratio": 0.01797565268319833
+                  },
+                  "total": {
+                    "rms": 0.4315805435180664,
+                    "hidden_rms": 6.0512542724609375,
+                    "ratio": 0.07132084095063985,
+                    "max": 2.793989658355713,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 0.5976487994194031,
+                    "cumulative_ratio": 0.05982352385537237
+                  }
+                },
+                "13": {
+                  "geometry": {
+                    "rms": 0.4203508496284485,
+                    "hidden_rms": 5.4785284996032715,
+                    "ratio": 0.07672696229633345,
+                    "max": 3.1991374492645264,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 0.5125911235809326,
+                    "cumulative_ratio": 0.051309410040455423
+                  },
+                  "appearance": {
+                    "rms": 0.2680721879005432,
+                    "hidden_rms": 5.600492000579834,
+                    "ratio": 0.04786582819380672,
+                    "max": 1.8515625,
+                    "count": 98,
+                    "nonzero_tokens": 98,
+                    "cumulative": 0.35562950372695923,
+                    "cumulative_ratio": 0.03537437828796744
+                  },
+                  "contact": {
+                    "rms": 0.17557479441165924,
+                    "hidden_rms": 5.609053611755371,
+                    "ratio": 0.03130203534580098,
+                    "max": 2.1541848182678223,
+                    "count": 88,
+                    "nonzero_tokens": 88,
+                    "cumulative": 0.23793496191501617,
+                    "cumulative_ratio": 0.02367219093223934
+                  },
+                  "total": {
+                    "rms": 0.5805973410606384,
+                    "hidden_rms": 5.4785284996032715,
+                    "ratio": 0.10597687702139041,
+                    "max": 3.984375,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 0.7224029302597046,
+                    "cumulative_ratio": 0.07231117836021086
+                  }
+                },
+                "18": {
+                  "geometry": {
+                    "rms": 0.5310654044151306,
+                    "hidden_rms": 4.666282653808594,
+                    "ratio": 0.11380909469375543,
+                    "max": 4.125,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 0.587483823299408,
+                    "cumulative_ratio": 0.058806028811469374
+                  },
+                  "appearance": {
+                    "rms": 0.36629894375801086,
+                    "hidden_rms": 4.706267356872559,
+                    "ratio": 0.07783215784014157,
+                    "max": 2.375,
+                    "count": 98,
+                    "nonzero_tokens": 98,
+                    "cumulative": 0.4200435280799866,
+                    "cumulative_ratio": 0.04178162527010697
+                  },
+                  "contact": {
+                    "rms": 0.2563602030277252,
+                    "hidden_rms": 4.700236797332764,
+                    "ratio": 0.0545419760921836,
+                    "max": 3.235746383666992,
+                    "count": 88,
+                    "nonzero_tokens": 88,
+                    "cumulative": 0.2939436137676239,
+                    "cumulative_ratio": 0.029244501490726358
+                  },
+                  "total": {
+                    "rms": 0.7268862128257751,
+                    "hidden_rms": 4.666282653808594,
+                    "ratio": 0.15577414973619197,
+                    "max": 4.55322265625,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 0.7912139296531677,
+                    "cumulative_ratio": 0.07919903033569532
+                  }
+                },
+                "23": {
+                  "geometry": {
+                    "rms": 0.5430196523666382,
+                    "hidden_rms": 6.71734094619751,
+                    "ratio": 0.08083848307179134,
+                    "max": 4.691737174987793,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 0.6529991626739502,
+                    "cumulative_ratio": 0.06536399140049035
+                  },
+                  "appearance": {
+                    "rms": 0.38204434514045715,
+                    "hidden_rms": 6.752366542816162,
+                    "ratio": 0.05657932559169405,
+                    "max": 2.75,
+                    "count": 98,
+                    "nonzero_tokens": 98,
+                    "cumulative": 0.48688778281211853,
+                    "cumulative_ratio": 0.04843060666363931
+                  },
+                  "contact": {
+                    "rms": 0.30643850564956665,
+                    "hidden_rms": 6.761585235595703,
+                    "ratio": 0.045320512124339005,
+                    "max": 3.6327617168426514,
+                    "count": 88,
+                    "nonzero_tokens": 88,
+                    "cumulative": 0.35149073600769043,
+                    "cumulative_ratio": 0.03496987473685879
+                  },
+                  "total": {
+                    "rms": 0.7481715083122253,
+                    "hidden_rms": 6.71734094619751,
+                    "ratio": 0.11137911776470767,
+                    "max": 4.671454906463623,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 0.8565974831581116,
+                    "cumulative_ratio": 0.0857438014063507
+                  }
+                },
+                "28": {
+                  "geometry": {
+                    "rms": 0.5522333979606628,
+                    "hidden_rms": 6.61206579208374,
+                    "ratio": 0.08351904160146459,
+                    "max": 5.8134765625,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 0.7981551885604858,
+                    "cumulative_ratio": 0.07989383733310193
+                  },
+                  "appearance": {
+                    "rms": 0.4337630867958069,
+                    "hidden_rms": 6.61161994934082,
+                    "ratio": 0.06560617369409642,
+                    "max": 3.734375,
+                    "count": 98,
+                    "nonzero_tokens": 98,
+                    "cumulative": 0.632736086845398,
+                    "cumulative_ratio": 0.06293810119225089
+                  },
+                  "contact": {
+                    "rms": 0.2638492286205292,
+                    "hidden_rms": 6.594118118286133,
+                    "ratio": 0.04001281504024769,
+                    "max": 3.2158873081207275,
+                    "count": 88,
+                    "nonzero_tokens": 88,
+                    "cumulative": 0.42045411467552185,
+                    "cumulative_ratio": 0.041831053329605135
+                  },
+                  "total": {
+                    "rms": 0.7817380428314209,
+                    "hidden_rms": 6.61206579208374,
+                    "ratio": 0.11822901758892848,
+                    "max": 5.965827941894531,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 1.063881516456604,
+                    "cumulative_ratio": 0.10649254435190136
+                  }
+                }
+              }
+            },
+            "uncond": null,
+            "combined": {
+              "rms": 1.297438621520996,
+              "max_abs": 5.75,
+              "finite": true
+            },
+            "combined_matches_native_formula": true,
+            "combined_formula_max_abs": 0.0
+          }
+        ]
+      }
+    },
+    "cfg_4": {
+      "output": "/home/shangguanrz/project/pic-edit/experiments/qwen21_dual_v8/eval_pair14_v8_300_v1/probe_cfg_4.png",
+      "cfg": 4.0,
+      "steps": 4,
+      "decoded_rgb_finite": true,
+      "diagnostics": {
+        "3": {
+          "geometry": {
+            "rms": 0.28343838453292847,
+            "hidden_rms": 10.716686248779297,
+            "ratio": 0.026448323479211125,
+            "max": 2.5835702419281006,
+            "count": 124,
+            "nonzero_tokens": 124,
+            "cumulative": 0.28343838453292847,
+            "cumulative_ratio": 0.026448323479211125
+          },
+          "appearance": {
+            "rms": 0.242747500538826,
+            "hidden_rms": 10.757081985473633,
+            "ratio": 0.02256629640516195,
+            "max": 1.6875,
+            "count": 98,
+            "nonzero_tokens": 98,
+            "cumulative": 0.242747500538826,
+            "cumulative_ratio": 0.02256629640516195
+          },
+          "contact": {
+            "rms": 0.05693048983812332,
+            "hidden_rms": 10.762161254882812,
+            "ratio": 0.005289875192335912,
+            "max": 0.7295639514923096,
+            "count": 88,
+            "nonzero_tokens": 88,
+            "cumulative": 0.05693048983812332,
+            "cumulative_ratio": 0.005289875192335912
+          },
+          "total": {
+            "rms": 0.4449906647205353,
+            "hidden_rms": 10.716686248779297,
+            "ratio": 0.0415231587815891,
+            "max": 3.5516655445098877,
+            "count": 124,
+            "nonzero_tokens": 124,
+            "cumulative": 0.4449906647205353,
+            "cumulative_ratio": 0.0415231587815891
+          }
+        },
+        "8": {
+          "geometry": {
+            "rms": 0.27803367376327515,
+            "hidden_rms": 6.224658012390137,
+            "ratio": 0.0446664978557619,
+            "max": 2.0560805797576904,
+            "count": 124,
+            "nonzero_tokens": 124,
+            "cumulative": 0.38186129927635193,
+            "cumulative_ratio": 0.0356324044962918
+          },
+          "appearance": {
+            "rms": 0.17677804827690125,
+            "hidden_rms": 6.2503838539123535,
+            "ratio": 0.028282750693183287,
+            "max": 1.2265625,
+            "count": 98,
+            "nonzero_tokens": 98,
+            "cumulative": 0.29448965191841125,
+            "cumulative_ratio": 0.027376350976602223
+          },
+          "contact": {
+            "rms": 0.16458743810653687,
+            "hidden_rms": 6.239579200744629,
+            "ratio": 0.02637797082323998,
+            "max": 1.903905987739563,
+            "count": 88,
+            "nonzero_tokens": 88,
+            "cumulative": 0.17558500170707703,
+            "cumulative_ratio": 0.016315031669629908
+          },
+          "total": {
+            "rms": 0.41565653681755066,
+            "hidden_rms": 6.224658012390137,
+            "ratio": 0.06677580294213584,
+            "max": 2.822289228439331,
+            "count": 124,
+            "nonzero_tokens": 124,
+            "cumulative": 0.5816593170166016,
+            "cumulative_ratio": 0.054276042380437935
+          }
+        },
+        "13": {
+          "geometry": {
+            "rms": 0.4016529619693756,
+            "hidden_rms": 5.57086706161499,
+            "ratio": 0.0720988236708949,
+            "max": 3.1576926708221436,
+            "count": 124,
+            "nonzero_tokens": 124,
+            "cumulative": 0.4917232096195221,
+            "cumulative_ratio": 0.045883885951735565
+          },
+          "appearance": {
+            "rms": 0.27305251359939575,
+            "hidden_rms": 5.650934219360352,
+            "ratio": 0.04831988888915141,
+            "max": 1.84375,
+            "count": 98,
+            "nonzero_tokens": 98,
+            "cumulative": 0.3572314977645874,
+            "cumulative_ratio": 0.033208959292770374
+          },
+          "contact": {
+            "rms": 0.17182162404060364,
+            "hidden_rms": 5.657876014709473,
+            "ratio": 0.03036857357670934,
+            "max": 2.1273691654205322,
+            "count": 88,
+            "nonzero_tokens": 88,
+            "cumulative": 0.23194165527820587,
+            "cumulative_ratio": 0.021551587063701867
+          },
+          "total": {
+            "rms": 0.5669782161712646,
+            "hidden_rms": 5.57086706161499,
+            "ratio": 0.10177557818206096,
+            "max": 3.9765625,
+            "count": 124,
+            "nonzero_tokens": 124,
+            "cumulative": 0.7041409015655518,
+            "cumulative_ratio": 0.06570509626012035
+          }
+        },
+        "18": {
+          "geometry": {
+            "rms": 0.4830893278121948,
+            "hidden_rms": 4.973837375640869,
+            "ratio": 0.09712608019275051,
+            "max": 3.953667163848877,
+            "count": 124,
+            "nonzero_tokens": 124,
+            "cumulative": 0.5511530041694641,
+            "cumulative_ratio": 0.0514294242991619
+          },
+          "appearance": {
+            "rms": 0.3672730326652527,
+            "hidden_rms": 4.995211124420166,
+            "ratio": 0.0735250269742873,
+            "max": 2.3125,
+            "count": 98,
+            "nonzero_tokens": 98,
+            "cumulative": 0.4206348955631256,
+            "cumulative_ratio": 0.03910306681041858
+          },
+          "contact": {
+            "rms": 0.25429245829582214,
+            "hidden_rms": 4.996131896972656,
+            "ratio": 0.050897867298080636,
+            "max": 3.235746383666992,
+            "count": 88,
+            "nonzero_tokens": 88,
+            "cumulative": 0.28922367095947266,
+            "cumulative_ratio": 0.02687412538334262
+          },
+          "total": {
+            "rms": 0.6860379576683044,
+            "hidden_rms": 4.973837375640869,
+            "ratio": 0.13792931007920414,
+            "max": 4.2420654296875,
+            "count": 124,
+            "nonzero_tokens": 124,
+            "cumulative": 0.7609104514122009,
+            "cumulative_ratio": 0.07100240071868054
+          }
+        },
+        "23": {
+          "geometry": {
+            "rms": 0.48290112614631653,
+            "hidden_rms": 6.9110589027404785,
+            "ratio": 0.06987368114527706,
+            "max": 4.691737174987793,
+            "count": 124,
+            "nonzero_tokens": 124,
+            "cumulative": 0.6024975180625916,
+            "cumulative_ratio": 0.05622050548799262
+          },
+          "appearance": {
+            "rms": 0.3455401360988617,
+            "hidden_rms": 6.949795722961426,
+            "ratio": 0.04971946656751822,
+            "max": 2.828125,
+            "count": 98,
+            "nonzero_tokens": 98,
+            "cumulative": 0.4666273593902588,
+            "cumulative_ratio": 0.04337861885039015
+          },
+          "contact": {
+            "rms": 0.2903117835521698,
+            "hidden_rms": 6.95053243637085,
+            "ratio": 0.041768279798684485,
+            "max": 3.378762722015381,
+            "count": 88,
+            "nonzero_tokens": 88,
+            "cumulative": 0.33919963240623474,
+            "cumulative_ratio": 0.031517798736972025
+          },
+          "total": {
+            "rms": 0.6712399125099182,
+            "hidden_rms": 6.9110589027404785,
+            "ratio": 0.0971254798948028,
+            "max": 4.663172245025635,
+            "count": 124,
+            "nonzero_tokens": 124,
+            "cumulative": 0.8022307753562927,
+            "cumulative_ratio": 0.07485810041771748
+          }
+        },
+        "28": {
+          "geometry": {
+            "rms": 0.4412720203399658,
+            "hidden_rms": 8.016637802124023,
+            "ratio": 0.05504452505301536,
+            "max": 4.457672119140625,
+            "count": 124,
+            "nonzero_tokens": 124,
+            "cumulative": 0.700730562210083,
+            "cumulative_ratio": 0.06538686921900891
+          },
+          "appearance": {
+            "rms": 0.3174154758453369,
+            "hidden_rms": 8.119330406188965,
+            "ratio": 0.03909379960734037,
+            "max": 3.0,
+            "count": 98,
+            "nonzero_tokens": 98,
+            "cumulative": 0.5450838208198547,
+            "cumulative_ratio": 0.05067208947146969
+          },
+          "contact": {
+            "rms": 0.24099068343639374,
+            "hidden_rms": 8.100970268249512,
+            "ratio": 0.029748372782075143,
+            "max": 2.962785243988037,
+            "count": 88,
+            "nonzero_tokens": 88,
+            "cumulative": 0.39734694361686707,
+            "cumulative_ratio": 0.03692073870725455
+          },
+          "total": {
+            "rms": 0.6180872917175293,
+            "hidden_rms": 8.016637802124023,
+            "ratio": 0.077100563474848,
+            "max": 4.630043029785156,
+            "count": 124,
+            "nonzero_tokens": 124,
+            "cumulative": 0.9318036437034607,
+            "cumulative_ratio": 0.08694885919699286
+          }
+        }
+      },
+      "actual_velocity_diagnostics": {
+        "observer_version": "native_cfg_velocity_v1",
+        "cfg": 4.0,
+        "steps": [
+          {
+            "step": 0,
+            "timestep": 1000.0,
+            "cfg": 4.0,
+            "cond": {
+              "rms": 1.6959145069122314,
+              "max_abs": 7.875,
+              "finite": true,
+              "residuals": {
+                "3": {
+                  "geometry": {
+                    "rms": 0.3262407183647156,
+                    "hidden_rms": 7.937384605407715,
+                    "ratio": 0.041101790398621836,
+                    "max": 2.734110116958618,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 0.3262407183647156,
+                    "cumulative_ratio": 0.041101790398621836
+                  },
+                  "appearance": {
+                    "rms": 0.24695420265197754,
+                    "hidden_rms": 7.932937145233154,
+                    "ratio": 0.031130235640448832,
+                    "max": 1.6953125,
+                    "count": 98,
+                    "nonzero_tokens": 98,
+                    "cumulative": 0.24695420265197754,
+                    "cumulative_ratio": 0.031130235640448832
+                  },
+                  "contact": {
+                    "rms": 0.05656256154179573,
+                    "hidden_rms": 7.950366020202637,
+                    "ratio": 0.007114460063607748,
+                    "max": 0.7250041961669922,
+                    "count": 88,
+                    "nonzero_tokens": 88,
+                    "cumulative": 0.05656256154179573,
+                    "cumulative_ratio": 0.007114460063607748
+                  },
+                  "total": {
+                    "rms": 0.49051958322525024,
+                    "hidden_rms": 7.937384605407715,
+                    "ratio": 0.061798641191087154,
+                    "max": 3.7952466011047363,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 0.49051958322525024,
+                    "cumulative_ratio": 0.061798641191087154
+                  }
+                },
+                "8": {
+                  "geometry": {
+                    "rms": 0.3537028133869171,
+                    "hidden_rms": 5.148103713989258,
+                    "ratio": 0.06870545603535119,
+                    "max": 2.493544340133667,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 0.4629274606704712,
+                    "cumulative_ratio": 0.0583224177338062
+                  },
+                  "appearance": {
+                    "rms": 0.25816887617111206,
+                    "hidden_rms": 5.202744960784912,
+                    "ratio": 0.04962166666193136,
+                    "max": 1.7421875,
+                    "count": 98,
+                    "nonzero_tokens": 98,
+                    "cumulative": 0.35050898790359497,
+                    "cumulative_ratio": 0.044184011733184266
+                  },
+                  "contact": {
+                    "rms": 0.19369545578956604,
+                    "hidden_rms": 5.207241535186768,
+                    "ratio": 0.037197325009933266,
+                    "max": 2.3254852294921875,
+                    "count": 88,
+                    "nonzero_tokens": 88,
+                    "cumulative": 0.20322562754154205,
+                    "cumulative_ratio": 0.025561795145673343
+                  },
+                  "total": {
+                    "rms": 0.5646167397499084,
+                    "hidden_rms": 5.148103713989258,
+                    "ratio": 0.1096747018160572,
+                    "max": 3.349587917327881,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 0.7154343128204346,
+                    "cumulative_ratio": 0.09013476710363909
+                  }
+                },
+                "13": {
+                  "geometry": {
+                    "rms": 0.4119054973125458,
+                    "hidden_rms": 4.539599895477295,
+                    "ratio": 0.09073607956571642,
+                    "max": 2.8974475860595703,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 0.5469475984573364,
+                    "cumulative_ratio": 0.06890778583221263
+                  },
+                  "appearance": {
+                    "rms": 0.27745649218559265,
+                    "hidden_rms": 4.565212249755859,
+                    "ratio": 0.0607762524514453,
+                    "max": 1.859375,
+                    "count": 98,
+                    "nonzero_tokens": 98,
+                    "cumulative": 0.40082305669784546,
+                    "cumulative_ratio": 0.05052643798377971
+                  },
+                  "contact": {
+                    "rms": 0.19577066600322723,
+                    "hidden_rms": 4.567505836486816,
+                    "ratio": 0.04286161266381828,
+                    "max": 2.576033115386963,
+                    "count": 88,
+                    "nonzero_tokens": 88,
+                    "cumulative": 0.266751229763031,
+                    "cumulative_ratio": 0.03355206906011506
+                  },
+                  "total": {
+                    "rms": 0.5955864191055298,
+                    "hidden_rms": 4.539599895477295,
+                    "ratio": 0.13119799824184938,
+                    "max": 3.8828125,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 0.8082273006439209,
+                    "cumulative_ratio": 0.10182539221965863
+                  }
+                },
+                "18": {
+                  "geometry": {
+                    "rms": 0.5222691297531128,
+                    "hidden_rms": 3.913667917251587,
+                    "ratio": 0.1334474822074024,
+                    "max": 3.65625,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 0.5925589203834534,
+                    "cumulative_ratio": 0.07465417764684665
+                  },
+                  "appearance": {
+                    "rms": 0.3361824154853821,
+                    "hidden_rms": 3.9102892875671387,
+                    "ratio": 0.08597379650510319,
+                    "max": 2.1875,
+                    "count": 98,
+                    "nonzero_tokens": 98,
+                    "cumulative": 0.4278516173362732,
+                    "cumulative_ratio": 0.05393356955984029
+                  },
+                  "contact": {
+                    "rms": 0.26022636890411377,
+                    "hidden_rms": 3.8948974609375,
+                    "ratio": 0.06681212317242298,
+                    "max": 3.319516181945801,
+                    "count": 88,
+                    "nonzero_tokens": 88,
+                    "cumulative": 0.313456267118454,
+                    "cumulative_ratio": 0.039426646059053355
+                  },
+                  "total": {
+                    "rms": 0.7191063165664673,
+                    "hidden_rms": 3.913667917251587,
+                    "ratio": 0.1837422928492786,
+                    "max": 4.628509521484375,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 0.8260780572891235,
+                    "cumulative_ratio": 0.10407433913764481
+                  }
+                },
+                "23": {
+                  "geometry": {
+                    "rms": 0.6193896532058716,
+                    "hidden_rms": 6.3997321128845215,
+                    "ratio": 0.09678368442311204,
+                    "max": 4.5,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 0.680662989616394,
+                    "cumulative_ratio": 0.08575406427359719
+                  },
+                  "appearance": {
+                    "rms": 0.3428870737552643,
+                    "hidden_rms": 6.3861188888549805,
+                    "ratio": 0.053692560336399145,
+                    "max": 2.59375,
+                    "count": 98,
+                    "nonzero_tokens": 98,
+                    "cumulative": 0.4645269513130188,
+                    "cumulative_ratio": 0.05855674169713418
+                  },
+                  "contact": {
+                    "rms": 0.3388955593109131,
+                    "hidden_rms": 6.379209995269775,
+                    "ratio": 0.053125004438199445,
+                    "max": 3.7025372982025146,
+                    "count": 88,
+                    "nonzero_tokens": 88,
+                    "cumulative": 0.37987083196640015,
+                    "cumulative_ratio": 0.04778029476895934
+                  },
+                  "total": {
+                    "rms": 0.8227619528770447,
+                    "hidden_rms": 6.3997321128845215,
+                    "ratio": 0.12856193640052302,
+                    "max": 5.139181137084961,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 0.8932183980941772,
+                    "cumulative_ratio": 0.11253308772333274
+                  }
+                },
+                "28": {
+                  "geometry": {
+                    "rms": 0.6585978269577026,
+                    "hidden_rms": 4.642277240753174,
+                    "ratio": 0.1418695594429535,
+                    "max": 6.15625,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 0.8738911747932434,
+                    "cumulative_ratio": 0.11009812655391099
+                  },
+                  "appearance": {
+                    "rms": 0.3438970148563385,
+                    "hidden_rms": 4.612557888031006,
+                    "ratio": 0.07455668269198464,
+                    "max": 2.921875,
+                    "count": 98,
+                    "nonzero_tokens": 98,
+                    "cumulative": 0.5554637312889099,
+                    "cumulative_ratio": 0.07001993348991604
+                  },
+                  "contact": {
+                    "rms": 0.2561977207660675,
+                    "hidden_rms": 4.610197067260742,
+                    "ratio": 0.05557196732119164,
+                    "max": 2.8585665225982666,
+                    "count": 88,
+                    "nonzero_tokens": 88,
+                    "cumulative": 0.43906962871551514,
+                    "cumulative_ratio": 0.05522634147909636
+                  },
+                  "total": {
+                    "rms": 0.8403228521347046,
+                    "hidden_rms": 4.642277240753174,
+                    "ratio": 0.18101522346786178,
+                    "max": 6.4676513671875,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 1.1063932180404663,
+                    "cumulative_ratio": 0.1393901483980862
+                  }
+                }
+              }
+            },
+            "uncond": {
+              "rms": 1.60712730884552,
+              "max_abs": 7.59375,
+              "finite": true,
+              "residuals": {
+                "3": {
+                  "geometry": {
+                    "rms": 0.32525262236595154,
+                    "hidden_rms": 7.418830871582031,
+                    "ratio": 0.04384149308644273,
+                    "max": 2.7207021713256836,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 0.32525262236595154,
+                    "cumulative_ratio": 0.04384149308644273
+                  },
+                  "appearance": {
+                    "rms": 0.2469004988670349,
+                    "hidden_rms": 7.414660930633545,
+                    "ratio": 0.03329896015163279,
+                    "max": 1.6875,
+                    "count": 98,
+                    "nonzero_tokens": 98,
+                    "cumulative": 0.2469004988670349,
+                    "cumulative_ratio": 0.03329896015163279
+                  },
+                  "contact": {
+                    "rms": 0.05658090487122536,
+                    "hidden_rms": 7.424983024597168,
+                    "ratio": 0.007620341310382333,
+                    "max": 0.7250041961669922,
+                    "count": 88,
+                    "nonzero_tokens": 88,
+                    "cumulative": 0.05658090487122536,
+                    "cumulative_ratio": 0.007620341310382333
+                  },
+                  "total": {
+                    "rms": 0.489694207906723,
+                    "hidden_rms": 7.418830871582031,
+                    "ratio": 0.06600692432314446,
+                    "max": 3.7952466011047363,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 0.489694207906723,
+                    "cumulative_ratio": 0.06600692432314446
+                  }
+                },
+                "8": {
+                  "geometry": {
+                    "rms": 0.3636082708835602,
+                    "hidden_rms": 4.943055629730225,
+                    "ratio": 0.07355941306762204,
+                    "max": 2.4789621829986572,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 0.4694431722164154,
+                    "cumulative_ratio": 0.0632772441294795
+                  },
+                  "appearance": {
+                    "rms": 0.25957319140434265,
+                    "hidden_rms": 5.009774208068848,
+                    "ratio": 0.05181335138543142,
+                    "max": 1.71875,
+                    "count": 98,
+                    "nonzero_tokens": 98,
+                    "cumulative": 0.3512727916240692,
+                    "cumulative_ratio": 0.04737543562818789
+                  },
+                  "contact": {
+                    "rms": 0.1937846541404724,
+                    "hidden_rms": 5.006556034088135,
+                    "ratio": 0.03870617902227618,
+                    "max": 2.3254852294921875,
+                    "count": 88,
+                    "nonzero_tokens": 88,
+                    "cumulative": 0.20331664383411407,
+                    "cumulative_ratio": 0.02738277557814952
+                  },
+                  "total": {
+                    "rms": 0.5780961513519287,
+                    "hidden_rms": 4.943055629730225,
+                    "ratio": 0.11695117244381069,
+                    "max": 3.4394326210021973,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 0.7246734499931335,
+                    "cumulative_ratio": 0.09768027638546238
+                  }
+                },
+                "13": {
+                  "geometry": {
+                    "rms": 0.4397665560245514,
+                    "hidden_rms": 4.100848197937012,
+                    "ratio": 0.10723795049174999,
+                    "max": 2.9922189712524414,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 0.5664685368537903,
+                    "cumulative_ratio": 0.07635549949300752
+                  },
+                  "appearance": {
+                    "rms": 0.2980882525444031,
+                    "hidden_rms": 4.125289440155029,
+                    "ratio": 0.07225874859660777,
+                    "max": 1.8671875,
+                    "count": 98,
+                    "nonzero_tokens": 98,
+                    "cumulative": 0.41158244013786316,
+                    "cumulative_ratio": 0.05550927331517175
+                  },
+                  "contact": {
+                    "rms": 0.20862406492233276,
+                    "hidden_rms": 4.113602161407471,
+                    "ratio": 0.05071566396954438,
+                    "max": 2.7905821800231934,
+                    "count": 88,
+                    "nonzero_tokens": 88,
+                    "cumulative": 0.2753538191318512,
+                    "cumulative_ratio": 0.03708477423041518
+                  },
+                  "total": {
+                    "rms": 0.643950343132019,
+                    "hidden_rms": 4.100848197937012,
+                    "ratio": 0.15702857361459202,
+                    "max": 4.1640625,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 0.8392026424407959,
+                    "cumulative_ratio": 0.11311790994661668
+                  }
+                },
+                "18": {
+                  "geometry": {
+                    "rms": 0.5897470712661743,
+                    "hidden_rms": 3.579383611679077,
+                    "ratio": 0.16476218680275118,
+                    "max": 3.7038612365722656,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 0.6378616690635681,
+                    "cumulative_ratio": 0.08597873170379298
+                  },
+                  "appearance": {
+                    "rms": 0.3652859926223755,
+                    "hidden_rms": 3.5390546321868896,
+                    "ratio": 0.10321569757646101,
+                    "max": 2.171875,
+                    "count": 98,
+                    "nonzero_tokens": 98,
+                    "cumulative": 0.4463711977005005,
+                    "cumulative_ratio": 0.06020116116926204
+                  },
+                  "contact": {
+                    "rms": 0.25983926653862,
+                    "hidden_rms": 3.523655652999878,
+                    "ratio": 0.07374139022847048,
+                    "max": 3.301276922225952,
+                    "count": 88,
+                    "nonzero_tokens": 88,
+                    "cumulative": 0.31866979598999023,
+                    "cumulative_ratio": 0.04291858916502765
+                  },
+                  "total": {
+                    "rms": 0.8070757389068604,
+                    "hidden_rms": 3.579383611679077,
+                    "ratio": 0.22547897248941803,
+                    "max": 5.01202392578125,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 0.8803473711013794,
+                    "cumulative_ratio": 0.11866389547624899
+                  }
+                },
+                "23": {
+                  "geometry": {
+                    "rms": 0.7040653228759766,
+                    "hidden_rms": 6.460963726043701,
+                    "ratio": 0.10897218321129673,
+                    "max": 4.625,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 0.7552299499511719,
+                    "cumulative_ratio": 0.10179905203717396
+                  },
+                  "appearance": {
+                    "rms": 0.37111663818359375,
+                    "hidden_rms": 6.454220771789551,
+                    "ratio": 0.057499836356030766,
+                    "max": 2.59375,
+                    "count": 98,
+                    "nonzero_tokens": 98,
+                    "cumulative": 0.49038195610046387,
+                    "cumulative_ratio": 0.06613680122235384
+                  },
+                  "contact": {
+                    "rms": 0.3783527612686157,
+                    "hidden_rms": 6.451375961303711,
+                    "ratio": 0.05864683186006062,
+                    "max": 4.468579292297363,
+                    "count": 88,
+                    "nonzero_tokens": 88,
+                    "cumulative": 0.40751978754997253,
+                    "cumulative_ratio": 0.054884945352731224
+                  },
+                  "total": {
+                    "rms": 0.9400683641433716,
+                    "hidden_rms": 6.460963726043701,
+                    "ratio": 0.14549971242742327,
+                    "max": 5.547721862792969,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 0.9850706458091736,
+                    "cumulative_ratio": 0.1327797685188518
+                  }
+                },
+                "28": {
+                  "geometry": {
+                    "rms": 0.751381516456604,
+                    "hidden_rms": 5.062866687774658,
+                    "ratio": 0.14841029061084515,
+                    "max": 6.3125,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 0.9844978451728821,
+                    "cumulative_ratio": 0.13270255950220125
+                  },
+                  "appearance": {
+                    "rms": 0.3843865692615509,
+                    "hidden_rms": 5.019557476043701,
+                    "ratio": 0.07657778023183738,
+                    "max": 2.796875,
+                    "count": 98,
+                    "nonzero_tokens": 98,
+                    "cumulative": 0.5973401069641113,
+                    "cumulative_ratio": 0.08056202603900751
+                  },
+                  "contact": {
+                    "rms": 0.32800787687301636,
+                    "hidden_rms": 5.036454677581787,
+                    "ratio": 0.06512674050916044,
+                    "max": 3.7469570636749268,
+                    "count": 88,
+                    "nonzero_tokens": 88,
+                    "cumulative": 0.5027002096176147,
+                    "cumulative_ratio": 0.06770388672301214
+                  },
+                  "total": {
+                    "rms": 0.981344997882843,
+                    "hidden_rms": 5.062866687774658,
+                    "ratio": 0.19383188584690647,
+                    "max": 6.954803466796875,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 1.251378059387207,
+                    "cumulative_ratio": 0.16867591148096311
+                  }
+                }
+              }
+            },
+            "combined": {
+              "rms": 2.419334888458252,
+              "max_abs": 15.125,
+              "finite": true
+            },
+            "combined_matches_native_formula": true,
+            "combined_formula_max_abs": 0.0
+          },
+          {
+            "step": 1,
+            "timestep": 749.2682495117188,
+            "cfg": 4.0,
+            "cond": {
+              "rms": 1.6449743509292603,
+              "max_abs": 6.90625,
+              "finite": true,
+              "residuals": {
+                "3": {
+                  "geometry": {
+                    "rms": 0.3082987070083618,
+                    "hidden_rms": 10.16951847076416,
+                    "ratio": 0.030315959196561208,
+                    "max": 2.7013766765594482,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 0.3082987070083618,
+                    "cumulative_ratio": 0.030315959196561208
+                  },
+                  "appearance": {
+                    "rms": 0.24439957737922668,
+                    "hidden_rms": 10.25191879272461,
+                    "ratio": 0.023839398489253313,
+                    "max": 1.6875,
+                    "count": 98,
+                    "nonzero_tokens": 98,
+                    "cumulative": 0.24439957737922668,
+                    "cumulative_ratio": 0.023839398489253313
+                  },
+                  "contact": {
+                    "rms": 0.05672343075275421,
+                    "hidden_rms": 10.202938079833984,
+                    "ratio": 0.005559519258954199,
+                    "max": 0.7295639514923096,
+                    "count": 88,
+                    "nonzero_tokens": 88,
+                    "cumulative": 0.05672343075275421,
+                    "cumulative_ratio": 0.005559519258954199
+                  },
+                  "total": {
+                    "rms": 0.46892157196998596,
+                    "hidden_rms": 10.16951847076416,
+                    "ratio": 0.04611049906817762,
+                    "max": 3.6761088371276855,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 0.46892157196998596,
+                    "cumulative_ratio": 0.04611049906817762
+                  }
+                },
+                "8": {
+                  "geometry": {
+                    "rms": 0.3150070309638977,
+                    "hidden_rms": 6.0218048095703125,
+                    "ratio": 0.05231106635393835,
+                    "max": 2.2893946170806885,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 0.4237698018550873,
+                    "cumulative_ratio": 0.04167058677098251
+                  },
+                  "appearance": {
+                    "rms": 0.20157036185264587,
+                    "hidden_rms": 6.03392219543457,
+                    "ratio": 0.0334061917479081,
+                    "max": 1.484375,
+                    "count": 98,
+                    "nonzero_tokens": 98,
+                    "cumulative": 0.31071755290031433,
+                    "cumulative_ratio": 0.030308233920153423
+                  },
+                  "contact": {
+                    "rms": 0.17875026166439056,
+                    "hidden_rms": 6.01894998550415,
+                    "ratio": 0.029697914436053973,
+                    "max": 2.133974552154541,
+                    "count": 88,
+                    "nonzero_tokens": 88,
+                    "cumulative": 0.18897219002246857,
+                    "cumulative_ratio": 0.018521350276149418
+                  },
+                  "total": {
+                    "rms": 0.47252342104911804,
+                    "hidden_rms": 6.0218048095703125,
+                    "ratio": 0.07846873752834826,
+                    "max": 3.046983003616333,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 0.635895848274231,
+                    "cumulative_ratio": 0.06252959273365166
+                  }
+                },
+                "13": {
+                  "geometry": {
+                    "rms": 0.40106016397476196,
+                    "hidden_rms": 5.225614547729492,
+                    "ratio": 0.0767488991603908,
+                    "max": 3.1725575923919678,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 0.5157614946365356,
+                    "cumulative_ratio": 0.05071641259311073
+                  },
+                  "appearance": {
+                    "rms": 0.2617413401603699,
+                    "hidden_rms": 5.29630184173584,
+                    "ratio": 0.04941964185232035,
+                    "max": 1.8671875,
+                    "count": 98,
+                    "nonzero_tokens": 98,
+                    "cumulative": 0.36278656125068665,
+                    "cumulative_ratio": 0.03538718639754952
+                  },
+                  "contact": {
+                    "rms": 0.17761725187301636,
+                    "hidden_rms": 5.2831926345825195,
+                    "ratio": 0.033619302599412364,
+                    "max": 2.2525289058685303,
+                    "count": 88,
+                    "nonzero_tokens": 88,
+                    "cumulative": 0.24503803253173828,
+                    "cumulative_ratio": 0.02401641866435059
+                  },
+                  "total": {
+                    "rms": 0.5614730715751648,
+                    "hidden_rms": 5.225614547729492,
+                    "ratio": 0.10744632357530513,
+                    "max": 3.6978759765625,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 0.7358333468437195,
+                    "cumulative_ratio": 0.07235675405469098
+                  }
+                },
+                "18": {
+                  "geometry": {
+                    "rms": 0.508543074131012,
+                    "hidden_rms": 4.464580535888672,
+                    "ratio": 0.11390612624032032,
+                    "max": 3.816535472869873,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 0.5699595212936401,
+                    "cumulative_ratio": 0.056045871093325435
+                  },
+                  "appearance": {
+                    "rms": 0.3292456567287445,
+                    "hidden_rms": 4.461298942565918,
+                    "ratio": 0.07380040229704463,
+                    "max": 2.140625,
+                    "count": 98,
+                    "nonzero_tokens": 98,
+                    "cumulative": 0.40235674381256104,
+                    "cumulative_ratio": 0.03924696946469163
+                  },
+                  "contact": {
+                    "rms": 0.25404223799705505,
+                    "hidden_rms": 4.445559501647949,
+                    "ratio": 0.05714516652018328,
+                    "max": 3.228320598602295,
+                    "count": 88,
+                    "nonzero_tokens": 88,
+                    "cumulative": 0.2966025769710541,
+                    "cumulative_ratio": 0.029070310399833398
+                  },
+                  "total": {
+                    "rms": 0.6893518567085266,
+                    "hidden_rms": 4.464580535888672,
+                    "ratio": 0.15440461901563873,
+                    "max": 4.422964096069336,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 0.7734471559524536,
+                    "cumulative_ratio": 0.0760554354835972
+                  }
+                },
+                "23": {
+                  "geometry": {
+                    "rms": 0.5787074565887451,
+                    "hidden_rms": 6.946944713592529,
+                    "ratio": 0.08330388112293952,
+                    "max": 4.670523166656494,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 0.6488081216812134,
+                    "cumulative_ratio": 0.06379929625443323
+                  },
+                  "appearance": {
+                    "rms": 0.334261417388916,
+                    "hidden_rms": 6.964094638824463,
+                    "ratio": 0.04799782810610099,
+                    "max": 2.671875,
+                    "count": 98,
+                    "nonzero_tokens": 98,
+                    "cumulative": 0.4449394941329956,
+                    "cumulative_ratio": 0.04340060657218159
+                  },
+                  "contact": {
+                    "rms": 0.3191172778606415,
+                    "hidden_rms": 6.974050045013428,
+                    "ratio": 0.04575781300692216,
+                    "max": 3.6476500034332275,
+                    "count": 88,
+                    "nonzero_tokens": 88,
+                    "cumulative": 0.3596806526184082,
+                    "cumulative_ratio": 0.03525265465732011
+                  },
+                  "total": {
+                    "rms": 0.7662391662597656,
+                    "hidden_rms": 6.946944713592529,
+                    "ratio": 0.1102987281243979,
+                    "max": 4.771234035491943,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 0.8416315913200378,
+                    "cumulative_ratio": 0.08276022052957595
+                  }
+                },
+                "28": {
+                  "geometry": {
+                    "rms": 0.5162421464920044,
+                    "hidden_rms": 5.901927947998047,
+                    "ratio": 0.08747008622277665,
+                    "max": 4.70391845703125,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 0.7681009769439697,
+                    "cumulative_ratio": 0.07552972927402067
+                  },
+                  "appearance": {
+                    "rms": 0.30581367015838623,
+                    "hidden_rms": 5.826920032501221,
+                    "ratio": 0.052482901507593695,
+                    "max": 2.612548828125,
+                    "count": 98,
+                    "nonzero_tokens": 98,
+                    "cumulative": 0.5207749605178833,
+                    "cumulative_ratio": 0.05079780390842124
+                  },
+                  "contact": {
+                    "rms": 0.2286597341299057,
+                    "hidden_rms": 5.846651077270508,
+                    "ratio": 0.03910952288889708,
+                    "max": 2.531022548675537,
+                    "count": 88,
+                    "nonzero_tokens": 88,
+                    "cumulative": 0.4089805781841278,
+                    "cumulative_ratio": 0.040084588868815565
+                  },
+                  "total": {
+                    "rms": 0.675074577331543,
+                    "hidden_rms": 5.901927947998047,
+                    "ratio": 0.1143820431695596,
+                    "max": 4.98126220703125,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 0.9820080995559692,
+                    "cumulative_ratio": 0.0965638739316021
+                  }
+                }
+              }
+            },
+            "uncond": {
+              "rms": 1.6495097875595093,
+              "max_abs": 6.875,
+              "finite": true,
+              "residuals": {
+                "3": {
+                  "geometry": {
+                    "rms": 0.30763596296310425,
+                    "hidden_rms": 9.992547988891602,
+                    "ratio": 0.030786538458968962,
+                    "max": 2.7013766765594482,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 0.30763596296310425,
+                    "cumulative_ratio": 0.030786538458968962
+                  },
+                  "appearance": {
+                    "rms": 0.24420644342899323,
+                    "hidden_rms": 10.060148239135742,
+                    "ratio": 0.024274636677716864,
+                    "max": 1.6875,
+                    "count": 98,
+                    "nonzero_tokens": 98,
+                    "cumulative": 0.24420644342899323,
+                    "cumulative_ratio": 0.024274636677716864
+                  },
+                  "contact": {
+                    "rms": 0.05674133077263832,
+                    "hidden_rms": 9.995224952697754,
+                    "ratio": 0.00567684379702966,
+                    "max": 0.7295639514923096,
+                    "count": 88,
+                    "nonzero_tokens": 88,
+                    "cumulative": 0.05674133077263832,
+                    "cumulative_ratio": 0.00567684379702966
+                  },
+                  "total": {
+                    "rms": 0.46819207072257996,
+                    "hidden_rms": 9.992547988891602,
+                    "ratio": 0.046854122816628374,
+                    "max": 3.668884515762329,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 0.46819207072257996,
+                    "cumulative_ratio": 0.046854122816628374
+                  }
+                },
+                "8": {
+                  "geometry": {
+                    "rms": 0.3149949014186859,
+                    "hidden_rms": 5.7681684494018555,
+                    "ratio": 0.05460917172960684,
+                    "max": 2.2893946170806885,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 0.42330214381217957,
+                    "cumulative_ratio": 0.04236178242854086
+                  },
+                  "appearance": {
+                    "rms": 0.1999063491821289,
+                    "hidden_rms": 5.76561164855957,
+                    "ratio": 0.03467218421346012,
+                    "max": 1.4375,
+                    "count": 98,
+                    "nonzero_tokens": 98,
+                    "cumulative": 0.30947059392929077,
+                    "cumulative_ratio": 0.03076203119208481
+                  },
+                  "contact": {
+                    "rms": 0.178618922829628,
+                    "hidden_rms": 5.734260559082031,
+                    "ratio": 0.031149425630254617,
+                    "max": 2.133974552154541,
+                    "count": 88,
+                    "nonzero_tokens": 88,
+                    "cumulative": 0.1888517439365387,
+                    "cumulative_ratio": 0.01889419646183819
+                  },
+                  "total": {
+                    "rms": 0.47221383452415466,
+                    "hidden_rms": 5.7681684494018555,
+                    "ratio": 0.08186547231870839,
+                    "max": 3.0413014888763428,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 0.6351390480995178,
+                    "cumulative_ratio": 0.06356127073951326
+                  }
+                },
+                "13": {
+                  "geometry": {
+                    "rms": 0.4021792709827423,
+                    "hidden_rms": 5.0102386474609375,
+                    "ratio": 0.08027147991973528,
+                    "max": 3.189772367477417,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 0.5160211324691772,
+                    "cumulative_ratio": 0.051640595876329194
+                  },
+                  "appearance": {
+                    "rms": 0.26159796118736267,
+                    "hidden_rms": 5.080397129058838,
+                    "ratio": 0.051491636291792146,
+                    "max": 1.8671875,
+                    "count": 98,
+                    "nonzero_tokens": 98,
+                    "cumulative": 0.36165472865104675,
+                    "cumulative_ratio": 0.035949244489673265
+                  },
+                  "contact": {
+                    "rms": 0.1790473312139511,
+                    "hidden_rms": 5.057272911071777,
+                    "ratio": 0.0354039290270388,
+                    "max": 2.2434091567993164,
+                    "count": 88,
+                    "nonzero_tokens": 88,
+                    "cumulative": 0.24587810039520264,
+                    "cumulative_ratio": 0.02459955644408374
+                  },
+                  "total": {
+                    "rms": 0.5633339285850525,
+                    "hidden_rms": 5.0102386474609375,
+                    "ratio": 0.11243654608559134,
+                    "max": 3.84375,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 0.7362510561943054,
+                    "cumulative_ratio": 0.0736800120462541
+                  }
+                },
+                "18": {
+                  "geometry": {
+                    "rms": 0.5093954801559448,
+                    "hidden_rms": 4.431707859039307,
+                    "ratio": 0.11494337992449939,
+                    "max": 3.8988144397735596,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 0.5702775716781616,
+                    "cumulative_ratio": 0.05707028600834553
+                  },
+                  "appearance": {
+                    "rms": 0.3280707895755768,
+                    "hidden_rms": 4.424392223358154,
+                    "ratio": 0.07415047604585293,
+                    "max": 2.125,
+                    "count": 98,
+                    "nonzero_tokens": 98,
+                    "cumulative": 0.40048593282699585,
+                    "cumulative_ratio": 0.03980914826573184
+                  },
+                  "contact": {
+                    "rms": 0.2557962238788605,
+                    "hidden_rms": 4.40852165222168,
+                    "ratio": 0.05802312976050637,
+                    "max": 3.235746383666992,
+                    "count": 88,
+                    "nonzero_tokens": 88,
+                    "cumulative": 0.2981758713722229,
+                    "cumulative_ratio": 0.0298318319781031
+                  },
+                  "total": {
+                    "rms": 0.690033495426178,
+                    "hidden_rms": 4.431707859039307,
+                    "ratio": 0.15570374162157916,
+                    "max": 4.3857421875,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 0.7737430930137634,
+                    "cumulative_ratio": 0.07743201172252653
+                  }
+                },
+                "23": {
+                  "geometry": {
+                    "rms": 0.5796169638633728,
+                    "hidden_rms": 6.947032928466797,
+                    "ratio": 0.08343374356097859,
+                    "max": 4.806389808654785,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 0.6491873264312744,
+                    "cumulative_ratio": 0.06496714623266812
+                  },
+                  "appearance": {
+                    "rms": 0.3345157504081726,
+                    "hidden_rms": 6.961811542510986,
+                    "ratio": 0.048050101380296695,
+                    "max": 2.640625,
+                    "count": 98,
+                    "nonzero_tokens": 98,
+                    "cumulative": 0.4431181252002716,
+                    "cumulative_ratio": 0.04404687830309143
+                  },
+                  "contact": {
+                    "rms": 0.31879183650016785,
+                    "hidden_rms": 6.971835136413574,
+                    "ratio": 0.04572567053904255,
+                    "max": 3.6476500034332275,
+                    "count": 88,
+                    "nonzero_tokens": 88,
+                    "cumulative": 0.36036255955696106,
+                    "cumulative_ratio": 0.03605347165895428
+                  },
+                  "total": {
+                    "rms": 0.7675139307975769,
+                    "hidden_rms": 6.947032928466797,
+                    "ratio": 0.11048082522432587,
+                    "max": 4.804493427276611,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 0.8418528437614441,
+                    "cumulative_ratio": 0.08424806612860956
+                  }
+                },
+                "28": {
+                  "geometry": {
+                    "rms": 0.5126978158950806,
+                    "hidden_rms": 5.927882194519043,
+                    "ratio": 0.08648920458795963,
+                    "max": 4.88519287109375,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 0.7661885619163513,
+                    "cumulative_ratio": 0.07667599522845413
+                  },
+                  "appearance": {
+                    "rms": 0.30361229181289673,
+                    "hidden_rms": 5.85658597946167,
+                    "ratio": 0.051841173830219155,
+                    "max": 2.6275634765625,
+                    "count": 98,
+                    "nonzero_tokens": 98,
+                    "cumulative": 0.518322765827179,
+                    "cumulative_ratio": 0.0515223785481423
+                  },
+                  "contact": {
+                    "rms": 0.22502359747886658,
+                    "hidden_rms": 5.880399227142334,
+                    "ratio": 0.038266721150533194,
+                    "max": 2.382138729095459,
+                    "count": 88,
+                    "nonzero_tokens": 88,
+                    "cumulative": 0.4076326787471771,
+                    "cumulative_ratio": 0.040782741826851564
+                  },
+                  "total": {
+                    "rms": 0.6680703163146973,
+                    "hidden_rms": 5.927882194519043,
+                    "ratio": 0.11269966142923678,
+                    "max": 5.0816192626953125,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 0.9785362482070923,
+                    "cumulative_ratio": 0.09792659983168457
+                  }
+                }
+              }
+            },
+            "combined": {
+              "rms": 1.6437273025512695,
+              "max_abs": 7.0,
+              "finite": true
+            },
+            "combined_matches_native_formula": true,
+            "combined_formula_max_abs": 0.0
+          },
+          {
+            "step": 2,
+            "timestep": 432.5879211425781,
+            "cfg": 4.0,
+            "cond": {
+              "rms": 1.6429659128189087,
+              "max_abs": 6.875,
+              "finite": true,
+              "residuals": {
+                "3": {
+                  "geometry": {
+                    "rms": 0.31073442101478577,
+                    "hidden_rms": 9.75497055053711,
+                    "ratio": 0.0318539578776767,
+                    "max": 2.734720468521118,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 0.31073442101478577,
+                    "cumulative_ratio": 0.0318539578776767
+                  },
+                  "appearance": {
+                    "rms": 0.24464011192321777,
+                    "hidden_rms": 9.815866470336914,
+                    "ratio": 0.024922925822443556,
+                    "max": 1.6875,
+                    "count": 98,
+                    "nonzero_tokens": 98,
+                    "cumulative": 0.24464011192321777,
+                    "cumulative_ratio": 0.024922925822443556
+                  },
+                  "contact": {
+                    "rms": 0.05676454305648804,
+                    "hidden_rms": 9.824291229248047,
+                    "ratio": 0.005777978454821601,
+                    "max": 0.7295639514923096,
+                    "count": 88,
+                    "nonzero_tokens": 88,
+                    "cumulative": 0.05676454305648804,
+                    "cumulative_ratio": 0.005777978454821601
+                  },
+                  "total": {
+                    "rms": 0.47118568420410156,
+                    "hidden_rms": 9.75497055053711,
+                    "ratio": 0.04830211242187277,
+                    "max": 3.6884119510650635,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 0.47118568420410156,
+                    "cumulative_ratio": 0.04830211242187277
+                  }
+                },
+                "8": {
+                  "geometry": {
+                    "rms": 0.31199580430984497,
+                    "hidden_rms": 5.964309215545654,
+                    "ratio": 0.05231046765594321,
+                    "max": 2.3039767742156982,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 0.4232308566570282,
+                    "cumulative_ratio": 0.04338617471620405
+                  },
+                  "appearance": {
+                    "rms": 0.19033081829547882,
+                    "hidden_rms": 5.978907108306885,
+                    "ratio": 0.03183371389581213,
+                    "max": 1.421875,
+                    "count": 98,
+                    "nonzero_tokens": 98,
+                    "cumulative": 0.3039226233959198,
+                    "cumulative_ratio": 0.030962383638200423
+                  },
+                  "contact": {
+                    "rms": 0.1750616580247879,
+                    "hidden_rms": 5.987566947937012,
+                    "ratio": 0.029237528289367116,
+                    "max": 2.088376998901367,
+                    "count": 88,
+                    "nonzero_tokens": 88,
+                    "cumulative": 0.18546953797340393,
+                    "cumulative_ratio": 0.01887866856198641
+                  },
+                  "total": {
+                    "rms": 0.45948922634124756,
+                    "hidden_rms": 5.964309215545654,
+                    "ratio": 0.07703980624338078,
+                    "max": 3.0339667797088623,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 0.6283635497093201,
+                    "cumulative_ratio": 0.06441470493980346
+                  }
+                },
+                "13": {
+                  "geometry": {
+                    "rms": 0.41348832845687866,
+                    "hidden_rms": 5.330461502075195,
+                    "ratio": 0.0775708310238999,
+                    "max": 3.212850570678711,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 0.5229458808898926,
+                    "cumulative_ratio": 0.0536081455275228
+                  },
+                  "appearance": {
+                    "rms": 0.2635965645313263,
+                    "hidden_rms": 5.410454273223877,
+                    "ratio": 0.04871985811539989,
+                    "max": 1.8671875,
+                    "count": 98,
+                    "nonzero_tokens": 98,
+                    "cumulative": 0.3585250675678253,
+                    "cumulative_ratio": 0.036525055495739596
+                  },
+                  "contact": {
+                    "rms": 0.1776246577501297,
+                    "hidden_rms": 5.420077800750732,
+                    "ratio": 0.03277160665950717,
+                    "max": 2.216050624847412,
+                    "count": 88,
+                    "nonzero_tokens": 88,
+                    "cumulative": 0.24260132014751434,
+                    "cumulative_ratio": 0.024694027740674286
+                  },
+                  "total": {
+                    "rms": 0.5726681351661682,
+                    "hidden_rms": 5.330461502075195,
+                    "ratio": 0.10743312468221063,
+                    "max": 3.8671875,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 0.7366389632225037,
+                    "cumulative_ratio": 0.07551421702466793
+                  }
+                },
+                "18": {
+                  "geometry": {
+                    "rms": 0.5280540585517883,
+                    "hidden_rms": 4.65504264831543,
+                    "ratio": 0.11343699691835926,
+                    "max": 4.062762260437012,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 0.5852224230766296,
+                    "cumulative_ratio": 0.0599922285818082
+                  },
+                  "appearance": {
+                    "rms": 0.34536609053611755,
+                    "hidden_rms": 4.654290199279785,
+                    "ratio": 0.07420381535074032,
+                    "max": 2.265625,
+                    "count": 98,
+                    "nonzero_tokens": 98,
+                    "cumulative": 0.4091099500656128,
+                    "cumulative_ratio": 0.04167843473644673
+                  },
+                  "contact": {
+                    "rms": 0.2532965838909149,
+                    "hidden_rms": 4.645727157592773,
+                    "ratio": 0.054522483843446996,
+                    "max": 3.1918423175811768,
+                    "count": 88,
+                    "nonzero_tokens": 88,
+                    "cumulative": 0.29471999406814575,
+                    "cumulative_ratio": 0.02999911008243835
+                  },
+                  "total": {
+                    "rms": 0.7137284278869629,
+                    "hidden_rms": 4.65504264831543,
+                    "ratio": 0.15332371404701253,
+                    "max": 4.5402631759643555,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 0.7866732478141785,
+                    "cumulative_ratio": 0.08064332370238311
+                  }
+                },
+                "23": {
+                  "geometry": {
+                    "rms": 0.5702717900276184,
+                    "hidden_rms": 6.964875221252441,
+                    "ratio": 0.0818782493457321,
+                    "max": 4.855685234069824,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 0.6559253334999084,
+                    "cumulative_ratio": 0.06724011416557205
+                  },
+                  "appearance": {
+                    "rms": 0.3505765199661255,
+                    "hidden_rms": 6.982321739196777,
+                    "ratio": 0.050209161516875996,
+                    "max": 2.71875,
+                    "count": 98,
+                    "nonzero_tokens": 98,
+                    "cumulative": 0.45952242612838745,
+                    "cumulative_ratio": 0.04681424992047748
+                  },
+                  "contact": {
+                    "rms": 0.31317734718322754,
+                    "hidden_rms": 6.991833209991455,
+                    "ratio": 0.04479187900759582,
+                    "max": 3.6327617168426514,
+                    "count": 88,
+                    "nonzero_tokens": 88,
+                    "cumulative": 0.35521766543388367,
+                    "cumulative_ratio": 0.036157078118405094
+                  },
+                  "total": {
+                    "rms": 0.7630418539047241,
+                    "hidden_rms": 6.964875221252441,
+                    "ratio": 0.10955571057129607,
+                    "max": 4.801012992858887,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 0.8511776924133301,
+                    "cumulative_ratio": 0.08725579313680902
+                  }
+                },
+                "28": {
+                  "geometry": {
+                    "rms": 0.5103786587715149,
+                    "hidden_rms": 6.362762451171875,
+                    "ratio": 0.08021337629499509,
+                    "max": 5.0654296875,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 0.7699610590934753,
+                    "cumulative_ratio": 0.07893012645241468
+                  },
+                  "appearance": {
+                    "rms": 0.296342134475708,
+                    "hidden_rms": 6.297272205352783,
+                    "ratio": 0.047058809721423886,
+                    "max": 2.4473876953125,
+                    "count": 98,
+                    "nonzero_tokens": 98,
+                    "cumulative": 0.5291166305541992,
+                    "cumulative_ratio": 0.05390422049374497
+                  },
+                  "contact": {
+                    "rms": 0.230472132563591,
+                    "hidden_rms": 6.313015460968018,
+                    "ratio": 0.036507455745760385,
+                    "max": 2.605464220046997,
+                    "count": 88,
+                    "nonzero_tokens": 88,
+                    "cumulative": 0.4059171974658966,
+                    "cumulative_ratio": 0.041317708116941236
+                  },
+                  "total": {
+                    "rms": 0.6630754470825195,
+                    "hidden_rms": 6.362762451171875,
+                    "ratio": 0.104211881579894,
+                    "max": 5.231788635253906,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 0.9833853840827942,
+                    "cumulative_ratio": 0.10080864713924215
+                  }
+                }
+              }
+            },
+            "uncond": {
+              "rms": 1.646517276763916,
+              "max_abs": 6.84375,
+              "finite": true,
+              "residuals": {
+                "3": {
+                  "geometry": {
+                    "rms": 0.31048697233200073,
+                    "hidden_rms": 9.621031761169434,
+                    "ratio": 0.03227169185587026,
+                    "max": 2.734720468521118,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 0.31048697233200073,
+                    "cumulative_ratio": 0.03227169185587026
+                  },
+                  "appearance": {
+                    "rms": 0.2444535344839096,
+                    "hidden_rms": 9.665499687194824,
+                    "ratio": 0.025291349893453496,
+                    "max": 1.6875,
+                    "count": 98,
+                    "nonzero_tokens": 98,
+                    "cumulative": 0.2444535344839096,
+                    "cumulative_ratio": 0.025291349893453496
+                  },
+                  "contact": {
+                    "rms": 0.056778088212013245,
+                    "hidden_rms": 9.666473388671875,
+                    "ratio": 0.005873712772907584,
+                    "max": 0.7295639514923096,
+                    "count": 88,
+                    "nonzero_tokens": 88,
+                    "cumulative": 0.056778088212013245,
+                    "cumulative_ratio": 0.005873712772907584
+                  },
+                  "total": {
+                    "rms": 0.47080427408218384,
+                    "hidden_rms": 9.621031761169434,
+                    "ratio": 0.048934904880197354,
+                    "max": 3.6861438751220703,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 0.47080427408218384,
+                    "cumulative_ratio": 0.048934904880197354
+                  }
+                },
+                "8": {
+                  "geometry": {
+                    "rms": 0.3119911551475525,
+                    "hidden_rms": 5.750489234924316,
+                    "ratio": 0.05425471510367216,
+                    "max": 2.3039767742156982,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 0.42304083704948425,
+                    "cumulative_ratio": 0.04397042308465093
+                  },
+                  "appearance": {
+                    "rms": 0.18875503540039062,
+                    "hidden_rms": 5.745735168457031,
+                    "ratio": 0.03285132883196898,
+                    "max": 1.328125,
+                    "count": 98,
+                    "nonzero_tokens": 98,
+                    "cumulative": 0.302806556224823,
+                    "cumulative_ratio": 0.03132859821267091
+                  },
+                  "contact": {
+                    "rms": 0.1744866818189621,
+                    "hidden_rms": 5.742685794830322,
+                    "ratio": 0.030384159616749083,
+                    "max": 2.0792572498321533,
+                    "count": 88,
+                    "nonzero_tokens": 88,
+                    "cumulative": 0.18492689728736877,
+                    "cumulative_ratio": 0.01913075119040666
+                  },
+                  "total": {
+                    "rms": 0.45855364203453064,
+                    "hidden_rms": 5.750489234924316,
+                    "ratio": 0.07974167471692793,
+                    "max": 3.028285264968872,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 0.6274234056472778,
+                    "cumulative_ratio": 0.0652137339551839
+                  }
+                },
+                "13": {
+                  "geometry": {
+                    "rms": 0.413784384727478,
+                    "hidden_rms": 5.199957847595215,
+                    "ratio": 0.07957456518976164,
+                    "max": 3.2262585163116455,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 0.5229787826538086,
+                    "cumulative_ratio": 0.054357868847762815
+                  },
+                  "appearance": {
+                    "rms": 0.26365941762924194,
+                    "hidden_rms": 5.275528430938721,
+                    "ratio": 0.04997782138429813,
+                    "max": 1.8671875,
+                    "count": 98,
+                    "nonzero_tokens": 98,
+                    "cumulative": 0.35772213339805603,
+                    "cumulative_ratio": 0.037010205884335005
+                  },
+                  "contact": {
+                    "rms": 0.17667467892169952,
+                    "hidden_rms": 5.276660919189453,
+                    "ratio": 0.033482287686743856,
+                    "max": 2.179572343826294,
+                    "count": 88,
+                    "nonzero_tokens": 88,
+                    "cumulative": 0.24160464107990265,
+                    "cumulative_ratio": 0.024994083298572854
+                  },
+                  "total": {
+                    "rms": 0.5728845596313477,
+                    "hidden_rms": 5.199957847595215,
+                    "ratio": 0.11017100069307009,
+                    "max": 3.953125,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 0.7360841631889343,
+                    "cumulative_ratio": 0.0765078196872581
+                  }
+                },
+                "18": {
+                  "geometry": {
+                    "rms": 0.525403618812561,
+                    "hidden_rms": 4.646215915679932,
+                    "ratio": 0.11308204963945868,
+                    "max": 4.063372611999512,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 0.5839328765869141,
+                    "cumulative_ratio": 0.06069337375474345
+                  },
+                  "appearance": {
+                    "rms": 0.3429146707057953,
+                    "hidden_rms": 4.6444172859191895,
+                    "ratio": 0.07383373405000324,
+                    "max": 2.265625,
+                    "count": 98,
+                    "nonzero_tokens": 98,
+                    "cumulative": 0.4071890413761139,
+                    "cumulative_ratio": 0.04212809006818049
+                  },
+                  "contact": {
+                    "rms": 0.2533974349498749,
+                    "hidden_rms": 4.635322093963623,
+                    "ratio": 0.05466662937616854,
+                    "max": 3.182115077972412,
+                    "count": 88,
+                    "nonzero_tokens": 88,
+                    "cumulative": 0.2941969633102417,
+                    "cumulative_ratio": 0.030434777139614396
+                  },
+                  "total": {
+                    "rms": 0.7100368142127991,
+                    "hidden_rms": 4.646215915679932,
+                    "ratio": 0.15282045154565135,
+                    "max": 4.511098861694336,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 0.7845553755760193,
+                    "cumulative_ratio": 0.08154586691445001
+                  }
+                },
+                "23": {
+                  "geometry": {
+                    "rms": 0.5695314407348633,
+                    "hidden_rms": 6.969613552093506,
+                    "ratio": 0.0817163586586217,
+                    "max": 4.855685234069824,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 0.6546565890312195,
+                    "cumulative_ratio": 0.06804432261344559
+                  },
+                  "appearance": {
+                    "rms": 0.34838590025901794,
+                    "hidden_rms": 6.987149238586426,
+                    "ratio": 0.04986095020485066,
+                    "max": 2.703125,
+                    "count": 98,
+                    "nonzero_tokens": 98,
+                    "cumulative": 0.45681750774383545,
+                    "cumulative_ratio": 0.04726268920675074
+                  },
+                  "contact": {
+                    "rms": 0.3119758367538452,
+                    "hidden_rms": 6.99700927734375,
+                    "ratio": 0.04458702631194445,
+                    "max": 3.6476500034332275,
+                    "count": 88,
+                    "nonzero_tokens": 88,
+                    "cumulative": 0.35429647564888,
+                    "cumulative_ratio": 0.036652092381910396
+                  },
+                  "total": {
+                    "rms": 0.76093590259552,
+                    "hidden_rms": 6.969613552093506,
+                    "ratio": 0.1091790666595787,
+                    "max": 4.800854682922363,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 0.8486679196357727,
+                    "cumulative_ratio": 0.08820965783119059
+                  }
+                },
+                "28": {
+                  "geometry": {
+                    "rms": 0.5102667212486267,
+                    "hidden_rms": 6.323054313659668,
+                    "ratio": 0.08069940505592363,
+                    "max": 5.0966796875,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 0.7690116763114929,
+                    "cumulative_ratio": 0.07993027103550689
+                  },
+                  "appearance": {
+                    "rms": 0.29929327964782715,
+                    "hidden_rms": 6.243991851806641,
+                    "ratio": 0.047933002917233056,
+                    "max": 2.5074462890625,
+                    "count": 98,
+                    "nonzero_tokens": 98,
+                    "cumulative": 0.528285562992096,
+                    "cumulative_ratio": 0.05465682893684082
+                  },
+                  "contact": {
+                    "rms": 0.22989201545715332,
+                    "hidden_rms": 6.25770902633667,
+                    "ratio": 0.036737408928668995,
+                    "max": 2.6352410316467285,
+                    "count": 88,
+                    "nonzero_tokens": 88,
+                    "cumulative": 0.40487051010131836,
+                    "cumulative_ratio": 0.04188399365747859
+                  },
+                  "total": {
+                    "rms": 0.6641519069671631,
+                    "hidden_rms": 6.323054313659668,
+                    "ratio": 0.10503656524543818,
+                    "max": 5.263050079345703,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 0.9821011424064636,
+                    "cumulative_ratio": 0.102078567744702
+                  }
+                }
+              }
+            },
+            "combined": {
+              "rms": 1.637413740158081,
+              "max_abs": 6.96875,
+              "finite": true
+            },
+            "combined_matches_native_formula": true,
+            "combined_formula_max_abs": 0.0
+          },
+          {
+            "step": 3,
+            "timestep": 19.999921798706055,
+            "cfg": 4.0,
+            "cond": {
+              "rms": 1.3493027687072754,
+              "max_abs": 5.75,
+              "finite": true,
+              "residuals": {
+                "3": {
+                  "geometry": {
+                    "rms": 0.28366297483444214,
+                    "hidden_rms": 10.787032127380371,
+                    "ratio": 0.026296665429820096,
+                    "max": 2.5835702419281006,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 0.28366297483444214,
+                    "cumulative_ratio": 0.026296665429820096
+                  },
+                  "appearance": {
+                    "rms": 0.2430148422718048,
+                    "hidden_rms": 10.837804794311523,
+                    "ratio": 0.02242288423568552,
+                    "max": 1.6875,
+                    "count": 98,
+                    "nonzero_tokens": 98,
+                    "cumulative": 0.2430148422718048,
+                    "cumulative_ratio": 0.02242288423568552
+                  },
+                  "contact": {
+                    "rms": 0.056926097720861435,
+                    "hidden_rms": 10.846368789672852,
+                    "ratio": 0.005248401453494966,
+                    "max": 0.7295639514923096,
+                    "count": 88,
+                    "nonzero_tokens": 88,
+                    "cumulative": 0.056926097720861435,
+                    "cumulative_ratio": 0.005248401453494966
+                  },
+                  "total": {
+                    "rms": 0.4454076588153839,
+                    "hidden_rms": 10.787032127380371,
+                    "ratio": 0.04129102922432392,
+                    "max": 3.553870439529419,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 0.4454076588153839,
+                    "cumulative_ratio": 0.04129102922432392
+                  }
+                },
+                "8": {
+                  "geometry": {
+                    "rms": 0.27798992395401,
+                    "hidden_rms": 6.326254844665527,
+                    "ratio": 0.04394225822066254,
+                    "max": 2.0560805797576904,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 0.38199394941329956,
+                    "cumulative_ratio": 0.03541233074143692
+                  },
+                  "appearance": {
+                    "rms": 0.17708554863929749,
+                    "hidden_rms": 6.363856792449951,
+                    "ratio": 0.027826765185758252,
+                    "max": 1.25,
+                    "count": 98,
+                    "nonzero_tokens": 98,
+                    "cumulative": 0.2948956787586212,
+                    "cumulative_ratio": 0.027209908681267644
+                  },
+                  "contact": {
+                    "rms": 0.16458790004253387,
+                    "hidden_rms": 6.359626770019531,
+                    "ratio": 0.02588011938348835,
+                    "max": 1.8860288858413696,
+                    "count": 88,
+                    "nonzero_tokens": 88,
+                    "cumulative": 0.17558401823043823,
+                    "cumulative_ratio": 0.016188276614530844
+                  },
+                  "total": {
+                    "rms": 0.4156917929649353,
+                    "hidden_rms": 6.326254844665527,
+                    "ratio": 0.06570898630735025,
+                    "max": 2.8230063915252686,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 0.5819981694221497,
+                    "cumulative_ratio": 0.05395350292365244
+                  }
+                },
+                "13": {
+                  "geometry": {
+                    "rms": 0.4013950228691101,
+                    "hidden_rms": 5.662734031677246,
+                    "ratio": 0.0708836086285728,
+                    "max": 3.144284725189209,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 0.4916968047618866,
+                    "cumulative_ratio": 0.04558221380594841
+                  },
+                  "appearance": {
+                    "rms": 0.27279892563819885,
+                    "hidden_rms": 5.749591827392578,
+                    "ratio": 0.04744665948955064,
+                    "max": 1.84375,
+                    "count": 98,
+                    "nonzero_tokens": 98,
+                    "cumulative": 0.35739561915397644,
+                    "cumulative_ratio": 0.03297675368184929
+                  },
+                  "contact": {
+                    "rms": 0.1715703010559082,
+                    "hidden_rms": 5.761641502380371,
+                    "ratio": 0.029778024367712822,
+                    "max": 2.1273691654205322,
+                    "count": 88,
+                    "nonzero_tokens": 88,
+                    "cumulative": 0.2317778468132019,
+                    "cumulative_ratio": 0.02136916523010765
+                  },
+                  "total": {
+                    "rms": 0.5663360953330994,
+                    "hidden_rms": 5.662734031677246,
+                    "ratio": 0.10001107100651806,
+                    "max": 3.9921875,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 0.7040576934814453,
+                    "cumulative_ratio": 0.06526889742864107
+                  }
+                },
+                "18": {
+                  "geometry": {
+                    "rms": 0.48362764716148376,
+                    "hidden_rms": 4.983214855194092,
+                    "ratio": 0.09705133356981191,
+                    "max": 3.953667163848877,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 0.5513943433761597,
+                    "cumulative_ratio": 0.051116408745698776
+                  },
+                  "appearance": {
+                    "rms": 0.3679652512073517,
+                    "hidden_rms": 5.002236843109131,
+                    "ratio": 0.07356014174223778,
+                    "max": 2.328125,
+                    "count": 98,
+                    "nonzero_tokens": 98,
+                    "cumulative": 0.4211997091770172,
+                    "cumulative_ratio": 0.03886393205735665
+                  },
+                  "contact": {
+                    "rms": 0.2538261115550995,
+                    "hidden_rms": 5.001620769500732,
+                    "ratio": 0.050748771898681294,
+                    "max": 3.235746383666992,
+                    "count": 88,
+                    "nonzero_tokens": 88,
+                    "cumulative": 0.28883880376815796,
+                    "cumulative_ratio": 0.026630000267294056
+                  },
+                  "total": {
+                    "rms": 0.6867302656173706,
+                    "hidden_rms": 4.983214855194092,
+                    "ratio": 0.13780868085621065,
+                    "max": 4.2420654296875,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 0.7612209320068359,
+                    "cumulative_ratio": 0.07056815285407872
+                  }
+                },
+                "23": {
+                  "geometry": {
+                    "rms": 0.4831080436706543,
+                    "hidden_rms": 6.924778461456299,
+                    "ratio": 0.06976512625778002,
+                    "max": 4.71916389465332,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 0.6028274893760681,
+                    "cumulative_ratio": 0.055884462218846166
+                  },
+                  "appearance": {
+                    "rms": 0.34641730785369873,
+                    "hidden_rms": 6.963868618011475,
+                    "ratio": 0.049744951672080484,
+                    "max": 2.859375,
+                    "count": 98,
+                    "nonzero_tokens": 98,
+                    "cumulative": 0.4675833284854889,
+                    "cumulative_ratio": 0.04314373042877751
+                  },
+                  "contact": {
+                    "rms": 0.2891218662261963,
+                    "hidden_rms": 6.963844299316406,
+                    "ratio": 0.041517566131479625,
+                    "max": 3.3608856201171875,
+                    "count": 88,
+                    "nonzero_tokens": 88,
+                    "cumulative": 0.338234007358551,
+                    "cumulative_ratio": 0.031184077723836353
+                  },
+                  "total": {
+                    "rms": 0.6713336706161499,
+                    "hidden_rms": 6.924778461456299,
+                    "ratio": 0.09694659177226107,
+                    "max": 4.669677257537842,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 0.8025866150856018,
+                    "cumulative_ratio": 0.07440291320245745
+                  }
+                },
+                "28": {
+                  "geometry": {
+                    "rms": 0.44094350934028625,
+                    "hidden_rms": 7.981631278991699,
+                    "ratio": 0.05524478567443792,
+                    "max": 4.42694091796875,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 0.7008844017982483,
+                    "cumulative_ratio": 0.06497472089836613
+                  },
+                  "appearance": {
+                    "rms": 0.31640878319740295,
+                    "hidden_rms": 8.076981544494629,
+                    "ratio": 0.039174137201424104,
+                    "max": 2.828125,
+                    "count": 98,
+                    "nonzero_tokens": 98,
+                    "cumulative": 0.5454739928245544,
+                    "cumulative_ratio": 0.05033067149455019
+                  },
+                  "contact": {
+                    "rms": 0.23995999991893768,
+                    "hidden_rms": 8.053945541381836,
+                    "ratio": 0.029794092682400623,
+                    "max": 2.9330084323883057,
+                    "count": 88,
+                    "nonzero_tokens": 88,
+                    "cumulative": 0.3959484100341797,
+                    "cumulative_ratio": 0.03650515833567948
+                  },
+                  "total": {
+                    "rms": 0.6168521642684937,
+                    "hidden_rms": 7.981631278991699,
+                    "ratio": 0.0772839714974179,
+                    "max": 4.597820281982422,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 0.9315020442008972,
+                    "cumulative_ratio": 0.08635387687744954
+                  }
+                }
+              }
+            },
+            "uncond": {
+              "rms": 1.3459415435791016,
+              "max_abs": 5.75,
+              "finite": true,
+              "residuals": {
+                "3": {
+                  "geometry": {
+                    "rms": 0.28343838453292847,
+                    "hidden_rms": 10.716686248779297,
+                    "ratio": 0.026448323479211125,
+                    "max": 2.5835702419281006,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 0.28343838453292847,
+                    "cumulative_ratio": 0.026448323479211125
+                  },
+                  "appearance": {
+                    "rms": 0.242747500538826,
+                    "hidden_rms": 10.757081985473633,
+                    "ratio": 0.02256629640516195,
+                    "max": 1.6875,
+                    "count": 98,
+                    "nonzero_tokens": 98,
+                    "cumulative": 0.242747500538826,
+                    "cumulative_ratio": 0.02256629640516195
+                  },
+                  "contact": {
+                    "rms": 0.05693048983812332,
+                    "hidden_rms": 10.762161254882812,
+                    "ratio": 0.005289875192335912,
+                    "max": 0.7295639514923096,
+                    "count": 88,
+                    "nonzero_tokens": 88,
+                    "cumulative": 0.05693048983812332,
+                    "cumulative_ratio": 0.005289875192335912
+                  },
+                  "total": {
+                    "rms": 0.4449906647205353,
+                    "hidden_rms": 10.716686248779297,
+                    "ratio": 0.0415231587815891,
+                    "max": 3.5516655445098877,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 0.4449906647205353,
+                    "cumulative_ratio": 0.0415231587815891
+                  }
+                },
+                "8": {
+                  "geometry": {
+                    "rms": 0.27803367376327515,
+                    "hidden_rms": 6.224658012390137,
+                    "ratio": 0.0446664978557619,
+                    "max": 2.0560805797576904,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 0.38186129927635193,
+                    "cumulative_ratio": 0.0356324044962918
+                  },
+                  "appearance": {
+                    "rms": 0.17677804827690125,
+                    "hidden_rms": 6.2503838539123535,
+                    "ratio": 0.028282750693183287,
+                    "max": 1.2265625,
+                    "count": 98,
+                    "nonzero_tokens": 98,
+                    "cumulative": 0.29448965191841125,
+                    "cumulative_ratio": 0.027376350976602223
+                  },
+                  "contact": {
+                    "rms": 0.16458743810653687,
+                    "hidden_rms": 6.239579200744629,
+                    "ratio": 0.02637797082323998,
+                    "max": 1.903905987739563,
+                    "count": 88,
+                    "nonzero_tokens": 88,
+                    "cumulative": 0.17558500170707703,
+                    "cumulative_ratio": 0.016315031669629908
+                  },
+                  "total": {
+                    "rms": 0.41565653681755066,
+                    "hidden_rms": 6.224658012390137,
+                    "ratio": 0.06677580294213584,
+                    "max": 2.822289228439331,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 0.5816593170166016,
+                    "cumulative_ratio": 0.054276042380437935
+                  }
+                },
+                "13": {
+                  "geometry": {
+                    "rms": 0.4016529619693756,
+                    "hidden_rms": 5.57086706161499,
+                    "ratio": 0.0720988236708949,
+                    "max": 3.1576926708221436,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 0.4917232096195221,
+                    "cumulative_ratio": 0.045883885951735565
+                  },
+                  "appearance": {
+                    "rms": 0.27305251359939575,
+                    "hidden_rms": 5.650934219360352,
+                    "ratio": 0.04831988888915141,
+                    "max": 1.84375,
+                    "count": 98,
+                    "nonzero_tokens": 98,
+                    "cumulative": 0.3572314977645874,
+                    "cumulative_ratio": 0.033208959292770374
+                  },
+                  "contact": {
+                    "rms": 0.17182162404060364,
+                    "hidden_rms": 5.657876014709473,
+                    "ratio": 0.03036857357670934,
+                    "max": 2.1273691654205322,
+                    "count": 88,
+                    "nonzero_tokens": 88,
+                    "cumulative": 0.23194165527820587,
+                    "cumulative_ratio": 0.021551587063701867
+                  },
+                  "total": {
+                    "rms": 0.5669782161712646,
+                    "hidden_rms": 5.57086706161499,
+                    "ratio": 0.10177557818206096,
+                    "max": 3.9765625,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 0.7041409015655518,
+                    "cumulative_ratio": 0.06570509626012035
+                  }
+                },
+                "18": {
+                  "geometry": {
+                    "rms": 0.4830893278121948,
+                    "hidden_rms": 4.973837375640869,
+                    "ratio": 0.09712608019275051,
+                    "max": 3.953667163848877,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 0.5511530041694641,
+                    "cumulative_ratio": 0.0514294242991619
+                  },
+                  "appearance": {
+                    "rms": 0.3672730326652527,
+                    "hidden_rms": 4.995211124420166,
+                    "ratio": 0.0735250269742873,
+                    "max": 2.3125,
+                    "count": 98,
+                    "nonzero_tokens": 98,
+                    "cumulative": 0.4206348955631256,
+                    "cumulative_ratio": 0.03910306681041858
+                  },
+                  "contact": {
+                    "rms": 0.25429245829582214,
+                    "hidden_rms": 4.996131896972656,
+                    "ratio": 0.050897867298080636,
+                    "max": 3.235746383666992,
+                    "count": 88,
+                    "nonzero_tokens": 88,
+                    "cumulative": 0.28922367095947266,
+                    "cumulative_ratio": 0.02687412538334262
+                  },
+                  "total": {
+                    "rms": 0.6860379576683044,
+                    "hidden_rms": 4.973837375640869,
+                    "ratio": 0.13792931007920414,
+                    "max": 4.2420654296875,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 0.7609104514122009,
+                    "cumulative_ratio": 0.07100240071868054
+                  }
+                },
+                "23": {
+                  "geometry": {
+                    "rms": 0.48290112614631653,
+                    "hidden_rms": 6.9110589027404785,
+                    "ratio": 0.06987368114527706,
+                    "max": 4.691737174987793,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 0.6024975180625916,
+                    "cumulative_ratio": 0.05622050548799262
+                  },
+                  "appearance": {
+                    "rms": 0.3455401360988617,
+                    "hidden_rms": 6.949795722961426,
+                    "ratio": 0.04971946656751822,
+                    "max": 2.828125,
+                    "count": 98,
+                    "nonzero_tokens": 98,
+                    "cumulative": 0.4666273593902588,
+                    "cumulative_ratio": 0.04337861885039015
+                  },
+                  "contact": {
+                    "rms": 0.2903117835521698,
+                    "hidden_rms": 6.95053243637085,
+                    "ratio": 0.041768279798684485,
+                    "max": 3.378762722015381,
+                    "count": 88,
+                    "nonzero_tokens": 88,
+                    "cumulative": 0.33919963240623474,
+                    "cumulative_ratio": 0.031517798736972025
+                  },
+                  "total": {
+                    "rms": 0.6712399125099182,
+                    "hidden_rms": 6.9110589027404785,
+                    "ratio": 0.0971254798948028,
+                    "max": 4.663172245025635,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 0.8022307753562927,
+                    "cumulative_ratio": 0.07485810041771748
+                  }
+                },
+                "28": {
+                  "geometry": {
+                    "rms": 0.4412720203399658,
+                    "hidden_rms": 8.016637802124023,
+                    "ratio": 0.05504452505301536,
+                    "max": 4.457672119140625,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 0.700730562210083,
+                    "cumulative_ratio": 0.06538686921900891
+                  },
+                  "appearance": {
+                    "rms": 0.3174154758453369,
+                    "hidden_rms": 8.119330406188965,
+                    "ratio": 0.03909379960734037,
+                    "max": 3.0,
+                    "count": 98,
+                    "nonzero_tokens": 98,
+                    "cumulative": 0.5450838208198547,
+                    "cumulative_ratio": 0.05067208947146969
+                  },
+                  "contact": {
+                    "rms": 0.24099068343639374,
+                    "hidden_rms": 8.100970268249512,
+                    "ratio": 0.029748372782075143,
+                    "max": 2.962785243988037,
+                    "count": 88,
+                    "nonzero_tokens": 88,
+                    "cumulative": 0.39734694361686707,
+                    "cumulative_ratio": 0.03692073870725455
+                  },
+                  "total": {
+                    "rms": 0.6180872917175293,
+                    "hidden_rms": 8.016637802124023,
+                    "ratio": 0.077100563474848,
+                    "max": 4.630043029785156,
+                    "count": 124,
+                    "nonzero_tokens": 124,
+                    "cumulative": 0.9318036437034607,
+                    "cumulative_ratio": 0.08694885919699286
+                  }
+                }
+              }
+            },
+            "combined": {
+              "rms": 1.3659535646438599,
+              "max_abs": 5.75,
+              "finite": true
+            },
+            "combined_matches_native_formula": true,
+            "combined_formula_max_abs": 0.0
+          }
+        ]
+      }
+    },
+    "native_weight_checksum": {
+      "expected": "4b40da9b51ddcb44bc4cae009242f7f29936883bbd9fd05b16da789519848d5e",
+      "before": "4b40da9b51ddcb44bc4cae009242f7f29936883bbd9fd05b16da789519848d5e",
+      "after": "4b40da9b51ddcb44bc4cae009242f7f29936883bbd9fd05b16da789519848d5e",
+      "matches_checkpoint": true,
+      "unchanged": true
+    }
+  }
+}

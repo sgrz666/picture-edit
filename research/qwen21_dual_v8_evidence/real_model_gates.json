@@ -1,0 +1,88 @@
+{
+  "zero_init_exact": true,
+  "backbone_before": "4b40da9b51ddcb44bc4cae009242f7f29936883bbd9fd05b16da789519848d5e",
+  "warm_tensors": 178,
+  "frozen_coverage": {
+    "required": true,
+    "complete": true,
+    "missing": [],
+    "scopes": {
+      "geometry_encoder.spatial_encoder.": {
+        "expected_tensor_count": 141,
+        "matched_tensor_count": 141,
+        "expected_numel": 5061152,
+        "matched_numel": 5061152,
+        "missing": [],
+        "complete": true
+      },
+      "reasoner.person_reasoner.": {
+        "expected_tensor_count": 36,
+        "matched_tensor_count": 36,
+        "expected_numel": 15219712,
+        "matched_numel": 15219712,
+        "missing": [],
+        "complete": true
+      },
+      "reasoner.shared_role_offset": {
+        "expected_tensor_count": 1,
+        "matched_tensor_count": 1,
+        "expected_numel": 512,
+        "matched_numel": 512,
+        "missing": [],
+        "complete": true
+      }
+    },
+    "expected_tensor_count": 178,
+    "matched_tensor_count": 178,
+    "expected_numel": 20281376,
+    "matched_numel": 20281376
+  },
+  "precision_policy": {
+    "name": "qwen21_bf16_full_precision_reduction_v1",
+    "allow_bf16_reduced_precision_reduction": false
+  },
+  "update_1": {
+    "loss": 0.07006978988647461,
+    "gradient_norms": {
+      "final_heads": 0.008073995317122506,
+      "query": 0.0,
+      "global": 0.0,
+      "relative": 0.0,
+      "mutual": 0.0,
+      "contact": 0.0,
+      "appearance": 0.0,
+      "depth": 0.0
+    }
+  },
+  "update_2": {
+    "loss": 0.06981919705867767,
+    "gradient_norms": {
+      "final_heads": 0.007979678127683049,
+      "query": 0.0003094130059410082,
+      "global": 1.0415339800670075e-05,
+      "relative": 3.932629079578767e-06,
+      "mutual": 9.831899584808439e-05,
+      "contact": 0.0002612817893419105,
+      "appearance": 0.0008359154071173966,
+      "depth": 0.00029021804166447826
+    }
+  },
+  "native_cache_control": {
+    "prefix_exact": true,
+    "disabled_exact": true,
+    "target_changed": true,
+    "cached_close": true,
+    "extract_close": true,
+    "cached_max_abs": 0.015625,
+    "cached_mean_abs": 4.901708962279372e-06,
+    "cached_max_relative": 0.0078125,
+    "native_cached_close": true,
+    "native_cached_max_abs": 0.015625,
+    "native_cached_mean_abs": 4.624969733413309e-06,
+    "adapter_increment_cache_max_abs": 0.015625,
+    "atol": 0.01,
+    "rtol": 0.01
+  },
+  "backbone_after": "4b40da9b51ddcb44bc4cae009242f7f29936883bbd9fd05b16da789519848d5e",
+  "passed": true
+}

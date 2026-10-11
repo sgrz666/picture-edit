@@ -2,7 +2,7 @@
 
 日期：2026-10-11。远端：`ssh sg`，项目 `/home/shangguanrz/project/pic-edit`。
 
-**本轮已完成研究和设计，没有实施新版网络，也没有启动双人全量训练。** 本报告区分论文提出的机制、公开代码实现和我们自己的设计推论。详细实施设计见 [设计规格](D:/codeplus/pictureedit/docs/superpowers/specs/2026-10-11-qwen21-dual-v8-design.md)。
+**此报告记录研究与设计阶段。** 后续实现及单样本结果见 [V8 实验报告](C:/Users/sg/.codex/worktrees/qwen21-dual-v8/pictureedit/reports/Qwen21_dual_v8_pilot_20261011.md)，复现见 [运行文档](C:/Users/sg/.codex/worktrees/qwen21-dual-v8/pictureedit/docs/experiments/2026-10-11-qwen21-dual-v8-pilot.md)。 本报告区分论文提出的机制、公开代码实现和我们自己的设计推论。详细实施设计见 [设计规格](C:/Users/sg/.codex/worktrees/qwen21-dual-v8/pictureedit/docs/superpowers/specs/2026-10-11-qwen21-dual-v8-design.md)。
 
 ## 1. 结论
 

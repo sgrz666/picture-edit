@@ -646,3 +646,38 @@ class Qwen21FullControlContext(AbstractContextManager):
         self.handles.clear()
         self.transformer._pic_edit_qwen21_control_active = False
         return False
+
+
+def create_control_context(
+    transformer, adapter=None, prepared_or_factory=None, *, mode="single_v6",
+    generation=None, dual_adapter=None, dual_prepared=None, sigma=None,
+    dual_strengths=None, single_context=None, single_context_factory=None,
+    legacy_dual_context_factory=None, **single_context_kwargs,
+):
+    """Unified full entry retaining the original single conditioning protocol.
+
+    Supply the original adapter and prepared condition/factory with exactly the
+    existing Qwen21FullControlContext keyword arguments, or its existing context.
+    A B-missing dual input selects that original context without converting any
+    dual geometry fields or overriding single strengths.
+    """
+    from .dual.api import select_control_context
+
+    if single_context is not None:
+        if not isinstance(single_context,Qwen21FullControlContext):
+            raise TypeError("single_context must be the original Qwen21FullControlContext")
+        if single_context.transformer is not transformer:
+            raise ValueError("single_context must belong to the supplied transformer")
+    if adapter is not None or prepared_or_factory is not None:
+        if adapter is None or prepared_or_factory is None:
+            raise ValueError("supply both the original single adapter and prepared condition/factory")
+        if single_context is not None or single_context_factory is not None:
+            raise ValueError("original single adapter arguments conflict with supplied single context")
+        single_context_factory = lambda: Qwen21FullControlContext(
+            transformer,adapter,prepared_or_factory,**single_context_kwargs)
+    elif single_context_kwargs:
+        raise ValueError("single context keyword arguments require the original adapter and prepared condition")
+    return select_control_context(mode,transformer,generation=generation,adapter=dual_adapter,
+        prepared=dual_prepared,sigma=sigma,strengths=dual_strengths,
+        single_context=single_context,single_context_factory=single_context_factory,
+        legacy_dual_context_factory=legacy_dual_context_factory)
