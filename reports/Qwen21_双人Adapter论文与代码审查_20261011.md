@@ -214,3 +214,28 @@ cd /home/shangguanrz/project/pic-edit/research/qwen21_dual_upgrade_20261011
 远端项目 HEAD 快照为 `3236657b08f0fe51d881a78c114bf57b956e953e`，工作区存在未提交内容，以保存的实际源码 hash 为准。已安装 Diffusers 为 `0.41.0.dev0`；模型配置记录的版本是 `0.37.0.dev0`。研究下载没有执行外部仓库代码或下载其模型权重。
 
 新版使用方式、具体张量协议、测试矩阵和阶段验收已经写入设计规格。它们是待实施接口，不能当作现有 CLI 运行。
+
+## 9. 后续实施前提核查
+
+本节来自当前远端文件、检查点内容和实际命令，不依赖文件夹名称推断。[核查记录](D:/codeplus/pictureedit/research/qwen21_dual_upgrade_20261011/readiness.json)。
+
+| 项目 | 当前证据 | 实施影响 |
+|---|---|---|
+| 单人 best/last | best 实际 step=19500；last=20000；键与尺寸都匹配当前轻量 BodyAdapter | 默认采用 best 的已训练几何副本；不是 full 全分支权重 |
+| 可迁移几何 | spatial encoder 141/141、person reasoner 36/36 参数张量均有 Adam 状态和非零 momentum | 对应约 5.06M/15.22M 参数作为 warm start |
+| 交互参数 | relative/contact encoders、cross-person/contact reasoner、dual fusion 在该单人 optimizer 中无状态 | 不将这些参数宣称为经本轮 iPER 训练的双人模块 |
+| 新几何语义 | global32/relative14 与旧编码语义不同 | 新建编码器，禁止仅按 tensor shape 转换 |
+| SMPL-X pilot | 当前几何/导出测试 12/12 通过 | 两帧数据接口可用；仍是拟合伪标注，非精细手指真值 |
+| CUDA | 实际分配 CUDA tensor 并回读成功；设备 RTX 6000D，CUDA 报告约 83.05GiB 总显存 | CUDA 可用，但尚未证明新版真实前后向的显存及梯度 |
+| NVML | 内核驱动 580.173.02、NVML 580.178；nvidia-smi 报 mismatch | GPU 监控存在故障；本轮没有修改驱动或重启 |
+
+新 global/relative、Mutual/Graph、appearance routing/controller 和输出头均需要新训练。旧 A role 条件可作为两人共享的初始化偏置；不使用两套不对称 slot embedding。
+
+复核 SMPL-X 已有测试：
+
+```bash
+cd /home/shangguanrz/project/pic-edit
+/home/shangguanrz/nihaochen/envs/qwen21/bin/python -m unittest discover -s research/hi4d_smplx_pilot_20261011 -p 'test_*.py'
+```
+
+当前结果 12/12。这与 §8 的 10/10 静态核查范围不同，两者都不能代替尚未实现的 dual_v8 前后向与生成质量测试。

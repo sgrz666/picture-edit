@@ -77,6 +77,14 @@ flowchart TD
 
 兼容规则：旧检查点仍由旧 loader 加载。新检查点必须含 `architecture=dual_v8`、schema 版本、几何/appearance encoder 版本、注入索引和加载报告；不能把旧 300 步权重改名当作新版。只迁移形状和语义都一致的几何张量；旧输出头、1536 控制核心及不同约定的 global encoder 不做盲目转换。
 
+### 3.1 已核实的 warm start
+
+首版几何副本采用 `experiments/qwen21_iper_body/full_20k/checkpoint_best.pt`，文件中的实际 step 为 **19500**；`checkpoint_last.pt` 的实际 step 为 20000。两个 state dict 均与当前轻量 BodyAdapter 的键与尺寸一致。这是轻量单人 Body 检查点，不是 full 全分支检查点。
+
+新 dual 可拷贝 `condition_injector.spatial_encoder` 的对应 stem/融合参数及 `reasoner.person_reasoner`，两组分别约 5.06M 与 15.22M 参数。两组在最佳检查点中分别有 141/141、36/36 个参数张量的 Adam 更新记录。RoleFiLM 使用同一已学 A 条件处理两个人；旧 reasoner 的 A role offset 若保留，也作为两人共享的同一个 offset，不能继承 A/B 两套不同向量。
+
+该检查点的 relative encoder、contact encoders、cross-person reasoner、contact reasoner、dual fusion 均没有本轮单人训练的 Adam 状态。它们的张量存在不能证明其双人能力受过训练。新 global32、relative14、部位图关系、外观 resampler/controller 与零输出头仍按新参数初始化。已有几何输出桥及旧 single 的后处理层不进入新逐人物状态路径。
+
 ## 4. 数据契约
 
 ### 4.1 三类对象分离
@@ -345,7 +353,7 @@ L=L_{FM}+\lambda_{bg}L_{bg}+\lambda_{budget}L_{budget}.
 
 ### 10.2 单样本试验
 
-先用已拟合的 `pair14 / talk14 frame32 → hug14 frame62` 做新版 overfit，最多先跑 300 步，与旧 300 步权重分目录。使用当前 body 几何可迁移权重副本初始化；global/relative、router、graph 和输出头作为新参数。全程冻结 Qwen 和旧 single。
+先用已拟合的 `pair14 / talk14 frame32 → hug14 frame62` 做新版 overfit，最多先跑 300 步，与旧 300 步权重分目录。按 §3.1 使用已核实的单人 body 几何权重副本初始化；global/relative、router、graph 和输出头作为新参数。全程冻结 Qwen 和旧 single。
 
 首轮训练 controller/新 global-relative/appearance/graph；复用的几何编码先冻结。若新头已学到且姿态仍不足，才以低学习率开放新 dual 几何副本。记录每个参数组梯度与实际更新，不能称旧单人 checkpoint 为已训练双人参数。
 
