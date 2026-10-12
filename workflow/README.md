@@ -58,12 +58,17 @@ bash run.sh
 
 每个阶段的 `stage.json` 记两样东西：`identity`（设置、workflow 代码哈希、模型文件身份、各输入的内容 SHA256）与产物清单（相对 run 目录的路径 + SHA256）。绝对路径只放在 `runtime` 里，不参与指纹，所以改 run 目录名、搬仓库、换机器都不会让内容失效；改设置、改代码、改输入内容、改产物内容才会。
 
-失效时不再只说一句"stale"，而是逐条说明原因，例如：
+失效时不再只说一句"stale"，而是逐条说明原因。下面是实测输出：改了 `run.py` 之后复验既有 run，会指名是哪个代码文件的哈希变了（`bash run.sh --name hard_02 --pair …/hard_02 --resolution 768 --verify`）：
 
 ```
-prompt: not reusable -> artifact content changed after the stage wrote it: pe_compiled_prompt -> .../pe_compiled_prompt.txt (recorded c55965f6f84a..., on disk 17b9c6084d0b...)
-geometry: not reusable -> workflow code changed: pose_transfer/geometry.py (f0c0fc90... -> 8a1c22b4...)
+WORKFLOW_FAILED: Prepared inputs are not reusable:
+  request identity changed (bf07d16f... != a204fb7e...)
+  workflow code changed: run.py (52794b78... -> d9809836...)
 ```
+
+产物在阶段写完后被改动、或上游输入哈希变了，会分别报 `artifact content changed after the stage wrote it: <name> -> <path> (recorded …, on disk …)` 与 `inputs_sha256.<name> changed: …`（这两种措辞由 `tests/test_workflow_common.py` 断言）。
+
+代码哈希在指纹里，意味着**任何一次 workflow 代码改动都会让全部既有 run 变成 stale**，即使产物一个字节都没变。这是设计取舍：报告里的数字必须绑定产出它的那份代码。要判断产物本身是否完好，看 `stage.json` 里的哈希，或读 `report.py` 的状态列。
 
 收尾会对本轮涉及的每个阶段重跑一次校验，把实测结果写进 `run.json` 的 `verification.status`（`validated` / `mismatch`）并打印 `VERIFICATION …`；这句结论是量出来的，不是走到结尾就写上的。
 
@@ -136,9 +141,12 @@ PE 提示词中的源图 `<image1>` 保持为生成图 1，骨架 `<image3>` 转
 | `hard_04` | source_person | auto | 1.000 | 0.064 | 0.127 | 0.020 | 1 |
 | `hard_05` | source_person | auto | 0.056 | 1.476 | 0.921 | 1.685 | 1 |
 | `hard_05_torso` | source_torso | auto | 0.389 | 0.328 | 0.341 | 0.029 | 1 |
+| `hard_05_manual` | source_torso | auto（提示词手工） | 0.667 | 0.196 | 0.359 | 0.052 | 1 |
 | `medium_01` | source_person | largest（A 有 2 人） | 1.000 | 0.033 | 0.060 | 0.014 | 2 |
 | `medium_02` | source_person | auto | 1.000 | 0.040 | 0.070 | 0.024 | 1 |
 
-八次运行收尾自检全部 `VERIFICATION validated`。`hard_05` 与 `hard_05_torso` 是同一对图的定标 A/B：A 框长宽比 0.39、B 框 0.88，`source_person` 的内切缩放被宽度主导（尺度 0.410），请求骨架躯干只有 95.9px，而生成人物躯干 225.6px，错配 2.35 倍；`source_torso` 把尺度提到 0.977，躯干比回到 1.02，指标随之改善 4~7 倍。其余四对 B 框都比 A 框窄，两种定标差不多，所以默认值没有改。`hard_05` 即便修好尺度，body PCK 仍只有 0.389，说明剩下的偏差是真实的姿态不一致而不是尺度问题——它仍是这套基线最难的一对。
+九次运行收尾自检全部 `VERIFICATION validated`。这些数字分属两份代码状态：7 对的批处理跑在加入 `--framing` 之前的 `run.py`（`52794b78…`），`hard_05_torso` 与 `hard_05_manual` 跑在其后的版本；因此现在对它们执行 `--verify` 都会报 `workflow code changed`，产物本身完好。全测试集尚未在同一份代码状态下重跑过。
+
+`hard_05` 的三行是同一对图的两个变量对照。定标：A 框长宽比 0.39、B 框 0.88，`source_person` 的内切缩放被宽度主导（尺度 0.410），请求骨架躯干只有 95.9px，而生成人物躯干 225.6px，错配 2.35 倍；`source_torso` 把尺度提到 0.977，躯干比回到 1.02，指标随之改善 4~7 倍。其余四对 B 框都比 A 框窄，两种定标差不多，所以默认值没有改。提示词：`hard_05_manual` 用的是 `--prompt-file` 引入的一段手写提示词（与 legacy run `testset_hard05_promptv2` 里那份逐字节相同，来源哈希 `17b9c608…`），几何与 PE 阶段照常跑，PE 自己的产物同时保留在 `prompt/pe_compiled_prompt.txt`；在同一份躯干定标下，手写提示词的 body PCK 0.667 高于 PE 编译版的 0.389。即便修好尺度与提示词，`hard_05` 的 body PCK 仍明显低于其余各对，它依然是这套基线最难的一对。
 
 schema v1 的旧 run（`demo`、`testset_hard05*`、`testset_medium02_768`）是整改前的冻结证据：记录格式已变，不再可 `--verify`，`report.py` 会标为 `legacy`；其中 `testset_hard05_promptv2` 与 `testset_hard05_fitgeo` 的提示词是手工写入的，几何与 PE 阶段记录逐字节相同，两者只差提示词文本。整改前的整树备份在 `/data/shangguanrz/pic-edit-archive/workflow_runs_backup_20261012/`（含 `SHA256SUMS`）。
