@@ -1,1 +1,422 @@
-../../train_iper_qwen21_full.py
+#!/usr/bin/env python3
+"""Bounded Body/Face training of the complete V6 architecture on Qwen21."""
+from __future__ import annotations
+
+import argparse
+import hashlib
+import json
+import random
+import time
+import signal
+from datetime import datetime
+from importlib.metadata import version
+from pathlib import Path
+
+import numpy as np
+import torch
+
+from src.pose_control.qwen21_full.execution import (
+    ARCHITECTURE, MODEL, ROOT, RUN_ROOT, FaceConditionStore, QwenFullDataset,
+    Qwen21IPERCache, batch_one, frozen_digest, json_write, load_adapter_checkpoint,
+    new_adapter, parameter_groups, precompute, prepare, probe, run_loss,
+    restore_rng, save_checkpoint, seed_all, set_training_phase, transformer_inputs,
+    assert_fp32_training_state, assert_frozen_gradients, capture_rng, checkpoint_provenance,
+    diagnostic_probe, validate_probe_indices, validate_resume_configuration,
+    reconcile_resume_metrics, training_attempt_accounting,
+)
+from src.pose_control.qwen21_full.qwen_adapter import Qwen21FullControlContext
+from src.pose_control.qwen21_full.qwen_runtime import MODEL_REVISION, PROMPT
+from src.pose_control.qwen21_full.face_supervision import FaceSupervisionStore
+
+
+def arguments(argv=None):
+    p = argparse.ArgumentParser(description=__doc__)
+    p.add_argument('--branch', choices=('body', 'face'), required=True)
+    p.add_argument('--model', type=Path, default=MODEL)
+    p.add_argument('--train-pairs', type=Path, default=RUN_ROOT / 'train_pairs.jsonl')
+    p.add_argument('--val-pairs', type=Path, default=RUN_ROOT / 'val_pairs.jsonl')
+    p.add_argument('--dataset-type', choices=('auto', 'iper', 'tiktok_v3'), default='auto')
+    p.add_argument('--tiktok-raw-root', type=Path, default=ROOT / 'datasets/TikTokDataset/TikTok_dataset/TikTok_dataset')
+    p.add_argument('--tiktok-assets-root', type=Path, default=ROOT / 'datasets/TikTokDataset/TikTok_3d_assets_native')
+    p.add_argument('--align-mode', choices=('resize','letterbox'), default='resize')
+    p.add_argument('--single-pass', action='store_true', help='One permutation, no repeated training pairs')
+    p.add_argument('--stop-at-utc', help='Absolute ISO-8601 training deadline; safe stop at update boundary')
+    p.add_argument('--features', type=Path, default=RUN_ROOT / 'face_cache')
+    p.add_argument('--face-supervision', type=Path, default=RUN_ROOT / 'face_supervision.json')
+    p.add_argument('--cache', type=Path, default=RUN_ROOT / 'native_cache')
+    p.add_argument('--output', type=Path)
+    p.add_argument('--resolution', type=int, choices=(512, 1024), default=512)
+    p.add_argument('--max-steps', type=int, default=100)
+    p.add_argument('--warmup-steps', type=int, default=20)
+    p.add_argument('--lr-scale', type=float, default=1.0, help='Scale all branch learning rates; keep group ratios')
+    p.add_argument('--seed', type=int, default=42)
+    p.add_argument('--prompt', default=PROMPT)
+    p.add_argument('--init-checkpoint', type=Path)
+    p.add_argument('--resume', type=Path)
+    p.add_argument('--save-every', type=int, default=20)
+    p.add_argument('--save-steps', nargs='*', type=int, default=[])
+    p.add_argument('--diagnostic-probes', action='store_true')
+    p.add_argument('--diagnostic-pair-indices', nargs='+', type=int, default=[0],
+                   help='Distinct training pair indices for before/after and fixed-noise diagnostic probes')
+    p.add_argument('--require-active-gradients', action='store_true')
+    p.add_argument('--face-evaluator-range', choices=('legacy','normalized'), default='legacy')
+    p.add_argument('--face-flow-loss', choices=('global','roi'), default='global',
+                   help='Historical whole-image flow or separately normalized face-region flow')
+    p.add_argument('--face-aux-every', type=int, default=4,
+                   help='Identity/perceptual interval; zero disables these terms for a diagnosis')
+    p.add_argument('--face-aux-alignment', choices=('box','five_point'), default='box',
+                   help='Historical square crop or fixed Target five-point alignment for offline losses')
+    p.add_argument('--verify-resume', action='store_true')
+    p.add_argument('--gradient-only', action='store_true', help='One forward/backward, no parameter update')
+    p.add_argument('--precompute-only', action='store_true')
+    return p.parse_args(argv)
+
+
+def parameter_digest(adapter):
+    h = hashlib.sha256()
+    for name, p in adapter.named_parameters():
+        if p.requires_grad:
+            h.update(name.encode())
+            h.update(p.detach().cpu().contiguous().view(torch.uint8).numpy().tobytes())
+    return h.hexdigest()
+
+
+def state_digest(value):
+    """Exact digest of tensors plus optimizer groups and scalar metadata."""
+    h = hashlib.sha256()
+    def visit(item):
+        if torch.is_tensor(item):
+            h.update(str((item.dtype, tuple(item.shape))).encode())
+            h.update(item.detach().cpu().contiguous().reshape(-1).view(torch.uint8).numpy().tobytes())
+        elif isinstance(item, np.ndarray):
+            h.update(str((item.dtype, item.shape)).encode())
+            h.update(item.tobytes())
+        elif isinstance(item, dict):
+            for key in sorted(item, key=str):
+                h.update(repr(key).encode())
+                visit(item[key])
+        elif isinstance(item, (list, tuple)):
+            for element in item:
+                visit(element)
+        else:
+            h.update(repr(item).encode())
+    visit(value)
+    return h.hexdigest()
+
+
+def main():
+    args = arguments()
+    stop = {'reason': None}
+    deadline = datetime.fromisoformat(args.stop_at_utc).timestamp() if args.stop_at_utc else None
+    if args.stop_at_utc and datetime.fromisoformat(args.stop_at_utc).tzinfo is None:
+        raise ValueError('stop-at-utc requires an explicit timezone')
+    def request_stop(signum, frame):
+        stop['reason'] = f'signal_{signum}'
+    def should_stop():
+        if deadline is not None and time.time() >= deadline:
+            stop['reason'] = stop['reason'] or 'training_deadline'
+        return stop['reason'] is not None
+    if args.stop_at_utc:
+        signal.signal(signal.SIGTERM, request_stop)
+        signal.signal(signal.SIGINT, request_stop)
+    # The fixed-noise diagnostic run requires an actual update at every counted
+    # training step; historical runs without this option keep their old behavior.
+    args.require_active_gradients = args.require_active_gradients or args.diagnostic_probes
+    if args.diagnostic_probes:
+        args.face_evaluator_range = 'normalized'
+    args.output = args.output or RUN_ROOT / f'{args.branch}_{args.resolution}_100'
+    args.output.mkdir(parents=True, exist_ok=True)
+    metrics_path = args.output / 'train_metrics.jsonl'
+    if metrics_path.exists() and not (args.resume or args.gradient_only or args.precompute_only):
+        raise FileExistsError('Existing training run: use --resume or a new output directory')
+    if not 0 <= args.warmup_steps <= args.max_steps or args.max_steps <= 0:
+        raise ValueError('Invalid step count')
+    if any(step < 0 or step > args.max_steps for step in args.save_steps):
+        raise ValueError('save-steps must lie between zero and max-steps')
+    if args.face_aux_every < 0:
+        raise ValueError('face-aux-every must be nonnegative')
+    if args.save_every <= 0:
+        raise ValueError('save-every must be positive')
+    if args.init_checkpoint and args.resume:
+        raise ValueError('init-checkpoint and resume are separate initialization modes')
+    if not np.isfinite(args.lr_scale) or args.lr_scale <= 0:
+        raise ValueError('lr-scale must be positive and finite')
+    if args.branch == 'face' and not (args.init_checkpoint or args.resume):
+        raise ValueError('Face training must start from the completed qwen21_full Body checkpoint')
+    seed_all(args.seed)
+    torch.set_num_threads(4)
+    dataset_options = dict(resolution=args.resolution, dataset_type=args.dataset_type,
+                           tiktok_raw_root=args.tiktok_raw_root, tiktok_assets_root=args.tiktok_assets_root,
+                           align_mode=args.align_mode)
+    train = QwenFullDataset(args.train_pairs, **dataset_options)
+    val = QwenFullDataset(args.val_pairs, **dataset_options)
+    validate_probe_indices(train, args.diagnostic_pair_indices)
+    if train.dataset_type != val.dataset_type:
+        raise ValueError('Training and validation must use the same dataset type')
+    if args.branch == 'face' and args.align_mode == 'letterbox' and args.face_flow_loss != 'roi':
+        raise ValueError('Letterbox Face requires --face-flow-loss roi')
+    if args.single_pass and args.max_steps > len(train):
+        raise ValueError('Single-pass max-steps exceeds the locked training pair count')
+    from src.pose_control.qwen21_full.data_runtime import pair_metadata
+    for row in train.samples:
+        meta = pair_metadata(row)
+        if meta['source_appearance'] != meta['target_appearance']:
+            raise ValueError('Different-person A/B examples are inference checks, never reconstruction training targets')
+    store = FaceConditionStore(args.features)
+    cache = Qwen21IPERCache(args.cache, resolution=args.resolution, prompt=args.prompt,
+                          preprocessing='letterbox_v1' if args.align_mode=='letterbox' else 'resize_v1')
+    run_manifest = {
+        'architecture': ARCHITECTURE, 'args': vars(args), 'model_revision': MODEL_REVISION,
+        'train_pairs_sha256': hashlib.sha256(args.train_pairs.read_bytes()).hexdigest(),
+        'val_pairs_sha256': hashlib.sha256(args.val_pairs.read_bytes()).hexdigest(),
+        'train_pairs': len(train), 'val_pairs': len(val), 'micro_batch_size': 1, 'accumulation': 1,
+        'diagnostic_pairs': [{'pair_index': index, **pair_metadata(train.samples[index])}
+                             for index in args.diagnostic_pair_indices],
+        'versions': {key: version(key) for key in ('torch', 'diffusers', 'transformers')},
+        'scope': 'bounded migration acceptance; final 50-pair test set excluded',
+        'training_contract': {
+            'parameter_dtype': 'float32', 'optimizer': 'AdamW', 'optimizer_state_dtype': 'float32',
+            'autocast_dtype': 'bfloat16', 'gradient_checkpointing': True,
+            'frozen_models': ['transformer', 'text_encoder', 'vae', 'face_evaluators'],
+            'warmup_trainable_prefix': f'output_bridges.{"geometry" if args.branch == "body" else "face"}.',
+            'face_loss_coefficients': {'flow': 1.0, 'identity': .10, 'perceptual': .05, 'outside': .02},
+        },
+    }
+    json_write(args.output / ('resume_manifest.json' if args.resume else 'run_manifest.json'), run_manifest)
+    from diffusers import QwenImage21Pipeline
+    pipe = QwenImage21Pipeline.from_pretrained(str(args.model), dtype=torch.bfloat16)
+    for model in (pipe.transformer, pipe.text_encoder, pipe.vae):
+        model.eval().requires_grad_(False)
+    pipe.text_encoder.to('cuda')
+    pipe.vae.to('cuda')
+    precompute(pipe, cache, (train, val), should_stop=should_stop if args.stop_at_utc else None)
+    if args.precompute_only:
+        return
+    pipe.text_encoder.to('cpu')
+    if args.branch == 'body' or args.gradient_only:
+        pipe.vae.to('cpu')
+    torch.cuda.empty_cache()
+    pipe.transformer.to('cuda')
+    pipe.transformer.enable_gradient_checkpointing()
+    adapter = new_adapter('cuda').train()
+    json_write(args.output / 'weight_loading.json', adapter.loading_report)
+    start_step = 0
+    sample_order = []
+    restored = None
+    adapter.initialization_provenance = {'mode': 'legacy_checkpoints',
+                                         'legacy_loading_report': adapter.loading_report,
+                                         'optimizer_state_restored': False}
+    if args.init_checkpoint:
+        initialized = load_adapter_checkpoint(adapter, args.init_checkpoint)
+        adapter.initialization_provenance = {
+            'mode': 'init_checkpoint', 'optimizer_state_restored': False,
+            'legacy_loading_report': adapter.loading_report,
+            **checkpoint_provenance(args.init_checkpoint, initialized),
+        }
+        del initialized
+    if args.resume:
+        restored = load_adapter_checkpoint(adapter, args.resume)
+        previous_manifest_path = args.resume.parent / 'run_manifest.json'
+        previous_manifest = json.loads(previous_manifest_path.read_text()) if previous_manifest_path.exists() else {}
+        validate_resume_configuration(restored, args, previous_manifest)
+        if restored['step'] > args.max_steps:
+            raise ValueError('Resume checkpoint step exceeds max-steps')
+        adapter.initialization_provenance = restored.get('initialization_provenance',
+                                                        adapter.initialization_provenance)
+        run_manifest['resume_source'] = checkpoint_provenance(args.resume, restored)
+        if not args.gradient_only:
+            reconciliation = reconcile_resume_metrics(
+                metrics_path, restored, checkpoint_path=args.resume,
+                checkpoint_sha256=run_manifest['resume_source']['checkpoint_sha256'])
+            run_manifest['resume_reconciliation'] = {
+                'path': str(args.output / 'resume_reconciliation.json'),
+                'last_resume': reconciliation['last_resume'],
+                'discarded_update_attempts': reconciliation['discarded_update_attempts'],
+            }
+            print(json.dumps({'resume_reconciliation': run_manifest['resume_reconciliation']},
+                             default=str), flush=True)
+        start_step = restored['step']
+        sample_order = list(restored['sample_order'])
+    run_manifest['initialization_provenance'] = adapter.initialization_provenance
+    json_write(args.output / ('resume_manifest.json' if args.resume else 'run_manifest.json'), run_manifest)
+    groups, names = parameter_groups(adapter, args.branch, lr_scale=args.lr_scale)
+    optimizer = torch.optim.AdamW(groups, weight_decay=.01)
+    if restored:
+        optimizer.load_state_dict(restored['optimizer_state_dict'])
+        restore_rng(restored)
+    assert_fp32_training_state(adapter, optimizer)
+    json_write(args.output / 'optimizer_parameters.json', names)
+    evaluators = None
+    supervision = None
+    if args.branch == 'face' and not args.gradient_only and args.face_aux_every:
+        supervision = FaceSupervisionStore(args.face_supervision)
+        evaluators = tuple(torch.jit.load(str(ROOT / 'models/face_eval' / filename), map_location='cuda').eval()
+                           for filename in ('identity_encoder.ts', 'perceptual_encoder.ts'))
+        for evaluator in evaluators:
+            for parameter in evaluator.parameters():
+                parameter.requires_grad_(False)
+    base_versions = [p._version for p in pipe.transformer.parameters()]
+    frozen_before = frozen_digest(adapter, args.branch)
+    set_training_phase(adapter, args.branch, warmup=start_step < args.warmup_steps and not args.gradient_only)
+    optimizer.zero_grad(set_to_none=True)
+    before_path = args.output / 'probe_before.json'
+    if args.resume and before_path.exists():
+        before = json.loads(before_path.read_text())
+    else:
+        before = probe(pipe, adapter, cache, train, store, args.branch,
+                       pair_indices=args.diagnostic_pair_indices, face_flow_loss=args.face_flow_loss)
+        json_write(before_path, before)
+    def save_probes(step):
+        if not args.diagnostic_probes:
+            return
+        json_write(args.output / f'diagnostic_probe_{step:06d}.json',
+                   diagnostic_probe(pipe, adapter, cache, train, store, args.branch, step=step,
+                                    pair_indices=args.diagnostic_pair_indices,
+                                    face_flow_loss=args.face_flow_loss))
+    if start_step == 0 and 0 in args.save_steps:
+        save_checkpoint(args.output / 'checkpoint_step_000000.pt', adapter, optimizer,
+                        step=0, branch=args.branch, args=args, sample_order=sample_order)
+        save_probes(0)
+    if args.branch == 'body' and not (args.init_checkpoint or args.resume):
+        batch = batch_one(train, 0)
+        pair = cache.pair(pipe, batch, torch.device('cuda'))
+        sigma = torch.tensor([.5], device='cuda', dtype=pair['target_latent'].dtype)
+        inputs = transformer_inputs(pair, pair['target_latent'] * .5, sigma)
+        tokens = (args.resolution // 16) ** 2
+        with torch.no_grad(), torch.autocast('cuda', dtype=torch.bfloat16):
+            native = pipe.transformer(**inputs)[0][:, -tokens:]
+            prepared = prepare(adapter, batch, pair, [train.samples[0]], store, with_face=True)
+            with Qwen21FullControlContext(pipe.transformer, adapter, prepared,
+                                         geometry_strength=0, interaction_strength=0, face_strength=0,
+                                         hand_strength=0, hand_mode='off'):
+                off = pipe.transformer(**inputs)[0][:, -tokens:]
+            with Qwen21FullControlContext(pipe.transformer, adapter, prepared,
+                                         face_strength=1, hand_strength=0, hand_mode='off'):
+                zero = pipe.transformer(**inputs)[0][:, -tokens:]
+        acceptance = {'disabled_equal': torch.equal(native, off),
+                      'zero_max_abs': float((native.float() - zero.float()).abs().max())}
+        json_write(args.output / 'native_parity.json', acceptance)
+        if not acceptance['disabled_equal'] or acceptance['zero_max_abs'] > .001:
+            raise AssertionError(acceptance)
+        del native, off, zero, prepared, inputs, pair, batch
+    torch.cuda.reset_peak_memory_stats()
+    started = time.perf_counter()
+    elapsed_offset = 0.
+    if args.resume and metrics_path.exists():
+        history = [json.loads(line) for line in metrics_path.read_text().splitlines()]
+        elapsed_offset = float(history[-1]['elapsed_seconds']) if history else 0.
+
+    def train_step(step, *, update=True):
+        epoch, offset = divmod(step, len(train))
+        index = int(torch.randperm(len(train), generator=torch.Generator().manual_seed(args.seed + epoch))[offset])
+        optimizer.zero_grad(set_to_none=True)
+        with torch.autocast('cuda', dtype=torch.bfloat16):
+            row = run_loss(pipe, adapter, cache, train, store, index, args.branch,
+                           seed=args.seed + step + (100000 if args.branch == 'face' else 0),
+                           auxiliary=args.branch == 'face' and args.face_aux_every > 0
+                                     and (step + 1) % args.face_aux_every == 0 and not args.gradient_only,
+                           evaluators=evaluators, supervision=supervision,
+                           require_active_face=args.require_active_gradients,
+                           normalized_face_evaluators=args.face_evaluator_range == 'normalized',
+                           face_flow_loss=args.face_flow_loss,
+                           face_aux_alignment=args.face_aux_alignment,
+                           check_auxiliary_gradients=args.diagnostic_probes and args.branch == 'face'
+                                                     and args.face_aux_every > 0 and step + 1 == args.face_aux_every,
+                           fixed_sigma=.2 if args.gradient_only and args.branch == 'face' else None)
+        grads = {key: float(sum((p.grad.detach().float().square().sum() for name, p in adapter.named_parameters()
+                               if name in group and p.grad is not None), torch.tensor(0., device='cuda')).sqrt())
+                 for key, group in names.items()}
+        norm = float(torch.nn.utils.clip_grad_norm_([p for p in adapter.parameters() if p.requires_grad], 1.0))
+        if not np.isfinite(norm) or not np.isfinite(row['loss']):
+            raise FloatingPointError(f'Non-finite loss/gradient at {step + 1}: {row}')
+        if args.require_active_gradients and norm == 0:
+            raise AssertionError(f'Gradient interruption at step {step + 1}')
+        if 'auxiliary_gradient_norms' in row and not all(v > 0 for v in row['auxiliary_gradient_norms'].values()):
+            raise AssertionError('An auxiliary Face loss has no gradient to its output interface')
+        assert_frozen_gradients(adapter, transformer=pipe.transformer, text_encoder=pipe.text_encoder,
+                                vae=pipe.vae, **({f'face_evaluator_{i}': evaluator
+                                               for i, evaluator in enumerate(evaluators)} if evaluators else {}))
+        if update:
+            optimizer.step()
+            assert_fp32_training_state(adapter, optimizer)
+        row.update(step=step + 1, warmup=step < args.warmup_steps, grad_norm=norm,
+                   group_grad_norms=grads, elapsed_seconds=elapsed_offset + time.perf_counter() - started,
+                   frozen_gradients_absent=True,
+                   peak_cuda_gib=torch.cuda.max_memory_allocated() / 1024**3)
+        return row
+
+    if args.gradient_only:
+        row = train_step(21, update=False)
+        json_write(args.output / 'gradient_only.json', row)
+        print(json.dumps(row, default=str), flush=True)
+        return
+    if args.single_pass:
+        permutation = torch.randperm(len(train), generator=torch.Generator().manual_seed(args.seed)).tolist()
+        if sample_order != permutation[:start_step]:
+            raise ValueError('Resume order differs from the fixed single-pass permutation')
+    actual_step = start_step
+    for step in range(start_step, args.max_steps):
+        if should_stop():
+            break
+        set_training_phase(adapter, args.branch, warmup=step < args.warmup_steps)
+        row = train_step(step)
+        sample_order.append(row['pair_index'])
+        actual_step = step + 1
+        with (args.output / 'train_metrics.jsonl').open('a') as stream:
+            stream.write(json.dumps(row, default=str) + '\n')
+        print(json.dumps(row, default=str), flush=True)
+        if (step + 1) % args.save_every == 0 or step + 1 in (21, args.max_steps):
+            save_checkpoint(args.output / 'checkpoint_last.pt', adapter, optimizer,
+                            step=step + 1, branch=args.branch, args=args, sample_order=sample_order)
+        if step + 1 in args.save_steps:
+            save_checkpoint(args.output / f'checkpoint_step_{step + 1:06d}.pt', adapter, optimizer,
+                            step=step + 1, branch=args.branch, args=args, sample_order=sample_order)
+            save_probes(step + 1)
+        if args.verify_resume and step + 1 == min(21, args.max_steps):
+            checkpoint = args.output / 'checkpoint_last.pt'
+            parameters_before = state_digest(adapter.state_dict())
+            optimizer_before = state_digest(optimizer.state_dict())
+            rng_before = state_digest(capture_rng())
+            restore = load_adapter_checkpoint(adapter, checkpoint)
+            optimizer.load_state_dict(restore['optimizer_state_dict'])
+            restore_rng(restore)
+            comparison = {
+                'checkpoint_step': step + 1,
+                'parameters_equal': parameters_before == state_digest(adapter.state_dict()),
+                'optimizer_equal': optimizer_before == state_digest(optimizer.state_dict()),
+                'rng_restored': rng_before == state_digest(capture_rng()),
+                'default_cuda_bitwise_update': False,
+                'note': 'Exact checkpoint loading; CUDA backward is nondeterministic. '
+                        'Separate deterministic-reference report verifies next-step continuation.',
+            }
+            json_write(args.output / 'resume_verification.json', comparison)
+            if not all(comparison[key] for key in ('parameters_equal', 'optimizer_equal', 'rng_restored')):
+                raise AssertionError(f'Resume differs: {comparison}')
+            optimizer.zero_grad(set_to_none=True)
+    if actual_step != args.max_steps:
+        save_checkpoint(args.output / 'checkpoint_last.pt', adapter, optimizer,
+                        step=actual_step, branch=args.branch, args=args, sample_order=sample_order)
+        save_checkpoint(args.output / f'checkpoint_step_{actual_step:06d}.pt', adapter, optimizer,
+                        step=actual_step, branch=args.branch, args=args, sample_order=sample_order)
+    after = probe(pipe, adapter, cache, train, store, args.branch,
+                  pair_indices=args.diagnostic_pair_indices, face_flow_loss=args.face_flow_loss)
+    frozen_after = frozen_digest(adapter, args.branch)
+    report = {'branch': args.branch, 'optimizer_steps': actual_step,
+              'requested_optimizer_steps': args.max_steps, 'stop_reason':stop['reason'],
+              'single_pass': args.single_pass,
+              'unique_training_pairs': len(set(sample_order)), 'training_pair_uses': len(sample_order),
+              'probe_before': before, 'probe_after': after,
+              'frozen_parameters_unchanged': frozen_before == frozen_after,
+              'base_versions_unchanged': base_versions == [p._version for p in pipe.transformer.parameters()],
+              'fixed_probe_improved': after['loss'] < before['loss'],
+              'seconds': elapsed_offset + time.perf_counter() - started, 'peak_cuda_gib': torch.cuda.max_memory_allocated() / 1024**3}
+    report.update(training_attempt_accounting(metrics_path, step=actual_step,
+                                             sample_order=sample_order, seconds=report['seconds']))
+    json_write(args.output / 'summary.json', report)
+    if not report['frozen_parameters_unchanged'] or not report['base_versions_unchanged']:
+        raise AssertionError('Frozen parameters changed')
+    print(json.dumps(report, default=str), flush=True)
+
+
+if __name__ == '__main__':
+    main()
