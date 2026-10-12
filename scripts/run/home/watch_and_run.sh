@@ -1,0 +1,1 @@
+/home/shangguanrz/watch_and_run.sh

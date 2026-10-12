@@ -1,0 +1,1 @@
+../../run_v6_comparative_3000.sh

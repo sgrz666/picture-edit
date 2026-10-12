@@ -1,0 +1,1 @@
+../../eval_qwen21_face_cross_person.py

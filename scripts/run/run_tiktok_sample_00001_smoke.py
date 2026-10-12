@@ -1,0 +1,1 @@
+../../run_tiktok_sample_00001_smoke.py

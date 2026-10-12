@@ -286,6 +286,7 @@ def process_tiktok_sequence(
     assets_root: Path,
     renderer: Optional[SMPLXPartRenderer] = None,
     overwrite: bool = False,
+    target_stems: Optional[set[str]] = None,
 ) -> bool:
     """Process one sequence in TikTok dataset, writing part_512/ and v6_conditions.pt."""
     seq_raw = raw_root / seq_id
@@ -308,6 +309,9 @@ def process_tiktok_sequence(
 
     params = torch.load(params_path, map_location="cpu", weights_only=False)
     mesh_cam_all = params["mesh_cam"].float()  # [N, 10475, 3]
+    if int(mesh_cam_all.shape[0]) != frame_count:
+        print(f"[{seq_id}] Frame count mismatch (frame_map={frame_count}, params={int(mesh_cam_all.shape[0])}), skipping.")
+        return False
     betas_all = params["betas"].float()        # [N, 10]
     orient_all = params["global_orient"].float() # [N, 3]
     transl_all = params["transl"].float()      # [N, 3]
@@ -315,8 +319,8 @@ def process_tiktok_sequence(
     focal_all = params.get("focal_length_xy_raw", params.get("focal_length_xy")).float()
     princpt_all = params.get("princpt_raw", params.get("princpt")).float()
 
-    w_val = float(params.get("width", torch.tensor([604.0]))[0])
-    h_val = float(params.get("height", torch.tensor([1080.0]))[0])
+    w_val = float(torch.as_tensor(params.get("width", torch.tensor([604.0]))).reshape(-1)[0])
+    h_val = float(torch.as_tensor(params.get("height", torch.tensor([1080.0]))).reshape(-1)[0])
     w_all = torch.full((frame_count,), w_val)
     h_all = torch.full((frame_count,), h_val)
 
@@ -349,11 +353,11 @@ def process_tiktok_sequence(
     part_out_dir = seq_assets / "part_512"
 
     for i, frame in enumerate(frames):
-        stem = frame.get("stem", f"{frame['index']+1:04d}")
+        stem = str(frame.get("stem", f"{frame['index']+1:04d}"))
         stems.append(stem)
 
         # 1. Part Map rendering
-        if renderer is not None:
+        if renderer is not None and (target_stems is None or stem in target_stems):
             part_file = part_out_dir / f"{stem}.png"
             if overwrite or not part_file.exists():
                 part_file.parent.mkdir(parents=True, exist_ok=True)
@@ -388,7 +392,9 @@ def process_tiktok_sequence(
     }
 
     bundle_out_path = seq_assets / "v6_conditions.pt"
-    torch.save(v6_bundle, bundle_out_path)
+    tmp_path = bundle_out_path.with_suffix(".pt.tmp")
+    torch.save(v6_bundle, tmp_path)
+    tmp_path.replace(bundle_out_path)
     return True
 
 
@@ -464,7 +470,9 @@ def main():
         type=str,
         default="/home/shangguanrz/project/pic-edit/add/tools/SMPLest-X/human_models/human_model_files/smplx/SMPLX_NEUTRAL.npz",
     )
-    parser.add_argument("--sequence", type=str, default="00001", help="Process single sequence ID, e.g. 00001")
+    parser.add_argument("--sequence", type=str, default="00001", help="Process single sequence ID, e.g. 00001, or 'all'")
+    parser.add_argument("--all", action="store_true", help="Process all sequences in assets_root")
+    parser.add_argument("--manifest", type=Path, help="Optional TikTok_v3 frame/pair JSONL to restrict part_512 rendering to active stems")
     parser.add_argument("--overwrite", action="store_true", help="Overwrite existing assets")
     parser.add_argument("--device", type=str, default="cuda:0")
     parser.add_argument("--single-frame-override-out", type=Path)
@@ -481,7 +489,9 @@ def main():
     print("TikTok V6 Condition Preprocessor")
     print(f"Raw Root    : {raw_root}")
     print(f"Assets Root : {assets_root}")
-    print(f"Sequence    : {args.sequence}")
+    print(f"Sequence    : {'ALL' if args.all or args.sequence == 'all' else args.sequence}")
+    if args.manifest is not None:
+        print(f"Manifest    : {args.manifest}")
     print("=" * 60)
 
     renderer = None
@@ -540,14 +550,45 @@ def main():
             print(f"Part preview: {args.part_preview_out}")
         return
 
-    if args.sequence:
-        seqs = [args.sequence]
-    else:
-        seqs = sorted([d.name for d in assets_root.iterdir() if d.is_dir() and not d.name.startswith(".")])
+    manifest_stems: dict[str, set[str]] = {}
+    if args.manifest is not None:
+        with args.manifest.open("r", encoding="utf-8") as handle:
+            for line in handle:
+                line = line.strip()
+                if not line:
+                    continue
+                row = json.loads(line)
+                seq_key = str(row.get("sequence_id") or row.get("sequence") or row.get("appearance") or "")
+                if not seq_key:
+                    continue
+                bucket = manifest_stems.setdefault(seq_key, set())
+                for field in ("stem", "source_stem", "target_stem"):
+                    if field in row and row[field] is not None:
+                        bucket.add(str(row[field]))
 
-    for seq in seqs:
-        ok = process_tiktok_sequence(seq, raw_root, assets_root, renderer=renderer, overwrite=args.overwrite)
-        print(f"Sequence {seq}: {'SUCCESS' if ok else 'SKIPPED'}")
+    if args.all or args.sequence == "all" or not args.sequence:
+        if args.manifest is not None and manifest_stems:
+            seqs = sorted(manifest_stems.keys())
+        else:
+            seqs = sorted([d.name for d in assets_root.iterdir() if d.is_dir() and not d.name.startswith(".")])
+    else:
+        seqs = [args.sequence]
+
+    success_count = 0
+    for idx, seq in enumerate(seqs, 1):
+        stems_filter = manifest_stems.get(seq, set()) if args.manifest is not None else None
+        ok = process_tiktok_sequence(
+            seq,
+            raw_root,
+            assets_root,
+            renderer=renderer,
+            overwrite=args.overwrite,
+            target_stems=stems_filter,
+        )
+        if ok:
+            success_count += 1
+        if len(seqs) <= 10 or idx % 25 == 0 or idx == len(seqs):
+            print(f"[{idx}/{len(seqs)}] Sequence {seq}: {'SUCCESS' if ok else 'SKIPPED'} (ok={success_count})", flush=True)
 
 
 if __name__ == "__main__":
