@@ -19,7 +19,7 @@ Adapter 输入通道顺序固定为 `Normal RGB + Depth + Pose RGB + Semantic`�
 
 ```powershell
 cd D:\codeplus\pictureedit
-python run_champ_single_overfit.py `
+python scripts/run/run_champ_single_overfit.py `
   --data_dir inputs\champ_sample `
   --validate_only
 ```
