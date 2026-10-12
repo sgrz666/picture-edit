@@ -145,7 +145,7 @@ PE 提示词中的源图 `<image1>` 保持为生成图 1，骨架 `<image3>` 转
 | `medium_01` | source_person | largest（A 有 2 人） | 1.000 | 0.033 | 0.060 | 0.014 | 2 |
 | `medium_02` | source_person | auto | 1.000 | 0.040 | 0.070 | 0.024 | 1 |
 
-九次运行收尾自检全部 `VERIFICATION validated`。这些数字分属两份代码状态：7 对的批处理跑在加入 `--framing` 之前的 `run.py`（`52794b78…`），`hard_05_torso` 与 `hard_05_manual` 跑在其后的版本；因此现在对它们执行 `--verify` 都会报 `workflow code changed`，产物本身完好。全测试集尚未在同一份代码状态下重跑过。
+九次运行收尾自检全部 `VERIFICATION validated`。这些数字分属三份代码状态，按各 run 的 `geometry/stage.json` 所记 `pose_transfer/geometry.py` 哈希区分：`6603a819…` 是首轮批处理（hard_02、hard_03、hard_04、hard_05、medium_02），`6a57ff88…` 是 hard_01 与 medium_01 用 `--subject largest` 的复跑，`5ac98986…` 是两个 hard_05 变体（当前版本，含 `--framing`）。因此现在对它们执行 `--verify` 都会报 `workflow code changed`，产物本身完好；全测试集尚未在同一份代码状态下重跑过。
 
 `hard_05` 的三行是同一对图的两个变量对照。定标：A 框长宽比 0.39、B 框 0.88，`source_person` 的内切缩放被宽度主导（尺度 0.410），请求骨架躯干只有 95.9px，而生成人物躯干 225.6px，错配 2.35 倍；`source_torso` 把尺度提到 0.977，躯干比回到 1.02，指标随之改善 4~7 倍。其余四对 B 框都比 A 框窄，两种定标差不多，所以默认值没有改。提示词：`hard_05_manual` 用的是 `--prompt-file` 引入的一段手写提示词（与 legacy run `testset_hard05_promptv2` 里那份逐字节相同，来源哈希 `17b9c608…`），几何与 PE 阶段照常跑，PE 自己的产物同时保留在 `prompt/pe_compiled_prompt.txt`；在同一份躯干定标下，手写提示词的 body PCK 0.667 高于 PE 编译版的 0.389。即便修好尺度与提示词，`hard_05` 的 body PCK 仍明显低于其余各对，它依然是这套基线最难的一对。
 
