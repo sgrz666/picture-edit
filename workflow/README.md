@@ -68,7 +68,7 @@ WORKFLOW_FAILED: Prepared inputs are not reusable:
 
 产物在阶段写完后被改动、或上游输入哈希变了，会分别报 `artifact content changed after the stage wrote it: <name> -> <path> (recorded …, on disk …)` 与 `inputs_sha256.<name> changed: …`（这两种措辞由 `tests/test_workflow_common.py` 断言）。
 
-代码哈希在指纹里，意味着**任何一次 workflow 代码改动都会让全部既有 run 变成 stale**，即使产物一个字节都没变。这是设计取舍：报告里的数字必须绑定产出它的那份代码。要判断产物本身是否完好，看 `stage.json` 里的哈希，或读 `report.py` 的状态列。
+代码哈希在指纹里，意味着**任何一次 workflow 代码改动都会让全部既有 run 变成 stale**，即使产物一个字节都没变。这是设计取舍：报告里的数字必须绑定产出它的那份代码。要判断产物本身是否完好，看 `stage.json` 里的哈希，或读 `report.py` 的状态列。2026-10-13 把共享层（缓存与指纹、关节表、投影、估计器调用）提到仓库级 `src/pose_edit/` 供单人与双人两条线共用，因此该日之前产出的全部 run 现在都会报 `workflow code changed`。
 
 收尾会对本轮涉及的每个阶段重跑一次校验，把实测结果写进 `run.json` 的 `verification.status`（`validated` / `mismatch`）并打印 `VERIFICATION …`；这句结论是量出来的，不是走到结尾就写上的。
 
