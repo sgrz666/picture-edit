@@ -193,17 +193,16 @@ def crops_of(image, boxes):
     return [None if box is None else crop_person(image, box) for box in boxes]
 
 
-def measure_appearance(config, run_dir, geometry, detected_people, mapping):
+def measure_appearance(config, run_dir, geometry, assigned_people, mapping, all_people=None):
     """Did each source person stay that person, and does any body look like B's people?
 
-    Two different questions, both needed: the first is measured along the pose assignment, the
-    second walks every detected body - including a third one that has no assignment at all - and
-    asks whether it resembles a person from the target photograph more than any person from the
-    source does. That is the direct test of "the model imported B's people", which until now was
-    only inferred from the person count.
+    ``assigned_people`` is the set aligned with the pose assignment (one per requested person);
+    ``all_people`` is every body the whole-image detector found, which is what the import test has
+    to look at - an extra body has no assignment by definition.
     """
     if not mapping:
         return {'available': False, 'reason': 'no pose assignment to compare along'}
+    all_people = assigned_people if all_people is None else all_people
     pair_dir = Path(geometry['pair_dir'])
     pair = read_json(pair_dir / 'pair.json')
     preprocess = read_json(run_dir / 'inputs' / 'source_preprocess.json')['A']
@@ -212,7 +211,7 @@ def measure_appearance(config, run_dir, geometry, detected_people, mapping):
     with Image.open(run_dir / 'generation' / 'final_image.png') as image:
         generated = image.convert('RGB')
     source_crops = crops_of(reference, source_boxes_canvas(pair, preprocess))
-    generated_crops = [crop_person(generated, detected_people[slot]['box_xyxy'])
+    generated_crops = [crop_person(generated, assigned_people[slot]['box_xyxy'])
         for slot in mapping]
     if not all(source_crops) or not all(generated_crops):
         return {'available': False, 'reason': 'a person crop came out empty',
@@ -226,7 +225,7 @@ def measure_appearance(config, run_dir, geometry, detected_people, mapping):
     with Image.open(pair_dir / pair['B']['image']) as image:
         target = image.convert('RGB')
     target_crops = crops_of(target, target_person_boxes(pair))
-    bodies = crops_of(generated, [person['box_xyxy'] for person in detected_people])
+    bodies = crops_of(generated, [person['box_xyxy'] for person in all_people])
     informative = pair['kind'] != 'same_identity'
     if all(target_crops) and all(bodies):
         block = judge_import(embed, source_crops, target_crops, bodies)
@@ -284,6 +283,45 @@ def region_count(config, image_bgr, requested, expand=0.2):
             'whole picture'}
 
 
+def translate_people(people, offset):
+    """Move detections made inside a crop back into full-image coordinates."""
+    offset = np.asarray(offset, dtype=float)
+    moved = []
+    for person in people:
+        points = person['points'] + offset
+        moved.append({'box_xyxy': [float(value) for value in
+            np.asarray(person['box_xyxy'], dtype=float) + np.concatenate([offset, offset])],
+            'points': points, 'scores': person['scores']})
+    return moved
+
+
+def region_people(config, image_bgr, requested, threshold, size):
+    """One person per requested slot, detected inside that slot's own region.
+
+    Whole-image detection merges bodies that touch, which loses both the count and the landmarks
+    for entangled pairs. Cropping to the region the guide asked for recovers a measurable body
+    per person. The slot ownership here is positional by construction - the same convention the
+    guide numbers its people with - so the assignment is no longer an inference.
+    """
+    people = []
+    for box, points in zip(region_boxes(requested, size), requested):
+        if box is None:
+            people.append(None)
+            continue
+        crop = image_bgr[box[1]:box[3], box[0]:box[2]]
+        found = translate_people(detect_people(config, crop), (box[0], box[1]))
+        if not found:
+            people.append(None)
+            continue
+        # Keep the body with the most believed landmarks inside this region, then only landmarks
+        # the detector both believed in and placed inside the frame.
+        best = max(found, key=lambda person: int((person['scores'] >= threshold).sum()))
+        cleaned_points, keep = cleaned(best['points'], best['scores'], threshold, size)
+        people.append({'box_xyxy': best['box_xyxy'], 'points': cleaned_points,
+            'scores': np.where(keep, best['scores'], 0.0)})
+    return people
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--run', required=True)
@@ -325,12 +363,25 @@ def main():
     threshold = config['keypoint_score_threshold']
     detected_bgr = cv2.cvtColor(rgb, cv2.COLOR_RGB2BGR)
     detected_people = detect_people(config, detected_bgr)
-    mapping, assignment = assign(detected_people[:len(requested)], requested, threshold, size)
+    if len(detected_people) == len(requested):
+        pose_basis = 'whole_image'
+        scoring_people = detected_people
+        mapping, assignment = assign(scoring_people, requested, threshold, size)
+    else:
+        # The whole-image count is not a usable basis for scoring when the detector merged the
+        # pair, so each requested person is detected inside their own region instead.
+        pose_basis = 'regions'
+        scoring_people = region_people(config, detected_bgr, requested, threshold, size)
+        mapping = list(range(len(requested)))
+        assignment = {'permutation': mapping, 'ambiguous': False,
+            'basis': 'each person detected inside the region the guide asked for; slot ownership '
+                'is positional, not inferred from hip distance'}
     persons = [score_person(requested[slot],
-        detected_people[mapping[slot]] if mapping else None, threshold, size)
+        scoring_people[mapping[slot]] if mapping else None, threshold, size)
         for slot in range(len(requested))]
     comparable = [person for person in persons if person.get('comparable')]
-    appearance = measure_appearance(config, run_dir, geometry, detected_people, mapping)
+    appearance = measure_appearance(config, run_dir, geometry, scoring_people, mapping,
+        detected_people)
     regions = region_count(config, detected_bgr, requested)
     summary = {
         'persons_detected': float(len(detected_people)),
@@ -367,7 +418,7 @@ def main():
         'requested_slots': [int(value) for value in arrays['slots']],
         'requested_hi4d_sides': [str(value) for value in arrays['hi4d_sides']],
         'detected_boxes': [{'box_xyxy': person['box_xyxy']} for person in detected_people],
-        'assignment': assignment, 'summary': summary, 'persons': persons,
+        'assignment': assignment, 'pose_basis': pose_basis, 'summary': summary, 'persons': persons,
         'appearance': appearance,
         'interaction': interaction, 'seconds': time.perf_counter() - started,
         'appearance_basis': 'DINOv2 ViT-S/14 cosine similarity on each person crop. It is an '

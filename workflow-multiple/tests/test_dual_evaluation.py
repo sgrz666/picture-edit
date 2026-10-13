@@ -45,6 +45,14 @@ class RegionBoxTests(unittest.TestCase):
         overlap = min(boxes[0][2], boxes[1][2]) - max(boxes[0][0], boxes[1][0])
         self.assertGreater(overlap, 0)
 
+    def test_crop_detections_come_back_to_full_image_coordinates(self):
+        person = {'box_xyxy': [10.0, 20.0, 110.0, 220.0],
+            'points': np.array([[10.0, 20.0], [50.0, 90.0]]), 'scores': np.array([0.9, 0.8])}
+        moved, = self.module.translate_people([person], (300, 400))
+        self.assertEqual(moved['box_xyxy'], [310.0, 420.0, 410.0, 620.0])
+        self.assertEqual(list(moved['points'][1]), [350.0, 490.0])
+        self.assertEqual(list(moved['scores']), [0.9, 0.8])
+
 
 if __name__ == '__main__':
     unittest.main()
