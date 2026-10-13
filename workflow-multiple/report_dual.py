@@ -66,6 +66,8 @@ def run_facts(run_dir, live_writer):
         'persons': summary.get('persons_detected'), 'count_ok': summary.get('person_count_ok'),
         'pck': summary.get('body_pck@0.2'), 'mpjpe': summary.get('body_mpjpe_norm'),
         'torso_ratio': summary.get('torso_scale_ratio'), 'gap_error': interaction,
+        'identity': summary.get('identity_similarity'),
+        'swap': summary.get('identity_swap_suspected'),
         'seconds': stage_seconds(run_dir),
         'error': manifest.get('error')}
 
@@ -96,18 +98,20 @@ def main():
         print(json.dumps({'runs': runs, 'pairs_available': len(available),
             'pairs_without_run': sorted(set(available) - built)}, ensure_ascii=False, indent=2))
         return
-    header = (f'{"run":30} {"status":10} {"verify":10} {"pair":26} {"framing":12} '
-        f'{"arm":14} res/steps/seed persons count pck mpjpe torso gap  stage seconds')
+    header = (f'{"run":54} {"status":9} v {"pair":26} {"framing":11} '
+        f'{"arm":13} res/steps/seed persons count pck mpjpe torso gap ident swap  stage seconds')
     print(header)
     print('-' * len(header))
     for fact in sorted(runs, key=lambda item: item['run']):
         timings = ' '.join(f'{name[:4]}:{value:.0f}s' if value else f'{name[:4]}:-'
             for name, value in fact['seconds'].items())
-        print(f'{fact["run"]:30} {fact["status"]:10} {str(fact["verified"]):10} '
-            f'{str(fact["pair"]):26} {str(fact["framing"]):12} {str(fact["arm"]):14} '
+        verified = {'validated': 'o', 'mismatch': 'k'}.get(fact['verified'], '-')
+        print(f'{fact["run"]:54} {fact["status"]:9} {verified} '
+            f'{str(fact["pair"]):26} {str(fact["framing"]):11} {str(fact["arm"]):13} '
             f'{fact["settings"]:14} {number(fact["persons"], 0):>7} '
             f'{number(fact["count_ok"]):>5} {number(fact["pck"]):>5} {number(fact["mpjpe"]):>5} '
-            f'{number(fact["torso_ratio"]):>5} {number(fact["gap_error"]):>4} {timings}')
+            f'{number(fact["torso_ratio"]):>5} {number(fact["gap_error"]):>4} '
+            f'{number(fact["identity"]):>5} {number(fact["swap"]):>4} {timings}')
     missing = sorted(set(available) - built)
     print(f'\npairs: {len(available)} available, {len(available) - len(missing)} with a run, '
         f'{len(missing)} without')
@@ -115,6 +119,28 @@ def main():
         print('without a run: ' + ', '.join(missing))
     if any(fact['status'] == 'abandoned' for fact in runs):
         print('abandoned runs are ones whose process died before writing a final status')
+    print('\nv: o=stages validated, k=mismatch, -=not checked')
+    print('pose columns are only comparable when the detected person count matches; a run with '
+          'extra bodies has its landmarks assigned to an arbitrary subset')
+    groups = {}
+    for fact in runs:
+        if fact['status'] != 'complete':
+            continue
+        groups.setdefault((fact['arm'], fact['framing']), []).append(fact)
+    print(f'\n{"arm":14} {"framing":11} runs count_ok pck mpjpe torso gap ident swap_rate')
+    for (arm, framing), facts in sorted(groups.items(), key=lambda item: str(item[0])):
+        comparable = [fact for fact in facts if fact['count_ok'] == 1.0]
+
+        def mean(key):
+            values = [fact[key] for fact in comparable if isinstance(fact[key], (int, float))]
+            return sum(values) / len(values) if values else None
+        print(f'{str(arm):14} {str(framing):11} {len(facts):4} '
+            f'{sum(1 for fact in facts if fact["count_ok"] == 1.0):8.0f} '
+            f'{number(mean("pck")):>4} {number(mean("mpjpe")):>5} {number(mean("torso_ratio")):>5} '
+            f'{number(mean("gap_error")):>3} {number(mean("identity")):>5} '
+            f'{sum(1 for fact in facts if fact["swap"] == 1.0) / len(facts):8.2f}')
+    print('arm means are taken over runs that detected the right number of people; swap_rate is '
+        'over every run in the group')
 
 
 if __name__ == '__main__':

@@ -176,6 +176,26 @@ def stage_outputs(path, base_dir):
     return {name: str(file) for name, file, _ in _record_rows(record, base_dir)}
 
 
+def furthest_valid_stage(run_dir, chain):
+    """Name of the furthest stage whose record still validates, walking a stage chain.
+
+    Orchestrators use this so a run's status reports how complete the run *is*, rather than
+    what the last invocation happened to ask for: rerunning an old run with ``--until
+    geometry`` must not silently downgrade a finished generation to ``partial``.
+
+    ``chain`` is ordered ``(stage, record_path, request_or_None)``; a None request means the
+    chain could not be rebuilt past that point.
+    """
+    furthest = None
+    for name, record, request in chain:
+        if request is None or not Path(record).is_file():
+            break
+        if stage_reasons(record, request, run_dir):
+            break
+        furthest = name
+    return furthest
+
+
 def model_signature(path):
     """Record weight stat identity plus hashes of small config/prompt files."""
     path = Path(path).resolve()

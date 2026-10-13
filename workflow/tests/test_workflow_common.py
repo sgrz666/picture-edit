@@ -127,5 +127,28 @@ class StageCacheTests(unittest.TestCase):
                 self.assertFalse((source / name).exists())
 
 
+    def test_status_follows_the_furthest_valid_stage_not_the_last_invocation(self):
+        """A finished run stays complete even if the newest call only asked for geometry."""
+        with tempfile.TemporaryDirectory() as directory:
+            run_dir = Path(directory) / 'run'
+            chain = []
+            for stage in ('geometry', 'prompt', 'generate'):
+                stage_dir = run_dir / stage
+                stage_dir.mkdir(parents=True)
+                artifact = stage_dir / 'out.json'
+                artifact.write_text('{"ok": true}\n', encoding='utf-8')
+                request = self.common.make_request(stage, {'settings': {}}, run_dir, {})
+                self.common.finish_stage(stage_dir / 'stage.json', request, {'out': artifact},
+                    {}, run_dir)
+                chain.append((stage, stage_dir / 'stage.json', request))
+            self.assertEqual(self.common.furthest_valid_stage(run_dir, chain), 'generate')
+            artifact.write_text('tampered after the stage completed\n', encoding='utf-8')
+            self.assertEqual(self.common.furthest_valid_stage(run_dir, chain), 'prompt')
+            rebuilt = chain[:2] + [('generate', run_dir / 'generate/stage.json', None)]
+            self.assertEqual(self.common.furthest_valid_stage(run_dir, rebuilt), 'prompt')
+            self.assertIsNone(self.common.furthest_valid_stage(run_dir,
+                [('geometry', run_dir / 'nowhere/stage.json', chain[0][2])]))
+
+
 if __name__ == '__main__':
     unittest.main()

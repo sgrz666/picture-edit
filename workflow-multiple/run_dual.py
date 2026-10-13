@@ -15,8 +15,9 @@ if str(REPO_ROOT) not in sys.path:
 
 from dual_geometry import GUIDE_FRAMINGS, produce
 from dual_prompts import GENERATOR_ROLES, generator_allowed
-from src.pose_edit.common import (atomic_json, file_lock, finish_stage, make_request,
-    model_signature, read_json, sha256_file, stage_outputs, stage_reasons, stage_valid)
+from src.pose_edit.common import (atomic_json, file_lock, finish_stage, furthest_valid_stage,
+    make_request, model_signature, read_json, sha256_file, stage_outputs, stage_reasons,
+    stage_valid)
 from src.pose_edit.prompt_contract import PE_SAMPLING, validate_generator_prompt
 
 ROOT = Path(__file__).resolve().parent
@@ -115,6 +116,30 @@ def stage_request(stage, config, paths, pair_dir, run_dir):
         if key in paths})
     return make_request(stage, identity, run_dir, {'run_dir': str(run_dir),
         'pair_dir': str(pair_dir), **runtime})
+
+
+def validity_chain(config, paths, pair_dir, run_dir):
+    """Rebuild, in order, every stage request the run directory could support."""
+    chain = []
+    for stage in STAGES:
+        record = run_dir / STAGE_DIRECTORY[stage] / 'stage.json'
+        try:
+            request = stage_request(stage, config, paths, pair_dir, run_dir)
+        except (KeyError, OSError, ValueError):
+            chain.append((stage, record, None))
+            return chain
+        chain.append((stage, record, request))
+        if not record.is_file():
+            return chain
+        for role, item in read_json(record)['outputs'].items():
+            paths[role] = str((run_dir / item['file']).resolve())
+        if stage == 'prompt':
+            for role, name in (('generation_prompt', 'generation_prompt.txt'),
+                    ('generation_prompt_provenance', 'generation_prompt.json')):
+                path = run_dir / 'prompt' / name
+                if path.is_file():
+                    paths[role] = str(path)
+    return chain
 
 
 def select_generation_prompt(run_dir, paths, manual_prompt, verify=False, arm='with_b'):
@@ -245,7 +270,10 @@ def main():
                 print(f'{stage.upper()} {"CACHE_HIT" if cached else "COMPLETE"}', flush=True)
                 if stage == args.until:
                     break
-            manifest['status'] = 'complete' if args.until == 'generate' else 'partial'
+            furthest = furthest_valid_stage(run_dir,
+                validity_chain(config, dict(paths), pair_dir, run_dir))
+            manifest['furthest_valid_stage'] = furthest
+            manifest['status'] = 'complete' if furthest == STAGES[-1] else 'partial'
             manifest.pop('active_stage', None)
             manifest['finished_at_unix'] = time.time()
             reasons_by_stage = {}

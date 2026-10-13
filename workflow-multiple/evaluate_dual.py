@@ -29,12 +29,14 @@ if str(REPO_ROOT) not in sys.path:
 
 from src.pose_edit.common import (atomic_json, finish_stage, make_request, read_json,
     sha256_file, stage_reasons)
+from src.pose_edit.appearance import crop_person, judge_appearance, load_embedder
 from src.pose_edit.geometry import (cocowholebody133_to_dwpose134, valid_points)
 from src.evaluation.dwpose_onnx.onnxdet import inference_detector
 from src.evaluation.dwpose_onnx.onnxpose import inference_pose
 
 ROOT = Path(__file__).resolve().parent
-CODE = ['evaluate_dual.py', 'src/pose_edit/common.py', 'src/pose_edit/geometry.py']
+CODE = ['evaluate_dual.py', 'src/pose_edit/common.py', 'src/pose_edit/geometry.py',
+    'src/pose_edit/appearance.py']
 BODY_SLOTS = slice(0, 18)
 HIP_SLOTS = (8, 11)
 PCK_THRESHOLDS = (0.1, 0.2, 0.5)
@@ -160,6 +162,43 @@ def draw_overlay(image, requested, detected_people, mapping):
     return overlay
 
 
+def source_boxes_canvas(pair, preprocess):
+    """A's person mask boxes, moved from A's native pixels into the shared canvas."""
+    scale_x, scale_y = preprocess['scale_xy']
+    offset_x, offset_y = preprocess['offset_xy']
+    boxes = []
+    for person in pair['A']['persons']:
+        box = person['region'].get('bbox_xyxy')
+        boxes.append(None if not box else [box[0] * scale_x + offset_x, box[1] * scale_y + offset_y,
+            box[2] * scale_x + offset_x, box[3] * scale_y + offset_y])
+    return boxes
+
+
+def measure_appearance(config, run_dir, geometry, detected_people, mapping):
+    """Compare each source person with the generated person the pose assignment picked."""
+    if not mapping:
+        return {'available': False, 'reason': 'no pose assignment to compare along'}
+    pair = read_json(Path(geometry['pair_dir']) / 'pair.json')
+    preprocess = read_json(run_dir / 'inputs' / 'source_preprocess.json')['A']
+    with Image.open(run_dir / 'inputs' / 'A_reference.png') as image:
+        reference = image.convert('RGB')
+    with Image.open(run_dir / 'generation' / 'final_image.png') as image:
+        generated = image.convert('RGB')
+    source_crops = [crop_person(reference, box)
+        for box in source_boxes_canvas(pair, preprocess)]
+    generated_crops = [crop_person(generated, detected_people[slot]['box_xyxy'])
+        for slot in mapping]
+    if not all(source_crops) or not all(generated_crops):
+        return {'available': False, 'reason': 'a person crop came out empty',
+            'source_people': len(source_crops), 'generated_people': len(generated_crops)}
+    embed, error = load_embedder(config['dinov2_repo'])
+    if embed is None:
+        return {'available': False, 'reason': error}
+    similarity = np.array([[float(np.dot(embed(one), embed(other)))
+        for other in generated_crops] for one in source_crops])
+    return judge_appearance(similarity, mapping)
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--run', required=True)
@@ -175,7 +214,8 @@ def main():
     if not final_image.is_file():
         raise FileNotFoundError(f'{final_image} is missing; run the workflow first')
     identity = {'settings': {key: config[key] for key in
-            ('dwpose_det_model', 'dwpose_pose_model', 'keypoint_score_threshold')},
+            ('dwpose_det_model', 'dwpose_pose_model', 'keypoint_score_threshold',
+             'dinov2_repo')},
         'inputs_sha256': {'final_image': sha256_file(final_image),
             'dual_keypoints': sha256_file(run_dir / 'geometry' / 'dual_keypoints.npz'),
             'dual_geometry': sha256_file(run_dir / 'geometry' / 'dual_geometry.json'),
@@ -204,6 +244,7 @@ def main():
         detected_people[mapping[slot]] if mapping else None, threshold, size)
         for slot in range(len(requested))]
     comparable = [person for person in persons if person.get('comparable')]
+    appearance = measure_appearance(config, run_dir, geometry, detected_people, mapping)
     summary = {
         'persons_detected': float(len(detected_people)),
         'person_count_ok': float(len(detected_people) == len(requested)),
@@ -212,7 +253,10 @@ def main():
         'body_mpjpe_norm': float(np.mean([person['mpjpe_norm'] for person in comparable]))
             if comparable else None,
         'torso_scale_ratio': float(np.mean([person['torso_scale_ratio'] for person in comparable
-            if person['torso_scale_ratio']])) if comparable else None}
+            if person['torso_scale_ratio']])) if comparable else None,
+        'identity_similarity': appearance.get('identity_mean'),
+        'identity_swap_suspected': float(appearance['identity_swap_suspected'])
+            if appearance.get('available') else None}
     interaction = None
     if len(persons) == 2 and all(person.get('hip_centre_xy') for person in persons):
         detected_gap = float(np.linalg.norm(np.asarray(persons[0]['hip_centre_xy'])
@@ -231,11 +275,16 @@ def main():
         'requested_hi4d_sides': [str(value) for value in arrays['hi4d_sides']],
         'detected_boxes': [{'box_xyxy': person['box_xyxy']} for person in detected_people],
         'assignment': assignment, 'summary': summary, 'persons': persons,
+        'appearance': appearance,
         'interaction': interaction, 'seconds': time.perf_counter() - started,
-        'not_measured': 'identity and clothing preservation. The VGG weights the earlier dual '
-            'evaluation used are absent on this host; DINOv2 weights are present, so a feature '
-            'similarity metric is the candidate but is not implemented yet.',
-        'limits': 'Pose fidelity only, judged with the same DWPose detector that produced the '
+        'appearance_basis': 'DINOv2 ViT-S/14 cosine similarity on each person crop. It is an '
+            'appearance proxy, not biometric identity: a regenerated or occluded face lowers it '
+            'without proving a swap. A swap is claimed only when pairing by appearance disagrees '
+            'with the hip-based pose pairing beyond the margin.',
+        'not_measured': 'Scene and object preservation beyond the two crops, and attribution of '
+            'a low appearance score: a changed background inside the box moves the same number '
+            'as a changed face would.',
+        'limits': 'Pose fidelity is judged with the same DWPose detector that produced the '
             'Hi4D ground truth, so detector bias enters both sides. Landmarks the detector did '
             'not find in the generated image are excluded rather than counted as errors, so a '
             'result that hides a limb can score better than it looks. Person count is reported '

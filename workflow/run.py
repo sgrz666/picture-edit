@@ -16,8 +16,8 @@ if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
 from src.pose_edit.common import (atomic_json, canvas_size, file_lock, finish_stage,
-    letterbox, make_request, model_signature, read_json, sha256_file, stage_outputs,
-    stage_reasons, stage_valid)
+    furthest_valid_stage, letterbox, make_request, model_signature, read_json, sha256_file,
+    stage_outputs, stage_reasons, stage_valid)
 from pose_transfer.prompts import PE_SAMPLING, validate_generator_prompt
 
 ROOT = Path(__file__).resolve().parent
@@ -202,6 +202,29 @@ def select_generation_prompt(run_dir, paths, manual_prompt, verify=False):
     return selected
 
 
+def validity_chain(config, paths, run_dir):
+    """Rebuild, in order, every stage request the run directory could support."""
+    chain = []
+    for stage in STAGES:
+        record = run_dir / STAGE_DIRECTORY[stage] / 'stage.json'
+        try:
+            request = stage_request(stage, config, paths, run_dir)
+        except (KeyError, OSError, ValueError):
+            chain.append((stage, record, None))
+            return chain
+        chain.append((stage, record, request))
+        if not record.is_file():
+            return chain
+        for role, item in read_json(record)['outputs'].items():
+            paths[role] = str((run_dir / item['file']).resolve())
+        for role, name in (('generation_prompt', 'generation_prompt.txt'),
+                ('generation_prompt_provenance', 'generation_prompt.json')):
+            path = run_dir / 'prompt' / name
+            if path.is_file():
+                paths[role] = str(path)
+    return chain
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--config', type=Path, default=ROOT / 'config.json')
@@ -305,7 +328,9 @@ def main():
                 print(f'{stage.upper()} {"CACHE_HIT" if cached else "COMPLETE"}', flush=True)
                 if stage == args.until:
                     break
-            manifest['status'] = 'complete' if args.until == 'generate' else 'partial'
+            furthest = furthest_valid_stage(run_dir, validity_chain(config, dict(paths), run_dir))
+            manifest['furthest_valid_stage'] = furthest
+            manifest['status'] = 'complete' if furthest == STAGES[-1] else 'partial'
             manifest.pop('active_stage', None)
             manifest['finished_at_unix'] = time.time()
             # Re-check every stage this run touched, so the recorded verdict is measured now
