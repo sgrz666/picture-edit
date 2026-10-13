@@ -313,5 +313,33 @@ class TorsoFramingTests(unittest.TestCase):
             self.align(blank, self.bbox_B, self.bbox_A, 'source_torso')
 
 
+class CocoWholeBodyConversionTests(unittest.TestCase):
+    """The raw DWPose ONNX returns 133 points; the guides and Hi4D files use 134."""
+
+    def setUp(self):
+        from src.pose_edit.geometry import cocowholebody133_to_dwpose134
+        self.convert = cocowholebody133_to_dwpose134
+        self.points = np.stack([np.arange(133), np.arange(133) * 2.0], axis=1)
+
+    def test_slot_semantics_match_the_dwpose_18_body_block(self):
+        converted = self.convert(self.points)
+        self.assertEqual(converted.shape, (134, 2))
+        # Slot 1 is the inserted neck, i.e. the shoulder midpoint, not a detector answer.
+        self.assertEqual(converted[:18, 0].tolist(),
+            [0, 5.5, 6, 8, 10, 5, 7, 9, 12, 14, 16, 11, 13, 15, 2, 4, 1, 3])
+        self.assertEqual(converted[18:24, 0].tolist(), list(range(17, 23)))
+        self.assertEqual(converted[24:92, 0].tolist(), list(range(23, 91)))
+        self.assertEqual(converted[92:134, 0].tolist(), list(range(91, 133)))
+
+    def test_neck_is_the_shoulder_midpoint_because_the_detector_has_no_neck(self):
+        converted = self.convert(self.points)
+        np.testing.assert_allclose(converted[1], (self.points[5] + self.points[6]) / 2)
+
+    def test_wrong_length_is_rejected(self):
+        for rows in (132, 134):
+            with self.subTest(rows=rows), self.assertRaises(ValueError):
+                self.convert(np.zeros((rows, 2)))
+
+
 if __name__ == "__main__":
     unittest.main()

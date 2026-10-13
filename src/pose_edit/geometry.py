@@ -124,6 +124,25 @@ def _validated_bbox(bbox: Sequence[float], name: str) -> tuple[float, float, flo
     return x1, y1, x2, y2
 
 
+def cocowholebody133_to_dwpose134(points: np.ndarray) -> np.ndarray:
+    """Convert the raw DWPose ONNX layout into the 134-slot layout this repo renders.
+
+    ``dw-ll_ucoco_384.onnx`` returns COCO-WholeBody order: 17 body, 6 foot, 68 face, 42 hand
+    = 133. The 134-point convention used by the guides and by the Hi4D keypoint files is the
+    OpenPose-compatible one, where a neck is inserted at slot 1 and the body block is
+    reordered. Neck has no detector answer, so it is the shoulder midpoint, which is what the
+    MimicMotion wrapper does.
+    """
+    array = _points_array(points, (1, 2), "points")
+    if array.shape[0] != 133:
+        raise ValueError(f"points must contain 133 COCO-WholeBody keypoints; got {array.shape[0]}")
+    body = [0, 1, 6, 8, 10, 5, 7, 9, 12, 14, 16, 11, 13, 15, 2, 4, 1, 3]
+    converted = [array[index] for index in body]
+    converted[1] = (array[5] + array[6]) / 2
+    converted += [array[index] for index in range(17, 133)]
+    return np.asarray(converted, dtype=float)
+
+
 def torso_length(points_xy: np.ndarray) -> float:
     """Neck-to-hip-centre length of a DWPose-134 layout; NaN when a landmark is missing."""
     points = _points_array(points_xy, (2,), "points_xy")

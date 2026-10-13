@@ -25,7 +25,7 @@ import sys
 import time
 
 import numpy as np
-from PIL import Image
+from PIL import Image, ImageOps
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 if str(REPO_ROOT) not in sys.path:
@@ -74,7 +74,8 @@ def measure_pair(points_list):
         ys.append(float(kept[:, 1].mean()))
     if not heights:
         return None
-    return {'extent_px': float(np.mean(heights)), 'centre_xy': [float(np.mean(xs)), float(np.mean(ys))],
+    return {'extent_px': float(np.mean(heights)),
+        'centre_xy': [float(np.mean(xs)), float(np.mean(ys))],
         'persons_measured': len(heights)}
 
 
@@ -103,8 +104,7 @@ def combine_guides(images):
     for image in images[1:]:
         overlay = np.asarray(image, dtype=np.uint16)
         base = np.asarray(combined, dtype=np.uint16)
-        merged = np.where(overlay > base, overlay, base).astype(np.uint8)
-        combined = Image.fromarray(merged)
+        combined = Image.fromarray(np.where(overlay > base, overlay, base).astype(np.uint8))
     return combined
 
 
@@ -118,13 +118,14 @@ def build_guides(pair, pair_dir, canvas, framing, score_threshold):
     for slot in sorted(item['slot'] for item in pair['B']['slot_order']):
         entry = next(item for item in pair['B']['slot_order'] if item['slot'] == slot)
         keypoints = next(item for item in pair['B']['keypoints'] if item['slot'] == slot)
-        native, scores, valid = load_person(pair_dir / keypoints['file'], score_threshold)
+        native, scores, valid = load_person(Path(pair_dir) / keypoints['file'], score_threshold)
         on_canvas = rigid_transform(native, b_scale, [0.0, 0.0], b_offset)
         on_canvas = np.where(valid_points(on_canvas, *canvas)[:, None], on_canvas, np.nan)
         persons.append(on_canvas)
         meta.append({'slot': slot, 'hi4d_side': entry['hi4d_side'],
             'keypoints_file': keypoints['file'], 'keypoints_sha256': keypoints['sha256'],
-            'valid_native': int(valid.sum()), 'valid_canvas': int(np.isfinite(on_canvas).all(axis=1).sum()),
+            'valid_native': int(valid.sum()),
+            'valid_canvas': int(np.isfinite(on_canvas).all(axis=1).sum()),
             'min_score': float(scores.min()), 'max_score': float(scores.max())})
     b_pair = measure_pair(persons)
     transform = {'framing': framing, 'b_letterbox_scale': b_scale, 'b_letterbox_offset': b_offset,
@@ -147,46 +148,59 @@ def build_guides(pair, pair_dir, canvas, framing, score_threshold):
     return persons, images, combine_guides(images), transform, meta
 
 
-def main():
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--pair', type=Path, required=True, help='Directory holding pair.json')
-    parser.add_argument('--out', type=Path, required=True, help='Run directory for this pair')
-    parser.add_argument('--framing', choices=GUIDE_FRAMINGS, default='b_canvas')
-    parser.add_argument('--resolution', type=int, default=768)
-    parser.add_argument('--score-threshold', type=float)
-    args = parser.parse_args()
-
-    pair_dir = args.pair.resolve()
+def produce(pair_dir, out_dir, framing='b_canvas', resolution=768, score_threshold=None):
+    """Write every geometry artifact for one run and return the artifact map plus the record."""
+    pair_dir, out_dir = Path(pair_dir).resolve(), Path(out_dir).resolve()
     pair = read_json(pair_dir / 'pair.json')
-    threshold = args.score_threshold or pair['scoring']['score_threshold']
+    threshold = score_threshold if score_threshold is not None else pair['scoring']['score_threshold']
     started = time.perf_counter()
-    out = args.out.resolve()
-    (out / 'inputs').mkdir(parents=True, exist_ok=True)
-    (out / 'geometry').mkdir(parents=True, exist_ok=True)
+    (out_dir / 'inputs').mkdir(parents=True, exist_ok=True)
+    (out_dir / 'geometry').mkdir(parents=True, exist_ok=True)
 
     with Image.open(pair_dir / pair['A']['image']) as image:
-        source = image.convert('RGB')
-    canvas = canvas_size(source.size, args.resolution)
+        source = ImageOps.exif_transpose(image).convert('RGB')
+    canvas = canvas_size(source.size, resolution)
     reference, preprocess = letterbox(source, canvas)
-    reference.save(out / 'inputs' / 'A_reference.png')
-    atomic_json(out / 'inputs' / 'source_preprocess.json', preprocess)
+    with Image.open(pair_dir / pair['B']['image']) as image:
+        target = ImageOps.exif_transpose(image).convert('RGB')
+    # B is letterboxed too, so every reference shares one canvas and nothing is stretched.
+    b_reference, b_preprocess = letterbox(target, canvas)
+    reference.save(out_dir / 'inputs' / 'A_reference.png')
+    b_reference.save(out_dir / 'inputs' / 'B_reference.png')
+    atomic_json(out_dir / 'inputs' / 'source_preprocess.json',
+        {'A': preprocess, 'B': b_preprocess, 'canvas': list(canvas)})
 
     persons, images, combined, transform, meta = build_guides(
-        pair, pair_dir, canvas, args.framing, threshold)
+        pair, pair_dir, canvas, framing, threshold)
+    outputs = {}
     for entry, image in zip(meta, images):
-        image.save(out / 'geometry' / f"skeleton_{entry['slot']}.png")
-    combined.save(out / 'geometry' / 'skeleton_both.png')
-    with Image.open(pair_dir / pair['B']['image']) as image:
-        b_image = image.convert('RGB')
-    # Letterbox B exactly like the points, otherwise this QC image lies about alignment.
-    b_view, b_letterbox = letterbox(b_image, canvas)
-    Image.blend(b_view, combined, 0.45).save(out / 'geometry' / 'B_skeleton_overlay.png')
-    Image.blend(reference, combined, 0.45).save(out / 'geometry' / 'A_skeleton_overlay.png')
+        path = out_dir / 'geometry' / f"skeleton_{entry['slot']}.png"
+        image.save(path)
+        outputs[f'skeleton_{entry["slot"]}'] = path
+    combined_path = out_dir / 'geometry' / 'skeleton_both.png'
+    combined.save(combined_path)
+    outputs['skeleton_both'] = combined_path
+    # The evaluator needs the requested joints as numbers, not as pixels in a drawing.
+    keypoints_path = out_dir / 'geometry' / 'dual_keypoints.npz'
+    np.savez_compressed(keypoints_path,
+        canvas_points=np.stack(persons), canvas_valid=np.isfinite(np.stack(persons)).all(axis=2),
+        slots=np.array([entry['slot'] for entry in meta]), hi4d_sides=np.array(
+            [entry['hi4d_side'] for entry in meta]),
+        canvas=np.array(canvas), content_box=np.array(preprocess['content_box']),
+        coordinate_system='canvas pixels, x-right y-down; subtract content_box for final_image')
+    outputs['dual_keypoints'] = keypoints_path
+    Image.blend(b_reference, combined, 0.45).save(out_dir / 'geometry' / 'B_skeleton_overlay.png')
+    Image.blend(reference, combined, 0.45).save(out_dir / 'geometry' / 'A_skeleton_overlay.png')
+    outputs['A_skeleton_overlay'] = out_dir / 'geometry' / 'A_skeleton_overlay.png'
+    outputs['B_skeleton_overlay'] = out_dir / 'geometry' / 'B_skeleton_overlay.png'
+    outputs['A_reference'] = out_dir / 'inputs' / 'A_reference.png'
+    outputs['B_reference'] = out_dir / 'inputs' / 'B_reference.png'
+    outputs['source_preprocess'] = out_dir / 'inputs' / 'source_preprocess.json'
 
     record = {'schema': 'dual_geometry_v1', 'pair': pair['name'], 'kind': pair['kind'],
-        'framing': args.framing, 'resolution': args.resolution, 'canvas': list(canvas),
-        'score_threshold': threshold, 'transform': transform, 'persons': meta,
-        'overlay_letterbox': b_letterbox,
+        'pair_dir': str(pair_dir), 'framing': framing, 'resolution': resolution,
+        'canvas': list(canvas), 'score_threshold': threshold, 'transform': transform,
+        'persons': meta,
         'inputs': {'A_sha256': sha256_file(pair_dir / pair['A']['image']),
             'B_sha256': sha256_file(pair_dir / pair['B']['image']),
             'pair_json_sha256': sha256_file(pair_dir / 'pair.json')},
@@ -195,16 +209,25 @@ def main():
             'Points under the score threshold are absent rather than guessed, so an occluded '
             'person can legitimately show a partial skeleton, and the combined image stacks '
             'the two bodies without drawing any link between them.'}
-    atomic_json(out / 'geometry' / 'dual_geometry.json', record)
-    print('DUAL_GEOMETRY', args.framing, f'{canvas[0]}x{canvas[1]}',
-        ' '.join(f"slot{entry['slot']}:{entry['valid_canvas']}" for entry in meta),
-        'transform=' + json_scalar(transform), flush=True)
+    atomic_json(out_dir / 'geometry' / 'dual_geometry.json', record)
+    outputs['dual_geometry'] = out_dir / 'geometry' / 'dual_geometry.json'
+    return outputs, record
 
 
-def json_scalar(transform):
-    if 'applied_scale' in transform:
-        return f"scale={transform['applied_scale']:.3f}"
-    return f"letterbox_scale={transform['b_letterbox_scale']:.3f}"
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--pair', type=Path, required=True, help='Directory holding pair.json')
+    parser.add_argument('--out', type=Path, required=True, help='Run directory for this pair')
+    parser.add_argument('--framing', choices=GUIDE_FRAMINGS, default='b_canvas')
+    parser.add_argument('--resolution', type=int, default=768)
+    parser.add_argument('--score-threshold', type=float)
+    args = parser.parse_args()
+    _, record = produce(args.pair, args.out, args.framing, args.resolution, args.score_threshold)
+    transform = record['transform']
+    print('DUAL_GEOMETRY', record['framing'], f"{record['canvas'][0]}x{record['canvas'][1]}",
+        ' '.join(f"slot{item['slot']}:{item['valid_canvas']}" for item in record['persons']),
+        'scale=' + (f"{transform['applied_scale']:.3f}" if 'applied_scale' in transform
+            else f"letterbox {transform['b_letterbox_scale']:.3f}"), flush=True)
 
 
 if __name__ == '__main__':
