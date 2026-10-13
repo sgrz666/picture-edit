@@ -44,12 +44,24 @@ class TorsoRatioTests(unittest.TestCase):
         self.assertIsNone(self.module.assign_to_box(people, [300, 0, 400, 100]))
 
     def test_the_summary_reports_the_spread_not_just_the_centre(self):
-        measurements = [{'ratio': value, 'frame': 'A'} for value in (0.25, 0.30, 0.35)]
+        measurements = [{'ratio': value, 'frame': 'A', 'input_sha256': f'sha{index}',
+            'box_xyxy': [0.0, 0.0, 10.0, float(100 + index)]}
+            for index, value in enumerate((0.25, 0.30, 0.35))]
         summary = self.module.summarise(measurements)
         self.assertEqual(summary['measured'], 3)
+        self.assertEqual(summary['samples_raw'], 3)
         self.assertAlmostEqual(summary['median'], 0.30)
         self.assertAlmostEqual(summary['ratio_to_constant'], 0.30 / self.module.CONSTANT)
         self.assertEqual(summary['by_frame']['A']['n'], 3)
+
+    def test_the_same_body_measured_twice_counts_once(self):
+        # Re-run directories and pairs that share a source frame must not tighten the spread.
+        one = {'ratio': 0.30, 'frame': 'A', 'input_sha256': 'same', 'box_xyxy': [0, 0, 10, 100]}
+        twice = dict(one, ratio=0.31)
+        summary = self.module.summarise([one, twice])
+        self.assertEqual(summary['samples_raw'], 2)
+        self.assertEqual(summary['measured'], 1)
+        self.assertAlmostEqual(summary['median'], 0.30)
 
 
 if __name__ == '__main__':
