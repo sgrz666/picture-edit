@@ -42,16 +42,10 @@ from evaluate_dual import (BODY_SLOTS, PCK_THRESHOLDS, assign, cleaned, hip_cent
     torso_length)
 from src.pose_edit.common import atomic_json, read_json, sha256_file
 
-# One table serves both skeletons: these names exist in SMPL-24 (the Hi4D ground truth) and in the
-# SMPL-X 55-joint order the fit reports. Slots DWPose has but a mesh does not (nose, eyes, ears)
-# stay NaN, so a joint the estimator cannot supply is never counted as an error.
-DWPOSE_TO_JOINT = {1: 'neck', 2: 'right_shoulder', 3: 'right_elbow', 4: 'right_wrist',
-    5: 'left_shoulder', 6: 'left_elbow', 7: 'left_wrist', 8: 'right_hip', 9: 'right_knee',
-    10: 'right_ankle', 11: 'left_hip', 12: 'left_knee', 13: 'left_ankle'}
-SMPL24_NAMES = ['pelvis', 'left_hip', 'right_hip', 'spine1', 'left_knee', 'right_knee', 'spine2',
-    'left_ankle', 'right_ankle', 'spine3', 'left_foot', 'right_foot', 'neck', 'left_collar',
-    'right_collar', 'head', 'left_shoulder', 'right_shoulder', 'left_elbow', 'right_elbow',
-    'left_wrist', 'right_wrist', 'left_hand', 'right_hand']
+# The slot table, the SMPL-24 names and the landmark-block builder live in dual_fitting so that
+# this report and the guide that a fitted run draws cannot drift apart.
+from dual_fitting import DWPOSE_TO_JOINT, SMPL24_NAMES, joint_indices, person_from_joints
+
 EXTRINSIC_CONVENTIONS = ('world_to_camera', 'camera_to_world')
 # DWPose's neck is the shoulder midpoint; SMPL-X's neck is a spine-top joint several centimetres
 # above it. That is a convention offset, not an error, so the neck normalises the torso but is
@@ -69,14 +63,6 @@ FLOOR_SLACK_PCK = 0.05
 FLOOR_SLACK_MPJPE = 1.25
 
 
-def joint_indices(names, table=DWPOSE_TO_JOINT):
-    lookup = {str(name): index for index, name in enumerate(names)}
-    missing = sorted({name for name in table.values() if name not in lookup})
-    if missing:
-        raise KeyError(f'skeleton has no {missing}')
-    return {slot: lookup[name] for slot, name in table.items()}
-
-
 def to_camera(points_world, extrinsics, convention):
     rotation = np.asarray(extrinsics[:3, :3], dtype=float)
     translation = np.asarray(extrinsics[:3, 3], dtype=float)
@@ -92,18 +78,6 @@ def project(points_camera, intrinsics):
     depth = np.clip(points[..., 2], 1e-3, None)
     return np.stack([k[0, 0] * points[..., 0] / depth + k[0, 2],
         k[1, 1] * points[..., 1] / depth + k[1, 2]], axis=-1)
-
-
-def person_from_joints(joints2d, names, size):
-    """Put a skeleton's 2D joints into the DWPose-134 body block the evaluation reads."""
-    indices = joint_indices(names)
-    points = np.full((134, 2), np.nan)
-    for slot, index in indices.items():
-        points[slot] = joints2d[index]
-    usable = (np.isfinite(points).all(axis=1) & (points[:, 0] >= 0) & (points[:, 0] < size[0])
-        & (points[:, 1] >= 0) & (points[:, 1] < size[1]))
-    return {'points': np.where(usable[:, None], points, np.nan),
-        'scores': np.where(usable, 1.0, 0.0)}
 
 
 def comparison(reference, candidate):

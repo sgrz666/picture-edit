@@ -13,7 +13,7 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
-from dual_geometry import GUIDE_FRAMINGS, produce
+from dual_geometry import GUIDE_FRAMINGS, GUIDE_SOURCES, produce
 from dual_prompts import GENERATOR_ROLES, generator_allowed
 from src.pose_edit.common import (atomic_json, file_lock, finish_stage, furthest_valid_stage,
     make_request, model_signature, read_json, sha256_file, stage_outputs, stage_reasons,
@@ -46,7 +46,10 @@ def code_identity(names):
 def pair_inputs(pair_dir):
     pair = read_json(pair_dir / 'pair.json')
     files = {'pair_json': pair_dir / 'pair.json', 'A_original': pair_dir / pair['A']['image'],
-        'B_original': pair_dir / pair['B']['image']}
+        'B_original': pair_dir / pair['B']['image'],
+        # Only hashed into the geometry fingerprint when the guides are drawn from the fit, but
+        # always resolved so that a changed fit cannot slip past the cache.
+        'fit_npz': ROOT / 'fits' / f'{pair_dir.name}.npz'}
     for item in pair['B']['keypoints']:
         files[f"B_keypoints_{item['slot']}"] = pair_dir / item['file']
     return pair, {name: Path(path) for name, path in files.items()}
@@ -81,10 +84,12 @@ def stage_identity(stage, config, paths, pair_dir):
     arm = config['generator_references']
     if stage == 'geometry':
         settings = {key: config[key] for key in
-            ('framing', 'resolution', 'keypoint_score_threshold')}
+            ('framing', 'keypoints_source', 'resolution', 'keypoint_score_threshold')}
         input_names = ['pair_json', 'A_original', 'B_original', 'B_keypoints_1', 'B_keypoints_2']
+        if config['keypoints_source'] == 'fit':
+            input_names.append('fit_npz')
         identities = None
-        code = SHARED_CODE + ['dual_geometry.py']
+        code = SHARED_CODE + ['dual_geometry.py', 'dual_fitting.py']
     elif stage == 'prompt':
         settings = {key: config[key] for key in
             ('pe_model', 'pe_seed', 'prop_policy', 'generator_references')}
@@ -177,6 +182,8 @@ def main():
     parser.add_argument('--name', help='Run directory name, default the pair directory name')
     parser.add_argument('--until', choices=STAGES, default='generate')
     parser.add_argument('--framing', choices=GUIDE_FRAMINGS)
+    parser.add_argument('--keypoints-source', choices=GUIDE_SOURCES,
+        help='draw the guides from the pair ground truth (dwpose) or the multi-HMR fit (fit)')
     parser.add_argument('--generator-references', choices=sorted(GENERATOR_ROLES))
     parser.add_argument('--prompt-file', type=Path, help='Generate with this prompt text instead '
         'of the prompt-engineering output; PE stays cached and is never overwritten')
@@ -191,13 +198,16 @@ def main():
         parser.error('--force and --verify are mutually exclusive')
     config = read_json(args.config)
     for key, value in (('resolution', args.resolution), ('steps', args.steps), ('seed', args.seed),
-            ('framing', args.framing), ('generator_references', args.generator_references)):
+            ('framing', args.framing), ('keypoints_source', args.keypoints_source),
+            ('generator_references', args.generator_references)):
         if value is not None:
             config[key] = value
     if config['generator_references'] not in GENERATOR_ROLES:
         parser.error('--generator-references must be with_b or skeleton_only')
     if config['framing'] not in GUIDE_FRAMINGS:
         parser.error('--framing must be b_canvas or source_fit')
+    if config['keypoints_source'] not in GUIDE_SOURCES:
+        parser.error('--keypoints-source must be dwpose or fit')
     if (config.get('adapter') is not False or config.get('lora') is not False
             or config.get('prop_policy') != 'source_only'):
         parser.error('This workflow is fixed to source-only objects and no adapter/LoRA')
@@ -242,7 +252,8 @@ def main():
                     if stage == 'geometry':
                         outputs, geometry_record = produce(pair_dir, run_dir,
                             config['framing'], config['resolution'],
-                            config['keypoint_score_threshold'])
+                            config['keypoint_score_threshold'], config['keypoints_source'],
+                            paths['fit_npz'])
                         finish_stage(record, request, outputs,
                             {'seconds': geometry_record['seconds'],
                              'canvas': geometry_record['canvas'],

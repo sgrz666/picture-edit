@@ -26,7 +26,7 @@
 | WP4 双人 PE | 完成 | 四图角色契约 + 4→3 编译；`citation_rule` 单一约定（PE 按自己收到的编号写，重编号只由编译器做） |
 | WP5 生成两臂 | 完成 | 四图 34.04 GiB / 142 s，三图 86 s；`generation.json` 记录每张参考图角色与 SHA256 |
 | WP6 评测与索引 | 完成 | `evaluate_dual.py` + `report_dual.py`；身份/服装保持已补（`src/pose_edit/appearance.py`，DINOv2 逐人相似 + 外观配对与姿态配对的分歧作换人信号）；两臂对照见 README 实况表 |
-| WP7 multi-HMR 拟合臂 | **报告完成，接入未做** | `fit_dual_report.py` + `fit_dual_worker.py` 在 17 对上量完，数字、门禁通过与未过项的归因都在 README「拟合臂（WP7）」一节。要点：拟合与 DWPose 的分歧不比 DWPose 与真几何投影的分歧大，唯一未过的髖距项经同表证明是向导错（三张 backhug 里向导说两人髖心相距几 px，真几何与拟合都说 70+ px）。接入（`dual_geometry.py` 的 `--keypoints-source fit`）等批量对照跑完再做，一次只换一个变量 |
+| WP7 multi-HMR 拟合臂 | **报告完成，向导接入完成，fit 向导的生成实验未跑** | `fit_dual_report.py` + `fit_dual_worker.py` 在 17 对上量完，数字与门禁归因见 README。`--keypoints-source dwpose|fit` 已实现：槽位表收在 `dual_fitting.py` 一处（报告与向导共用），fit 分支按髖心 x 排 slot、人数不为 2 就报错；重构后 dwpose 分支重画同一对，三张骨架图与已完成 run 逐字节相同，故批量里 PE/生成缓存仍有效，只有 geometry 指纹重算一次（约 2 秒）。 |
 | WP8 文档与入库 | 本文与 README；代码入库见下一个提交 | — |
 
 ## 过程中修掉的两个约定/设计陷阱

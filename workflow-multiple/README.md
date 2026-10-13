@@ -102,7 +102,15 @@ $PY report_dual.py
 
 门禁判定：`fit pck@0.2 ≥ 底-0.05`、`fit mpjpe_norm ≤ 底×1.25`、`髖距误差(躯干归一) ≤ 0.10`、`对应正确率 ≥ 0.90`、`人数正确率 ≥ 0.90`、`躯干比例 ∈ [0.85,1.20]` —— 前两项、后三项通过，只有髖距 0.120 未过。**未过这一项的责任不在估计器**：三张 backhug（两个 same_identity 对 + 用同一张 B 的一个 cross 对）里，DWPose 向导说两人髖心相距 4.2–4.4 px，而 SMPL 几何投影说 72.6–73.5 px，multi-HMR 说 72.3–72.4 px——拟合跟着真几何走，偏差 1 px 内，是现有向导错了约 68 px。这三对同时也是 `floor PCK@0.2 = 0.500` 与唯一一例对应错（backhug_039）的出处：纠缠姿态下逐人 mask 框里含另一个人，DWPose 的逐人关键点被污染了。
 
-因此这一期的口径定为：**宽松姿态（dance/hug/pose/taichi/yoga）用 DWPose 向导与用拟合骨架向导等价（差异在参照自身噪声以内）；拥抱缠绕类（backhug）以 multi-HMR 的 3D 拟合为准，且评测必须同时报 `projected_gt_px` 那一列，否则把向导错了算成生成器错了。** 把拟合骨架接进生成链（`dual_geometry.py` 增加 `--keypoints-source fit`）留作下一步，接之前先补齐批量对照，避免两个变量同轮换。
+因此这一期的口径定为：**宽松姿态（dance/hug/pose/taichi/yoga）用 DWPose 向导与用拟合骨架向导等价（差异在参照自身噪声以内）；拥抱缠绕类（backhug）以 multi-HMR 的 3D 拟合为准，且评测必须同时报 `projected_gt_px` 那一列，否则把向导错了算成生成器错了。**
+
+拟合骨架接入生成链**已经做完并验证**（`--keypoints-source fit`）：`dual_fitting.py` 是槽位表的唯一住处（`fit_dual_report.py` 与 `dual_geometry.py` 都从它取，报告和向导不可能各说各话），fit 分支读 `fits/<pair>.npz` 的 `j2d_native`，按**髖心 x 从左到右**排成 slot 1/2——与测试集编号 slot 的同一规则，向导不主张身份，provenance 里写 `side_basis: hip centre x order, identity not asserted`；人数不是 2、或任一人缺髖，直接报错而不是猜。走的是与 GT 完全相同的 letterbox/定标/渲染管线，所以 fit 与 dwpose 两种向导的差**只在关键点来源**，一次实验只换一个变量。
+
+两条安全性验证（都是实测，不是声明）：
+- **默认路径逐位不变**：`hug_pair00_084_c4_r000` 用重构后的 dwpose 分支重画，`skeleton_1/2/both.png` 与已完成 run 里的三个文件 SHA256 完全相同（`1f414ba7a116d1d4 / f90d0aa7765a6db0 / 55b7154844e16a3a`）。因为 PE 阶段的代码清单不含 `dual_geometry.py`，且骨架图逐位相同，批量里已缓存的 PE/生成阶段**继续有效**，只有 geometry 指纹变了一次（重算约 2 秒）。
+- **fit 路径真跑得通**：同一对用 `--keypoints-source fit` 出图，两人各 13 个在框内的点、产物齐全。
+
+fit 向导的生成实验本身还没跑——它在等显存窗口，且按计划排在批量之后，免得两组结论搅在一起。踩到的坑记一笔：新参数最初叫 `source`，与 `produce()` 里存 A 图的局部变量 `source` 同名，于是 PIL Image 被当来源名传下去、直接撞进"未知来源"分支；改名为 `keypoints_source` 后一致。
 
 踩过的坑，记下来避免重复：`ImageOps.contain` **返回新图而不原地缩放**，第一版 `pad_geometry` 读原对象的 size，得到 scale=1.0 与负 pad，于是所有拟合点少除了一次 0.7 的缩放并被平移 (22,192) px——表现是 2D PCK@0.2 只有 0.14、3D 绝对误差 1.9 m，而两人髖距误差却只有 1 cm（常量平移与统一缩放不改变相对距离），差点被当成"模型精度差"。修正后同一套代码得到上表。自检教训写进了代码注释：**模型自己 j2d 与 j3d 的重投影一致性（0.17 px）查不出这类坐标错，因为它两侧用的是同一个错内参；只有与外部参照对比才能发现。**
 

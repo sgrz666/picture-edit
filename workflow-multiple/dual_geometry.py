@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 """Turn a two-person pair directory into the pose guides the generator will receive.
 
-Pure CPU, no estimator: the interaction pose comes from Hi4D's per-person DWPose-134 files
-(WP7 puts a fitted alternative behind the same interface).
+Pure CPU: the interaction pose comes either from Hi4D's per-person DWPose-134 files (``dwpose``,
+the default) or from a multi-HMR fit measured by WP7 (``fit``). Both go through the same slot
+order, letterbox and framing, so a fit-guided run differs from a ground-truth-guided run in the
+landmarks only - which is what makes the two attributable.
 
 Two framings exist because they answer different questions:
 
@@ -34,7 +36,10 @@ if str(REPO_ROOT) not in sys.path:
 from src.pose_edit.common import atomic_json, canvas_size, letterbox, read_json, sha256_file
 from src.pose_edit.geometry import render_poseguide, valid_points
 
+import dual_fitting
+
 GUIDE_FRAMINGS = ('b_canvas', 'source_fit')
+GUIDE_SOURCES = ('dwpose', 'fit')
 
 
 def load_person(path, score_threshold):
@@ -108,28 +113,61 @@ def combine_guides(images):
     return combined
 
 
-def build_guides(pair, pair_dir, canvas, framing, score_threshold):
+def guide_persons(pair, pair_dir, score_threshold, keypoints_source='dwpose', fit_npz=None):
+    """The two people of B in native pixels, plus per-person provenance, in guide slot order."""
+    slots = sorted(item['slot'] for item in pair['B']['slot_order'])
+    if keypoints_source == 'dwpose':
+        persons, meta = [], []
+        for slot in slots:
+            entry = next(item for item in pair['B']['slot_order'] if item['slot'] == slot)
+            keypoints = next(item for item in pair['B']['keypoints'] if item['slot'] == slot)
+            native, scores, valid = load_person(Path(pair_dir) / keypoints['file'],
+                score_threshold)
+            persons.append(native)
+            meta.append({'slot': slot, 'hi4d_side': entry['hi4d_side'], 'source': 'dwpose',
+                'keypoints_file': keypoints['file'], 'keypoints_sha256': keypoints['sha256'],
+                'valid_native': int(valid.sum()), 'min_score': float(scores.min()),
+                'max_score': float(scores.max())})
+        return persons, meta
+    if keypoints_source == 'fit':
+        if not fit_npz or not Path(fit_npz).is_file():
+            raise FileNotFoundError(f'--keypoints-source fit needs the fit npz for this pair; '
+                f'got {fit_npz}')
+        people, provenance = dual_fitting.load_fit(Path(fit_npz), tuple(pair['B']['size']),
+            len(slots))
+        meta = []
+        for slot, person in zip(slots, people):
+            entry = next(item for item in pair['B']['slot_order'] if item['slot'] == slot)
+            native = person['points']
+            valid = np.isfinite(native).all(axis=1)
+            # A fit carries no identity, so the slot is positional: hip x order, the same rule the
+            # test set used to number the ground-truth people. Nothing here asserts who is who.
+            meta.append({'slot': slot, 'hi4d_side': entry['hi4d_side'], 'source': 'fit',
+                'side_basis': 'hip centre x order, identity not asserted',
+                'fit_npz': str(fit_npz), 'fit_npz_sha256': sha256_file(fit_npz),
+                'fit_index': provenance['slot_order_by_hip_x'][slots.index(slot)],
+                'valid_native': int(valid.sum())})
+        return [person['points'] for person in people], meta
+    raise ValueError(f'unknown keypoint source {keypoints_source!r}; use dwpose or fit')
+
+
+def build_guides(pair, pair_dir, canvas, framing, score_threshold, keypoints_source='dwpose', fit_npz=None):
     """Load both people, put them on the canvas, and apply the requested framing."""
     b_size = pair['B']['size']
     b_scale = min(canvas[0] / b_size[0], canvas[1] / b_size[1])
     b_offset = [(canvas[0] - round(b_size[0] * b_scale)) / 2,
         (canvas[1] - round(b_size[1] * b_scale)) / 2]
-    persons, meta = [], []
-    for slot in sorted(item['slot'] for item in pair['B']['slot_order']):
-        entry = next(item for item in pair['B']['slot_order'] if item['slot'] == slot)
-        keypoints = next(item for item in pair['B']['keypoints'] if item['slot'] == slot)
-        native, scores, valid = load_person(Path(pair_dir) / keypoints['file'], score_threshold)
-        on_canvas = rigid_transform(native, b_scale, [0.0, 0.0], b_offset)
-        on_canvas = np.where(valid_points(on_canvas, *canvas)[:, None], on_canvas, np.nan)
-        persons.append(on_canvas)
-        meta.append({'slot': slot, 'hi4d_side': entry['hi4d_side'],
-            'keypoints_file': keypoints['file'], 'keypoints_sha256': keypoints['sha256'],
-            'valid_native': int(valid.sum()),
-            'valid_canvas': int(np.isfinite(on_canvas).all(axis=1).sum()),
-            'min_score': float(scores.min()), 'max_score': float(scores.max())})
+    persons, meta = guide_persons(pair, pair_dir, score_threshold, keypoints_source, fit_npz)
+    for index, person in enumerate(meta):
+        finite = np.isfinite(persons[index]).all(axis=1)
+        person['valid_native'] = int(finite.sum())
+        persons[index] = rigid_transform(persons[index], b_scale, [0.0, 0.0], b_offset)
+        persons[index] = np.where(valid_points(persons[index], *canvas)[:, None],
+            persons[index], np.nan)
+        person['valid_canvas'] = int(np.isfinite(persons[index]).all(axis=1).sum())
     b_pair = measure_pair(persons)
-    transform = {'framing': framing, 'b_letterbox_scale': b_scale, 'b_letterbox_offset': b_offset,
-        'b_pair_canvas': b_pair}
+    transform = {'framing': framing, 'keypoints_source': keypoints_source,
+        'b_letterbox_scale': b_scale, 'b_letterbox_offset': b_offset, 'b_pair_canvas': b_pair}
     if framing == 'source_fit':
         a_pair, a_transform = measure_source(pair, canvas)
         transform['a_pair_canvas'] = a_pair
@@ -148,7 +186,8 @@ def build_guides(pair, pair_dir, canvas, framing, score_threshold):
     return persons, images, combine_guides(images), transform, meta
 
 
-def produce(pair_dir, out_dir, framing='b_canvas', resolution=768, score_threshold=None):
+def produce(pair_dir, out_dir, framing='b_canvas', resolution=768, score_threshold=None,
+        keypoints_source='dwpose', fit_npz=None):
     """Write every geometry artifact for one run and return the artifact map plus the record."""
     pair_dir, out_dir = Path(pair_dir).resolve(), Path(out_dir).resolve()
     pair = read_json(pair_dir / 'pair.json')
@@ -171,7 +210,7 @@ def produce(pair_dir, out_dir, framing='b_canvas', resolution=768, score_thresho
         {'A': preprocess, 'B': b_preprocess, 'canvas': list(canvas)})
 
     persons, images, combined, transform, meta = build_guides(
-        pair, pair_dir, canvas, framing, threshold)
+        pair, pair_dir, canvas, framing, threshold, keypoints_source, fit_npz)
     outputs = {}
     for entry, image in zip(meta, images):
         path = out_dir / 'geometry' / f"skeleton_{entry['slot']}.png"
@@ -198,7 +237,8 @@ def produce(pair_dir, out_dir, framing='b_canvas', resolution=768, score_thresho
     outputs['source_preprocess'] = out_dir / 'inputs' / 'source_preprocess.json'
 
     record = {'schema': 'dual_geometry_v1', 'pair': pair['name'], 'kind': pair['kind'],
-        'pair_dir': str(pair_dir), 'framing': framing, 'resolution': resolution,
+        'pair_dir': str(pair_dir), 'framing': framing, 'keypoints_source': keypoints_source,
+        'resolution': resolution,
         'canvas': list(canvas), 'score_threshold': threshold, 'transform': transform,
         'persons': meta,
         'inputs': {'A_sha256': sha256_file(pair_dir / pair['A']['image']),
@@ -219,10 +259,15 @@ def main():
     parser.add_argument('--pair', type=Path, required=True, help='Directory holding pair.json')
     parser.add_argument('--out', type=Path, required=True, help='Run directory for this pair')
     parser.add_argument('--framing', choices=GUIDE_FRAMINGS, default='b_canvas')
+    parser.add_argument('--keypoints-source', choices=GUIDE_SOURCES, default='dwpose',
+        help='draw the guides from the pair ground truth or from a multi-HMR fit')
+    parser.add_argument('--fit-npz', type=Path,
+        help='the fit_dual_worker npz for this pair; required with --keypoints-source fit')
     parser.add_argument('--resolution', type=int, default=768)
     parser.add_argument('--score-threshold', type=float)
     args = parser.parse_args()
-    _, record = produce(args.pair, args.out, args.framing, args.resolution, args.score_threshold)
+    _, record = produce(args.pair, args.out, args.framing, args.resolution, args.score_threshold,
+        args.keypoints_source, args.fit_npz)
     transform = record['transform']
     print('DUAL_GEOMETRY', record['framing'], f"{record['canvas'][0]}x{record['canvas'][1]}",
         ' '.join(f"slot{item['slot']}:{item['valid_canvas']}" for item in record['persons']),
