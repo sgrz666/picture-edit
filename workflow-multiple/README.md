@@ -83,6 +83,8 @@ $PY report_dual.py
 
 这张卡与别人的长任务共用：会话开始时空余 60.7 GiB，2026-10-13 23:50 实测只剩 9.8–21 GiB（对方的 8arm 任务已跑 2 天 6 小时），而一次 768/30 生成实测峰值 34 GiB，池子不够时会被驱动的 NVML 断言直接打死。为此加了 `gpu_gate.sh`：每 5 分钟测一次 `torch.cuda.mem_get_info()`，空余 < 40 GiB 就 TERM 掉 batch 循环（正在跑的那个 run 不动，让它自己跑完或失败），回到 40 GiB 以上就重新拉起 `batch_dual.sh` —— 拉起时已记录 ok 的 run 会被跳过，恢复只花缓存检查的时间。看 `logs_batch/gate.log` 判断当前处于 RESUME / HOLD / PAUSE 哪一档。
 
+批量要回答的是"同一对上，另一臂/另一档定标更好吗"，而 `report_dual.py` 的按臂均值回答不了这个——两臂若落在不同的对上，均值比的是对而不是臂。`compare_dual.py` 做**成对**比较：`--by arm` 比 `skeleton_only` 与 `with_b`、`--by framing` 比 `b_canvas` 与 `source_fit`，只取两边都 `complete` 的同一对，逐对给 left−right 的差与判定（PCK/身份/人数越大越好，MPJPE/髖距误差越小越好，躯干比例只作信息因为它是"离 1.0 的距离"，0.02 以内算平），并明确列出"只有一边跑成过"的对。当前（写这里时批量被显存闸门挡住、只完成 4 对次）它已经是可读的但几乎是空的：`with_b` 在人数不对时姿态与身份指标本就量不出来，于是成对表里那一格显示 `not measured`，而 `count_ok` 一项直接判给 `skeleton_only`——这本身就是本轮要的结论形态，不是缺数据。
+
 ## 拟合臂（WP7）实测：multi-HMR 能不能当向导
 
 `fit_dual_report.py` + `fit_dual_worker.py`（跑在 `add/envs/multihmr`，权重 `models/multiHMR/multiHMR_896_L.pt`）对 17 对的 B 原图各拟合一次，与两套参照比较：本线一直在用的 DWPose-134 逐人关键点，以及 Hi4D SMPL 关节经该帧自带内参投影到像素的结果。外参方向没写在任何资产说明里，所以按"哪个方向落在这张图的 DWPose 点上"选出 `world_to_camera`；SMPL-24 的关节顺序同样不靠假设，用骨盆=两髖中点、颈=两锁骨中点这两个刚性关系验（实测 0.087–0.088 m 与 0.090–0.091 m，与 SMPL 骨骼一致）。误差统计里剔掉 neck 槽：DWPose 的 neck 是两肩中点，SMPL-X 的 neck 是脊椎顶端，差几厘米是口径差不是错。
