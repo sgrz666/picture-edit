@@ -81,6 +81,8 @@ $PY report_dual.py
 
 批量对照在跑：`batch_dual.sh` 对 12 对 same_identity 跑 `{with_b, skeleton_only} × b_canvas` 加 `skeleton_only × source_fit`，对 5 对 cross_pair 跑两臂 `b_canvas`，共 46 个 run，逐个 `evaluate_dual.py`，进度与失败记在 `logs_batch/index.tsv`，收尾自动出 `report_dual.py`（已加身份两列、按"臂 × 定标"分组的均值块，且只在人数正确的 run 上求姿态均值）。写这一段时完成 3/46（2 成功、1 失败——失败是本机驱动的 NVML 断言，不是流水线），`retry_dual.sh` 会在批量结束后只重跑失败的 run（几何与提示词阶段仍命中缓存，一次重试只花生成那 2–8 分钟）。
 
+这张卡与别人的长任务共用：会话开始时空余 60.7 GiB，2026-10-13 23:50 实测只剩 9.8–21 GiB（对方的 8arm 任务已跑 2 天 6 小时），而一次 768/30 生成实测峰值 34 GiB，池子不够时会被驱动的 NVML 断言直接打死。为此加了 `gpu_gate.sh`：每 5 分钟测一次 `torch.cuda.mem_get_info()`，空余 < 40 GiB 就 TERM 掉 batch 循环（正在跑的那个 run 不动，让它自己跑完或失败），回到 40 GiB 以上就重新拉起 `batch_dual.sh` —— 拉起时已记录 ok 的 run 会被跳过，恢复只花缓存检查的时间。看 `logs_batch/gate.log` 判断当前处于 RESUME / HOLD / PAUSE 哪一档。
+
 ## 拟合臂（WP7）实测：multi-HMR 能不能当向导
 
 `fit_dual_report.py` + `fit_dual_worker.py`（跑在 `add/envs/multihmr`，权重 `models/multiHMR/multiHMR_896_L.pt`）对 17 对的 B 原图各拟合一次，与两套参照比较：本线一直在用的 DWPose-134 逐人关键点，以及 Hi4D SMPL 关节经该帧自带内参投影到像素的结果。外参方向没写在任何资产说明里，所以按"哪个方向落在这张图的 DWPose 点上"选出 `world_to_camera`；SMPL-24 的关节顺序同样不靠假设，用骨盆=两髖中点、颈=两锁骨中点这两个刚性关系验（实测 0.087–0.088 m 与 0.090–0.091 m，与 SMPL 骨骼一致）。误差统计里剔掉 neck 槽：DWPose 的 neck 是两肩中点，SMPL-X 的 neck 是脊椎顶端，差几厘米是口径差不是错。
@@ -101,3 +103,13 @@ $PY report_dual.py
 因此这一期的口径定为：**宽松姿态（dance/hug/pose/taichi/yoga）用 DWPose 向导与用拟合骨架向导等价（差异在参照自身噪声以内）；拥抱缠绕类（backhug）以 multi-HMR 的 3D 拟合为准，且评测必须同时报 `projected_gt_px` 那一列，否则把向导错了算成生成器错了。** 把拟合骨架接进生成链（`dual_geometry.py` 增加 `--keypoints-source fit`）留作下一步，接之前先补齐批量对照，避免两个变量同轮换。
 
 踩过的坑，记下来避免重复：`ImageOps.contain` **返回新图而不原地缩放**，第一版 `pad_geometry` 读原对象的 size，得到 scale=1.0 与负 pad，于是所有拟合点少除了一次 0.7 的缩放并被平移 (22,192) px——表现是 2D PCK@0.2 只有 0.14、3D 绝对误差 1.9 m，而两人髖距误差却只有 1 cm（常量平移与统一缩放不改变相对距离），差点被当成"模型精度差"。修正后同一套代码得到上表。自检教训写进了代码注释：**模型自己 j2d 与 j3d 的重投影一致性（0.17 px）查不出这类坐标错，因为它两侧用的是同一个错内参；只有与外部参照对比才能发现。**
+
+## 定标常数：躯干 ÷ 人体框高
+
+共享包里的 `TORSO_TO_PERSON_BOX_HEIGHT = 0.31` 是单人线 `source_torso` 定标用的（期望躯干 = 源人物框高 × 0.31），当年由 5 对单人数据反推。双人线自己的 `source_fit` 不做逐人缩放、用不到它，所以这个常数在双人数据上一直是空白。`torso_ratio.py` 直接量它：A 侧用 pair.json 里的 mask 框 + 在本机 CPU 上跑的 DWPose 关键点，B 侧用 pair 自带关键点 + `geometry.npz` 的语义掩码框，17 对 × 2 人 × 2 帧 = **68 个样本**（明细 `ratios/torso_ratio.json`）：
+
+- 中位数 **0.285**，均值 0.286，IQR 0.270–0.299，极值 0.256–0.333；
+- 分帧：A 0.280（34 个）、B 0.285（34 个）；同一帧跨对重复测得的值一致；
+- 分动作族：dance 0.275、pose 0.277、backhug 0.277、taichi↔hug 0.289–0.290、hug→yoga 0.306、yoga 0.324。
+
+方向性结论：0.31 落在 IQR 上沿之外（p75 = 0.299）。这里的框是分割掩码框，比检测框更贴身体，**掩码口径的比值是检测口径的上界**；上界已经低于 0.31，说明按这类身形，0.31 大约偏高 9%，用它缩放会把迁移后的姿态放大同样比例。单人线当初能反推出 0.31，可能是那 5 对的源人物框被画面边缘裁短或含额外留白（分母偏小 → 比值偏大），也可能两线的取景与身形本就不同——**在没有用同一口径回测单人线之前不下这个结论**。本轮没有改常数，也没有重跑单人线对照。
