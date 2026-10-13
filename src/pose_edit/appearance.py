@@ -85,6 +85,48 @@ def best_assignment(similarity: np.ndarray):
     return ([0, 1] if direct >= swapped else [1, 0]), max(direct, swapped)
 
 
+def mask_box(mask) -> list | None:
+    """Tight xyxy box around the nonzero part of a person mask, or None if the mask is empty.
+
+    Lives here because both the identity metric and the framing audit need the same silhouette
+    box; a second copy in a caller is how the two would drift apart.
+    """
+    rows = np.where(mask.any(axis=1))[0]
+    columns = np.where(mask.any(axis=0))[0]
+    if not len(rows) or not len(columns):
+        return None
+    return [float(columns[0]), float(rows[0]), float(columns[-1] + 1), float(rows[-1] + 1)]
+
+
+def judge_import(embed, reference_crops, target_crops, generated_crops) -> dict:
+    """Is an extra body in the result actually one of the target photograph's people?
+
+    This is only informative when the source and the target show *different* people: in a
+    same-identity pair A and B are the same actors in the same clothes, so "looks like B" and
+    "looks like A" are the same statement and the caller must say so rather than report a number.
+    """
+    if not reference_crops or not target_crops or not generated_crops:
+        return {'available': False, 'reason': 'need source, target and generated crops'}
+    reference = [embed(crop) for crop in reference_crops]
+    target = [embed(crop) for crop in target_crops]
+    bodies = []
+    for crop in generated_crops:
+        feature = embed(crop)
+        against_reference = [float(np.dot(feature, one)) for one in reference]
+        against_target = [float(np.dot(feature, one)) for one in target]
+        best_reference = max(against_reference)
+        best_target = max(against_target)
+        bodies.append({'best_source_similarity': best_reference,
+            'best_target_similarity': best_target,
+            'target_minus_source': best_target - best_reference,
+            'looks_more_like_target': best_target - best_reference > SWAP_MARGIN_PER_PERSON})
+    return {'available': True, 'bodies': bodies,
+        'bodies_liking_target_more': sum(1 for body in bodies if body['looks_more_like_target']),
+        'margin_per_body': SWAP_MARGIN_PER_PERSON,
+        'basis': 'DINOv2 cosine similarity of each generated body against the source people and '
+            'the target people, best match each way'}
+
+
 def judge_appearance(similarity: np.ndarray, pose_assignment) -> dict:
     """Compare the pose-based pairing with the appearance-optimal pairing.
 

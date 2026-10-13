@@ -37,18 +37,10 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from evaluate_dual import detect_people, hip_centre, torso_length
+from src.pose_edit.appearance import mask_box
 from src.pose_edit.common import atomic_json, read_json, sha256_file
 
 CONSTANT = 0.31
-
-
-def mask_box(mask) -> list[float] | None:
-    """xyxy box around the nonzero part of a person's semantic/mask image."""
-    rows = np.where(mask.any(axis=1))[0]
-    cols = np.where(mask.any(axis=0))[0]
-    if not len(rows) or not len(cols):
-        return None
-    return [float(cols[0]), float(rows[0]), float(cols[-1] + 1), float(rows[-1] + 1)]
 
 
 def ratio(points, box) -> dict:

@@ -29,7 +29,8 @@ if str(REPO_ROOT) not in sys.path:
 
 from src.pose_edit.common import (atomic_json, finish_stage, make_request, read_json,
     sha256_file, stage_reasons)
-from src.pose_edit.appearance import crop_person, judge_appearance, load_embedder
+from src.pose_edit.appearance import (crop_person, judge_appearance, judge_import, load_embedder,
+    mask_box)
 from src.pose_edit.geometry import (cocowholebody133_to_dwpose134, valid_points)
 from src.evaluation.dwpose_onnx.onnxdet import inference_detector
 from src.evaluation.dwpose_onnx.onnxpose import inference_pose
@@ -174,18 +175,43 @@ def source_boxes_canvas(pair, preprocess):
     return boxes
 
 
+def target_person_boxes(pair):
+    """B's two person boxes, taken from the frame's own semantic masks."""
+    arrays = np.load(pair['B']['geometry_original'], allow_pickle=True)
+    boxes = []
+    for item in pair['B']['slot_order']:
+        # The mask keys are spelled with the Hi4D side's case (semantic_A, semantic_B); matching
+        # them case-insensitively would silently return no boxes and no error.
+        key = next((name for name in (f"semantic_{item['hi4d_side']}",
+            f"semantic_{str(item['hi4d_side']).upper()}") if name in arrays.files), None)
+        boxes.append(None if key is None else mask_box(arrays[key] > 0))
+    return boxes
+
+
+def crops_of(image, boxes):
+    """Crop every box that exists; a missing box yields None and the caller degrades."""
+    return [None if box is None else crop_person(image, box) for box in boxes]
+
+
 def measure_appearance(config, run_dir, geometry, detected_people, mapping):
-    """Compare each source person with the generated person the pose assignment picked."""
+    """Did each source person stay that person, and does any body look like B's people?
+
+    Two different questions, both needed: the first is measured along the pose assignment, the
+    second walks every detected body - including a third one that has no assignment at all - and
+    asks whether it resembles a person from the target photograph more than any person from the
+    source does. That is the direct test of "the model imported B's people", which until now was
+    only inferred from the person count.
+    """
     if not mapping:
         return {'available': False, 'reason': 'no pose assignment to compare along'}
-    pair = read_json(Path(geometry['pair_dir']) / 'pair.json')
+    pair_dir = Path(geometry['pair_dir'])
+    pair = read_json(pair_dir / 'pair.json')
     preprocess = read_json(run_dir / 'inputs' / 'source_preprocess.json')['A']
     with Image.open(run_dir / 'inputs' / 'A_reference.png') as image:
         reference = image.convert('RGB')
     with Image.open(run_dir / 'generation' / 'final_image.png') as image:
         generated = image.convert('RGB')
-    source_crops = [crop_person(reference, box)
-        for box in source_boxes_canvas(pair, preprocess)]
+    source_crops = crops_of(reference, source_boxes_canvas(pair, preprocess))
     generated_crops = [crop_person(generated, detected_people[slot]['box_xyxy'])
         for slot in mapping]
     if not all(source_crops) or not all(generated_crops):
@@ -196,7 +222,24 @@ def measure_appearance(config, run_dir, geometry, detected_people, mapping):
         return {'available': False, 'reason': error}
     similarity = np.array([[float(np.dot(embed(one), embed(other)))
         for other in generated_crops] for one in source_crops])
-    return judge_appearance(similarity, mapping)
+    verdict = judge_appearance(similarity, mapping)
+    with Image.open(pair_dir / pair['B']['image']) as image:
+        target = image.convert('RGB')
+    target_crops = crops_of(target, target_person_boxes(pair))
+    bodies = crops_of(generated, [person['box_xyxy'] for person in detected_people])
+    informative = pair['kind'] != 'same_identity'
+    if all(target_crops) and all(bodies):
+        block = judge_import(embed, source_crops, target_crops, bodies)
+    else:
+        block = {'available': False, 'bodies': [], 'bodies_liking_target_more': 0,
+            'reason': 'a target photograph or generated body crop came out empty'}
+    block['informative'] = bool(informative)
+    if not informative:
+        block['not_informative_reason'] = ('A and B are the same two people in the same clothes '
+            'on this flavour of pair, so "looks like B" cannot be told apart from "looks like A"; '
+            'the numbers are reported but only cross_pair runs can flag an import')
+    verdict['target_import'] = block
+    return verdict
 
 
 def main():
@@ -256,7 +299,11 @@ def main():
             if person['torso_scale_ratio']])) if comparable else None,
         'identity_similarity': appearance.get('identity_mean'),
         'identity_swap_suspected': float(appearance['identity_swap_suspected'])
-            if appearance.get('available') else None}
+            if appearance.get('available') else None,
+        'target_import_suspected': float(
+            (appearance.get('target_import') or {}).get('bodies_liking_target_more', 0) > 0)
+            if (appearance.get('target_import') or {}).get('available')
+            and (appearance.get('target_import') or {}).get('informative') else None}
     interaction = None
     if len(persons) == 2 and all(person.get('hip_centre_xy') for person in persons):
         detected_gap = float(np.linalg.norm(np.asarray(persons[0]['hip_centre_xy'])

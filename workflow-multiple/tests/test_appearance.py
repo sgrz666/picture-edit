@@ -72,6 +72,37 @@ class AppearanceTests(unittest.TestCase):
         self.assertEqual(pairs, [1, 0])
         self.assertAlmostEqual(total, 1.75)
 
+    def test_an_extra_body_that_matches_the_target_better_than_the_source_is_an_import_signal(self):
+        vectors = {'a1': np.array([1.0, 0.0]), 'a2': np.array([0.0, 1.0]),
+            'b1': np.array([0.6, 0.8]), 'like_a': np.array([0.0, 1.0]),
+            'like_b': np.array([0.6, 0.8])}
+        embed = lambda crop: vectors[crop]
+        verdict = self.module.judge_import(embed, ['a1', 'a2'], ['b1'], ['like_a', 'like_b'])
+        self.assertTrue(verdict['available'])
+        self.assertEqual(verdict['bodies_liking_target_more'], 1)
+        self.assertFalse(verdict['bodies'][0]['looks_more_like_target'])
+        self.assertAlmostEqual(verdict['bodies'][0]['best_source_similarity'], 1.0)
+        self.assertAlmostEqual(verdict['bodies'][1]['best_target_similarity'], 1.0)
+        self.assertAlmostEqual(verdict['bodies'][1]['target_minus_source'], 0.2)
+
+    def test_the_import_signal_needs_to_clear_the_margin_not_just_point_the_other_way(self):
+        margin = self.module.SWAP_MARGIN_PER_PERSON
+        vectors = {'a1': np.array([1.0, 0.0]), 'b1': np.array([np.cos(margin), np.sin(margin)]),
+            'body': np.array([1.0, 0.0])}
+        embed = lambda crop: vectors[crop]
+        verdict = self.module.judge_import(embed, ['a1'], ['b1'], ['body'])
+        self.assertAlmostEqual(verdict['bodies'][0]['best_source_similarity'], 1.0)
+        self.assertFalse(verdict['bodies'][0]['looks_more_like_target'])
+        self.assertEqual(verdict['bodies_liking_target_more'], 0)
+
+    def test_missing_crops_degrade_to_a_reason(self):
+        embed = lambda crop: np.array([1.0, 0.0])
+        for reference, target, bodies in (([], ['b'], ['g']), (['a'], [], ['g']),
+                (['a'], ['b'], [])):
+            with self.subTest(reference=len(reference), target=len(target)):
+                verdict = self.module.judge_import(embed, reference, target, bodies)
+                self.assertFalse(verdict['available'])
+
 
 if __name__ == '__main__':
     unittest.main()

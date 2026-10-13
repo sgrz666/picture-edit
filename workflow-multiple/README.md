@@ -66,6 +66,8 @@ $PY report_dual.py
 
 它只测姿态与人际几何。身份/服装保持由 `src/pose_edit/appearance.py` 补上：把 A 的两人 mask 框与生成图上按姿态分配到的两人检出框各裁一张，过 DINOv2 ViT-S/14 取 CLS 特征算余弦相似，逐人给分数，并把"按外观最优配对"与"按姿态配对"做对比——两者不一致且人均差距超过 0.02 才报 `identity_swap_suspected`。它是外观代理而不是生物身份：重画的脸、被挡的脸都会降分而不证明人被换掉；框内背景变了也动同一个数。检出的点若被生成器藏起来，该点被排除而不算错，所以"藏 limbs"的结果会虚高。
 
+`target_import` 是另一件事：**直接**测"把 B 的人搬进来"，此前只能靠人数间接推断。它对生成图上每一个检出人体（含没有分配的第 3 个）分别取"与 A 两人的最大相似"和"与 B 两人的最大相似"，后者比前者超过 0.02 就计入 `bodies_liking_target_more`，汇总成 `summary.target_import_suspected`。它只在 A、B 是不同人的 `cross_pair` 上有意义：`same_identity` 对里 A 与 B 是同一对演员、同一身衣服，"像 B"与"像 A"是同一句话。这不是理论顾虑而是实测——`hug_skeleton_only`（我们认定成功的臂）在 same_identity 对上有 2/2 个人体"更像 B"（例：更像 A 0.800、更像 B 0.862），若不按 kind 门控就会把成功的臂标成搬运者；门控后该列输出 `None`，并在 json 里带 `not_informative_reason`。开发这段时被"跑一遍才发现"抓出两个静默错误：掩码键大小写敏感（`semantic_A/semantic_B`，按小写比对就永远取不到框、指标恒为 unavailable），以及框缺失时 `crop_person(None)` 直接崩——现在两种拼法都试、缺框走带原因的 unavailable。
+
 `run.json` 的 `status` 由 `furthest_valid_stage()` 按阶段有效性算出（走到哪一段的指纹与产物哈希还成立），不再等于"最后一次调用要到哪"；同时写 `furthest_valid_stage` 字段。旧 run 的 `status` 保持当时的写法，要按新口径判定就重跑一次 `--verify`。
 
 ## 实况
