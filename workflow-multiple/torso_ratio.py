@@ -169,6 +169,24 @@ def single_person_measurements(config, runs_root, cache) -> list[dict]:
     return entries
 
 
+def sizing_error(measurements) -> dict:
+    """What the constant does to a body, in the units the framing uses.
+
+    ``source_torso`` transfers a pose at ``CONSTANT * A_box_height`` and calls that the source
+    person's torso. The measured torso is ``ratio * A_box_height``, so the body comes out
+    ``CONSTANT / ratio`` of its true size - a per-pair multiplier, not an average error. A median
+    near 1.0 would mean the constant is fine and only noisy; a median away from 1.0 means every
+    pose drawn through that framing is systematically mis-sized.
+    """
+    factors = [CONSTANT / item['ratio'] for item in deduplicate(measurements) if item['ratio']]
+    if not factors:
+        return {'pairs': 0}
+    return {'pairs': len(factors), 'median_multiplier': float(np.median(factors)),
+        'p25': float(np.percentile(factors, 25)), 'p75': float(np.percentile(factors, 75)),
+        'min': float(min(factors)), 'max': float(max(factors)),
+        'within_10_percent': sum(1 for value in factors if 0.9 <= value <= 1.1) / len(factors)}
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--config', type=Path, default=ROOT / 'config.json')
@@ -226,6 +244,15 @@ def main():
         for action, values in sorted(by_action.items())}
     summary['single_person_line'] = summarise(single)
     summary['both_lines_combined'] = summarise(measurements + single)
+    summary['sizing_multiplier'] = {'single_person_line': sizing_error(single),
+        'two_person_set': sizing_error(measurements)}
+    for line, block in summary['sizing_multiplier'].items():
+        if block.get('pairs'):
+            print(f'SIZING {line}: pairs={block["pairs"]} '
+                f'median={block["median_multiplier"]:.2f} '
+                f'IQR={block["p25"]:.2f}-{block["p75"]:.2f} '
+                f'range={block["min"]:.2f}-{block["max"]:.2f} '
+                f'within_10pct={block["within_10_percent"]:.2f}')
     atomic_json(args.out / 'torso_ratio.json',
         {'summary': summary, 'pairs': per_pair, 'single_runs': single})
     print('\nTORSO_OVER_BOX_HEIGHT ' + ' '.join(

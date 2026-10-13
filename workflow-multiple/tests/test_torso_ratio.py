@@ -54,6 +54,19 @@ class TorsoRatioTests(unittest.TestCase):
         self.assertAlmostEqual(summary['ratio_to_constant'], 0.30 / self.module.CONSTANT)
         self.assertEqual(summary['by_frame']['A']['n'], 3)
 
+    def test_the_sizing_multiplier_is_the_constant_over_the_measured_ratio(self):
+        # 0.31 divided by the measured torso/box ratio is the factor a body is drawn at when a
+        # pose is transferred through the source_torso framing.
+        measurements = [{'ratio': ratio, 'frame': 'A', 'input_sha256': f'sha{index}',
+            'box_xyxy': [0.0, 0.0, 10.0, 100.0 + index]}
+            for index, ratio in enumerate((0.31, 0.62, 0.155))]
+        block = self.module.sizing_error(measurements)
+        self.assertEqual(block['pairs'], 3)
+        self.assertAlmostEqual(block['median_multiplier'], 1.0)
+        self.assertAlmostEqual(block['min'], 0.5)
+        self.assertAlmostEqual(block['max'], 2.0)
+        self.assertAlmostEqual(block['within_10_percent'], 1 / 3)
+
     def test_the_same_body_measured_twice_counts_once(self):
         # Re-run directories and pairs that share a source frame must not tighten the spread.
         one = {'ratio': 0.30, 'frame': 'A', 'input_sha256': 'same', 'box_xyxy': [0, 0, 10, 100]}
