@@ -17,16 +17,23 @@ import time
 import numpy as np
 from PIL import Image
 
-from pose_transfer.common import (atomic_json, finish_stage, make_request, model_signature,
+# The repo-level shared package lives one directory up from this workflow.
+import sys
+from pathlib import Path
+REPO_ROOT = Path(__file__).resolve().parents[1]
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
+
+from src.pose_edit.common import (atomic_json, finish_stage, make_request, model_signature,
     read_json, sha256_file, stage_reasons)
-from pose_transfer.estimator import estimate_single, project, reconstruct
-from pose_transfer.geometry import render_poseguide, smplx137_to_dwpose134, valid_points
+from src.pose_edit.estimator import estimate_single, project, reconstruct
+from src.pose_edit.geometry import render_poseguide, smplx137_to_dwpose134, valid_points
 
 ROOT = Path(__file__).resolve().parent
 ESTIMATOR_SOURCE_FILES = ['main/inference.py', 'main/base.py', 'models/SMPLest_X.py',
     'human_models/human_models.py', 'scripts/run_smplestx_params_only.py']
-CODE = ['evaluate.py', 'pose_transfer/common.py', 'pose_transfer/geometry.py',
-    'pose_transfer/estimator.py']
+CODE = ['evaluate.py', 'src/pose_edit/common.py', 'src/pose_edit/geometry.py',
+    'src/pose_edit/estimator.py']
 GROUPS = {'body': slice(0, 18), 'feet': slice(18, 24), 'face': slice(24, 92),
     'left_hand': slice(92, 113), 'right_hand': slice(113, 134)}
 PCK_THRESHOLDS = (0.2, 0.5)
@@ -83,7 +90,7 @@ def main():
             'human_models': model_signature(smpl_root / 'human_models/human_model_files/smplx'),
             'estimator_source': {name: sha256_file(smpl_root / name)
                 for name in ESTIMATOR_SOURCE_FILES}},
-        'code': {name: sha256_file(ROOT / name) for name in CODE}}
+        'code': {name: sha256_file((REPO_ROOT if name.startswith('src/') else ROOT) / name) for name in CODE}}
     request = make_request('evaluate', identity, run_dir,
         {'run_dir': str(run_dir), 'final_image': final_image, 'B_keypoints': keypoints})
     stage_dir = run_dir / 'evaluation'

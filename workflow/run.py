@@ -11,7 +11,11 @@ import time
 
 from PIL import Image, ImageOps
 
-from pose_transfer.common import (atomic_json, canvas_size, file_lock, finish_stage,
+REPO_ROOT = Path(__file__).resolve().parents[1]
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
+
+from src.pose_edit.common import (atomic_json, canvas_size, file_lock, finish_stage,
     letterbox, make_request, model_signature, read_json, sha256_file, stage_outputs,
     stage_reasons, stage_valid)
 from pose_transfer.prompts import PE_SAMPLING, validate_generator_prompt
@@ -24,7 +28,7 @@ STAGE_SCRIPT = {'geometry': 'smplx_worker.py', 'prompt': 'pe_worker.py',
     'generate': 'generate_worker.py'}
 ESTIMATOR_SOURCE_FILES = ['main/inference.py', 'main/base.py', 'models/SMPLest_X.py',
     'human_models/human_models.py', 'scripts/run_smplestx_params_only.py']
-INPUTS_CODE = ['pose_transfer/common.py', 'run.py']
+INPUTS_CODE = ['src/pose_edit/common.py', 'run.py']
 # Provenance files the worker should record but must never fingerprint: they hold absolute
 # paths, so hashing them would make a cached run go stale when the checkout simply moves.
 EXTRA_RUNTIME_ROLES = ('generation_prompt_provenance',)
@@ -57,7 +61,7 @@ def discover_pair(directory):
 
 
 def code_identity(names):
-    return {name: sha256_file(ROOT / name) for name in names}
+    return {name: sha256_file((REPO_ROOT if name.startswith('src/') else ROOT) / name) for name in names}
 
 
 def run_worker(python, script, request, request_path, log_path):
@@ -100,7 +104,7 @@ def dependency_check(config):
 
 def stage_identity(stage, config, paths):
     """Everything a cached stage must still match; deliberately never an absolute path."""
-    common_code = ['pose_transfer/common.py']
+    common_code = ['src/pose_edit/common.py']
     if stage == 'geometry':
         fields = ['smplest_root', 'smplest_checkpoint', 'person_detection_confidence',
             'pose_framing', 'subject']
@@ -111,8 +115,8 @@ def stage_identity(stage, config, paths):
             'detector': model_signature(model / 'pretrained_models/yolov8x.pt'),
             'human_models': model_signature(model / 'human_models/human_model_files/smplx'),
             'estimator_source': {name: sha256_file(model / name) for name in ESTIMATOR_SOURCE_FILES}}
-        code = common_code + ['smplx_worker.py', 'pose_transfer/estimator.py',
-            'pose_transfer/geometry.py']
+        code = common_code + ['smplx_worker.py', 'src/pose_edit/estimator.py',
+            'src/pose_edit/geometry.py']
     elif stage == 'prompt':
         fields = ['pe_model', 'pe_seed', 'prop_policy']
         input_names = ['A_reference', 'B_rgb', 'B_3d_dwpose']

@@ -1,3 +1,4 @@
+import _workflow_paths  # noqa: F401 - puts the workflow and repo roots on sys.path for unittest discovery
 import importlib
 import json
 import os
@@ -14,16 +15,14 @@ class InputFailureTests(unittest.TestCase):
     def test_corrupt_source_updates_existing_run_and_latest_to_failed(self):
         from PIL import Image, UnidentifiedImageError
         run = importlib.import_module('run')
-        common = importlib.import_module('pose_transfer.common')
+        common = importlib.import_module('src.pose_edit.common')
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             a, b = root / 'A.jpg', root / 'B.png'
             a.write_bytes(b'not a valid JPEG')
             Image.new('RGB', (100, 150)).save(b)
             config = run.ROOT / 'config.json'
-            (root / 'pose_transfer').mkdir()
-            for name in ('pose_transfer/common.py', 'run.py'):
-                shutil.copyfile(run.ROOT / name, root / name)
+            shutil.copyfile(run.ROOT / 'run.py', root / 'run.py')
             common.atomic_json(root / 'runs/demo/run.json', {'status': 'complete'})
             common.atomic_json(root / 'latest_run.json', {'status': 'complete'})
             argv = ['run.py', '--config', str(config), '--a', str(a), '--b', str(b)]
@@ -38,16 +37,14 @@ class InputFailureTests(unittest.TestCase):
     def test_verify_failure_does_not_overwrite_existing_run_or_latest(self):
         from PIL import Image
         run = importlib.import_module('run')
-        common = importlib.import_module('pose_transfer.common')
+        common = importlib.import_module('src.pose_edit.common')
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             a, b = root / 'A.jpg', root / 'B.png'
             a.write_bytes(b'not a valid JPEG')
             Image.new('RGB', (100, 150)).save(b)
             config = run.ROOT / 'config.json'
-            (root / 'pose_transfer').mkdir()
-            for name in ('pose_transfer/common.py', 'run.py'):
-                shutil.copyfile(run.ROOT / name, root / name)
+            shutil.copyfile(run.ROOT / 'run.py', root / 'run.py')
             manifest_path, latest_path = root / 'runs/demo/run.json', root / 'latest_run.json'
             common.atomic_json(manifest_path, {'status': 'complete', 'finished_at_unix': 123})
             common.atomic_json(latest_path, {'status': 'complete', 'finished_at_unix': 123})

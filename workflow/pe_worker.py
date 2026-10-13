@@ -13,7 +13,14 @@ from PIL import Image
 import torch
 from transformers import AutoProcessor, AutoModelForImageTextToText
 
-from pose_transfer.common import atomic_json, finish_stage, read_json, runtime_paths, sha256_file
+# The repo-level shared package lives one directory up from this workflow.
+import sys
+from pathlib import Path
+REPO_ROOT = Path(__file__).resolve().parents[1]
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
+
+from src.pose_edit.common import atomic_json, finish_stage, read_json, runtime_paths, sha256_file
 from pose_transfer.prompts import (PE_ROLE_SYSTEM_SUFFIX, PE_SAMPLING, compile_prompt,
     parse_pe_answer, pe_instruction)
 

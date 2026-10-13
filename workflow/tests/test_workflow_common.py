@@ -1,3 +1,4 @@
+import _workflow_paths  # noqa: F401 - puts the workflow and repo roots on sys.path for unittest discovery
 import importlib
 import os
 import tempfile
@@ -8,7 +9,7 @@ from pathlib import Path
 class StageCacheTests(unittest.TestCase):
     def setUp(self):
         try:
-            self.common = importlib.import_module('pose_transfer.common')
+            self.common = importlib.import_module('src.pose_edit.common')
         except ModuleNotFoundError:
             self.fail('workflow cache implementation is missing')
 

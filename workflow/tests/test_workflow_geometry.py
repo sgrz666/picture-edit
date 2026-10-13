@@ -1,3 +1,4 @@
+import _workflow_paths  # noqa: F401 - puts the workflow and repo roots on sys.path for unittest discovery
 import ast
 import json
 from pathlib import Path
@@ -5,7 +6,7 @@ import unittest
 
 import numpy as np
 
-from pose_transfer.geometry import (
+from src.pose_edit.geometry import (
     align_to_source_bbox,
     project_camera,
     render_poseguide,
@@ -211,7 +212,7 @@ class SubjectSelectionTests(unittest.TestCase):
     """A multi-person photo must be an explicit choice, never a silent guess."""
 
     def setUp(self):
-        from pose_transfer.geometry import choose_subject
+        from src.pose_edit.geometry import choose_subject
         self.choose = choose_subject
         # Largest box first is NOT the detection order here, so ordering has to be derived.
         self.boxes = np.array([[86.0, 270.0, 350.0, 1278.0],
@@ -253,7 +254,7 @@ class TorsoFramingTests(unittest.TestCase):
     """Box-fit framing collapses when A and B are cropped with opposite aspect ratios."""
 
     def setUp(self):
-        from pose_transfer.geometry import TORSO_TO_PERSON_BOX_HEIGHT, align_to_source_bbox
+        from src.pose_edit.geometry import TORSO_TO_PERSON_BOX_HEIGHT, align_to_source_bbox
         self.align = align_to_source_bbox
         self.constant = TORSO_TO_PERSON_BOX_HEIGHT
         # A DWPose-134 array whose neck is 100px above the hip centre, plus one missing joint.
@@ -267,7 +268,7 @@ class TorsoFramingTests(unittest.TestCase):
         self.bbox_A = [100.0, 100.0, 300.0, 900.0]
 
     def test_torso_length_is_neck_to_hip_centre(self):
-        from pose_transfer.geometry import torso_length
+        from src.pose_edit.geometry import torso_length
         self.assertAlmostEqual(torso_length(self.points), 100.0)
         missing = np.full((134, 2), np.nan)
         self.assertTrue(np.isnan(torso_length(missing)))

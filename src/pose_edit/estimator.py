@@ -15,8 +15,8 @@ import numpy as np
 from PIL import Image
 import torch
 
-from pose_transfer.common import create_estimator_sandbox
-from pose_transfer.geometry import project_camera
+from src.pose_edit.common import create_estimator_sandbox
+from src.pose_edit.geometry import project_camera
 
 REQUIRED_PARAMETER_KEYS = ['global_orient', 'body_pose', 'left_hand_pose', 'right_hand_pose',
     'jaw_pose', 'betas', 'expression', 'mesh_cam', 'joint_proj_model', 'transl',

@@ -1,11 +1,16 @@
+"""Single-person prompt contract: three inputs in, two references out.
+
+The person-count-independent half (sampling, the official answer parser, the reference
+guard) lives in src.pose_edit.prompt_contract and is re-exported here so this
+workflow keeps one import site.
+"""
 from __future__ import annotations
 
-import json
 import re
 
-PE_SAMPLING = {'max_new_tokens': 24000, 'do_sample': True, 'temperature': 1.0,
-    'top_p': 0.95, 'top_k': 20}
-IMAGE_REFERENCE = re.compile(r'<image[_\s]*(\d+)>|\bimage[_\s]*(\d+)\b', re.I)
+from src.pose_edit.prompt_contract import (IMAGE_REFERENCE, PE_SAMPLING,
+    parse_pe_answer, referenced_images, validate_generator_prompt)
+
 
 PE_ROLE_SYSTEM_SUFFIX = (
     '\n\nWORKFLOW-SPECIFIC OUTPUT REFERENCE CONTRACT. This takes precedence over '
@@ -55,43 +60,6 @@ def pe_instruction(prop_policy='source_only'):
         'Return the official JSON contract with rewritten_prompt, wh_ratio="", '
         'ratio_follow="<image1>". Do not change the canvas or introduce a new style.'
     )
-
-
-def parse_pe_answer(raw):
-    answer = raw.split('</think>')[-1].strip()
-    if answer.startswith('```'):
-        answer = re.sub(r'^```(?:json)?\s*|\s*```$', '', answer, flags=re.I)
-    start = answer.find('{')
-    if start < 0:
-        raise ValueError('PE returned no JSON answer')
-    payload = answer[start:]
-    result, end = json.JSONDecoder().raw_decode(payload)
-    if payload[end:].strip() or not isinstance(result, dict):
-        raise ValueError('PE returned malformed JSON or trailing content')
-    text = result.get('rewritten_prompt')
-    if not isinstance(text, str) or not text.strip():
-        raise ValueError('PE returned an empty rewritten_prompt')
-    if result.get('ratio_follow') != '<image1>' or result.get('wh_ratio', '') != '':
-        raise ValueError('Pose transfer must preserve the source image canvas')
-    return result
-
-
-def validate_generator_prompt(text):
-    """Reject references the two-image generator cannot resolve.
-
-    The generator only ever sees the source and the pose guide, so a prompt that names a
-    third image, or that names no image at all, is a contract break rather than a style
-    choice. This guards both compiled PE output and a hand-supplied --prompt-file.
-    """
-    indices = {int(match.group(1) or match.group(2))
-        for match in IMAGE_REFERENCE.finditer(text)}
-    unknown = sorted(index for index in indices if index not in (1, 2))
-    if unknown:
-        raise ValueError(f'Generator prompt refers to image{unknown[0]}, but only the source '
-            '(<image1>) and the pose guide (<image2>) exist downstream')
-    if not indices:
-        raise ValueError('Generator prompt refers to neither the source nor the pose guide')
-    return text
 
 
 def compile_prompt(text, prop_policy='source_only'):

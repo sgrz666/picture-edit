@@ -4,22 +4,21 @@ from __future__ import annotations
 
 import argparse
 import fcntl
-import json
-import os
 from pathlib import Path
+import sys
 import time
+
+REPO_ROOT = Path(__file__).resolve().parents[1]
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
+
+from src.pose_edit.common import read_json
+
 
 ROOT = Path(__file__).resolve().parent
 STAGE_DIRECTORY = {'geometry': 'geometry', 'prompt': 'prompt', 'generate': 'generation'}
 CURRENT_SCHEMA = 'single_person_pose_workflow_v2'
 CURRENT_STAGE_SCHEMA = 'single_person_pose_stage_v2'
-
-
-def read_json(path):
-    try:
-        return json.loads(Path(path).read_text(encoding='utf-8'))
-    except (OSError, ValueError):
-        return None
 
 
 def lock_held():

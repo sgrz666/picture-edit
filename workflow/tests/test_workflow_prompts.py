@@ -1,3 +1,4 @@
+import _workflow_paths  # noqa: F401 - puts the workflow and repo roots on sys.path for unittest discovery
 import importlib
 import unittest
 

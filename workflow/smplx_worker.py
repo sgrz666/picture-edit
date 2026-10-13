@@ -11,9 +11,16 @@ import numpy as np
 from PIL import Image
 import torch
 
-from pose_transfer.common import atomic_json, finish_stage, read_json, runtime_paths
-from pose_transfer.estimator import estimate_single, project, reconstruct
-from pose_transfer.geometry import (align_to_source_bbox, choose_subject, render_poseguide,
+# The repo-level shared package lives one directory up from this workflow.
+import sys
+from pathlib import Path
+REPO_ROOT = Path(__file__).resolve().parents[1]
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
+
+from src.pose_edit.common import atomic_json, finish_stage, read_json, runtime_paths
+from src.pose_edit.estimator import estimate_single, project, reconstruct
+from src.pose_edit.geometry import (align_to_source_bbox, choose_subject, render_poseguide,
     smplx137_to_dwpose134, valid_points)
 
 
