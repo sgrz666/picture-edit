@@ -242,6 +242,48 @@ def measure_appearance(config, run_dir, geometry, detected_people, mapping):
     return verdict
 
 
+def region_boxes(requested, size, expand: float = 0.2):
+    """One crop box per requested person: their landmark extent, padded, clamped to the frame."""
+    width, height = size
+    boxes = []
+    for points in requested:
+        finite = points[np.isfinite(points).all(axis=1)]
+        if not len(finite):
+            boxes.append(None)
+            continue
+        x0, y0 = finite.min(axis=0)
+        x1, y1 = finite.max(axis=0)
+        pad_x, pad_y = (x1 - x0) * expand, (y1 - y0) * expand
+        box = [max(0, int(x0 - pad_x)), max(0, int(y0 - pad_y)),
+            min(width, int(x1 + pad_x)), min(height, int(y1 + pad_y))]
+        boxes.append(box if box[2] - box[0] >= 8 and box[3] - box[1] >= 8 else None)
+    return boxes
+
+
+def region_count(config, image_bgr, requested, expand=0.2):
+    """Ask a different question than whole-image detection: is there a body where each
+    requested person should be?
+
+    Measured, not assumed: on the real Hi4D target photograph of an embracing pair, YOLOX returns
+    a single box above its own 0.3 cutoff, and loosening NMS only produces near-duplicate boxes
+    over the same body (IoU ~0.9). So a whole-image count under-counts entangled pairs no matter
+    what the generator did, and it must not be read as the hard gate it was assumed to be. Cropping
+    to each requested person's own region lets the detector see the person it would otherwise
+    merge away.
+    """
+    regions = []
+    for box in region_boxes(requested, (image_bgr.shape[1], image_bgr.shape[0]), expand):
+        if box is None:
+            regions.append({'found': None, 'reason': 'no usable landmark extent for this person'})
+            continue
+        regions.append({'box_xyxy': box,
+            'found': len(detect_people(config, image_bgr[box[1]:box[3], box[0]:box[2]]))})
+    return {'regions': regions,
+        'all_regions_have_a_body': all(region.get('found') for region in regions),
+        'basis': 'one DWPose detection pass per requested person region, not one pass over the '
+            'whole picture'}
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--run', required=True)
@@ -281,16 +323,19 @@ def main():
     requested = [arrays['canvas_points'][index] - offset
         for index in range(len(arrays['canvas_points']))]
     threshold = config['keypoint_score_threshold']
-    detected_people = detect_people(config, cv2.cvtColor(rgb, cv2.COLOR_RGB2BGR))
+    detected_bgr = cv2.cvtColor(rgb, cv2.COLOR_RGB2BGR)
+    detected_people = detect_people(config, detected_bgr)
     mapping, assignment = assign(detected_people[:len(requested)], requested, threshold, size)
     persons = [score_person(requested[slot],
         detected_people[mapping[slot]] if mapping else None, threshold, size)
         for slot in range(len(requested))]
     comparable = [person for person in persons if person.get('comparable')]
     appearance = measure_appearance(config, run_dir, geometry, detected_people, mapping)
+    regions = region_count(config, detected_bgr, requested)
     summary = {
         'persons_detected': float(len(detected_people)),
         'person_count_ok': float(len(detected_people) == len(requested)),
+        'person_count_regions_ok': float(regions['all_regions_have_a_body']),
         'body_pck@0.2': float(np.mean([person['pck@0.2'] for person in comparable]))
             if comparable else None,
         'body_mpjpe_norm': float(np.mean([person['mpjpe_norm'] for person in comparable]))
@@ -315,6 +360,7 @@ def main():
             'error_px': abs(detected_gap - requested_gap),
             'error_relative': abs(detected_gap - requested_gap) / max(requested_gap, 1.0)}
     evaluation = {'schema': 'dual_pose_evaluation_v1', 'run': args.run, 'pair': geometry['pair'],
+        'region_count': regions,
         'kind': geometry['kind'], 'framing': geometry['framing'],
         'generator_references': generation['generator_references'],
         'final_image': str(final_image), 'final_size': list(size),

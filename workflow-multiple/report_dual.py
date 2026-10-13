@@ -61,9 +61,13 @@ def run_facts(run_dir, live_writer):
     return {'run': run_dir.name, 'status': status,
         'verified': verification.get('status'), 'pair': manifest.get('pair', {}).get('name'),
         'kind': manifest.get('pair', {}).get('kind'),
+        # Runs written before --keypoints-source existed have no such setting; their guides were
+        # necessarily the pair's own landmarks, because nothing else could draw them.
         'framing': settings.get('framing'), 'arm': settings.get('generator_references'),
+        'source': settings.get('keypoints_source', 'dwpose'),
         'settings': f"{settings.get('resolution')}/{settings.get('steps')}/{settings.get('seed')}",
         'persons': summary.get('persons_detected'), 'count_ok': summary.get('person_count_ok'),
+        'regions_ok': summary.get('person_count_regions_ok'),
         'pck': summary.get('body_pck@0.2'), 'mpjpe': summary.get('body_mpjpe_norm'),
         'torso_ratio': summary.get('torso_scale_ratio'), 'gap_error': interaction,
         'identity': summary.get('identity_similarity'),
@@ -99,7 +103,7 @@ def main():
             'pairs_without_run': sorted(set(available) - built)}, ensure_ascii=False, indent=2))
         return
     header = (f'{"run":54} {"status":9} v {"pair":26} {"framing":11} '
-        f'{"arm":13} res/steps/seed persons count pck mpjpe torso gap ident swap  stage seconds')
+        f'{"arm":13} res/steps/seed persons count reg pck mpjpe torso gap ident swap  stage seconds')
     print(header)
     print('-' * len(header))
     for fact in sorted(runs, key=lambda item: item['run']):
@@ -109,7 +113,8 @@ def main():
         print(f'{fact["run"]:54} {fact["status"]:9} {verified} '
             f'{str(fact["pair"]):26} {str(fact["framing"]):11} {str(fact["arm"]):13} '
             f'{fact["settings"]:14} {number(fact["persons"], 0):>7} '
-            f'{number(fact["count_ok"]):>5} {number(fact["pck"]):>5} {number(fact["mpjpe"]):>5} '
+            f'{number(fact["count_ok"]):>5} {number(fact["regions_ok"]):>3} '
+            f'{number(fact["pck"]):>5} {number(fact["mpjpe"]):>5} '
             f'{number(fact["torso_ratio"]):>5} {number(fact["gap_error"]):>4} '
             f'{number(fact["identity"]):>5} {number(fact["swap"]):>4} {timings}')
     missing = sorted(set(available) - built)
@@ -120,6 +125,9 @@ def main():
     if any(fact['status'] == 'abandoned' for fact in runs):
         print('abandoned runs are ones whose process died before writing a final status')
     print('\nv: o=stages validated, k=mismatch, -=not checked')
+    print('count is the whole-image person check, reg the per-region one; YOLOX merges embracing '
+          'bodies even on the real Hi4D photographs, so a zero in count on an entangled pair is '
+          'often the detector, not the generator - read reg before blaming the picture')
     print('pose columns are only comparable when the detected person count matches; a run with '
           'extra bodies has its landmarks assigned to an arbitrary subset')
     groups = {}

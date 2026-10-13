@@ -66,6 +66,19 @@ $PY report_dual.py
 
 它只测姿态与人际几何。身份/服装保持由 `src/pose_edit/appearance.py` 补上：把 A 的两人 mask 框与生成图上按姿态分配到的两人检出框各裁一张，过 DINOv2 ViT-S/14 取 CLS 特征算余弦相似，逐人给分数，并把"按外观最优配对"与"按姿态配对"做对比——两者不一致且人均差距超过 0.02 才报 `identity_swap_suspected`。它是外观代理而不是生物身份：重画的脸、被挡的脸都会降分而不证明人被换掉；框内背景变了也动同一个数。检出的点若被生成器藏起来，该点被排除而不算错，所以"藏 limbs"的结果会虚高。
 
+**人数这一硬指标本身被查实是有条件的**（2026-10-14，用 `count_probe.py` 量的）：YOLOX 在**真实 Hi4D 目标照片** `pairs/dance_pair02_059_c4_r424/B_target.png` 上，nms_thr=0.45 只给 1 个 >0.3 的人框；把 NMS 放宽到 0.95 只多出几个几乎重合的框（[411,300,713,998] vs [410,310,681,1011]，同一具身体），并不是第二个人的框。也就是说**相拥的两个人会被检测器并成一框**，与生成器无关。因此 `person_count_ok=0` 不能直接读成"图里人不对"。
+
+补上的口径是 `region_count`：对**每一个请求的人**各裁其 landmark 外扩 20% 的区域，在区域内单独跑一次检测，看那里有没有身体（`summary.person_count_regions_ok`）。实测对照：
+
+| run | 整图检出 | 整图人数对 | 各区域内检出 | 区域全有 |
+| --- | --- | --- | --- | --- |
+| `dance_059.skeleton_only.b_canvas` | 1 | 否 | [1, 1] | 是 |
+| `dance_059.with_b.b_canvas` | 1 | 否 | [1, 1] | 是 |
+| `hug_skeleton_only` | 2 | 是 | [2, 2] | 是 |
+| `hug_pair00_084`（with_b） | 3 | 否 | [3, 2] | 是 |
+
+读法：dance 那两行**不是**"两臂都失败"，而是检测器在纠缠姿态上并框——肉眼看结果图确实是两个人在相拥（我下载核对过图）；hug 的 with_b 那一行才是真的多画了一个人（第一个区域内就有 3 个框）。所以：**整图人数只在两人分开时可信，纠缠姿态要用 `person_count_regions_ok`**；而姿态类指标（PCK/MPJPE/身份）在整图并框时会直接量不出来（dance 两行为 `None`），这类对子要么等区域化重算，要么在结论里单列，不能混进均值。这条修正来自②刚开始跑就出现反例——如果只按原来那一对 hug 下结论，"skeleton_only 人数正确、with_b 必失败"会被当成普适结论。
+
 `target_import` 是另一件事：**直接**测"把 B 的人搬进来"，此前只能靠人数间接推断。它对生成图上每一个检出人体（含没有分配的第 3 个）分别取"与 A 两人的最大相似"和"与 B 两人的最大相似"，后者比前者超过 0.02 就计入 `bodies_liking_target_more`，汇总成 `summary.target_import_suspected`。它只在 A、B 是不同人的 `cross_pair` 上有意义：`same_identity` 对里 A 与 B 是同一对演员、同一身衣服，"像 B"与"像 A"是同一句话。这不是理论顾虑而是实测——`hug_skeleton_only`（我们认定成功的臂）在 same_identity 对上有 2/2 个人体"更像 B"（例：更像 A 0.800、更像 B 0.862），若不按 kind 门控就会把成功的臂标成搬运者；门控后该列输出 `None`，并在 json 里带 `not_informative_reason`。开发这段时被"跑一遍才发现"抓出两个静默错误：掩码键大小写敏感（`semantic_A/semantic_B`，按小写比对就永远取不到框、指标恒为 unavailable），以及框缺失时 `crop_person(None)` 直接崩——现在两种拼法都试、缺框走带原因的 unavailable。
 
 `run.json` 的 `status` 由 `furthest_valid_stage()` 按阶段有效性算出（走到哪一段的指纹与产物哈希还成立），不再等于"最后一次调用要到哪"；同时写 `furthest_valid_stage` 字段。旧 run 的 `status` 保持当时的写法，要按新口径判定就重跑一次 `--verify`。
