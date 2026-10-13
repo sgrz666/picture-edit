@@ -10,8 +10,9 @@ class CompareDualTests(unittest.TestCase):
     def setUp(self):
         self.module = importlib.import_module('compare_dual')
 
-    def fact(self, pair, arm, **values):
-        fact = {'pair': pair, 'arm': arm, 'framing': 'b_canvas', 'status': 'complete'}
+    def fact(self, pair, arm='a', framing='b_canvas', **values):
+        fact = {'pair': pair, 'arm': arm, 'framing': framing, 'status': 'complete',
+            'run': f'{pair}.{arm}.{framing}'}
         for name, _ in self.module.METRICS:
             fact[name] = values.get(name)
         return fact
@@ -57,7 +58,32 @@ class CompareDualTests(unittest.TestCase):
         rows, missing = self.module.paired_rows(facts, 'arm')
         self.assertEqual([row['pair'] for row in rows], ['p1'])
         self.assertEqual([item['pair'] for item in missing], ['p2'])
-        self.assertEqual(missing[0]['only'], ['left'])
+        self.assertEqual(missing[0]['only'], ['a'])
+
+    def test_comparing_framings_holds_the_arm_fixed(self):
+        # The bug this pins: b_canvas existed for the with_b arm and source_fit only for the
+        # skeleton_only arm. Grouping by (pair, framing) alone compared those two and reported a
+        # person-count win for source_fit that was really the arm difference.
+        facts = [self.fact('p1', arm='with_b', framing='b_canvas', count_ok=0.0, pck=None),
+            self.fact('p1', arm='skeleton_only', framing='b_canvas', count_ok=1.0, pck=0.5),
+            self.fact('p1', arm='skeleton_only', framing='source_fit', count_ok=1.0, pck=0.7)]
+        rows, missing = self.module.paired_rows(facts, 'framing')
+        self.assertEqual(len(rows), 1, 'only the arm that has both framings may be compared')
+        self.assertEqual([rows[0]['left'], rows[0]['right']], ['b_canvas', 'source_fit'])
+        self.assertEqual(rows[0]['metrics']['pck']['right'], 0.7)
+        self.assertEqual(rows[0]['metrics']['count_ok']['verdict'], 'tie')
+        self.assertEqual([item['only'] for item in missing], [['b_canvas']])
+        self.assertEqual(missing[0]['held'], 'with_b')
+        self.assertEqual(missing[0]['held_variable'], 'arm')
+
+    def test_the_same_treatment_measured_twice_uses_the_batch_named_run(self):
+        legacy = self.fact('p1', arm='b', framing='b_canvas', pck=0.9, )
+        legacy['run'] = 'hand_named_b'
+        batch = self.fact('p1', arm='b', framing='b_canvas', pck=0.4)
+        other = self.fact('p1', arm='a', framing='b_canvas', pck=0.5)
+        rows, _ = self.module.paired_rows([legacy, batch, other], 'arm')
+        self.assertEqual(len(rows), 1)
+        self.assertAlmostEqual(rows[0]['metrics']['pck']['right'], 0.4)
 
     def test_the_summary_counts_verdicts_over_the_pairs_that_have_both_sides(self):
         facts = [self.fact('p1', 'a', pck=0.2, mpjpe=0.9),

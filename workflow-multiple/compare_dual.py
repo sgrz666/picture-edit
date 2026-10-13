@@ -16,7 +16,6 @@ similarity and person-count improve upwards, error metrics improve downwards.
 from __future__ import annotations
 
 import argparse
-from itertools import combinations
 from pathlib import Path
 import sys
 
@@ -67,27 +66,45 @@ def differences(left, right, key, tolerance=TIE_TOLERANCE):
     return row
 
 
-def paired_rows(facts, key):
-    """Compare every two-way combination of arms or framings, pair by pair.
+def pick(candidates):
+    """One run per (pair, treatment): prefer the batch-named directory, then the later name.
 
-    Only pairs with both sides present contribute, and a pair that only one side ever reached is
-    reported as missing rather than being dropped silently from the counts.
+    Legacy runs with hand-made names (``hug_skeleton_only``) still count, but when a pair has both
+    a legacy run and a batch run for the same treatment the batch one wins, because its name is
+    the convention the batch writes and the comparison must not depend on directory order.
     """
+    named = [fact for fact in candidates if str(fact.get('run', '')).startswith(str(fact['pair']))]
+    pool = named or candidates
+    return sorted(pool, key=lambda fact: fact.get('run', ''))[-1]
+
+
+def paired_rows(facts, key):
+    """Compare two treatments of the same pair with every *other* variable held fixed.
+
+    Comparing framings must use the same arm, and comparing arms must use the same framing: the
+    first version of this function grouped only by (pair, treatment) and silently paired
+    ``b_canvas`` from the with_b arm against ``source_fit`` from the skeleton_only arm, which
+    would have read as "source_fit wins on person count" while actually measuring the arm.
+    """
+    other = 'framing' if key == 'arm' else 'arm'
     values = sorted({fact.get(key) for fact in facts if fact.get(key)})
+    if len(values) < 2:
+        return [], []
+    left_value, right_value = values[-2], values[-1]
+    slots = {}
+    for fact in facts:
+        pair, treatment, held = fact.get('pair'), fact.get(key), fact.get(other)
+        if not pair or not treatment or not held:
+            continue
+        slots.setdefault((pair, held), {}).setdefault(treatment, []).append(fact)
     rows, missing = [], []
-    for left_value, right_value in combinations(values, 2):
-        by_pair = {}
-        for fact in facts:
-            if not fact.get('pair') or fact.get(key) not in (left_value, right_value):
-                continue
-            side = 'left' if fact[key] == left_value else 'right'
-            by_pair.setdefault(fact['pair'], {})[side] = fact
-        for pair, sides in sorted(by_pair.items()):
-            if 'left' in sides and 'right' in sides:
-                rows.append(differences(sides['left'], sides['right'], key))
-            else:
-                missing.append({'pair': pair, 'left': left_value, 'right': right_value,
-                    'only': list(sides)})
+    for (pair, held), by_treatment in sorted(slots.items()):
+        sides = {treatment: pick(items) for treatment, items in by_treatment.items()}
+        if left_value in sides and right_value in sides:
+            rows.append(differences(sides[left_value], sides[right_value], key))
+        elif len(sides) == 1:
+            missing.append({'pair': pair, 'held': held, 'held_variable': other,
+                'left': left_value, 'right': right_value, 'only': [next(iter(sides))]})
     return rows, missing
 
 
@@ -110,6 +127,12 @@ def number(value, digits=3):
     return '-' if value is None else f'{value:.{digits}f}'
 
 
+# A cell shows both sides, not only the delta: when one arm cannot be scored at all (with_b with
+# the wrong person count has no pose metrics), the other side's value is still the finding.
+VERDICT_MARK = {'left': 'L', 'right': 'R', 'tie': '=', 'not measured': '.',
+    'informative only': 'i'}
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--runs', type=Path, default=ROOT / 'runs')
@@ -121,12 +144,14 @@ def main():
         for path in sorted(Path(args.runs).iterdir()) if path.is_dir()) if fact]
     complete = [fact for fact in facts if fact['status'] == 'complete']
     rows, missing = paired_rows(complete, args.by)
-    header = f'{"pair":42} {"left":14} {"right":14} ' + ' '.join(f'{name:>12}' for name, _ in METRICS)
+    header = (f'{"pair":42} {"left":14} {"right":14} '
+        + ' '.join(f'{name:>15}' for name, _ in METRICS))
     print(header)
     print('-' * len(header))
     for row in rows:
-        cells = ' '.join(f'{number((row["metrics"][name].get("delta"))):>7}'
-            f'[{row["metrics"][name]["verdict"][:2]}]' for name, _ in METRICS)
+        cells = ' '.join(f'{number(row["metrics"][name].get("left"))}|'
+            f'{number(row["metrics"][name].get("right"))}'
+            f'{VERDICT_MARK[row["metrics"][name]["verdict"]]}' for name, _ in METRICS)
         print(f'{row["pair"]:42} {str(row["left"]):14} {str(row["right"]):14} {cells}')
     if not rows:
         print('no pair has both sides complete yet; this table fills in as the batch runs')
@@ -136,11 +161,14 @@ def main():
             f'right_wins={item["right_wins"]:2} ties={item["ties"]:2} '
             f'not_measured={item["not_measured"]:2} median_delta={number(item["median_delta"])}')
     if missing:
-        print('pairs measured on one side only: '
-            + ', '.join(f"{item['pair']}({item['left']} vs {item['right']}: only "
-                f"{item['only']})" for item in missing))
-    print('delta is left minus right; a metric only votes when both sides measured it, and ties '
-        f'within {TIE_TOLERANCE} count as ties rather than wins')
+        print('one-sided (the other variable had to match, so these could not vote): '
+            + ', '.join(f"{item['pair']} at {item['held_variable']}={item['held']} "
+                f"only ran {item['only'][0]} of {item['left']}/{item['right']}"
+                for item in missing))
+    print('each cell is left|right then a verdict mark: L=left wins, R=right wins, ==tie within '
+        f'{TIE_TOLERANCE}, .=one side did not measure that metric, i=informative only')
+    print('a metric only votes when both sides measured it; the summary counts and median delta '
+        'below are over the pairs that could vote')
     print('torso_ratio never votes: it is a distance from 1.0, not a higher-or-lower-is-better '
         'quantity')
     if args.out:
