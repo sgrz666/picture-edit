@@ -104,5 +104,44 @@ class AppearanceTests(unittest.TestCase):
                 self.assertFalse(verdict['available'])
 
 
+
+class CropShapeTests(unittest.TestCase):
+    """crop_person stays at its stored behaviour unless the caller asks for a square."""
+
+    def setUp(self):
+        import numpy as np
+        from PIL import Image
+        self.image = Image.fromarray((np.random.rand(200, 200, 3) * 255).astype('uint8'))
+
+    def test_default_is_the_tight_detector_aspect(self):
+        from src.pose_edit.appearance import crop_person
+        tight = crop_person(self.image, [10, 10, 60, 150])
+        self.assertEqual(tight.size, (52, 146))
+        self.assertEqual(crop_person(self.image, [10, 10, 60, 150], shape='tight').size, tight.size)
+
+    def test_square_grows_the_shorter_side(self):
+        from src.pose_edit.appearance import crop_person
+        size = crop_person(self.image, [10, 10, 60, 150], shape='square').size
+        self.assertEqual(size[0], size[1])
+        self.assertGreater(size[0], 52)
+
+    def test_square_stays_square_inside_the_image_near_a_border(self):
+        from src.pose_edit.appearance import crop_person
+        # A 50x50 box in the far corner: padding already makes it 51, so the square cannot exceed
+        # that; the invariant to hold is 'still square and never larger than what fits'.
+        size = crop_person(self.image, [150, 150, 200, 200], shape='square').size
+        self.assertEqual(size[0], size[1], 'a corner crop must still come out square')
+        self.assertLessEqual(size[0], 51)
+        # A wide short box against the right edge wants 51px of height room it does not have there,
+        # so it must shrink instead of inventing pixels: that is the observable difference.
+        shrunk = crop_person(self.image, [150, 50, 200, 60], shape='square').size
+        self.assertEqual(shrunk[0], shrunk[1], 'shrinking must keep it square')
+        self.assertLess(shrunk[0], 51, 'near a border the square gives up area rather than pads')
+
+    def test_unknown_shape_is_rejected(self):
+        from src.pose_edit.appearance import crop_person
+        with self.assertRaisesRegex(ValueError, 'unknown crop shape'):
+            crop_person(self.image, [0, 0, 10, 10], shape='wide')
+
 if __name__ == '__main__':
     unittest.main()
