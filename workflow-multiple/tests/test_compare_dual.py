@@ -10,9 +10,9 @@ class CompareDualTests(unittest.TestCase):
     def setUp(self):
         self.module = importlib.import_module('compare_dual')
 
-    def fact(self, pair, arm='a', framing='b_canvas', **values):
-        fact = {'pair': pair, 'arm': arm, 'framing': framing, 'status': 'complete',
-            'run': f'{pair}.{arm}.{framing}'}
+    def fact(self, pair, arm='a', framing='b_canvas', source='dwpose', **values):
+        fact = {'pair': pair, 'arm': arm, 'framing': framing, 'source': source,
+            'status': 'complete', 'run': f'{pair}.{arm}.{framing}'}
         for name, _ in self.module.METRICS:
             fact[name] = values.get(name)
         return fact
@@ -73,8 +73,23 @@ class CompareDualTests(unittest.TestCase):
         self.assertEqual(rows[0]['metrics']['pck']['right'], 0.7)
         self.assertEqual(rows[0]['metrics']['count_ok']['verdict'], 'tie')
         self.assertEqual([item['only'] for item in missing], [['b_canvas']])
-        self.assertEqual(missing[0]['held'], 'with_b')
-        self.assertEqual(missing[0]['held_variable'], 'arm')
+        self.assertEqual(missing[0]['held'], {'arm': 'with_b', 'source': 'dwpose'})
+
+    def test_comparing_guide_sources_holds_arm_and_framing_fixed(self):
+        # A fit-guided run must be compared against the ground-truth-guided run of the same arm in
+        # the same framing, and a source run that only exists for the other arm must not vote.
+        facts = [self.fact('p1', arm='skeleton_only', framing='b_canvas', source='dwpose',
+                pck=0.5, count_ok=1.0),
+            self.fact('p1', arm='skeleton_only', framing='b_canvas', source='fit', pck=0.7,
+                count_ok=1.0),
+            self.fact('p1', arm='with_b', framing='b_canvas', source='fit', pck=0.2)]
+        rows, missing = self.module.paired_rows(facts, 'source')
+        self.assertEqual(len(rows), 1)
+        self.assertEqual([rows[0]['left'], rows[0]['right']], ['dwpose', 'fit'])
+        self.assertEqual(rows[0]['metrics']['pck']['verdict'], 'right')
+        # the with_b fit run has no with_b ground-truth twin, so it is listed rather than voted
+        self.assertEqual([item['only'] for item in missing], [['fit']])
+        self.assertEqual(missing[0]['held'], {'arm': 'with_b', 'framing': 'b_canvas'})
 
     def test_the_same_treatment_measured_twice_uses_the_batch_named_run(self):
         legacy = self.fact('p1', arm='b', framing='b_canvas', pck=0.9, )

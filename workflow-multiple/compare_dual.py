@@ -81,20 +81,24 @@ def pick(candidates):
 def paired_rows(facts, key):
     """Compare two treatments of the same pair with every *other* variable held fixed.
 
-    Comparing framings must use the same arm, and comparing arms must use the same framing: the
-    first version of this function grouped only by (pair, treatment) and silently paired
-    ``b_canvas`` from the with_b arm against ``source_fit`` from the skeleton_only arm, which
-    would have read as "source_fit wins on person count" while actually measuring the arm.
+    The variables are arm, framing and keypoints source. Comparing any one of them must hold the
+    remaining two equal, or the "winner" is whichever treatment happened to run on easier pairs -
+    the first version of this function grouped only by (pair, treatment) and paired a with_b
+    b_canvas run against a skeleton_only source_fit run, which read as a framing result.
     """
-    other = 'framing' if key == 'arm' else 'arm'
+    variables = ('arm', 'framing', 'source')
+    held_variables = [name for name in variables if name != key]
     values = sorted({fact.get(key) for fact in facts if fact.get(key)})
     if len(values) < 2:
         return [], []
     left_value, right_value = values[-2], values[-1]
     slots = {}
     for fact in facts:
-        pair, treatment, held = fact.get('pair'), fact.get(key), fact.get(other)
-        if not pair or not treatment or not held:
+        pair, treatment = fact.get('pair'), fact.get(key)
+        if not pair or not treatment:
+            continue
+        held = tuple(fact.get(name) for name in held_variables)
+        if any(value is None for value in held):
             continue
         slots.setdefault((pair, held), {}).setdefault(treatment, []).append(fact)
     rows, missing = [], []
@@ -103,7 +107,8 @@ def paired_rows(facts, key):
         if left_value in sides and right_value in sides:
             rows.append(differences(sides[left_value], sides[right_value], key))
         elif len(sides) == 1:
-            missing.append({'pair': pair, 'held': held, 'held_variable': other,
+            missing.append({'pair': pair,
+                'held': dict(zip(held_variables, held)), 'held_variables': held_variables,
                 'left': left_value, 'right': right_value, 'only': [next(iter(sides))]})
     return rows, missing
 
@@ -136,7 +141,8 @@ VERDICT_MARK = {'left': 'L', 'right': 'R', 'tie': '=', 'not measured': '.',
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--runs', type=Path, default=ROOT / 'runs')
-    parser.add_argument('--by', choices=('arm', 'framing'), required=True)
+    parser.add_argument('--by', choices=('arm', 'framing', 'source'), required=True,
+        help='which treatment to compare; the other two are held fixed within a pair')
     parser.add_argument('--out', type=Path)
     args = parser.parse_args()
     live_writer = lock_held()
@@ -161,9 +167,10 @@ def main():
             f'right_wins={item["right_wins"]:2} ties={item["ties"]:2} '
             f'not_measured={item["not_measured"]:2} median_delta={number(item["median_delta"])}')
     if missing:
-        print('one-sided (the other variable had to match, so these could not vote): '
-            + ', '.join(f"{item['pair']} at {item['held_variable']}={item['held']} "
-                f"only ran {item['only'][0]} of {item['left']}/{item['right']}"
+        print('one-sided (the other variables had to match, so these could not vote): '
+            + ', '.join(f"{item['pair']} at "
+                + ' '.join(f'{name}={value}' for name, value in item['held'].items())
+                + f" only ran {item['only'][0]} of {item['left']}/{item['right']}"
                 for item in missing))
     print('each cell is left|right then a verdict mark: L=left wins, R=right wins, ==tie within '
         f'{TIE_TOLERANCE}, .=one side did not measure that metric, i=informative only')
