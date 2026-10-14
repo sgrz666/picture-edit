@@ -222,6 +222,12 @@ fit 向导的生成实验本身还没跑——它在等显存窗口，且按计�
 
 踩过的坑，记下来避免重复：`ImageOps.contain` **返回新图而不原地缩放**，第一版 `pad_geometry` 读原对象的 size，得到 scale=1.0 与负 pad，于是所有拟合点少除了一次 0.7 的缩放并被平移 (22,192) px——表现是 2D PCK@0.2 只有 0.14、3D 绝对误差 1.9 m，而两人髖距误差却只有 1 cm（常量平移与统一缩放不改变相对距离），差点被当成"模型精度差"。修正后同一套代码得到上表。自检教训写进了代码注释：**模型自己 j2d 与 j3d 的重投影一致性（0.17 px）查不出这类坐标错，因为它两侧用的是同一个错内参；只有与外部参照对比才能发现。**
 
+### 门的参照口径修正（2026-10-14 10:25，用今天的代码重跑报告时发现）
+
+重跑 `fit_dual_report.py` 得到 **VERDICT FAIL**：判定项 `hip_gap_error_norm`（拟合 vs **DWPose** 髖距）均值 0.120 > 0.10。逐行查来源，失败全部来自三条 DWPose 自己就错的记录——`backhug_pair02_037`、它的 cross 孪生、`backhug_pair02_039`：DWPose 报两髖心相距 4.2–4.4 px，而拟合与**投影 Hi4D 几何**都报 ~72 px（72.4 vs 73.5、72.3 vs 72.6）。把同一项改用它本该参照的投影几何后，17 对逐对误差 0.001–0.058，**均值 0.021 ≤ 0.10**；DWPose 参照那个值仍在报告里，但降级为 `DIAGNOSTIC` 并注明"分歧可能是向导错"。
+
+这不是放宽阈值：**阈值没动（仍是 0.10），动的是拿什么当参照**，且两个方向的数都同时印出（`GATE PASS hip_gap_error_norm_gt max 0.1 measured 0.021` + `DIAGNOSTIC hip_gap_error_norm=0.120`）。修正后六项全过：correspondence 0.941、person_count 1.000、hip_gap_gt 0.021、torso_scale_ratio 1.096、fit vs DWPose PCK@0.2 0.902（下限 0.859）、mpjpe_norm 0.122（上限 0.132）→ `VERDICT PASS: the fitted skeleton is accurate enough to guide generation`。于是④那句"报告过关才把拟合骨架接进生成链"变成**机械可判定**的，不再靠人工归因兜底。契约测试 `tests/test_fit_gate.py`（GATE 不含 DWPose 项、DIAGNOSTIC 含它、缺投影参照时不编造数值）。复现：`fit_dual_report.py --out fits_recheck2`（写新目录，不覆盖 10-13 那份 blessed 报告）。
+
 ## 定标常数：躯干 ÷ 人体框高
 
 共享包里的 `TORSO_TO_PERSON_BOX_HEIGHT = 0.31` 是单人线 `source_torso` 定标用的（期望躯干 = 源人物框高 × 0.31），当年由 5 对单人数据反推。双人线自己的 `source_fit` 不做逐人缩放、用不到它，所以这个常数在双人数据上一直是空白。`torso_ratio.py` 直接量它：A 侧用 pair.json 里的 mask 框 + 在本机 CPU 上跑的 DWPose 关键点，B 侧用 pair 自带关键点 + `geometry.npz` 的语义掩码框；同一人体被多个 run 目录或共用源帧重复量到时只算一次（按 图片哈希+框 去重），原始次数与独立人体数都写出来，明细在 `ratios/torso_ratio.json`：
