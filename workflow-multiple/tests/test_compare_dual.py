@@ -114,5 +114,61 @@ class CompareDualTests(unittest.TestCase):
         self.assertEqual(summary['by_metric']['mpjpe']['not_measured'], 1)
 
 
+
+def fact(pair, arm, framing, source, **metrics):
+    """A run_facts-shaped record; unmentioned metrics default to not measured."""
+    record = {'run': f'{pair}.{arm}.{framing}' + ('.fit' if source == 'fit' else ''),
+        'pair': pair, 'status': 'complete', 'arm': arm, 'framing': framing, 'source': source,
+        'count_ok': None, 'pck': None, 'mpjpe': None, 'torso_ratio': None, 'gap_error': None,
+        'identity': None}
+    record.update(metrics)
+    return record
+
+
+class HeldContext(unittest.TestCase):
+    """Rows must say which variables stayed fixed, and tallies must not pool across them."""
+
+    def setUp(self):
+        self.facts = [
+            fact('pair_a', 'with_b', 'b_canvas', 'dwpose', pck=0.80, count_ok=1.0),
+            fact('pair_a', 'skeleton_only', 'b_canvas', 'dwpose', pck=0.70, count_ok=1.0),
+            fact('pair_a', 'with_b', 'source_fit', 'dwpose', pck=0.60, count_ok=0.0),
+            fact('pair_a', 'skeleton_only', 'source_fit', 'dwpose', pck=0.90, count_ok=1.0),
+            fact('pair_b', 'with_b', 'b_canvas', 'dwpose', pck=0.50, count_ok=1.0),
+            fact('pair_b', 'skeleton_only', 'b_canvas', 'dwpose', pck=0.50, count_ok=1.0),
+        ]
+
+    def test_every_row_records_the_held_variables(self):
+        from compare_dual import paired_rows
+        rows, missing = paired_rows(self.facts, 'arm')
+        self.assertEqual(len(rows), 3)
+        self.assertFalse(missing)
+        for row in rows:
+            self.assertEqual(set(row['held']), {'framing', 'source'})
+            self.assertEqual(row['held']['source'], 'dwpose')
+            self.assertIn(row['held']['framing'], ('b_canvas', 'source_fit'))
+        self.assertTrue(all('left_run' in row and 'right_run' in row for row in rows))
+
+    def test_tallies_are_separated_per_context(self):
+        from compare_dual import summarise
+        rows, _ = __import__('compare_dual').paired_rows(self.facts, 'arm')
+        summary = summarise(rows)
+        self.assertEqual(len(summary['contexts']), 2)
+        self.assertEqual(summary['comparisons'], 3)
+        self.assertEqual(summary['by_context']['framing=b_canvas source=dwpose']['comparisons'], 2)
+        self.assertEqual(summary['by_context']['framing=source_fit source=dwpose']['comparisons'], 1)
+
+    def test_a_single_framing_row_does_not_vote_on_the_other(self):
+        """The two framings of pair_a disagree in direction; pooling would hide that."""
+        from compare_dual import paired_rows, summarise
+        rows, _ = paired_rows(self.facts, 'arm')
+        summary = summarise(rows)
+        wide = summary['by_context']['framing=b_canvas source=dwpose']['by_metric']['pck']
+        tall = summary['by_context']['framing=source_fit source=dwpose']['by_metric']['pck']
+        self.assertEqual((wide['left_wins'], wide['right_wins'], wide['ties']), (0, 1, 1))
+        self.assertEqual((tall['left_wins'], tall['right_wins'], tall['ties']), (1, 0, 0))
+        self.assertEqual(summary['by_metric']['pck']['median_delta'], 0.0,
+            'the pooled block must not be quoted as a single-framing result')
+
 if __name__ == '__main__':
     unittest.main()

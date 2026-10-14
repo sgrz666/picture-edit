@@ -124,6 +124,15 @@ $PY report_dual.py
 **臂（`skeleton_only` vs `with_b`，同臂同定标，12 对）**：count 3 胜 / 8 平 / 1 负，PCK 4/5/2，MPJPE 3/4/4，髖距 2/2/5，identity 5/3/3。
 读数：**上一轮"with_b 把 B 的人搬进来所以失败"在这 12 对里不成立**。with_b 在能投票的姿态指标上略优（均值 PCK 0.807 vs 0.786、MPJPE 0.148 vs 0.157，髖距 5:2 领先），代价集中在**人数**（7/12 vs 12/17）；身份反而更高（0.745 vs 0.729）、swap 只 flag 1 对。`target_import` 在 with_b 上恒为无定义，这是设计如此：给了 B 的原图，"更像 B"就是预期结果，flag 没有信息量——所以这个指标只在 `skeleton_only` 侧读（3/17 与 4/16 被 flag，即生成图里有人比像 A 更像 B，而这一臂并没有把 B 的照片喂给出图模型）。
 
+**臂的结论随定标变号，这是分档后才看见的（`compare_dual.py` 现在按 held 上下文分开报，2026-10-14 10:08，`--by arm` 18 行）**：
+
+| 定标档 | 行数 | count(skel/平/with_b) | PCK | MPJPE | identity |
+|---|---|---|---|---|---|
+| `b_canvas` | 12 | 3 / 8 / 1 | 4 / 5 / 2 | 3 / 4 / 4 | 5 / 3 / 3 |
+| `source_fit` | 6（进行中，n 尚小） | 3 / 3 / 0 | **2 / 1 / 3** | **1 / 2 / 3** | 3 / 2 / 1 |
+
+读法：**人数**在两个档都是 `skeleton_only` 稳赢（3-8-1 与 3-3-0），但**姿态**在两档方向不同——`b_canvas` 档 PCK 4/5/2 偏 `skeleton_only`，`source_fit` 档 PCK 2/1/3、MPJPE 1/2/3 反过来偏 `with_b`（中位差 −0.042 / +0.049）。合并两档的池化块会把这个交互抹平（池化 PCK 是 6/6/6），所以**引用时必须指名档位，池化块不作结论**（工具已把这一点写进输出：`--- POOLED over N held contexts: not a single-framing result ---`）。`source_fit` 档只有 6 行、`with_b` 的 12 格仍在补，`FIT_ALL_DONE` 后以 finalize 的重算值替换这两行。
+
 **定标（`b_canvas` vs `source_fit`，同臂同向导，16 对）**：count 6 胜 / 8 平 / 2 负，PCK 6/3/6，MPJPE 5/7/3，髖距 7/3/2，identity 3/7/5。
 读数：中期那份"b_canvas 在每个可投票姿态指标上全胜"是 5 对时的表象。**扩到 16 对后 PCK 打平（6:6）**，`b_canvas` 的优势只剩两处：人数正确率（6 胜 2 负）与髖距（7 胜 2 负）；MPJPE 略偏 `b_canvas`；identity 反而 `source_fit` 略好（5 胜 3 负）。两条定标在姿态上没有稳定的胜负关系，`b_canvas` 的领先集中在人数与髖距两处。**这一档与 0.31 常数无关**（先前本节把它归因给常数是错的，已改）：双人线的 `source_fit` 用的是实测的两人 extent 比 `a_pair[extent_px]/b_pair[extent_px]`（`dual_geometry.py:171-185`），`TORSO_TO_PERSON_BOX_HEIGHT` 只存在于单人线的 `align_to_source_bbox(..., framing="source_torso")`。所以这里量到的是"用整体 extent 定标与用 B 自己的画布定标差不多"，而不是"某个常数对不对"。
 
