@@ -131,6 +131,8 @@ $PY report_dual.py
 读数：**n=3，不构成结论**，方向与 WP7 的门一致——缠绕的 backhug 上拟合向导更好（那里 DWPose 向导自己就错了），宽松姿势上 GT 更好。fit 孪生有 2/3 人数不对，但能打分时 PCK 均值 0.887 最高，所以这一格现在只能写成"值得扩到全部 12 对再判"，不能写成"拟合向导更好"。
 
 ### 逐轮计数（追加，不覆盖）：
+- 2026-10-14 09:43 **②的覆盖被审计出缺口并已开跑第二轮**：`batch_dual.sh` 旧矩阵把 `with_b` 限制在 12 个同身份对的 `b_canvas`（注释理由是"失败就在那一格复现过"，即 n=1 的取舍），于是全交叉的 17×2×2=68 格里只有 45 格有 ok 记录，**缺 23 格**（12 个 `with_b.source_fit` + 5 个跨身份对的 `with_b` + `cross_backhug…skeleton_only.source_fit`）。矩阵已改成 pair×arm×framing 全交叉（`896e222`），09:39 起跑第二轮，`done_run()` 只补空格；watch_and_retry / finalize / gpu_gate 全挂上（起时显存 62 GiB 空闲，闸门记 OK free=82GiB）。上面"②的最终成对读数"里的臂对比因此只在 `b_canvas` 一档成立，第二轮跑完需重读 `compare_dual --by arm`（应出现 source_fit 档）与 `--by framing`（应出现 with_b 档）。向导那一档同步扩样本：`run_fit_after_batch.sh` 原本硬编码 3 个对，已改成从 `fits/*.npz` 派生（`5d006c4`），待跑 14 个孪生（9 同身份 + 5 跨身份，拟合缓存都在），排在第二轮 finalize 之后，跑完 `--by source` 从 n=3 变 n=17。
+
 - 2026-10-14 09:35 **②收尾**：批量 04:09 BATCH_DONE、retry 3 轮 04:12 RETRY_DONE、finalize 04:18 统一重算 45 条 run（`EVAL_FAILED=0`，用的已经是修好的评测器）、fit 孪生 04:35 FIT_AFTER_DONE。成对读数从 5 对扩到 12（臂）/16（定标）/3（向导），上面中期表已被最终表替换。三处中期结论被数据改写：with_b 在姿态上不再"更差"（略优，输在人数）、b_canvas 的 PCK 全胜变成打平、`target_import` 在 with_b 上恒无定义是设计而非缺测。
 - 2026-10-14 01:45 评测阶段两处崩溃已修（`evaluate_dual.py` 只出现在评测指纹里，几何/PE/生成缓存与批量都不受影响）：
   ① 没有任何可评人员时 `np.mean([])` 把 NaN 写进 `eval_dual.json`，`json.dumps` 抛 `Out of range float values are not JSON compliant: nan`，整条 run 记成 `evaluate_failed`。现在 `finite()` 递归把 NaN/inf 写成 `null`——"测不出"在数据里就是缺值，与"测不出 ≠ 更差"的报告口径一致。
