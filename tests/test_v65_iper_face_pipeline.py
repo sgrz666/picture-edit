@@ -49,7 +49,7 @@ _PROJECT_ROOT = Path(__file__).resolve().parents[1]
 if str(_PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(_PROJECT_ROOT))
 
-from scripts.precompute_iper_face_features_v65 import (
+from scripts.data.precompute_iper_face_features_v65 import (
     CACHE_SCHEMA_VERSION,
     atomic_save_cache,
     build_v65_face_cache,
@@ -60,7 +60,7 @@ from scripts.precompute_iper_face_features_v65 import (
     project_smplx_face72_to_rgb_normalized,
     safe_expanded_crop,
 )
-from train_iper_v65_face import (
+from scripts.train.train_iper_v65_face import (
     build_face_inputs,
     build_face_optimizer,
     compute_v65_face_losses,
@@ -78,7 +78,7 @@ def test_precompute_cli_can_run_directly_from_repository_root() -> None:
     result = subprocess.run(
         [
             sys.executable,
-            str(repository_root / "scripts" / "precompute_iper_face_features_v65.py"),
+            str(repository_root / "scripts" / "data" / "precompute_iper_face_features_v65.py"),
             "--help",
         ],
         cwd=repository_root,

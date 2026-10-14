@@ -455,7 +455,7 @@ def test_tiktok_v65_face_overfit_loader(tmp_path: Path) -> None:
 
 
 def test_smoke_test_runner_dry_run(tmp_path: Path) -> None:
-    from run_tiktok_sample_00001_smoke import run_smoke_test
+    from scripts.run.run_tiktok_sample_00001_smoke import run_smoke_test
     import argparse
 
     seq_id = "00001"

@@ -6,7 +6,7 @@ import pytest
 import torch
 import torch.nn as nn
 
-from train_iper_v65_face import (
+from scripts.train.train_iper_v65_face import (
     FP32MasterAdamW,
     checkpoint_float_dtype,
     compute_face_validation_metrics,

@@ -13,7 +13,7 @@ import torch.nn.functional as F
 
 from src.pose_control.v6.deepgen_adapter import UnifiedSMPLXAdapterV6
 from src.pose_control.v6.conditions import AdapterIdentityCondition, TaskType
-from train_iper_v6_native import (
+from scripts.train.train_iper_v6_native import (
     configure_scheme_a_parameters,
     build_scheme_a_optimizer,
     CheckpointManager,

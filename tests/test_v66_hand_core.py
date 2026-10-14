@@ -13,7 +13,7 @@ from src.pose_control.v6.conditions import AdapterIdentityCondition
 from test_deepgen_control_interface_v1 import _control_state
 from src.pose_control.v6.hand.quality import hand_quality_gate, merge_vitpose_keypoints
 from src.pose_control.v6.hand.refiner_export import hand_refiner_payload
-from scripts.precompute_iper_hand_features_v66 import build_cache
+from scripts.data.precompute_iper_hand_features_v66 import build_cache
 
 
 def test_hand_pose_and_confident_heatmap():

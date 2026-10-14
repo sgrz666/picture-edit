@@ -31,7 +31,7 @@ from src.data.iper_dataset import IPERPoseDataset
 from src.pose_control.v6.conditions import AdapterIdentityCondition, TaskType
 from src.pose_control.v6.deepgen_adapter import UnifiedSMPLXAdapterV6
 from src.pose_control.v6.controlled_pipeline import ControlledDeepGenPipeline
-from train_iper_v6_native import get_cached_conditions
+from scripts.train.train_iper_v6_native import get_cached_conditions
 
 
 def parse_args() -> argparse.Namespace:

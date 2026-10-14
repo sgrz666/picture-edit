@@ -6,7 +6,7 @@ from pathlib import Path
 import numpy as np
 from PIL import Image
 
-from eval_iper_v6 import compute_metrics
+from scripts.eval.eval_iper_v6 import compute_metrics
 
 
 class TestIPERV6EvalParity(unittest.TestCase):

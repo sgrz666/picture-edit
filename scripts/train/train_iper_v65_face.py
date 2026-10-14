@@ -19,7 +19,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-from scripts.precompute_iper_face_features_v65 import load_v65_face_cache
+from scripts.data.precompute_iper_face_features_v65 import load_v65_face_cache
 
 
 FACE_PARAMETER_PREFIXES = (
