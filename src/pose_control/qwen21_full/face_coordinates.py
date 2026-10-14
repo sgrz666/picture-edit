@@ -6,12 +6,18 @@ from typing import Mapping, Sequence
 
 import torch
 
-from src.data.letterbox import Letterbox, VERSION
+from src.data.letterbox import Letterbox, VERSION, NativePad, NATIVE_VERSION
 
 
-def transform_from_record(record: Mapping) -> Letterbox:
-    if record.get('version') != VERSION:
-        raise ValueError('Face coordinates require the recorded letterbox_v1 transform')
+def transform_from_record(record: Mapping) -> Letterbox | NativePad:
+    version = record.get('version')
+    if version == NATIVE_VERSION:
+        transform = NativePad.from_record(record)
+        if transform.metadata() != dict(record):
+            raise ValueError('Face transform differs from the RGB transform')
+        return transform
+    if version != VERSION:
+        raise ValueError('Face coordinates require recorded letterbox_v1 or native_pad_v1 transform')
     transform = Letterbox.from_size((record['width'], record['height']), record['side'])
     if transform.metadata() != dict(record):
         raise ValueError('Face transform differs from the RGB transform')
@@ -55,6 +61,10 @@ def transform_face_condition(condition, alignments: Sequence[Mapping] | None):
 def valid_image_tokens(batch, grid, device):
     if 'valid_image_mask' not in batch:
         return None
+    if isinstance(grid, (tuple, list)):
+        size = (int(grid[0]), int(grid[1]))
+    else:
+        size = (int(grid), int(grid))
     return torch.nn.functional.interpolate(
         batch['valid_image_mask'].to(device=device, dtype=torch.float32),
-        size=(grid, grid), mode='area').flatten(2).transpose(1, 2)
+        size=size, mode='area').flatten(2).transpose(1, 2)

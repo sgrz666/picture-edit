@@ -299,6 +299,7 @@ class Qwen21FullAdapter(nn.Module):
         prompt_embeds: torch.Tensor, prompt_mask: torch.Tensor | None,
         sigma: torch.Tensor, target_token_hw: tuple[int, int],
         denoise_progress: float | torch.Tensor | None = None,
+        target_valid_mask: torch.Tensor | None = None,
         geometry_strength=1.0, interaction_strength=0.8, detail_strength=1.0,
         face_strength=1.0, hand_strength=1.0, hand_mode: str = "legacy",
         face_reference_token_hw: tuple[int, int] | None = None,
@@ -431,6 +432,13 @@ class Qwen21FullAdapter(nn.Module):
             # cancellation in BF16: an explicitly disabled group equals Body.
             scaled = tuple(base if face_group_gains[index] == 0 else base + face_deltas[index]
                            for index, base in enumerate(scaled))
+        if target_valid_mask is not None:
+            mask_val = target_valid_mask.to(device=scaled[0].device, dtype=scaled[0].dtype)
+            if mask_val.ndim == 2:
+                mask_val = mask_val.unsqueeze(-1)
+            scaled = tuple(res * mask_val for res in scaled)
+            if face_deltas is not None:
+                face_deltas = tuple(d * mask_val for d in face_deltas)
         diagnostics.update({
             "target_token_hw": list(target_token_hw), "active_block_mapping": [list(group) for group in LAYER_GROUPS],
             "face_reference_token_hw": None if face_reference_token_hw is None else list(face_reference_token_hw),
@@ -452,6 +460,7 @@ class Qwen21FullControlContext(AbstractContextManager):
         self, transformer: nn.Module, adapter: Qwen21FullAdapter,
         prepared_or_factory: PreparedControlConditioning | Callable[[dict], PreparedControlConditioning],
         *, target_token_hw: tuple[int, int] | None = None,
+        target_valid_mask: torch.Tensor | None = None,
         progress_mode: str = "sigma", num_inference_steps: int | None = None,
         denoise_progress: float | torch.Tensor | None = None,
         detailed_face_diagnostics: bool = False, diagnostic_stage_steps=(),
@@ -464,6 +473,7 @@ class Qwen21FullControlContext(AbstractContextManager):
         self.transformer, self.adapter = transformer, adapter
         self.prepared_or_factory = prepared_or_factory
         self.expected_hw = target_token_hw
+        self.target_valid_mask = target_valid_mask
         self.progress_mode, self.num_inference_steps = progress_mode, num_inference_steps
         self.denoise_progress = denoise_progress
         self.detailed_face_diagnostics = bool(detailed_face_diagnostics)
@@ -524,10 +534,12 @@ class Qwen21FullControlContext(AbstractContextManager):
         if progress is None and self.progress_mode == "step":
             progress = min(self._step_index / max(self.num_inference_steps - 1, 1), 1.0)
         prepared = self.prepared_or_factory(inputs) if callable(self.prepared_or_factory) else self.prepared_or_factory
+        target_valid_mask = self.target_valid_mask if self.target_valid_mask is not None else inputs.get("target_valid_mask")
         self.output = self.adapter.build_residuals(
             noisy_target=hidden[:, -self.target_tokens:], prepared=prepared,
             prompt_embeds=self._prompt, prompt_mask=self._prompt_mask,
-            sigma=sigma, target_token_hw=(h, w), denoise_progress=progress, **self.strengths,
+            sigma=sigma, target_token_hw=(h, w), denoise_progress=progress,
+            target_valid_mask=target_valid_mask, **self.strengths,
             record_face_injection=self.detailed_face_diagnostics,
         )
         self._face_roi_support = None

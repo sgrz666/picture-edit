@@ -40,7 +40,8 @@ class PoseMetric:
         return points[0, :17], scores[0, :17]
 
     @staticmethod
-    def compare(detected: tuple[np.ndarray, np.ndarray] | None, target: np.ndarray) -> dict[str, float | bool | None]:
+    def compare(detected: tuple[np.ndarray, np.ndarray] | None, target: np.ndarray,
+                image_size: tuple[int, int] | None = None) -> dict[str, float | bool | None]:
         if detected is None:
             return {'pose_detected': False, 'pose_nme_diagonal': None, 'pose_pck_002': 0.0, 'pose_pck_005': 0.0, 'pose_joint_recall': 0.0, 'pose_matched_joints': 0}
         points, scores = detected
@@ -51,7 +52,10 @@ class PoseMetric:
         denominator = int(target_visible.sum())
         if denominator == 0:
             return {'pose_detected': True, 'pose_nme_diagonal': None, 'pose_pck_002': None, 'pose_pck_005': None, 'pose_joint_recall': None, 'pose_matched_joints': 0}
-        distance = np.linalg.norm(points[matched] - target_coco[matched, :2] * 512, axis=1) / np.hypot(512, 512)
+        w, h = (512.0, 512.0) if image_size is None else (float(image_size[0]), float(image_size[1]))
+        scale = np.array([w, h], dtype=np.float32)
+        diag = float(np.hypot(w, h))
+        distance = np.linalg.norm(points[matched] - target_coco[matched, :2] * scale, axis=1) / max(diag, 1e-12)
         return {'pose_detected': True, 'pose_nme_diagonal': float(distance.mean()) if count else None,
                 'pose_pck_002': float((distance < 0.02).sum() / denominator),
                 'pose_pck_005': float((distance < 0.05).sum() / denominator),

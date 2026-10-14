@@ -1,5 +1,5 @@
 $ErrorActionPreference = 'Stop'
-$taskLocalRoot = 'D:/codeplus/pictureedit/research/bfs_body_face_joint_pilot_20261008'
+$taskLocalRoot = 'D:/codeplus/pictureedit/experiments/bfs_body_face_joint_pilot_20261008'
 New-Item -ItemType Directory -Path $taskLocalRoot -Force | Out-Null
 $taskExportCode = @'
 import tarfile

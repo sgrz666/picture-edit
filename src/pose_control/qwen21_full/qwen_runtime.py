@@ -26,10 +26,10 @@ def dataset_image_to_pil(image: torch.Tensor) -> Image.Image:
 
 
 class Qwen21IPERCache:
-    def __init__(self, root: str | Path, *, prompt: str = PROMPT, resolution: int = RESOLUTION,
+    def __init__(self, root: str | Path, *, prompt: str = PROMPT, resolution: int | str = RESOLUTION,
                  preprocessing: str = 'resize_v1') -> None:
-        if resolution not in (512, 1024):
-            raise ValueError('resolution must be 512 or 1024')
+        if resolution not in (512, 1024, '512', '1024', 'native'):
+            raise ValueError("resolution must be 512, 1024, or 'native'")
         self.root = Path(root)
         self.root.mkdir(parents=True, exist_ok=True)
         self.prompt = prompt
@@ -62,8 +62,10 @@ class Qwen21IPERCache:
 
     def _vae_input(self, pipe, image: Image.Image, device: torch.device) -> torch.Tensor:
         rgba = image.convert("RGBA")
+        width = image.width if self.resolution == 'native' else int(self.resolution)
+        height = image.height if self.resolution == 'native' else int(self.resolution)
         return pipe.image_processor.preprocess(
-            rgba, width=self.resolution, height=self.resolution
+            rgba, width=width, height=height
         ).unsqueeze(2).to(device=device, dtype=pipe.vae.dtype)
 
     def source(self, pipe, image: Image.Image, *, prompt: str | None = None) -> dict[str, torch.Tensor]:
@@ -76,7 +78,9 @@ class Qwen21IPERCache:
             raise RuntimeError(f"missing source cache {path.name}; text encoder must be on GPU for precompute")
         with torch.inference_mode():
             rgba = image.convert("RGBA")
-            vlm_image = pipe.image_processor.resize(rgba, width=self.resolution, height=self.resolution)
+            width = image.width if self.resolution == 'native' else int(self.resolution)
+            height = image.height if self.resolution == 'native' else int(self.resolution)
+            vlm_image = pipe.image_processor.resize(rgba, width=width, height=height)
             prompt_embeds, prompt_mask, image_mask = pipe.encode_prompt(
                 resolved_prompt, image=[vlm_image], device=device
             )
@@ -90,6 +94,7 @@ class Qwen21IPERCache:
                 "prompt_mask": prompt_mask.cpu().bool().contiguous(),
                 "image_mask": image_mask.cpu().bool().contiguous(),
                 "reference_latent": latent.cpu().contiguous(),
+                "token_hw": (height // 16, width // 16),
             }
         self._store(path, entry)
         return entry
@@ -125,8 +130,16 @@ class Qwen21IPERCache:
         targets = [self.target(pipe, dataset_image_to_pil(batch["tgt_image"][index])) for index in range(batch_size)]
         target_latent = torch.cat(targets, dim=0)
         tokens = target_latent.shape[1]
-        if tokens != (self.resolution // 16) ** 2 or tokens % 4:
-            raise ValueError(f"unexpected Qwen21 target token count: {tokens}")
+        if self.resolution == 'native':
+            tgt_h, tgt_w = batch["tgt_image"].shape[2] // 16, batch["tgt_image"].shape[3] // 16
+            src_h, src_w = batch["src_image"].shape[2] // 16, batch["src_image"].shape[3] // 16
+            if tokens != tgt_h * tgt_w or tokens % 4:
+                raise ValueError(f"unexpected Qwen21 target token count: {tokens} (expected {tgt_h}x{tgt_w}={tgt_h * tgt_w})")
+        else:
+            res_int = int(self.resolution)
+            tgt_h = tgt_w = src_h = src_w = res_int // 16
+            if tokens != (res_int // 16) ** 2 or tokens % 4:
+                raise ValueError(f"unexpected Qwen21 target token count: {tokens}")
         max_prompt = max(condition["prompt_embeds"].shape[1] for condition in conditions)
         prompt_embeds = torch.cat([
             F.pad(condition["prompt_embeds"], (0, 0, 0, max_prompt - condition["prompt_embeds"].shape[1]))
@@ -149,19 +162,26 @@ class Qwen21IPERCache:
             "prompt_mask": prompt_mask.to(device),
             "img_mask": image_mask.to(device),
             "resolution": self.resolution,
+            "target_token_hw": (tgt_h, tgt_w),
+            "source_token_hw": (src_h, src_w),
         }
 
 
 def transformer_inputs(pair: dict[str, torch.Tensor], noisy_target: torch.Tensor, sigma: torch.Tensor):
-    grid = pair['resolution'] // 16
-    if noisy_target.shape[1] != grid * grid:
+    if pair.get('target_token_hw') is not None:
+        th, tw = pair['target_token_hw']
+        sh, sw = pair.get('source_token_hw', (th, tw))
+    else:
+        grid = int(pair['resolution']) // 16
+        th = tw = sh = sw = grid
+    if noisy_target.shape[1] != th * tw:
         raise ValueError('target latent token count does not match resolution')
     return {
         "hidden_states": torch.cat((pair["source_latent"], noisy_target), dim=1),
         "timestep": sigma,
         "encoder_hidden_states": pair["prompt_embeds"],
         "encoder_hidden_states_mask": pair["prompt_mask"],
-        "img_shapes": [[(1, grid, grid)] * 2 for _ in range(noisy_target.shape[0])],
+        "img_shapes": [[(1, sh, sw), (1, th, tw)] for _ in range(noisy_target.shape[0])],
         "img_mask": pair["img_mask"],
         "return_dict": False,
     }

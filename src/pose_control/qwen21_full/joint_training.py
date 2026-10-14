@@ -92,10 +92,13 @@ def validate_locked_split(train_path, val_path):
             'branch_sha256': hashes['branch256_pairs.jsonl']}
 
 
-def joint_parameter_groups(adapter, *, body_scale=.25, face_scale=.5):
+def joint_parameter_groups(adapter, *, body_scale=.25, face_scale=.5, hand_scale=1.0, with_hand=False):
     from .execution import parameter_groups
     result, names, seen = [], {}, set()
-    for branch, scale in [('body', body_scale), ('face', face_scale)]:
+    branches = [('body', body_scale), ('face', face_scale)]
+    if with_hand:
+        branches.append(('hand', hand_scale))
+    for branch, scale in branches:
         groups, branch_names = parameter_groups(adapter, branch, lr_scale=scale)
         for group in groups:
             key = f'{branch}_{group["name"]}'
@@ -108,6 +111,16 @@ def joint_parameter_groups(adapter, *, body_scale=.25, face_scale=.5):
             result.append({**group, 'name': key, 'params': [parameter for _, parameter in retained],
                            'base_lr': group['lr']})
     return result, names
+
+
+def init_hand_weights_if_zero(adapter):
+    with torch.no_grad():
+        for h in adapter.legacy.control_interface.hand_adapter.zero_heads:
+            if h.weight.norm() == 0:
+                h.weight.fill_(0.01)
+        for sa in adapter.legacy.control_interface.hand_adapter.stage_adapters:
+            if sa.up.weight.norm() == 0:
+                sa.up.weight.fill_(0.01)
 
 
 def enable_joint_training(adapter, names):
@@ -135,7 +148,37 @@ def validate_joint_signature(stored, current):
             raise ValueError(f'Joint resume configuration differs: {key}')
 
 
-def joint_velocity_loss(squared, human, valid, face_mask, *, face_active, face_weight=.5):
+def hand_loss_mask(prepared, grid):
+    hand = prepared.hand
+    if hand is None:
+        raise ValueError('Hand loss requires hand conditioning')
+    if isinstance(grid, (tuple, list)):
+        gh, gw = int(grid[0]), int(grid[1])
+    else:
+        gh = gw = int(grid)
+    b = hand.spatial_features.shape[0]
+    device = hand.target_boxes.device
+    dtype = hand.target_boxes.dtype
+    yy = (torch.arange(gh, device=device, dtype=dtype) + .5) / gh
+    xx = (torch.arange(gw, device=device, dtype=dtype) + .5) / gw
+    total_mask = torch.zeros((b, gh, gw), device=device, dtype=dtype)
+    for p in range(hand.target_boxes.shape[1]):
+        for s in range(2):
+            valid = hand.hand_valid[:, p, s]
+            if not valid.any():
+                continue
+            boxes = hand.target_boxes[:, p, s].float()
+            in_box = ((xx[None, None, :] >= boxes[:, 0, None, None])
+                      & (xx[None, None, :] <= boxes[:, 2, None, None])
+                      & (yy[None, :, None] >= boxes[:, 1, None, None])
+                      & (yy[None, :, None] <= boxes[:, 3, None, None]))
+            in_box = in_box & valid[:, None, None]
+            total_mask = torch.logical_or(total_mask.bool(), in_box).to(dtype)
+    return total_mask.reshape(b, gh * gw, 1).detach()
+
+
+def joint_velocity_loss(squared, human, valid, face_mask, *, face_active, face_weight=.5,
+                        hand_mask=None, hand_active=False, hand_weight=.5):
     from src.data.letterbox import valid_body_velocity_loss
     body = valid_body_velocity_loss(squared, human, valid)
     face = squared.new_zeros(())
@@ -145,7 +188,14 @@ def joint_velocity_loss(squared, human, valid, face_mask, *, face_active, face_w
         if not bool(denominator > 0):
             raise ValueError('Active Face has an empty valid ROI')
         face = (squared * weight).sum() / denominator
-    return body + face_weight * face, {'body': body, 'face': face}
+    hand = squared.new_zeros(())
+    if hand_active and hand_mask is not None:
+        h_weight = hand_mask if valid is None else hand_mask * valid
+        h_denominator = h_weight.sum() * squared.shape[-1]
+        if h_denominator > 0:
+            hand = (squared * h_weight).sum() / h_denominator
+    total = body + face_weight * face + hand_weight * hand
+    return total, {'body': body, 'face': face, 'hand': hand}
 
 
 def joint_group_gradients(adapter, names):
@@ -157,17 +207,29 @@ def joint_group_gradients(adapter, names):
 
 def run_joint_loss(pipe, adapter, cache, dataset, store, index, *, seed, auxiliary=False,
                    evaluators=None, supervision=None, backward=True, fixed_sigma=None,
-                   face_weight=.5, check_auxiliary_gradients=False):
+                   face_weight=.5, check_auxiliary_gradients=False,
+                   with_hand=False, hand_store=None, hand_weight=.5, prompt: str | None = None):
     from .execution import (batch_one, crop_batch, decode_tokens, face_loss_mask, feature,
                             pair_metadata, prepare, transformer_inputs)
     from .face_coordinates import valid_image_tokens
     from .qwen_adapter import Qwen21FullControlContext
+    from .prompt_study.protocol import text_sha256
     device = next(adapter.parameters()).device
     batch = batch_one(dataset, index)
     metadata = [dataset.samples[index]]
-    pair = cache.pair(pipe, batch, device)
+    if prompt is None:
+        pair = cache.pair(pipe, batch, device)
+    else:
+        if not isinstance(prompt, str) or not prompt.strip():
+            raise ValueError("Joint prompt must be nonempty")
+        pair = cache.pair(pipe, batch, device, prompts=[prompt])
     target = pair['target_latent']
-    grid = cache.resolution // 16
+    if pair.get('target_token_hw') is not None:
+        target_token_hw = tuple(pair['target_token_hw'])
+    else:
+        grid_dim = int(cache.resolution) // 16
+        target_token_hw = (grid_dim, grid_dim)
+    target_tokens = target_token_hw[0] * target_token_hw[1]
     generator = torch.Generator(device=device).manual_seed(seed)
     sigma = torch.rand((1,), device=device, dtype=target.dtype, generator=generator)
     if fixed_sigma is not None:
@@ -175,29 +237,42 @@ def run_joint_loss(pipe, adapter, cache, dataset, store, index, *, seed, auxilia
     noise = torch.randn(target.shape, device=device, dtype=target.dtype, generator=generator)
     noisy = (1 - sigma[:, None, None]) * target + sigma[:, None, None] * noise
     velocity = noise - target
-    prepared = prepare(adapter, batch, pair, metadata, store, with_face=True)
+    prepared = prepare(adapter, batch, pair, metadata, store, with_face=True,
+                       with_hand=with_hand, hand_store=hand_store)
     if prepared.face is None or not bool(prepared.face.face_valid[:, 0].all()):
         raise ValueError(f'Joint training requires a valid source identity and target Face geometry: {index}')
     schedule = adapter.legacy.control_interface.strength_controller.face_schedule
     schedule_dtype = torch.bfloat16 if torch.is_autocast_enabled(device.type) else target.dtype
     face_active = bool((schedule.multiplier(1 - sigma.to(schedule_dtype)) != 0).all())
+    hand_mask = hand_loss_mask(prepared, target_token_hw) if with_hand else None
+    hand_active = bool(with_hand and prepared.hand is not None and prepared.hand.hand_valid.any() and hand_mask is not None and hand_mask.any())
+    valid_tokens = valid_image_tokens(batch, target_token_hw, device)
     context = Qwen21FullControlContext(
         pipe.transformer, adapter, prepared,
+        target_token_hw=target_token_hw,
+        target_valid_mask=valid_tokens,
         geometry_strength=1, interaction_strength=0, detail_strength=1,
-        face_strength=1, hand_strength=0, hand_mode='off',
+        face_strength=1, hand_strength=1 if with_hand else 0,
+        hand_mode='v66' if with_hand else 'off',
     )
     # detail_strength is also a Face gate in the inherited interface. No shared
     # Detail payload is provided, so that branch remains absent.
-    if prepared.detail is not None or prepared.hand is not None:
-        raise AssertionError('Joint Body/Face pilot must not prepare Hand/shared Detail')
+    if not with_hand and prepared.detail is not None:
+        raise AssertionError('Joint Body/Face pilot must not prepare shared Detail')
+    if not with_hand and prepared.hand is not None:
+        raise AssertionError('Joint Body/Face pilot must not prepare Hand')
+    if with_hand and prepared.hand is None:
+        raise AssertionError('Joint Body/Face/Hand pilot requires prepared Hand')
     with context:
-        prediction = pipe.transformer(**transformer_inputs(pair, noisy, sigma))[0][:, -(grid * grid):]
+        prediction = pipe.transformer(**transformer_inputs(pair, noisy, sigma))[0][:, -target_tokens:]
         squared = (prediction.float() - velocity.float()).square()
         human = F.interpolate(batch['human_mask'].to(device=device, dtype=torch.float32),
-                              size=(grid, grid), mode='bilinear', align_corners=False).flatten(2).transpose(1, 2)
-        valid_tokens = valid_image_tokens(batch, grid, device)
-        total, parts = joint_velocity_loss(squared, human, valid_tokens, face_loss_mask(prepared, grid),
-                                           face_active=face_active, face_weight=face_weight)
+                              size=target_token_hw, mode='bilinear', align_corners=False).flatten(2).transpose(1, 2)
+        total, parts = joint_velocity_loss(
+            squared, human, valid_tokens, face_loss_mask(prepared, target_token_hw),
+            face_active=face_active, face_weight=face_weight,
+            hand_mask=hand_mask, hand_active=hand_active, hand_weight=hand_weight,
+        )
         identity = perceptual = squared.new_zeros(())
         eligible = 0
         auxiliary_used = auxiliary and face_active and float(sigma.item()) <= .35
@@ -209,7 +284,8 @@ def run_joint_loss(pipe, adapter, cache, dataset, store, index, *, seed, auxilia
             eligible = int(valid.sum())
             if eligible:
                 x0 = noisy - sigma[:, None, None] * prediction
-                decoded = decode_tokens(pipe, x0, cache.resolution)
+                res_hw = (batch['tgt_image'].shape[2], batch['tgt_image'].shape[3]) if cache.resolution == 'native' else cache.resolution
+                decoded = decode_tokens(pipe, x0, res_hw)
                 target_pixels = (batch['tgt_image'].to(device).float() * .5 + .5).clamp(0, 1)
                 boxes = prepared.face.target_boxes[:, 0].float()
                 generated = crop_batch(decoded, boxes)[valid] * 2 - 1
@@ -232,13 +308,17 @@ def run_joint_loss(pipe, adapter, cache, dataset, store, index, *, seed, auxilia
     meta = pair_metadata(metadata[0])
     report = {
         'loss': float(total.detach()), 'body_flow': float(parts['body'].detach()),
-        'face_flow': float(parts['face'].detach()), 'identity': float(identity.detach()),
+        'face_flow': float(parts['face'].detach()),
+        'hand_flow': float(parts['hand'].detach()) if 'hand' in parts else 0.0,
+        'identity': float(identity.detach()),
         'perceptual': float(perceptual.detach()), 'sigma': float(sigma.item()),
-        'face_active': face_active, 'auxiliary_requested': auxiliary,
+        'face_active': face_active, 'hand_active': hand_active,
+        'auxiliary_requested': auxiliary,
         'auxiliary_used': auxiliary_used, 'auxiliary_eligible_faces': eligible,
         'pair_index': index, 'pair_id': meta['pair_id'], 'noise_seed': seed,
         'source_stem': meta['source_stem'], 'target_stem': meta['target_stem'],
         'source_appearance': meta['source_appearance'], 'target_appearance': meta['target_appearance'],
+        'prompt_sha256': text_sha256(cache.prompt if prompt is None else prompt),
     }
     if check_auxiliary_gradients:
         report['auxiliary_gradient_norms'] = auxiliary_gradients
