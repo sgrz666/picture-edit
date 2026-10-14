@@ -55,13 +55,14 @@ for base in pairs pairs_cross; do
   for pair_dir in "$base"/*/; do
     [ -f "$pair_dir/pair.json" ] || continue
     pair=$(basename "$pair_dir")
-    # with_b is only paired with source_fit for the same-identity set; the cross-pair hard cases
-    # keep the two arms at b_canvas, where the single existing failure was reproduced.
-    if [ "$base" = "pairs" ]; then
-      run_one "$pair_dir" "$pair.with_b.b_canvas" with_b b_canvas
-    fi
-    run_one "$pair_dir" "$pair.skeleton_only.b_canvas" skeleton_only b_canvas
-    run_one "$pair_dir" "$pair.skeleton_only.source_fit" skeleton_only source_fit
+    # Every pair x every arm x every framing. Restricting with_b to same-identity b_canvas was an
+    # n=1 rationale and left the arm comparison impossible at source_fit; done_run() skips cells
+    # that already passed, so widening the loop only runs the empty ones.
+    for arm in with_b skeleton_only; do
+      for framing in b_canvas source_fit; do
+        run_one "$pair_dir" "$pair.$arm.$framing" "$arm" "$framing"
+      done
+    done
   done
 done
 
