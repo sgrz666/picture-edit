@@ -25,6 +25,12 @@ STAGES = ('geometry', 'prompt', 'generate')
 STAGE_DIRECTORY = {'geometry': 'geometry', 'prompt': 'prompt', 'generate': 'generation'}
 STAGE_SCRIPT = {'geometry': None, 'prompt': 'pe_dual_worker.py',
     'generate': 'generate_dual_worker.py'}
+# A run name is <pair>.<arm>.<framing>[.<guide-suffix>]. Cross-pair directory names already run to
+# 41 characters, so the longest planned cell measured 70; the cap has to stay above that or the
+# batch rejects a cell for its length and the failure looks like a bad command line.
+RUN_NAME_MAX_LENGTH = 128
+RUN_NAME_PATTERN = re.compile(rf'[A-Za-z0-9][A-Za-z0-9_.-]{{0,{RUN_NAME_MAX_LENGTH - 1}}}')
+
 SHARED_CODE = ['src/pose_edit/common.py', 'src/pose_edit/geometry.py']
 PROMPT_CODE = SHARED_CODE + ['src/pose_edit/prompt_contract.py', 'dual_prompts.py']
 
@@ -220,8 +226,9 @@ def main():
         parser.error('--pair is required: a directory holding pair.json, A_source.png and B_target.png')
     pair_dir = discover_pair(args.pair)
     name = args.name or pair_dir.name
-    if not re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9_.-]{0,63}', name):
-        parser.error('--name must be a simple directory name')
+    if not RUN_NAME_PATTERN.fullmatch(name):
+        parser.error(f'--name must be a simple directory name of at most {RUN_NAME_MAX_LENGTH} '
+            f'characters; got {name!r} ({len(name)})')
     run_dir = ROOT / 'runs' / name
     if args.verify and not run_dir.is_dir():
         raise RuntimeError(f'No existing run to verify: {run_dir}')
