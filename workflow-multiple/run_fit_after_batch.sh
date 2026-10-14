@@ -32,9 +32,15 @@ for npz in fits/*.npz; do
   note "FIT_TWIN $pair exit=$?"
 done
 
-"$QWEN_PY" compare_dual.py --by source --out comparisons/compare_source.json > logs_batch/fit_report.txt 2>&1 \
-  || note "COMPARE_SOURCE_FAILED"
+# The twins change the grid, so every readout is recomputed from this moment, not just --by source.
+: > logs_batch/fit_report.txt
+for by in source arm framing; do
+  "$QWEN_PY" compare_dual.py --by "$by" --out "comparisons/compare_$by.json" \
+    >> logs_batch/fit_report.txt 2>&1 || note "COMPARE_FAILED $by"
+done
 "$QWEN_PY" report_dual.py > logs_batch/report.txt 2>&1 || note "REPORT_FAILED"
+"$QWEN_PY" matrix_audit.py > logs_batch/matrix_audit.txt 2>&1
+note "MATRIX_AUDIT exit=$? see logs_batch/matrix_audit.txt"
 note "FIT_ALL_DONE"
 echo "$(date -Is) FIT_ALL_DONE" >> logs_batch/batch.log
 note "FIT_AFTER_DONE"

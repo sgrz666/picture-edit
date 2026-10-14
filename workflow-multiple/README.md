@@ -110,7 +110,7 @@ $PY report_dual.py
 
 ### ②的最终成对读数（2026-10-14 04:18 finalize 统一重算；替换本节此前的 5 对中期表，也替换下面两臂小样本表的口径）
 
-覆盖：17 对全部跑通。同一身份的 12 对跑满三格（`skeleton_only.b_canvas`、`skeleton_only.source_fit`、`with_b.b_canvas`），跨身份的 5 对只跑 `skeleton_only`（不给 B 的原图才有意义），另有 3 对配了 fit 向导孪生 run。合计 48 个 run 目录、45 条带评测的批量 run。评测口径与批量期间的两次修补见后一节。
+覆盖：下表是 **04:18 那一次的 45 格**（臂 12 行 / 定标 16 行 / 向导 3 行）。**行数会随第二轮补格上升，实时格数与配对行数一律以 `matrix_audit.py`（落盘 `logs_batch/matrix_audit.txt`）为准，不要把本表的行数当现状读**：09:51 实测已经是 planned 85 / covered 50、`--by arm` 14 行、`--by framing` 18 行、`--by source` 3 行，还欠 35 格（21 个 dwpose 向导格 + 14 个拟合孪生）。覆盖判据刻意取 run.json=complete **且** evaluation/eval_dual.json 存在：光看目录会把"跑完但没人能打分"的 run 算成证据。同一身份的 12 对跑满三格（`skeleton_only.b_canvas`、`skeleton_only.source_fit`、`with_b.b_canvas`），跨身份的 5 对只跑 `skeleton_only`（不给 B 的原图才有意义），另有 3 对配了 fit 向导孪生 run。合计 48 个 run 目录、45 条带评测的批量 run。评测口径与批量期间的两次修补见后一节。
 
 **分组均值**（identity/pck/mpjpe 只在能打分的人数正确 run 上取均值；count 与 swap 覆盖组内全部 run）：
 
