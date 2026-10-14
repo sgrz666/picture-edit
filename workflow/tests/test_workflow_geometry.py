@@ -281,12 +281,37 @@ class TorsoFramingTests(unittest.TestCase):
         self.assertGreater(torso['scale'], person['scale'] * 5,
             'a wide B inside a narrow A must not be fitted by the width ratio')
 
-    def test_torso_scale_is_derived_from_the_source_box_and_the_measured_torso(self):
+    def test_torso_scale_falls_back_to_the_box_height_only_without_a_measurement(self):
         _, metadata = self.align(self.points, self.bbox_B, self.bbox_A, 'source_torso')
         self.assertEqual(metadata['framing'], 'source_torso')
         self.assertAlmostEqual(metadata['B_torso_px'], 100.0)
         self.assertAlmostEqual(metadata['A_box_height_px'], 800.0)
         self.assertAlmostEqual(metadata['scale'], self.constant * 800.0 / 100.0)
+        self.assertEqual(metadata['torso_reference'], 'constant_fallback')
+        self.assertIsNone(metadata['A_torso_px'])
+
+    def test_measured_A_torso_replaces_the_constant(self):
+        # A's real torso is 180px here; 0.31 x 800px of box height would claim 248px, i.e. the
+        # constant inflates this body by 38%, which is the failure torso_ratio.py measured.
+        _, metadata = self.align(self.points, self.bbox_B, self.bbox_A, 'source_torso',
+            a_torso_px=180.0)
+        self.assertEqual(metadata['torso_reference'], 'measured_A')
+        self.assertAlmostEqual(metadata['A_torso_px'], 180.0)
+        self.assertAlmostEqual(metadata['scale'], 180.0 / 100.0)
+        self.assertLess(metadata['scale'], self.constant * 800.0 / 100.0)
+
+    def test_unusable_measurements_do_not_silently_become_a_scale(self):
+        for value in (None, float('nan'), 0.0, -5.0):
+            with self.subTest(value=value):
+                _, metadata = self.align(self.points, self.bbox_B, self.bbox_A, 'source_torso',
+                    a_torso_px=value)
+                self.assertEqual(metadata['torso_reference'], 'constant_fallback')
+                self.assertIsNone(metadata['A_torso_px'])
+
+    def test_the_other_framing_does_not_claim_a_torso_reference(self):
+        _, metadata = self.align(self.points, self.bbox_B, self.bbox_A, 'source_person')
+        self.assertEqual(metadata['torso_reference'], 'not_applicable')
+        self.assertIsNone(metadata['A_torso_px'])
 
     def test_both_framings_keep_proportions_and_missing_joints(self):
         for framing in ('source_person', 'source_torso'):

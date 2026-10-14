@@ -15,10 +15,15 @@ _BODY18_FROM_SMPLX137 = (
 )
 _FACE68_FROM_SMPLX137 = tuple(range(120, 137)) + tuple(range(69, 79)) + tuple(range(79, 88)) + tuple(range(88, 100)) + tuple(range(100, 120))
 
-# Neck-to-hip-centre length as a fraction of a full-body detection box height. Measured against
-# the generated bodies of the frozen test pairs: 0.31 reproduces the scale that actually matched
-# the source body within about 4% on all five scored pairs, including the one whose width-driven
-# box fit was off by 2.35x.
+# Neck-to-hip-centre length as a fraction of a full-body detection box height.
+#
+# This is now a FALLBACK only. The claim it carried - that 0.31 matched the source body within
+# about 4% on all five scored pairs - does not hold when measured: across 8 source frames of this
+# same single-person line the torso/box-height ratio spans 0.259-0.524, which as the sizing
+# multiplier this branch applies (0.31 / ratio) is 0.59x to 1.20x, with only 2 of 8 inside +/-10%
+# (workflow-multiple/torso_ratio.py). Box height carries no information about a torso, so
+# source_torso measures A's torso directly and reaches for this number only when A has no usable
+# neck or hip landmark.
 TORSO_TO_PERSON_BOX_HEIGHT = 0.31
 
 
@@ -159,6 +164,7 @@ def align_to_source_bbox(
     bbox_B: Sequence[float],
     bbox_A: Sequence[float],
     framing: str = "source_person",
+    a_torso_px: float | None = None,
 ) -> tuple[np.ndarray, dict[str, object]]:
     """Uniformly scale and center B-space points onto the source person in A.
 
@@ -166,21 +172,30 @@ def align_to_source_bbox(
     the smaller of the two side ratios, so when A and B are cropped with opposite aspect ratios
     the width term wins and the requested pose ends up far smaller than the source body.
 
-    ``source_torso`` scales B's measured torso onto the source person's expected torso, derived
-    from A's box height, so the transferred body keeps the source's own size no matter how the
-    two boxes were cropped.
+    ``source_torso`` scales B's measured torso onto A's measured torso (``a_torso_px``), so the
+    transferred body keeps the source's own size no matter how the two boxes were cropped. With no
+    measurement available it falls back to ``TORSO_TO_PERSON_BOX_HEIGHT * A_box_height`` and records
+    that it did, because a box height is a weak stand-in for a torso.
     """
     points = _points_array(points_xy, (2,), "points_xy")
     bx1, by1, bx2, by2 = _validated_bbox(bbox_B, "bbox_B")
     ax1, ay1, ax2, ay2 = _validated_bbox(bbox_A, "bbox_A")
     b_torso = float("nan")
+    measured = float("nan")
+    torso_reference = "not_applicable"
     if framing == "source_person":
         scale = min((ax2 - ax1) / (bx2 - bx1), (ay2 - ay1) / (by2 - by1))
     elif framing == "source_torso":
         b_torso = torso_length(points)
         if not np.isfinite(b_torso) or b_torso <= 0:
             raise ValueError("source_torso framing needs a finite neck and at least one hip in B")
-        scale = TORSO_TO_PERSON_BOX_HEIGHT * (ay2 - ay1) / b_torso
+        measured = float(a_torso_px) if a_torso_px is not None else float("nan")
+        if np.isfinite(measured) and measured > 0:
+            scale = measured / b_torso
+            torso_reference = "measured_A"
+        else:
+            scale = TORSO_TO_PERSON_BOX_HEIGHT * (ay2 - ay1) / b_torso
+            torso_reference = "constant_fallback"
     else:
         raise ValueError(f"unknown pose framing {framing!r}; use source_person or source_torso")
     center_b = np.array([(bx1 + bx2) / 2, (by1 + by2) / 2])
@@ -190,7 +205,9 @@ def align_to_source_bbox(
     aligned[~np.isfinite(points).all(axis=1)] = np.nan
     return aligned, {"scale": float(scale), "offset_xy": offset.tolist(), "framing": framing,
         "B_torso_px": float(b_torso) if np.isfinite(b_torso) else None,
-        "A_box_height_px": float(ay2 - ay1)}
+        "A_box_height_px": float(ay2 - ay1),
+        "A_torso_px": measured if torso_reference == "measured_A" else None,
+        "torso_reference": torso_reference}
 
 
 def valid_points(points_xy: np.ndarray, width: int, height: int) -> np.ndarray:

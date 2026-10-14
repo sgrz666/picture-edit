@@ -17,10 +17,11 @@ bash run.sh --check          # 资产路径、两个环境导入、CUDA、估计
 bash run.sh                  # pictures/A + pictures/B 各一张，输出到 runs/demo
 ```
 
-跑测试集里的一对，run 名默认取目录名：
+跑测试集里的一对，run 名默认取目录名。测试集位置两侧不同（sg 的 `experiments/` 是 5 族分组，Windows 侧平铺），`batch.sh` 与 `report.py` 现在都会自己探测两种布局；只写死平铺路径的命令在 2026-10-13 重构后指不到东西了：
 
 ```bash
-bash run.sh --pair ../experiments/qwen-2.1-test/data/testset/pairs/hard_05 --resolution 768
+PAIRS=../experiments/2.qwen-test/qwen-2.1-test/data/testset/pairs   # sg 实测在位，7 对齐全
+bash run.sh --pair $PAIRS/hard_05 --resolution 768
 bash run.sh --pair .../pairs/hard_05 --resolution 768 --verify   # 同参数复验，不启动推理
 ```
 
@@ -103,15 +104,26 @@ PE 的产物 `prompt/pe_compiled_prompt.txt` 只读。生成阶段实际读的�
 ## 评测
 
 ```bash
-GEOPY=$(/home/shangguanrz/nihaochen/envs/qwen21/bin/python -c 'import json;print(json.load(open("config.json"))["geometry_python"])')
+QWENPY=/home/shangguanrz/nihaochen/envs/qwen21/bin/python
+GEOPY=$($QWENPY -c 'import json;print(json.load(open("config.json"))["geometry_python"])')
 $GEOPY evaluate.py --run hard_05          # 单个 run；已算过则 CACHE_HIT
+$QWENPY evaluate2.py --all                # 无 GT 六轴补测，写 eval2.json，绝不覆写 eval.json
+$QWENPY scorecard.py                      # 汇总 eval2 成横表
 RESOLUTION=768 bash batch.sh              # 全测试集，跑完自动逐对评测
-/home/shangguanrz/nihaochen/envs/qwen21/bin/python report.py
+$QWENPY report.py                         # 全部 run 的索引、状态、逐对指标
 ```
 
 `evaluate.py` 用与几何阶段同一个估计器回估生成图里的人，把 134 点与请求骨架逐点比对，按 body / feet / face / 左右手分组给出 MPJPE（像素与按躯干长度归一化）、P95、PCK@0.2 与 PCK@0.5，并记录生成图里检出的人数。归一化长度取请求骨架的颈到髋中心距离。
 
 它只回答一个问题：生成器有没有把身体摆到骨架要求的位置。身份、服装、场景是否保持，以及多人图里"别人有没有被改动"，都不在指标内。指标两侧用同一个估计器，估计器自身的偏差会同时进入分子分母，没有与人工标注或第二套检测器交叉验证过。
+
+`evaluate2.py` 与 `scorecard.py`（2026-10-14 落盘）补的就是上面这几条：DWPose 作第二读者的一致率、把"画外关节被排除"算成错的 strict PCK、骨长比漂移、ArcFace 身份余弦、背景与人体区域的 MAE/PSNR/SSIM、以及非主体人物的改动。它写 `evaluation/eval2.json` 与 `stage2.json`，不碰 `evaluate.py` 的产物，字节相同的输出图按 `duplicate` 只计一次。指标选择的完整推导见 `docs/workflow_无GT定量评测调研_20261013.md`，方向层的缺口与优先级见 `docs/workflow_大方向优化调研_20261014.md`。**仍然没有任何指标覆盖**：主观合理度、数据质量、双人交互合理性，以及合同验收写的那条"身高高低/体型胖瘦相对估计准确率"。`eval2.json` 目前只覆盖部分 run，`scorecard.py` 的表因此不完整。
+
+主观读数（合同验收写的"合理比例"与"优胜率"）不在机器指标里，走 `human_eval/`：
+出题（只出两臂都有图的题、随机左右）→ 单文件离线盲评 → `tally.py` 给 win_rate 与**按题** bootstrap CI95、
+逐轴不合格率、Fleiss κ。用法与坑见 [`human_eval/README.md`](human_eval/README.md)。
+合同的参照臂（不给任何姿态条件的纯 Qwen-Edit）尚未实现——它要改 `run.py`（在缓存指纹 `INPUTS_CODE` 里），
+排在批量收尾的同一个窗口。
 
 ## 测试
 
@@ -131,7 +143,7 @@ PE 提示词中的源图 `<image1>` 保持为生成图 1，骨架 `<image3>` 转
 
 `config.json` 指向 sg 已有模型与两个 Python 环境（几何走 `add/envs/smplestx_bw`，PE 与生成走 `~/nihaochen/envs/qwen21`），默认 seed 42、30 步、1024 分辨率预算、true CFG 1、KV cache 关闭。`bash run.sh --help` 查看全部参数，不需要另行安装模型。
 
-测试集共 7 对（`experiments/qwen-2.1-test/data/testset/pairs/`：hard_01~hard_05、medium_01、medium_02）。覆盖率与逐对指标以 `report.py` 的输出为准，下表是整改后那次全量批处理的快照：768 分辨率、seed 42、30 步、提示词全部来自 PE（无手工干预），每对单次运行，指标含义与局限见"评测"一节。
+测试集共 7 对（sg 上 `experiments/2.qwen-test/qwen-2.1-test/data/testset/pairs/`：hard_01~hard_05、medium_01、medium_02）。覆盖率与逐对指标以 `report.py` 的输出为准（2026-10-14 修掉它三处崩溃后实测：19 个 run 全部索引进来、7/7 对都有 run；`medium_01` 实际嵌在 `runs/test/demo/medium_01/`，按一层遍历的旧版本看不见它），下表是整改后那次全量批处理的快照：768 分辨率、seed 42、30 步、提示词全部来自 PE（无手工干预），每对单次运行，指标含义与局限见"评测"一节。
 
 | run | 对齐 | 主体 | body PCK@0.2 | body MPJPE（归一化） | hand | face | 生成图检出人数 |
 | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -150,3 +162,44 @@ PE 提示词中的源图 `<image1>` 保持为生成图 1，骨架 `<image3>` 转
 `hard_05` 的三行是同一对图的两个变量对照。定标：A 框长宽比 0.39、B 框 0.88，`source_person` 的内切缩放被宽度主导（尺度 0.410），请求骨架躯干只有 95.9px，而生成人物躯干 225.6px，错配 2.35 倍；`source_torso` 把尺度提到 0.977，躯干比回到 1.02，指标随之改善 4~7 倍。其余四对 B 框都比 A 框窄，两种定标差不多，所以默认值没有改。提示词：`hard_05_manual` 用的是 `--prompt-file` 引入的一段手写提示词（与 legacy run `testset_hard05_promptv2` 里那份逐字节相同，来源哈希 `17b9c608…`），几何与 PE 阶段照常跑，PE 自己的产物同时保留在 `prompt/pe_compiled_prompt.txt`；在同一份躯干定标下，手写提示词的 body PCK 0.667 高于 PE 编译版的 0.389。即便修好尺度与提示词，`hard_05` 的 body PCK 仍明显低于其余各对，它依然是这套基线最难的一对。
 
 schema v1 的旧 run（`demo`、`testset_hard05*`、`testset_medium02_768`）是整改前的冻结证据：记录格式已变，不再可 `--verify`，`report.py` 会标为 `legacy`；其中 `testset_hard05_promptv2` 与 `testset_hard05_fitgeo` 的提示词是手工写入的，几何与 PE 阶段记录逐字节相同，两者只差提示词文本。整改前的整树备份在 `/data/shangguanrz/pic-edit-archive/workflow_runs_backup_20261012/`（含 `SHA256SUMS`）。
+
+## source_torso 改用实测 A 躯干（2026-10-14）
+
+**改了什么**：`src/pose_edit/geometry.py` 的 `align_to_source_bbox(points, bbox_B, bbox_A, framing,
+a_torso_px=None)`。`source_torso` 现在把 B 的实测躯干缩放到 **A 的实测躯干**（neck→髖心），只有拿不到 A 的
+关键点时才退回 `TORSO_TO_PERSON_BOX_HEIGHT × A框高`，且**在产物里写明走了哪条路**：`B_to_generation.torso_reference`
+取 `measured_A` / `constant_fallback`，`source_person` 取 `not_applicable`。
+
+**为什么必须改**：常数原来的注释写着"在 5 对上把尺度还原到约 4% 以内"，这句不成立。`workflow-multiple/torso_ratio.py`
+按 图片哈希+框 去重量过：单人线 8 张源帧的 躯干/框高 从 **0.259 跨到 0.524**，换算成本流水线自己的单位（迁移后躯干
+= 0.31 × A框高 ⇒ 人被画成 `0.31 / 比值` 倍）是 **0.59×–1.20×，只有 2/8 落在 ±10% 内**。框高不含躯干信息，所以修法是
+换代理量，不是再调一个常数。
+
+**一格真实重跑**：`runs/torso_measured_hard02_20261014`（`run.py --until geometry --framing source_torso`，
+输入沿用已验收的 hard02 的 A_rgb/B_rgb，不改旧 run）：
+A 实测躯干 **585.7px**、A 框高 1118.2px ⇒ 比值 **0.524，正好是上面区间的上界**；`scale = 1.526`，
+常数会给 `0.31 × 1118.2 / 383.8 = 0.903` ⇒ 旧口径把这个人**做小 35%**（measured/constant = 1.69）；
+同一对上 `source_person` 只给 0.690。`VERIFICATION validated`。
+
+**A 的关键点从哪来**：新增 `src/pose_edit/dwpose.py`，一条约定只放一处——ONNX 会话走 CPU、
+`inference_detector` 这一版只返回 xyxy 且自带 0.3 阈、模型输出 **133** 点转成本仓库渲染/打分用的 **134** 点、
+1 号 neck 是派生点所以分数取两肩较弱者、按 IoU 选主体而不是按检测顺序（检测顺序不稳定）。
+**双人线也改从这走**：`workflow-multiple/evaluate_dual.py` 的 `detect_people` 变成转调它，删掉本地那份重复实现；
+重跑 `hug_pair00_084…skeleton_only.b_canvas` 与 `dance_pair02_120…skeleton_only.b_canvas` 的评测，
+新写的 `eval_dual.json` 与原存文件**逐字段相同**（含 per-person 细节，只差 `seconds`），所以这次委托不改数，
+只是把两份 133/134 约定合成一份。
+
+**失败要响**：`source_torso` 下若 DWPose 在 A 里找不到与主体框有重叠的人，`smplx_worker.py` 直接抛
+RuntimeError，**不**悄悄退回常数——那会在不留记录的情况下改变这条 run 的迁移尺度。
+
+**指纹影响（重要，别误判成缓存坏了）**：`src/pose_edit/geometry.py` 属 SHARED_CODE，出现在两条线所有阶段的
+代码清单里，所以**本次改动起，两边已有的阶段缓存都不再等于当前代码**；已有 run 的产物与 `stage.json` 保持原样
+（它们诚实记录了当时是谁算的），不 `--force` 就不会重算。`dwpose.py` 已加入单人线 geometry 阶段与双人线评测的
+代码清单；当 `pose_framing == source_torso` 时，几何指纹还额外包含两个 DWPose 权重的 `model_signature`（权重内容
+变了指纹就变），其余 framing 不为此付哈希成本。
+
+**测试**：`workflow/tests/test_workflow_geometry.py` 从 30 条涨到 33 条（新增实测路径、
+`nan/0/负值` 一律视为不可测量而落回兜底、另一 framing 不声称躯干来源；原来那条"由 A 框高与 B 躯干导出"
+改名为 `..._falls_back_to_the_box_height_only_without_a_measurement` 并加了来源断言），新增
+`workflow/tests/test_dwpose_helper.py` 8 条（IoU、按重叠而非检测顺序选人、133→134、neck 分数规则、
+量不到人返回 None）。单人线 33 条与双人线 11 个模块全绿。

@@ -17,5 +17,7 @@
   "pose_framing": "source_person",
   "prop_policy": "source_only",
   "adapter": false,
-  "lora": false
+  "lora": false,
+  "dwpose_det_model": "/home/shangguanrz/project/pic-edit/add/tools/dwpose_mimicmotion_official/models/yolox_l.onnx",
+  "dwpose_pose_model": "/home/shangguanrz/project/pic-edit/add/tools/dwpose_mimicmotion_official/models/dw-ll_ucoco_384.onnx"
 }
