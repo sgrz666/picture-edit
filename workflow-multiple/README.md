@@ -78,6 +78,23 @@ $PY report_dual.py
 
 **`identity_swap_suspected` 是有信号的**：9/55 被 flag，其中 `skeleton_only` 7、`with_b` 2，`b_canvas` 与 `source_fit` 两档都有，两种检测基准各有（whole_image 5、regions 4），超阈值幅度 0.022–0.120（门槛 0.02）。可核查例：`dance_pair02_059_c4_r424.skeleton_only.b_canvas` 相似度矩阵对角 0.651/0.664、非对角 0.734/0.737 → 外观配对 [1,0] 与姿态配对 [0,1] 相反，`swap_margin_per_person` 0.078。矩阵与两个配对都存在 `eval_dual.json` 的 `appearance` 块里，判定可逐条复核——这才是①要的那块"看不见的失败面"。
 
+**为什么说它"看不见"——被 flag 的 9 条里，姿态指标本身很好看**：
+
+| run | PCK@0.2 | MPJPE(归一) | 整图人数 | 基准 |
+|---|---|---|---|---|
+| `dance_059.skeleton_only.b_canvas.fit` | **1.000** | 0.064 | 1（错） | regions |
+| `dance_059.skeleton_only.source_fit` | 0.950 | 0.068 | 0（错） | regions |
+| `dance_059.with_b.b_canvas` | 0.917 | 0.051 | 0（错） | regions |
+| `yoga_263.skeleton_only.b_canvas` | 0.941 | 0.057 | 1（对） | whole_image |
+| `dance_059.skeleton_only.b_canvas` | 0.913 | 0.068 | 0（错） | regions |
+| `dance_059.with_b.source_fit` | 0.875 | 0.059 | 0（错） | regions |
+| `hug_084.skeleton_only.b_canvas.fit` | 0.662 | 0.158 | 1（对） | whole_image |
+| `backhug_037.skeleton_only.b_canvas` / `.source_fit` | 0.500 | 0.230 / 0.321 | 1（对） | whole_image |
+
+`dance_059` 这一对的五个 run 全被 flag（两臂 × 两定标再加 fit 孪生），它们的 PCK 在 0.875–1.000、MPJPE 0.051–0.068——按姿态看是全场最好的那批图。也就是说**这两个人站到了对方的位置上，关节却摆对了**：只看姿态与人数都会放行。`backhug_037` 是另一类（PCK 0.500、人数正确），flag 与姿态问题同时出现。这一条不依赖 `target_import`，所以①的成果仍然成立，只是"漏外观"那一半被撤。
+
+**import 偏差的来源已定位到口径**（不是猜）：A 侧裁剪用 Hi4D 语义**掩码**框（`evaluate_dual.py:167` `source_boxes_canvas` 读 `person['region']['bbox_xyxy']`），生成侧用 DWPose/YOLOX **检测**框，`crop_person` 两边都只各扩 2%——掩码贴身体、检测框含更多背景，再加上 `A_reference.png` 与 `B_target.png` 的取景/分辨率本就不同，余弦差的**符号**可由口径预测。所以 #25 的第一步是把两侧裁剪几何对齐（同长边正方形化）再重测控制组，第二步才谈阈值。
+
 **人数这一硬指标本身被查实是有条件的**（2026-10-14，用 `count_probe.py` 量的）：YOLOX 在**真实 Hi4D 目标照片** `pairs/dance_pair02_059_c4_r424/B_target.png` 上，nms_thr=0.45 只给 1 个 >0.3 的人框；把 NMS 放宽到 0.95 只多出几个几乎重合的框（[411,300,713,998] vs [410,310,681,1011]，同一具身体），并不是第二个人的框。也就是说**相拥的两个人会被检测器并成一框**，与生成器无关。因此 `person_count_ok=0` 不能直接读成"图里人不对"。
 
 补上的口径是 `region_count`：对**每一个请求的人**各裁其 landmark 外扩 20% 的区域，在区域内单独跑一次检测，看那里有没有身体（`summary.person_count_regions_ok`）。实测对照：
