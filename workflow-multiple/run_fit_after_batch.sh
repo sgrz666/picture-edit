@@ -19,7 +19,15 @@ until grep -q FINALIZE_DONE logs_batch/batch.log 2>/dev/null; do
 done
 note "FINALIZE_DONE starting the guide-source comparison"
 
-for pair in hug_pair00_084_c4_r000 backhug_pair02_037_c64_r545 dance_pair02_059_c4_r424; do
+# Derive the list from cached fits so the guide comparison covers every pair instead of three.
+# A twin only makes sense next to an existing ground-truth-guided run of the same cell.
+for npz in fits/*.npz; do
+  pair=$(basename "$npz" .npz)
+  [ -d "runs/$pair.skeleton_only.b_canvas" ] || continue
+  if [ -d "runs/$pair.skeleton_only.b_canvas.fit" ]; then
+    note "SKIP_TWIN $pair (already exists)"
+    continue
+  fi
   ./run_fit_guide.sh "$pair" skeleton_only b_canvas
   note "FIT_TWIN $pair exit=$?"
 done
@@ -27,5 +35,7 @@ done
 "$QWEN_PY" compare_dual.py --by source --out comparisons/compare_source.json > logs_batch/fit_report.txt 2>&1 \
   || note "COMPARE_SOURCE_FAILED"
 "$QWEN_PY" report_dual.py > logs_batch/report.txt 2>&1 || note "REPORT_FAILED"
+note "FIT_ALL_DONE"
+echo "$(date -Is) FIT_ALL_DONE" >> logs_batch/batch.log
 note "FIT_AFTER_DONE"
 echo "$(date -Is) FIT_AFTER_DONE" >> logs_batch/batch.log
