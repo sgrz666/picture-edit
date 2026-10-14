@@ -133,6 +133,15 @@ $PY report_dual.py
 
 读法：**人数**在两个档都是 `skeleton_only` 稳赢（3-8-1 与 3-3-0），但**姿态**在两档方向不同——`b_canvas` 档 PCK 4/5/2 偏 `skeleton_only`，`source_fit` 档 PCK 2/1/3、MPJPE 1/2/3 反过来偏 `with_b`（中位差 −0.042 / +0.049）。合并两档的池化块会把这个交互抹平（池化 PCK 是 6/6/6），所以**引用时必须指名档位，池化块不作结论**（工具已把这一点写进输出：`--- POOLED over N held contexts: not a single-framing result ---`）。`source_fit` 档只有 6 行、`with_b` 的 12 格仍在补，`FIT_ALL_DONE` 后以 finalize 的重算值替换这两行。
 
+反方向（`--by framing` 按臂分档，同一时刻）也一并记下来，因为它把"定标影响什么"说得更准：
+
+| 臂档 | 行数 | count(b_canvas/平/source_fit) | PCK | MPJPE | identity |
+|---|---|---|---|---|---|
+| `skeleton_only` | 16 | 6 / 8 / 2 | 6 / 3 / 6 | 5 / 7 / 3 | 3 / 7 / 5 |
+| `with_b` | 7（进行中） | **3 / 4 / 0** | 1 / 4 / 1 | 1 / 4 / 1 | 3 / 2 / 1 |
+
+读法：**定标的作用是人数**——两臂都是 `b_canvas` 在人数上领先（`with_b` 档 3 胜 0 负），而姿态在两臂都以平局为主（`with_b` 档 PCK 6 行里 4 行判平）。也就是"给不给 B 原图"与"用哪档定标"影响的量不是同一个：前者在 `source_fit` 档能改姿态胜负，后者主要改人数。两档样本都还在补，finalize 后替换。
+
 **定标（`b_canvas` vs `source_fit`，同臂同向导，16 对）**：count 6 胜 / 8 平 / 2 负，PCK 6/3/6，MPJPE 5/7/3，髖距 7/3/2，identity 3/7/5。
 读数：中期那份"b_canvas 在每个可投票姿态指标上全胜"是 5 对时的表象。**扩到 16 对后 PCK 打平（6:6）**，`b_canvas` 的优势只剩两处：人数正确率（6 胜 2 负）与髖距（7 胜 2 负）；MPJPE 略偏 `b_canvas`；identity 反而 `source_fit` 略好（5 胜 3 负）。两条定标在姿态上没有稳定的胜负关系，`b_canvas` 的领先集中在人数与髖距两处。**这一档与 0.31 常数无关**（先前本节把它归因给常数是错的，已改）：双人线的 `source_fit` 用的是实测的两人 extent 比 `a_pair[extent_px]/b_pair[extent_px]`（`dual_geometry.py:171-185`），`TORSO_TO_PERSON_BOX_HEIGHT` 只存在于单人线的 `align_to_source_bbox(..., framing="source_torso")`。所以这里量到的是"用整体 extent 定标与用 B 自己的画布定标差不多"，而不是"某个常数对不对"。
 
