@@ -19,6 +19,7 @@ import sys
 import time
 
 import cv2
+import math
 import numpy as np
 import onnxruntime as ort
 from PIL import Image, ImageDraw
@@ -322,6 +323,17 @@ def region_people(config, image_bgr, requested, threshold, size):
     return people
 
 
+def finite(value):
+    """Replace NaN/inf with None: an unmeasurable metric is missing evidence, not a number."""
+    if isinstance(value, float) and not math.isfinite(value):
+        return None
+    if isinstance(value, dict):
+        return {key: finite(item) for key, item in value.items()}
+    if isinstance(value, (list, tuple)):
+        return [finite(item) for item in value]
+    return value
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--run', required=True)
@@ -434,8 +446,10 @@ def main():
             'result that hides a limb can score better than it looks. Person count is reported '
             'separately because extra bodies are the dominant failure when the target photograph '
             'is given to the generator.'}
+    evaluation = finite(evaluation)
+    summary = finite(evaluation['summary'])
     atomic_json(stage_dir / 'eval_dual.json', evaluation)
-    draw_overlay(Image.fromarray(rgb), requested, detected_people, mapping) \
+    draw_overlay(Image.fromarray(rgb), requested, scoring_people, mapping) \
         .save(stage_dir / 'eval_overlay.png')
     finish_stage(record, request, {'eval_dual': stage_dir / 'eval_dual.json',
         'overlay': stage_dir / 'eval_overlay.png'},

@@ -124,6 +124,11 @@ $PY report_dual.py
 臂对照（`skeleton_only` 为左，可投票 2 对）：人数 2 胜 2 平 0 负；PCK 1 胜 1 平（dance_059 上 0.913 vs 0.917 判平）；身份 1 胜 1 负。与「人数与换人」一节的口径一致：**with_b 可复现的失败是引入多余身体与换人位置，不是"姿态必然做坏"**。
 
 ### 逐轮计数（追加，不覆盖）：
+- 2026-10-14 01:45 评测阶段两处崩溃已修（`evaluate_dual.py` 只出现在评测指纹里，几何/PE/生成缓存与批量都不受影响）：
+  ① 没有任何可评人员时 `np.mean([])` 把 NaN 写进 `eval_dual.json`，`json.dumps` 抛 `Out of range float values are not JSON compliant: nan`，整条 run 记成 `evaluate_failed`。现在 `finite()` 递归把 NaN/inf 写成 `null`——"测不出"在数据里就是缺值，与"测不出 ≠ 更差"的报告口径一致。
+  ② `pose_basis=regions` 时 assignment 按请求人数给（长度 2），而 `draw_overlay` 拿的是整图那次检测（可能只有 1 人）→ `IndexError`；它发生在 `eval_dual.json` 写完**之后**，所以数字其实已经算对，却被连带作废。现在覆盖图按真正用于打分的人员清单画。
+  实测补回一格：`dance_pair02_120_c4_r459.skeleton_only.b_canvas` → persons_detected=1、count_ok=0、regions_ok=1、PCK@0.2=0.500、mpjpe_norm=0.336、identity=0.706、swap=0。tests/ 七个模块全绿。
+
 - 23:39 前后：3 个 run 完成（2 成 1 败）。
 - 00:22：7 个 run 完成。`with_b` 三对全部人数不对（backhug_037 检 1 人、backhug_039 检 1 人、hug_084 检 3 人），因此**臂对照的姿态与身份两列结构性地是空的**：not measured 不是"数据还不够"，而是这一臂根本产不出可计分的两人图——成对表把它显示为 `count_ok` 判给 skeleton_only，其余列为 `.`。把 with_b 的结论写成"PCK 更低"会是假的，它没有 PCK。
 - 同一时刻定标对照已经能投票（同臂 skeleton_only、两档定标都成的对）：backhug_037 上 MPJPE 与髖距误差偏向 `b_canvas`（0.230 vs 0.321；16.7 vs 25.4），PCK 打平 0.500，身份相似偏向 `source_fit`（0.788 vs 0.658）；backhug_039 上 `b_canvas` 连人数都没保住而 `source_fit` 保住了。两对都是 backhug，正是 WP7 里向导本身不可信的姿态，**不能当两档定标的结论**，要等非缠绕的 12 对跑完。
