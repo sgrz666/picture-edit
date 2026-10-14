@@ -44,13 +44,15 @@ def crop_person(image: Image.Image, box, pad_ratio: float = 0.02,
         return None
     if shape == 'square':
         centre_x, centre_y = (left + right) / 2.0, (top + bottom) / 2.0
-        side = max(right - left, bottom - top)
-        # One half-length for both axes keeps the result square; capping it by the free room on each
-        # side keeps it inside the image. Near a border the square shrinks, which is recorded by
-        # returning the smaller crop instead of padding with pixels that were never there.
-        half = min(side / 2.0, centre_x, width - centre_x, centre_y, height - centre_y)
-        left, right = int(round(centre_x - half)), int(round(centre_x + half))
-        top, bottom = int(round(centre_y - half)), int(round(centre_y + half))
+        # One integer side length for both axes. Rounding the two edges independently can differ by
+        # a pixel when the centre is fractional, which quietly produced a 51x50 'square' near a
+        # border, so the side is chosen first and the box is then re-anchored inside the image.
+        half = min(max(right - left, bottom - top) / 2.0, centre_x, width - centre_x,
+            centre_y, height - centre_y)
+        side = int(2 * half)
+        left = min(max(0, int(round(centre_x - side / 2.0))), width - side)
+        top = min(max(0, int(round(centre_y - side / 2.0))), height - side)
+        right, bottom = left + side, top + side
     elif shape != 'tight':
         raise ValueError(f"unknown crop shape {shape!r}; use 'tight' or 'square'")
     if right - left < 2 or bottom - top < 2:
