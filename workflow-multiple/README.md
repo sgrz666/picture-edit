@@ -143,49 +143,39 @@ $PY report_dual.py
 
 批量要回答的是"同一对上，另一臂/另一档定标更好吗"，而 `report_dual.py` 的按臂均值回答不了这个——两臂若落在不同的对上，均值比的是对而不是臂。`compare_dual.py` 做**成对**比较：`--by arm` 比 `skeleton_only` 与 `with_b`、`--by framing` 比 `b_canvas` 与 `source_fit`，只取同一对两边都 complete 的 run，逐对给 left−right 的差与判定（PCK/身份/人数越大越好，MPJPE/髖距误差越小越好，躯干比例只作信息因为它是"离 1.0 的距离"，0.02 以内算平），并明确列出"只有一边跑成过"的对。`matrix_audit.py` 回答"这一轮到底覆盖了几格、每个 compare 维度真有几对可投票"（覆盖判据 = `run.json` status=complete **且** 有 `evaluation/eval_dual.json`，光看目录会把跑完但无人能打分的 run 算成证据）；`size_compliance.py` 回答"人是按请求尺寸画出来的吗"（逐人 实测躯干 ÷ 请求躯干）。两个都只读已有产物、不需要 GPU，批量在跑的时候也能执行；退出码 1 表示矩阵还有空格，别把"跑完了"当成"覆盖了"。
 
-### ②的成对读数（三段：04:18 finalize 重算的 45 格表 + 10:08 第二轮进行中的两个分档表）
-本节的三个块各有自己的样本量：45 格表是 finalize 的统一重算值（可引用），两个分档表是第二轮跑到一半时的行数（18/22 行，`with_b.source_fit` 与跨身份对还没补完，只能算早期信号）。`FIT_ALL_DONE` 之后用 finalize 的重算值统一替换，并且**臂的结论必须按定标分档写、定标的结论必须按臂分档写**——这一轮已经证明合并会抹掉真实的交互。
+### ②的成对读数（17 对 × 两臂 × 两定标 = 68 格全部跑通，finalize 11:48 统一重算）
 
+覆盖以 `matrix_audit.py` 为准（判据 = `run.json` complete **且** 有 `eval_dual.json`）：12:16 实测 **planned 85 / covered 76** —— 68 个 dwpose 向导格全齐，fit 孪生 8/17 在跑；带姿态值 74 条、带身份值 74 条、整图人数正确 36 条。
 
-覆盖：下表是 **04:18 那一次的 45 格**（臂 12 行 / 定标 16 行 / 向导 3 行）。**行数会随第二轮补格上升，实时格数与配对行数一律以 `matrix_audit.py`（落盘 `logs_batch/matrix_audit.txt`）为准，不要把本表的行数当现状读**：09:51 实测已经是 planned 85 / covered 50、`--by arm` 14 行、`--by framing` 18 行、`--by source` 3 行，还欠 35 格（21 个 dwpose 向导格 + 14 个拟合孪生）。覆盖判据刻意取 run.json=complete **且** evaluation/eval_dual.json 存在：光看目录会把"跑完但没人能打分"的 run 算成证据。同一身份的 12 对跑满三格（`skeleton_only.b_canvas`、`skeleton_only.source_fit`、`with_b.b_canvas`），跨身份的 5 对只跑 `skeleton_only`（不给 B 的原图才有意义），另有 3 对配了 fit 向导孪生 run。合计 48 个 run 目录、45 条带评测的批量 run。评测口径与批量期间的两次修补见后一节。
+**分组均值**（每组 17 条 run；pck/mpjpe/ident/torso 只在能打分者上取均值，countok 与 swap 覆盖全组）：
 
-**分组均值**（identity/pck/mpjpe 只在能打分的人数正确 run 上取均值；count 与 swap 覆盖组内全部 run）：
+| 臂 | 定标 | 人数正确率 | PCK@0.2 | MPJPE(归一) | 身份相似 | 躯干比例 | swap flag |
+|---|---|---|---|---|---|---|---|
+| `skeleton_only` | `b_canvas` | **70.6%** | 0.786 | 0.157 | 0.729 | 0.986 | 3 |
+| `skeleton_only` | `source_fit` | 47.1% | 0.779 | 0.186 | 0.725 | 0.995 | 2 |
+| `with_b` | `b_canvas` | 47.1% | **0.828** | **0.128** | **0.735** | 1.010 | 1 |
+| `with_b` | `source_fit` | **17.6%** | 0.815 | 0.156 | 0.713 | 0.994 | 1 |
 
-| 组 | run | 人数正确 | 区域都有人 | swap flag | import flag | identity | PCK@0.2 | mpjpe_norm |
-|---|---|---|---|---|---|---|---|---|
-| `skeleton_only.b_canvas` | 17 | 12/17 | 17/17 | 3 | 3（另 13 无定义） | 0.729 (n=16) | 0.786 | 0.157 |
-| `skeleton_only.source_fit` | 16 | 8/16 | 16/16 | 2 | 4（另 12 无定义） | 0.728 (n=16) | 0.765 | 0.195 |
-| `with_b.b_canvas` | 12 | 7/12 | 12/12 | 1 | 0（全部无定义） | 0.745 (n=11) | 0.807 | 0.148 |
-| `skeleton_only.b_canvas.fit` | 3 | 1/3 | 3/3 | 2 | 0（全部无定义） | 0.716 (n=3) | 0.887 | 0.103 |
+**成对投票（`compare_dual.py` 按 held 上下文分块；left 恒为 `skeleton_only` 或 `b_canvas`；写法 L/平/R）**：
 
-**臂（`skeleton_only` vs `with_b`，同臂同定标，12 对）**：count 3 胜 / 8 平 / 1 负，PCK 4/5/2，MPJPE 3/4/4，髖距 2/2/5，identity 5/3/3。
-读数：**上一轮"with_b 把 B 的人搬进来所以失败"在这 12 对里不成立**。with_b 在能投票的姿态指标上略优（均值 PCK 0.807 vs 0.786、MPJPE 0.148 vs 0.157，髖距 5:2 领先），代价集中在**人数**（7/12 vs 12/17）；身份反而更高（0.745 vs 0.729）、swap 只 flag 1 对。`target_import` 在 with_b 上恒为无定义，这是设计如此：给了 B 的原图，"更像 B"就是预期结果，flag 没有信息量——所以这个指标只在 `skeleton_only` 侧读（3/17 与 4/16 被 flag，即生成图里有人比像 A 更像 B，而这一臂并没有把 B 的照片喂给出图模型）。
+| 上下文 | n | count_ok | PCK | MPJPE | 髖距 | identity |
+|---|---|---|---|---|---|---|
+| 臂 @ `b_canvas` | 17 | 6/9/2 | 4/6/5 | 3/5/7（中位差 +0.018） | 3/2/7 | 6/5/4 |
+| 臂 @ `source_fit` | 17 | **5/12/0** | 6/6/5 | 3/10/4 | 1/6/4 | 5/11/1 |
+| 定标 @ `skeleton_only` | 17 | 6/9/2 | **6/3/7** | 5/7/4 | 7/4/2 | 4/7/5 |
+| 定标 @ `with_b` | 17 | 6/10/1 | 5/8/3 | 4/9/3 | 5/4/2 | 8/5/3 |
 
-**臂的结论随定标变号，这是分档后才看见的（`compare_dual.py` 现在按 held 上下文分开报，2026-10-14 10:08，`--by arm` 18 行）**：
+读数（68 格，替换本节此前 12/16/45 格的所有说法）：
 
-| 定标档 | 行数 | count(skel/平/with_b) | PCK | MPJPE | identity |
-|---|---|---|---|---|---|
-| `b_canvas` | 12 | 3 / 8 / 1 | 4 / 5 / 2 | 3 / 4 / 4 | 5 / 3 / 3 |
-| `source_fit` | 6（进行中，n 尚小） | 3 / 3 / 0 | **2 / 1 / 3** | **1 / 2 / 3** | 3 / 2 / 1 |
-
-读法：**人数**在两个档都是 `skeleton_only` 稳赢（3-8-1 与 3-3-0），但**姿态**在两档方向不同——`b_canvas` 档 PCK 4/5/2 偏 `skeleton_only`，`source_fit` 档 PCK 2/1/3、MPJPE 1/2/3 反过来偏 `with_b`（中位差 −0.042 / +0.049）。合并两档的池化块会把这个交互抹平（池化 PCK 是 6/6/6），所以**引用时必须指名档位，池化块不作结论**（工具已把这一点写进输出：`--- POOLED over N held contexts: not a single-framing result ---`）。`source_fit` 档只有 6 行、`with_b` 的 12 格仍在补，`FIT_ALL_DONE` 后以 finalize 的重算值替换这两行。
-
-反方向（`--by framing` 按臂分档，同一时刻）也一并记下来，因为它把"定标影响什么"说得更准：
-
-| 臂档 | 行数 | count(b_canvas/平/source_fit) | PCK | MPJPE | identity |
-|---|---|---|---|---|---|
-| `skeleton_only` | 16 | 6 / 8 / 2 | 6 / 3 / 6 | 5 / 7 / 3 | 3 / 7 / 5 |
-| `with_b` | 7（进行中） | **3 / 4 / 0** | 1 / 4 / 1 | 1 / 4 / 1 | 3 / 2 / 1 |
-
-读法：**定标的作用是人数**——两臂都是 `b_canvas` 在人数上领先（`with_b` 档 3 胜 0 负），而姿态在两臂都以平局为主（`with_b` 档 PCK 6 行里 4 行判平）。也就是"给不给 B 原图"与"用哪档定标"影响的量不是同一个：前者在 `source_fit` 档能改姿态胜负，后者主要改人数。两档样本都还在补，finalize 后替换。
-
-**定标（`b_canvas` vs `source_fit`，同臂同向导，16 对）**：count 6 胜 / 8 平 / 2 负，PCK 6/3/6，MPJPE 5/7/3，髖距 7/3/2，identity 3/7/5。
-读数：中期那份"b_canvas 在每个可投票姿态指标上全胜"是 5 对时的表象。**扩到 16 对后 PCK 打平（6:6）**，`b_canvas` 的优势只剩两处：人数正确率（6 胜 2 负）与髖距（7 胜 2 负）；MPJPE 略偏 `b_canvas`；identity 反而 `source_fit` 略好（5 胜 3 负）。两条定标在姿态上没有稳定的胜负关系，`b_canvas` 的领先集中在人数与髖距两处。**这一档与 0.31 常数无关**（先前本节把它归因给常数是错的，已改）：双人线的 `source_fit` 用的是实测的两人 extent 比 `a_pair[extent_px]/b_pair[extent_px]`（`dual_geometry.py:171-185`），`TORSO_TO_PERSON_BOX_HEIGHT` 只存在于单人线的 `align_to_source_bbox(..., framing="source_torso")`。所以这里量到的是"用整体 extent 定标与用 B 自己的画布定标差不多"，而不是"某个常数对不对"。
-
-**向导来源（`dwpose` GT 骨架 vs `fit` multi-HMR 拟合骨架，3 对孪生）**：count 1/2/0，PCK 1/0/2，MPJPE 1/1/1，identity 2/0/1，髖距 1/0/0。逐对：backhug_pair02_037 拟合赢 3 项、hug_pair00_084 GT 赢 4 项、dance_pair02_059 1/2/1 基本平。
-读数：**n=3，不构成结论**，方向与 WP7 的门一致——缠绕的 backhug 上拟合向导更好（那里 DWPose 向导自己就错了），宽松姿势上 GT 更好。fit 孪生有 2/3 人数不对，但能打分时 PCK 均值 0.887 最高，所以这一格现在只能写成"值得扩到全部 12 对再判"，不能写成"拟合向导更好"。
+1. **人数有两个独立主效应，最坏是它们的组合。** 两档定标里 `skeleton_only` 都在人数上占优（`b_canvas` 6/9/2；`source_fit` 5/12/0 且 `with_b` 零胜），两臂里 `b_canvas` 都在人数上占优（6/9/2 与 6/10/1）；叠加后 `with_b × source_fit` 只有 **17.6%** 的 run 人数正确，而 `skeleton_only × b_canvas` 有 70.6%。
+2. **姿态不站队，且与 12 格时的读法相反。** `b_canvas` 档 PCK 4/6/5（略偏 `with_b`）、MPJPE 与髖距反而 `with_b` 更好（3/5/7、3/2/7）；`source_fit` 档 PCK 6/6/5 均势。均值上 `with_b` 两档 PCK 更高（0.828/0.815 vs 0.786/0.779）、MPJPE 更低。**之前"扩到 12 对后 PCK 打平 / b_canvas 姿态全胜"都是样本未齐时的读数，现以本表为准。**
+3. **定标对身份的影响很小**：四组身份均值都在 0.713–0.735（±0.02 内），成对投票里 identity 最多也就是 8/5/3 这种幅度。所以"选哪档定标"不该用身份相似来投票，用人数与髖距。
+4. **交换（①那块看不见的失败面）在全矩阵上仍成立**：dwpose 68 格里 7 条被 flag（3/2/1/1 分布在四个组），比例约 10%，与前面按幅度分层的结论一致（≥0.055 的才是稳的，边界那条依赖 0.02 阈值）。
+5. **与 0.31 常数无关**（本节此前归因错过一次，已改）：双人线 `source_fit` 用实测 extent 比，见"定标常数"一节。
 
 ### 逐轮计数（追加，不覆盖）：
+- 2026-10-14 12:16 **②收口**：第二轮 23 格 + finalize（11:48 统一重算）跑完，68 个 dwpose 向导格全部覆盖（`--by arm` 34 行 = 17 对 × 2 定标；`--by framing` 34 行；`--by source` 8 行，孪生 8/17 在跑）。本节上方表格已换成 68 格值。本轮唯一失败格不是显存而是 `run_dual.py` 的 64 字符 run 名上限（66 字符的跨身份格被判成"非法名字"），已提上限到 128 并加从真实对名派生的测试（`8855d30`）；同一修复救回 3 个跨身份 fit 孪生。三处中期说法被 68 格数据改写：人数从"臂的单一结论"变成"臂与定标两个主效应"、PCK 在 `b_canvas` 档转为略偏 `with_b`、身份差异缩到 ±0.02。
+
 - 2026-10-14 09:43 **②的覆盖被审计出缺口并已开跑第二轮**：`batch_dual.sh` 旧矩阵把 `with_b` 限制在 12 个同身份对的 `b_canvas`（注释理由是"失败就在那一格复现过"，即 n=1 的取舍），于是全交叉的 17×2×2=68 格里只有 45 格有 ok 记录，**缺 23 格**（12 个 `with_b.source_fit` + 5 个跨身份对的 `with_b` + `cross_backhug…skeleton_only.source_fit`）。矩阵已改成 pair×arm×framing 全交叉（`896e222`），09:39 起跑第二轮，`done_run()` 只补空格；watch_and_retry / finalize / gpu_gate 全挂上（起时显存 62 GiB 空闲，闸门记 OK free=82GiB）。上面"②的最终成对读数"里的臂对比因此只在 `b_canvas` 一档成立，第二轮跑完需重读 `compare_dual --by arm`（应出现 source_fit 档）与 `--by framing`（应出现 with_b 档）。向导那一档同步扩样本：`run_fit_after_batch.sh` 原本硬编码 3 个对，已改成从 `fits/*.npz` 派生（`5d006c4`），待跑 14 个孪生（9 同身份 + 5 跨身份，拟合缓存都在），排在第二轮 finalize 之后，跑完 `--by source` 从 n=3 变 n=17。
 
 - 2026-10-14 09:35 **②收尾**：批量 04:09 BATCH_DONE、retry 3 轮 04:12 RETRY_DONE、finalize 04:18 统一重算 45 条 run（`EVAL_FAILED=0`，用的已经是修好的评测器）、fit 孪生 04:35 FIT_AFTER_DONE。成对读数从 5 对扩到 12（臂）/16（定标）/3（向导），上面中期表已被最终表替换。三处中期结论被数据改写：with_b 在姿态上不再"更差"（略优，输在人数）、b_canvas 的 PCK 全胜变成打平、`target_import` 在 with_b 上恒无定义是设计而非缺测。
