@@ -106,7 +106,7 @@ $PY report_dual.py
 
 这张卡与别人的长任务共用：会话开始时空余 60.7 GiB，2026-10-13 23:50 实测只剩 9.8–21 GiB（对方的 8arm 任务已跑 2 天 6 小时），而一次 768/30 生成实测峰值 34 GiB，池子不够时会被驱动的 NVML 断言直接打死。为此加了 `gpu_gate.sh`：每 5 分钟测一次 `torch.cuda.mem_get_info()`，空余 < 40 GiB 就 TERM 掉 batch 循环（正在跑的那个 run 不动，让它自己跑完或失败），回到 40 GiB 以上就重新拉起 `batch_dual.sh` —— 拉起时已记录 ok 的 run 会被跳过，恢复只花缓存检查的时间。看 `logs_batch/gate.log` 判断当前处于 RESUME / HOLD / PAUSE 哪一档。
 
-批量要回答的是"同一对上，另一臂/另一档定标更好吗"，而 `report_dual.py` 的按臂均值回答不了这个——两臂若落在不同的对上，均值比的是对而不是臂。`compare_dual.py` 做**成对**比较：`--by arm` 比 `skeleton_only` 与 `with_b`、`--by framing` 比 `b_canvas` 与 `source_fit`，只取同一对两边都 complete 的 run，逐对给 left−right 的差与判定（PCK/身份/人数越大越好，MPJPE/髖距误差越小越好，躯干比例只作信息因为它是"离 1.0 的距离"，0.02 以内算平），并明确列出"只有一边跑成过"的对。
+批量要回答的是"同一对上，另一臂/另一档定标更好吗"，而 `report_dual.py` 的按臂均值回答不了这个——两臂若落在不同的对上，均值比的是对而不是臂。`compare_dual.py` 做**成对**比较：`--by arm` 比 `skeleton_only` 与 `with_b`、`--by framing` 比 `b_canvas` 与 `source_fit`，只取同一对两边都 complete 的 run，逐对给 left−right 的差与判定（PCK/身份/人数越大越好，MPJPE/髖距误差越小越好，躯干比例只作信息因为它是"离 1.0 的距离"，0.02 以内算平），并明确列出"只有一边跑成过"的对。`matrix_audit.py` 回答"这一轮到底覆盖了几格、每个 compare 维度真有几对可投票"（覆盖判据 = `run.json` status=complete **且** 有 `evaluation/eval_dual.json`，光看目录会把跑完但无人能打分的 run 算成证据）；`size_compliance.py` 回答"人是按请求尺寸画出来的吗"（逐人 实测躯干 ÷ 请求躯干）。两个都只读已有产物、不需要 GPU，批量在跑的时候也能执行；退出码 1 表示矩阵还有空格，别把"跑完了"当成"覆盖了"。
 
 ### ②的最终成对读数（2026-10-14 04:18 finalize 统一重算；替换本节此前的 5 对中期表，也替换下面两臂小样本表的口径）
 
