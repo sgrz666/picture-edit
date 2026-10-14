@@ -108,7 +108,9 @@ $PY report_dual.py
 
 批量要回答的是"同一对上，另一臂/另一档定标更好吗"，而 `report_dual.py` 的按臂均值回答不了这个——两臂若落在不同的对上，均值比的是对而不是臂。`compare_dual.py` 做**成对**比较：`--by arm` 比 `skeleton_only` 与 `with_b`、`--by framing` 比 `b_canvas` 与 `source_fit`，只取同一对两边都 complete 的 run，逐对给 left−right 的差与判定（PCK/身份/人数越大越好，MPJPE/髖距误差越小越好，躯干比例只作信息因为它是"离 1.0 的距离"，0.02 以内算平），并明确列出"只有一边跑成过"的对。`matrix_audit.py` 回答"这一轮到底覆盖了几格、每个 compare 维度真有几对可投票"（覆盖判据 = `run.json` status=complete **且** 有 `evaluation/eval_dual.json`，光看目录会把跑完但无人能打分的 run 算成证据）；`size_compliance.py` 回答"人是按请求尺寸画出来的吗"（逐人 实测躯干 ÷ 请求躯干）。两个都只读已有产物、不需要 GPU，批量在跑的时候也能执行；退出码 1 表示矩阵还有空格，别把"跑完了"当成"覆盖了"。
 
-### ②的最终成对读数（2026-10-14 04:18 finalize 统一重算；替换本节此前的 5 对中期表，也替换下面两臂小样本表的口径）
+### ②的成对读数（三段：04:18 finalize 重算的 45 格表 + 10:08 第二轮进行中的两个分档表）
+本节的三个块各有自己的样本量：45 格表是 finalize 的统一重算值（可引用），两个分档表是第二轮跑到一半时的行数（18/22 行，`with_b.source_fit` 与跨身份对还没补完，只能算早期信号）。`FIT_ALL_DONE` 之后用 finalize 的重算值统一替换，并且**臂的结论必须按定标分档写、定标的结论必须按臂分档写**——这一轮已经证明合并会抹掉真实的交互。
+
 
 覆盖：下表是 **04:18 那一次的 45 格**（臂 12 行 / 定标 16 行 / 向导 3 行）。**行数会随第二轮补格上升，实时格数与配对行数一律以 `matrix_audit.py`（落盘 `logs_batch/matrix_audit.txt`）为准，不要把本表的行数当现状读**：09:51 实测已经是 planned 85 / covered 50、`--by arm` 14 行、`--by framing` 18 行、`--by source` 3 行，还欠 35 格（21 个 dwpose 向导格 + 14 个拟合孪生）。覆盖判据刻意取 run.json=complete **且** evaluation/eval_dual.json 存在：光看目录会把"跑完但没人能打分"的 run 算成证据。同一身份的 12 对跑满三格（`skeleton_only.b_canvas`、`skeleton_only.source_fit`、`with_b.b_canvas`），跨身份的 5 对只跑 `skeleton_only`（不给 B 的原图才有意义），另有 3 对配了 fit 向导孪生 run。合计 48 个 run 目录、45 条带评测的批量 run。评测口径与批量期间的两次修补见后一节。
 
