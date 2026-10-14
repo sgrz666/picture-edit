@@ -1,0 +1,1 @@
+/home/shangguanrz/run_smplestx.sh

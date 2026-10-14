@@ -243,7 +243,7 @@ def test_v65_checkpoint_roundtrip_v64_migration_and_face_only_freeze() -> None:
     source = UnifiedSMPLXAdapterV6.build_tiny(
         hidden_dim=16, geometry_channels=4, enable_face_adapter=True, face_dim=16
     )
-    assert ARCHITECTURE_VERSION == "v6.5"
+    assert ARCHITECTURE_VERSION == "v6.6"  # V6.5 metadata remains versioned below.
     checkpoint = build_v65_checkpoint(source, feature_cache_fingerprint="test")
     assert checkpoint["metadata"]["branch_names"] == [
         "geometry", "interaction", "hand", "face"

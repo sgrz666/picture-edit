@@ -320,7 +320,7 @@ Expected: `passed: true`, `checked_primary_runs: 111`, `PASS: 111`.
 Run:
 
 ```bash
-python run_champ_single_overfit.py \
+python scripts/run/run_champ_single_overfit.py \
   --data_dir inputs/champ_sample \
   --validate_only
 ```
@@ -399,7 +399,7 @@ scp -r src/integration sg:/home/shangguanrz/project/pic-edit/src/
 scp run_champ_single_overfit.py sg:/home/shangguanrz/project/pic-edit/run_champ_single_overfit.py
 scp tests/test_champ_deepgen_integration.py tests/test_deepgen_pose_patch.py sg:/home/shangguanrz/project/pic-edit/tests/
 scp docs/champ_deepgen_single_sample_runbook.md sg:/home/shangguanrz/project/pic-edit/docs/champ_deepgen_single_sample_runbook.md
-ssh sg "cd /home/shangguanrz/project/pic-edit && /home/shangguanrz/miniconda3/envs/deepgen/bin/python run_champ_single_overfit.py --data_dir inputs/champ_sample --validate_only"
+ssh sg "cd /home/shangguanrz/project/pic-edit && /home/shangguanrz/miniconda3/envs/deepgen/bin/python scripts/run/run_champ_single_overfit.py --data_dir inputs/champ_sample --validate_only"
 ```
 
 Expected: remote validation passes before model loading.

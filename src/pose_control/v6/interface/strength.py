@@ -77,6 +77,7 @@ class ControlStrengthController(nn.Module):
         face_schedule: StrengthScheduleConfig | None = None,
         face_texture_schedule: StrengthScheduleConfig | None = None,
         enable_face: bool = False,
+        enable_hand: bool = False,
     ) -> None:
         super().__init__()
         if num_control_groups != 6:
@@ -105,6 +106,8 @@ class ControlStrengthController(nn.Module):
             start_multiplier=0.0,
             end_multiplier=1.0,
         )
+        self.hand_schedule = StrengthScheduleConfig(curve="cosine", start_progress=0.0, end_progress=1.0, start_multiplier=0.15, end_multiplier=1.0)
+        self.hand_texture_schedule = StrengthScheduleConfig(curve="cosine", start_progress=0.65, end_progress=1.0, start_multiplier=0.0, end_multiplier=1.0)
         self.geometry_log_group_scale = nn.Parameter(torch.zeros(num_control_groups))
         self.interaction_log_group_scale = nn.Parameter(torch.zeros(num_control_groups))
         self.detail_log_group_scale = nn.Parameter(torch.zeros(num_control_groups))
@@ -117,6 +120,12 @@ class ControlStrengthController(nn.Module):
         else:
             self.register_parameter("face_log_group_scale", None)
             self.register_buffer("face_group_prior", None)
+        if enable_hand:
+            self.hand_log_group_scale = nn.Parameter(torch.zeros(num_control_groups))
+            self.register_buffer("hand_group_prior", torch.tensor([0.1, 0.2, 0.4, 0.7, 1.0, 1.0]))
+        else:
+            self.register_parameter("hand_log_group_scale", None)
+            self.register_buffer("hand_group_prior", None)
 
     @staticmethod
     def _sample_gate(value, reference: torch.Tensor) -> torch.Tensor | float:
@@ -129,6 +138,11 @@ class ControlStrengthController(nn.Module):
             raise ValueError("per-sample strength or progress must have shape [B]")
         return value[:, None, None]
 
+    def enable_v66_hand(self) -> None:
+        if self.hand_log_group_scale is None:
+            self.hand_log_group_scale = nn.Parameter(torch.zeros(self.num_control_groups))
+            self.hand_group_prior = torch.tensor([0.1, 0.2, 0.4, 0.7, 1.0, 1.0])
+
     def forward(
         self,
         residuals: BranchControlResiduals,
@@ -140,8 +154,11 @@ class ControlStrengthController(nn.Module):
         face_strength: float | torch.Tensor = 1.0,
         hand_strength: float | torch.Tensor = 1.0,
         detail_region_masks: torch.Tensor | None = None,
+        hand_mode: Literal["legacy", "v66", "off"] = "legacy",
     ) -> tuple[tuple[torch.Tensor, ...], dict[str, object]]:
         residuals.validate()
+        if hand_mode not in {"legacy", "v66", "off"}:
+            raise ValueError("hand_mode must be legacy, v66 or off")
         geo_schedule = self.geometry_schedule.multiplier(denoise_progress)
         int_schedule = self.interaction_schedule.multiplier(denoise_progress)
         detail_schedule = self.detail_schedule.multiplier(denoise_progress)
@@ -191,7 +208,7 @@ class ControlStrengthController(nn.Module):
             zero_detail_strength = bool(torch.count_nonzero(detail_strength) == 0)
         else:
             zero_detail_strength = float(detail_strength) == 0.0
-        detail_is_disabled = residuals.detail is None or zero_detail_strength
+        detail_is_disabled = residuals.detail is None or zero_detail_strength or hand_mode != "legacy"
         if not detail_is_disabled:
             if detail_region_masks is None:
                 raise ValueError("detail_region_masks are required when detail residuals are active")
@@ -218,6 +235,13 @@ class ControlStrengthController(nn.Module):
                 )
                 for index, (current, face) in enumerate(zip(output, residuals.face))
             )
+        if hand_mode == "v66" and residuals.hand is not None and not zero_detail_strength:
+            if self.hand_log_group_scale is None or self.hand_group_prior is None:
+                raise ValueError("v66 hand residuals require a hand-enabled controller")
+            hand_gates = self.hand_log_group_scale.exp() * self.hand_group_prior
+            hand_schedule = self._sample_gate(self.hand_schedule.multiplier(denoise_progress), reference)
+            output = tuple(current + hand * detail_strength * hand_strength * hand_schedule * hand_gates[index]
+                           for index, (current, hand) in enumerate(zip(output, residuals.hand)))
 
         def diagnostic(value):
             if torch.is_tensor(value):
@@ -237,5 +261,7 @@ class ControlStrengthController(nn.Module):
             "interaction_group_scales": int_gates.detach().cpu().tolist(),
             "detail_group_scales": detail_gates.detach().cpu().tolist(),
             "face_group_scales": face_gates.detach().cpu().tolist(),
+            "hand_mode": hand_mode,
+            "hand_group_scales": None if self.hand_log_group_scale is None else (self.hand_log_group_scale.exp() * self.hand_group_prior).detach().cpu().tolist(),
         }
         return output, diagnostics

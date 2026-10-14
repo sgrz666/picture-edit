@@ -1,0 +1,52 @@
+# scripts/eval/ —— 目录层级与功能说明
+
+> 本文件由 `scripts/gen_folder_docs.py` 依据目录实际内容自动生成（生成时间：2026-10-11 16:23）；如需补充人工说明，请写在本目录 `README.md` 中（生成器不会覆盖 README）。
+
+- **路径**：`scripts/eval`　- **层级**：第 3 级　- **上级**：[../目录说明.md](scripts)
+
+## 一、目录定位
+
+模型评测与推理验证脚本目录，含多模型消融对照。
+
+- **本级内容**：文件 19 个，315.1 KB
+- **子树规模**：文件 19 个，逻辑体积 315.1 KB
+
+## 二、层级目录
+
+本目录为叶子目录，不含子目录。
+
+## 三、文件清单
+
+共 **19** 个文件（不含隐藏文件与自动生成的说明文件）。类型分布：Python 源码×19
+
+| 文件 | 类型 | 大小 | 内容摘要 |
+|---|---|---|---|
+| `bfs_compare.py` | Python 源码 | 21.3 KB | 模块 docstring：Balanced, matched-prompt BFS experiment on sg; no training or production edits.；顶层定义 10 个（`arguments`, `balanced_pairs`, `normalized_detection`, `sha256`…） |
+| `build_bfs_comparison_report.py` | Python 源码 | 7.6 KB | 模块 docstring：Build saved-image BFS comparison panels. Target B is evaluation-only.；顶层定义 3 个（`head_crop`, `number`, `main`） |
+| `diagnose_qwen21_full_face.py` | Python 源码 | 13.6 KB | 模块 docstring：Bounded Face stability diagnosis; no training and no final-test samples.；顶层定义 8 个（`read`, `lines`, `sha`, `write_json`…） |
+| `eval_hi4d_native_binding.py` | Python 源码 | 24.2 KB | 模块 docstring：Locked, inference-only Hi4D person-to-pose correspondence experiment.；顶层定义 7 个（`sha`, `write`, `read_rows`, `versions`…） |
+| `eval_qwen21_bfs_rgb.py` | Python 源码 | 16.9 KB | 模块 docstring：Inference-only, four-case BFS audit with locked A RGB + B RGB references.；顶层定义 6 个（`timestamp`, `prepare_rgb`, `reference_signature`, `validate_native`…） |
+| `eval_qwen21_bfs_skeleton.py` | Python 源码 | 20.6 KB | 模块 docstring：Inference-only BFS comparison with the locked native A+skeleton protocol. Run --prepare on；顶层定义 5 个（`versions`, `digest_text`, `prepare`, `validate_saved`…） |
+| `eval_qwen21_face_repair.py` | Python 源码 | 3.2 KB | 模块 docstring：Render and score one bounded Face repair checkpoint using the frozen inputs.；顶层定义 1 个（`main`） |
+| `eval_qwen21_joint_pilot.py` | Python 源码 | 36.3 KB | 模块 docstring：Sample one frozen Qwen/BFS base with the joint Body+Face controller. One invocation loads ；顶层定义 6 个（`select_indices`, `case_stem`, `crop_normalized`, `image_strip`…） |
+| `eval_qwen21_native_value.py` | Python 源码 | 43.2 KB | 模块 docstring：Fixed-input native Qwen/Body/Face comparison; never trains or changes weights. Prompts are；顶层定义 10 个（`sha256`, `json_write`, `read_rows`, `read_prompts`…） |
+| `evaluate_qwen21_weight_inheritance.py` | Python 源码 | 13.1 KB | 模块 docstring：CPU metrics for the fixed inheritance comparison; no image synthesis.；顶层定义 5 个（`cpu_identity_metric`, `read_jsonl`, `key`, `face_detection`…） |
+| `multi_stage_eval_v6.py` | Python 源码 | 16.9 KB | 模块 docstring：Multi-stage checkpoint inference and comparison visualization for UnifiedSMPLXAdapterV6. L；顶层定义 4 个（`parse_args`, `compute_metrics`, `select_diverse_pairs`, `main`） |
+| `prepare_qwen21_condition_combinations.py` | Python 源码 | 7.4 KB | 模块 docstring：Archive the old report and lock a supplement without changing old assets.；顶层定义 5 个（`sha`, `read_rows`, `save_once`, `copy_once`…） |
+| `qwen21_condition_combinations.py` | Python 源码 | 4.7 KB | 模块 docstring：Explicit, ordered native references for the supplementary factorial audit.；顶层定义 5 个（`combination_prompt`, `output_key`, `protocol_expected`, `require_protocol_outputs`…） |
+| `qwen21_native_value_prompts.py` | Python 源码 | 6.9 KB | 模块 docstring：Auditable detailed prompts for the inference-only Qwen value comparison.；顶层定义 2 个（`build_prompt`, `main`） |
+| `score_hi4d_native_binding.py` | Python 源码 | 15.3 KB | 模块 docstring：Evaluate the locked Hi4D experiment after explicitly reviewing A identities. Detection nev；顶层定义 10 个（`cache_file`, `detect`, `records`, `review_sheets`…） |
+| `score_qwen21_bfs_rgb.py` | Python 源码 | 7.2 KB | 模块 docstring：Score the 12 RGB-reference outputs with the unchanged cross-person metrics.；顶层定义 3 个（`validate_index`, `summarize`, `main`） |
+| `score_qwen21_bfs_skeleton.py` | Python 源码 | 7.4 KB | 模块 docstring：Evaluate the three fixed BFS skeleton arms; preserve the older protocol.；顶层定义 4 个（`expected_keys`, `validate_index`, `summary`, `main`） |
+| `score_qwen21_native_value.py` | Python 源码 | 36.1 KB | 模块 docstring：CPU evaluation of the fixed cross-person Qwen native/control comparison. B supplies a pose；顶层定义 12 个（`read_jsonl`, `save`, `sha`, `rgb`…） |
+| `summarize_bfs_comparison.py` | Python 源码 | 13.2 KB | 模块 docstring：Actor-clustered, paired BFS statistics; preserves runner results and missing cases.；顶层定义 4 个（`actor_id`, `paired_stat`, `analyze`, `self_test`） |
+
+## 四、构成画像
+
+- **直属类型分布**：Python 源码×19
+- **子树类型构成**：Python 源码×19
+
+## 五、导航
+
+- 根目录总览：[`目录总览.md`](../../目录总览.md)
+- 根 README：[README.md](../../README.md)

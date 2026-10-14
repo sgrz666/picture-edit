@@ -1,0 +1,23 @@
+{
+  "project_root": "/home/shangguanrz/project/pic-edit",
+  "geometry_python": "/home/shangguanrz/project/pic-edit/add/envs/smplestx_bw/bin/python",
+  "qwen_python": "/home/shangguanrz/nihaochen/envs/qwen21/bin/python",
+  "smplest_root": "/home/shangguanrz/project/pic-edit/add/tools/SMPLest-X",
+  "smplest_checkpoint": "smplest_x_h",
+  "pe_model": "/data/shangguanrz/pic-edit-models/Qwen-Image-2.1-PE-I2I",
+  "qwen_model": "/data/shangguanrz/pic-edit-models/Qwen-Image-2.1",
+  "person_detection_confidence": 0.5,
+  "subject": "auto",
+  "resolution": 1024,
+  "steps": 30,
+  "seed": 42,
+  "pe_seed": 42,
+  "true_cfg_scale": 1.0,
+  "use_kv_cache": false,
+  "pose_framing": "source_person",
+  "prop_policy": "source_only",
+  "adapter": false,
+  "lora": false,
+  "dwpose_det_model": "/home/shangguanrz/project/pic-edit/add/tools/dwpose_mimicmotion_official/models/yolox_l.onnx",
+  "dwpose_pose_model": "/home/shangguanrz/project/pic-edit/add/tools/dwpose_mimicmotion_official/models/dw-ll_ucoco_384.onnx"
+}

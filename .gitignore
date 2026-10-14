@@ -35,5 +35,10 @@ evidence.zip
 /logs/
 /_evidence_tmp/
 /evidence_controlnet_residual/
-/results/
+
+# results/ 与 demooutput/ 的图片、视频是**已跟踪的历史产物**（2026-10-14 决定原样发布），
+# 这里不再写 /results/ —— ignore 规则对已跟踪路径是空转，只会让读者误判它们不在 Git 里。
+# 一次性合并工作区与本仓审计产物，永不入库。
+/.wt/
+/.inspect/
 

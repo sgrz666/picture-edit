@@ -26,18 +26,25 @@ def invoke(script, values):
     subprocess.run(command, check=True, cwd=ROOT)
 
 
-def train(run, arm, steps, *, gradient=False, resume=False, private=None):
-    common = arm == 'J'
+def train(run, arm, steps, *, gradient=False, resume=False, private=None, resolution='512', align_mode=None):
+    common = arm in ('J', 'BFH')
     base = LORAS.get(arm)
     directory = run / ('preflight' if gradient else 'training') / arm
     if private:
         directory = run / 'preflight/resume_check' / private
+    supervision = OLD / ('data/face_supervision_native.json' if align_mode == 'native' else 'data/face_supervision.json')
+    cache_dir = OLD / ('native_cache_tiktok_native' if align_mode == 'native' else 'native_cache_tiktok')
     values = ['--train-pairs', run / 'data' / ('common256_pairs.jsonl' if common else 'branch256_pairs.jsonl'),
               '--val-pairs', run / 'data/val24_pairs.jsonl', '--features', OLD / 'data/face_cache',
-              '--face-supervision', OLD / 'data/face_supervision.json', '--cache', OLD / 'native_cache_tiktok',
-              '--output', directory, '--steps', steps, '--noise-offset', 0 if common else 256]
+              '--face-supervision', supervision, '--cache', cache_dir,
+              '--output', directory, '--steps', steps, '--noise-offset', 0 if common else 256,
+              '--resolution', str(resolution)]
+    if align_mode:
+        values += ['--align-mode', align_mode]
     if base:
         values += ['--lora', base]
+    if arm == 'BFH':
+        values += ['--with-hand', '--hand-lr-scale', '1.0', '--hand-weight', '0.5']
     if gradient:
         values += ['--gradient-only']
     else:
@@ -49,20 +56,31 @@ def train(run, arm, steps, *, gradient=False, resume=False, private=None):
     invoke('scripts/train/train_qwen21_joint_pilot.py', values)
 
 
-def evaluate(run, arm, checkpoint, stage, *, monitor=False, strengths=None):
+def evaluate(run, arm, checkpoint, stage, *, monitor=False, strengths=None, resolution='512', align_mode=None):
     lock = json.loads((run / 'data/lock.json').read_text())
     base = LORAS.get(arm)
-    for dataset in ['tiktok', 'iper']:
+    datasets = ['tiktok'] if arm == 'BFH' else ['tiktok', 'iper']
+    for dataset in datasets:
         output = run / 'evaluation' / f'{arm}_{stage}_{dataset}'
+        if dataset == 'tiktok':
+            chosen_align = align_mode or 'letterbox'
+            chosen_res = resolution
+            cache_dir = OLD / ('native_cache_tiktok_native' if chosen_align == 'native' else 'native_cache_tiktok')
+        else:
+            chosen_align = 'resize'
+            chosen_res = 512
+            cache_dir = OLD / 'native_cache_iper'
         values = ['--checkpoint', checkpoint, '--pairs', run / 'data' / ('val24_pairs.jsonl' if dataset == 'tiktok' else 'iper12_pairs.jsonl'),
                   '--dataset-type', 'tiktok_v3' if dataset == 'tiktok' else 'iper',
-                  '--align-mode', 'letterbox' if dataset == 'tiktok' else 'resize',
+                  '--align-mode', chosen_align,
                   '--features', OLD / 'data/face_cache',
-                  '--cache', OLD / f'native_cache_{dataset}', '--output', output,
+                  '--cache', cache_dir, '--output', output,
                   '--label', f'{arm}_{stage}_{dataset}', '--variant', arm, '--stage', stage,
-                  '--resolution', 512, '--seed', 42, '--steps', 30]
+                  '--resolution', str(chosen_res), '--seed', 42, '--steps', 30]
         if base:
             values += ['--lora', base]
+        if arm == 'BFH':
+            values += ['--with-hand', '--hand-strength', '1.0']
         if monitor:
             values += ['--indices', ','.join(map(str, lock[f'monitor_{dataset}_indices']))]
         if strengths is not None:
@@ -371,11 +389,11 @@ def compare_resume(run):
     return report
 
 
-def run_resume_check(run):
-    train(run, 'J', 4, private='direct')
+def run_resume_check(run, resolution='512', align_mode=None):
+    train(run, 'J', 4, private='direct', resolution=resolution, align_mode=align_mode)
     fork_resume_checkpoint(run)
     for name in _CONTINUATIONS:
-        train(run, 'J', 4, private=name, resume=True)
+        train(run, 'J', 4, private=name, resume=True, resolution=resolution, align_mode=align_mode)
     return compare_resume(run)
 
 
@@ -390,39 +408,55 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--run', type=Path, default=RUN)
     parser.add_argument('--phase', required=True, choices=['initial', 'J-preflight', 'resume-check', 'J-mid', 'J-final',
+        'BFH-preflight', 'BFH-final',
         'diagnostics', *[f'{arm}-{stage}' for arm in LORAS for stage in ['preflight', 'hotload', 'mid', 'final']]])
+    parser.add_argument('--resolution', default='512', help='512, 1024, or native')
+    parser.add_argument('--align-mode', choices=('letterbox', 'resize', 'native'), default=None)
     args = parser.parse_args()
     run = args.run
     hold = run / 'data/preprocessing_review_required.json'
-    if hold.is_file():
+    if hold.is_file() and (args.resolution != 'native' or args.align_mode != 'native'):
         parser.error('Pilot stopped: original pixel dimensions are required. The existing runner uses fixed 512 inputs. '
                      f'Read the handoff and implement/validate native resolution before starting a new run. Hold: {hold}')
     if args.phase == 'initial':
-        evaluate(run, 'init', INITIAL, 'initial')
+        evaluate(run, 'init', INITIAL, 'initial', resolution=args.resolution, align_mode=args.align_mode)
+    elif args.phase == 'BFH-preflight':
+        train(run, 'BFH', 256, gradient=True, resolution=args.resolution, align_mode=args.align_mode)
+    elif args.phase == 'BFH-final':
+        ckpt = run / 'training/BFH/checkpoint_step_000256.pt'
+        if not ckpt.is_file():
+            train(run, 'BFH', 256, resolution=args.resolution, align_mode=args.align_mode)
+        evaluate(run, 'BFH', ckpt, 'final', resolution=args.resolution, align_mode=args.align_mode)
     elif args.phase == 'resume-check':
-        result = run_resume_check(run)
+        result = run_resume_check(run, resolution=args.resolution, align_mode=args.align_mode)
         print(json.dumps({'resume_check_passed': result['passed'], 'numerical_review_required': result['numerical_review_required'],
                           'private_optimizer_updates': result['private_optimizer_updates']}), flush=True)
         if not result['passed']:
             raise RuntimeError('Resume hard gate failed; inspect preflight/resume_check/result.json')
     elif args.phase == 'diagnostics':
         for arm, strength in [('JBodyOnly', (1, 0)), ('JFaceOnly', (0, 1))]:
-            evaluate(run, arm, run / 'training/J/checkpoint_step_000256.pt', 'common', strengths=strength)
+            evaluate(run, arm, run / 'training/J/checkpoint_step_000256.pt', 'common', strengths=strength,
+                     resolution=args.resolution, align_mode=args.align_mode)
     else:
         arm, stage = args.phase.split('-')
         if stage == 'preflight':
-            train(run, arm, 256, gradient=True)
+            train(run, arm, 256, gradient=True, resolution=args.resolution, align_mode=args.align_mode)
         elif stage == 'hotload':
-            evaluate(run, arm, run / 'training/J/checkpoint_step_000256.pt', 'hotload', monitor=True)
+            evaluate(run, arm, run / 'training/J/checkpoint_step_000256.pt', 'hotload', monitor=True,
+                     resolution=args.resolution, align_mode=args.align_mode)
         elif stage == 'mid':
             if arm == 'J' and not json.loads((run / 'preflight/resume_check/result.json').read_text()).get('passed'):
                 raise ValueError('Resume check required before formal training')
-            train(run, arm, 128)
-            evaluate(run, arm, run / 'training' / arm / 'checkpoint_step_000128.pt', 'mid', monitor=True)
+            ckpt = run / 'training' / arm / 'checkpoint_step_000128.pt'
+            if not ckpt.is_file():
+                train(run, arm, 128, resolution=args.resolution, align_mode=args.align_mode)
+            evaluate(run, arm, ckpt, 'mid', monitor=True,
+                     resolution=args.resolution, align_mode=args.align_mode)
         else:
             require_mid_review(run, arm)
-            train(run, arm, 256, resume=True)
-            evaluate(run, arm, run / 'training' / arm / 'checkpoint_step_000256.pt', 'common' if arm == 'J' else 'final')
+            train(run, arm, 256, resume=True, resolution=args.resolution, align_mode=args.align_mode)
+            evaluate(run, arm, run / 'training' / arm / 'checkpoint_step_000256.pt', 'common' if arm == 'J' else 'final',
+                     resolution=args.resolution, align_mode=args.align_mode)
 
 
 if __name__ == '__main__':
