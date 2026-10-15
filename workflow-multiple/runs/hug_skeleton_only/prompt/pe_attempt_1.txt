@@ -1,0 +1,165 @@
+Let me carefully analyze this task.
+
+The user instruction is in English. Therefore the output must be in English.
+
+There are 4 input images, but the instruction states that the editor will receive only 3 images: <image1> source photo, and the skeletons renumbered as <image2> (person 1) and <image3> (person 2). The instruction explicitly states: "The editor will receive only <image1>, and the two guides renumbered as <image2> (person 1) and <image3> (person 2)." And: "In the rewritten_prompt, number the images exactly as the editor will receive them."
+
+So in the rewritten prompt I have to use only <image1>, <image2>, <image3>. <image2> corresponds to the first skeleton image (the person in image 2, i.e., the man in the striped shirt? Let me check the correspondence).
+
+Input images in order: <image1> = source photo (two people facing each other in a green-screen studio), <image2> = target photo (two people hugging), <image3> = skeleton for person 1 in target, <image4> = skeleton for person 2 in target.
+
+The editor receives 3 images: source, guide of person 1, guide of person 2. Numbered as <image1>, <image2>, <image3>.
+
+Who is person 1 and who is person 2? The instruction says "<image3> and <image4> are 2D projections of the estimated 3D body for each person in the target photo respectively." So skeleton 1 corresponds to person 1 in the target photo, skeleton 2 to person 2.
+
+Looking at the target photo: the man on the left (grey T-shirt, white pants) has his arms around the woman; the woman on the right (striped shirt, black pants) has her arms around the man, and the two are hugging.
+
+Skeletons: <image3> (the first guide) shows a figure leaning with head tilted, one arm extended. Hmm, hard to tell which skeleton corresponds to whom. The instruction says renumber as <image2> (person 1) and <image3> (person 2). I need to decide which is person 1.
+
+Looking at skeleton <image3> (first guide): head at upper center, arm extended to the left side (viewer's left) with a hand cluster around upper-left, torso, legs. The extended arm points to viewer's left. In the target photo, the woman (right side) extends her arm over the man's shoulder? Actually the two are hugging: the man's arms are around the woman's waist/back (extending to the right), the woman's arms are around the man's shoulders (extending to the left).
+
+Skeleton <image4> (second guide): head at top, one arm extended to viewer's right with a hand cluster, body tilted.
+
+Let me think about pose estimation: in the target photo, the man is on the left, his right arm extended to the right hugging the woman; the woman is on the right, her arms extended to the left hugging the man. The man's head is tilted to the right (toward the woman). The woman's head is tilted to the left.
+
+Skeleton <image3>: head at upper center-right, a separate hand cluster at viewer's left upper area (detached?), torso line going down, legs. The arm extending to viewer's left is not clearly visible; there's a head and a separate cluster on the left which might be the other person's hand? Actually each skeleton should correspond to one person.
+
+Skeleton <image3>: there's a head-like point cloud at upper center, a small cluster at middle-left that could be a hand, torso line going down, two legs bent. The head is tilted? The face points suggest the face is oriented to the viewer's left.
+
+Skeleton <image4>: head at top, an arm extending horizontally to viewer's right ending in a hand cluster, legs with feet apart. The face points suggest the face is oriented to viewer's right.
+
+Hmm, in the target photo: the man's head is oriented to the viewer's right (toward the woman), the woman's head is oriented to the viewer's left (toward the man). The man's arm extends to the viewer's right; the woman's arm extends to the viewer's left.
+
+Skeleton <image4> has an arm extending to viewer's right → matches the man. Skeleton <image3> has a cluster at viewer's left → matches the woman (her arm extended leftward over the man's shoulder). Also in skeleton <image3> the head is oriented left (face points facing left), matching the woman; in <image4> the head is oriented right, matching the man.
+
+So: person 1 in target = the man? But which numbering? The instruction says "<image3> and <image4> are 2D projections of the estimated 3D body for each person in the target photo respectively." So the first guide (<image3> after renumbering) = person 1, second = person 2. The renumbering just assigns <image2> = guide of person 1, <image3> = guide of person 2.
+
+I need to decide which guide is person 1. The user hasn't specified. I can define person 1 = the man in grey T-shirt (in the target photo), person 2 = the woman in striped shirt. Then <image2> = skeleton of the man, <image3> = skeleton of the woman.
+
+But wait — looking at the skeletons again: <image2> (first guide) shows a figure with a detached hand cluster on the viewer's left, head oriented left, legs bent — that matches the woman (she faces left, her arm extends left). <image3> (second guide) shows a figure with arm extended to viewer's right, head oriented right — matches the man.
+
+Hmm, but the order of "respectively" is ambiguous. The safest approach: explicitly assign in the rewritten prompt: "<image2> is the skeleton guide of the man (the source person in the grey T-shirt), <image3> is the skeleton guide of the woman (the source person in the striped shirt)." This resolves the ambiguity based on pose matching.
+
+Actually, let me double-check the skeleton shapes more carefully.
+
+First guide (<image3> in input order): coordinates: small cluster at middle-left (approx x=100, y=255), head at upper center (approx x=225, y=235), torso from head down to hip (approx x=225, y=370), then legs going down: one leg bent (blue line to x=210, y=440 then purple to y=540, feet at y=535), the other leg (red/orange) to x=245, y=510 then to feet at y=550. So the figure is somewhat leaning, head oriented left? The face points around the head cluster.
+
+Second guide (<image4>): head at top (approx x=210, y=220), arm extending from shoulder to viewer's right ending in hand cluster (approx x=290, y=320), torso down to hip (approx x=210, y=400), legs: blue line to left leg x=170, y=440 then to foot at y=600; orange/red leg to x=215, y=520 then to foot at y=580.
+
+In the target photo, the man: head oriented right (toward the woman), his right arm extended to the viewer's right hugging the woman's back, legs somewhat apart with weight shifted. The woman: head oriented left, left arm extended to viewer's left over the man's shoulder, right arm extended to the man's waist? Actually the woman's arms: one arm around the man's shoulder (extending left), the other also around his back.
+
+Hmm, the second guide shows only one extended arm; the first guide shows a detached hand cluster on the left (probably her hand on the man's shoulder, separated in estimation) and no clearly extended arm.
+
+Honestly, the exact skeleton correspondence is guesswork, but the instruction says "person 1" and "person 2". I just need to make a consistent assignment. Let me define: person 1 = the man in the grey T-shirt from <image1>; person 2 = the woman in the striped shirt from <image1>. Then <image2> = skeleton guide of the man, <image3> = skeleton guide of the woman.
+
+Wait, but the mapping might be the reverse: the first guide's head orientation is left = the woman faces left. So the first guide = the woman. If "respectively" ties the first guide to person 1, then person 1 = the woman. Ugh, ambiguous.
+
+The downstream editor receives <image1>, <image2> (guide of person 1), <image3> (guide of person 2). The rewritten prompt must map the guides to the source people. I'll write explicitly: "<image2> is the 2D pose skeleton of the woman in the striped shirt from <image1> (head oriented toward viewer's left, one arm extended to the viewer's left), and <image3> is the 2D pose skeleton of the man in the grey T-shirt from <image1> (head oriented toward viewer's right, one arm extended to the viewer's right)."
+
+This grounds the assignment in observable skeleton features. Good.
+
+Now, the interaction in the target photo: the two are hugging each other — the man on the left leans his torso toward the woman on the right, his arms wrapped around her back/waist with hands placed on her sides/shoulders; the woman wraps her arms around his shoulders/neck, leaning into him, both smiling with faces close together, heads tilted toward each other. Relative distance: standing close, bodies overlapping, hips pressed together.
+
+Skeleton guidance: person 1 (woman per my assignment): head tilted toward viewer's left, arm extended to the left... hmm, actually in the target the woman's arm extends to the viewer's left (over the man's shoulder). The first guide shows a cluster on the viewer's left = her hand on the man's shoulder, and the torso line. Good.
+
+Person 2 (man): arm extended to viewer's right = his arm around the woman's back, head oriented right. Good.
+
+So the rewritten prompt: on <image1> (canvas), change only the poses/interaction of the two people to match the described interaction, using the skeletal guides <image2> and <image3> as pose references (do not render the skeleton graphics). Preserve identity, face, hairstyle, clothing, accessories, shoes, and the green-screen studio scene with lighting equipment.
+
+Let me describe the interaction in explicit body words:
+
+- The two people move from the facing-while-standing-apart stance in <image1> into a close mutual hug matching the target: they stand close with torsos pressed together and hips in contact.
+- The woman (person 1, <image2>): leans her torso toward the man, head tilted toward the viewer's left facing him, one arm extended across the man's upper back with the hand resting on his shoulder area (as in the leftward arm extension in <image2>), the other arm reaching around the man's side; knees slightly bent, feet apart with weight shifted, body angled toward the man.
+- The man (person 2, <image3>): leans toward the woman, head tilted toward the viewer's right facing her, one arm extended horizontally to the viewer's right wrapped around the woman's back with the hand on her side/shoulder, the other arm reaching around her waist; legs in a staggered stance with weight forward, feet as in the guide.
+- Both smile with faces close together, heads inclined toward each other, as in the target photo's facial expressions (but identity from source).
+
+Preservation: both people's facial identity, face shape, hairstyle (man's short black hair; woman's black hair in a bun with a clip), clothing (man: light grey T-shirt with a small orange emblem on the chest, off-white pants, red-and-white striped socks, beige checkered sneakers; woman: navy-and-white horizontal striped T-shirt, black pants, black-and-white sneakers, hair clip), the green-screen studio background with green fabric walls, green floor, metal lighting truss with attached square panel lights, and the bench/pad along the wall — all unchanged. Lighting unchanged.
+
+Also: keep exactly two people; do not add/remove/merge; do not render skeleton lines; do not copy the target photo's background/clothing; preserve the source photo's style.
+
+The instruction also states: "Do not enumerate the target's clothing or other target appearance in negative clauses." So I should not say "do not put on the striped shirt" — just don't mention the target clothing at all. But I do need to describe the source clothing for preservation. That's fine.
+
+Also rule: describe limbs using viewer-left/viewer-right, not anatomical left/right.
+
+Output size: the user states wh_ratio="" and ratio_follow="<image1>". So I set ratio_follow to "<image1>", wh_ratio to "".
+
+Language: English.
+
+Now, the rewritten prompt must be a single continuous paragraph with no line breaks. It must be directive, describing the transformation on the canvas <image1>.
+
+Let me carefully draft the rewritten prompt.
+
+"Transform <image1> in place by changing only the two people's poses and interpersonal arrangement to reproduce the two-person interaction of the reference photograph, using <image2> and <image3> solely as 2D pose skeletons that must not be rendered as visible graphics. Keep the two people from <image1> as exactly two individuals with their identities fully preserved: the man with short black hair in the light grey T-shirt with the small orange chest emblem, off-white trousers, red-and-white striped socks and beige checkered sneakers, and the woman with black hair in a low bun with a hair clip, in the navy-and-white horizontal-striped T-shirt, black trousers and black-and-white sneakers; retain their faces, facial expressions' identity features, hairstyles, body proportions, clothing designs, colours, materials, accessories and shoes, and retain the entire green-screen studio scene of <image1> unchanged, including the green fabric wall and floor, the metal lighting truss with its attached square panel lights and the padded bench along the wall. Move the pair from their current apart-facing stance into the close mutual embrace of the target: the woman (pose guided by <image2>) leans her torso toward the man with her head tilted toward the viewer's left in his face, her left-side arm extended across his upper back with the hand resting on his far shoulder, her knees slightly bent and her feet apart with weight shifted toward him, and her second arm reaching around his side; the man (pose guided by <image3>) leans his torso toward the woman with his head tilted toward the viewer's right in her face, one arm extended horizontally toward the viewer's right wrapped around her back with the hand on her side, his other arm reaching around her waist, his legs in a staggered stance with weight forward and feet planted as in <image3>. Their bodies press together with hips in contact and heads inclined toward each other at close distance, matching the relative distance, height, contact and leaning of the target photograph, with natural cloth folds and pose-dependent shadows consistent with the studio illumination of <image1>. The facial expressions must read as a smiling, close embrace, while facial identity remains exactly that of <image1>. Do not add, remove or merge any person, do not render skeleton lines or their colours, do not introduce any object from the target photograph, and do not alter the canvas framing, background or lighting of <image1>."
+
+Check forbidden words: no "such as", no "etc.", no "maybe", no "or"? I used "or" in "do not add, remove or merge any person" — hmm, the forbidden list includes "or / 或 / 或者 / alternatively". That's about hedging alternatives in directives, but to be safe I should avoid the word "or". Let me rephrase: "do not add, remove, merge any person" → "do not add any person, do not remove any person, do not merge the two people". Also avoid "and/or". Let me scan the draft for "or": "orange" contains "or" but that's fine — the forbidden is the word "or" as a standalone conjunction. Let me check standalone "or": "red-and-white striped socks and beige checkered sneakers" is fine. "do not render skeleton lines or their colours" → change to "do not render skeleton lines, do not render their colours". "clothing designs, colours, materials, accessories and shoes" is fine.
+
+Also avoid "approximately". I didn't use any.
+
+The prompt must be a single paragraph, no newlines.
+
+Also, per the system: the rewritten prompt must reference images with <imageN> tags; the user states the editor receives 3 images numbered <image1>, <image2>, <image3>. Good.
+
+Let me double-check the skeleton assignment once more. The instruction: "<image3> and <image4> are 2D projections of the estimated 3D body for each person in the target photo respectively." Then "the two guides renumbered as <image2> (person 1) and <image3> (person 2)". So the first guide (<image3>) = person 1, second guide (<image4>) = person 2. Which person is "person 1"? In the target photo, the order is left to right: man on left, woman on right. Usually "person 1" = the leftmost person = the man. Then guide <image3> should be the man's skeleton. But my visual check suggested the first guide matches the woman's pose (head oriented left, detached hand on the left = her arm extended left). Let me re-examine the first guide's head orientation: the head cluster at upper center has face points; there's a small blue line near the head pointing left? The cluster on the viewer's left at (100,255) is separate from the head at (225,235) — that could be the man's hand? No wait, each guide has one person.
+
+First guide: elements: cluster at (100-140, 250-270) — looks like a hand (finger bones). Head at (215-245, 220-255). Torso from (245,255) to (225,370). Then legs. There's no visible arm line extending left from the shoulder; the hand cluster on the left is detached (probably the arm extended to the viewer's left, with the arm line hidden or short). Head orientation: face points appear oriented left (a blue line near the head pointing left). So the first guide: a person facing viewer's left with an arm extended to the viewer's left. That's the woman in the target (she faces left, arm extended left).
+
+Second guide: head at (205-230, 210-245) facing right (face points oriented right), arm extended from shoulder to viewer's right ending in a hand cluster at (275-300, 310-335). Legs. So the second guide = the man? But the man faces right with arm extended right. Yes.
+
+So first guide = woman = person 1? If "person 1" = the left person (man), then the first guide should be the man. Contradiction. The "respectively" pairing is ambiguous anyway.
+
+Given the ambiguity, the safest is to explicitly define the mapping in the prompt based on pose features, regardless of the user's implicit numbering. I'll define: "<image2> is the pose skeleton of the woman in the striped shirt from <image1>, and <image3> is the pose skeleton of the man in the grey T-shirt from <image1>." This is consistent with my visual reading of the guides.
+
+Now let me also describe the interaction using viewer-based limb directions.
+
+Let me also include the requirement: "Describe the interaction in words because the target photo won't reach the editor." So the prompt describes the embrace in words + skeleton guides.
+
+Also "keep the source setting and overall illumination, allowing natural cloth folds and pose-dependent shadows."
+
+Now let me finalize the JSON.
+
+wh_ratio: "" ; ratio_follow: "<image1>".
+
+Let me write the final rewritten prompt as one continuous paragraph, in English, directive.
+
+Final draft:
+
+Transform <image1> in place by changing only the poses and interpersonal arrangement of its two people to reproduce the two-person interaction shown by the pose skeletons, using <image2> and <image3> solely as 2D pose references that must not be rendered as visible lines, colours, graphics. Preserve both people from <image1> as exactly two individuals with full identity: the man with short black hair wearing the light grey T-shirt with the small orange chest emblem, off-white trousers, red-and-white striped socks, beige checkered sneakers, and the woman with black hair in a low bun with a hair clip wearing the navy-and-white horizontal-striped T-shirt, black trousers, black-and-white sneakers; keep their facial identity, hairstyles, body proportions, clothing design, colours, materials, accessories, shoes, and keep the entire green-screen studio scene of <image1> unchanged, including the green fabric walls and floor, the metal lighting truss with its attached square panel lights, the padded bench along the wall, the overall illumination and photographic style. Move the pair from their current apart, facing stance into the close mutual embrace defined by the skeletons: the woman, guided by <image2>, leans her torso toward the man with her head tilted toward the viewer's left in his face, one arm extended toward the viewer's left across his upper back with the hand resting on his far shoulder, knees slightly bent, feet apart with body weight shifted toward him, her second arm reaching around his side; the man, guided by <image3>, leans his torso toward the woman with his head tilted toward the viewer's right in her face, one arm extended horizontally toward the viewer's right wrapped around her back with the hand on her side, his other arm reaching around her waist, legs in a staggered stance with weight forward and feet planted as in <image3>. Their torsos press together with hips in contact and heads inclined toward each other at the close distance, relative height, contact and leaning of the target photograph, with natural cloth folds and pose-dependent shadows consistent with the studio illumination of <image1>, and both faces show a smiling expression matching the target photograph while facial identity remains exactly that of <image1>. Do not add any person, do not remove any person, do not merge the two people, do not render skeleton lines, do not introduce any object from the target photograph, do not alter the background, framing, lighting of <image1>.
+
+Check forbidden hedges: no "such as", no "etc.", no "maybe", no standalone "or"? Let me scan: "lines, colours, graphics" fine. "framing, lighting" fine. No "approximately". No "slightly"? I used "knees slightly bent" — "slightly" is forbidden! Replace with "knees bent". Also "a smiling expression" is fine.
+
+Also avoid "or": I don't see any standalone "or". Check words containing "or" are fine.
+
+Check "do not alter the background, framing, lighting of <image1>." is fine.
+
+One more: "the target photograph" — the user said the rewritten prompt must not mention <image2> as the target photo; but can I say "target photograph"? The instruction says "must not mention <image2> as the target photograph, and must state all necessary actions in explicit body words." It's better to avoid the phrase "target photograph" and instead describe actions explicitly. I'll replace "matching the relative height, contact and leaning of the target photograph" with "matching the close distance and leaning shown in the skeleton guides". And "smiling expression matching the target photograph" → "smiling expression as in the interaction". Hmm "as in" is fine, not forbidden.
+
+Also the system's forbidden list includes "similar to / 类似". I don't use it.
+
+Let me also confirm I'm not using "etc.". I'm not.
+
+Final check on "or": scanning the draft: "poses and interpersonal arrangement" ... "lines, colours, graphics" ... "identity: the man ... and the woman ..." ... "accessories, shoes, and keep ..." ... "walls and floor, the metal lighting truss with its attached square panel lights, the padded bench along the wall, the overall illumination and photographic style." ... "viewer's left in his face, one arm extended toward the viewer's left across his upper back with the hand resting on his far shoulder, knees bent, feet apart with body weight shifted toward him, her second arm reaching around his side;" ... "his other arm reaching around her waist, legs in a staggered stance with weight forward and feet planted as in <image3>." ... "Do not add any person, do not remove any person, do not merge the two people, do not render skeleton lines, do not introduce any object from the target photograph, do not alter the background, framing, lighting of <image1>."
+
+Wait "object from the target photograph" — I want to say "do not introduce any held object from the reference image". I'll keep "target photograph" phrasing? The rule is: "Do not mention <image2> as the target photograph" — meaning don't treat <image2> as the target. Saying "do not introduce any object from the reference photograph" is fine.
+
+I think it's good. Also I should state that the edit changes pose and interpersonal arrangement only — included.
+
+One more nuance: the user stated the instruction: "retain both people's identity, face, hairstyle, body proportions, clothing design, colours, materials, accessories, shoes, and the photographic scene, including other objects already there." Covered.
+
+Now the JSON output.
+
+{
+  "rewritten_prompt": "Transform <image1> in place by changing only the poses and interpersonal arrangement of its two people to reproduce the two-person interaction defined by the pose skeletons, using <image2> and <image3> solely as 2D pose references that must not be rendered as visible lines, colours, graphics. Preserve both people from <image1> as exactly two individuals with full identity: the man with short black hair wearing the light grey T-shirt with the small orange chest emblem, off-white trousers, red-and-white striped socks, beige checkered sneakers, and the woman with black hair in a low bun with a hair clip wearing the navy-and-white horizontal-striped T-shirt, black trousers, black-and-white sneakers; keep their facial identity, hairstyles, body proportions, clothing design, colours, materials, accessories, shoes, and keep the entire green-screen studio scene of <image1> unchanged, including the green fabric walls and floor, the metal lighting truss with its attached square panel lights, the padded bench along the wall, the overall illumination and photographic style. Move the pair from their current apart, facing stance into the close mutual embrace defined by the skeletons: the woman, guided by <image2>, leans her torso toward the man with her head tilted toward the viewer's left in his face, one arm extended toward the viewer's left across his upper back with the hand resting on his far shoulder, knees bent, feet apart with body weight shifted toward him, her second arm reaching around his side; the man, guided by <image3>, leans his torso toward the woman with his head tilted toward the viewer's right in her face, one arm extended horizontally toward the viewer's right wrapped around her back with the hand on her side, his other arm reaching around her waist, legs in a staggered stance with weight forward and feet planted as in <image3>. Their torsos press together with hips in contact and heads inclined toward each other at the close distance and leaning shown in the skeleton guides, with natural cloth folds and pose-dependent shadows consistent with the studio illumination of <image1>, and both faces show a smiling expression while facial identity remains exactly that of <image1>. Do not add any person, do not remove any person, do not merge the two people, do not render skeleton lines, do not introduce any held object from the reference photograph, do not alter the background, framing, lighting of <image1>.",
+  "wh_ratio": "",
+  "ratio_follow": "<image1>"
+}
+
+Check "do not alter the background, framing, lighting of <image1>" — grammatically fine.
+
+I need to make sure there are no newline characters within the prompt. Good.
+
+One more forbidden check: "exactly" is fine. No "approximately". No "slightly". No "such as". No "etc.". No standalone "or". Let me mentally scan for " or " once more: "interpersonal arrangement of its two people to reproduce" no. "visible lines, colours, graphics" no. "identity: the man with short black hair wearing" no. "accessories, shoes, and keep" no. "apart, facing stance" no. "his side; the man" no. "staggered stance with weight forward and feet planted" no. "Do not add any person, do not remove any person, do not merge the two people, do not render skeleton lines, do not introduce any held object from the reference photograph, do not alter the background, framing, lighting of <image1>." No "or". Good.
+
+Output only the JSON, no markdown fences.
+</think>
+
+{"rewritten_prompt": "Transform <image1> in place by changing only the poses and interpersonal arrangement of its two people to reproduce the two-person interaction defined by the pose skeletons, using <image2> and <image3> solely as 2D pose references that must not be rendered as visible lines, colours, graphics. Preserve both people from <image1> as exactly two individuals with full identity: the man with short black hair wearing the light grey T-shirt with the small orange chest emblem, off-white trousers, red-and-white striped socks, beige checkered sneakers, and the woman with black hair in a low bun with a hair clip wearing the navy-and-white horizontal-striped T-shirt, black trousers, black-and-white sneakers; keep their facial identity, hairstyles, body proportions, clothing design, colours, materials, accessories, shoes, and keep the entire green-screen studio scene of <image1> unchanged, including the green fabric walls and floor, the metal lighting truss with its attached square panel lights, the padded bench along the wall, the overall illumination and photographic style. Move the pair from their current apart, facing stance into the close mutual embrace defined by the skeletons: the woman, guided by <image2>, leans her torso toward the man with her head tilted toward the viewer's left in his face, one arm extended toward the viewer's left across his upper back with the hand resting on his far shoulder, knees bent, feet apart with body weight shifted toward him, her second arm reaching around his side; the man, guided by <image3>, leans his torso toward the woman with his head tilted toward the viewer's right in her face, one arm extended horizontally toward the viewer's right wrapped around her back with the hand on her side, his other arm reaching around her waist, legs in a staggered stance with weight forward and feet planted as in <image3>. Their torsos press together with hips in contact and heads inclined toward each other at the close distance and leaning shown in the skeleton guides, with natural cloth folds and pose-dependent shadows consistent with the studio illumination of <image1>, and both faces show a smiling expression while facial identity remains exactly that of <image1>. Do not add any person, do not remove any person, do not merge the two people, do not render skeleton lines, do not introduce any held object from the reference photograph, do not alter the background, framing, lighting of <image1>.", "wh_ratio": "", "ratio_follow": "<image1>"}

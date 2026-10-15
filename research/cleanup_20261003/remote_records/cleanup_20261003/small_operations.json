@@ -1,0 +1,186 @@
+{
+  "moves": [
+    {
+      "source": "/home/shangguanrz/project/pic-edit/demooutput",
+      "target": "/home/shangguanrz/project/pic-edit/results/legacy_demo_202609",
+      "sha256": {
+        "control_skeleton.png": "a414fd40f4a035809f9df575917246842162dcb3558102a217ad02894e80d13d",
+        "comparison_single_pose_celebration.png": "c33ea85df25810bfa88bca5f364692ac912992962485f63db78822bbda459a9f",
+        "demo_dual_pose_shoulder.png": "4e4a96dada55674b7906fa77ffdfb568c2ea9e1d378c78219721303e1ab1abfe",
+        "comparison_dual_pose_shoulder.png": "49734f97df7029df7f91075ceabd4590508e64be05fa186ca3ca34d0612a8448",
+        "demo_batch_1_sitting.png": "39285c3502c08c978b092e28f7e6d79fd9530cb9424504407c8e8529fd500cc7",
+        "diag_vae_rec.png": "73e2b3e67f6ca6a6ea04a26257195f94a9de5c498271bede0704818d3ca8faca",
+        "demo_dual_pose_shake_hands.png": "73b0219aa808531bc4dd2f5bb5652e04bbdee8964fc53b158a0a33ee993b8700",
+        "DeepGen最新实验结果与显存分析简报.docx": "491c94e14e2542930739d676cb2187399a14e925721f511eee439c978fa3ca71",
+        "comparison_dual_pose_shake_hands.png": "e92830f3969b71dad743769eb901e8336332db4876015888049b20bc17fb0c66",
+        "vram_adapter_scale_and_latency.png": "1ba93a3b0f9466fa4c3058d870fcf53b9e91c01fef5de75df03c04c2efd495e3",
+        "demo_single_pose_wave.png": "addc17da8ce508737dbb0c111e7f4b45b14ce1467d0048b4c5fd89124c47d9a8",
+        "control_normal.png": "ac5cc42fea6ce9b6b5495645ba4c0c9e9e325eeaf6a625d6fce20b794795352b",
+        "deepgen_vram_requirement_dashboard.png": "f66e89ec6c72ccfddf2dbd43e7f5b4a0a61da4cc533681c5192f1336235b7e4b",
+        "Qwen_Edit_20B显存预算与可行性分析简报.docx": "29fc755c9180f5e37157a7087dcc1d87778a0dd4c46d4b4d8a4a13e53cdfa491",
+        "vram_comparison_by_mode.png": "9654ae0ab67c5c0e204a05047c3f5802bf69d85b0203b757f60495a9ff552a36",
+        "native_test_result.png": "4447429b10cb9ac87bd0dbfeee724bf5831d34f1d54b49603dbdd325cf8b012e",
+        "demo_single_pose_celebration.png": "40ce442c1320d8b0f3aee9ac398e97972fa4eec43778212dc599553a4ad37b8b",
+        "comparison_single_pose_wave.png": "b01c816aee480fcbabdcd0bbf54f787802d5e390ca3667e1107dc481969eb389",
+        "control_contact.png": "b723fd31db8006f13f0372890038c18ed239dd094d7e94ccf39f28c5551f5219",
+        "demo_batch_2_highfive.png": "5ba917143fafe5e8534c64746f2877dc397cdab5da6b1d4bde11b43a7d42796c",
+        "test_t2i.png": "da612833f1ce456f2c28ee5285494ad74d9549bf9b98029c46c2784bb766a62c",
+        "control_depth.png": "b199da08554710e3216a7249c9b768a0d8b0fb2a99b8e0b84de096a06d50580c",
+        "人物图像姿态编辑系统架构设计与核心技术方案.docx": "20051a292659822270290db1266cd8e6e61be566451961e9cd5a5e823bccef67",
+        "manual_test_apple.png": "eea07a9939fa28dca8337c2a1a558a0f4cdd97e07e046a51b36d7be78edcb814",
+        "人物图像姿态编辑项目架构与进展简报_科研同步版.docx": "c18c3ffe06b532b4d7a15233e3434dcaf672729ae3683afd977b6095869fb8d5",
+        "comparison_single_pose_sitting.png": "b832922a9fb4c236c90b9d15c105658c2848173dc9b0ac8b33ed33eb61b47e36",
+        "native_input_src.png": "e3452a7327eae086c8f0f4758c0ba9785768787e09af0f08a65234ef00a42197",
+        "walkthrough.md": "390caac05a0210da154e7fdbef3b6af78432f3767b76ae67cbd2dc977cfaf024"
+      },
+      "state": "completed"
+    },
+    {
+      "source": "/home/shangguanrz/project/pic-edit/inference.log",
+      "target": "/home/shangguanrz/project/pic-edit/logs/legacy/inference_202609.log",
+      "sha256": {
+        ".": "48e9e76aa0d48f5df1eb8e353b1c2f57d1025398c07dbeeb9e03db0f857984b9"
+      },
+      "state": "completed"
+    }
+  ],
+  "backup_groups": [
+    {
+      "original_paths": [
+        "add/datasets/dpw_single_pose_edit_dataset_before_use_dwpose_render_20260930_090016.py",
+        "add/datasets/dpw_single_pose_edit_dataset_before_dwpose_qc_mapping_20260930_090438.py"
+      ],
+      "archive": "/home/shangguanrz/project/pic-edit/archive/cleanup_20261003/add_backups/group_1/dpw_single_pose_edit_dataset_before_use_dwpose_render_20260930_090016.py",
+      "sha256": "9fe0b6c88fc1a902b0a8960fc99fc8fd26d675f630108f29387092a1af4c34cb",
+      "retained_holds": [
+        "/home/shangguanrz/project/pic-edit/archive/cleanup_20261003/backup_holds/add/datasets/dpw_single_pose_edit_dataset_before_use_dwpose_render_20260930_090016.py",
+        "/home/shangguanrz/project/pic-edit/archive/cleanup_20261003/backup_holds/add/datasets/dpw_single_pose_edit_dataset_before_dwpose_qc_mapping_20260930_090438.py"
+      ]
+    },
+    {
+      "original_paths": [
+        "add/tools/visualize_dpw_single_pose_edit_dataset.py",
+        "add/tools/visualize_dpw_single_pose_edit_dataset_backup_20260930_083758.py",
+        "add/tools/visualize_dpw_single_pose_edit_dataset_before_black_pose_20260930_084339.py"
+      ],
+      "archive": "/home/shangguanrz/project/pic-edit/archive/cleanup_20261003/add_backups/group_2/visualize_dpw_single_pose_edit_dataset.py",
+      "sha256": "6886edaf58009e8f05c31de5514b0eba16cf813d3287fe6b70fdc58d2a8d70e9",
+      "retained_holds": [
+        "/home/shangguanrz/project/pic-edit/archive/cleanup_20261003/backup_holds/add/tools/visualize_dpw_single_pose_edit_dataset_backup_20260930_083758.py",
+        "/home/shangguanrz/project/pic-edit/archive/cleanup_20261003/backup_holds/add/tools/visualize_dpw_single_pose_edit_dataset_before_black_pose_20260930_084339.py"
+      ]
+    },
+    {
+      "original_paths": [
+        "add/tools/visualize_dpw_single_pose_edit_dataset_before_color_pose_20260930_084629.py",
+        "add/tools/visualize_dpw_single_pose_edit_dataset_before_dwpose_color_v2_20260930_084922.py",
+        "add/tools/visualize_dpw_single_pose_edit_dataset_before_safe_color_pose_20260930_085112.py"
+      ],
+      "archive": "/home/shangguanrz/project/pic-edit/archive/cleanup_20261003/add_backups/group_3/visualize_dpw_single_pose_edit_dataset_before_color_pose_20260930_084629.py",
+      "sha256": "3db03180c33fda39fd0f35c527be007e86105a3ed73855175b363443c3e053c1",
+      "retained_holds": [
+        "/home/shangguanrz/project/pic-edit/archive/cleanup_20261003/backup_holds/add/tools/visualize_dpw_single_pose_edit_dataset_before_color_pose_20260930_084629.py",
+        "/home/shangguanrz/project/pic-edit/archive/cleanup_20261003/backup_holds/add/tools/visualize_dpw_single_pose_edit_dataset_before_dwpose_color_v2_20260930_084922.py",
+        "/home/shangguanrz/project/pic-edit/archive/cleanup_20261003/backup_holds/add/tools/visualize_dpw_single_pose_edit_dataset_before_safe_color_pose_20260930_085112.py"
+      ]
+    }
+  ],
+  "cache_removed": [
+    {
+      "path": "/home/shangguanrz/project/pic-edit/__pycache__",
+      "bytes": 853955
+    },
+    {
+      "path": "/home/shangguanrz/project/pic-edit/.pytest_cache",
+      "bytes": 54082
+    },
+    {
+      "path": "/home/shangguanrz/project/pic-edit/src/__pycache__",
+      "bytes": 147
+    },
+    {
+      "path": "/home/shangguanrz/project/pic-edit/src/integration/__pycache__",
+      "bytes": 12282
+    },
+    {
+      "path": "/home/shangguanrz/project/pic-edit/src/pose_control/__pycache__",
+      "bytes": 213
+    },
+    {
+      "path": "/home/shangguanrz/project/pic-edit/src/adapter/__pycache__",
+      "bytes": 8774
+    },
+    {
+      "path": "/home/shangguanrz/project/pic-edit/src/data/__pycache__",
+      "bytes": 94532
+    },
+    {
+      "path": "/home/shangguanrz/project/pic-edit/src/evaluation/dwpose_onnx/__pycache__",
+      "bytes": 23438
+    },
+    {
+      "path": "/home/shangguanrz/project/pic-edit/src/pose_control/qwen21_full/__pycache__",
+      "bytes": 277832
+    },
+    {
+      "path": "/home/shangguanrz/project/pic-edit/src/pose_control/v6/__pycache__",
+      "bytes": 148441
+    },
+    {
+      "path": "/home/shangguanrz/project/pic-edit/src/pose_control/qwen21/__pycache__",
+      "bytes": 64358
+    },
+    {
+      "path": "/home/shangguanrz/project/pic-edit/src/pose_control/qwen21_full/face/__pycache__",
+      "bytes": 66505
+    },
+    {
+      "path": "/home/shangguanrz/project/pic-edit/src/pose_control/qwen21_full/detail/__pycache__",
+      "bytes": 57492
+    },
+    {
+      "path": "/home/shangguanrz/project/pic-edit/src/pose_control/qwen21_full/interface/__pycache__",
+      "bytes": 50151
+    },
+    {
+      "path": "/home/shangguanrz/project/pic-edit/src/pose_control/qwen21_full/reasoning/__pycache__",
+      "bytes": 49021
+    },
+    {
+      "path": "/home/shangguanrz/project/pic-edit/src/pose_control/qwen21_full/hand/__pycache__",
+      "bytes": 54418
+    },
+    {
+      "path": "/home/shangguanrz/project/pic-edit/src/pose_control/v6/face/__pycache__",
+      "bytes": 82623
+    },
+    {
+      "path": "/home/shangguanrz/project/pic-edit/src/pose_control/v6/detail/__pycache__",
+      "bytes": 57438
+    },
+    {
+      "path": "/home/shangguanrz/project/pic-edit/src/pose_control/v6/interface/__pycache__",
+      "bytes": 50115
+    },
+    {
+      "path": "/home/shangguanrz/project/pic-edit/src/pose_control/v6/reasoning/__pycache__",
+      "bytes": 48940
+    },
+    {
+      "path": "/home/shangguanrz/project/pic-edit/src/pose_control/v6/hand/__pycache__",
+      "bytes": 54346
+    },
+    {
+      "path": "/home/shangguanrz/project/pic-edit/tests/__pycache__",
+      "bytes": 1295765
+    },
+    {
+      "path": "/home/shangguanrz/project/pic-edit/scripts/__pycache__",
+      "bytes": 625338
+    },
+    {
+      "path": "/home/shangguanrz/project/pic-edit/vram_lab/__pycache__",
+      "bytes": 61194
+    }
+  ]
+}

@@ -1,0 +1,122 @@
+{
+  "schema": "dual_pose_pair_v1",
+  "kind": "same_identity",
+  "name": "hug_pair00_086_c4_r003",
+  "built_at_unix": 1791889446.572676,
+  "manifest": {
+    "row_index": 3,
+    "pair": "pair00",
+    "camera_id": 4,
+    "source_action": "taichi00",
+    "target_action": "hug00",
+    "pair_relation": "CROSS_ACTION",
+    "pair_type": "N2C_SAME_IDENTITY_CAMERA",
+    "source_frame_id": 19,
+    "target_frame_id": 86,
+    "target_contact_vertex_count_total": 47,
+    "asset_version": "hi4d_final_assets_v4_2"
+  },
+  "A": {
+    "image": "A_source.png",
+    "sha256": "6a4d3ff86b2e4f3581a08d5338e7a648862e4650ae97659da8a2f9c2a37e8d33",
+    "size": [
+      940,
+      1280
+    ],
+    "persons": [
+      {
+        "hi4d_side": "A",
+        "region": {
+          "pixel_count": 59313,
+          "centroid_xy": [
+            696.1301063847723,
+            676.1053563299782
+          ],
+          "bbox_xyxy": [
+            614.0,
+            340.0,
+            805.0,
+            1015.0
+          ]
+        },
+        "mask_original": "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/final_assets_v4_2/sources/pair00/cam4/taichi00/000019/mask_A.png"
+      },
+      {
+        "hi4d_side": "B",
+        "region": {
+          "pixel_count": 69224,
+          "centroid_xy": [
+            294.9205477868947,
+            644.7158211025078
+          ],
+          "bbox_xyxy": [
+            202.0,
+            323.0,
+            493.0,
+            966.0
+          ]
+        },
+        "mask_original": "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/final_assets_v4_2/sources/pair00/cam4/taichi00/000019/mask_B.png"
+      }
+    ]
+  },
+  "B": {
+    "image": "B_target.png",
+    "sha256": "8670aa537b8f48dc8cea8fb27117123f1768eb678907743f5bdfda8170363127",
+    "size": [
+      940,
+      1280
+    ],
+    "slot_order": [
+      {
+        "slot": 1,
+        "hi4d_side": "B",
+        "hip_x": 411.59619140625,
+        "valid_body_points": 14,
+        "hip_x_separation": 192.45458984375
+      },
+      {
+        "slot": 2,
+        "hi4d_side": "A",
+        "hip_x": 604.05078125,
+        "valid_body_points": 13,
+        "hip_x_separation": 192.45458984375
+      }
+    ],
+    "keypoints": [
+      {
+        "slot": 1,
+        "hi4d_side": "A",
+        "file": "B_person_1_keypoints.npz",
+        "sha256": "679691c09dd88ebaa5d4f8f5687a8420697daed1e128a0e7146bb4f0ab342654"
+      },
+      {
+        "slot": 2,
+        "hi4d_side": "B",
+        "file": "B_person_2_keypoints.npz",
+        "sha256": "3f94366cf55fb2e7633f8bb1d28fb7b64d74a7e71d107b0c0598fa7181e9420f"
+      }
+    ],
+    "smpl_original": "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/raw/pair00/hug00/smpl/000086.npz",
+    "geometry_original": "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/final_assets_v4_2/targets/pair00/hug00/cam4/000086/geometry.npz",
+    "camera_original": "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/raw/pair00/hug00/cameras/rgb_cameras.npz",
+    "keypoint_source": "Hi4D precomputed DWPose-134 per person"
+  },
+  "scoring": {
+    "person_assignment": {
+      "assignment": "direct",
+      "cost_direct": 0.2998792421696273,
+      "cost_swapped": 0.8528063116314801,
+      "cost_margin": 0.5529270694618529,
+      "ambiguous_below": 0.01,
+      "basis": "horizontal centre of the A person mask versus hip x of the B skeleton",
+      "note": "evaluation hint only; the generator is never told which person is which"
+    },
+    "score_threshold": 0.5
+  },
+  "ground_truth_limits": {
+    "hands_and_face": "DWPose-134 supplies them; the SMPL npz is 24-joint SMPL only",
+    "occlusion": "the estimator guesses occluded landmarks; scores plus A_occluded_by_B/B_occluded_by_A in the geometry npz bound how far they can be trusted",
+    "appearance_contrast": "A and B are the same two actors in the same camera, so this flavour cannot detect appearance leakage from B"
+  }
+}

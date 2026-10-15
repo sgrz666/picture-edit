@@ -1,0 +1,104 @@
+{
+  "case": "hard_04",
+  "source": {
+    "path": "/home/shangguanrz/project/pic-edit/workflow/runs/hard_04/inputs/A_reference.png",
+    "selected_bbox": [
+      55.60641860961914,
+      55.73468017578125,
+      665.8470458984375,
+      886.8035888671875
+    ],
+    "subject_iou_to_A_box": 0.9828769873608567,
+    "persons_detected": 1,
+    "torso_px": 369.9476354173725,
+    "shoulder_width_px": 278.24532037884023,
+    "neck_canvas": [
+      332.9973822732767,
+      310.97996512055397
+    ],
+    "pelvis_canvas": [
+      355.3161273797353,
+      680.2537477910519
+    ],
+    "torso_landmark_scores": [
+      0.680863618850708,
+      0.7237603068351746,
+      0.7213025689125061,
+      0.7305442094802856
+    ],
+    "face_contour_height_px": 106.8594462672869,
+    "ankle_scores": [
+      0.12375027686357498,
+      0.13014118373394012
+    ]
+  },
+  "baseline_generated": {
+    "path": "/home/shangguanrz/project/pic-edit/workflow/runs/hard_04/generation/final_canvas.png",
+    "selected_bbox": [
+      155.29412841796875,
+      34.932281494140625,
+      553.430419921875,
+      877.631103515625
+    ],
+    "subject_iou_to_A_box": 0.6294478630217917,
+    "persons_detected": 2,
+    "torso_px": 235.38588623357776,
+    "shoulder_width_px": 138.5363813448604,
+    "neck_canvas": [
+      341.33226308723295,
+      189.50936033825081
+    ],
+    "pelvis_canvas": [
+      373.56439576546353,
+      422.677979712685
+    ],
+    "torso_landmark_scores": [
+      0.7500105500221252,
+      0.7607621550559998,
+      0.7003610134124756,
+      0.6441741585731506
+    ],
+    "face_contour_height_px": 60.34952501455939,
+    "ankle_scores": [
+      0.8894598484039307,
+      0.7729670405387878
+    ]
+  },
+  "new_generated": {
+    "path": "/home/shangguanrz/project/pic-edit/workflow/runs/scale_anchor_20261013/hard_04/generation/final_canvas.png",
+    "selected_bbox": [
+      50.56895446777344,
+      93.87361145019531,
+      613.4083862304688,
+      887.2067260742188
+    ],
+    "subject_iou_to_A_box": 0.8645234920567784,
+    "persons_detected": 2,
+    "torso_px": 359.28117720098004,
+    "shoulder_width_px": 216.94239479830063,
+    "neck_canvas": [
+      308.7464892566204,
+      304.60272002220154
+    ],
+    "pelvis_canvas": [
+      359.1045482903719,
+      660.3372139657538
+    ],
+    "torso_landmark_scores": [
+      0.7192147970199585,
+      0.7085450291633606,
+      0.7155564427375793,
+      0.6484858393669128
+    ],
+    "face_contour_height_px": 105.88104719916976,
+    "ankle_scores": [
+      0.2136467695236206,
+      0.11629648506641388
+    ]
+  },
+  "baseline_output_to_A_torso": 0.6362681193191488,
+  "new_output_to_A_torso": 0.9711676540266067,
+  "baseline_face_height_to_A": 0.56475610835197,
+  "new_face_height_to_A": 0.9908440563535218,
+  "limits": "Observed 2D lengths, affected by pose/viewpoint and landmark error; manual checks of extra arms/persons required"
+}

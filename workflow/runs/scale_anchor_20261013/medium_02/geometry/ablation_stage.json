@@ -1,0 +1,100 @@
+{
+  "schema": "single_person_pose_stage_v2",
+  "status": "complete",
+  "identity": {
+    "experiment": "source_anchor_geometry_ablation_v1",
+    "operation": "A shoulder-hip scale + A pelvis + raster clipping",
+    "min_source_score": 0.3,
+    "inputs_sha256": {
+      "baseline_keypoints": "fe721730856f21b8fd6273a3e1cb25b5da61179d76532136847fa4097fc013df",
+      "source_visible_pose": "51548bfd5cc46861f35410024789b1e96712258866667119dab72c46185df387",
+      "A_reference": "c2be2d59d2d6521ceabb075ef983c6b35d8ed5b68eaab2a68100c962aeec196e",
+      "source_preprocess": "5deb3cd2d257a90d3f8e2fbb5d9a8c7396e98be8355d00d28a86eefaab8e91cc",
+      "frozen_prompt": "9e942c88f09858271c04b926140dae4fbbcf8b95da36a983576a966872128427"
+    },
+    "code": {
+      "geometry_ablation.py": "334ea0b5754ce5552cc49957c2225169102dd1d3551c7d5e0d5811ed00ccfe37",
+      "run_experiment.py": "731d733625fa3959bc8edda6f21323ff3cde49a0146f98707797805fd40c1f39",
+      "pose_transfer/geometry.py": "5ac98986c3f379f470c27fcca34d6af8338fbf66a101d238c5684c52ee386257"
+    }
+  },
+  "request_sha256": "2207d9703d7b6393f847045721b23d3cf83f2492834e3c3a8783ce8c7e84bc7c",
+  "outputs": {
+    "A_reference": {
+      "file": "inputs/A_reference.png",
+      "sha256": "c2be2d59d2d6521ceabb075ef983c6b35d8ed5b68eaab2a68100c962aeec196e"
+    },
+    "source_preprocess": {
+      "file": "inputs/source_preprocess.json",
+      "sha256": "5deb3cd2d257a90d3f8e2fbb5d9a8c7396e98be8355d00d28a86eefaab8e91cc"
+    },
+    "B_3d_dwpose": {
+      "file": "geometry/B_3d_dwpose.png",
+      "sha256": "4b46fdf0522118bcc39e2e8daaa639028dca4bcc504e871dd299cc59e006b232"
+    },
+    "B_keypoints": {
+      "file": "geometry/B_keypoints.npz",
+      "sha256": "2cd39566dd2004dc83bb54c63f9257f47959b44666d04dc3276db832f2babb15"
+    },
+    "A_alignment": {
+      "file": "geometry/A_poseguide_alignment.png",
+      "sha256": "494639be706029f848cdd640a2d8384ae3b9bfe4ee5780d57ca2590e497fcabd"
+    },
+    "operation": {
+      "file": "geometry/operation.json",
+      "sha256": "ef730f2e6213de05583cb0139e9dd08d1f5fbe58d0b2805f1b5b511a74d99b18"
+    },
+    "generation_prompt": {
+      "file": "prompt/generation_prompt.txt",
+      "sha256": "9e942c88f09858271c04b926140dae4fbbcf8b95da36a983576a966872128427"
+    },
+    "generation_prompt_provenance": {
+      "file": "prompt/generation_prompt.json",
+      "sha256": "137d97617f7f4ccc07670766dd408035f29296a95365b00d22e5f18144aecd80"
+    }
+  },
+  "metadata": {
+    "operation": "uniform scale about guide pelvis, then anchor at A pelvis",
+    "torso_definition": "shoulder midpoint to hip midpoint on both sides",
+    "scale_multiplier": 1.1139154701049834,
+    "A_torso_px": 247.37898115639774,
+    "baseline_guide_torso_px": 222.08056876441708,
+    "A_shoulder_midpoint": [
+      315.04012685020757,
+      367.85109379763406
+    ],
+    "A_pelvis": [
+      330.14412012323737,
+      614.7685490436852
+    ],
+    "baseline_guide_shoulder_midpoint": [
+      311.51940531547626,
+      281.5212984205158
+    ],
+    "baseline_guide_pelvis": [
+      306.55163029133314,
+      503.54629754006646
+    ],
+    "source_anchor_scores": [
+      0.6670256853103638,
+      0.7212491631507874,
+      0.6264463663101196,
+      0.6448556780815125
+    ],
+    "confidence_threshold": 0.3,
+    "body_proportions": "B bone proportions retained; A torso scale and pelvis anchor only",
+    "baseline_run": "/home/shangguanrz/project/pic-edit/workflow/runs/medium_02",
+    "A_reference_sha256": "c2be2d59d2d6521ceabb075ef983c6b35d8ed5b68eaab2a68100c962aeec196e",
+    "source_pose_npz": "/home/shangguanrz/project/pic-edit/workflow/diagnostics/2026-10-13-scale/medium_02_visible_pose.npz",
+    "source_pose_sha256": "51548bfd5cc46861f35410024789b1e96712258866667119dab72c46185df387",
+    "original_keypoints_sha256": "fe721730856f21b8fd6273a3e1cb25b5da61179d76532136847fa4097fc013df",
+    "joints_in_frame": 126,
+    "body_joints_in_frame": 16,
+    "canvas_size": [
+      640,
+      928
+    ],
+    "clipping_policy": "raster clipping only; off-frame joint coordinates retained"
+  },
+  "completed_at_unix": 1791881157.6053076
+}

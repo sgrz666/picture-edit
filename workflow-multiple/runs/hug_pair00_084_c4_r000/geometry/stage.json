@@ -1,0 +1,112 @@
+{
+  "schema": "single_person_pose_stage_v2",
+  "status": "complete",
+  "identity": {
+    "settings": {
+      "framing": "b_canvas",
+      "resolution": 768,
+      "keypoint_score_threshold": 0.5
+    },
+    "inputs_sha256": {
+      "pair_json": "8f637bf189438b4d00902d75ca9e32ea5569951834b37d15c6d01591a7595458",
+      "A_original": "d7b1bd97b6f0ee8f150f414363e90a6fa3bca55c4b10d4f3dcb28fdfa88414ff",
+      "B_original": "592aea679af6d0c2ee9702eac61924e31fb62bab6eead9bb1975f3a365e57507",
+      "B_keypoints_1": "b80ce506cc44c0ad095254732154f548b04cccf83f0e015e47ae8efb7d5b6f29",
+      "B_keypoints_2": "bde8ef883f1998e355fd8170121e0e31e3c19d862aeaa4f29a9e0359516458fe"
+    },
+    "code": {
+      "src/pose_edit/common.py": "ca76a12450a6cceedacef63e13fd66c7bdb19169d0bf7182d0de0d755cf932a4",
+      "src/pose_edit/geometry.py": "5ac98986c3f379f470c27fcca34d6af8338fbf66a101d238c5684c52ee386257",
+      "dual_geometry.py": "a21958e74b5c71d26faf415e066596e823059cbd9a05801da3c535399c0ef4f5"
+    }
+  },
+  "request_sha256": "a468a99874ab16aecb808c602671f317ce7dc3c3cc7c8e143c08cfdbb3350c11",
+  "outputs": {
+    "skeleton_1": {
+      "file": "geometry/skeleton_1.png",
+      "sha256": "1f414ba7a116d1d44c73c5ebfed7ecff576d09caded9f779e92800902f12443d"
+    },
+    "skeleton_2": {
+      "file": "geometry/skeleton_2.png",
+      "sha256": "f90d0aa7765a6db004c0695c44afa29911de92f955372ac1f6ef7a9741d6abd2"
+    },
+    "skeleton_both": {
+      "file": "geometry/skeleton_both.png",
+      "sha256": "55b7154844e16a3a47615ce726a01769883cd553f4291cd35d36611025fd983b"
+    },
+    "dual_keypoints": {
+      "file": "geometry/dual_keypoints.npz",
+      "sha256": "160c78053f5e189655cc366c5cbe3c4e08461b838b9b8da9e034d255047ccd8b"
+    },
+    "A_skeleton_overlay": {
+      "file": "geometry/A_skeleton_overlay.png",
+      "sha256": "e8f8a471abb0d0237d9131bfd16fedec0c7e3376c474460fc901faadf3e0902b"
+    },
+    "B_skeleton_overlay": {
+      "file": "geometry/B_skeleton_overlay.png",
+      "sha256": "230dc64d2349520cb6234f381e8512c7bc4a589e15473b70ed8ae99f1c2a719c"
+    },
+    "A_reference": {
+      "file": "inputs/A_reference.png",
+      "sha256": "c3cf426d3e9e182eb52aa814c21a15b714efec736db4ddec7437c88d2db2dd25"
+    },
+    "B_reference": {
+      "file": "inputs/B_reference.png",
+      "sha256": "422861584d0aba02de72b5f3c0397a7a382af6d626273fcdfab918698fb3d7af"
+    },
+    "source_preprocess": {
+      "file": "inputs/source_preprocess.json",
+      "sha256": "5d5fc85904c3330f1f5503bf91b3479de9d25ea2b7b7497b8f9428eb1e9ab686"
+    },
+    "dual_geometry": {
+      "file": "geometry/dual_geometry.json",
+      "sha256": "cdbba78081270c51dca8b16fbc5e0adeb8ce145e43b8438bd7575b811ed3bf48"
+    }
+  },
+  "metadata": {
+    "seconds": 1.7423923970200121,
+    "canvas": [
+      672,
+      896
+    ],
+    "persons": [
+      {
+        "slot": 1,
+        "hi4d_side": "B",
+        "keypoints_file": "B_person_1_keypoints.npz",
+        "keypoints_sha256": "b80ce506cc44c0ad095254732154f548b04cccf83f0e015e47ae8efb7d5b6f29",
+        "valid_native": 109,
+        "valid_canvas": 109,
+        "min_score": 0.12309814989566803,
+        "max_score": 1.0
+      },
+      {
+        "slot": 2,
+        "hi4d_side": "A",
+        "keypoints_file": "B_person_2_keypoints.npz",
+        "keypoints_sha256": "bde8ef883f1998e355fd8170121e0e31e3c19d862aeaa4f29a9e0359516458fe",
+        "valid_native": 124,
+        "valid_canvas": 124,
+        "min_score": 0.308867484331131,
+        "max_score": 1.0
+      }
+    ],
+    "transform": {
+      "framing": "b_canvas",
+      "b_letterbox_scale": 0.7,
+      "b_letterbox_offset": [
+        7.0,
+        0.0
+      ],
+      "b_pair_canvas": {
+        "extent_px": 429.9405853271485,
+        "centre_xy": [
+          350.9622909699434,
+          339.1491486562078
+        ],
+        "persons_measured": 2
+      }
+    }
+  },
+  "completed_at_unix": 1791893195.1324236
+}

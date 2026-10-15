@@ -1,0 +1,198 @@
+{
+  "schema": "single_person_pose_request_v2",
+  "stage": "generate",
+  "identity": {
+    "settings": {
+      "qwen_model": "/data/shangguanrz/pic-edit-models/Qwen-Image-2.1",
+      "resolution": 768,
+      "steps": 30,
+      "seed": 42,
+      "true_cfg_scale": 1.0,
+      "use_kv_cache": false,
+      "adapter": false,
+      "lora": false
+    },
+    "inputs_sha256": {
+      "A_reference": "8708b8159be270edf4b2155ebd8b222f9363c855441d2157e11ee53845d848c8",
+      "B_3d_dwpose": "1c3ed8927de4dcc4de416638a8b0ddeb3d37fba8be6278fc75fba568f621d112",
+      "generation_prompt": "d367e0ca1f7f140fe358e3b58af59280513555c8cf78db5c71ea2ca79e6b1866",
+      "source_preprocess": "5deb3cd2d257a90d3f8e2fbb5d9a8c7396e98be8355d00d28a86eefaab8e91cc"
+    },
+    "model_identity": {
+      "path": "/data/shangguanrz/pic-edit-models/Qwen-Image-2.1",
+      "files": [
+        {
+          "name": "model_index.json",
+          "size": 447,
+          "mtime_ns": 1790247768359825764,
+          "sha256": "cf1ecd104ea090855d60d8cec0895c1e9d6ee41b2f87e231b678beecd1cf7809"
+        },
+        {
+          "name": "processor/added_tokens.json",
+          "size": 707,
+          "mtime_ns": 1790247768350825794,
+          "sha256": "c0284b582e14987fbd3d5a2cb2bd139084371ed9acbae488829a1c900833c680"
+        },
+        {
+          "name": "processor/chat_template.jinja",
+          "size": 5292,
+          "mtime_ns": 1790247768354825781,
+          "sha256": "3636d0f0bd6bef02654cdffdc447b79cb2cef8ab02cc75267345946291a489e4"
+        },
+        {
+          "name": "processor/merges.txt",
+          "size": 1671853,
+          "mtime_ns": 1790247769327822557
+        },
+        {
+          "name": "processor/preprocessor_config.json",
+          "size": 782,
+          "mtime_ns": 1790247768841824167,
+          "sha256": "93585062a80db5e8ca038efc7726a3e6411d9db948472d81d63c6303993be8c5"
+        },
+        {
+          "name": "processor/special_tokens_map.json",
+          "size": 613,
+          "mtime_ns": 1790247769128823216,
+          "sha256": "76862e765266b85aa9459767e33cbaf13970f327a0e88d1c65846c2ddd3a1ecd"
+        },
+        {
+          "name": "processor/tokenizer.json",
+          "size": 11422654,
+          "mtime_ns": 1790247771702814687
+        },
+        {
+          "name": "processor/tokenizer_config.json",
+          "size": 5445,
+          "mtime_ns": 1790247768876824051,
+          "sha256": "81ec7bb9530159b326c0bef1d0b6c33d392090524014ea3f0123a3c1eb9c2af5"
+        },
+        {
+          "name": "processor/video_preprocessor_config.json",
+          "size": 817,
+          "mtime_ns": 1790247768872824065,
+          "sha256": "59c5c9eb52182eb14c06ffb10ca9effd29adce5f238a95de23ca14a38dbd2cb1"
+        },
+        {
+          "name": "processor/vocab.json",
+          "size": 2776833,
+          "mtime_ns": 1790247769434822202
+        },
+        {
+          "name": "scheduler/scheduler_config.json",
+          "size": 485,
+          "mtime_ns": 1790247769364822434,
+          "sha256": "5895f3a167c14a967fe9ac70c64924ae5acc79799e0679fd12907e594a713cd1"
+        },
+        {
+          "name": "text_encoder/config.json",
+          "size": 1517,
+          "mtime_ns": 1790247769376822394,
+          "sha256": "6001331949f7f86ab6d791a80b12246d4f8da5159fa08c3e62368a39f36d63a9"
+        },
+        {
+          "name": "text_encoder/generation_config.json",
+          "size": 213,
+          "mtime_ns": 1790247769370822414,
+          "sha256": "4d9818c3d27895c0058828a5f68bc7a4de80c3ae1bcdac90936ce24178063f59"
+        },
+        {
+          "name": "text_encoder/model-00001-of-00004.safetensors",
+          "size": 4998056552,
+          "mtime_ns": 1790248584033275644
+        },
+        {
+          "name": "text_encoder/model-00002-of-00004.safetensors",
+          "size": 4915962464,
+          "mtime_ns": 1790248481549602990
+        },
+        {
+          "name": "text_encoder/model-00003-of-00004.safetensors",
+          "size": 4915962496,
+          "mtime_ns": 1790248431172763388
+        },
+        {
+          "name": "text_encoder/model-00004-of-00004.safetensors",
+          "size": 2704357976,
+          "mtime_ns": 1790248105444789227
+        },
+        {
+          "name": "text_encoder/model.safetensors.index.json",
+          "size": 67795,
+          "mtime_ns": 1790247769873820748,
+          "sha256": "859146bff8db1d617fca8b457a5223edff963bb70076b3645f2189fe0540a147"
+        },
+        {
+          "name": "transformer/config.json",
+          "size": 370,
+          "mtime_ns": 1790247769941820522,
+          "sha256": "56ae3281c4e6c2d1aa3658252d187488071815fd79bef15808bb0205fc1a2241"
+        },
+        {
+          "name": "transformer/diffusion_pytorch_model-00001-of-00002.safetensors",
+          "size": 9968332504,
+          "mtime_ns": 1790248485489590428
+        },
+        {
+          "name": "transformer/diffusion_pytorch_model-00002-of-00002.safetensors",
+          "size": 4261951904,
+          "mtime_ns": 1790248103397795595
+        },
+        {
+          "name": "transformer/diffusion_pytorch_model.safetensors.index.json",
+          "size": 30283,
+          "mtime_ns": 1790247771931813928,
+          "sha256": "17987f6623b1c814d0ef55a137d99142b7b3b040eb1bf241b5575dd35af803a2"
+        },
+        {
+          "name": "vae/config.json",
+          "size": 2079,
+          "mtime_ns": 1790247772330812606,
+          "sha256": "9785d527b278cb8b210e9f48a8028d92a4190968ce7e24c8fc85d9d1b82f6ba2"
+        },
+        {
+          "name": "vae/diffusion_pytorch_model.safetensors",
+          "size": 1350989512,
+          "mtime_ns": 1790248073018889946
+        }
+      ]
+    },
+    "code": {
+      "pose_transfer/common.py": "ca76a12450a6cceedacef63e13fd66c7bdb19169d0bf7182d0de0d755cf932a4",
+      "generate_worker.py": "e6a5e7c5a60257e67ba752bc371d760603a81e6a4604e1a289a481b32a8b08cf"
+    },
+    "experiment_geometry": {
+      "experiment": "source_anchor_geometry_ablation_v1",
+      "operation": "A shoulder-hip scale + A pelvis + raster clipping",
+      "min_source_score": 0.3,
+      "inputs_sha256": {
+        "baseline_keypoints": "83eeb78c811b22ae4c012fbfbca2dca4d331c174af92b6322cbc15d1977dfd37",
+        "source_visible_pose": "69b09605ff4b6b95d720cf6659a2b2ef872d6dc76d4a6600cf45d3fc2aa92b13",
+        "A_reference": "8708b8159be270edf4b2155ebd8b222f9363c855441d2157e11ee53845d848c8",
+        "source_preprocess": "5deb3cd2d257a90d3f8e2fbb5d9a8c7396e98be8355d00d28a86eefaab8e91cc",
+        "frozen_prompt": "244ebef2f04314cd9ce034842fde71e0a6265787114d821ce199edd386d97152"
+      },
+      "code": {
+        "geometry_ablation.py": "334ea0b5754ce5552cc49957c2225169102dd1d3551c7d5e0d5811ed00ccfe37",
+        "run_experiment.py": "731d733625fa3959bc8edda6f21323ff3cde49a0146f98707797805fd40c1f39",
+        "pose_transfer/geometry.py": "5ac98986c3f379f470c27fcca34d6af8338fbf66a101d238c5684c52ee386257"
+      }
+    },
+    "prompt_variant": {
+      "source_prompt_sha256": "244ebef2f04314cd9ce034842fde71e0a6265787114d821ce199edd386d97152",
+      "script_sha256": "7d2b71fcab17212ced58294545b842a5c439df8f0fb8b6b25cd7ae6abef90b6d",
+      "operation": "replace only the contradictory microphone-arm clause"
+    }
+  },
+  "runtime": {
+    "run_dir": "/home/shangguanrz/project/pic-edit/workflow/runs/scale_anchor_20261013/hard_02_pose_consistent",
+    "paths": {
+      "run_dir": "/home/shangguanrz/project/pic-edit/workflow/runs/scale_anchor_20261013/hard_02_pose_consistent",
+      "A_reference": "/home/shangguanrz/project/pic-edit/workflow/runs/scale_anchor_20261013/hard_02_pose_consistent/inputs/A_reference.png",
+      "B_3d_dwpose": "/home/shangguanrz/project/pic-edit/workflow/runs/scale_anchor_20261013/hard_02_pose_consistent/geometry/B_3d_dwpose.png",
+      "generation_prompt": "/home/shangguanrz/project/pic-edit/workflow/runs/scale_anchor_20261013/hard_02_pose_consistent/prompt/generation_prompt.txt",
+      "source_preprocess": "/home/shangguanrz/project/pic-edit/workflow/runs/scale_anchor_20261013/hard_02_pose_consistent/inputs/source_preprocess.json",
+      "generation_prompt_provenance": "/home/shangguanrz/project/pic-edit/workflow/runs/scale_anchor_20261013/hard_02_pose_consistent/prompt/generation_prompt.json"
+    }
+  }
+}

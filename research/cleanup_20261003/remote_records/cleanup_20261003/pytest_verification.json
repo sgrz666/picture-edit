@@ -1,0 +1,33 @@
+{
+  "command": [
+    "/home/shangguanrz/nihaochen/envs/qwen21/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "-p",
+    "no:cacheprovider",
+    "tests/test_hi4d_geometry_registration.py",
+    "tests/test_qwen21_action_prompts.py",
+    "tests/test_qwen21_control_contract.py",
+    "tests/test_qwen21_dual_control.py",
+    "tests/test_qwen21_dual_inference_boundary.py",
+    "tests/test_qwen21_face_control.py",
+    "tests/test_qwen21_face_loss_alignment.py",
+    "tests/test_qwen21_face_objective.py",
+    "tests/test_qwen21_face_reference_grid.py",
+    "tests/test_qwen21_full_bridge.py",
+    "tests/test_qwen21_full_preservation.py",
+    "tests/test_qwen21_weight_audit.py",
+    "tests/test_qwen21_weight_inheritance.py",
+    "tests/test_tiktok_data_contract.py",
+    "tests/test_tiktok_qwen21_face_cache.py",
+    "tests/test_tiktok_qwen21_full_chain.py",
+    "tests/test_tiktok_qwen21_learning_rates.py",
+    "tests/test_tiktok_qwen21_readiness.py",
+    "tests/test_train_tiktok_v65_face_smoke.py"
+  ],
+  "exit_code": 0,
+  "seconds": 22.16871404647827,
+  "stdout": "........................................................................ [ 40%]\n........................................................................ [ 81%]\n.................................                                        [100%]\n=============================== warnings summary ===============================\n<frozen importlib._bootstrap>:488\n  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute\n\n<frozen importlib._bootstrap>:488\n  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n177 passed, 2 warnings in 20.07s\n",
+  "stderr": "sys:1: DeprecationWarning: builtin type swigvarlink has no __module__ attribute\n"
+}

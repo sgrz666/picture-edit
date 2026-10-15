@@ -1,0 +1,111 @@
+{
+  "schema": "dual_pose_evaluation_v1",
+  "run": "hug_pair00_084_c4_r000",
+  "pair": "hug_pair00_084_c4_r000",
+  "kind": "same_identity",
+  "framing": "b_canvas",
+  "generator_references": "with_b",
+  "final_image": "/home/shangguanrz/project/pic-edit/workflow-multiple/runs/hug_pair00_084_c4_r000/generation/final_image.png",
+  "final_size": [
+    658,
+    896
+  ],
+  "requested_slots": [
+    1,
+    2
+  ],
+  "requested_hi4d_sides": [
+    "B",
+    "A"
+  ],
+  "detected_boxes": [
+    {
+      "box_xyxy": [
+        111.49710845947266,
+        225.59219360351562,
+        259.31146240234375,
+        677.4281616210938
+      ]
+    },
+    {
+      "box_xyxy": [
+        456.2610168457031,
+        228.66725158691406,
+        568.8823852539062,
+        714.6128540039062
+      ]
+    },
+    {
+      "box_xyxy": [
+        234.9813232421875,
+        238.80223083496094,
+        518.0000610351562,
+        715.68994140625
+      ]
+    }
+  ],
+  "assignment": {
+    "permutation": [
+      1,
+      0
+    ],
+    "cost_px": 195.9896219407878,
+    "cost_margin_to_next": 283.1866006665926,
+    "ambiguous": false,
+    "basis": "summed distance between hip centres, both permutations tried"
+  },
+  "summary": {
+    "persons_detected": 3.0,
+    "person_count_ok": 0.0,
+    "body_pck@0.2": 0.0,
+    "body_mpjpe_norm": 0.9470330407148224,
+    "torso_scale_ratio": 1.067918166304089
+  },
+  "persons": [
+    {
+      "comparable": true,
+      "body_joints": 13,
+      "mpjpe_px": 120.50631451395995,
+      "mpjpe_norm": 0.9002897852333074,
+      "p95_norm": 1.5523998680536204,
+      "pck@0.1": 0.0,
+      "pck@0.2": 0.0,
+      "pck@0.5": 0.07692307692307693,
+      "worst_joint_px": 303.4939762142042,
+      "requested_torso_px": 133.85280660796465,
+      "detected_torso_px": 152.48748104670844,
+      "torso_scale_ratio": 1.1392176593900047,
+      "hip_centre_xy": [
+        520.480971922477,
+        480.3402507553498
+      ]
+    },
+    {
+      "comparable": true,
+      "body_joints": 15,
+      "mpjpe_px": 136.16927725568,
+      "mpjpe_norm": 0.9937762961963373,
+      "p95_norm": 1.5905200121061172,
+      "pck@0.1": 0.0,
+      "pck@0.2": 0.0,
+      "pck@0.5": 0.0,
+      "worst_joint_px": 271.7107645239839,
+      "requested_torso_px": 137.02206198403573,
+      "detected_torso_px": 136.558745616148,
+      "torso_scale_ratio": 0.9966186732181733,
+      "hip_centre_xy": [
+        184.66887532671294,
+        457.7611634979645
+      ]
+    }
+  ],
+  "interaction": {
+    "requested_hip_gap_px": 142.94191581080776,
+    "detected_hip_gap_px": 336.5703186578094,
+    "error_px": 193.62840284700167,
+    "error_relative": 1.354594988801469
+  },
+  "seconds": 1.4374031250481494,
+  "not_measured": "identity and clothing preservation. The VGG weights the earlier dual evaluation used are absent on this host; DINOv2 weights are present, so a feature similarity metric is the candidate but is not implemented yet.",
+  "limits": "Pose fidelity only, judged with the same DWPose detector that produced the Hi4D ground truth, so detector bias enters both sides. Landmarks the detector did not find in the generated image are excluded rather than counted as errors, so a result that hides a limb can score better than it looks. Person count is reported separately because extra bodies are the dominant failure when the target photograph is given to the generator."
+}

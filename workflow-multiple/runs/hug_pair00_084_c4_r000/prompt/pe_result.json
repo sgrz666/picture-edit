@@ -1,0 +1,89 @@
+{
+  "official_result": {
+    "rewritten_prompt": "On <image1> (canvas), re-pose the two standing people into the mutual embrace shown in <image2>, transferring only the body action, pair arrangement, relative distance, contact, leaning, head orientation and facial expression from <image2>, while preserving every identity and appearance attribute from <image1>. The man currently standing on the viewer-left, with short black hair, light grey T-shirt with a small orange chest logo, cream trousers, red-and-white striped socks and checkered sneakers, turns his body toward the woman, leans his torso against hers, wraps his arms around the woman's back with his viewer-right arm crossing her midsection and his viewer-left arm resting on her far shoulder, tilts his head toward her face and smiles. The woman currently standing on the viewer-right, with a black hair bun secured by a clip, blue-and-white horizontal striped T-shirt, black trousers and white sneakers, turns toward the man, leans into his chest, wraps her viewer-left arm across his upper back with her hand resting on his far shoulder, extends her viewer-right arm to the side with fingers spread, and smiles with her head close to his. Keep the close face-to-face distance and standing height difference observed in <image2>. Match each person's joint angles, limb directions and head direction to the corresponding skeletal guide: the man's joints follow <image3> and the woman's joints follow <image4>, using <image2> to clarify hand placement and head direction where the guides are ambiguous. Treat <image3> and <image4> purely as joint-arrangement references; their black backgrounds and line colours carry no scene meaning, and never draw skeleton lines in the output. Never copy any identity, hair, clothing, jewellery, colour, background element, held object from <image2>. Preserve from <image1> both facial identities, hairstyles, body proportions, the exact garment designs, colours and fabrics, all accessories and shoes, the green cyclorama backdrop, the metal support truss, the wall-mounted light panels, the green floor and the overall illumination; allow natural cloth folds and pose-dependent shadows consistent with the existing light sources, and maintain the original photographic style. Keep exactly two people in the output, one per source person, adding no one, removing no one, merging no one, and introduce no new objects into the scene.",
+    "wh_ratio": "",
+    "ratio_follow": "<image1>"
+  },
+  "compiled_prompt": "Edit exactly the two people in <image1> into the requested interaction. <image1> supplies all identity, hairstyle, face, body proportions, outfit, accessories and scene appearance for both of them. <image2> is the target photograph and is shown for the interaction only; copy no appearance from it. The remaining images are colored skeletal pose guides, one per person: use their joint positions, never their line colours as appearance. Do not add a third person or any target-only object. Preserve objects already in the source. On <image1> (canvas), re-pose the two standing people into the mutual embrace shown in <image2>, transferring only the body action, pair arrangement, relative distance, contact, leaning, head orientation and facial expression from <image2>, while preserving every identity and appearance attribute from <image1>. The man currently standing on the viewer-left, with short black hair, light grey T-shirt with a small orange chest logo, cream trousers, red-and-white striped socks and checkered sneakers, turns his body toward the woman, leans his torso against hers, wraps his arms around the woman's back with his viewer-right arm crossing her midsection and his viewer-left arm resting on her far shoulder, tilts his head toward her face and smiles. The woman currently standing on the viewer-right, with a black hair bun secured by a clip, blue-and-white horizontal striped T-shirt, black trousers and white sneakers, turns toward the man, leans into his chest, wraps her viewer-left arm across his upper back with her hand resting on his far shoulder, extends her viewer-right arm to the side with fingers spread, and smiles with her head close to his. Keep the close face-to-face distance and standing height difference observed in <image2>. Match each person's joint angles, limb directions and head direction to the corresponding skeletal guide: the man's joints follow <image3> and the woman's joints follow <image4>, using <image2> to clarify hand placement and head direction where the guides are ambiguous. Treat <image3> and <image4> purely as joint-arrangement references; their black backgrounds and line colours carry no scene meaning, and never draw skeleton lines in the output. Never copy any identity, hair, clothing, jewellery, colour, background element, held object from <image2>. Preserve from <image1> both facial identities, hairstyles, body proportions, the exact garment designs, colours and fabrics, all accessories and shoes, the green cyclorama backdrop, the metal support truss, the wall-mounted light panels, the green floor and the overall illumination; allow natural cloth folds and pose-dependent shadows consistent with the existing light sources, and maintain the original photographic style. Keep exactly two people in the output, one per source person, adding no one, removing no one, merging no one, and introduce no new objects into the scene. Preserve both source people, their clothing and the original setting. Render a natural photograph without skeleton lines, diagrams or pose-guide colors.",
+  "generator_references": "with_b",
+  "input_roles": [
+    {
+      "index": 1,
+      "role": "A_reference",
+      "path": "/home/shangguanrz/project/pic-edit/workflow-multiple/runs/hug_pair00_084_c4_r000/inputs/A_reference.png",
+      "sha256": "c3cf426d3e9e182eb52aa814c21a15b714efec736db4ddec7437c88d2db2dd25",
+      "size": [
+        672,
+        896
+      ],
+      "given_to_generator": true
+    },
+    {
+      "index": 2,
+      "role": "B_reference",
+      "path": "/home/shangguanrz/project/pic-edit/workflow-multiple/runs/hug_pair00_084_c4_r000/inputs/B_reference.png",
+      "sha256": "422861584d0aba02de72b5f3c0397a7a382af6d626273fcdfab918698fb3d7af",
+      "size": [
+        672,
+        896
+      ],
+      "given_to_generator": true
+    },
+    {
+      "index": 3,
+      "role": "skeleton_1",
+      "path": "/home/shangguanrz/project/pic-edit/workflow-multiple/runs/hug_pair00_084_c4_r000/geometry/skeleton_1.png",
+      "sha256": "1f414ba7a116d1d44c73c5ebfed7ecff576d09caded9f779e92800902f12443d",
+      "size": [
+        672,
+        896
+      ],
+      "given_to_generator": true
+    },
+    {
+      "index": 4,
+      "role": "skeleton_2",
+      "path": "/home/shangguanrz/project/pic-edit/workflow-multiple/runs/hug_pair00_084_c4_r000/geometry/skeleton_2.png",
+      "sha256": "f90d0aa7765a6db004c0695c44afa29911de92f955372ac1f6ef7a9741d6abd2",
+      "size": [
+        672,
+        896
+      ],
+      "given_to_generator": true
+    }
+  ],
+  "generator_roles": {
+    "1": "A_reference",
+    "2": "B_reference",
+    "3": "skeleton_1",
+    "4": "skeleton_2"
+  },
+  "instruction": "Write a precise English editing instruction for two-person interaction transfer. <image1> is the source photograph with exactly two people: retain both people's identity, face, hairstyle, body proportions, clothing design, colours, material, accessories, shoes and the photographic scene, including other objects already there. <image2> is the target photograph of two people interacting: use ONLY their body actions, the arrangement between them, their relative distance and height, contact and leaning, head orientation and facial expression. Never copy its identities, hair, clothes, jewellery, colours, background or held objects. <image3> and <image4> are 2D projections of an estimated 3D body for each person in <image2>, already placed in that photograph's frame. Black regions in them are not a scene, and their colours carry no meaning. Use them for joint arrangement; the target photograph may clarify head direction and hands where a guide is ambiguous. The edit changes pose and interpersonal arrangement only. Keep exactly two people, one per source person; do not add, remove or merge anyone. Preserve objects already in the source and do not introduce target-only objects or a replacement for them. Organise the instruction around source appearance preservation, the explicit action of each of the two people, how they relate to each other, the skeletal guides, the original photographic style, and the actual edit. Describe limbs using viewer image-left/image-right only; do not assign anatomical left/right labels, which can conflict with image directions. Do not enumerate the target clothing or other target appearance in negative clauses. The editor will receive all four images. In rewritten_prompt, number images exactly as the editor will receive them. Do not render skeleton lines or their colours. Keep the source setting and overall illumination, allowing natural cloth folds and pose-dependent shadows. Return the official JSON contract with rewritten_prompt, wh_ratio=\"\", ratio_follow=\"<image1>\". Do not change the canvas or introduce a new style.",
+  "visible_statement": "The editor receives all four images in this order: source, target photograph, guide of person one, guide of person two.",
+  "system_prompt_sha256": "e378fea686a1431581ba4c654d332ae96adad633f144ae738ec8ce9c4fd66439",
+  "system_role_suffix": "\n\nWORKFLOW-SPECIFIC OUTPUT REFERENCE CONTRACT. This takes precedence over the general multi-image reference rules above for the final rewritten_prompt only. You receive four images: <image1> the source photograph of two people, <image2> the target photograph of two people interacting, <image3> and <image4> a skeletal guide of each person in <image2> respectively. You may reason over all four. The final rewritten_prompt may reference only the images the downstream editor will actually receive, which this run states in the user instruction. Translate anything you take from the target photograph into explicit words about bodies, limbs, head direction, gaze and contact when it may not be referenced. Keep the official three-field JSON contract with wh_ratio=\"\" and ratio_follow=\"<image1>\". Never ask for a third person, never ask to copy the target people's faces, hair, clothing or background, and never ask to draw the skeleton.",
+  "effective_system_prompt_sha256": "f7a3c4e2dc2ceda7984c7bd9fdd3ef7f735758c3694d6b0ae8e25a72a7a0e9a9",
+  "enable_thinking": true,
+  "sampling": {
+    "max_new_tokens": 24000,
+    "do_sample": true,
+    "temperature": 1.0,
+    "top_p": 0.95,
+    "top_k": 20
+  },
+  "seed": 42,
+  "attempts": [
+    {
+      "attempt": 1,
+      "seed": 42,
+      "raw_path": "/home/shangguanrz/project/pic-edit/workflow-multiple/runs/hug_pair00_084_c4_r000/prompt/pe_attempt_1.txt",
+      "raw_sha256": "e63d17cb0a1c90ab2906e508ca3c53426cc769bf4f30edd1d37e01523e2760f1",
+      "output_tokens": 4091,
+      "status": "accepted"
+    }
+  ],
+  "output_tokens": 4091,
+  "seconds": 258.71915215504123,
+  "peak_gpu_memory_gib": 19.702500343322754,
+  "semantic_review": "Model-generated candidate; role checks do not guarantee the two body actions or the contact between them were understood correctly"
+}

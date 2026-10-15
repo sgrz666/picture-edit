@@ -1,0 +1,112 @@
+{
+  "schema": "dual_pose_workflow_v1",
+  "status": "running",
+  "pair_dir": "/home/shangguanrz/project/pic-edit/workflow-multiple/pairs/hug_pair00_084_c4_r000",
+  "settings": {
+    "project_root": "/home/shangguanrz/project/pic-edit",
+    "geometry_python": "/home/shangguanrz/project/pic-edit/add/envs/smplestx_bw/bin/python",
+    "qwen_python": "/home/shangguanrz/nihaochen/envs/qwen21/bin/python",
+    "multihmr_python": "/home/shangguanrz/project/pic-edit/add/envs/multihmr/bin/python",
+    "hi4d_manifest": "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/final_assets_v4_2/manifests/main_pairs_test.jsonl",
+    "dwpose_det_model": "/home/shangguanrz/project/pic-edit/add/tools/dwpose_mimicmotion_official/models/yolox_l.onnx",
+    "dwpose_pose_model": "/home/shangguanrz/project/pic-edit/add/tools/dwpose_mimicmotion_official/models/dw-ll_ucoco_384.onnx",
+    "pe_model": "/data/shangguanrz/pic-edit-models/Qwen-Image-2.1-PE-I2I",
+    "qwen_model": "/data/shangguanrz/pic-edit-models/Qwen-Image-2.1",
+    "person_detection_confidence": 0.5,
+    "persons_required": 2,
+    "keypoint_score_threshold": 0.5,
+    "resolution": 768,
+    "steps": 30,
+    "seed": 42,
+    "pe_seed": 42,
+    "true_cfg_scale": 1.0,
+    "use_kv_cache": false,
+    "generator_references": "skeleton_only",
+    "framing": "b_canvas",
+    "prop_policy": "source_only",
+    "adapter": false,
+    "lora": false
+  },
+  "requested_until": "generate",
+  "prompt_source": null,
+  "stages": [
+    {
+      "stage": "geometry",
+      "cache_hit": true,
+      "record": "/home/shangguanrz/project/pic-edit/workflow-multiple/runs/hug_skeleton_only/geometry/stage.json"
+    }
+  ],
+  "outputs": {
+    "skeleton_1": {
+      "path": "/home/shangguanrz/project/pic-edit/workflow-multiple/runs/hug_skeleton_only/geometry/skeleton_1.png",
+      "sha256": "1f414ba7a116d1d44c73c5ebfed7ecff576d09caded9f779e92800902f12443d"
+    },
+    "skeleton_2": {
+      "path": "/home/shangguanrz/project/pic-edit/workflow-multiple/runs/hug_skeleton_only/geometry/skeleton_2.png",
+      "sha256": "f90d0aa7765a6db004c0695c44afa29911de92f955372ac1f6ef7a9741d6abd2"
+    },
+    "skeleton_both": {
+      "path": "/home/shangguanrz/project/pic-edit/workflow-multiple/runs/hug_skeleton_only/geometry/skeleton_both.png",
+      "sha256": "55b7154844e16a3a47615ce726a01769883cd553f4291cd35d36611025fd983b"
+    },
+    "dual_keypoints": {
+      "path": "/home/shangguanrz/project/pic-edit/workflow-multiple/runs/hug_skeleton_only/geometry/dual_keypoints.npz",
+      "sha256": "160c78053f5e189655cc366c5cbe3c4e08461b838b9b8da9e034d255047ccd8b"
+    },
+    "A_skeleton_overlay": {
+      "path": "/home/shangguanrz/project/pic-edit/workflow-multiple/runs/hug_skeleton_only/geometry/A_skeleton_overlay.png",
+      "sha256": "e8f8a471abb0d0237d9131bfd16fedec0c7e3376c474460fc901faadf3e0902b"
+    },
+    "B_skeleton_overlay": {
+      "path": "/home/shangguanrz/project/pic-edit/workflow-multiple/runs/hug_skeleton_only/geometry/B_skeleton_overlay.png",
+      "sha256": "230dc64d2349520cb6234f381e8512c7bc4a589e15473b70ed8ae99f1c2a719c"
+    },
+    "A_reference": {
+      "path": "/home/shangguanrz/project/pic-edit/workflow-multiple/runs/hug_skeleton_only/inputs/A_reference.png",
+      "sha256": "c3cf426d3e9e182eb52aa814c21a15b714efec736db4ddec7437c88d2db2dd25"
+    },
+    "B_reference": {
+      "path": "/home/shangguanrz/project/pic-edit/workflow-multiple/runs/hug_skeleton_only/inputs/B_reference.png",
+      "sha256": "422861584d0aba02de72b5f3c0397a7a382af6d626273fcdfab918698fb3d7af"
+    },
+    "source_preprocess": {
+      "path": "/home/shangguanrz/project/pic-edit/workflow-multiple/runs/hug_skeleton_only/inputs/source_preprocess.json",
+      "sha256": "5d5fc85904c3330f1f5503bf91b3479de9d25ea2b7b7497b8f9428eb1e9ab686"
+    },
+    "dual_geometry": {
+      "path": "/home/shangguanrz/project/pic-edit/workflow-multiple/runs/hug_skeleton_only/geometry/dual_geometry.json",
+      "sha256": "fc410865d1330e79538ef291999a52330ab8c105ba4bbf6b092203e6e502ab36"
+    }
+  },
+  "started_at_unix": 1791899200.9725375,
+  "pair": {
+    "name": "hug_pair00_084_c4_r000",
+    "kind": "same_identity",
+    "manifest": {
+      "row_index": 0,
+      "pair": "pair00",
+      "camera_id": 4,
+      "source_action": "taichi00",
+      "target_action": "hug00",
+      "pair_relation": "CROSS_ACTION",
+      "pair_type": "N2C_SAME_IDENTITY_CAMERA",
+      "source_frame_id": 9,
+      "target_frame_id": 84,
+      "target_contact_vertex_count_total": 2,
+      "asset_version": "hi4d_final_assets_v4_2"
+    },
+    "scoring": {
+      "person_assignment": {
+        "assignment": "direct",
+        "cost_direct": 0.37817799200874785,
+        "cost_swapped": 0.9327954743577969,
+        "cost_margin": 0.5546174823490491,
+        "ambiguous_below": 0.01,
+        "basis": "horizontal centre of the A person mask versus hip x of the B skeleton",
+        "note": "evaluation hint only; the generator is never told which person is which"
+      },
+      "score_threshold": 0.5
+    }
+  },
+  "active_stage": "prompt"
+}

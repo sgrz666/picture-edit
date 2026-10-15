@@ -1,0 +1,96 @@
+[
+  {
+    "entry": "scripts/train/train_iper_qwen21_full.py",
+    "python": "/home/shangguanrz/nihaochen/envs/qwen21/bin/python",
+    "exit_code": 0,
+    "seconds": 13.755638360977173,
+    "stdout_tail": "radient-only]\n                                 [--precompute-only]\n\nBounded Body/Face training of the complete V6 architecture on Qwen21.\n\noptions:\n  -h, --help            show this help message and exit\n  --branch {body,face}\n  --model MODEL\n  --train-pairs TRAIN_PAIRS\n  --val-pairs VAL_PAIRS\n  --dataset-type {auto,iper,tiktok_v3}\n  --tiktok-raw-root TIKTOK_RAW_ROOT\n  --tiktok-assets-root TIKTOK_ASSETS_ROOT\n  --align-mode {resize}\n  --features FEATURES\n  --face-supervision FACE_SUPERVISION\n  --cache CACHE\n  --output OUTPUT\n  --resolution {512,1024}\n  --max-steps MAX_STEPS\n  --warmup-steps WARMUP_STEPS\n  --lr-scale LR_SCALE   Scale all branch learning rates; keep group ratios\n  --seed SEED\n  --prompt PROMPT\n  --init-checkpoint INIT_CHECKPOINT\n  --resume RESUME\n  --save-every SAVE_EVERY\n  --save-steps [SAVE_STEPS ...]\n  --diagnostic-probes\n  --require-active-gradients\n  --face-evaluator-range {legacy,normalized}\n  --face-flow-loss {global,roi}\n                        Historical whole-image flow or separately normalized\n                        face-region flow\n  --face-aux-every FACE_AUX_EVERY\n                        Identity/perceptual interval; zero disables these\n                        terms for a diagnosis\n  --face-aux-alignment {box,five_point}\n                        Historical square crop or fixed Target five-point\n                        alignment for offline losses\n  --verify-resume\n  --gradient-only       One forward/backward, no parameter update\n  --precompute-only\n",
+    "stderr_tail": ""
+  },
+  {
+    "entry": "train_iper_qwen21_full.py",
+    "python": "/home/shangguanrz/nihaochen/envs/qwen21/bin/python",
+    "exit_code": 0,
+    "seconds": 9.122066736221313,
+    "stdout_tail": "radient-only]\n                                 [--precompute-only]\n\nBounded Body/Face training of the complete V6 architecture on Qwen21.\n\noptions:\n  -h, --help            show this help message and exit\n  --branch {body,face}\n  --model MODEL\n  --train-pairs TRAIN_PAIRS\n  --val-pairs VAL_PAIRS\n  --dataset-type {auto,iper,tiktok_v3}\n  --tiktok-raw-root TIKTOK_RAW_ROOT\n  --tiktok-assets-root TIKTOK_ASSETS_ROOT\n  --align-mode {resize}\n  --features FEATURES\n  --face-supervision FACE_SUPERVISION\n  --cache CACHE\n  --output OUTPUT\n  --resolution {512,1024}\n  --max-steps MAX_STEPS\n  --warmup-steps WARMUP_STEPS\n  --lr-scale LR_SCALE   Scale all branch learning rates; keep group ratios\n  --seed SEED\n  --prompt PROMPT\n  --init-checkpoint INIT_CHECKPOINT\n  --resume RESUME\n  --save-every SAVE_EVERY\n  --save-steps [SAVE_STEPS ...]\n  --diagnostic-probes\n  --require-active-gradients\n  --face-evaluator-range {legacy,normalized}\n  --face-flow-loss {global,roi}\n                        Historical whole-image flow or separately normalized\n                        face-region flow\n  --face-aux-every FACE_AUX_EVERY\n                        Identity/perceptual interval; zero disables these\n                        terms for a diagnosis\n  --face-aux-alignment {box,five_point}\n                        Historical square crop or fixed Target five-point\n                        alignment for offline losses\n  --verify-resume\n  --gradient-only       One forward/backward, no parameter update\n  --precompute-only\n",
+    "stderr_tail": ""
+  },
+  {
+    "entry": "scripts/eval/eval_iper_qwen21_full.py",
+    "python": "/home/shangguanrz/nihaochen/envs/qwen21/bin/python",
+    "exit_code": 0,
+    "seconds": 8.972076177597046,
+    "stdout_tail": "             [--face-checkpoint FACE_CHECKPOINT]\n                                [--modes {initial,body,body_face} [{initial,body,body_face} ...]]\n                                [--output OUTPUT] [--resolution {512,1024}]\n                                [--max-samples MAX_SAMPLES] [--steps STEPS]\n                                [--seed SEED] [--prompt PROMPT]\n                                [--progress-mode {step,sigma}]\n                                [--face-strength FACE_STRENGTH]\n                                [--face-scatter-grid {native,checkpoint}]\n                                [--use-kv-cache | --no-use-kv-cache]\n\nComplete 30-step sampling for the preserved full controller and Qwen21.\n\noptions:\n  -h, --help            show this help message and exit\n  --pairs PAIRS\n  --dataset-type {auto,iper,tiktok_v3}\n  --tiktok-raw-root TIKTOK_RAW_ROOT\n  --tiktok-assets-root TIKTOK_ASSETS_ROOT\n  --model MODEL\n  --features FEATURES\n  --cache CACHE\n  --body-checkpoint BODY_CHECKPOINT\n  --face-checkpoint FACE_CHECKPOINT\n  --modes {initial,body,body_face} [{initial,body,body_face} ...]\n  --output OUTPUT\n  --resolution {512,1024}\n  --max-samples MAX_SAMPLES\n  --steps STEPS\n  --seed SEED\n  --prompt PROMPT\n  --progress-mode {step,sigma}\n  --face-strength FACE_STRENGTH\n  --face-scatter-grid {native,checkpoint}\n                        Native reproduces historical sampling; checkpoint maps\n                        Face residuals from its training grid.\n  --use-kv-cache, --no-use-kv-cache\n",
+    "stderr_tail": ""
+  },
+  {
+    "entry": "scripts/data/prepare_qwen21_full_data.py",
+    "python": "/home/shangguanrz/nihaochen/envs/qwen21/bin/python",
+    "exit_code": 0,
+    "seconds": 9.088077068328857,
+    "stdout_tail": "_full_data.py [-h] [--out OUT]\n                                   [--sampled-root SAMPLED_ROOT]\n                                   [--assets-root ASSETS_ROOT]\n                                   [--train-pairs TRAIN_PAIRS]\n                                   [--val-pairs VAL_PAIRS]\n                                   [--cross-pairs CROSS_PAIRS]\n                                   [--train-count TRAIN_COUNT]\n                                   [--val-count VAL_COUNT]\n                                   [--cross-count CROSS_COUNT]\n                                   [--min-score MIN_SCORE]\n                                   [--min-face-short-side MIN_FACE_SHORT_SIDE]\n                                   [--device DEVICE] [--dino-model DINO_MODEL]\n                                   [--insightface-root INSIGHTFACE_ROOT]\n\nPrepare a fixed, small real-data acceptance set for the full Qwen adapter.\nThis is an engineering acceptance set, not a training-coverage or quality\nclaim. Only A frames are passed to ArcFace/DINO. B contributes SMPL-X geometry\nonly.\n\noptions:\n  -h, --help            show this help message and exit\n  --out OUT\n  --sampled-root SAMPLED_ROOT\n  --assets-root ASSETS_ROOT\n  --train-pairs TRAIN_PAIRS\n  --val-pairs VAL_PAIRS\n  --cross-pairs CROSS_PAIRS\n  --train-count TRAIN_COUNT\n  --val-count VAL_COUNT\n  --cross-count CROSS_COUNT\n  --min-score MIN_SCORE\n  --min-face-short-side MIN_FACE_SHORT_SIDE\n  --device DEVICE\n  --dino-model DINO_MODEL\n  --insightface-root INSIGHTFACE_ROOT\n",
+    "stderr_tail": ""
+  },
+  {
+    "entry": "scripts/weights/inherit_qwen21_full_weights.py",
+    "python": "/home/shangguanrz/nihaochen/envs/qwen21/bin/python",
+    "exit_code": 0,
+    "seconds": 9.243739604949951,
+    "stdout_tail": "usage: inherit_qwen21_full_weights.py [-h] --source-id {body512,body1024}\n                                      [--receiver RECEIVER] [--source SOURCE]\n                                      [--whitelist WHITELIST]\n                                      [--output OUTPUT]\n\nCreate a full-controller initialization checkpoint from an audited whitelist.\n\noptions:\n  -h, --help            show this help message and exit\n  --source-id {body512,body1024}\n  --receiver RECEIVER\n  --source SOURCE\n  --whitelist WHITELIST\n  --output OUTPUT\n",
+    "stderr_tail": ""
+  },
+  {
+    "entry": "scripts/audit/audit_hi4d_qwen21_prompt_leak.py",
+    "python": "/home/shangguanrz/nihaochen/envs/qwen21/bin/python",
+    "exit_code": 0,
+    "seconds": 8.839887142181396,
+    "stdout_tail": "usage: audit_hi4d_qwen21_prompt_leak.py [-h] --peak-pairs PEAK_PAIRS\n                                        --alternate-pairs ALTERNATE_PAIRS\n                                        --checkpoint CHECKPOINT --output\n                                        OUTPUT [--model MODEL]\n                                        [--control-cache CONTROL_CACHE]\n                                        [--latent-cache LATENT_CACHE]\n                                        [--steps STEPS] [--seed SEED]\n\nCheck target-RGB isolation and target-geometry sensitivity on one Hi4D source.\n\noptions:\n  -h, --help            show this help message and exit\n  --peak-pairs PEAK_PAIRS\n  --alternate-pairs ALTERNATE_PAIRS\n  --checkpoint CHECKPOINT\n  --output OUTPUT\n  --model MODEL\n  --control-cache CONTROL_CACHE\n  --latent-cache LATENT_CACHE\n  --steps STEPS\n  --seed SEED\n",
+    "stderr_tail": ""
+  },
+  {
+    "entry": "scripts/audit/audit_qwen21_weight_compatibility.py",
+    "python": "/home/shangguanrz/nihaochen/envs/qwen21/bin/python",
+    "exit_code": 0,
+    "seconds": 9.134748935699463,
+    "stdout_tail": "usage: audit_qwen21_weight_compatibility.py [-h] [--output OUTPUT]\n\nCPU-only weight provenance, semantic mapping and in-memory module audit. Never\nconstructs Qwen's base model, an optimizer, or an image pipeline. Never saves\nadapter tensors. Source checkpoints and existing entrypoints are read-only.\n\noptions:\n  -h, --help       show this help message and exit\n  --output OUTPUT\n",
+    "stderr_tail": ""
+  },
+  {
+    "entry": "scripts/eval/multi_stage_eval_v6.py",
+    "python": "/home/shangguanrz/miniconda3/envs/deepgen/bin/python",
+    "exit_code": 0,
+    "seconds": 10.93570351600647,
+    "stdout_tail": "usage: multi_stage_eval_v6.py [-h] [--model_path MODEL_PATH]\n                              [--exp_dir EXP_DIR]\n                              [--baseline_exp_dir BASELINE_EXP_DIR]\n                              [--sampled_root SAMPLED_ROOT]\n                              [--assets_root ASSETS_ROOT]\n                              [--test_pairs TEST_PAIRS]\n                              [--cache_dir CACHE_DIR]\n                              [--steps STEPS [STEPS ...]]\n                              [--resolution RESOLUTION]\n                              [--inference_steps INFERENCE_STEPS]\n                              [--guidance_scale GUIDANCE_SCALE]\n                              [--num_samples NUM_SAMPLES] [--seed SEED]\n                              [--prompt PROMPT]\n                              [--negative_prompt NEGATIVE_PROMPT]\n\nMulti-stage checkpoint evaluation for V6.3 Adapter\n\noptions:\n  -h, --help            show this help message and exit\n  --model_path MODEL_PATH\n  --exp_dir EXP_DIR\n  --baseline_exp_dir BASELINE_EXP_DIR\n                        Path to baseline 130.28M experiment directory for\n                        comparison\n  --sampled_root SAMPLED_ROOT\n  --assets_root ASSETS_ROOT\n  --test_pairs TEST_PAIRS\n  --cache_dir CACHE_DIR\n  --steps STEPS [STEPS ...]\n  --resolution RESOLUTION\n  --inference_steps INFERENCE_STEPS\n  --guidance_scale GUIDANCE_SCALE\n  --num_samples NUM_SAMPLES\n  --seed SEED\n  --prompt PROMPT\n  --negative_prompt NEGATIVE_PROMPT\n",
+    "stderr_tail": ""
+  },
+  {
+    "entry": "multi_stage_eval_v6.py",
+    "python": "/home/shangguanrz/miniconda3/envs/deepgen/bin/python",
+    "exit_code": 0,
+    "seconds": 7.1666624546051025,
+    "stdout_tail": "usage: multi_stage_eval_v6.py [-h] [--model_path MODEL_PATH]\n                              [--exp_dir EXP_DIR]\n                              [--baseline_exp_dir BASELINE_EXP_DIR]\n                              [--sampled_root SAMPLED_ROOT]\n                              [--assets_root ASSETS_ROOT]\n                              [--test_pairs TEST_PAIRS]\n                              [--cache_dir CACHE_DIR]\n                              [--steps STEPS [STEPS ...]]\n                              [--resolution RESOLUTION]\n                              [--inference_steps INFERENCE_STEPS]\n                              [--guidance_scale GUIDANCE_SCALE]\n                              [--num_samples NUM_SAMPLES] [--seed SEED]\n                              [--prompt PROMPT]\n                              [--negative_prompt NEGATIVE_PROMPT]\n\nMulti-stage checkpoint evaluation for V6.3 Adapter\n\noptions:\n  -h, --help            show this help message and exit\n  --model_path MODEL_PATH\n  --exp_dir EXP_DIR\n  --baseline_exp_dir BASELINE_EXP_DIR\n                        Path to baseline 130.28M experiment directory for\n                        comparison\n  --sampled_root SAMPLED_ROOT\n  --assets_root ASSETS_ROOT\n  --test_pairs TEST_PAIRS\n  --cache_dir CACHE_DIR\n  --steps STEPS [STEPS ...]\n  --resolution RESOLUTION\n  --inference_steps INFERENCE_STEPS\n  --guidance_scale GUIDANCE_SCALE\n  --num_samples NUM_SAMPLES\n  --seed SEED\n  --prompt PROMPT\n  --negative_prompt NEGATIVE_PROMPT\n",
+    "stderr_tail": ""
+  },
+  {
+    "entry": "scripts/data/precompute_iper_face_features_v65.py",
+    "python": "/home/shangguanrz/miniconda3/envs/deepgen/bin/python",
+    "exit_code": 0,
+    "seconds": 1.3679709434509277,
+    "stdout_tail": "usage: precompute_iper_face_features_v65.py [-h] --appearance APPEARANCE\n                                            [--sampled-root SAMPLED_ROOT]\n                                            [--assets-root ASSETS_ROOT]\n                                            [--params-path PARAMS_PATH]\n                                            [--frame-map FRAME_MAP]\n                                            --dino-model DINO_MODEL\n                                            [--dino-revision DINO_REVISION]\n                                            --insightface-root\n                                            INSIGHTFACE_ROOT\n                                            [--insightface-name INSIGHTFACE_NAME]\n                                            [--device DEVICE] [--overwrite]\n\nPrecompute V6.5 iPER face features\n\noptions:\n  -h, --help            show this help message and exit\n  --appearance APPEARANCE\n  --sampled-root SAMPLED_ROOT\n  --assets-root ASSETS_ROOT\n  --params-path PARAMS_PATH\n  --frame-map FRAME_MAP\n  --dino-model DINO_MODEL\n  --dino-revision DINO_REVISION\n  --insightface-root INSIGHTFACE_ROOT\n  --insightface-name INSIGHTFACE_NAME\n  --device DEVICE\n  --overwrite\n",
+    "stderr_tail": ""
+  },
+  {
+    "entry": "scripts/audit/smoke_adapter_v6.py",
+    "python": "/home/shangguanrz/miniconda3/envs/deepgen/bin/python",
+    "exit_code": 0,
+    "seconds": 6.667212247848511,
+    "stdout_tail": "usage: smoke_adapter_v6.py [-h] --mode {single,dual} --model-path MODEL_PATH\n                           [--condition-backend {native,champ}] [--use-depth]\n                           [--image-size IMAGE_SIZE]\n                           [--latent-size LATENT_SIZE] [--seed SEED]\n                           [--device DEVICE] [--output OUTPUT]\n                           [--skip-deepgen-equivalence]\n\nReal DeepGen structural smoke test for Unified SMPL-X Adapter V6. Synthetic\nprepared conditions exercise the ConditionBundle boundary. The script never\nestimates SMPL-X, trains, creates an optimizer, or saves weights. Zero-\ninitialized heads must leave the frozen DeepGen result unchanged.\n\noptions:\n  -h, --help            show this help message and exit\n  --mode {single,dual}\n  --model-path MODEL_PATH\n  --condition-backend {native,champ}\n  --use-depth\n  --image-size IMAGE_SIZE\n  --latent-size LATENT_SIZE\n  --seed SEED\n  --device DEVICE\n  --output OUTPUT\n  --skip-deepgen-equivalence\n                        Run adapter-only checks without the two frozen-\n                        backbone forwards.\n",
+    "stderr_tail": ""
+  },
+  {
+    "entry": "compatibility_imports",
+    "exit_code": 0,
+    "stdout": "/home/shangguanrz/project/pic-edit /home/shangguanrz/project/pic-edit /home/shangguanrz/project/pic-edit\n",
+    "stderr": ""
+  }
+]

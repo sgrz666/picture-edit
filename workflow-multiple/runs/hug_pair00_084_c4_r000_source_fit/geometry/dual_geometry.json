@@ -1,0 +1,110 @@
+{
+  "schema": "dual_geometry_v1",
+  "pair": "hug_pair00_084_c4_r000",
+  "kind": "same_identity",
+  "framing": "source_fit",
+  "resolution": 768,
+  "canvas": [
+    672,
+    896
+  ],
+  "score_threshold": 0.5,
+  "transform": {
+    "framing": "source_fit",
+    "b_letterbox_scale": 0.7,
+    "b_letterbox_offset": [
+      7.0,
+      0.0
+    ],
+    "b_pair_canvas": {
+      "extent_px": 429.9405853271485,
+      "centre_xy": [
+        350.9622909699434,
+        339.1491486562078
+      ],
+      "persons_measured": 2
+    },
+    "a_pair_canvas": {
+      "extent_px": 465.84999999999997,
+      "centre_xy": [
+        353.14673661540434,
+        458.242671381375
+      ],
+      "persons_measured": 2
+    },
+    "a_letterbox": {
+      "scale": 0.7,
+      "offset": [
+        7.0,
+        0.0
+      ]
+    },
+    "applied_scale": 1.0835218071946557,
+    "applied_centre_from": [
+      350.9622909699434,
+      339.1491486562078
+    ],
+    "applied_centre_to": [
+      353.14673661540434,
+      458.242671381375
+    ],
+    "applied_as": "one uniform scale and one translation shared by both people"
+  },
+  "persons": [
+    {
+      "slot": 1,
+      "hi4d_side": "B",
+      "keypoints_file": "B_person_1_keypoints.npz",
+      "keypoints_sha256": "b80ce506cc44c0ad095254732154f548b04cccf83f0e015e47ae8efb7d5b6f29",
+      "valid_native": 109,
+      "valid_canvas": 109,
+      "min_score": 0.12309814989566803,
+      "max_score": 1.0
+    },
+    {
+      "slot": 2,
+      "hi4d_side": "A",
+      "keypoints_file": "B_person_2_keypoints.npz",
+      "keypoints_sha256": "bde8ef883f1998e355fd8170121e0e31e3c19d862aeaa4f29a9e0359516458fe",
+      "valid_native": 124,
+      "valid_canvas": 124,
+      "min_score": 0.308867484331131,
+      "max_score": 1.0
+    }
+  ],
+  "overlay_letterbox": {
+    "original_size": [
+      940,
+      1280
+    ],
+    "canvas_size": [
+      672,
+      896
+    ],
+    "resized_size": [
+      658,
+      896
+    ],
+    "scale_xy": [
+      0.7,
+      0.7
+    ],
+    "offset_xy": [
+      7,
+      0
+    ],
+    "content_box": [
+      7,
+      0,
+      665,
+      896
+    ]
+  },
+  "inputs": {
+    "A_sha256": "d7b1bd97b6f0ee8f150f414363e90a6fa3bca55c4b10d4f3dcb28fdfa88414ff",
+    "B_sha256": "592aea679af6d0c2ee9702eac61924e31fb62bab6eead9bb1975f3a365e57507",
+    "pair_json_sha256": "8f637bf189438b4d00902d75ca9e32ea5569951834b37d15c6d01591a7595458"
+  },
+  "seconds": 1.338503981998656,
+  "limits": "Guides carry landmark positions only; joint colours carry no meaning. Points under the score threshold are absent rather than guessed, so an occluded person can legitimately show a partial skeleton, and the combined image stacks the two bodies without drawing any link between them."
+}

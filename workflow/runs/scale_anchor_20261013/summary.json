@@ -1,0 +1,160 @@
+{
+  "schema": "source_anchor_geometry_ablation_v1",
+  "cases": {
+    "medium_02": {
+      "schema": "source_anchor_geometry_ablation_v1",
+      "case": "medium_02",
+      "baseline_run": "/home/shangguanrz/project/pic-edit/workflow/runs/medium_02",
+      "status": "complete",
+      "started_at_unix": 1791881157.2313085,
+      "variables_changed": [
+        "guide scale",
+        "guide pelvis anchor",
+        "off-canvas segment raster clipping"
+      ],
+      "fixed": [
+        "A image",
+        "source canvas/preprocess",
+        "exact baseline prompt",
+        "model",
+        "seed",
+        "steps",
+        "CFG",
+        "KV cache"
+      ],
+      "limits": "Uniform 2D source-scale/anchor ablation; B bone proportions retained; PE not rerun",
+      "generation_request": "/home/shangguanrz/project/pic-edit/workflow/runs/scale_anchor_20261013/medium_02/generation/request.json",
+      "cache_hit": false,
+      "outputs": {
+        "final_image": "/home/shangguanrz/project/pic-edit/workflow/runs/scale_anchor_20261013/medium_02/generation/final_image.png",
+        "final_canvas": "/home/shangguanrz/project/pic-edit/workflow/runs/scale_anchor_20261013/medium_02/generation/final_canvas.png",
+        "generation_info": "/home/shangguanrz/project/pic-edit/workflow/runs/scale_anchor_20261013/medium_02/generation/generation.json"
+      },
+      "finished_at_unix": 1791881214.9898174
+    },
+    "hard_04": {
+      "schema": "source_anchor_geometry_ablation_v1",
+      "case": "hard_04",
+      "baseline_run": "/home/shangguanrz/project/pic-edit/workflow/runs/hard_04",
+      "status": "complete",
+      "started_at_unix": 1791881046.7701,
+      "variables_changed": [
+        "guide scale",
+        "guide pelvis anchor",
+        "off-canvas segment raster clipping"
+      ],
+      "fixed": [
+        "A image",
+        "source canvas/preprocess",
+        "exact baseline prompt",
+        "model",
+        "seed",
+        "steps",
+        "CFG",
+        "KV cache"
+      ],
+      "limits": "Uniform 2D source-scale/anchor ablation; B bone proportions retained; PE not rerun",
+      "generation_request": "/home/shangguanrz/project/pic-edit/workflow/runs/scale_anchor_20261013/hard_04/generation/request.json",
+      "cache_hit": false,
+      "outputs": {
+        "final_image": "/home/shangguanrz/project/pic-edit/workflow/runs/scale_anchor_20261013/hard_04/generation/final_image.png",
+        "final_canvas": "/home/shangguanrz/project/pic-edit/workflow/runs/scale_anchor_20261013/hard_04/generation/final_canvas.png",
+        "generation_info": "/home/shangguanrz/project/pic-edit/workflow/runs/scale_anchor_20261013/hard_04/generation/generation.json"
+      },
+      "finished_at_unix": 1791881102.1942558
+    },
+    "hard_01": {
+      "schema": "source_anchor_geometry_ablation_v1",
+      "case": "hard_01",
+      "baseline_run": "/home/shangguanrz/project/pic-edit/workflow/runs/hard_01",
+      "status": "complete",
+      "started_at_unix": 1791880993.5238261,
+      "variables_changed": [
+        "guide scale",
+        "guide pelvis anchor",
+        "off-canvas segment raster clipping"
+      ],
+      "fixed": [
+        "A image",
+        "source canvas/preprocess",
+        "exact baseline prompt",
+        "model",
+        "seed",
+        "steps",
+        "CFG",
+        "KV cache"
+      ],
+      "limits": "Uniform 2D source-scale/anchor ablation; B bone proportions retained; PE not rerun",
+      "generation_request": "/home/shangguanrz/project/pic-edit/workflow/runs/scale_anchor_20261013/hard_01/generation/request.json",
+      "cache_hit": false,
+      "outputs": {
+        "final_image": "/home/shangguanrz/project/pic-edit/workflow/runs/scale_anchor_20261013/hard_01/generation/final_image.png",
+        "final_canvas": "/home/shangguanrz/project/pic-edit/workflow/runs/scale_anchor_20261013/hard_01/generation/final_canvas.png",
+        "generation_info": "/home/shangguanrz/project/pic-edit/workflow/runs/scale_anchor_20261013/hard_01/generation/generation.json"
+      },
+      "finished_at_unix": 1791881046.769727
+    },
+    "hard_05": {
+      "schema": "source_anchor_geometry_ablation_v1",
+      "case": "hard_05",
+      "baseline_run": "/home/shangguanrz/project/pic-edit/workflow/runs/hard_05",
+      "status": "complete",
+      "started_at_unix": 1791881102.1946108,
+      "variables_changed": [
+        "guide scale",
+        "guide pelvis anchor",
+        "off-canvas segment raster clipping"
+      ],
+      "fixed": [
+        "A image",
+        "source canvas/preprocess",
+        "exact baseline prompt",
+        "model",
+        "seed",
+        "steps",
+        "CFG",
+        "KV cache"
+      ],
+      "limits": "Uniform 2D source-scale/anchor ablation; B bone proportions retained; PE not rerun",
+      "generation_request": "/home/shangguanrz/project/pic-edit/workflow/runs/scale_anchor_20261013/hard_05/generation/request.json",
+      "cache_hit": false,
+      "outputs": {
+        "final_image": "/home/shangguanrz/project/pic-edit/workflow/runs/scale_anchor_20261013/hard_05/generation/final_image.png",
+        "final_canvas": "/home/shangguanrz/project/pic-edit/workflow/runs/scale_anchor_20261013/hard_05/generation/final_canvas.png",
+        "generation_info": "/home/shangguanrz/project/pic-edit/workflow/runs/scale_anchor_20261013/hard_05/generation/generation.json"
+      },
+      "finished_at_unix": 1791881157.2309592
+    },
+    "hard_02": {
+      "schema": "source_anchor_geometry_ablation_v1",
+      "case": "hard_02",
+      "baseline_run": "/home/shangguanrz/project/pic-edit/workflow/runs/hard_02",
+      "status": "complete",
+      "started_at_unix": 1791880876.4667182,
+      "variables_changed": [
+        "guide scale",
+        "guide pelvis anchor",
+        "off-canvas segment raster clipping"
+      ],
+      "fixed": [
+        "A image",
+        "source canvas/preprocess",
+        "exact baseline prompt",
+        "model",
+        "seed",
+        "steps",
+        "CFG",
+        "KV cache"
+      ],
+      "limits": "Uniform 2D source-scale/anchor ablation; B bone proportions retained; PE not rerun",
+      "generation_request": "/home/shangguanrz/project/pic-edit/workflow/runs/scale_anchor_20261013/hard_02/generation/request.json",
+      "cache_hit": false,
+      "outputs": {
+        "final_image": "/home/shangguanrz/project/pic-edit/workflow/runs/scale_anchor_20261013/hard_02/generation/final_image.png",
+        "final_canvas": "/home/shangguanrz/project/pic-edit/workflow/runs/scale_anchor_20261013/hard_02/generation/final_canvas.png",
+        "generation_info": "/home/shangguanrz/project/pic-edit/workflow/runs/scale_anchor_20261013/hard_02/generation/generation.json"
+      },
+      "finished_at_unix": 1791880930.3723154
+    }
+  }
+}

@@ -1,0 +1,81 @@
+{
+  "focal_xy": [
+    28389.51953125,
+    28389.521484375
+  ],
+  "principal_xy": [
+    628.514404296875,
+    658.4159545898438
+  ],
+  "B_size": [
+    1294,
+    1279
+  ],
+  "generation_canvas": [
+    768,
+    1344
+  ],
+  "B_to_generation": {
+    "scale": 0.8769152584405621,
+    "offset_xy": [
+      -261.60486478609437,
+      151.44815988060816
+    ]
+  },
+  "source_letterbox": {
+    "original_size": [
+      1280,
+      2196
+    ],
+    "canvas_size": [
+      768,
+      1344
+    ],
+    "resized_size": [
+      768,
+      1318
+    ],
+    "scale_xy": [
+      0.6,
+      0.6001821493624773
+    ],
+    "offset_xy": [
+      0,
+      13
+    ],
+    "content_box": [
+      0,
+      13,
+      768,
+      1331
+    ]
+  },
+  "coordinate_system": "camera XYZ; pixels x-right y-down; projection uses Z+1e-4",
+  "detections": {
+    "A": {
+      "bbox_xyxy": [
+        17.370389938354492,
+        201.3587188720703,
+        950.53564453125,
+        2185.396728515625
+      ],
+      "score": 0.9450135231018066
+    },
+    "B": {
+      "bbox_xyxy": [
+        310.2091064453125,
+        53.627567291259766,
+        948.6962890625,
+        1264.1641845703125
+      ],
+      "score": 0.9586206078529358
+    }
+  },
+  "mesh_max_error_m": 3.814697265625e-06,
+  "projection_max_error_px": 0.0001867698487103553,
+  "valid_B_joints": 134,
+  "visibility_policy": "finite positive depth and in-frame only; not an occlusion confidence",
+  "estimated_hidden_joints": true,
+  "native_estimator_input": "/home/shangguanrz/project/pic-edit/workflow/runs/demo/geometry/estimator/workflow_78376c259ccf4cf3/demo/input_frames/workflow_78376c259ccf4cf3/000001.jpg",
+  "native_estimator_params": "/home/shangguanrz/project/pic-edit/workflow/runs/demo/geometry/estimator/workflow_78376c259ccf4cf3/demo/output_frames/workflow_78376c259ccf4cf3/workflow_78376c259ccf4cf3_params.pt"
+}

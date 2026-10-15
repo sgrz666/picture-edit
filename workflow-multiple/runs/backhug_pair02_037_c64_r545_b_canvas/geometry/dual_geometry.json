@@ -1,0 +1,85 @@
+{
+  "schema": "dual_geometry_v1",
+  "pair": "backhug_pair02_037_c64_r545",
+  "kind": "same_identity",
+  "framing": "b_canvas",
+  "resolution": 768,
+  "canvas": [
+    672,
+    896
+  ],
+  "score_threshold": 0.5,
+  "transform": {
+    "framing": "b_canvas",
+    "b_letterbox_scale": 0.7,
+    "b_letterbox_offset": [
+      7.0,
+      0.0
+    ],
+    "b_pair_canvas": {
+      "extent_px": 428.80183563232424,
+      "centre_xy": [
+        294.15963061129753,
+        362.18872214519075
+      ],
+      "persons_measured": 2
+    }
+  },
+  "persons": [
+    {
+      "slot": 1,
+      "hi4d_side": "B",
+      "keypoints_file": "B_person_1_keypoints.npz",
+      "keypoints_sha256": "0d765acf4ff6ed891f8aa9176ba8bbd391858c4f4a86bf25af75362f65d7ab52",
+      "valid_native": 108,
+      "valid_canvas": 108,
+      "min_score": 0.22624410688877106,
+      "max_score": 1.0
+    },
+    {
+      "slot": 2,
+      "hi4d_side": "A",
+      "keypoints_file": "B_person_2_keypoints.npz",
+      "keypoints_sha256": "abaee640d20cae18bce3052fd9b8d8fc8482c53a72e5a56b48f7dd148023fedf",
+      "valid_native": 118,
+      "valid_canvas": 118,
+      "min_score": 0.4118334949016571,
+      "max_score": 1.0
+    }
+  ],
+  "overlay_letterbox": {
+    "original_size": [
+      940,
+      1280
+    ],
+    "canvas_size": [
+      672,
+      896
+    ],
+    "resized_size": [
+      658,
+      896
+    ],
+    "scale_xy": [
+      0.7,
+      0.7
+    ],
+    "offset_xy": [
+      7,
+      0
+    ],
+    "content_box": [
+      7,
+      0,
+      665,
+      896
+    ]
+  },
+  "inputs": {
+    "A_sha256": "a8bf198a9ebbe9f43f8f3e77f14689bd4b38e94ace35ed14e23bf0bdd649e009",
+    "B_sha256": "736e17c7d91dea32e7069a173935f707e23638ae44a49387985ecf206fbab63d",
+    "pair_json_sha256": "6b6f940c60fd95355d552f51377767daf7264b17466338f9c518704f001ee654"
+  },
+  "seconds": 1.3656741369632073,
+  "limits": "Guides carry landmark positions only; joint colours carry no meaning. Points under the score threshold are absent rather than guessed, so an occluded person can legitimately show a partial skeleton, and the combined image stacks the two bodies without drawing any link between them."
+}

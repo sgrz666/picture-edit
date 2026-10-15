@@ -1,0 +1,118 @@
+Let me carefully analyze this task.
+
+The user's instruction is in English (a detailed workflow specification). Therefore the output should be in English.
+
+Let me look at the images:
+- <image1>: Source photo — two people standing facing each other on a green-screen studio set. Left: a man with short black hair, wearing a light gray/lavender T-shirt, beige/cream pants, red-and-white striped socks, and checkered sneakers. Right: a woman with black hair tied in a bun, wearing a blue-and-white striped T-shirt, black pants, and white sneakers. The two are standing apart, facing each other, with arms slightly extended.
+- <image2>: Target photo — the same two people embracing (hugging), with arms wrapped around each other. The man is on the left, the woman on the right, in a hug with heads close together, smiling.
+- <image3>: Skeleton pose guide of one person in image2 (a single skeleton standing with head oriented toward the left).
+- <image4>: Skeleton pose guide of the other person in image2 (a single skeleton with arm extended to the side).
+
+Task: two-person interaction transfer. The canvas is <image1> (source photo). The target <image2> provides body action/pose, arrangement, distance, height, contact/leaning, head orientation, facial expression. <image3> and <image4> are 2D skeleton guides indicating joint arrangement for each person respectively.
+
+The edit changes only pose and interpersonal arrangement. Preserve the identities, clothing, scene, lighting, objects from <image1>. Do not copy identity, hair, clothing, background, or held objects from <image2>.
+
+This is essentially a pose/action transfer sub-type (with two people). Canvas = <image1>. ratio_follow = "<image1>". wh_ratio = "".
+
+I need to write the rewritten prompt in English, as a single continuous paragraph, with no line breaks.
+
+Let me describe the source appearance preservation:
+- Person 1 (in <image1>, on the left): a man with short black hair, light gray T-shirt (with a small orange logo on the chest), cream/beige pants, red-and-white striped socks, checkered sneakers.
+- Person 2 (in <image1>, on the right): a woman with black hair in a bun with a hair clip, blue-and-white horizontal striped T-shirt, black pants, white sneakers.
+
+Target pose from <image2>: the two embrace each other. The man wraps his arms around the woman's back/waist, the woman wraps her arms around the man's shoulders/upper back, heads close together, both smiling, bodies leaning into each other, standing very close.
+
+Let me look at <image2> more carefully: the man on the left wraps his right arm around the woman's back, his left arm extended to her side; the woman wraps her arm over the man's shoulder/upper back; the two are smiling, faces close. The woman leans into the man, her body tilted.
+
+Skeleton guides: <image3> is probably the man's skeleton (head oriented left, standing), <image4> is the woman's skeleton with arm extended. The instruction says: "<image3> and <image4> are 2D projections of the estimated 3D bodies of each person in <image2>, already placed within that photo's frame... use them for joint arrangement; where the guides are ambiguous, the target photo may clarify head direction and hands."
+
+So in the rewritten prompt I should say: the pose must match the joint arrangement of <image3> and <image4> respectively, and where ambiguous, refer to <image2> for head direction and hand placement.
+
+Mapping: which skeleton corresponds to which person? The instruction says "<image3> and <image4> are 2D projections of the estimated 3D bodies of each person in <image2>, respectively." The order is likely: <image3> = person 1 (the man, left in image2), <image4> = person 2 (the woman, right in image2). In image2, the man's pose: standing, head tilted toward the woman (head oriented right... hmm, actually the man's head is tilted right toward the woman). The skeleton in <image3> has the head oriented left. The woman's head in image2 is oriented left toward the man. Hmm.
+
+Let me think about the skeleton orientations. <image3>: skeleton with head at the top, oriented left (face points left), one arm not visible (probably wrapped around someone), legs standing with one leg bent forward. <image4>: skeleton with head at top, face points left, one arm extended horizontally to the right with fingers spread, legs standing.
+
+In <image2>: the man's left arm wraps around the woman's back (his left arm extends to the right side of the frame and is visible on her far side), his right arm... actually looking at the hug: the man's right arm goes over the woman's shoulder? Let me look again: the woman's arm is over the man's shoulder (her arm crosses his upper back, visible on his left shoulder side). The man's arms: one arm wraps around the woman's waist/back (his arm visible crossing her midsection, hand on her far side). The woman's other arm is on his back.
+
+It's hard to determine precisely which skeleton is which, but the order "respectively" suggests <image3> = first person (the man, left in image2), <image4> = second person (the woman, right in image2). I'll state: the man's joint arrangement follows <image3>, the woman's follows <image4>. Hmm, but wait — in <image2>, the woman has an arm extended horizontally (her right arm reaching toward the man's side, with hand visible). The skeleton in <image4> has an arm extended horizontally to the side with fingers spread — that matches the woman's extended arm. The skeleton in <image3> has no extended arm; head oriented left, legs with one forward — matches the man's leaning posture.
+
+Actually, in image2, the woman's arm extended horizontally is her right arm reaching to the man's back side? The hand with spread fingers visible on the man's right side (viewer's right) at his waist level — that's the woman's hand wrapping around his back? Hmm.
+
+Anyway, I'll assign <image3> to the man and <image4> to the woman, and state that if ambiguous, <image2> clarifies.
+
+The rewritten prompt must be directive: on <image1> (canvas), re-pose the two people into the embracing arrangement from <image2>, guided by skeletons <image3>/<image4>, preserving identity/clothing/scene/lighting.
+
+I need to describe each person's action in the target:
+- The man (viewer-left): turns toward the woman, leans in close, wraps his arms around the woman's back/waist, head tilted toward her face, smiling.
+- The woman (viewer-right): turns toward the man, leans into him, wraps her arms around his shoulders/upper back, one arm extended with hand resting on his back, head close to his, smiling.
+
+Relative distance: bodies very close, torsos touching; height difference preserved (man slightly taller... actually in image1 the man looks taller; in image2 similar).
+
+Preservation: both people's facial identity, hairstyle (man's short black hair; woman's bun with clip), clothing design and color (man: light gray T-shirt with small orange chest logo, cream pants, red-and-white striped socks, checkered sneakers; woman: blue-and-white striped T-shirt, black pants, white sneakers), green-screen studio background with lighting equipment (light panels, support truss, green backdrop cloth), overall illumination.
+
+Pose-dependent shadows and natural cloth folds allowed. Do not render skeleton lines. Keep exactly two people. No new objects.
+
+Also, following the rule: describe limbs using viewer image-left/image-right only.
+
+Prohibitions: no hedging words, no "or", no "approximately", etc. Need to be careful to avoid prohibited expressions: "such as", "etc.", "maybe", "or", "alternatively", "suggest", "seems", "approximately", "slightly", "similar to", "including but not limited to". Hmm, "or" is prohibited — tricky but doable. Avoid the word "or" entirely. Also avoid "slightly". Let me craft carefully.
+
+Output language: English (user instruction is English).
+
+wh_ratio: "" and ratio_follow: "<image1>".
+
+Now let me craft the rewritten prompt as a single continuous paragraph.
+
+Draft:
+
+On <image1> (canvas), re-pose the two standing people into the mutual embrace shown in <image2>, transferring only the body action, pair arrangement, relative distance, contact and leaning, head orientation and facial expression from <image2>, while preserving every identity and appearance attribute from <image1>. The man currently standing on the viewer-left, with short black hair, light grey T-shirt with a small orange chest logo, cream trousers, red-and-white striped socks and checkered sneakers, turns his body toward the woman, leans his torso against hers, wraps his arms around the woman's back with his viewer-right arm crossing her midsection and his viewer-left arm resting on her far shoulder, tilts his head toward her face and smiles. The woman currently standing on the viewer-right, with a black hair bun secured by a clip, blue-and-white horizontal striped T-shirt, black trousers and white sneakers, turns toward the man, leans into his chest, wraps her viewer-left arm across his upper back with her hand resting on his far shoulder, extends her viewer-right arm to the side with fingers spread, and smiles with her head close to his. Keep the standing height difference and the close face-to-face distance of <image2>. Match each person's joint angles, limb directions and head direction to the corresponding skeletal guide: the man's joints follow <image3> and the woman's joints follow <image4>, using <image2> to clarify hand placement and head direction where the guides are ambiguous. Render only the two people's bodies as clothed humans, never draw the skeleton lines, and never copy any identity, hair, clothing, jewellery, colour, background element or held object from <image2>. Preserve from <image1> both faces, hairstyles, body proportions, the exact garment designs, colours and fabrics, all accessories and shoes, the green cyclorama backdrop, the metal support truss, the wall-mounted light panels, the floor, and the overall illumination; allow natural cloth folds and pose-dependent shadows consistent with the existing light sources. Keep exactly two people in the output, one per source person, with no added, removed or merged individuals, and introduce no new objects into the scene.
+
+Let me check prohibited words: "such as" none; "etc." none; "maybe" none; "or" — let me check: "contact and leaning" good; "head orientation and facial expression" good; "red-and-white striped socks" good; "no added, removed or merged individuals" — contains "or"! Need to rephrase: "with no added, removed, merged individuals" — better: "with zero added, removed, merged individuals"? Hmm. Let me rephrase: "Keep exactly two people in the output, one per source person, adding no one, removing no one, merging no one." Good.
+
+Check other "or"s: "where the guides are ambiguous" good. "fingers spread" good. Let me scan the draft for "or": "viewer-right arm crossing her midsection and his viewer-left arm resting on her far shoulder" good. "never copy any identity, hair, clothing, jewellery, colour, background element or held object" — contains "or". Rephrase: "never copy any identity, hair, clothing, jewellery, colour, background element, held object from <image2>". Good.
+
+"Pose-dependent shadows consistent with the existing light sources" good.
+
+Also avoid "approximately" — none. Avoid "slightly" — none. Avoid "similar to" — none.
+
+Also need to double-check "including" is not prohibited, but "including but not limited to" is prohibited; "including" alone is probably fine, but I'll avoid it anyway.
+
+The prompt should be a transformation of the canvas. Good.
+
+Also mention that the black regions in the guides are not a scene and colors carry no meaning? The instruction says don't render skeleton lines; the guides are only for joint arrangement. I've stated that.
+
+Also "do not enumerate target clothing in negative clauses" — good, I've only enumerated source clothing.
+
+One more check: the man in image1 has a small orange logo on the chest of the gray shirt. Good.
+
+Text enumeration: no text-bearing surfaces significant. The shirt logo is small; no readable text. Good.
+
+Now the final JSON output with three fields. rewritten_prompt is a single paragraph, no newlines.
+
+Let me also double-check the mapping of skeleton guides: "the skeleton guides: <image3> and <image4>... respectively." The editor receives them in order: source, target, guide of person 1, guide of person 2. Person 1 in image2 is the man (left). So <image3> = man, <image4> = woman. Good.
+
+Let me also incorporate "relative distance and height": bodies nearly touching, faces within a few centimeters, man's head a bit higher.
+
+Final check on hedging: "where the guides are ambiguous" — this is fine (not hedging but a conditional clarification permitted by the user's instruction).
+
+Let me also confirm the sentence structure is directive: starts with "On <image1> (canvas), re-pose...". Good.
+
+Word count is fine.
+
+Let me now produce the JSON.
+
+One more nuance: the user says "retain both people's identity, face, hairstyle, body proportions, clothing design, colours, material, accessories, shoes and the photographic scene, including other objects already there." I've covered that.
+
+Also "preserve the original photographic style" — I'll add "maintain the original photographic style, camera framing and green-screen studio setting of <image1>."
+
+Let me finalize.
+
+Final rewritten prompt (single paragraph):
+
+On <image1> (canvas), re-pose the two standing people into the mutual embrace shown in <image2>, transferring only the body action, pair arrangement, relative distance, contact, leaning, head orientation and facial expression from <image2>, while preserving every identity and appearance attribute from <image1>. The man currently standing on the viewer-left, with short black hair, light grey T-shirt with a small orange chest logo, cream trousers, red-and-white striped socks and checkered sneakers, turns his body toward the woman, leans his torso against hers, wraps his arms around the woman's back with his viewer-right arm crossing her midsection and his viewer-left arm resting on her far shoulder, tilts his head toward her face and smiles. The woman currently standing on the viewer-right, with a black hair bun secured by a clip, blue-and-white horizontal striped T-shirt, black trousers and white sneakers, turns toward the man, leans into his chest, wraps her viewer-left arm across his upper back with her hand resting on his far shoulder, extends her viewer-right arm to the side with fingers spread, and smiles with her head close to his. Keep the close face-to-face distance and standing height difference observed in <image2>. Match each person's joint angles, limb directions and head direction to the corresponding skeletal guide: the man's joints follow <image3> and the woman's joints follow <image4>, using <image2> to clarify hand placement and head direction where the guides are ambiguous. Treat <image3> and <image4> purely as joint-arrangement references; their black backgrounds and line colours carry no scene meaning, and never draw skeleton lines in the output. Never copy any identity, hair, clothing, jewellery, colour, background element, held object from <image2>. Preserve from <image1> both facial identities, hairstyles, body proportions, the exact garment designs, colours and fabrics, all accessories and shoes, the green cyclorama backdrop, the metal support truss, the wall-mounted light panels, the green floor and the overall illumination; allow natural cloth folds and pose-dependent shadows consistent with the existing light sources, and maintain the original photographic style. Keep exactly two people in the output, one per source person, adding no one, removing no one, merging no one, and introduce no new objects into the scene.
+
+Check for prohibited tokens once more: scanning for " or " — I see none. "etc." none. "approximately" none. "slightly" none. "maybe" none. "such as" none. "similar to" none. "suggest" none. "seems" none.
+
+Good. wh_ratio "" and ratio_follow "<image1>".
+</think>
+
+{"rewritten_prompt": "On <image1> (canvas), re-pose the two standing people into the mutual embrace shown in <image2>, transferring only the body action, pair arrangement, relative distance, contact, leaning, head orientation and facial expression from <image2>, while preserving every identity and appearance attribute from <image1>. The man currently standing on the viewer-left, with short black hair, light grey T-shirt with a small orange chest logo, cream trousers, red-and-white striped socks and checkered sneakers, turns his body toward the woman, leans his torso against hers, wraps his arms around the woman's back with his viewer-right arm crossing her midsection and his viewer-left arm resting on her far shoulder, tilts his head toward her face and smiles. The woman currently standing on the viewer-right, with a black hair bun secured by a clip, blue-and-white horizontal striped T-shirt, black trousers and white sneakers, turns toward the man, leans into his chest, wraps her viewer-left arm across his upper back with her hand resting on his far shoulder, extends her viewer-right arm to the side with fingers spread, and smiles with her head close to his. Keep the close face-to-face distance and standing height difference observed in <image2>. Match each person's joint angles, limb directions and head direction to the corresponding skeletal guide: the man's joints follow <image3> and the woman's joints follow <image4>, using <image2> to clarify hand placement and head direction where the guides are ambiguous. Treat <image3> and <image4> purely as joint-arrangement references; their black backgrounds and line colours carry no scene meaning, and never draw skeleton lines in the output. Never copy any identity, hair, clothing, jewellery, colour, background element, held object from <image2>. Preserve from <image1> both facial identities, hairstyles, body proportions, the exact garment designs, colours and fabrics, all accessories and shoes, the green cyclorama backdrop, the metal support truss, the wall-mounted light panels, the green floor and the overall illumination; allow natural cloth folds and pose-dependent shadows consistent with the existing light sources, and maintain the original photographic style. Keep exactly two people in the output, one per source person, adding no one, removing no one, merging no one, and introduce no new objects into the scene.", "wh_ratio": "", "ratio_follow": "<image1>"}

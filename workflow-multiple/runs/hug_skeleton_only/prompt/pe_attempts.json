@@ -1,0 +1,20 @@
+[
+  {
+    "attempt": 1,
+    "seed": 42,
+    "raw_path": "/home/shangguanrz/project/pic-edit/workflow-multiple/runs/hug_skeleton_only/prompt/pe_attempt_1.txt",
+    "raw_sha256": "264162db80a0389042d99d1e150678144e3a6490201d3acf8d2716ed352fbd8a",
+    "output_tokens": 6918,
+    "status": "rejected",
+    "error": "The prompt refers to the target photograph, which the skeleton_only generator cannot see; describe each person's body action, their distance and contact in explicit words instead"
+  },
+  {
+    "attempt": 2,
+    "seed": 43,
+    "raw_path": "/home/shangguanrz/project/pic-edit/workflow-multiple/runs/hug_skeleton_only/prompt/pe_attempt_2.txt",
+    "raw_sha256": "cc690c5ade51cdc29cdd9accc3f033e2d66bef60a3ebafc98d9d3ee998bc0d8b",
+    "output_tokens": 5312,
+    "status": "rejected",
+    "error": "The prompt refers to the target photograph, which the skeleton_only generator cannot see; describe each person's body action, their distance and contact in explicit words instead"
+  }
+]

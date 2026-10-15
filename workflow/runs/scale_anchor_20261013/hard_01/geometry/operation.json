@@ -1,0 +1,43 @@
+{
+  "operation": "uniform scale about guide pelvis, then anchor at A pelvis",
+  "torso_definition": "shoulder midpoint to hip midpoint on both sides",
+  "scale_multiplier": 1.531526578258279,
+  "A_torso_px": 371.51754833889595,
+  "baseline_guide_torso_px": 242.57988964279187,
+  "A_shoulder_midpoint": [
+    313.3423641373714,
+    324.0648175701499
+  ],
+  "A_pelvis": [
+    366.3408505593737,
+    691.7827110166352
+  ],
+  "baseline_guide_shoulder_midpoint": [
+    326.7811406737841,
+    212.26340823478472
+  ],
+  "baseline_guide_pelvis": [
+    319.9340424847246,
+    454.74664498631455
+  ],
+  "source_anchor_scores": [
+    0.3426057994365692,
+    0.6063557267189026,
+    0.43562495708465576,
+    0.40392711758613586
+  ],
+  "confidence_threshold": 0.3,
+  "body_proportions": "B bone proportions retained; A torso scale and pelvis anchor only",
+  "baseline_run": "/home/shangguanrz/project/pic-edit/workflow/runs/hard_01",
+  "A_reference_sha256": "af6bfdda9a1b5edecefe729f29e0b32bdeaf03f31e2391bc527f23efb9e07567",
+  "source_pose_npz": "/home/shangguanrz/project/pic-edit/workflow/diagnostics/2026-10-13-scale/hard_01_visible_pose.npz",
+  "source_pose_sha256": "b47cf0415198d49748997d1110108ca10f6e439fae1d5df6ed5d9748374efba5",
+  "original_keypoints_sha256": "898589f3c2de44e1c68bfe92c9f0d2fed30ab825f95e84118d1c3d9b7e294a9d",
+  "joints_in_frame": 124,
+  "body_joints_in_frame": 14,
+  "canvas_size": [
+    672,
+    864
+  ],
+  "clipping_policy": "raster clipping only; off-frame joint coordinates retained"
+}

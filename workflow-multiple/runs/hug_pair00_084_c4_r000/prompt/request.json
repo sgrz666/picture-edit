@@ -1,0 +1,122 @@
+{
+  "schema": "single_person_pose_request_v2",
+  "stage": "prompt",
+  "identity": {
+    "settings": {
+      "pe_model": "/data/shangguanrz/pic-edit-models/Qwen-Image-2.1-PE-I2I",
+      "pe_seed": 42,
+      "prop_policy": "source_only",
+      "generator_references": "with_b"
+    },
+    "inputs_sha256": {
+      "A_reference": "c3cf426d3e9e182eb52aa814c21a15b714efec736db4ddec7437c88d2db2dd25",
+      "B_reference": "422861584d0aba02de72b5f3c0397a7a382af6d626273fcdfab918698fb3d7af",
+      "skeleton_1": "1f414ba7a116d1d44c73c5ebfed7ecff576d09caded9f779e92800902f12443d",
+      "skeleton_2": "f90d0aa7765a6db004c0695c44afa29911de92f955372ac1f6ef7a9741d6abd2"
+    },
+    "code": {
+      "src/pose_edit/common.py": "ca76a12450a6cceedacef63e13fd66c7bdb19169d0bf7182d0de0d755cf932a4",
+      "src/pose_edit/geometry.py": "5ac98986c3f379f470c27fcca34d6af8338fbf66a101d238c5684c52ee386257",
+      "src/pose_edit/prompt_contract.py": "7697f107d2afda3a0691a7cc3d182ea91a7d80dc22787d5ad3eed7dce54eae70",
+      "dual_prompts.py": "072897109c865c188091db3f910edcb5d4d32b60d177c2eae9accb38c8aeb72b",
+      "pe_dual_worker.py": "cb8702765a8b207080c05eacff362f63e2614408206f7864db16f01c8f751168"
+    },
+    "model_identity": {
+      "path": "/data/shangguanrz/pic-edit-models/Qwen-Image-2.1-PE-I2I",
+      "files": [
+        {
+          "name": "chat_template.jinja",
+          "size": 7756,
+          "mtime_ns": 1791432339025471232,
+          "sha256": "a4aee8afcf2e0711942cf848899be66016f8d14a889ff9ede07bca099c28f715"
+        },
+        {
+          "name": "config.json",
+          "size": 2808,
+          "mtime_ns": 1791432339521461500,
+          "sha256": "9ec8ded376ee90bc4cf86ea1459efc90e704b16c4461c17e232b03857132db49"
+        },
+        {
+          "name": "generation_config.json",
+          "size": 178,
+          "mtime_ns": 1791432340058769325,
+          "sha256": "2d92457211a50894a21ea309b73c86db69672350709c864e32744ca377a3e503"
+        },
+        {
+          "name": "model-00001.safetensors",
+          "size": 5074583064,
+          "mtime_ns": 1791434407250074682
+        },
+        {
+          "name": "model-00002.safetensors",
+          "size": 5089028664,
+          "mtime_ns": 1791436502276882107
+        },
+        {
+          "name": "model-00003.safetensors",
+          "size": 5089028760,
+          "mtime_ns": 1791438557724760139
+        },
+        {
+          "name": "model-00004.safetensors",
+          "size": 3567080680,
+          "mtime_ns": 1791440110999668445
+        },
+        {
+          "name": "model.safetensors.index.json",
+          "size": 62376,
+          "mtime_ns": 1791432340661439158,
+          "sha256": "cd170bbfe328839bbec7c241dd2e3179a206c6e6c48c00348b6000e322f53d25"
+        },
+        {
+          "name": "processor_config.json",
+          "size": 1298,
+          "mtime_ns": 1791432341195428711,
+          "sha256": "e612ca25e93af6072f0c3f6dec5913b8a1326332503ca66d7b4c9ef8336c4b38"
+        },
+        {
+          "name": "system_prompt.txt",
+          "size": 18344,
+          "mtime_ns": 1791432341909414760,
+          "sha256": "e378fea686a1431581ba4c654d332ae96adad633f144ae738ec8ce9c4fd66439"
+        },
+        {
+          "name": "tokenizer.json",
+          "size": 19989343,
+          "mtime_ns": 1791432343385385990
+        },
+        {
+          "name": "tokenizer_config.json",
+          "size": 1166,
+          "mtime_ns": 1791432343907960990,
+          "sha256": "b0130c1a11528a8a2d6a079d51a38ca357d4100e97ee3d4c02da034771e85430"
+        }
+      ]
+    },
+    "sampling": {
+      "max_new_tokens": 24000,
+      "do_sample": true,
+      "temperature": 1.0,
+      "top_p": 0.95,
+      "top_k": 20
+    },
+    "enable_thinking": true,
+    "generator_allowed": [
+      1,
+      2,
+      3,
+      4
+    ]
+  },
+  "runtime": {
+    "run_dir": "/home/shangguanrz/project/pic-edit/workflow-multiple/runs/hug_pair00_084_c4_r000",
+    "paths": {
+      "run_dir": "/home/shangguanrz/project/pic-edit/workflow-multiple/runs/hug_pair00_084_c4_r000",
+      "pair_dir": "/home/shangguanrz/project/pic-edit/workflow-multiple/pairs/hug_pair00_084_c4_r000",
+      "A_reference": "/home/shangguanrz/project/pic-edit/workflow-multiple/runs/hug_pair00_084_c4_r000/inputs/A_reference.png",
+      "B_reference": "/home/shangguanrz/project/pic-edit/workflow-multiple/runs/hug_pair00_084_c4_r000/inputs/B_reference.png",
+      "skeleton_1": "/home/shangguanrz/project/pic-edit/workflow-multiple/runs/hug_pair00_084_c4_r000/geometry/skeleton_1.png",
+      "skeleton_2": "/home/shangguanrz/project/pic-edit/workflow-multiple/runs/hug_pair00_084_c4_r000/geometry/skeleton_2.png"
+    }
+  }
+}
