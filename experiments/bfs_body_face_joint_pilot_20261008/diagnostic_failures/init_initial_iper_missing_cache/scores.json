@@ -1,0 +1,147 @@
+{
+  "metric_resolution": 512,
+  "identity_definition": "unique-face ArcFace output versus Source A",
+  "pose_definition": "trusted PoseMetric versus transformed B Body25",
+  "per_sample": [
+    {
+      "pair_index": 0,
+      "image_stem": "000_001_2_source_standard_f000681_target_f001344_5236e955b1",
+      "status": "complete",
+      "image": "images/000_001_2_source_standard_f000681_target_f001344_5236e955b1_on.png",
+      "failure": null,
+      "identity_A": 0.2823778986930847,
+      "face_count": 1,
+      "source_face_count": 1,
+      "face_unique": true,
+      "pose_detected": true,
+      "pose_nme_diagonal": 0.00887606204414011,
+      "pose_pck_002": 0.9411764705882353,
+      "pose_pck_005": 1.0,
+      "pose_joint_recall": 1.0,
+      "pose_matched_joints": 17
+    },
+    {
+      "pair_index": 1,
+      "image_stem": "001_001_5_source_motion_f000815_target_f000135_85d9ea30d8",
+      "status": "complete",
+      "image": "images/001_001_5_source_motion_f000815_target_f000135_85d9ea30d8_on.png",
+      "failure": null,
+      "identity_A": 0.2578333020210266,
+      "face_count": 1,
+      "source_face_count": 1,
+      "face_unique": true,
+      "pose_detected": true,
+      "pose_nme_diagonal": 0.014322261416357675,
+      "pose_pck_002": 0.8823529411764706,
+      "pose_pck_005": 1.0,
+      "pose_joint_recall": 1.0,
+      "pose_matched_joints": 17
+    },
+    {
+      "pair_index": 2,
+      "image_stem": "002_006_1_source_motion_f001625_target_f001189_d146897ead",
+      "status": "complete",
+      "image": "images/002_006_1_source_motion_f001625_target_f001189_d146897ead_on.png",
+      "failure": null,
+      "identity_A": 0.4289642572402954,
+      "face_count": 1,
+      "source_face_count": 1,
+      "face_unique": true,
+      "pose_detected": true,
+      "pose_nme_diagonal": 0.01030471341239906,
+      "pose_pck_002": 0.9411764705882353,
+      "pose_pck_005": 1.0,
+      "pose_joint_recall": 1.0,
+      "pose_matched_joints": 17
+    },
+    {
+      "pair_index": 3,
+      "image_stem": "003_009_3_source_motion_f000168_target_f000420_6ad164b82a",
+      "status": "complete",
+      "image": "images/003_009_3_source_motion_f000168_target_f000420_6ad164b82a_on.png",
+      "failure": null,
+      "identity_A": 0.6167135238647461,
+      "face_count": 1,
+      "source_face_count": 1,
+      "face_unique": true,
+      "pose_detected": true,
+      "pose_nme_diagonal": 0.010443368574202104,
+      "pose_pck_002": 1.0,
+      "pose_pck_005": 1.0,
+      "pose_joint_recall": 1.0,
+      "pose_matched_joints": 17
+    },
+    {
+      "pair_index": 4,
+      "image_stem": "004_012_4_source_motion_f000491_target_f000579_8b1151c115",
+      "status": "failed",
+      "image": null,
+      "failure": "FileNotFoundError: [Errno 2] No such file or directory: '/home/shangguanrz/nihaochen/qwen21_full/face_cache/012_4.pt'",
+      "identity_A": null,
+      "face_count": null
+    },
+    {
+      "pair_index": 5,
+      "image_stem": "005_012_4_source_motion_f000491_target_f001406_e712de22a6",
+      "status": "failed",
+      "image": null,
+      "failure": "FileNotFoundError: [Errno 2] No such file or directory: '/home/shangguanrz/nihaochen/qwen21_full/face_cache/012_4.pt'",
+      "identity_A": null,
+      "face_count": null
+    },
+    {
+      "pair_index": 6,
+      "image_stem": "006_015_1_source_motion_f000445_target_f000504_7df8fadc47",
+      "status": "failed",
+      "image": null,
+      "failure": "FileNotFoundError: [Errno 2] No such file or directory: '/home/shangguanrz/nihaochen/qwen21_full/face_cache/015_1.pt'",
+      "identity_A": null,
+      "face_count": null
+    },
+    {
+      "pair_index": 7,
+      "image_stem": "007_015_1_source_motion_f000747_target_f001553_6c9edd3985",
+      "status": "failed",
+      "image": null,
+      "failure": "FileNotFoundError: [Errno 2] No such file or directory: '/home/shangguanrz/nihaochen/qwen21_full/face_cache/015_1.pt'",
+      "identity_A": null,
+      "face_count": null
+    },
+    {
+      "pair_index": 8,
+      "image_stem": "008_019_3_source_motion_f001183_target_f001253_a3c19f067a",
+      "status": "failed",
+      "image": null,
+      "failure": "FileNotFoundError: [Errno 2] No such file or directory: '/home/shangguanrz/nihaochen/qwen21_full/face_cache/019_3.pt'",
+      "identity_A": null,
+      "face_count": null
+    },
+    {
+      "pair_index": 9,
+      "image_stem": "009_019_3_source_motion_f001183_target_f000311_29049b864f",
+      "status": "failed",
+      "image": null,
+      "failure": "FileNotFoundError: [Errno 2] No such file or directory: '/home/shangguanrz/nihaochen/qwen21_full/face_cache/019_3.pt'",
+      "identity_A": null,
+      "face_count": null
+    },
+    {
+      "pair_index": 10,
+      "image_stem": "010_024_2_source_motion_f000454_target_f000714_168c3a39aa",
+      "status": "failed",
+      "image": null,
+      "failure": "FileNotFoundError: [Errno 2] No such file or directory: '/home/shangguanrz/nihaochen/qwen21_full/face_cache/024_2.pt'",
+      "identity_A": null,
+      "face_count": null
+    },
+    {
+      "pair_index": 11,
+      "image_stem": "011_024_2_source_motion_f000454_target_f001410_29e8395318",
+      "status": "failed",
+      "image": null,
+      "failure": "FileNotFoundError: [Errno 2] No such file or directory: '/home/shangguanrz/nihaochen/qwen21_full/face_cache/024_2.pt'",
+      "identity_A": null,
+      "face_count": null
+    }
+  ]
+}

@@ -1,0 +1,460 @@
+{
+  "task": "single-person cross-body-type pose retargeting capability test",
+  "backbone": "Qwen-Image-2.1 (sha 790c92633540aa0cb11d9abf19eb46d861714758)",
+  "source": "Wikimedia Commons (freely licensed)",
+  "convention": "A_source = appearance source (large build); B_target = pose reference (slim)",
+  "frozen_long_side": 1280,
+  "counts": {
+    "A_heavy": 19,
+    "B_slim": 21,
+    "pairs": 7
+  },
+  "pairs": [
+    {
+      "pair": "hard_01",
+      "A_file": "BigGirlsRock2FashionShow22016_011__25986507981_.jpg",
+      "A_size": [
+        980,
+        1280
+      ],
+      "A_path": "/home/shangguanrz/project/pic-edit/experiments/qwen-2.1-test/data/testset/pairs/hard_01/A_source.png",
+      "B_file": "Miguel_Ramirez_Headshot.jpg",
+      "B_size": [
+        853,
+        1280
+      ],
+      "B_path": "/home/shangguanrz/project/pic-edit/experiments/qwen-2.1-test/data/testset/pairs/hard_01/B_target.png"
+    },
+    {
+      "pair": "hard_02",
+      "A_file": "BigGirlsRock2FashionShow22016_014__25779998480_.jpg",
+      "A_size": [
+        853,
+        1280
+      ],
+      "A_path": "/home/shangguanrz/project/pic-edit/experiments/qwen-2.1-test/data/testset/pairs/hard_02/A_source.png",
+      "B_file": "Lucas_Oliveira_Miranda.jpg",
+      "B_size": [
+        855,
+        1280
+      ],
+      "B_path": "/home/shangguanrz/project/pic-edit/experiments/qwen-2.1-test/data/testset/pairs/hard_02/B_target.png"
+    },
+    {
+      "pair": "hard_03",
+      "A_file": "BigGirlsRock2FashionShow22016_062__25448057424_.jpg",
+      "A_size": [
+        931,
+        1280
+      ],
+      "A_path": "/home/shangguanrz/project/pic-edit/experiments/qwen-2.1-test/data/testset/pairs/hard_03/A_source.png",
+      "B_file": "Vuslat_DS.jpg",
+      "B_size": [
+        854,
+        1280
+      ],
+      "B_path": "/home/shangguanrz/project/pic-edit/experiments/qwen-2.1-test/data/testset/pairs/hard_03/B_target.png"
+    },
+    {
+      "pair": "hard_04",
+      "A_file": "BigGirlsRock2FashionShow22016_087__25986461641_.jpg",
+      "A_size": [
+        945,
+        1280
+      ],
+      "A_path": "/home/shangguanrz/project/pic-edit/experiments/qwen-2.1-test/data/testset/pairs/hard_04/A_source.png",
+      "B_file": "Ama_Ampofo.jpg",
+      "B_size": [
+        1024,
+        1280
+      ],
+      "B_path": "/home/shangguanrz/project/pic-edit/experiments/qwen-2.1-test/data/testset/pairs/hard_04/B_target.png"
+    },
+    {
+      "pair": "hard_05",
+      "A_file": "BBW_Christmas_Model.jpg",
+      "A_size": [
+        896,
+        1280
+      ],
+      "A_path": "/home/shangguanrz/project/pic-edit/experiments/qwen-2.1-test/data/testset/pairs/hard_05/A_source.png",
+      "B_file": "Prelude__35036862301_.jpg",
+      "B_size": [
+        968,
+        1280
+      ],
+      "B_path": "/home/shangguanrz/project/pic-edit/experiments/qwen-2.1-test/data/testset/pairs/hard_05/B_target.png"
+    },
+    {
+      "pair": "medium_01",
+      "A_file": "Bench_Press_-_Flickr_-_colros.jpg",
+      "A_size": [
+        1120,
+        1280
+      ],
+      "A_path": "/home/shangguanrz/project/pic-edit/experiments/qwen-2.1-test/data/testset/pairs/medium_01/A_source.png",
+      "B_file": "Ringberg2021.jpg",
+      "B_size": [
+        961,
+        1280
+      ],
+      "B_path": "/home/shangguanrz/project/pic-edit/experiments/qwen-2.1-test/data/testset/pairs/medium_01/B_target.png"
+    },
+    {
+      "pair": "medium_02",
+      "A_file": "Toccara_Jones.jpg",
+      "A_size": [
+        853,
+        1280
+      ],
+      "A_path": "/home/shangguanrz/project/pic-edit/experiments/qwen-2.1-test/data/testset/pairs/medium_02/A_source.png",
+      "B_file": "Mercy_Namukose.jpg",
+      "B_size": [
+        1024,
+        1280
+      ],
+      "B_path": "/home/shangguanrz/project/pic-edit/experiments/qwen-2.1-test/data/testset/pairs/medium_02/B_target.png"
+    }
+  ],
+  "assets": {
+    "A": {
+      "BigGirlsRock2FashionShow22016_011__25986507981_.jpg": {
+        "file": "BigGirlsRock2FashionShow22016_011__25986507981_.png",
+        "frozen_size": [
+          980,
+          1280
+        ],
+        "attribution": {}
+      },
+      "BigGirlsRock2FashionShow22016_014__25779998480_.jpg": {
+        "file": "BigGirlsRock2FashionShow22016_014__25779998480_.png",
+        "frozen_size": [
+          853,
+          1280
+        ],
+        "attribution": {}
+      },
+      "BigGirlsRock2FashionShow22016_026__26052853385_.jpg": {
+        "file": "BigGirlsRock2FashionShow22016_026__26052853385_.png",
+        "frozen_size": [
+          853,
+          1280
+        ],
+        "attribution": {}
+      },
+      "BigGirlsRock2FashionShow22016_029__25779993480_.jpg": {
+        "file": "BigGirlsRock2FashionShow22016_029__25779993480_.png",
+        "frozen_size": [
+          884,
+          1280
+        ],
+        "attribution": {}
+      },
+      "BigGirlsRock2FashionShow22016_039__25450287583_.jpg": {
+        "file": "BigGirlsRock2FashionShow22016_039__25450287583_.png",
+        "frozen_size": [
+          976,
+          1280
+        ],
+        "attribution": {}
+      },
+      "BigGirlsRock2FashionShow22016_047__26052846665_.jpg": {
+        "file": "BigGirlsRock2FashionShow22016_047__26052846665_.png",
+        "frozen_size": [
+          889,
+          1280
+        ],
+        "attribution": {}
+      },
+      "BigGirlsRock2FashionShow22016_062__25448057424_.jpg": {
+        "file": "BigGirlsRock2FashionShow22016_062__25448057424_.png",
+        "frozen_size": [
+          931,
+          1280
+        ],
+        "attribution": {}
+      },
+      "BigGirlsRock2FashionShow22016_066__25448036534_.jpg": {
+        "file": "BigGirlsRock2FashionShow22016_066__25448036534_.png",
+        "frozen_size": [
+          917,
+          1280
+        ],
+        "attribution": {}
+      },
+      "BigGirlsRock2FashionShow22016_067__26052813995_.jpg": {
+        "file": "BigGirlsRock2FashionShow22016_067__26052813995_.png",
+        "frozen_size": [
+          840,
+          1280
+        ],
+        "attribution": {}
+      },
+      "BigGirlsRock2FashionShow22016_069__25450250993_.jpg": {
+        "file": "BigGirlsRock2FashionShow22016_069__25450250993_.png",
+        "frozen_size": [
+          822,
+          1280
+        ],
+        "attribution": {}
+      },
+      "BigGirlsRock2FashionShow22016_081__25448032524_.jpg": {
+        "file": "BigGirlsRock2FashionShow22016_081__25448032524_.png",
+        "frozen_size": [
+          853,
+          1280
+        ],
+        "attribution": {}
+      },
+      "BigGirlsRock2FashionShow22016_087__25986461641_.jpg": {
+        "file": "BigGirlsRock2FashionShow22016_087__25986461641_.png",
+        "frozen_size": [
+          945,
+          1280
+        ],
+        "attribution": {}
+      },
+      "BigGirlsRock2FashionShow22016_092__26052844055_.jpg": {
+        "file": "BigGirlsRock2FashionShow22016_092__26052844055_.png",
+        "frozen_size": [
+          853,
+          1280
+        ],
+        "attribution": {}
+      },
+      "BBW_Christmas_Model.jpg": {
+        "file": "BBW_Christmas_Model.png",
+        "frozen_size": [
+          896,
+          1280
+        ],
+        "attribution": {}
+      },
+      "Bench_Press_-_Flickr_-_colros.jpg": {
+        "file": "Bench_Press_-_Flickr_-_colros.png",
+        "frozen_size": [
+          1120,
+          1280
+        ],
+        "attribution": {}
+      },
+      "Toccara_Jones.jpg": {
+        "file": "Toccara_Jones.png",
+        "frozen_size": [
+          853,
+          1280
+        ],
+        "attribution": {}
+      },
+      "Toccara_Jones_2.jpg": {
+        "file": "Toccara_Jones_2.png",
+        "frozen_size": [
+          853,
+          1280
+        ],
+        "attribution": {}
+      },
+      "Toccara_Jones_3.jpg": {
+        "file": "Toccara_Jones_3.png",
+        "frozen_size": [
+          853,
+          1280
+        ],
+        "attribution": {}
+      },
+      "Toccara_Jones_cropped.jpg": {
+        "file": "Toccara_Jones_cropped.png",
+        "frozen_size": [
+          1129,
+          1280
+        ],
+        "attribution": {}
+      }
+    },
+    "B": {
+      "Miguel_Ramirez_Headshot.jpg": {
+        "file": "Miguel_Ramirez_Headshot.png",
+        "frozen_size": [
+          853,
+          1280
+        ],
+        "attribution": {}
+      },
+      "Lucas_Oliveira_Miranda.jpg": {
+        "file": "Lucas_Oliveira_Miranda.png",
+        "frozen_size": [
+          855,
+          1280
+        ],
+        "attribution": {}
+      },
+      "Vuslat_DS.jpg": {
+        "file": "Vuslat_DS.png",
+        "frozen_size": [
+          854,
+          1280
+        ],
+        "attribution": {}
+      },
+      "OIKN_Deputi_202411749__1_.jpg": {
+        "file": "OIKN_Deputi_202411749__1_.png",
+        "frozen_size": [
+          853,
+          1280
+        ],
+        "attribution": {}
+      },
+      "DR.Andi_Afdal_MBA__AAK-017.jpg": {
+        "file": "DR.Andi_Afdal_MBA__AAK-017.png",
+        "frozen_size": [
+          1024,
+          1280
+        ],
+        "attribution": {}
+      },
+      "Keonte__in_2024.jpg": {
+        "file": "Keonte__in_2024.png",
+        "frozen_size": [
+          960,
+          1280
+        ],
+        "attribution": {}
+      },
+      "Mercy_Namukose.jpg": {
+        "file": "Mercy_Namukose.png",
+        "frozen_size": [
+          1024,
+          1280
+        ],
+        "attribution": {}
+      },
+      "Ama_Ampofo.jpg": {
+        "file": "Ama_Ampofo.png",
+        "frozen_size": [
+          1024,
+          1280
+        ],
+        "attribution": {}
+      },
+      "Prelude__35036862301_.jpg": {
+        "file": "Prelude__35036862301_.png",
+        "frozen_size": [
+          968,
+          1280
+        ],
+        "attribution": {}
+      },
+      "My_Coloured_Rectangle.jpg": {
+        "file": "My_Coloured_Rectangle.png",
+        "frozen_size": [
+          853,
+          1280
+        ],
+        "attribution": {}
+      },
+      "Siuzanna-77.jpg": {
+        "file": "Siuzanna-77.png",
+        "frozen_size": [
+          852,
+          1280
+        ],
+        "attribution": {
+          "license": "CC BY-SA 4.0",
+          "artist": "<a href=\"//commons.wikimedia.org/w/index.php?title=User:Iglidan16&amp;action=edit&amp;redlink=1\" class=\"new\" title=\"User:Iglidan16 (page does not exist)\">Iglidan16</a>",
+          "credit": "<span class=\"int-own-work\" lang=\"en\">Own work</span>",
+          "descriptionurl": "<a rel=\"nofollow\" class=\"external text\" href=\"https://www.iglidan.com/\">Siuzanna Iglidan</a> smiling and standing on one leg."
+        }
+      },
+      "Lynda_Carter_at_The_Heart_Truth_2009.jpg": {
+        "file": "Lynda_Carter_at_The_Heart_Truth_2009.png",
+        "frozen_size": [
+          853,
+          1280
+        ],
+        "attribution": {}
+      },
+      "Ringberg2021.jpg": {
+        "file": "Ringberg2021.png",
+        "frozen_size": [
+          961,
+          1280
+        ],
+        "attribution": {
+          "license": "CC BY-SA 4.0",
+          "artist": "<a href=\"//commons.wikimedia.org/w/index.php?title=User:Galicnik62&amp;action=edit&amp;redlink=1\" class=\"new\" title=\"User:Galicnik62 (page does not exist)\">Galicnik62</a>",
+          "credit": "<span class=\"int-own-work\" lang=\"en\">Own work</span>",
+          "descriptionurl": "At the V4 conference in Ringberg, 14-17 July 2021."
+        }
+      },
+      "KurtMaier_FotoSylviaAsmus.jpg": {
+        "file": "KurtMaier_FotoSylviaAsmus.png",
+        "frozen_size": [
+          712,
+          1280
+        ],
+        "attribution": {}
+      },
+      "IOW_Oliver_Zielinski_Pressefoto_IMG_1715_KBeck.jpg": {
+        "file": "IOW_Oliver_Zielinski_Pressefoto_IMG_1715_KBeck.png",
+        "frozen_size": [
+          899,
+          1280
+        ],
+        "attribution": {}
+      },
+      "Aardra_Padmakumar.jpg": {
+        "file": "Aardra_Padmakumar.png",
+        "frozen_size": [
+          1024,
+          1280
+        ],
+        "attribution": {}
+      },
+      "African_Street_Style_Festival__Shoreditch__London__24_July_2016_15.jpg": {
+        "file": "African_Street_Style_Festival__Shoreditch__London__24_July_2016_15.png",
+        "frozen_size": [
+          855,
+          1280
+        ],
+        "attribution": {}
+      },
+      "African_Street_Style_Festival__Shoreditch__London__24_July_2016_33.jpg": {
+        "file": "African_Street_Style_Festival__Shoreditch__London__24_July_2016_33.png",
+        "frozen_size": [
+          855,
+          1280
+        ],
+        "attribution": {}
+      },
+      "-37_Eiffel_Janell_Rosalita__Catanduanes__52266606299_.jpg": {
+        "file": "-37_Eiffel_Janell_Rosalita__Catanduanes__52266606299_.png",
+        "frozen_size": [
+          854,
+          1280
+        ],
+        "attribution": {}
+      },
+      "230731_서울_이랜드_FC_vs_충남_아산_FC__문현호_.jpg": {
+        "file": "230731_서울_이랜드_FC_vs_충남_아산_FC__문현호_.png",
+        "frozen_size": [
+          1024,
+          1280
+        ],
+        "attribution": {}
+      },
+      "230731_서울_이랜드_FC_vs_충남_아산_FC__이동률_.jpg": {
+        "file": "230731_서울_이랜드_FC_vs_충남_아산_FC__이동률_.png",
+        "frozen_size": [
+          1024,
+          1280
+        ],
+        "attribution": {}
+      }
+    }
+  },
+  "known_limitations": [
+    "A 侧多为 3/4 身裁切（Wikimedia 上现代、全身、体型显著偏大的自由版权照片稀缺）",
+    "社媒来源（小红书/抖音）需浏览器 CDP，未纳入本轮",
+    "背景与光照未做统一，评测时需在指标之外人工核验"
+  ]
+}

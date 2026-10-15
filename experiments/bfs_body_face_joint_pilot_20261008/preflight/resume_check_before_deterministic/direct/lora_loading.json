@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "variant": "qwen",
+  "path": null,
+  "file_sha256": null,
+  "adapter_name": null,
+  "gate_first": null,
+  "strength": 0.0,
+  "source_tensors": 0,
+  "tensors_checked": 0,
+  "modules_checked": 0,
+  "tensor_checks": [],
+  "module_checks": {},
+  "module_scales": [],
+  "all_values_match_after_dtype_conversion": true,
+  "tensors_cast_through_base_dtype": 0,
+  "converted_lora_sha256": null,
+  "freeze": {
+    "all_parameters_frozen": true,
+    "trainable_parameter_names": [],
+    "parameter_tensors": 297,
+    "parameter_elements": 7115124736,
+    "lora_parameter_tensors": 0,
+    "lora_parameter_elements": 0,
+    "parameter_names_sha256": "8bd2002d9e00ac48f08aca91fbdc26fe126b3e80073b8e80a61dc6ae46c2e917"
+  },
+  "loaded_lora_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "loaded_lora_digest_scope": "lora_parameters_only"
+}

@@ -1,0 +1,15 @@
+{
+  "reason": "Agent sent SIGINT when user corrected preprocessing to original pixel dimensions. User subsequently requested a complete handoff and no further experiments.",
+  "retained_records": [
+    {
+      "pair_index": 0,
+      "status": "complete"
+    },
+    {
+      "pair_index": 2,
+      "status": "failed",
+      "cause": "explicit workflow interruption; original failure string is empty"
+    }
+  ],
+  "not_a_model_quality_failure": true
+}

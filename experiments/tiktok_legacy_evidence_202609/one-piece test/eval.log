@@ -1,0 +1,43 @@
+========================================================================
+STARTING FULL ADAPTER COMPREHENSIVE EVALUATION & PANEL GENERATION
+Sequence: 00001, Source: 0014 -> Target: 0074
+Training Directory: datasets/TikTokDataset/showcase_single/sample_01_00001_0014_to_0074/overfit_full_200
+Output Directory  : datasets/TikTokDataset/showcase_single/sample_01_00001_0014_to_0074/overfit_full_200/final_eval
+========================================================================
+
+[1/6] Plotting training dynamics and loss curves...
+Saved: datasets/TikTokDataset/showcase_single/sample_01_00001_0014_to_0074/overfit_full_200/final_eval/01_full_adapter_training_loss_curves.png
+
+[2/6] Loading TikTok input pair and 3D conditions...
+
+[3/6] Generating step progression evolution grid...
+Saved: datasets/TikTokDataset/showcase_single/sample_01_00001_0014_to_0074/overfit_full_200/final_eval/02_full_adapter_step_evolution.png
+
+[4/6] Executing pure 28-step diffusion inference from Gaussian noise...
+Keyword arguments {'trust_remote_code': True} are not expected by DeepGenPipeline and will be ignored.
+Loading pipeline components...:   0%|          | 0/3 [00:00<?, ?it/s]Loading pipeline components...:  67%|██████▋   | 2/3 [00:01<00:00,  1.86it/s]Loading pipeline components...: 100%|██████████| 3/3 [00:01<00:00,  2.73it/s]
+Expected types for transformer: (<class 'diffusers_modules.local.deepgen_pipeline.SD3Transformer2DModel'>,), got <class 'diffusers.models.transformers.transformer_sd3.SD3Transformer2DModel'>.
+Loading VLM from /home/shangguanrz/project/pic-edit/models/DeepGen-1.0-diffusers/vlm...
+`torch_dtype` is deprecated! Use `dtype` instead!
+Loading checkpoint shards:   0%|          | 0/2 [00:00<?, ?it/s]Loading checkpoint shards: 100%|██████████| 2/2 [00:00<00:00, 41.84it/s]
+Loading tokenizer...
+Loading connector...
+All components loaded.
+Loading checkpoint from: datasets/TikTokDataset/showcase_single/sample_01_00001_0014_to_0074/overfit_full_200/checkpoints/checkpoint_step_000200.pt
+  -> Generating Baseline (Face OFF, Global Baseline)...
+  0%|          | 0/28 [00:00<?, ?it/s]  4%|▎         | 1/28 [00:00<00:05,  5.36it/s]  7%|▋         | 2/28 [00:00<00:04,  6.04it/s] 11%|█         | 3/28 [00:00<00:03,  6.27it/s] 14%|█▍        | 4/28 [00:00<00:03,  6.37it/s] 18%|█▊        | 5/28 [00:00<00:03,  6.44it/s] 21%|██▏       | 6/28 [00:00<00:03,  6.46it/s] 25%|██▌       | 7/28 [00:01<00:03,  6.46it/s] 29%|██▊       | 8/28 [00:01<00:03,  6.48it/s] 32%|███▏      | 9/28 [00:01<00:02,  6.48it/s] 36%|███▌      | 10/28 [00:01<00:02,  6.50it/s] 39%|███▉      | 11/28 [00:01<00:02,  6.27it/s] 43%|████▎     | 12/28 [00:01<00:02,  6.12it/s] 46%|████▋     | 13/28 [00:02<00:02,  6.02it/s] 50%|█████     | 14/28 [00:02<00:02,  5.97it/s] 54%|█████▎    | 15/28 [00:02<00:02,  5.93it/s] 57%|█████▋    | 16/28 [00:02<00:02,  5.91it/s] 61%|██████    | 17/28 [00:02<00:01,  5.92it/s] 64%|██████▍   | 18/28 [00:02<00:01,  5.85it/s] 68%|██████▊   | 19/28 [00:03<00:01,  5.85it/s] 71%|███████▏  | 20/28 [00:03<00:01,  5.86it/s] 75%|███████▌  | 21/28 [00:03<00:01,  5.80it/s] 79%|███████▊  | 22/28 [00:03<00:01,  5.83it/s] 82%|████████▏ | 23/28 [00:03<00:00,  5.86it/s] 86%|████████▌ | 24/28 [00:03<00:00,  5.82it/s] 89%|████████▉ | 25/28 [00:04<00:00,  5.84it/s] 93%|█████████▎| 26/28 [00:04<00:00,  5.85it/s] 96%|█████████▋| 27/28 [00:04<00:00,  5.78it/s]100%|██████████| 28/28 [00:04<00:00,  5.81it/s]100%|██████████| 28/28 [00:04<00:00,  6.01it/s]
+     Done in 5.33s
+  -> Generating Full Adapter Trained (Face ON + Hand + Body)...
+  0%|          | 0/28 [00:00<?, ?it/s]  4%|▎         | 1/28 [00:00<00:04,  6.55it/s]  7%|▋         | 2/28 [00:00<00:03,  6.52it/s] 11%|█         | 3/28 [00:00<00:03,  6.35it/s] 14%|█▍        | 4/28 [00:00<00:03,  6.44it/s] 18%|█▊        | 5/28 [00:00<00:03,  6.41it/s] 21%|██▏       | 6/28 [00:00<00:03,  6.19it/s] 25%|██▌       | 7/28 [00:01<00:03,  6.32it/s] 29%|██▊       | 8/28 [00:01<00:03,  6.35it/s] 32%|███▏      | 9/28 [00:01<00:02,  6.42it/s] 36%|███▌      | 10/28 [00:01<00:02,  6.47it/s] 39%|███▉      | 11/28 [00:01<00:02,  6.11it/s] 43%|████▎     | 12/28 [00:01<00:02,  5.97it/s] 46%|████▋     | 13/28 [00:02<00:02,  5.88it/s] 50%|█████     | 14/28 [00:02<00:02,  5.75it/s] 54%|█████▎    | 15/28 [00:02<00:02,  5.73it/s] 57%|█████▋    | 16/28 [00:02<00:02,  5.68it/s] 61%|██████    | 17/28 [00:02<00:01,  5.58it/s] 64%|██████▍   | 18/28 [00:03<00:01,  5.59it/s] 68%|██████▊   | 19/28 [00:03<00:01,  5.61it/s] 71%|███████▏  | 20/28 [00:03<00:01,  5.63it/s] 75%|███████▌  | 21/28 [00:03<00:01,  5.63it/s] 79%|███████▊  | 22/28 [00:03<00:01,  5.64it/s] 82%|████████▏ | 23/28 [00:03<00:00,  5.66it/s] 86%|████████▌ | 24/28 [00:04<00:00,  5.67it/s] 89%|████████▉ | 25/28 [00:04<00:00,  5.68it/s] 93%|█████████▎| 26/28 [00:04<00:00,  5.67it/s] 96%|█████████▋| 27/28 [00:04<00:00,  5.67it/s]100%|██████████| 28/28 [00:04<00:00,  5.67it/s]100%|██████████| 28/28 [00:04<00:00,  5.88it/s]
+     Done in 5.10s
+
+[5/6] Extracting ROIs and computing metrics...
+  Left Hand Target Box : (127, 414, 257, 512)
+  Right Hand Target Box: (18, 70, 151, 202)
+
+[6/6] Generating composite panels and scorecards...
+
+========================================================================
+ALL EVALUATIONS AND PANELS SUCCESSFULLY COMPLETED!
+Generated panels saved in: datasets/TikTokDataset/showcase_single/sample_01_00001_0014_to_0074/overfit_full_200/final_eval
+========================================================================

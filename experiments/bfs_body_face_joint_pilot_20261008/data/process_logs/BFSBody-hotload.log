@@ -1,0 +1,66 @@
+{"command": ["/home/shangguanrz/nihaochen/envs/qwen21/bin/python", "/home/shangguanrz/project/pic-edit/scripts/eval/eval_qwen21_joint_pilot.py", "--checkpoint", "/home/shangguanrz/nihaochen/qwen21_full/bfs_body_face_joint_pilot_20261008/training/J/checkpoint_step_000256.pt", "--pairs", "/home/shangguanrz/nihaochen/qwen21_full/bfs_body_face_joint_pilot_20261008/data/val24_pairs.jsonl", "--dataset-type", "tiktok_v3", "--align-mode", "letterbox", "--features", "/home/shangguanrz/nihaochen/qwen21_full/tiktok_face_v1_20261004/data/face_cache", "--cache", "/home/shangguanrz/nihaochen/qwen21_full/tiktok_face_v1_20261004/native_cache_tiktok", "--output", "/home/shangguanrz/nihaochen/qwen21_full/bfs_body_face_joint_pilot_20261008/evaluation/BFSBody_hotload_tiktok", "--label", "BFSBody_hotload_tiktok", "--variant", "BFSBody", "--stage", "hotload", "--resolution", "512", "--seed", "42", "--steps", "30", "--lora", "/home/shangguanrz/models/bfs/bfs_body_swap_v1.0_qwen_2.1.safetensors", "--indices", "0,4,7,8,13,14,16,19,22"]}
+Loading pipeline components...:   0%|          | 0/5 [00:00<?, ?it/s]
+Loading weights:   0%|          | 0/750 [00:00<?, ?it/s][ALoading weights: 100%|██████████| 750/750 [00:00<00:00, 10615.88it/s]
+Loading pipeline components...:  40%|████      | 2/5 [00:00<00:00,  6.95it/s]
+Loading checkpoint shards:   0%|          | 0/2 [00:00<?, ?it/s][ALoading checkpoint shards: 100%|██████████| 2/2 [00:00<00:00, 156.17it/s]
+Loading pipeline components...:  80%|████████  | 4/5 [00:00<00:00,  8.47it/s]Loading pipeline components...: 100%|██████████| 5/5 [00:01<00:00,  4.16it/s]Loading pipeline components...: 100%|██████████| 5/5 [00:01<00:00,  4.90it/s]
+{"pair_index": 0, "status": "complete", "face_valid": true, "seconds": 5.838973835998331, "failure": null}
+{"pair_index": 4, "status": "complete", "face_valid": true, "seconds": 5.443608694000432, "failure": null}
+{"pair_index": 7, "status": "complete", "face_valid": true, "seconds": 5.446567762999621, "failure": null}
+{"pair_index": 8, "status": "complete", "face_valid": true, "seconds": 5.443158217000018, "failure": null}
+{"pair_index": 13, "status": "complete", "face_valid": true, "seconds": 5.437374949000514, "failure": null}
+{"pair_index": 14, "status": "complete", "face_valid": true, "seconds": 5.438861683000141, "failure": null}
+{"pair_index": 16, "status": "complete", "face_valid": true, "seconds": 5.418585341001744, "failure": null}
+{"pair_index": 19, "status": "complete", "face_valid": true, "seconds": 5.412401211997349, "failure": null}
+{"pair_index": 22, "status": "complete", "face_valid": true, "seconds": 5.422749114997714, "failure": null}
+{"attempted": 9, "complete": 9, "failed": 0, "face_condition_valid": 9, "label": "BFSBody_hotload_tiktok", "variant": "BFSBody", "stage": "hotload", "evaluation_scope": "pilot diagnostic pairs; not final held-out test"}
+{"command": ["/home/shangguanrz/nihaochen/envs/qwen21/bin/python", "/home/shangguanrz/project/pic-edit/scripts/eval/eval_qwen21_joint_pilot.py", "--score-only", "--output", "/home/shangguanrz/nihaochen/qwen21_full/bfs_body_face_joint_pilot_20261008/evaluation/BFSBody_hotload_tiktok"]}
+{"scored": 9, "output": "/home/shangguanrz/nihaochen/qwen21_full/bfs_body_face_joint_pilot_20261008/evaluation/BFSBody_hotload_tiktok/scores.json"}
+{"command": ["/home/shangguanrz/nihaochen/envs/qwen21/bin/python", "/home/shangguanrz/project/pic-edit/scripts/eval/eval_qwen21_joint_pilot.py", "--checkpoint", "/home/shangguanrz/nihaochen/qwen21_full/bfs_body_face_joint_pilot_20261008/training/J/checkpoint_step_000256.pt", "--pairs", "/home/shangguanrz/nihaochen/qwen21_full/bfs_body_face_joint_pilot_20261008/data/iper12_pairs.jsonl", "--dataset-type", "iper", "--align-mode", "resize", "--features", "/home/shangguanrz/nihaochen/qwen21_full/tiktok_face_v1_20261004/data/face_cache", "--cache", "/home/shangguanrz/nihaochen/qwen21_full/tiktok_face_v1_20261004/native_cache_iper", "--output", "/home/shangguanrz/nihaochen/qwen21_full/bfs_body_face_joint_pilot_20261008/evaluation/BFSBody_hotload_iper", "--label", "BFSBody_hotload_iper", "--variant", "BFSBody", "--stage", "hotload", "--resolution", "512", "--seed", "42", "--steps", "30", "--lora", "/home/shangguanrz/models/bfs/bfs_body_swap_v1.0_qwen_2.1.safetensors", "--indices", "0,2,3"]}
+Loading pipeline components...:   0%|          | 0/5 [00:00<?, ?it/s]Loading pipeline components...:  20%|██        | 1/5 [00:00<00:00,  4.93it/s]Loading pipeline components...:  40%|████      | 2/5 [00:00<00:01,  2.50it/s]
+Loading weights:   0%|          | 0/750 [00:00<?, ?it/s][ALoading weights: 100%|██████████| 750/750 [00:00<00:00, 11013.22it/s]
+Loading pipeline components...:  80%|████████  | 4/5 [00:00<00:00,  4.35it/s]
+Loading checkpoint shards:   0%|          | 0/2 [00:00<?, ?it/s][ALoading checkpoint shards: 100%|██████████| 2/2 [00:00<00:00, 156.24it/s]
+Loading pipeline components...: 100%|██████████| 5/5 [00:01<00:00,  4.85it/s]
+{"pair_index": 0, "status": "complete", "face_valid": true, "seconds": 5.814181469999312, "failure": null}
+{"pair_index": 2, "status": "failed", "face_valid": true, "seconds": null, "failure": null}
+Traceback (most recent call last):
+  File "/home/shangguanrz/project/pic-edit/scripts/eval/eval_qwen21_joint_pilot.py", line 475, in <module>
+    main()
+  File "/home/shangguanrz/project/pic-edit/scripts/eval/eval_qwen21_joint_pilot.py", line 433, in main
+    result = pipe(**generation_arguments(source, args, prompt=PROMPT,
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/shangguanrz/nihaochen/envs/qwen21/lib/python3.12/site-packages/torch/utils/_contextlib.py", line 120, in decorate_context
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/shangguanrz/nihaochen/envs/qwen21/lib/python3.12/site-packages/diffusers/pipelines/qwenimage21/pipeline_qwenimage21.py", line 772, in __call__
+    noise_pred = self.transformer(
+                 ^^^^^^^^^^^^^^^^^
+  File "/home/shangguanrz/nihaochen/envs/qwen21/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1773, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/shangguanrz/nihaochen/envs/qwen21/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1879, in _call_impl
+    return inner()
+           ^^^^^^^
+  File "/home/shangguanrz/nihaochen/envs/qwen21/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1827, in inner
+    result = forward_call(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/shangguanrz/nihaochen/envs/qwen21/lib/python3.12/site-packages/diffusers/utils/peft_utils.py", line 323, in wrapper
+    result = forward_fn(self, *args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/shangguanrz/nihaochen/envs/qwen21/lib/python3.12/site-packages/diffusers/models/transformers/transformer_qwenimage21.py", line 999, in forward
+    joint_hidden_states = block(
+                          ^^^^^^
+  File "/home/shangguanrz/nihaochen/envs/qwen21/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1773, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/shangguanrz/nihaochen/envs/qwen21/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1879, in _call_impl
+    return inner()
+           ^^^^^^^
+  File "/home/shangguanrz/nihaochen/envs/qwen21/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1840, in inner
+    hook_result = hook(self, args, result)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/shangguanrz/project/pic-edit/src/pose_control/qwen21_full/qwen_adapter.py", line 585, in inject
+    'target_hidden_rms': float(output[:, prefix:].detach().float().square().mean().sqrt()),
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+KeyboardInterrupt

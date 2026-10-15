@@ -1,0 +1,287 @@
+{
+  "summary": {
+    "body": {
+      "n_total": 30,
+      "n_complete": 30,
+      "n_face_detected": 30,
+      "identity_A_mean": 0.3590948550651471,
+      "identity_A_n": 24,
+      "pose_pck_002_mean": 0.9899509803921569,
+      "pose_pck_002_n": 30,
+      "outside_head_mae_255_mean": 0.0,
+      "outside_head_mae_255_n": 30
+    },
+    "nolora": {
+      "n_total": 30,
+      "n_complete": 24,
+      "n_face_detected": 24,
+      "identity_A_mean": 0.5209582786386212,
+      "identity_A_n": 24,
+      "pose_pck_002_mean": 0.9497549019607844,
+      "pose_pck_002_n": 24,
+      "outside_head_mae_255_mean": 3.1267737547556558,
+      "outside_head_mae_255_n": 24
+    },
+    "bfs": {
+      "n_total": 30,
+      "n_complete": 24,
+      "n_face_detected": 24,
+      "identity_A_mean": 0.44219619408249855,
+      "identity_A_n": 24,
+      "pose_pck_002_mean": 0.9629289215686274,
+      "pose_pck_002_n": 24,
+      "outside_head_mae_255_mean": 4.351762175559998,
+      "outside_head_mae_255_n": 24
+    },
+    "alternative": {
+      "n_total": 30,
+      "n_complete": 24,
+      "n_face_detected": 24,
+      "identity_A_mean": 0.4527437298869093,
+      "identity_A_n": 24,
+      "pose_pck_002_mean": 0.9678308823529411,
+      "pose_pck_002_n": 24,
+      "outside_head_mae_255_mean": 4.271671215693156,
+      "outside_head_mae_255_n": 24
+    }
+  },
+  "paired_identity": {
+    "bfs_minus_nolora": {
+      "n_pairs": 24,
+      "n_identities": 10,
+      "mean_delta": -0.07876208455612262,
+      "wins": 7,
+      "losses": 17,
+      "equal_identity_mean_delta": -0.0999860130250454,
+      "identity_cluster_bootstrap_95_ci": [
+        -0.16352518045033018,
+        -0.03229997581491869
+      ]
+    },
+    "bfs_minus_body": {
+      "n_pairs": 24,
+      "n_identities": 10,
+      "mean_delta": 0.08310133901735146,
+      "wins": 18,
+      "losses": 6,
+      "equal_identity_mean_delta": 0.09051083872715633,
+      "identity_cluster_bootstrap_95_ci": [
+        0.046934550839165846,
+        0.13256509643048045
+      ]
+    },
+    "alternative_minus_nolora": {
+      "n_pairs": 24,
+      "n_identities": 10,
+      "mean_delta": -0.06821454875171185,
+      "wins": 7,
+      "losses": 17,
+      "equal_identity_mean_delta": -0.08283031284809111,
+      "identity_cluster_bootstrap_95_ci": [
+        -0.14062918360655507,
+        -0.02425283419589202
+      ]
+    },
+    "alternative_minus_body": {
+      "n_pairs": 24,
+      "n_identities": 10,
+      "mean_delta": 0.09364887482176225,
+      "wins": 20,
+      "losses": 4,
+      "equal_identity_mean_delta": 0.10766653890411057,
+      "identity_cluster_bootstrap_95_ci": [
+        0.06545965206498902,
+        0.15694716720531382
+      ]
+    }
+  },
+  "by_identity": {
+    "001_2": {
+      "body": {
+        "n": 3,
+        "mean": 0.4491870601971944
+      },
+      "nolora": {
+        "n": 3,
+        "mean": 0.46987507740656537
+      },
+      "bfs": {
+        "n": 3,
+        "mean": 0.5244332551956177
+      },
+      "alternative": {
+        "n": 3,
+        "mean": 0.5165861248970032
+      }
+    },
+    "001_5": {
+      "body": {
+        "n": 2,
+        "mean": 0.3928470015525818
+      },
+      "nolora": {
+        "n": 2,
+        "mean": 0.624241292476654
+      },
+      "bfs": {
+        "n": 2,
+        "mean": 0.4662294089794159
+      },
+      "alternative": {
+        "n": 2,
+        "mean": 0.469971626996994
+      }
+    },
+    "006_1": {
+      "body": {
+        "n": 1,
+        "mean": 0.47108152508735657
+      },
+      "nolora": {
+        "n": 1,
+        "mean": 0.7685300707817078
+      },
+      "bfs": {
+        "n": 1,
+        "mean": 0.6065674424171448
+      },
+      "alternative": {
+        "n": 1,
+        "mean": 0.5907605886459351
+      }
+    },
+    "009_3": {
+      "body": {
+        "n": 3,
+        "mean": 0.5109329024950663
+      },
+      "nolora": {
+        "n": 3,
+        "mean": 0.6626427968343099
+      },
+      "bfs": {
+        "n": 3,
+        "mean": 0.5849526127179464
+      },
+      "alternative": {
+        "n": 3,
+        "mean": 0.5939157803853353
+      }
+    },
+    "012_4": {
+      "body": {
+        "n": 3,
+        "mean": 0.22260068853696188
+      },
+      "nolora": {
+        "n": 3,
+        "mean": 0.35961950570344925
+      },
+      "bfs": {
+        "n": 3,
+        "mean": 0.38593944907188416
+      },
+      "alternative": {
+        "n": 3,
+        "mean": 0.3967148959636688
+      }
+    },
+    "015_1": {
+      "body": {
+        "n": 3,
+        "mean": 0.26444511612256366
+      },
+      "nolora": {
+        "n": 3,
+        "mean": 0.353238508105278
+      },
+      "bfs": {
+        "n": 3,
+        "mean": 0.41392460465431213
+      },
+      "alternative": {
+        "n": 3,
+        "mean": 0.3996476431687673
+      }
+    },
+    "015_2": {
+      "body": {
+        "n": 3,
+        "mean": 0.16245946288108826
+      },
+      "nolora": {
+        "n": 3,
+        "mean": 0.40958603223164874
+      },
+      "bfs": {
+        "n": 3,
+        "mean": 0.2154979705810547
+      },
+      "alternative": {
+        "n": 3,
+        "mean": 0.17973977078994116
+      }
+    },
+    "019_3": {
+      "body": {
+        "n": 2,
+        "mean": 0.35264909267425537
+      },
+      "nolora": {
+        "n": 2,
+        "mean": 0.5620533525943756
+      },
+      "bfs": {
+        "n": 2,
+        "mean": 0.32390278577804565
+      },
+      "alternative": {
+        "n": 2,
+        "mean": 0.4566316455602646
+      }
+    },
+    "021_1": {
+      "body": {
+        "n": 1,
+        "mean": 0.08419816195964813
+      },
+      "nolora": {
+        "n": 1,
+        "mean": 0.48144203424453735
+      },
+      "bfs": {
+        "n": 1,
+        "mean": 0.2868407070636749
+      },
+      "alternative": {
+        "n": 1,
+        "mean": 0.36517709493637085
+      }
+    },
+    "024_2": {
+      "body": {
+        "n": 3,
+        "mean": 0.5810429851214091
+      },
+      "nolora": {
+        "n": 3,
+        "mean": 0.7051838437716166
+      },
+      "bfs": {
+        "n": 3,
+        "mean": 0.5882641474405924
+      },
+      "alternative": {
+        "n": 3,
+        "mean": 0.5989642143249512
+      }
+    }
+  },
+  "limitations": [
+    "single seed; 30 pairs from ten validation appearances",
+    "simplified Body first stage; Full Face not compared",
+    "body PCK is not a head-pose/expression metric",
+    "whole-image second stage; outside-head edits are possible",
+    "body comparator is a deterministic 512-to-768 upscale, not an extra diffusion pass"
+  ]
+}

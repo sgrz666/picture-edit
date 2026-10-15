@@ -1,0 +1,674 @@
+{
+  "summary": {
+    "body": {
+      "n_total": 30,
+      "n_complete": 30,
+      "n_face_detected": 30,
+      "n_unique_face": 30,
+      "n_unique_face_on_eligible": 24,
+      "n_source_face_eligible": 24,
+      "n_source_face_fallback": 6,
+      "n_generated_face_failure_on_eligible": 0,
+      "n_generated_multiface_on_eligible": 0,
+      "n_unexpected_missing_on_eligible": 0,
+      "identity_A_mean": 0.3590948550651471,
+      "identity_A_n": 24,
+      "pose_pck_002_mean": 0.9899509803921569,
+      "pose_pck_002_n": 30,
+      "outside_head_mae_255_mean": 0.0,
+      "outside_head_mae_255_n": 30,
+      "common_identity_mean": 0.3590948550651471,
+      "common_identity_n": 24,
+      "eligible_pose_pck_002_mean": 0.9898897058823529,
+      "eligible_pose_pck_002_n": 24,
+      "with_source_fallback_pose_pck_002_mean": 0.9899509803921569,
+      "with_source_fallback_pose_pck_002_n": 30,
+      "with_source_fallback_outside_head_mae_255_mean": 0.0,
+      "with_source_fallback_outside_head_mae_255_n": 30
+    },
+    "nolora": {
+      "n_total": 30,
+      "n_complete": 24,
+      "n_face_detected": 24,
+      "n_unique_face": 24,
+      "n_unique_face_on_eligible": 24,
+      "n_source_face_eligible": 24,
+      "n_source_face_fallback": 6,
+      "n_generated_face_failure_on_eligible": 0,
+      "n_generated_multiface_on_eligible": 0,
+      "n_unexpected_missing_on_eligible": 0,
+      "identity_A_mean": 0.5209582786386212,
+      "identity_A_n": 24,
+      "pose_pck_002_mean": 0.9497549019607844,
+      "pose_pck_002_n": 24,
+      "outside_head_mae_255_mean": 3.1267737547556558,
+      "outside_head_mae_255_n": 24,
+      "common_identity_mean": 0.5209582786386212,
+      "common_identity_n": 24,
+      "eligible_pose_pck_002_mean": 0.9497549019607844,
+      "eligible_pose_pck_002_n": 24,
+      "with_source_fallback_pose_pck_002_mean": 0.9578431372549019,
+      "with_source_fallback_pose_pck_002_n": 30,
+      "with_source_fallback_outside_head_mae_255_mean": 2.5014190038045245,
+      "with_source_fallback_outside_head_mae_255_n": 30
+    },
+    "bfs": {
+      "n_total": 30,
+      "n_complete": 24,
+      "n_face_detected": 24,
+      "n_unique_face": 24,
+      "n_unique_face_on_eligible": 24,
+      "n_source_face_eligible": 24,
+      "n_source_face_fallback": 6,
+      "n_generated_face_failure_on_eligible": 0,
+      "n_generated_multiface_on_eligible": 0,
+      "n_unexpected_missing_on_eligible": 0,
+      "identity_A_mean": 0.44219619408249855,
+      "identity_A_n": 24,
+      "pose_pck_002_mean": 0.9629289215686274,
+      "pose_pck_002_n": 24,
+      "outside_head_mae_255_mean": 4.351762175559998,
+      "outside_head_mae_255_n": 24,
+      "common_identity_mean": 0.44219619408249855,
+      "common_identity_n": 24,
+      "eligible_pose_pck_002_mean": 0.9629289215686274,
+      "eligible_pose_pck_002_n": 24,
+      "with_source_fallback_pose_pck_002_mean": 0.9683823529411765,
+      "with_source_fallback_pose_pck_002_n": 30,
+      "with_source_fallback_outside_head_mae_255_mean": 3.4814097404479982,
+      "with_source_fallback_outside_head_mae_255_n": 30
+    },
+    "alternative": {
+      "n_total": 30,
+      "n_complete": 24,
+      "n_face_detected": 24,
+      "n_unique_face": 24,
+      "n_unique_face_on_eligible": 24,
+      "n_source_face_eligible": 24,
+      "n_source_face_fallback": 6,
+      "n_generated_face_failure_on_eligible": 0,
+      "n_generated_multiface_on_eligible": 0,
+      "n_unexpected_missing_on_eligible": 0,
+      "identity_A_mean": 0.4527437298869093,
+      "identity_A_n": 24,
+      "pose_pck_002_mean": 0.9678308823529411,
+      "pose_pck_002_n": 24,
+      "outside_head_mae_255_mean": 4.271671215693156,
+      "outside_head_mae_255_n": 24,
+      "common_identity_mean": 0.4527437298869093,
+      "common_identity_n": 24,
+      "eligible_pose_pck_002_mean": 0.9678308823529411,
+      "eligible_pose_pck_002_n": 24,
+      "with_source_fallback_pose_pck_002_mean": 0.9723039215686274,
+      "with_source_fallback_pose_pck_002_n": 30,
+      "with_source_fallback_outside_head_mae_255_mean": 3.4173369725545246,
+      "with_source_fallback_outside_head_mae_255_n": 30
+    }
+  },
+  "paired": {
+    "bfs_minus_nolora": {
+      "identity_A": {
+        "n_pairs": 24,
+        "n_actors": 8,
+        "mean_delta_per_pair": -0.07876208455612262,
+        "mean_delta_per_actor": -0.107521911089619,
+        "actor_cluster_bootstrap_95_ci": [
+          -0.16388784862123432,
+          -0.05225746495649221
+        ],
+        "wins": 7,
+        "losses": 17,
+        "ties": 0,
+        "stems": [
+          "000_001_2_source_motion_f001325_target_f000081",
+          "001_001_2_source_motion_f001258_target_f000173",
+          "002_001_2_source_motion_f001325_target_f001479",
+          "003_001_5_source_motion_f000815_target_f000135",
+          "004_001_5_source_motion_f000989_target_f001322",
+          "006_006_1_source_motion_f001625_target_f000209",
+          "009_009_3_source_motion_f000415_target_f000044",
+          "010_009_3_source_motion_f000168_target_f000656",
+          "011_009_3_source_motion_f000415_target_f001285",
+          "012_012_4_source_standard_f000557_target_f000260",
+          "013_012_4_source_standard_f000301_target_f000943",
+          "014_012_4_source_motion_f000453_target_f001241",
+          "015_015_1_source_standard_f000649_target_f000575",
+          "016_015_1_source_motion_f000445_target_f001061",
+          "017_015_1_source_motion_f000445_target_f001203",
+          "018_015_2_source_standard_f000257_target_f000333",
+          "019_015_2_source_standard_f000257_target_f000603",
+          "020_015_2_source_standard_f000257_target_f000929",
+          "021_019_3_source_motion_f000049_target_f000413",
+          "023_019_3_source_standard_f000018_target_f001371",
+          "025_021_1_source_motion_f000903_target_f000665",
+          "027_024_2_source_motion_f000454_target_f000265",
+          "028_024_2_source_motion_f000454_target_f000492",
+          "029_024_2_source_motion_f000454_target_f000838"
+        ],
+        "cohort": "valid source face and paired metric availability; identity requires both outputs detected"
+      },
+      "pose_pck_002": {
+        "n_pairs": 24,
+        "n_actors": 8,
+        "mean_delta_per_pair": 0.013174019607843137,
+        "mean_delta_per_actor": 0.0217984068627451,
+        "actor_cluster_bootstrap_95_ci": [
+          0.002450980392156863,
+          0.047150735294117646
+        ],
+        "wins": 7,
+        "losses": 4,
+        "ties": 13,
+        "stems": [
+          "000_001_2_source_motion_f001325_target_f000081",
+          "001_001_2_source_motion_f001258_target_f000173",
+          "002_001_2_source_motion_f001325_target_f001479",
+          "003_001_5_source_motion_f000815_target_f000135",
+          "004_001_5_source_motion_f000989_target_f001322",
+          "006_006_1_source_motion_f001625_target_f000209",
+          "009_009_3_source_motion_f000415_target_f000044",
+          "010_009_3_source_motion_f000168_target_f000656",
+          "011_009_3_source_motion_f000415_target_f001285",
+          "012_012_4_source_standard_f000557_target_f000260",
+          "013_012_4_source_standard_f000301_target_f000943",
+          "014_012_4_source_motion_f000453_target_f001241",
+          "015_015_1_source_standard_f000649_target_f000575",
+          "016_015_1_source_motion_f000445_target_f001061",
+          "017_015_1_source_motion_f000445_target_f001203",
+          "018_015_2_source_standard_f000257_target_f000333",
+          "019_015_2_source_standard_f000257_target_f000603",
+          "020_015_2_source_standard_f000257_target_f000929",
+          "021_019_3_source_motion_f000049_target_f000413",
+          "023_019_3_source_standard_f000018_target_f001371",
+          "025_021_1_source_motion_f000903_target_f000665",
+          "027_024_2_source_motion_f000454_target_f000265",
+          "028_024_2_source_motion_f000454_target_f000492",
+          "029_024_2_source_motion_f000454_target_f000838"
+        ],
+        "cohort": "valid source face and paired metric availability; identity requires both outputs detected"
+      }
+    },
+    "bfs_minus_body": {
+      "identity_A": {
+        "n_pairs": 24,
+        "n_actors": 8,
+        "mean_delta_per_pair": 0.08310133901735146,
+        "mean_delta_per_actor": 0.0912151833375295,
+        "actor_cluster_bootstrap_95_ci": [
+          0.03912614861813684,
+          0.1397316870590051
+        ],
+        "wins": 18,
+        "losses": 6,
+        "ties": 0,
+        "stems": [
+          "000_001_2_source_motion_f001325_target_f000081",
+          "001_001_2_source_motion_f001258_target_f000173",
+          "002_001_2_source_motion_f001325_target_f001479",
+          "003_001_5_source_motion_f000815_target_f000135",
+          "004_001_5_source_motion_f000989_target_f001322",
+          "006_006_1_source_motion_f001625_target_f000209",
+          "009_009_3_source_motion_f000415_target_f000044",
+          "010_009_3_source_motion_f000168_target_f000656",
+          "011_009_3_source_motion_f000415_target_f001285",
+          "012_012_4_source_standard_f000557_target_f000260",
+          "013_012_4_source_standard_f000301_target_f000943",
+          "014_012_4_source_motion_f000453_target_f001241",
+          "015_015_1_source_standard_f000649_target_f000575",
+          "016_015_1_source_motion_f000445_target_f001061",
+          "017_015_1_source_motion_f000445_target_f001203",
+          "018_015_2_source_standard_f000257_target_f000333",
+          "019_015_2_source_standard_f000257_target_f000603",
+          "020_015_2_source_standard_f000257_target_f000929",
+          "021_019_3_source_motion_f000049_target_f000413",
+          "023_019_3_source_standard_f000018_target_f001371",
+          "025_021_1_source_motion_f000903_target_f000665",
+          "027_024_2_source_motion_f000454_target_f000265",
+          "028_024_2_source_motion_f000454_target_f000492",
+          "029_024_2_source_motion_f000454_target_f000838"
+        ],
+        "cohort": "valid source face and paired metric availability; identity requires both outputs detected"
+      },
+      "pose_pck_002": {
+        "n_pairs": 24,
+        "n_actors": 8,
+        "mean_delta_per_pair": -0.026960784313725495,
+        "mean_delta_per_actor": -0.02034313725490197,
+        "actor_cluster_bootstrap_95_ci": [
+          -0.04044117647058825,
+          -0.004411764705882354
+        ],
+        "wins": 0,
+        "losses": 6,
+        "ties": 18,
+        "stems": [
+          "000_001_2_source_motion_f001325_target_f000081",
+          "001_001_2_source_motion_f001258_target_f000173",
+          "002_001_2_source_motion_f001325_target_f001479",
+          "003_001_5_source_motion_f000815_target_f000135",
+          "004_001_5_source_motion_f000989_target_f001322",
+          "006_006_1_source_motion_f001625_target_f000209",
+          "009_009_3_source_motion_f000415_target_f000044",
+          "010_009_3_source_motion_f000168_target_f000656",
+          "011_009_3_source_motion_f000415_target_f001285",
+          "012_012_4_source_standard_f000557_target_f000260",
+          "013_012_4_source_standard_f000301_target_f000943",
+          "014_012_4_source_motion_f000453_target_f001241",
+          "015_015_1_source_standard_f000649_target_f000575",
+          "016_015_1_source_motion_f000445_target_f001061",
+          "017_015_1_source_motion_f000445_target_f001203",
+          "018_015_2_source_standard_f000257_target_f000333",
+          "019_015_2_source_standard_f000257_target_f000603",
+          "020_015_2_source_standard_f000257_target_f000929",
+          "021_019_3_source_motion_f000049_target_f000413",
+          "023_019_3_source_standard_f000018_target_f001371",
+          "025_021_1_source_motion_f000903_target_f000665",
+          "027_024_2_source_motion_f000454_target_f000265",
+          "028_024_2_source_motion_f000454_target_f000492",
+          "029_024_2_source_motion_f000454_target_f000838"
+        ],
+        "cohort": "valid source face and paired metric availability; identity requires both outputs detected"
+      }
+    },
+    "alternative_minus_nolora": {
+      "identity_A": {
+        "n_pairs": 24,
+        "n_actors": 8,
+        "mean_delta_per_pair": -0.06821454875171185,
+        "mean_delta_per_actor": -0.08283839812502265,
+        "actor_cluster_bootstrap_95_ci": [
+          -0.12127513360852996,
+          -0.039877949217334396
+        ],
+        "wins": 7,
+        "losses": 17,
+        "ties": 0,
+        "stems": [
+          "000_001_2_source_motion_f001325_target_f000081",
+          "001_001_2_source_motion_f001258_target_f000173",
+          "002_001_2_source_motion_f001325_target_f001479",
+          "003_001_5_source_motion_f000815_target_f000135",
+          "004_001_5_source_motion_f000989_target_f001322",
+          "006_006_1_source_motion_f001625_target_f000209",
+          "009_009_3_source_motion_f000415_target_f000044",
+          "010_009_3_source_motion_f000168_target_f000656",
+          "011_009_3_source_motion_f000415_target_f001285",
+          "012_012_4_source_standard_f000557_target_f000260",
+          "013_012_4_source_standard_f000301_target_f000943",
+          "014_012_4_source_motion_f000453_target_f001241",
+          "015_015_1_source_standard_f000649_target_f000575",
+          "016_015_1_source_motion_f000445_target_f001061",
+          "017_015_1_source_motion_f000445_target_f001203",
+          "018_015_2_source_standard_f000257_target_f000333",
+          "019_015_2_source_standard_f000257_target_f000603",
+          "020_015_2_source_standard_f000257_target_f000929",
+          "021_019_3_source_motion_f000049_target_f000413",
+          "023_019_3_source_standard_f000018_target_f001371",
+          "025_021_1_source_motion_f000903_target_f000665",
+          "027_024_2_source_motion_f000454_target_f000265",
+          "028_024_2_source_motion_f000454_target_f000492",
+          "029_024_2_source_motion_f000454_target_f000838"
+        ],
+        "cohort": "valid source face and paired metric availability; identity requires both outputs detected"
+      },
+      "pose_pck_002": {
+        "n_pairs": 24,
+        "n_actors": 8,
+        "mean_delta_per_pair": 0.018075980392156864,
+        "mean_delta_per_actor": 0.02302389705882353,
+        "actor_cluster_bootstrap_95_ci": [
+          0.003676470588235295,
+          0.047150735294117646
+        ],
+        "wins": 6,
+        "losses": 3,
+        "ties": 15,
+        "stems": [
+          "000_001_2_source_motion_f001325_target_f000081",
+          "001_001_2_source_motion_f001258_target_f000173",
+          "002_001_2_source_motion_f001325_target_f001479",
+          "003_001_5_source_motion_f000815_target_f000135",
+          "004_001_5_source_motion_f000989_target_f001322",
+          "006_006_1_source_motion_f001625_target_f000209",
+          "009_009_3_source_motion_f000415_target_f000044",
+          "010_009_3_source_motion_f000168_target_f000656",
+          "011_009_3_source_motion_f000415_target_f001285",
+          "012_012_4_source_standard_f000557_target_f000260",
+          "013_012_4_source_standard_f000301_target_f000943",
+          "014_012_4_source_motion_f000453_target_f001241",
+          "015_015_1_source_standard_f000649_target_f000575",
+          "016_015_1_source_motion_f000445_target_f001061",
+          "017_015_1_source_motion_f000445_target_f001203",
+          "018_015_2_source_standard_f000257_target_f000333",
+          "019_015_2_source_standard_f000257_target_f000603",
+          "020_015_2_source_standard_f000257_target_f000929",
+          "021_019_3_source_motion_f000049_target_f000413",
+          "023_019_3_source_standard_f000018_target_f001371",
+          "025_021_1_source_motion_f000903_target_f000665",
+          "027_024_2_source_motion_f000454_target_f000265",
+          "028_024_2_source_motion_f000454_target_f000492",
+          "029_024_2_source_motion_f000454_target_f000838"
+        ],
+        "cohort": "valid source face and paired metric availability; identity requires both outputs detected"
+      }
+    },
+    "alternative_minus_body": {
+      "identity_A": {
+        "n_pairs": 24,
+        "n_actors": 8,
+        "mean_delta_per_pair": 0.09364887482176225,
+        "mean_delta_per_actor": 0.11589869630212585,
+        "actor_cluster_bootstrap_95_ci": [
+          0.06900010776395599,
+          0.1719060589869817
+        ],
+        "wins": 20,
+        "losses": 4,
+        "ties": 0,
+        "stems": [
+          "000_001_2_source_motion_f001325_target_f000081",
+          "001_001_2_source_motion_f001258_target_f000173",
+          "002_001_2_source_motion_f001325_target_f001479",
+          "003_001_5_source_motion_f000815_target_f000135",
+          "004_001_5_source_motion_f000989_target_f001322",
+          "006_006_1_source_motion_f001625_target_f000209",
+          "009_009_3_source_motion_f000415_target_f000044",
+          "010_009_3_source_motion_f000168_target_f000656",
+          "011_009_3_source_motion_f000415_target_f001285",
+          "012_012_4_source_standard_f000557_target_f000260",
+          "013_012_4_source_standard_f000301_target_f000943",
+          "014_012_4_source_motion_f000453_target_f001241",
+          "015_015_1_source_standard_f000649_target_f000575",
+          "016_015_1_source_motion_f000445_target_f001061",
+          "017_015_1_source_motion_f000445_target_f001203",
+          "018_015_2_source_standard_f000257_target_f000333",
+          "019_015_2_source_standard_f000257_target_f000603",
+          "020_015_2_source_standard_f000257_target_f000929",
+          "021_019_3_source_motion_f000049_target_f000413",
+          "023_019_3_source_standard_f000018_target_f001371",
+          "025_021_1_source_motion_f000903_target_f000665",
+          "027_024_2_source_motion_f000454_target_f000265",
+          "028_024_2_source_motion_f000454_target_f000492",
+          "029_024_2_source_motion_f000454_target_f000838"
+        ],
+        "cohort": "valid source face and paired metric availability; identity requires both outputs detected"
+      },
+      "pose_pck_002": {
+        "n_pairs": 24,
+        "n_actors": 8,
+        "mean_delta_per_pair": -0.02205882352941177,
+        "mean_delta_per_actor": -0.01911764705882353,
+        "actor_cluster_bootstrap_95_ci": [
+          -0.03431372549019608,
+          -0.004901960784313726
+        ],
+        "wins": 0,
+        "losses": 6,
+        "ties": 18,
+        "stems": [
+          "000_001_2_source_motion_f001325_target_f000081",
+          "001_001_2_source_motion_f001258_target_f000173",
+          "002_001_2_source_motion_f001325_target_f001479",
+          "003_001_5_source_motion_f000815_target_f000135",
+          "004_001_5_source_motion_f000989_target_f001322",
+          "006_006_1_source_motion_f001625_target_f000209",
+          "009_009_3_source_motion_f000415_target_f000044",
+          "010_009_3_source_motion_f000168_target_f000656",
+          "011_009_3_source_motion_f000415_target_f001285",
+          "012_012_4_source_standard_f000557_target_f000260",
+          "013_012_4_source_standard_f000301_target_f000943",
+          "014_012_4_source_motion_f000453_target_f001241",
+          "015_015_1_source_standard_f000649_target_f000575",
+          "016_015_1_source_motion_f000445_target_f001061",
+          "017_015_1_source_motion_f000445_target_f001203",
+          "018_015_2_source_standard_f000257_target_f000333",
+          "019_015_2_source_standard_f000257_target_f000603",
+          "020_015_2_source_standard_f000257_target_f000929",
+          "021_019_3_source_motion_f000049_target_f000413",
+          "023_019_3_source_standard_f000018_target_f001371",
+          "025_021_1_source_motion_f000903_target_f000665",
+          "027_024_2_source_motion_f000454_target_f000265",
+          "028_024_2_source_motion_f000454_target_f000492",
+          "029_024_2_source_motion_f000454_target_f000838"
+        ],
+        "cohort": "valid source face and paired metric availability; identity requires both outputs detected"
+      }
+    }
+  },
+  "face_detection_transitions": {
+    "bfs_minus_nolora": {
+      "baseline_face_True_variant_face_True": 24
+    },
+    "bfs_minus_body": {
+      "baseline_face_True_variant_face_True": 24
+    },
+    "alternative_minus_nolora": {
+      "baseline_face_True_variant_face_True": 24
+    },
+    "alternative_minus_body": {
+      "baseline_face_True_variant_face_True": 24
+    }
+  },
+  "by_actor": {
+    "001": {
+      "n_pairs": 6,
+      "appearances": [
+        "001_2",
+        "001_5"
+      ],
+      "n_source_face_eligible": 5,
+      "variants": {
+        "body": {
+          "identity_mean": 0.42665103673934934,
+          "identity_n": 5
+        },
+        "nolora": {
+          "identity_mean": 0.5316215634346009,
+          "identity_n": 5
+        },
+        "bfs": {
+          "identity_mean": 0.5011517167091369,
+          "identity_n": 5
+        },
+        "alternative": {
+          "identity_mean": 0.49794032573699953,
+          "identity_n": 5
+        }
+      }
+    },
+    "006": {
+      "n_pairs": 3,
+      "appearances": [
+        "006_1"
+      ],
+      "n_source_face_eligible": 1,
+      "variants": {
+        "body": {
+          "identity_mean": 0.47108152508735657,
+          "identity_n": 1
+        },
+        "nolora": {
+          "identity_mean": 0.7685300707817078,
+          "identity_n": 1
+        },
+        "bfs": {
+          "identity_mean": 0.6065674424171448,
+          "identity_n": 1
+        },
+        "alternative": {
+          "identity_mean": 0.5907605886459351,
+          "identity_n": 1
+        }
+      }
+    },
+    "009": {
+      "n_pairs": 3,
+      "appearances": [
+        "009_3"
+      ],
+      "n_source_face_eligible": 3,
+      "variants": {
+        "body": {
+          "identity_mean": 0.5109329024950663,
+          "identity_n": 3
+        },
+        "nolora": {
+          "identity_mean": 0.6626427968343099,
+          "identity_n": 3
+        },
+        "bfs": {
+          "identity_mean": 0.5849526127179464,
+          "identity_n": 3
+        },
+        "alternative": {
+          "identity_mean": 0.5939157803853353,
+          "identity_n": 3
+        }
+      }
+    },
+    "012": {
+      "n_pairs": 3,
+      "appearances": [
+        "012_4"
+      ],
+      "n_source_face_eligible": 3,
+      "variants": {
+        "body": {
+          "identity_mean": 0.22260068853696188,
+          "identity_n": 3
+        },
+        "nolora": {
+          "identity_mean": 0.35961950570344925,
+          "identity_n": 3
+        },
+        "bfs": {
+          "identity_mean": 0.38593944907188416,
+          "identity_n": 3
+        },
+        "alternative": {
+          "identity_mean": 0.3967148959636688,
+          "identity_n": 3
+        }
+      }
+    },
+    "015": {
+      "n_pairs": 6,
+      "appearances": [
+        "015_1",
+        "015_2"
+      ],
+      "n_source_face_eligible": 6,
+      "variants": {
+        "body": {
+          "identity_mean": 0.21345228950182596,
+          "identity_n": 6
+        },
+        "nolora": {
+          "identity_mean": 0.3814122701684634,
+          "identity_n": 6
+        },
+        "bfs": {
+          "identity_mean": 0.3147112876176834,
+          "identity_n": 6
+        },
+        "alternative": {
+          "identity_mean": 0.2896937069793542,
+          "identity_n": 6
+        }
+      }
+    },
+    "019": {
+      "n_pairs": 3,
+      "appearances": [
+        "019_3"
+      ],
+      "n_source_face_eligible": 2,
+      "variants": {
+        "body": {
+          "identity_mean": 0.35264909267425537,
+          "identity_n": 2
+        },
+        "nolora": {
+          "identity_mean": 0.5620533525943756,
+          "identity_n": 2
+        },
+        "bfs": {
+          "identity_mean": 0.32390278577804565,
+          "identity_n": 2
+        },
+        "alternative": {
+          "identity_mean": 0.4566316455602646,
+          "identity_n": 2
+        }
+      }
+    },
+    "021": {
+      "n_pairs": 3,
+      "appearances": [
+        "021_1"
+      ],
+      "n_source_face_eligible": 1,
+      "variants": {
+        "body": {
+          "identity_mean": 0.08419816195964813,
+          "identity_n": 1
+        },
+        "nolora": {
+          "identity_mean": 0.48144203424453735,
+          "identity_n": 1
+        },
+        "bfs": {
+          "identity_mean": 0.2868407070636749,
+          "identity_n": 1
+        },
+        "alternative": {
+          "identity_mean": 0.36517709493637085,
+          "identity_n": 1
+        }
+      }
+    },
+    "024": {
+      "n_pairs": 3,
+      "appearances": [
+        "024_2"
+      ],
+      "n_source_face_eligible": 3,
+      "variants": {
+        "body": {
+          "identity_mean": 0.5810429851214091,
+          "identity_n": 3
+        },
+        "nolora": {
+          "identity_mean": 0.7051838437716166,
+          "identity_n": 3
+        },
+        "bfs": {
+          "identity_mean": 0.5882641474405924,
+          "identity_n": 3
+        },
+        "alternative": {
+          "identity_mean": 0.5989642143249512,
+          "identity_n": 3
+        }
+      }
+    }
+  },
+  "cohort": {
+    "n_pairs": 30,
+    "n_actors": 8,
+    "n_appearances": 10,
+    "source_face_eligible": 24,
+    "common_identity_n": 24,
+    "actor_mapping_source": "https://svip-lab.github.io/dataset/iPER_dataset.html"
+  },
+  "output_face_audit_complete": true,
+  "limitations": [
+    "eight actors, ten clothing appearances; validation sample, not an independent unseen-actor test",
+    "identity means / confidence intervals are conditional on detection; consult failure transitions",
+    "paired PCK contrasts use common eligible samples; raw aggregate PCK denominators differ",
+    "fallback summaries copy Body metrics for source-face-unavailable cases; no BFS generation occurred there",
+    "one seed and one strength; simplified Body, no current Full Face comparison",
+    "body PCK does not measure head angle/expression",
+    "whole-image second stage may alter clothing/background"
+  ]
+}

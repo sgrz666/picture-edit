@@ -1,0 +1,189 @@
+{
+  "passed": true,
+  "joint_signature": {
+    "schema": "joint_body_face_pilot_v1",
+    "model_revision": "790c92633540aa0cb11d9abf19eb46d861714758",
+    "model": "/data/shangguanrz/pic-edit-models/Qwen-Image-2.1",
+    "lora_sha256": "7dc0a53aba4dbc70c204f498936a619d226559da11011f748c389189af46b664",
+    "strength": 1.0,
+    "train_sha256": "5f27d24e9ca7c6ee9fe4b837850975304026d16097a5c2d588a8e23fcca47d29",
+    "val_sha256": "cece883b96dbbc9270fd77d4bb1e973470f52f941af85c2a0746947f5d91e10a",
+    "features": "/home/shangguanrz/nihaochen/qwen21_full/tiktok_face_v1_20261004/data/face_cache",
+    "supervision_sha256": "db564908d0cb47ff33fcb04c7c7bb8ee2fd95133c8449fa48914f1bef728f2e4",
+    "cache": "/home/shangguanrz/nihaochen/qwen21_full/tiktok_face_v1_20261004/native_cache_tiktok",
+    "seed": 42,
+    "noise_offset": 256,
+    "body_lr_scale": 0.25,
+    "face_lr_scale": 0.5,
+    "face_weight": 0.5,
+    "aux_every": 4,
+    "warmup_steps": 20,
+    "joint_code_sha256": "cc9ea3f52f907685970eac52ce4aa9774f192f03df97c10c2c6056e7c936c3c7",
+    "trainer_code_sha256": "7c9bffb4e4dc0f8f026581578576f8c6a7dfa829794c21a41e6e5989325667a8",
+    "split": {
+      "role": "branch",
+      "lock_sha256": "41c62acde89a01b62a494d9da64ff8e488665877e0836985cf62b5a4e6888393",
+      "full512_sha256": "854133776d2067aa392442553f3003ef9e6d45107ccc9cffe5a4af8600fb929f",
+      "common_sha256": "43cedb569944bc6f98ec046d04f9e11d7cf7d9c8dba5aed7144b558e9dd08508",
+      "branch_sha256": "5f27d24e9ca7c6ee9fe4b837850975304026d16097a5c2d588a8e23fcca47d29"
+    },
+    "deterministic_algorithms": "warn_only",
+    "cublas_workspace_config": ":4096:8"
+  },
+  "initialization_sha256": "21d62ff1607dd3b081f94344a7da8184422435026fad58b88bad79e7d600a57b",
+  "low_noise": [
+    {
+      "loss": 0.5139602422714233,
+      "body_flow": 0.3273507058620453,
+      "face_flow": 0.35499855875968933,
+      "identity": 0.05940377712249756,
+      "perceptual": 0.06339779496192932,
+      "sigma": 0.2001953125,
+      "face_active": true,
+      "auxiliary_requested": true,
+      "auxiliary_used": true,
+      "auxiliary_eligible_faces": 1,
+      "pair_index": 0,
+      "pair_id": "train_0008447",
+      "noise_seed": 24042,
+      "source_stem": "0107",
+      "target_stem": "0178",
+      "source_appearance": "00338",
+      "target_appearance": "00338",
+      "auxiliary_gradient_norms": {
+        "identity": 0.3205852210521698,
+        "perceptual": 0.10489633679389954
+      },
+      "group_grad_norms": {
+        "body_heads_and_interface": 0.27379147215987343,
+        "body_encoders": 0.0013617675735136648,
+        "body_control_core": 0.031540347268204504,
+        "face_heads_and_interface": 0.26697562433755095,
+        "face_encoders": 0.036982814243090155,
+        "face_control_core": 0.20547375144911464
+      }
+    },
+    {
+      "loss": 0.6271880269050598,
+      "body_flow": 0.38999128341674805,
+      "face_flow": 0.39507749676704407,
+      "identity": 0.3370111584663391,
+      "perceptual": 0.1191372349858284,
+      "sigma": 0.2001953125,
+      "face_active": true,
+      "auxiliary_requested": true,
+      "auxiliary_used": true,
+      "auxiliary_eligible_faces": 1,
+      "pair_index": 64,
+      "pair_id": "train_0003092",
+      "noise_seed": 24106,
+      "source_stem": "0523",
+      "target_stem": "0333",
+      "source_appearance": "00108",
+      "target_appearance": "00108",
+      "auxiliary_gradient_norms": {
+        "identity": 1.3049765825271606,
+        "perceptual": 0.12412971258163452
+      },
+      "group_grad_norms": {
+        "body_heads_and_interface": 0.35118990478418405,
+        "body_encoders": 0.0032350124573824494,
+        "body_control_core": 0.05055300324549648,
+        "face_heads_and_interface": 0.40137118959574863,
+        "face_encoders": 0.05496662852349393,
+        "face_control_core": 0.24426651757130674
+      }
+    },
+    {
+      "loss": 0.6926864981651306,
+      "body_flow": 0.41971224546432495,
+      "face_flow": 0.4881085753440857,
+      "identity": 0.19702798128128052,
+      "perceptual": 0.18434365093708038,
+      "sigma": 0.2001953125,
+      "face_active": true,
+      "auxiliary_requested": true,
+      "auxiliary_used": true,
+      "auxiliary_eligible_faces": 1,
+      "pair_index": 128,
+      "pair_id": "train_0005207",
+      "noise_seed": 24170,
+      "source_stem": "0377",
+      "target_stem": "0232",
+      "source_appearance": "00186",
+      "target_appearance": "00186",
+      "auxiliary_gradient_norms": {
+        "identity": 0.7768612504005432,
+        "perceptual": 0.183454692363739
+      },
+      "group_grad_norms": {
+        "body_heads_and_interface": 0.290514840942133,
+        "body_encoders": 0.0032189573624446673,
+        "body_control_core": 0.029550026946588873,
+        "face_heads_and_interface": 0.33894531623047935,
+        "face_encoders": 0.051781399039406796,
+        "face_control_core": 0.23956575722180462
+      }
+    },
+    {
+      "loss": 0.6317006945610046,
+      "body_flow": 0.3715800642967224,
+      "face_flow": 0.4716417193412781,
+      "identity": 0.16921496391296387,
+      "perceptual": 0.14756575226783752,
+      "sigma": 0.2001953125,
+      "face_active": true,
+      "auxiliary_requested": true,
+      "auxiliary_used": true,
+      "auxiliary_eligible_faces": 1,
+      "pair_index": 192,
+      "pair_id": "train_0006180",
+      "noise_seed": 24234,
+      "source_stem": "0330",
+      "target_stem": "0195",
+      "source_appearance": "00212",
+      "target_appearance": "00212",
+      "auxiliary_gradient_norms": {
+        "identity": 0.5556659698486328,
+        "perceptual": 0.11527372896671295
+      },
+      "group_grad_norms": {
+        "body_heads_and_interface": 0.560913068266837,
+        "body_encoders": 0.005739835161131679,
+        "body_control_core": 0.0704506752458889,
+        "face_heads_and_interface": 0.281628094147908,
+        "face_encoders": 0.035212579227911475,
+        "face_control_core": 0.1867450901128118
+      }
+    }
+  ],
+  "high_noise": {
+    "loss": 0.09396421164274216,
+    "body_flow": 0.09396421164274216,
+    "face_flow": 0.0,
+    "identity": 0.0,
+    "perceptual": 0.0,
+    "sigma": 0.80078125,
+    "face_active": false,
+    "auxiliary_requested": false,
+    "auxiliary_used": false,
+    "auxiliary_eligible_faces": 0,
+    "pair_index": 0,
+    "pair_id": "train_0008447",
+    "noise_seed": 24042,
+    "source_stem": "0107",
+    "target_stem": "0178",
+    "source_appearance": "00338",
+    "target_appearance": "00338",
+    "group_grad_norms": {
+      "body_heads_and_interface": 0.20359238523782044,
+      "body_encoders": 0.012097240245601801,
+      "body_control_core": 0.0495091206718212,
+      "face_heads_and_interface": 0.0,
+      "face_encoders": 0.0,
+      "face_control_core": 0.0
+    }
+  },
+  "frozen_transformer_unchanged": true,
+  "frozen_adapter_unchanged": true
+}

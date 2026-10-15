@@ -1,0 +1,26 @@
+{
+  "reviewed_cases": 12,
+  "new_severe_failures": 0,
+  "moderate_regressions": [
+    "tiktok:19 expression",
+    "iper:0 head direction"
+  ],
+  "continue": true,
+  "reference": "init_initial",
+  "candidate": "J_mid",
+  "notes": {
+    "tiktok:0": "Mouth/eyes closer to B; face shape still softened.",
+    "tiktok:4": "Body pose and clothes stable; face remains low-detail like baseline.",
+    "tiktok:7": "Stable pose; identity/texture remains imperfect, no new severe collapse.",
+    "tiktok:8": "Similar to baseline.",
+    "tiktok:13": "Still retains A-like open mouth rather than neutral B expression.",
+    "tiktok:14": "Similar frontal face and clothes; existing smoothing remains.",
+    "tiktok:16": "Similar body pose; slight expression change.",
+    "tiktok:19": "New unwanted open mouth versus neutral B; moderate expression regression, pose/person intact.",
+    "tiktok:22": "Smile closer to B; body/clothes preserved.",
+    "iper:0": "Unwanted head tilt/turn persists or increases; identity and body intact, moderate regression.",
+    "iper:2": "Body pose stable, face comparable.",
+    "iper:3": "Body pose stable, face comparable."
+  },
+  "review_method": "All12 locked cases compared as unaltered whole RGB and fixed ROI crops in six local sheets; no face/multi-person collapse or new severe body/background/clothing destruction. Expression and head direction remain imperfect; no superiority claim."
+}

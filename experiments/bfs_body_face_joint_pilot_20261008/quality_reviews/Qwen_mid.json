@@ -1,0 +1,59 @@
+{
+  "reviewed_cases": 12,
+  "new_severe_failures": 0,
+  "continue": true,
+  "reference": "Qwen_hotload",
+  "candidate": "Qwen_mid",
+  "reviewer": "parent agent",
+  "method": "All 12 saved whole-image and fixed B-face ROI comparisons inspected in six local contact sheets",
+  "locked_tiktok_indices": [
+    0,
+    4,
+    7,
+    8,
+    13,
+    14,
+    16,
+    19,
+    22
+  ],
+  "locked_iper_indices": [
+    0,
+    2,
+    3
+  ],
+  "moderate_changes": [
+    {
+      "dataset": "tiktok",
+      "index": 0,
+      "observation": "Mouth closes more than B and own hotload; local expression regression."
+    },
+    {
+      "dataset": "tiktok",
+      "index": 8,
+      "observation": "Smile weaker than B; whole-body layout remains similar to hotload."
+    },
+    {
+      "dataset": "tiktok",
+      "index": 13,
+      "observation": "New open mouth versus near-closed B/hotload."
+    }
+  ],
+  "improvements": [
+    {
+      "dataset": "tiktok",
+      "index": 14,
+      "observation": "Eyes appear more symmetric than hotload."
+    },
+    {
+      "dataset": "tiktok",
+      "index": 22,
+      "observation": "Removes exaggerated open-mouth smile; B head direction still not matched."
+    }
+  ],
+  "inherited_failures": [
+    "TikTok 19 exaggerated open mouth already present at hotload.",
+    "iPER 0 head tilted/turned compared with B at both stages."
+  ],
+  "decision": "No new severe collapse or identity/body destruction in the locked 12; continue bounded final 128 updates."
+}

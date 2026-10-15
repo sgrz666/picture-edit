@@ -1,0 +1,198 @@
+SELECTION n=30 identities=10
+
+Loading pipeline components...:   0%|          | 0/5 [00:00<?, ?it/s]
+
+Loading weights:   0%|          | 0/750 [00:00<?, ?it/s]
+Loading weights: 100%|██████████| 750/750 [00:00<00:00, 10254.49it/s]
+
+Loading pipeline components...:  20%|██        | 1/5 [00:00<00:01,  3.47it/s]
+Loading pipeline components...:  40%|████      | 2/5 [00:00<00:01,  2.06it/s]
+
+Loading checkpoint shards:   0%|          | 0/2 [00:00<?, ?it/s]
+Loading checkpoint shards: 100%|██████████| 2/2 [00:00<00:00, 150.49it/s]
+
+Loading pipeline components...: 100%|██████████| 5/5 [00:01<00:00,  4.24it/s]
+Loading pipeline components...: 100%|██████████| 5/5 [00:01<00:00,  3.78it/s]
+PREFLIGHT {'bfs': {'tensors_checked': 384, 'modules_checked': 192, 'all_values_match_after_dtype_conversion': True, 'tensors_cast_through_base_dtype': 0, 'gate_first': True, 'strength': 1.0, 'module_scales': [1.0]}, 'alternative': {'tensors_checked': 448, 'modules_checked': 224, 'all_values_match_after_dtype_conversion': True, 'tensors_cast_through_base_dtype': 0, 'gate_first': True, 'strength': 1.0, 'module_scales': [1.0]}}
+GEN body 1/30 000_001_2_source_motion_f001325_target_f000081
+GEN body 2/30 001_001_2_source_motion_f001258_target_f000173
+GEN body 3/30 002_001_2_source_motion_f001325_target_f001479
+GEN body 4/30 003_001_5_source_motion_f000815_target_f000135
+GEN body 5/30 004_001_5_source_motion_f000989_target_f001322
+GEN body 6/30 005_001_5_source_standard_f000546_target_f001630
+GEN body 7/30 006_006_1_source_motion_f001625_target_f000209
+GEN body 8/30 007_006_1_source_standard_f000483_target_f000898
+GEN body 9/30 008_006_1_source_standard_f000483_target_f001505
+GEN body 10/30 009_009_3_source_motion_f000415_target_f000044
+GEN body 11/30 010_009_3_source_motion_f000168_target_f000656
+GEN body 12/30 011_009_3_source_motion_f000415_target_f001285
+GEN body 13/30 012_012_4_source_standard_f000557_target_f000260
+GEN body 14/30 013_012_4_source_standard_f000301_target_f000943
+GEN body 15/30 014_012_4_source_motion_f000453_target_f001241
+GEN body 16/30 015_015_1_source_standard_f000649_target_f000575
+GEN body 17/30 016_015_1_source_motion_f000445_target_f001061
+GEN body 18/30 017_015_1_source_motion_f000445_target_f001203
+GEN body 19/30 018_015_2_source_standard_f000257_target_f000333
+GEN body 20/30 019_015_2_source_standard_f000257_target_f000603
+GEN body 21/30 020_015_2_source_standard_f000257_target_f000929
+GEN body 22/30 021_019_3_source_motion_f000049_target_f000413
+GEN body 23/30 022_019_3_source_standard_f000136_target_f000841
+GEN body 24/30 023_019_3_source_standard_f000018_target_f001371
+GEN body 25/30 024_021_1_source_standard_f000359_target_f000265
+GEN body 26/30 025_021_1_source_motion_f000903_target_f000665
+GEN body 27/30 026_021_1_source_standard_f000158_target_f001416
+GEN body 28/30 027_024_2_source_motion_f000454_target_f000265
+GEN body 29/30 028_024_2_source_motion_f000454_target_f000492
+GEN body 30/30 029_024_2_source_motion_f000454_target_f000838
+GEN nolora 1/30 000_001_2_source_motion_f001325_target_f000081
+GEN nolora 2/30 001_001_2_source_motion_f001258_target_f000173
+GEN nolora 3/30 002_001_2_source_motion_f001325_target_f001479
+GEN nolora 4/30 003_001_5_source_motion_f000815_target_f000135
+GEN nolora 5/30 004_001_5_source_motion_f000989_target_f001322
+GEN nolora 7/30 006_006_1_source_motion_f001625_target_f000209
+GEN nolora 10/30 009_009_3_source_motion_f000415_target_f000044
+GEN nolora 11/30 010_009_3_source_motion_f000168_target_f000656
+GEN nolora 12/30 011_009_3_source_motion_f000415_target_f001285
+GEN nolora 13/30 012_012_4_source_standard_f000557_target_f000260
+GEN nolora 14/30 013_012_4_source_standard_f000301_target_f000943
+GEN nolora 15/30 014_012_4_source_motion_f000453_target_f001241
+GEN nolora 16/30 015_015_1_source_standard_f000649_target_f000575
+GEN nolora 17/30 016_015_1_source_motion_f000445_target_f001061
+GEN nolora 18/30 017_015_1_source_motion_f000445_target_f001203
+GEN nolora 19/30 018_015_2_source_standard_f000257_target_f000333
+GEN nolora 20/30 019_015_2_source_standard_f000257_target_f000603
+GEN nolora 21/30 020_015_2_source_standard_f000257_target_f000929
+GEN nolora 22/30 021_019_3_source_motion_f000049_target_f000413
+GEN nolora 24/30 023_019_3_source_standard_f000018_target_f001371
+GEN nolora 26/30 025_021_1_source_motion_f000903_target_f000665
+GEN nolora 28/30 027_024_2_source_motion_f000454_target_f000265
+GEN nolora 29/30 028_024_2_source_motion_f000454_target_f000492
+GEN nolora 30/30 029_024_2_source_motion_f000454_target_f000838
+LOAD bfs {'tensors_checked': 384, 'modules_checked': 192, 'all_values_match_after_dtype_conversion': True, 'tensors_cast_through_base_dtype': 0, 'gate_first': True, 'strength': 1.0, 'module_scales': [1.0]}
+GEN bfs 1/30 000_001_2_source_motion_f001325_target_f000081
+GEN bfs 2/30 001_001_2_source_motion_f001258_target_f000173
+GEN bfs 3/30 002_001_2_source_motion_f001325_target_f001479
+GEN bfs 4/30 003_001_5_source_motion_f000815_target_f000135
+GEN bfs 5/30 004_001_5_source_motion_f000989_target_f001322
+GEN bfs 7/30 006_006_1_source_motion_f001625_target_f000209
+GEN bfs 10/30 009_009_3_source_motion_f000415_target_f000044
+GEN bfs 11/30 010_009_3_source_motion_f000168_target_f000656
+GEN bfs 12/30 011_009_3_source_motion_f000415_target_f001285
+GEN bfs 13/30 012_012_4_source_standard_f000557_target_f000260
+GEN bfs 14/30 013_012_4_source_standard_f000301_target_f000943
+GEN bfs 15/30 014_012_4_source_motion_f000453_target_f001241
+GEN bfs 16/30 015_015_1_source_standard_f000649_target_f000575
+GEN bfs 17/30 016_015_1_source_motion_f000445_target_f001061
+GEN bfs 18/30 017_015_1_source_motion_f000445_target_f001203
+GEN bfs 19/30 018_015_2_source_standard_f000257_target_f000333
+GEN bfs 20/30 019_015_2_source_standard_f000257_target_f000603
+GEN bfs 21/30 020_015_2_source_standard_f000257_target_f000929
+GEN bfs 22/30 021_019_3_source_motion_f000049_target_f000413
+GEN bfs 24/30 023_019_3_source_standard_f000018_target_f001371
+GEN bfs 26/30 025_021_1_source_motion_f000903_target_f000665
+GEN bfs 28/30 027_024_2_source_motion_f000454_target_f000265
+GEN bfs 29/30 028_024_2_source_motion_f000454_target_f000492
+GEN bfs 30/30 029_024_2_source_motion_f000454_target_f000838
+LOAD alternative {'tensors_checked': 448, 'modules_checked': 224, 'all_values_match_after_dtype_conversion': True, 'tensors_cast_through_base_dtype': 0, 'gate_first': True, 'strength': 1.0, 'module_scales': [1.0]}
+GEN alternative 1/30 000_001_2_source_motion_f001325_target_f000081
+GEN alternative 2/30 001_001_2_source_motion_f001258_target_f000173
+GEN alternative 3/30 002_001_2_source_motion_f001325_target_f001479
+GEN alternative 4/30 003_001_5_source_motion_f000815_target_f000135
+GEN alternative 5/30 004_001_5_source_motion_f000989_target_f001322
+GEN alternative 7/30 006_006_1_source_motion_f001625_target_f000209
+GEN alternative 10/30 009_009_3_source_motion_f000415_target_f000044
+GEN alternative 11/30 010_009_3_source_motion_f000168_target_f000656
+GEN alternative 12/30 011_009_3_source_motion_f000415_target_f001285
+GEN alternative 13/30 012_012_4_source_standard_f000557_target_f000260
+GEN alternative 14/30 013_012_4_source_standard_f000301_target_f000943
+GEN alternative 15/30 014_012_4_source_motion_f000453_target_f001241
+GEN alternative 16/30 015_015_1_source_standard_f000649_target_f000575
+GEN alternative 17/30 016_015_1_source_motion_f000445_target_f001061
+GEN alternative 18/30 017_015_1_source_motion_f000445_target_f001203
+GEN alternative 19/30 018_015_2_source_standard_f000257_target_f000333
+GEN alternative 20/30 019_015_2_source_standard_f000257_target_f000603
+GEN alternative 21/30 020_015_2_source_standard_f000257_target_f000929
+GEN alternative 22/30 021_019_3_source_motion_f000049_target_f000413
+GEN alternative 24/30 023_019_3_source_standard_f000018_target_f001371
+GEN alternative 26/30 025_021_1_source_motion_f000903_target_f000665
+GEN alternative 28/30 027_024_2_source_motion_f000454_target_f000265
+GEN alternative 29/30 028_024_2_source_motion_f000454_target_f000492
+GEN alternative 30/30 029_024_2_source_motion_f000454_target_f000838
+SCORE 1/30 000_001_2_source_motion_f001325_target_f000081
+SCORE 2/30 001_001_2_source_motion_f001258_target_f000173
+SCORE 3/30 002_001_2_source_motion_f001325_target_f001479
+SCORE 4/30 003_001_5_source_motion_f000815_target_f000135
+SCORE 5/30 004_001_5_source_motion_f000989_target_f001322
+SCORE 6/30 005_001_5_source_standard_f000546_target_f001630
+SCORE 7/30 006_006_1_source_motion_f001625_target_f000209
+SCORE 8/30 007_006_1_source_standard_f000483_target_f000898
+SCORE 9/30 008_006_1_source_standard_f000483_target_f001505
+SCORE 10/30 009_009_3_source_motion_f000415_target_f000044
+SCORE 11/30 010_009_3_source_motion_f000168_target_f000656
+SCORE 12/30 011_009_3_source_motion_f000415_target_f001285
+SCORE 13/30 012_012_4_source_standard_f000557_target_f000260
+SCORE 14/30 013_012_4_source_standard_f000301_target_f000943
+SCORE 15/30 014_012_4_source_motion_f000453_target_f001241
+SCORE 16/30 015_015_1_source_standard_f000649_target_f000575
+SCORE 17/30 016_015_1_source_motion_f000445_target_f001061
+SCORE 18/30 017_015_1_source_motion_f000445_target_f001203
+SCORE 19/30 018_015_2_source_standard_f000257_target_f000333
+SCORE 20/30 019_015_2_source_standard_f000257_target_f000603
+SCORE 21/30 020_015_2_source_standard_f000257_target_f000929
+SCORE 22/30 021_019_3_source_motion_f000049_target_f000413
+SCORE 23/30 022_019_3_source_standard_f000136_target_f000841
+SCORE 24/30 023_019_3_source_standard_f000018_target_f001371
+SCORE 25/30 024_021_1_source_standard_f000359_target_f000265
+SCORE 26/30 025_021_1_source_motion_f000903_target_f000665
+SCORE 27/30 026_021_1_source_standard_f000158_target_f001416
+SCORE 28/30 027_024_2_source_motion_f000454_target_f000265
+SCORE 29/30 028_024_2_source_motion_f000454_target_f000492
+SCORE 30/30 029_024_2_source_motion_f000454_target_f000838
+{
+  "body": {
+    "n_total": 30,
+    "n_complete": 30,
+    "n_face_detected": 30,
+    "identity_A_mean": 0.3590948550651471,
+    "identity_A_n": 24,
+    "pose_pck_002_mean": 0.9899509803921569,
+    "pose_pck_002_n": 30,
+    "outside_head_mae_255_mean": 0.0,
+    "outside_head_mae_255_n": 30
+  },
+  "nolora": {
+    "n_total": 30,
+    "n_complete": 24,
+    "n_face_detected": 24,
+    "identity_A_mean": 0.5209582786386212,
+    "identity_A_n": 24,
+    "pose_pck_002_mean": 0.9497549019607844,
+    "pose_pck_002_n": 24,
+    "outside_head_mae_255_mean": 3.1267737547556558,
+    "outside_head_mae_255_n": 24
+  },
+  "bfs": {
+    "n_total": 30,
+    "n_complete": 24,
+    "n_face_detected": 24,
+    "identity_A_mean": 0.44219619408249855,
+    "identity_A_n": 24,
+    "pose_pck_002_mean": 0.9629289215686274,
+    "pose_pck_002_n": 24,
+    "outside_head_mae_255_mean": 4.351762175559998,
+    "outside_head_mae_255_n": 24
+  },
+  "alternative": {
+    "n_total": 30,
+    "n_complete": 24,
+    "n_face_detected": 24,
+    "identity_A_mean": 0.4527437298869093,
+    "identity_A_n": 24,
+    "pose_pck_002_mean": 0.9678308823529411,
+    "pose_pck_002_n": 24,
+    "outside_head_mae_255_mean": 4.271671215693156,
+    "outside_head_mae_255_n": 24
+  }
+}
+DONE
+

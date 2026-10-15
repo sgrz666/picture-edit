@@ -1,0 +1,308 @@
+[
+  {
+    "id": "inter_01_pair00_taichi__detailed",
+    "sample": "inter_01_pair00_taichi",
+    "pair": "pair00",
+    "interaction": "embrace",
+    "arm": "detailed",
+    "source_action": "taichi00",
+    "target_action": "hug00",
+    "seconds": 122.04,
+    "peak_cuda_gib": 19.025,
+    "output_size": [
+      768,
+      1024
+    ],
+    "n_refs": 1,
+    "prompt": "Image 1 is a studio photograph of two people standing apart without touching each other. They are the two subjects you must render. The two people step together and hold each other in a warm embrace. The person who was on the left slides in beside the other, their torsos pressed together and turned about thirty degrees away from the camera. The left person's right arm reaches over the other's far shoulder with the forearm resting across the upper back, while the right person's left arm wraps around the first person's waist. Their heads lean towards each other, and both keep their feet planted on the floor. Keep both people exactly as they appear in image 1 - the same two faces, hairstyles, skin tones, body sizes and the same clothing on each of them - and keep the plain green studio background, the camera angle and the full-length framing unchanged. Do not add, remove or replace either person."
+  },
+  {
+    "id": "inter_01_pair00_taichi__minimal",
+    "sample": "inter_01_pair00_taichi",
+    "pair": "pair00",
+    "interaction": "embrace",
+    "arm": "minimal",
+    "source_action": "taichi00",
+    "target_action": "hug00",
+    "seconds": 57.88,
+    "peak_cuda_gib": 19.025,
+    "output_size": [
+      768,
+      1024
+    ],
+    "n_refs": 1,
+    "prompt": "Image 1 is a studio photograph of two people standing apart without touching each other. They are the two subjects you must render. Make the two people in this image interact: they must physically touch each other. Keep both people exactly as they appear in image 1 - the same two faces, hairstyles, skin tones, body sizes and the same clothing on each of them - and keep the plain green studio background, the camera angle and the full-length framing unchanged. Do not add, remove or replace either person."
+  },
+  {
+    "id": "inter_01_pair00_taichi__w_ref",
+    "sample": "inter_01_pair00_taichi",
+    "pair": "pair00",
+    "interaction": "embrace",
+    "arm": "w_ref",
+    "source_action": "taichi00",
+    "target_action": "hug00",
+    "seconds": 63.51,
+    "peak_cuda_gib": 19.498,
+    "output_size": [
+      768,
+      1024
+    ],
+    "n_refs": 2,
+    "prompt": "Image 1 is a studio photograph of two people standing apart without touching each other. They are the two subjects you must render. Image 2 shows the same two people already performing the interaction to adopt. The two people step together and hold each other in a warm embrace. The person who was on the left slides in beside the other, their torsos pressed together and turned about thirty degrees away from the camera. The left person's right arm reaches over the other's far shoulder with the forearm resting across the upper back, while the right person's left arm wraps around the first person's waist. Their heads lean towards each other, and both keep their feet planted on the floor. Keep both people exactly as they appear in image 1 - the same two faces, hairstyles, skin tones, body sizes and the same clothing on each of them - and keep the plain green studio background, the camera angle and the full-length framing unchanged. Do not add, remove or replace either person."
+  },
+  {
+    "id": "inter_03_pair00_hug__detailed",
+    "sample": "inter_03_pair00_hug",
+    "pair": "pair00",
+    "interaction": "taichi partner push-hands",
+    "arm": "detailed",
+    "source_action": "hug00",
+    "target_action": "taichi00",
+    "seconds": 58.29,
+    "peak_cuda_gib": 19.028,
+    "output_size": [
+      768,
+      1024
+    ],
+    "n_refs": 1,
+    "prompt": "Image 1 is a studio photograph of two people standing apart without touching each other. They are the two subjects you must render. The two people square off into a taichi push-hands stance. Both drop into a slight crouch with knees bent and feet a shoulder-width apart, facing each other about one step away. Both raise their arms to chest height with the elbows bent and the palms open, so that their hands meet and press against each other in the space between them. Keep both people exactly as they appear in image 1 - the same two faces, hairstyles, skin tones, body sizes and the same clothing on each of them - and keep the plain green studio background, the camera angle and the full-length framing unchanged. Do not add, remove or replace either person."
+  },
+  {
+    "id": "inter_03_pair00_hug__minimal",
+    "sample": "inter_03_pair00_hug",
+    "pair": "pair00",
+    "interaction": "taichi partner push-hands",
+    "arm": "minimal",
+    "source_action": "hug00",
+    "target_action": "taichi00",
+    "seconds": 58.36,
+    "peak_cuda_gib": 19.027,
+    "output_size": [
+      768,
+      1024
+    ],
+    "n_refs": 1,
+    "prompt": "Image 1 is a studio photograph of two people standing apart without touching each other. They are the two subjects you must render. Make the two people in this image interact: they must physically touch each other. Keep both people exactly as they appear in image 1 - the same two faces, hairstyles, skin tones, body sizes and the same clothing on each of them - and keep the plain green studio background, the camera angle and the full-length framing unchanged. Do not add, remove or replace either person."
+  },
+  {
+    "id": "inter_03_pair00_hug__w_ref",
+    "sample": "inter_03_pair00_hug",
+    "pair": "pair00",
+    "interaction": "taichi partner push-hands",
+    "arm": "w_ref",
+    "source_action": "hug00",
+    "target_action": "taichi00",
+    "seconds": 61.85,
+    "peak_cuda_gib": 19.485,
+    "output_size": [
+      768,
+      1024
+    ],
+    "n_refs": 2,
+    "prompt": "Image 1 is a studio photograph of two people standing apart without touching each other. They are the two subjects you must render. Image 2 shows the same two people already performing the interaction to adopt. The two people square off into a taichi push-hands stance. Both drop into a slight crouch with knees bent and feet a shoulder-width apart, facing each other about one step away. Both raise their arms to chest height with the elbows bent and the palms open, so that their hands meet and press against each other in the space between them. Keep both people exactly as they appear in image 1 - the same two faces, hairstyles, skin tones, body sizes and the same clothing on each of them - and keep the plain green studio background, the camera angle and the full-length framing unchanged. Do not add, remove or replace either person."
+  },
+  {
+    "id": "inter_05_pair00_hug__detailed",
+    "sample": "inter_05_pair00_hug",
+    "pair": "pair00",
+    "interaction": "partner yoga",
+    "arm": "detailed",
+    "source_action": "hug00",
+    "target_action": "yoga00",
+    "seconds": 57.66,
+    "peak_cuda_gib": 19.027,
+    "output_size": [
+      768,
+      1024
+    ],
+    "n_refs": 1,
+    "prompt": "Image 1 is a studio photograph of two people standing apart without touching each other. They are the two subjects you must render. The two people perform a supported partner yoga pose. They stand very close, back to side, with the taller person upright and the other leaning backwards against them. Both raise their arms overhead and join hands above their heads, and their bodies touch along the side of the torso and hips while both keep their feet on the floor. Keep both people exactly as they appear in image 1 - the same two faces, hairstyles, skin tones, body sizes and the same clothing on each of them - and keep the plain green studio background, the camera angle and the full-length framing unchanged. Do not add, remove or replace either person."
+  },
+  {
+    "id": "inter_05_pair00_hug__minimal",
+    "sample": "inter_05_pair00_hug",
+    "pair": "pair00",
+    "interaction": "partner yoga",
+    "arm": "minimal",
+    "source_action": "hug00",
+    "target_action": "yoga00",
+    "seconds": 56.38,
+    "peak_cuda_gib": 19.024,
+    "output_size": [
+      768,
+      1024
+    ],
+    "n_refs": 1,
+    "prompt": "Image 1 is a studio photograph of two people standing apart without touching each other. They are the two subjects you must render. Make the two people in this image interact: they must physically touch each other. Keep both people exactly as they appear in image 1 - the same two faces, hairstyles, skin tones, body sizes and the same clothing on each of them - and keep the plain green studio background, the camera angle and the full-length framing unchanged. Do not add, remove or replace either person."
+  },
+  {
+    "id": "inter_05_pair00_hug__w_ref",
+    "sample": "inter_05_pair00_hug",
+    "pair": "pair00",
+    "interaction": "partner yoga",
+    "arm": "w_ref",
+    "source_action": "hug00",
+    "target_action": "yoga00",
+    "seconds": 60.49,
+    "peak_cuda_gib": 19.481,
+    "output_size": [
+      768,
+      1024
+    ],
+    "n_refs": 2,
+    "prompt": "Image 1 is a studio photograph of two people standing apart without touching each other. They are the two subjects you must render. Image 2 shows the same two people already performing the interaction to adopt. The two people perform a supported partner yoga pose. They stand very close, back to side, with the taller person upright and the other leaning backwards against them. Both raise their arms overhead and join hands above their heads, and their bodies touch along the side of the torso and hips while both keep their feet on the floor. Keep both people exactly as they appear in image 1 - the same two faces, hairstyles, skin tones, body sizes and the same clothing on each of them - and keep the plain green studio background, the camera angle and the full-length framing unchanged. Do not add, remove or replace either person."
+  },
+  {
+    "id": "inter_07_pair02_backhug__detailed",
+    "sample": "inter_07_pair02_backhug",
+    "pair": "pair02",
+    "interaction": "embrace from behind",
+    "arm": "detailed",
+    "source_action": "backhug02",
+    "target_action": "backhug02",
+    "seconds": 56.42,
+    "peak_cuda_gib": 19.029,
+    "output_size": [
+      768,
+      1024
+    ],
+    "n_refs": 1,
+    "prompt": "Image 1 is a studio photograph of two people standing apart without touching each other. They are the two subjects you must render. The person standing behind steps in and embraces the other from behind. The front person stands relaxed facing the camera, and the person behind presses against their back and wraps both arms around them, with one arm crossing the front person's chest and the other resting on the front person's waist. Their heads are level and close together and both stay on their feet. Keep both people exactly as they appear in image 1 - the same two faces, hairstyles, skin tones, body sizes and the same clothing on each of them - and keep the plain green studio background, the camera angle and the full-length framing unchanged. Do not add, remove or replace either person."
+  },
+  {
+    "id": "inter_07_pair02_backhug__minimal",
+    "sample": "inter_07_pair02_backhug",
+    "pair": "pair02",
+    "interaction": "embrace from behind",
+    "arm": "minimal",
+    "source_action": "backhug02",
+    "target_action": "backhug02",
+    "seconds": 55.29,
+    "peak_cuda_gib": 19.024,
+    "output_size": [
+      768,
+      1024
+    ],
+    "n_refs": 1,
+    "prompt": "Image 1 is a studio photograph of two people standing apart without touching each other. They are the two subjects you must render. Make the two people in this image interact: they must physically touch each other. Keep both people exactly as they appear in image 1 - the same two faces, hairstyles, skin tones, body sizes and the same clothing on each of them - and keep the plain green studio background, the camera angle and the full-length framing unchanged. Do not add, remove or replace either person."
+  },
+  {
+    "id": "inter_07_pair02_backhug__w_ref",
+    "sample": "inter_07_pair02_backhug",
+    "pair": "pair02",
+    "interaction": "embrace from behind",
+    "arm": "w_ref",
+    "source_action": "backhug02",
+    "target_action": "backhug02",
+    "seconds": 59.53,
+    "peak_cuda_gib": 19.485,
+    "output_size": [
+      768,
+      1024
+    ],
+    "n_refs": 2,
+    "prompt": "Image 1 is a studio photograph of two people standing apart without touching each other. They are the two subjects you must render. Image 2 shows the same two people already performing the interaction to adopt. The person standing behind steps in and embraces the other from behind. The front person stands relaxed facing the camera, and the person behind presses against their back and wraps both arms around them, with one arm crossing the front person's chest and the other resting on the front person's waist. Their heads are level and close together and both stay on their feet. Keep both people exactly as they appear in image 1 - the same two faces, hairstyles, skin tones, body sizes and the same clothing on each of them - and keep the plain green studio background, the camera angle and the full-length framing unchanged. Do not add, remove or replace either person."
+  },
+  {
+    "id": "inter_09_pair02_dance__detailed",
+    "sample": "inter_09_pair02_dance",
+    "pair": "pair02",
+    "interaction": "partner dance",
+    "arm": "detailed",
+    "source_action": "dance02",
+    "target_action": "dance02",
+    "seconds": 55.04,
+    "peak_cuda_gib": 19.027,
+    "output_size": [
+      768,
+      1024
+    ],
+    "n_refs": 1,
+    "prompt": "Image 1 is a studio photograph of two people standing apart without touching each other. They are the two subjects you must render. The two people take up a closed partner-dance hold. They face each other closely, bodies turned slightly open to the camera. Each extends one arm to hold the partner's hand at chest height between them, and each places the other hand on the partner's back or shoulder. They lean slightly towards each other and stand on their own feet. Keep both people exactly as they appear in image 1 - the same two faces, hairstyles, skin tones, body sizes and the same clothing on each of them - and keep the plain green studio background, the camera angle and the full-length framing unchanged. Do not add, remove or replace either person."
+  },
+  {
+    "id": "inter_09_pair02_dance__minimal",
+    "sample": "inter_09_pair02_dance",
+    "pair": "pair02",
+    "interaction": "partner dance",
+    "arm": "minimal",
+    "source_action": "dance02",
+    "target_action": "dance02",
+    "seconds": 54.35,
+    "peak_cuda_gib": 19.024,
+    "output_size": [
+      768,
+      1024
+    ],
+    "n_refs": 1,
+    "prompt": "Image 1 is a studio photograph of two people standing apart without touching each other. They are the two subjects you must render. Make the two people in this image interact: they must physically touch each other. Keep both people exactly as they appear in image 1 - the same two faces, hairstyles, skin tones, body sizes and the same clothing on each of them - and keep the plain green studio background, the camera angle and the full-length framing unchanged. Do not add, remove or replace either person."
+  },
+  {
+    "id": "inter_09_pair02_dance__w_ref",
+    "sample": "inter_09_pair02_dance",
+    "pair": "pair02",
+    "interaction": "partner dance",
+    "arm": "w_ref",
+    "source_action": "dance02",
+    "target_action": "dance02",
+    "seconds": 57.6,
+    "peak_cuda_gib": 19.484,
+    "output_size": [
+      768,
+      1024
+    ],
+    "n_refs": 2,
+    "prompt": "Image 1 is a studio photograph of two people standing apart without touching each other. They are the two subjects you must render. Image 2 shows the same two people already performing the interaction to adopt. The two people take up a closed partner-dance hold. They face each other closely, bodies turned slightly open to the camera. Each extends one arm to hold the partner's hand at chest height between them, and each places the other hand on the partner's back or shoulder. They lean slightly towards each other and stand on their own feet. Keep both people exactly as they appear in image 1 - the same two faces, hairstyles, skin tones, body sizes and the same clothing on each of them - and keep the plain green studio background, the camera angle and the full-length framing unchanged. Do not add, remove or replace either person."
+  },
+  {
+    "id": "inter_11_pair02_pose__detailed",
+    "sample": "inter_11_pair02_pose",
+    "pair": "pair02",
+    "interaction": "partner pose",
+    "arm": "detailed",
+    "source_action": "pose02",
+    "target_action": "pose02",
+    "seconds": 53.51,
+    "peak_cuda_gib": 19.027,
+    "output_size": [
+      768,
+      1024
+    ],
+    "n_refs": 1,
+    "prompt": "Image 1 is a studio photograph of two people standing apart without touching each other. They are the two subjects you must render. The two people stand shoulder to shoulder and strike a mirrored pose together. They move in close so their shoulders touch, both raise their arms straight overhead and bring their hands together above their heads, and both stand upright with their weight evenly on both feet. Keep both people exactly as they appear in image 1 - the same two faces, hairstyles, skin tones, body sizes and the same clothing on each of them - and keep the plain green studio background, the camera angle and the full-length framing unchanged. Do not add, remove or replace either person."
+  },
+  {
+    "id": "inter_11_pair02_pose__minimal",
+    "sample": "inter_11_pair02_pose",
+    "pair": "pair02",
+    "interaction": "partner pose",
+    "arm": "minimal",
+    "source_action": "pose02",
+    "target_action": "pose02",
+    "seconds": 54.24,
+    "peak_cuda_gib": 19.024,
+    "output_size": [
+      768,
+      1024
+    ],
+    "n_refs": 1,
+    "prompt": "Image 1 is a studio photograph of two people standing apart without touching each other. They are the two subjects you must render. Make the two people in this image interact: they must physically touch each other. Keep both people exactly as they appear in image 1 - the same two faces, hairstyles, skin tones, body sizes and the same clothing on each of them - and keep the plain green studio background, the camera angle and the full-length framing unchanged. Do not add, remove or replace either person."
+  },
+  {
+    "id": "inter_11_pair02_pose__w_ref",
+    "sample": "inter_11_pair02_pose",
+    "pair": "pair02",
+    "interaction": "partner pose",
+    "arm": "w_ref",
+    "source_action": "pose02",
+    "target_action": "pose02",
+    "seconds": 57.54,
+    "peak_cuda_gib": 19.473,
+    "output_size": [
+      768,
+      1024
+    ],
+    "n_refs": 2,
+    "prompt": "Image 1 is a studio photograph of two people standing apart without touching each other. They are the two subjects you must render. Image 2 shows the same two people already performing the interaction to adopt. The two people stand shoulder to shoulder and strike a mirrored pose together. They move in close so their shoulders touch, both raise their arms straight overhead and bring their hands together above their heads, and both stand upright with their weight evenly on both feet. Keep both people exactly as they appear in image 1 - the same two faces, hairstyles, skin tones, body sizes and the same clothing on each of them - and keep the plain green studio background, the camera angle and the full-length framing unchanged. Do not add, remove or replace either person."
+  }
+]

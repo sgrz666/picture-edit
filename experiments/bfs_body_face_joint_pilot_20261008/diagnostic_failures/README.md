@@ -1,0 +1,29 @@
+# diagnostic_failures 目录说明
+
+**路径**: `experiments/bfs_body_face_joint_pilot_20261008/diagnostic_failures`
+
+## 1. 目录定位与职责
+
+实验过程中的诊断性失败样本留存目录。
+
+**工程定位**: 记录条件缓存缺失或初始化异常时的故障图像与面板，用于排查根因。
+
+## 2. 目录结构与内容汇总
+
+### 子文件夹
+
+- **`init_initial_iper_missing_cache/`**: 该子目录下的专门功能模块或产物。
+
+### 文件概览
+
+- **文件总数**: 1 个文件
+- **文件类型统计**: .md: 1个
+
+| 文件名 | 说明 |
+|---|---|
+| `README.md` | 该模块下实现/记录文件 |
+
+## 3. 使用与关联说明
+
+- 更多全局架构说明与模型演进路线请参阅根目录 [README.md](../../../README.md) 或 [docs/PROJECT_STRUCTURE_20261003.md](../../../docs/PROJECT_STRUCTURE_20261003.md)。
+- 本目录下的所有文件均遵循项目统一的代码风格与数据管理规范。

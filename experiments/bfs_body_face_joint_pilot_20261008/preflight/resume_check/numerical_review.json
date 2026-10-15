@@ -1,0 +1,13 @@
+{
+  "continue": true,
+  "exact_restore_and_discrete_trajectory_passed": true,
+  "partial_determinism": true,
+  "resume_adapter_max_abs": 7.355120033025742e-06,
+  "resume_adapter_relative_l2": 3.197240972700206e-07,
+  "resume_loss_max_abs": 5.692243576049805e-05,
+  "repeat_loss_max_abs": 0.00019209086894989014,
+  "assessment": "Exact restoration and discrete trajectory pass. Resume loss/max-parameter drift is below observed continuation maxima, while optimizer drift is modestly above the small repeat envelope. Remaining unsupported BF16 pooling/interpolation/attention reductions explain numerical variation already seen without state mismatch. Proceed as a single-seed qualitative pilot with identical settings; do not interpret tiny arm differences as reproducible superiority or claim bit-exact training.",
+  "private_optimizer_updates_total": 18,
+  "optimizer_relative_l2": 0.10195495968290037,
+  "repeat_optimizer_relative_l2_max": 0.08248652884234924
+}

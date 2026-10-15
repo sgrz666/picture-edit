@@ -1,0 +1,1060 @@
+{
+  "n_common": 24,
+  "n_common_actors": 8,
+  "summary": {
+    "body": {
+      "identity_B_same_actor": 0.334042226546444,
+      "eye_line_roll_error_deg": 3.7378965251188334,
+      "normalized_five_point_error": 1.6944721308312891
+    },
+    "nolora": {
+      "identity_B_same_actor": 0.40822810772806406,
+      "eye_line_roll_error_deg": 6.724123832445894,
+      "normalized_five_point_error": 2.114094378309933
+    },
+    "bfs": {
+      "identity_B_same_actor": 0.40483791877826053,
+      "eye_line_roll_error_deg": 5.079106725328587,
+      "normalized_five_point_error": 1.6881916122477663
+    },
+    "alternative": {
+      "identity_B_same_actor": 0.40542222357665497,
+      "eye_line_roll_error_deg": 4.658720001874978,
+      "normalized_five_point_error": 1.6917125198721867
+    }
+  },
+  "paired_vs_nolora": {
+    "bfs": {
+      "identity_B_same_actor": {
+        "n_pairs": 24,
+        "n_actors": 8,
+        "mean_delta_per_pair": -0.003390188949803511,
+        "mean_delta_per_actor": -0.03384746226171652,
+        "actor_cluster_bootstrap_95_ci": [
+          -0.10068980803868423,
+          0.026432584412395956
+        ],
+        "wins": 12,
+        "losses": 12,
+        "ties": 0,
+        "stems": [
+          "000_001_2_source_motion_f001325_target_f000081",
+          "001_001_2_source_motion_f001258_target_f000173",
+          "002_001_2_source_motion_f001325_target_f001479",
+          "003_001_5_source_motion_f000815_target_f000135",
+          "004_001_5_source_motion_f000989_target_f001322",
+          "006_006_1_source_motion_f001625_target_f000209",
+          "009_009_3_source_motion_f000415_target_f000044",
+          "010_009_3_source_motion_f000168_target_f000656",
+          "011_009_3_source_motion_f000415_target_f001285",
+          "012_012_4_source_standard_f000557_target_f000260",
+          "013_012_4_source_standard_f000301_target_f000943",
+          "014_012_4_source_motion_f000453_target_f001241",
+          "015_015_1_source_standard_f000649_target_f000575",
+          "016_015_1_source_motion_f000445_target_f001061",
+          "017_015_1_source_motion_f000445_target_f001203",
+          "018_015_2_source_standard_f000257_target_f000333",
+          "019_015_2_source_standard_f000257_target_f000603",
+          "020_015_2_source_standard_f000257_target_f000929",
+          "021_019_3_source_motion_f000049_target_f000413",
+          "023_019_3_source_standard_f000018_target_f001371",
+          "025_021_1_source_motion_f000903_target_f000665",
+          "027_024_2_source_motion_f000454_target_f000265",
+          "028_024_2_source_motion_f000454_target_f000492",
+          "029_024_2_source_motion_f000454_target_f000838"
+        ],
+        "cohort": "valid source face and paired metric availability; identity requires both outputs detected"
+      },
+      "eye_line_roll_error_deg": {
+        "n_pairs": 24,
+        "n_actors": 8,
+        "mean_delta_per_pair": -1.645017107117307,
+        "mean_delta_per_actor": -0.4059493848683188,
+        "actor_cluster_bootstrap_95_ci": [
+          -2.28574290886309,
+          1.7455448467163954
+        ],
+        "wins": 9,
+        "losses": 15,
+        "ties": 0,
+        "stems": [
+          "000_001_2_source_motion_f001325_target_f000081",
+          "001_001_2_source_motion_f001258_target_f000173",
+          "002_001_2_source_motion_f001325_target_f001479",
+          "003_001_5_source_motion_f000815_target_f000135",
+          "004_001_5_source_motion_f000989_target_f001322",
+          "006_006_1_source_motion_f001625_target_f000209",
+          "009_009_3_source_motion_f000415_target_f000044",
+          "010_009_3_source_motion_f000168_target_f000656",
+          "011_009_3_source_motion_f000415_target_f001285",
+          "012_012_4_source_standard_f000557_target_f000260",
+          "013_012_4_source_standard_f000301_target_f000943",
+          "014_012_4_source_motion_f000453_target_f001241",
+          "015_015_1_source_standard_f000649_target_f000575",
+          "016_015_1_source_motion_f000445_target_f001061",
+          "017_015_1_source_motion_f000445_target_f001203",
+          "018_015_2_source_standard_f000257_target_f000333",
+          "019_015_2_source_standard_f000257_target_f000603",
+          "020_015_2_source_standard_f000257_target_f000929",
+          "021_019_3_source_motion_f000049_target_f000413",
+          "023_019_3_source_standard_f000018_target_f001371",
+          "025_021_1_source_motion_f000903_target_f000665",
+          "027_024_2_source_motion_f000454_target_f000265",
+          "028_024_2_source_motion_f000454_target_f000492",
+          "029_024_2_source_motion_f000454_target_f000838"
+        ],
+        "cohort": "valid source face and paired metric availability; identity requires both outputs detected"
+      },
+      "normalized_five_point_error": {
+        "n_pairs": 24,
+        "n_actors": 8,
+        "mean_delta_per_pair": -0.4259027660621659,
+        "mean_delta_per_actor": -0.38270749308707164,
+        "actor_cluster_bootstrap_95_ci": [
+          -0.7323122958479716,
+          -0.09488636576730004
+        ],
+        "wins": 6,
+        "losses": 18,
+        "ties": 0,
+        "stems": [
+          "000_001_2_source_motion_f001325_target_f000081",
+          "001_001_2_source_motion_f001258_target_f000173",
+          "002_001_2_source_motion_f001325_target_f001479",
+          "003_001_5_source_motion_f000815_target_f000135",
+          "004_001_5_source_motion_f000989_target_f001322",
+          "006_006_1_source_motion_f001625_target_f000209",
+          "009_009_3_source_motion_f000415_target_f000044",
+          "010_009_3_source_motion_f000168_target_f000656",
+          "011_009_3_source_motion_f000415_target_f001285",
+          "012_012_4_source_standard_f000557_target_f000260",
+          "013_012_4_source_standard_f000301_target_f000943",
+          "014_012_4_source_motion_f000453_target_f001241",
+          "015_015_1_source_standard_f000649_target_f000575",
+          "016_015_1_source_motion_f000445_target_f001061",
+          "017_015_1_source_motion_f000445_target_f001203",
+          "018_015_2_source_standard_f000257_target_f000333",
+          "019_015_2_source_standard_f000257_target_f000603",
+          "020_015_2_source_standard_f000257_target_f000929",
+          "021_019_3_source_motion_f000049_target_f000413",
+          "023_019_3_source_standard_f000018_target_f001371",
+          "025_021_1_source_motion_f000903_target_f000665",
+          "027_024_2_source_motion_f000454_target_f000265",
+          "028_024_2_source_motion_f000454_target_f000492",
+          "029_024_2_source_motion_f000454_target_f000838"
+        ],
+        "cohort": "valid source face and paired metric availability; identity requires both outputs detected"
+      }
+    },
+    "alternative": {
+      "identity_B_same_actor": {
+        "n_pairs": 24,
+        "n_actors": 8,
+        "mean_delta_per_pair": -0.0028058841514090696,
+        "mean_delta_per_actor": -0.02533682207576931,
+        "actor_cluster_bootstrap_95_ci": [
+          -0.08665255864500068,
+          0.03251693502495374
+        ],
+        "wins": 11,
+        "losses": 13,
+        "ties": 0,
+        "stems": [
+          "000_001_2_source_motion_f001325_target_f000081",
+          "001_001_2_source_motion_f001258_target_f000173",
+          "002_001_2_source_motion_f001325_target_f001479",
+          "003_001_5_source_motion_f000815_target_f000135",
+          "004_001_5_source_motion_f000989_target_f001322",
+          "006_006_1_source_motion_f001625_target_f000209",
+          "009_009_3_source_motion_f000415_target_f000044",
+          "010_009_3_source_motion_f000168_target_f000656",
+          "011_009_3_source_motion_f000415_target_f001285",
+          "012_012_4_source_standard_f000557_target_f000260",
+          "013_012_4_source_standard_f000301_target_f000943",
+          "014_012_4_source_motion_f000453_target_f001241",
+          "015_015_1_source_standard_f000649_target_f000575",
+          "016_015_1_source_motion_f000445_target_f001061",
+          "017_015_1_source_motion_f000445_target_f001203",
+          "018_015_2_source_standard_f000257_target_f000333",
+          "019_015_2_source_standard_f000257_target_f000603",
+          "020_015_2_source_standard_f000257_target_f000929",
+          "021_019_3_source_motion_f000049_target_f000413",
+          "023_019_3_source_standard_f000018_target_f001371",
+          "025_021_1_source_motion_f000903_target_f000665",
+          "027_024_2_source_motion_f000454_target_f000265",
+          "028_024_2_source_motion_f000454_target_f000492",
+          "029_024_2_source_motion_f000454_target_f000838"
+        ],
+        "cohort": "valid source face and paired metric availability; identity requires both outputs detected"
+      },
+      "eye_line_roll_error_deg": {
+        "n_pairs": 24,
+        "n_actors": 8,
+        "mean_delta_per_pair": -2.0654038305709164,
+        "mean_delta_per_actor": -0.9403544666450825,
+        "actor_cluster_bootstrap_95_ci": [
+          -3.0061367518508075,
+          1.3726817955469652
+        ],
+        "wins": 7,
+        "losses": 17,
+        "ties": 0,
+        "stems": [
+          "000_001_2_source_motion_f001325_target_f000081",
+          "001_001_2_source_motion_f001258_target_f000173",
+          "002_001_2_source_motion_f001325_target_f001479",
+          "003_001_5_source_motion_f000815_target_f000135",
+          "004_001_5_source_motion_f000989_target_f001322",
+          "006_006_1_source_motion_f001625_target_f000209",
+          "009_009_3_source_motion_f000415_target_f000044",
+          "010_009_3_source_motion_f000168_target_f000656",
+          "011_009_3_source_motion_f000415_target_f001285",
+          "012_012_4_source_standard_f000557_target_f000260",
+          "013_012_4_source_standard_f000301_target_f000943",
+          "014_012_4_source_motion_f000453_target_f001241",
+          "015_015_1_source_standard_f000649_target_f000575",
+          "016_015_1_source_motion_f000445_target_f001061",
+          "017_015_1_source_motion_f000445_target_f001203",
+          "018_015_2_source_standard_f000257_target_f000333",
+          "019_015_2_source_standard_f000257_target_f000603",
+          "020_015_2_source_standard_f000257_target_f000929",
+          "021_019_3_source_motion_f000049_target_f000413",
+          "023_019_3_source_standard_f000018_target_f001371",
+          "025_021_1_source_motion_f000903_target_f000665",
+          "027_024_2_source_motion_f000454_target_f000265",
+          "028_024_2_source_motion_f000454_target_f000492",
+          "029_024_2_source_motion_f000454_target_f000838"
+        ],
+        "cohort": "valid source face and paired metric availability; identity requires both outputs detected"
+      },
+      "normalized_five_point_error": {
+        "n_pairs": 24,
+        "n_actors": 8,
+        "mean_delta_per_pair": -0.42238185843774567,
+        "mean_delta_per_actor": -0.37621217127192785,
+        "actor_cluster_bootstrap_95_ci": [
+          -0.7155231383157228,
+          -0.09696563872482408
+        ],
+        "wins": 6,
+        "losses": 18,
+        "ties": 0,
+        "stems": [
+          "000_001_2_source_motion_f001325_target_f000081",
+          "001_001_2_source_motion_f001258_target_f000173",
+          "002_001_2_source_motion_f001325_target_f001479",
+          "003_001_5_source_motion_f000815_target_f000135",
+          "004_001_5_source_motion_f000989_target_f001322",
+          "006_006_1_source_motion_f001625_target_f000209",
+          "009_009_3_source_motion_f000415_target_f000044",
+          "010_009_3_source_motion_f000168_target_f000656",
+          "011_009_3_source_motion_f000415_target_f001285",
+          "012_012_4_source_standard_f000557_target_f000260",
+          "013_012_4_source_standard_f000301_target_f000943",
+          "014_012_4_source_motion_f000453_target_f001241",
+          "015_015_1_source_standard_f000649_target_f000575",
+          "016_015_1_source_motion_f000445_target_f001061",
+          "017_015_1_source_motion_f000445_target_f001203",
+          "018_015_2_source_standard_f000257_target_f000333",
+          "019_015_2_source_standard_f000257_target_f000603",
+          "020_015_2_source_standard_f000257_target_f000929",
+          "021_019_3_source_motion_f000049_target_f000413",
+          "023_019_3_source_standard_f000018_target_f001371",
+          "025_021_1_source_motion_f000903_target_f000665",
+          "027_024_2_source_motion_f000454_target_f000265",
+          "028_024_2_source_motion_f000454_target_f000492",
+          "029_024_2_source_motion_f000454_target_f000838"
+        ],
+        "cohort": "valid source face and paired metric availability; identity requires both outputs detected"
+      }
+    }
+  },
+  "limitations": [
+    "Target B is the same actor as A in these self-imitation pairs; identity_B is an offline auxiliary metric only",
+    "five-point shape and 2D eye-line roll are coarse proxies, not 3D head pose or expression accuracy",
+    "only unique detected target and generated faces enter this audit; missing cases remain in main records",
+    "no target RGB used for generation; this audit runs after all generation has completed"
+  ],
+  "per_pair": [
+    {
+      "stem": "000_001_2_source_motion_f001325_target_f000081",
+      "target_face_valid": true,
+      "metrics": {
+        "body": {
+          "identity_B_same_actor": 0.46578896045684814,
+          "eye_line_roll_error_deg": 3.382726559714797,
+          "normalized_five_point_error": 0.05822675385379249
+        },
+        "nolora": {
+          "identity_B_same_actor": 0.3572768270969391,
+          "eye_line_roll_error_deg": 5.724529580797082,
+          "normalized_five_point_error": 0.07774347115179152
+        },
+        "bfs": {
+          "identity_B_same_actor": 0.5725733041763306,
+          "eye_line_roll_error_deg": 4.881325864775846,
+          "normalized_five_point_error": 0.05912316296382728
+        },
+        "alternative": {
+          "identity_B_same_actor": 0.5739299058914185,
+          "eye_line_roll_error_deg": 4.5833443917482555,
+          "normalized_five_point_error": 0.05360491862120783
+        }
+      }
+    },
+    {
+      "stem": "001_001_2_source_motion_f001258_target_f000173",
+      "target_face_valid": true,
+      "metrics": {
+        "body": {
+          "identity_B_same_actor": 0.48814940452575684,
+          "eye_line_roll_error_deg": 5.061462937813388,
+          "normalized_five_point_error": 0.06320953518777117
+        },
+        "nolora": {
+          "identity_B_same_actor": 0.3041582703590393,
+          "eye_line_roll_error_deg": 4.616018742869443,
+          "normalized_five_point_error": 0.11875364843102802
+        },
+        "bfs": {
+          "identity_B_same_actor": 0.45635655522346497,
+          "eye_line_roll_error_deg": 6.377994644553354,
+          "normalized_five_point_error": 0.09457427018422829
+        },
+        "alternative": {
+          "identity_B_same_actor": 0.4452528953552246,
+          "eye_line_roll_error_deg": 5.662834682767112,
+          "normalized_five_point_error": 0.07952751376272103
+        }
+      }
+    },
+    {
+      "stem": "002_001_2_source_motion_f001325_target_f001479",
+      "target_face_valid": true,
+      "metrics": {
+        "body": {
+          "identity_B_same_actor": 0.46339672803878784,
+          "eye_line_roll_error_deg": 5.284898850757088,
+          "normalized_five_point_error": 0.0811585050197978
+        },
+        "nolora": {
+          "identity_B_same_actor": 0.5867885947227478,
+          "eye_line_roll_error_deg": 8.659473471420739,
+          "normalized_five_point_error": 0.13696168536472172
+        },
+        "bfs": {
+          "identity_B_same_actor": 0.4633272886276245,
+          "eye_line_roll_error_deg": 1.7622180789913102,
+          "normalized_five_point_error": 0.05832459188271247
+        },
+        "alternative": {
+          "identity_B_same_actor": 0.4853854477405548,
+          "eye_line_roll_error_deg": 2.617931641242137,
+          "normalized_five_point_error": 0.05673016410362264
+        }
+      }
+    },
+    {
+      "stem": "003_001_5_source_motion_f000815_target_f000135",
+      "target_face_valid": true,
+      "metrics": {
+        "body": {
+          "identity_B_same_actor": 0.4088684916496277,
+          "eye_line_roll_error_deg": 1.5065883686330324,
+          "normalized_five_point_error": 0.05967993728451007
+        },
+        "nolora": {
+          "identity_B_same_actor": 0.6884918212890625,
+          "eye_line_roll_error_deg": 4.427538645787962,
+          "normalized_five_point_error": 0.0685767902325187
+        },
+        "bfs": {
+          "identity_B_same_actor": 0.5011311769485474,
+          "eye_line_roll_error_deg": 4.059661892548689,
+          "normalized_five_point_error": 0.09361034195381304
+        },
+        "alternative": {
+          "identity_B_same_actor": 0.504213809967041,
+          "eye_line_roll_error_deg": 3.2678419052517427,
+          "normalized_five_point_error": 0.07895984690463968
+        }
+      }
+    },
+    {
+      "stem": "004_001_5_source_motion_f000989_target_f001322",
+      "target_face_valid": true,
+      "metrics": {
+        "body": {
+          "identity_B_same_actor": 0.2925642728805542,
+          "eye_line_roll_error_deg": 8.028187863685616,
+          "normalized_five_point_error": 35.379446108051
+        },
+        "nolora": {
+          "identity_B_same_actor": 0.16067898273468018,
+          "eye_line_roll_error_deg": 24.58330046628052,
+          "normalized_five_point_error": 35.836259235007184
+        },
+        "bfs": {
+          "identity_B_same_actor": 0.23763705790042877,
+          "eye_line_roll_error_deg": 10.667497010345755,
+          "normalized_five_point_error": 35.34981828096229
+        },
+        "alternative": {
+          "identity_B_same_actor": 0.2216690480709076,
+          "eye_line_roll_error_deg": 10.683820582769954,
+          "normalized_five_point_error": 35.397613648014534
+        }
+      }
+    },
+    {
+      "stem": "005_001_5_source_standard_f000546_target_f001630",
+      "target_face_valid": true,
+      "metrics": {
+        "body": {
+          "identity_B_same_actor": null,
+          "eye_line_roll_error_deg": null,
+          "normalized_five_point_error": null
+        },
+        "nolora": {
+          "identity_B_same_actor": null,
+          "eye_line_roll_error_deg": null,
+          "normalized_five_point_error": null
+        },
+        "bfs": {
+          "identity_B_same_actor": null,
+          "eye_line_roll_error_deg": null,
+          "normalized_five_point_error": null
+        },
+        "alternative": {
+          "identity_B_same_actor": null,
+          "eye_line_roll_error_deg": null,
+          "normalized_five_point_error": null
+        }
+      }
+    },
+    {
+      "stem": "006_006_1_source_motion_f001625_target_f000209",
+      "target_face_valid": true,
+      "metrics": {
+        "body": {
+          "identity_B_same_actor": 0.40305763483047485,
+          "eye_line_roll_error_deg": 4.690740286538613,
+          "normalized_five_point_error": 0.052599741523449255
+        },
+        "nolora": {
+          "identity_B_same_actor": 0.6558326482772827,
+          "eye_line_roll_error_deg": 0.3879326539981207,
+          "normalized_five_point_error": 0.035541161386527804
+        },
+        "bfs": {
+          "identity_B_same_actor": 0.5580636262893677,
+          "eye_line_roll_error_deg": 6.000479469231408,
+          "normalized_five_point_error": 0.06226188403154491
+        },
+        "alternative": {
+          "identity_B_same_actor": 0.5430219173431396,
+          "eye_line_roll_error_deg": 5.834699335702055,
+          "normalized_five_point_error": 0.05607982321804162
+        }
+      }
+    },
+    {
+      "stem": "007_006_1_source_standard_f000483_target_f000898",
+      "target_face_valid": true,
+      "metrics": {
+        "body": {
+          "identity_B_same_actor": null,
+          "eye_line_roll_error_deg": null,
+          "normalized_five_point_error": null
+        },
+        "nolora": {
+          "identity_B_same_actor": null,
+          "eye_line_roll_error_deg": null,
+          "normalized_five_point_error": null
+        },
+        "bfs": {
+          "identity_B_same_actor": null,
+          "eye_line_roll_error_deg": null,
+          "normalized_five_point_error": null
+        },
+        "alternative": {
+          "identity_B_same_actor": null,
+          "eye_line_roll_error_deg": null,
+          "normalized_five_point_error": null
+        }
+      }
+    },
+    {
+      "stem": "008_006_1_source_standard_f000483_target_f001505",
+      "target_face_valid": true,
+      "metrics": {
+        "body": {
+          "identity_B_same_actor": null,
+          "eye_line_roll_error_deg": null,
+          "normalized_five_point_error": null
+        },
+        "nolora": {
+          "identity_B_same_actor": null,
+          "eye_line_roll_error_deg": null,
+          "normalized_five_point_error": null
+        },
+        "bfs": {
+          "identity_B_same_actor": null,
+          "eye_line_roll_error_deg": null,
+          "normalized_five_point_error": null
+        },
+        "alternative": {
+          "identity_B_same_actor": null,
+          "eye_line_roll_error_deg": null,
+          "normalized_five_point_error": null
+        }
+      }
+    },
+    {
+      "stem": "009_009_3_source_motion_f000415_target_f000044",
+      "target_face_valid": true,
+      "metrics": {
+        "body": {
+          "identity_B_same_actor": 0.5092301368713379,
+          "eye_line_roll_error_deg": 6.298249616411226,
+          "normalized_five_point_error": 0.08265003783288877
+        },
+        "nolora": {
+          "identity_B_same_actor": 0.5460596084594727,
+          "eye_line_roll_error_deg": 10.509957361940337,
+          "normalized_five_point_error": 0.11194910749095455
+        },
+        "bfs": {
+          "identity_B_same_actor": 0.6038030385971069,
+          "eye_line_roll_error_deg": 7.4575694025107,
+          "normalized_five_point_error": 0.09890613228588484
+        },
+        "alternative": {
+          "identity_B_same_actor": 0.5888588428497314,
+          "eye_line_roll_error_deg": 5.658797978757747,
+          "normalized_five_point_error": 0.07359402638277387
+        }
+      }
+    },
+    {
+      "stem": "010_009_3_source_motion_f000168_target_f000656",
+      "target_face_valid": true,
+      "metrics": {
+        "body": {
+          "identity_B_same_actor": 0.4397595524787903,
+          "eye_line_roll_error_deg": 3.363389638600637,
+          "normalized_five_point_error": 0.037971129316690846
+        },
+        "nolora": {
+          "identity_B_same_actor": 0.5955709218978882,
+          "eye_line_roll_error_deg": 4.84237883800472,
+          "normalized_five_point_error": 0.0806753642284346
+        },
+        "bfs": {
+          "identity_B_same_actor": 0.5110887289047241,
+          "eye_line_roll_error_deg": 2.0527680269401856,
+          "normalized_five_point_error": 0.07515736326505676
+        },
+        "alternative": {
+          "identity_B_same_actor": 0.5849131345748901,
+          "eye_line_roll_error_deg": 3.4310849476015903,
+          "normalized_five_point_error": 0.07316217964400787
+        }
+      }
+    },
+    {
+      "stem": "011_009_3_source_motion_f000415_target_f001285",
+      "target_face_valid": true,
+      "metrics": {
+        "body": {
+          "identity_B_same_actor": 0.48933809995651245,
+          "eye_line_roll_error_deg": 2.2717667835142663,
+          "normalized_five_point_error": 0.023360932174397775
+        },
+        "nolora": {
+          "identity_B_same_actor": 0.5417126417160034,
+          "eye_line_roll_error_deg": 0.5726756683056919,
+          "normalized_five_point_error": 0.016580521320785465
+        },
+        "bfs": {
+          "identity_B_same_actor": 0.5622719526290894,
+          "eye_line_roll_error_deg": 1.939760570084701,
+          "normalized_five_point_error": 0.028291331008513658
+        },
+        "alternative": {
+          "identity_B_same_actor": 0.5253432393074036,
+          "eye_line_roll_error_deg": 1.628610167366105,
+          "normalized_five_point_error": 0.02624240949297089
+        }
+      }
+    },
+    {
+      "stem": "012_012_4_source_standard_f000557_target_f000260",
+      "target_face_valid": true,
+      "metrics": {
+        "body": {
+          "identity_B_same_actor": 0.004536519758403301,
+          "eye_line_roll_error_deg": 0.48035941695488305,
+          "normalized_five_point_error": 0.024020949347776977
+        },
+        "nolora": {
+          "identity_B_same_actor": 0.07235842198133469,
+          "eye_line_roll_error_deg": 5.308491059073475,
+          "normalized_five_point_error": 0.8742935204075952
+        },
+        "bfs": {
+          "identity_B_same_actor": 0.1255735158920288,
+          "eye_line_roll_error_deg": 0.35555351562524606,
+          "normalized_five_point_error": 0.029048348371008288
+        },
+        "alternative": {
+          "identity_B_same_actor": 0.09219002723693848,
+          "eye_line_roll_error_deg": 1.813826920186841,
+          "normalized_five_point_error": 0.04625098046720704
+        }
+      }
+    },
+    {
+      "stem": "013_012_4_source_standard_f000301_target_f000943",
+      "target_face_valid": true,
+      "metrics": {
+        "body": {
+          "identity_B_same_actor": 0.04727742075920105,
+          "eye_line_roll_error_deg": 2.6124317928219796,
+          "normalized_five_point_error": 0.05269807783582757
+        },
+        "nolora": {
+          "identity_B_same_actor": 0.09075349569320679,
+          "eye_line_roll_error_deg": 3.8056114174777065,
+          "normalized_five_point_error": 0.09580360548442186
+        },
+        "bfs": {
+          "identity_B_same_actor": 0.37945640087127686,
+          "eye_line_roll_error_deg": 3.808998233550909,
+          "normalized_five_point_error": 0.05175169070095613
+        },
+        "alternative": {
+          "identity_B_same_actor": 0.35093390941619873,
+          "eye_line_roll_error_deg": 3.5621866598068834,
+          "normalized_five_point_error": 0.03381549352509976
+        }
+      }
+    },
+    {
+      "stem": "014_012_4_source_motion_f000453_target_f001241",
+      "target_face_valid": true,
+      "metrics": {
+        "body": {
+          "identity_B_same_actor": 0.37051743268966675,
+          "eye_line_roll_error_deg": 8.531783804121346,
+          "normalized_five_point_error": 0.10024922925420153
+        },
+        "nolora": {
+          "identity_B_same_actor": 0.5988802909851074,
+          "eye_line_roll_error_deg": 10.784252961557286,
+          "normalized_five_point_error": 0.19793107088202241
+        },
+        "bfs": {
+          "identity_B_same_actor": 0.5658085346221924,
+          "eye_line_roll_error_deg": 7.979239461745465,
+          "normalized_five_point_error": 0.09238140886683718
+        },
+        "alternative": {
+          "identity_B_same_actor": 0.5586029291152954,
+          "eye_line_roll_error_deg": 7.310270469317857,
+          "normalized_five_point_error": 0.0892704818408567
+        }
+      }
+    },
+    {
+      "stem": "015_015_1_source_standard_f000649_target_f000575",
+      "target_face_valid": true,
+      "metrics": {
+        "body": {
+          "identity_B_same_actor": 0.14882731437683105,
+          "eye_line_roll_error_deg": 3.095650608420584,
+          "normalized_five_point_error": 0.049558216306986015
+        },
+        "nolora": {
+          "identity_B_same_actor": 0.034198321402072906,
+          "eye_line_roll_error_deg": 2.989120118316606,
+          "normalized_five_point_error": 0.03938784429746215
+        },
+        "bfs": {
+          "identity_B_same_actor": 0.11119045317173004,
+          "eye_line_roll_error_deg": 3.1116618624748185,
+          "normalized_five_point_error": 0.07025911938061621
+        },
+        "alternative": {
+          "identity_B_same_actor": 0.09949960559606552,
+          "eye_line_roll_error_deg": 3.008494180796305,
+          "normalized_five_point_error": 0.06985973815859792
+        }
+      }
+    },
+    {
+      "stem": "016_015_1_source_motion_f000445_target_f001061",
+      "target_face_valid": true,
+      "metrics": {
+        "body": {
+          "identity_B_same_actor": 0.30277392268180847,
+          "eye_line_roll_error_deg": 1.5523861024968824,
+          "normalized_five_point_error": 0.04827920827005256
+        },
+        "nolora": {
+          "identity_B_same_actor": 0.33237674832344055,
+          "eye_line_roll_error_deg": 0.8884492001478179,
+          "normalized_five_point_error": 0.1395391702796565
+        },
+        "bfs": {
+          "identity_B_same_actor": 0.4662379324436188,
+          "eye_line_roll_error_deg": 0.731929103857567,
+          "normalized_five_point_error": 0.04827777037606896
+        },
+        "alternative": {
+          "identity_B_same_actor": 0.4188893735408783,
+          "eye_line_roll_error_deg": 0.6439718308317026,
+          "normalized_five_point_error": 0.04753980653297889
+        }
+      }
+    },
+    {
+      "stem": "017_015_1_source_motion_f000445_target_f001203",
+      "target_face_valid": true,
+      "metrics": {
+        "body": {
+          "identity_B_same_actor": 0.29226431250572205,
+          "eye_line_roll_error_deg": 1.2734895086008464,
+          "normalized_five_point_error": 0.02929324325054895
+        },
+        "nolora": {
+          "identity_B_same_actor": 0.4354044497013092,
+          "eye_line_roll_error_deg": 3.5753711998815163,
+          "normalized_five_point_error": 0.06363816801493428
+        },
+        "bfs": {
+          "identity_B_same_actor": 0.44593602418899536,
+          "eye_line_roll_error_deg": 2.2309300966592787,
+          "normalized_five_point_error": 0.0440799866837573
+        },
+        "alternative": {
+          "identity_B_same_actor": 0.4573681354522705,
+          "eye_line_roll_error_deg": 2.5775459311235522,
+          "normalized_five_point_error": 0.04516569680600437
+        }
+      }
+    },
+    {
+      "stem": "018_015_2_source_standard_f000257_target_f000333",
+      "target_face_valid": true,
+      "metrics": {
+        "body": {
+          "identity_B_same_actor": -0.00896439328789711,
+          "eye_line_roll_error_deg": 1.468935259390804,
+          "normalized_five_point_error": 0.023252284351553427
+        },
+        "nolora": {
+          "identity_B_same_actor": 0.2686341404914856,
+          "eye_line_roll_error_deg": 9.63994645097597,
+          "normalized_five_point_error": 2.0033947840037714
+        },
+        "bfs": {
+          "identity_B_same_actor": 0.04773738980293274,
+          "eye_line_roll_error_deg": 0.8293710541773294,
+          "normalized_five_point_error": 0.039576539837053476
+        },
+        "alternative": {
+          "identity_B_same_actor": -0.009328458458185196,
+          "eye_line_roll_error_deg": 0.4627713501074595,
+          "normalized_five_point_error": 0.038066878500922184
+        }
+      }
+    },
+    {
+      "stem": "019_015_2_source_standard_f000257_target_f000603",
+      "target_face_valid": true,
+      "metrics": {
+        "body": {
+          "identity_B_same_actor": 0.059706732630729675,
+          "eye_line_roll_error_deg": 0.3459467606332396,
+          "normalized_five_point_error": 0.04462302474418332
+        },
+        "nolora": {
+          "identity_B_same_actor": 0.1540953814983368,
+          "eye_line_roll_error_deg": 7.7343649199935385,
+          "normalized_five_point_error": 1.7710114005619064
+        },
+        "bfs": {
+          "identity_B_same_actor": 0.13701413571834564,
+          "eye_line_roll_error_deg": 1.8401572839782148,
+          "normalized_five_point_error": 0.03399540697704488
+        },
+        "alternative": {
+          "identity_B_same_actor": 0.06329666823148727,
+          "eye_line_roll_error_deg": 1.6227966850254063,
+          "normalized_five_point_error": 0.0352192939230846
+        }
+      }
+    },
+    {
+      "stem": "020_015_2_source_standard_f000257_target_f000929",
+      "target_face_valid": true,
+      "metrics": {
+        "body": {
+          "identity_B_same_actor": 0.15605099499225616,
+          "eye_line_roll_error_deg": 3.8761326424008757,
+          "normalized_five_point_error": 0.05977261815556866
+        },
+        "nolora": {
+          "identity_B_same_actor": 0.07236751168966293,
+          "eye_line_roll_error_deg": 7.488651123869744,
+          "normalized_five_point_error": 1.9587718804953265
+        },
+        "bfs": {
+          "identity_B_same_actor": 0.2289225310087204,
+          "eye_line_roll_error_deg": 4.230812426902588,
+          "normalized_five_point_error": 0.0770800395030539
+        },
+        "alternative": {
+          "identity_B_same_actor": 0.2571094036102295,
+          "eye_line_roll_error_deg": 4.552980556573772,
+          "normalized_five_point_error": 0.057786919427876185
+        }
+      }
+    },
+    {
+      "stem": "021_019_3_source_motion_f000049_target_f000413",
+      "target_face_valid": true,
+      "metrics": {
+        "body": {
+          "identity_B_same_actor": 0.38680240511894226,
+          "eye_line_roll_error_deg": 1.2712456754339883,
+          "normalized_five_point_error": 0.07699542012770128
+        },
+        "nolora": {
+          "identity_B_same_actor": 0.5582914352416992,
+          "eye_line_roll_error_deg": 4.30583534719301,
+          "normalized_five_point_error": 0.14372979755817925
+        },
+        "bfs": {
+          "identity_B_same_actor": 0.38297516107559204,
+          "eye_line_roll_error_deg": 5.2405708599595755,
+          "normalized_five_point_error": 0.09774601949486277
+        },
+        "alternative": {
+          "identity_B_same_actor": 0.5424253940582275,
+          "eye_line_roll_error_deg": 0.7006559532979963,
+          "normalized_five_point_error": 0.0825083869353115
+        }
+      }
+    },
+    {
+      "stem": "022_019_3_source_standard_f000136_target_f000841",
+      "target_face_valid": true,
+      "metrics": {
+        "body": {
+          "identity_B_same_actor": null,
+          "eye_line_roll_error_deg": null,
+          "normalized_five_point_error": null
+        },
+        "nolora": {
+          "identity_B_same_actor": null,
+          "eye_line_roll_error_deg": null,
+          "normalized_five_point_error": null
+        },
+        "bfs": {
+          "identity_B_same_actor": null,
+          "eye_line_roll_error_deg": null,
+          "normalized_five_point_error": null
+        },
+        "alternative": {
+          "identity_B_same_actor": null,
+          "eye_line_roll_error_deg": null,
+          "normalized_five_point_error": null
+        }
+      }
+    },
+    {
+      "stem": "023_019_3_source_standard_f000018_target_f001371",
+      "target_face_valid": true,
+      "metrics": {
+        "body": {
+          "identity_B_same_actor": 0.5292412042617798,
+          "eye_line_roll_error_deg": 2.5134352643801776,
+          "normalized_five_point_error": 3.172200147297578
+        },
+        "nolora": {
+          "identity_B_same_actor": 0.2920234501361847,
+          "eye_line_roll_error_deg": 13.163074423458426,
+          "normalized_five_point_error": 5.205307530923818
+        },
+        "bfs": {
+          "identity_B_same_actor": 0.4669930934906006,
+          "eye_line_roll_error_deg": 12.12457867286929,
+          "normalized_five_point_error": 2.5975013745562707
+        },
+        "alternative": {
+          "identity_B_same_actor": 0.4584342837333679,
+          "eye_line_roll_error_deg": 8.259716788559956,
+          "normalized_five_point_error": 2.741800858045169
+        }
+      }
+    },
+    {
+      "stem": "024_021_1_source_standard_f000359_target_f000265",
+      "target_face_valid": true,
+      "metrics": {
+        "body": {
+          "identity_B_same_actor": null,
+          "eye_line_roll_error_deg": null,
+          "normalized_five_point_error": null
+        },
+        "nolora": {
+          "identity_B_same_actor": null,
+          "eye_line_roll_error_deg": null,
+          "normalized_five_point_error": null
+        },
+        "bfs": {
+          "identity_B_same_actor": null,
+          "eye_line_roll_error_deg": null,
+          "normalized_five_point_error": null
+        },
+        "alternative": {
+          "identity_B_same_actor": null,
+          "eye_line_roll_error_deg": null,
+          "normalized_five_point_error": null
+        }
+      }
+    },
+    {
+      "stem": "025_021_1_source_motion_f000903_target_f000665",
+      "target_face_valid": true,
+      "metrics": {
+        "body": {
+          "identity_B_same_actor": 0.07110562920570374,
+          "eye_line_roll_error_deg": 16.883290167996478,
+          "normalized_five_point_error": 1.044653721044798
+        },
+        "nolora": {
+          "identity_B_same_actor": 0.4283072352409363,
+          "eye_line_roll_error_deg": 24.690848698348987,
+          "normalized_five_point_error": 1.6606151883193203
+        },
+        "bfs": {
+          "identity_B_same_actor": 0.22239229083061218,
+          "eye_line_roll_error_deg": 25.085361630087192,
+          "normalized_five_point_error": 1.2834977923112096
+        },
+        "alternative": {
+          "identity_B_same_actor": 0.25716137886047363,
+          "eye_line_roll_error_deg": 25.77095548059637,
+          "normalized_five_point_error": 1.2903968170209976
+        }
+      }
+    },
+    {
+      "stem": "026_021_1_source_standard_f000158_target_f001416",
+      "target_face_valid": true,
+      "metrics": {
+        "body": {
+          "identity_B_same_actor": null,
+          "eye_line_roll_error_deg": null,
+          "normalized_five_point_error": null
+        },
+        "nolora": {
+          "identity_B_same_actor": null,
+          "eye_line_roll_error_deg": null,
+          "normalized_five_point_error": null
+        },
+        "bfs": {
+          "identity_B_same_actor": null,
+          "eye_line_roll_error_deg": null,
+          "normalized_five_point_error": null
+        },
+        "alternative": {
+          "identity_B_same_actor": null,
+          "eye_line_roll_error_deg": null,
+          "normalized_five_point_error": null
+        }
+      }
+    },
+    {
+      "stem": "027_024_2_source_motion_f000454_target_f000265",
+      "target_face_valid": true,
+      "metrics": {
+        "body": {
+          "identity_B_same_actor": 0.5172116756439209,
+          "eye_line_roll_error_deg": 1.126539735006503,
+          "normalized_five_point_error": 0.03847584028773372
+        },
+        "nolora": {
+          "identity_B_same_actor": 0.6794793009757996,
+          "eye_line_roll_error_deg": 2.0661569680642344,
+          "normalized_five_point_error": 0.04357239216302339
+        },
+        "bfs": {
+          "identity_B_same_actor": 0.523226261138916,
+          "eye_line_roll_error_deg": 0.9588961461790859,
+          "normalized_five_point_error": 0.03809592026825022
+        },
+        "alternative": {
+          "identity_B_same_actor": 0.539294958114624,
+          "eye_line_roll_error_deg": 0.4321116325827177,
+          "normalized_five_point_error": 0.03693854998565275
+        }
+      }
+    },
+    {
+      "stem": "028_024_2_source_motion_f000454_target_f000492",
+      "target_face_valid": true,
+      "metrics": {
+        "body": {
+          "identity_B_same_actor": 0.5871606469154358,
+          "eye_line_roll_error_deg": 2.7705630660758516,
+          "normalized_five_point_error": 0.026372795132161717
+        },
+        "nolora": {
+          "identity_B_same_actor": 0.6469437479972839,
+          "eye_line_roll_error_deg": 0.5933393468727388,
+          "normalized_five_point_error": 0.027287196710119716
+        },
+        "bfs": {
+          "identity_B_same_actor": 0.5576790571212769,
+          "eye_line_roll_error_deg": 2.6216462688540503,
+          "normalized_five_point_error": 0.036214391535718655
+        },
+        "alternative": {
+          "identity_B_same_actor": 0.5609802007675171,
+          "eye_line_roll_error_deg": 2.1282612172298627,
+          "normalized_five_point_error": 0.035771332821239565
+        }
+      }
+    },
+    {
+      "stem": "029_024_2_source_motion_f000454_target_f000838",
+      "target_face_valid": true,
+      "metrics": {
+        "body": {
+          "identity_B_same_actor": 0.5923483371734619,
+          "eye_line_roll_error_deg": 2.019315892448901,
+          "normalized_five_point_error": 0.038583684299972915
+        },
+        "nolora": {
+          "identity_B_same_actor": 0.696790337562561,
+          "eye_line_roll_error_deg": 0.0216533140657873,
+          "normalized_five_point_error": 0.030940544722873244
+        },
+        "bfs": {
+          "identity_B_same_actor": 0.5887145400047302,
+          "eye_line_roll_error_deg": 5.549579830983532,
+          "normalized_five_point_error": 0.057025526545816385
+        },
+        "alternative": {
+          "identity_B_same_actor": 0.6106873154640198,
+          "eye_line_roll_error_deg": 5.593768755756088,
+          "normalized_five_point_error": 0.05519471279696287
+        }
+      }
+    }
+  ]
+}

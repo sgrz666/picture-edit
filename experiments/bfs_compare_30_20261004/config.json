@@ -1,0 +1,86 @@
+{
+  "pairs": "/home/shangguanrz/nihaochen/qwen21_face/face_val_pairs.jsonl",
+  "pairs_sha256": "e5209797cd2583b1d2434ddeb40793671ca740b7d8061e12f8c6aed3c3bad8ff",
+  "selection": [
+    4,
+    0,
+    3,
+    5,
+    7,
+    9,
+    13,
+    12,
+    14,
+    18,
+    19,
+    17,
+    24,
+    23,
+    22,
+    29,
+    25,
+    28,
+    30,
+    33,
+    31,
+    35,
+    38,
+    36,
+    44,
+    43,
+    40,
+    47,
+    45,
+    49
+  ],
+  "selected_pairs_sha256": "4fffd2599ae71f0d688c10848224090357c31d82e46bb10a1b0ac9711682a96e",
+  "identity_counts": {
+    "001_2": 3,
+    "001_5": 3,
+    "006_1": 3,
+    "009_3": 3,
+    "012_4": 3,
+    "015_1": 3,
+    "015_2": 3,
+    "019_3": 3,
+    "021_1": 3,
+    "024_2": 3
+  },
+  "selection_rule": "per identity, chronological first/middle/last target frames; no outcome filtering",
+  "stage1": {
+    "body_checkpoint": "/home/shangguanrz/project/pic-edit/experiments/qwen21_iper_body/full_20k/checkpoint_last.pt",
+    "checkpoint_sha256": "23be5631cc61c2a0a8c0dd6a8e25a1aeaf10dddcca2a1adaf6c247f855a00ff5",
+    "resolution": 512,
+    "face_adapter": false,
+    "prompt": "Change the person pose to match the target pose. Preserve identity, clothing, and background."
+  },
+  "stage2": {
+    "resolution": 768,
+    "prompt": "head_swap: start with image 1 as the base image, keeping its lighting, environment, and background. remove the head from image 1 completely and replace it with the head from image 2, strictly preserving the hair, eye color, nose structure from image 2. copy the direction of the eye, head rotation, micro expressions from image 1, high quality, sharp details, 4k",
+    "body_adapter": false,
+    "face_adapter": false,
+    "inputs": [
+      "whole generated C at 512",
+      "source A face crop at 512"
+    ],
+    "weights": {
+      "bfs": {
+        "path": "/home/shangguanrz/models/bfs/bfs_head_v1.1_qwen_2.1.safetensors",
+        "sha256": "d1d748d5601077f3b6d05766f6823510e901970d916afa404a97e85dc92fa88e"
+      },
+      "alternative": {
+        "path": "/home/shangguanrz/models/bfs/bfs_head_v1.1_alternative_qwen_2.1.safetensors",
+        "sha256": "c5332bbc2f826856e7a09bce9740e97d39514b849368212e1f2c3c2c2d81c217"
+      }
+    },
+    "strength": 1.0
+  },
+  "seed": 42,
+  "steps": 30,
+  "true_cfg_scale": 1.0,
+  "use_kv_cache": true,
+  "model": "/home/shangguanrz/project/pic-edit/models/Qwen-Image-2.1",
+  "model_config_sha256": "56ae3281c4e6c2d1aa3658252d187488071815fd79bef15808bb0205fc1a2241",
+  "runner_sha256": "ef640c1523ae611841278ae3418eecf8d684ee1002b4813f709d72765e95c863",
+  "legacy_helper_sha256": "561c04a0b895804d46070724fa8000527c5b2fdd9e59ae780edcbffc9ba565b1"
+}

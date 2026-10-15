@@ -1,0 +1,222 @@
+{
+  "sample": "inter_01_pair00_taichi",
+  "hi4d": {
+    "pair": "pair00",
+    "source": "taichi00#41",
+    "target": "hug00#108",
+    "camera": 4
+  },
+  "geometry_npz": "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/final_assets_native_v1/pair00/hug00/cam4/geometry/000108.npz",
+  "task_id": 2,
+  "task_name": "HUG",
+  "tensors": {
+    "normal_a": {
+      "shape": [
+        1,
+        3,
+        512,
+        512
+      ],
+      "dtype": "torch.float32",
+      "min": -0.9998823404312134,
+      "max": 0.9942529201507568
+    },
+    "pose_heatmap_a": {
+      "shape": [
+        1,
+        25,
+        512,
+        512
+      ],
+      "dtype": "torch.float32",
+      "min": 0.0,
+      "max": 1.0
+    },
+    "part_onehot_a": {
+      "shape": [
+        1,
+        14,
+        512,
+        512
+      ],
+      "dtype": "torch.float32",
+      "min": 0.0,
+      "max": 1.0
+    },
+    "human_mask_a": {
+      "shape": [
+        1,
+        1,
+        512,
+        512
+      ],
+      "dtype": "torch.float32",
+      "min": 0.0,
+      "max": 1.0
+    },
+    "depth_a": {
+      "shape": [
+        1,
+        1,
+        512,
+        512
+      ],
+      "dtype": "torch.float32",
+      "min": 0.0,
+      "max": 1.0
+    },
+    "smplx_global_a": {
+      "shape": [
+        1,
+        26
+      ],
+      "dtype": "torch.float32",
+      "min": -1.452026128768921,
+      "max": 1.3653475046157837
+    },
+    "normal_b": {
+      "shape": [
+        1,
+        3,
+        512,
+        512
+      ],
+      "dtype": "torch.float32",
+      "min": -0.9998611807823181,
+      "max": 0.9866164922714233
+    },
+    "pose_heatmap_b": {
+      "shape": [
+        1,
+        25,
+        512,
+        512
+      ],
+      "dtype": "torch.float32",
+      "min": 0.0,
+      "max": 1.0
+    },
+    "part_onehot_b": {
+      "shape": [
+        1,
+        14,
+        512,
+        512
+      ],
+      "dtype": "torch.float32",
+      "min": 0.0,
+      "max": 1.0
+    },
+    "human_mask_b": {
+      "shape": [
+        1,
+        1,
+        512,
+        512
+      ],
+      "dtype": "torch.float32",
+      "min": 0.0,
+      "max": 1.0
+    },
+    "depth_b": {
+      "shape": [
+        1,
+        1,
+        512,
+        512
+      ],
+      "dtype": "torch.float32",
+      "min": 0.0,
+      "max": 1.0
+    },
+    "smplx_global_b": {
+      "shape": [
+        1,
+        26
+      ],
+      "dtype": "torch.float32",
+      "min": -0.8383214473724365,
+      "max": 1.4915508031845093
+    },
+    "contact_raster": {
+      "shape": [
+        1,
+        2,
+        512,
+        512
+      ],
+      "dtype": "torch.float32",
+      "min": 0.0,
+      "max": 1.0
+    },
+    "relative_geometry": {
+      "shape": [
+        1,
+        11
+      ],
+      "dtype": "torch.float32",
+      "min": -0.9846001267433167,
+      "max": 2.807318687438965
+    },
+    "person_b_valid": {
+      "shape": [
+        1
+      ],
+      "dtype": "torch.bool",
+      "min": 1.0,
+      "max": 1.0
+    },
+    "task_id": {
+      "shape": [
+        1
+      ],
+      "dtype": "torch.int64",
+      "min": 2.0,
+      "max": 2.0
+    }
+  },
+  "part_names": [
+    "head",
+    "torso",
+    "left_upper_arm",
+    "left_lower_arm",
+    "left_hand",
+    "right_upper_arm",
+    "right_lower_arm",
+    "right_hand",
+    "left_upper_leg",
+    "left_lower_leg",
+    "left_foot",
+    "right_upper_leg",
+    "right_lower_leg",
+    "right_foot"
+  ],
+  "body25_names": [
+    "Nose",
+    "Neck",
+    "RShoulder",
+    "RElbow",
+    "RWrist",
+    "LShoulder",
+    "LElbow",
+    "LWrist",
+    "MidHip",
+    "RHip",
+    "RKnee",
+    "RAnkle",
+    "LHip",
+    "LKnee",
+    "LAnkle",
+    "REye",
+    "LEye",
+    "REar",
+    "LEar",
+    "LBigToe",
+    "LSmallToe",
+    "LHeel",
+    "RBigToe",
+    "RSmallToe",
+    "RHeel"
+  ],
+  "contract_checks": "all passed"
+}
