@@ -1,0 +1,387 @@
+{
+  "audit_date": "2026-10-08",
+  "baseline_root": "/home/shangguanrz/nihaochen/qwen21_full/tiktok_body_fullpass_20261004",
+  "locked_manifest_checks": {
+    "train_pairs.jsonl": {
+      "exists": true,
+      "actual_sha256": "571b6af1bc9086b1cbd169ef1690dc695626f478e471297ae6b41bf13d9c58ac",
+      "matches": true
+    },
+    "val24_pairs.jsonl": {
+      "exists": true,
+      "actual_sha256": "cece883b96dbbc9270fd77d4bb1e973470f52f941af85c2a0746947f5d91e10a",
+      "matches": true
+    },
+    "iper12_pairs.jsonl": {
+      "exists": true,
+      "actual_sha256": "cce95f77d8402a48c846eb4f4c69f64354e8a41dff90ec5ee2b7773482423456",
+      "matches": true
+    },
+    "sample_order.json": {
+      "exists": true,
+      "actual_sha256": "90bd0a587acf506d52fa1993a822149adfefbd4f0fe684a45029c4ed721ad077",
+      "matches": true
+    },
+    "asset_fingerprints.json": {
+      "exists": true,
+      "actual_sha256": "ea40d7ec3b54241d94d64fc8eb2036844aa08720a5d30951baeb4bdf3b2fa984",
+      "matches": true
+    },
+    "spatial_transforms.json": {
+      "exists": true,
+      "actual_sha256": "01f893e8f34d417c96bf185a91dd2ad302e8b826a0ddd52b169e480907d02ebe",
+      "matches": true
+    },
+    "preparation.json": {
+      "exists": true,
+      "actual_sha256": "b0b8f636e337cdc2fd6a168caed81d9e02dc1fb17400ed8a591ba1273c4df8a2",
+      "matches": true
+    }
+  },
+  "data_counts": {
+    "train_pairs.jsonl": {
+      "pairs": 8548,
+      "video_groups": {
+        "seq_00001_00009": 150,
+        "seq_00029_00049": 908,
+        "seq_00050_00057": 828,
+        "seq_00058_00077": 362,
+        "seq_00078_00088": 444,
+        "seq_00089_00116": 596,
+        "seq_00117_00124": 424,
+        "seq_00140_00147": 94,
+        "seq_00148_00156": 186,
+        "seq_00157_00166": 386,
+        "seq_00167_00188": 878,
+        "seq_00189_00197": 472,
+        "seq_00198_00203": 298,
+        "seq_00204_00230": 552,
+        "seq_00245_00248": 126,
+        "seq_00249_00262": 296,
+        "seq_00263_00273": 358,
+        "seq_00274_00281": 214,
+        "seq_00308_00328": 420,
+        "seq_00329_00340": 556
+      },
+      "actor_ids_if_explicit": []
+    },
+    "val24_pairs.jsonl": {
+      "pairs": 24,
+      "video_groups": {
+        "seq_00125_00139": 8,
+        "seq_00231_00240": 8,
+        "seq_00282_00288": 8
+      },
+      "actor_ids_if_explicit": []
+    },
+    "iper12_pairs.jsonl": {
+      "pairs": 12,
+      "video_groups": {
+        "unknown": 12
+      },
+      "actor_ids_if_explicit": [
+        "001",
+        "006",
+        "009",
+        "012",
+        "015",
+        "019",
+        "024"
+      ]
+    }
+  },
+  "baseline_args": {
+    "branch": "body",
+    "model": "/home/shangguanrz/project/pic-edit/models/Qwen-Image-2.1",
+    "train_pairs": "/home/shangguanrz/nihaochen/qwen21_full/tiktok_body_fullpass_20261004/data/train_pairs.jsonl",
+    "val_pairs": "/home/shangguanrz/nihaochen/qwen21_full/tiktok_body_fullpass_20261004/data/val24_pairs.jsonl",
+    "dataset_type": "tiktok_v3",
+    "tiktok_raw_root": "/home/shangguanrz/project/pic-edit/datasets/TikTokDataset/TikTok_dataset/TikTok_dataset",
+    "tiktok_assets_root": "/home/shangguanrz/project/pic-edit/datasets/TikTokDataset/TikTok_3d_assets_native",
+    "align_mode": "letterbox",
+    "single_pass": true,
+    "stop_at_utc": "2026-10-04T09:41:42+08:00",
+    "features": "/home/shangguanrz/nihaochen/qwen21_full/face_cache",
+    "face_supervision": "/home/shangguanrz/nihaochen/qwen21_full/face_supervision.json",
+    "cache": "/home/shangguanrz/nihaochen/qwen21_full/tiktok_body_fullpass_20261004/native_cache_tiktok",
+    "output": "/home/shangguanrz/nihaochen/qwen21_full/tiktok_body_fullpass_20261004/training",
+    "resolution": 512,
+    "max_steps": 1000,
+    "warmup_steps": 20,
+    "lr_scale": 1.0,
+    "seed": 42,
+    "prompt": "Change the person pose to match the target pose. Preserve identity, clothing, and background.",
+    "init_checkpoint": "/home/shangguanrz/nihaochen/qwen21_full/face_multisample_v1/training/body/checkpoint_step_001000.pt",
+    "resume": null,
+    "save_every": 250,
+    "save_steps": [
+      0,
+      1000
+    ],
+    "diagnostic_probes": false,
+    "diagnostic_pair_indices": [
+      96,
+      528,
+      1284,
+      2238
+    ],
+    "require_active_gradients": true,
+    "face_evaluator_range": "legacy",
+    "face_flow_loss": "global",
+    "face_aux_every": 4,
+    "face_aux_alignment": "box",
+    "verify_resume": true,
+    "gradient_only": false,
+    "precompute_only": false
+  },
+  "coverage": {
+    "updates": 8548,
+    "different_pairs": 8548,
+    "full_pass_completed": true,
+    "fixed_permutation_matches": true,
+    "initial_adapter_exactly_matches_iper_body1000": true,
+    "new_optimizer_at_step0": true,
+    "active_training_seconds": 11298.93366592101,
+    "train_peak_cuda_gib": 22.494694232940674,
+    "default_replaced": false,
+    "final_test_used": false
+  },
+  "checkpoint_manifest": [
+    {
+      "path": "/home/shangguanrz/nihaochen/qwen21_full/tiktok_body_fullpass_20261004/training/checkpoint_step_000000.pt",
+      "sha256": "75fe6197e9d3a6e46d38dc449f21968e0f4b92d2f8b09fcb1886d595957dd3a8",
+      "step": 0,
+      "bytes": 2399044880
+    },
+    {
+      "path": "/home/shangguanrz/nihaochen/qwen21_full/tiktok_body_fullpass_20261004/training/checkpoint_step_001000.pt",
+      "sha256": "1cc87f638aa6d14388736c3466e94509e676a5fbbb7f08bb98a2ffeab04b51a8",
+      "step": 1000,
+      "bytes": 4010193553
+    },
+    {
+      "path": "/home/shangguanrz/nihaochen/qwen21_full/tiktok_body_fullpass_20261004/training/checkpoint_step_003000.pt",
+      "sha256": "f688fa07fcf7dd9a6dd179de8f73383765ff5750253ba6be80a707d702faeda6",
+      "step": 3000,
+      "bytes": 4010304529
+    },
+    {
+      "path": "/home/shangguanrz/nihaochen/qwen21_full/tiktok_body_fullpass_20261004/training/checkpoint_step_006000.pt",
+      "sha256": "6213996bb21f1dd7b3c1dea144d7cbad752efc38f82b3cb3409eeb9f799dc489",
+      "step": 6000,
+      "bytes": 4010313489
+    },
+    {
+      "path": "/home/shangguanrz/nihaochen/qwen21_full/tiktok_body_fullpass_20261004/training/checkpoint_step_008548.pt",
+      "sha256": "b4f90e6feb91ceaec6f833d8dd5efc6c6da05b04e60ae6ac5ac58ea147cb031b",
+      "step": 8548,
+      "bytes": 4010321041
+    }
+  ],
+  "baseline_metrics_context_only": {
+    "0": {
+      "tiktok": {
+        "n": 24,
+        "pose_pck_002": {
+          "mean": 0.22908996640614288,
+          "n": 24
+        },
+        "pose_nme_diagonal": {
+          "mean": 0.050945835068274194,
+          "n": 24
+        },
+        "identity_common": {
+          "mean": 0.48555326148083333,
+          "n": 19
+        },
+        "background_mae_source": {
+          "mean": 7.8461328347524,
+          "n": 24
+        }
+      },
+      "iper": {
+        "n": 12,
+        "pose_pck_002": {
+          "mean": 0.8262867647058822,
+          "n": 12
+        },
+        "pose_nme_diagonal": {
+          "mean": 0.014779579797389912,
+          "n": 12
+        },
+        "identity_common": {
+          "mean": 0.455697238445282,
+          "n": 2
+        },
+        "background_mae_source": {
+          "mean": 6.0511911908785505,
+          "n": 12
+        }
+      }
+    },
+    "1000": {
+      "tiktok": {
+        "n": 24,
+        "pose_pck_002": {
+          "mean": 0.31877013917455094,
+          "n": 24
+        },
+        "pose_nme_diagonal": {
+          "mean": 0.05151976517525935,
+          "n": 24
+        },
+        "identity_common": {
+          "mean": 0.48519062211639,
+          "n": 19
+        },
+        "background_mae_source": {
+          "mean": 7.415426353613536,
+          "n": 24
+        }
+      },
+      "iper": {
+        "n": 12,
+        "pose_pck_002": {
+          "mean": 0.7837009803921569,
+          "n": 12
+        },
+        "pose_nme_diagonal": {
+          "mean": 0.017963345480165212,
+          "n": 12
+        },
+        "identity_common": {
+          "mean": 0.4404582381248474,
+          "n": 2
+        },
+        "background_mae_source": {
+          "mean": 9.109107653299967,
+          "n": 12
+        }
+      }
+    },
+    "3000": {
+      "tiktok": {
+        "n": 24,
+        "pose_pck_002": {
+          "mean": 0.39168323506558794,
+          "n": 24
+        },
+        "pose_nme_diagonal": {
+          "mean": 0.03394730435594045,
+          "n": 24
+        },
+        "identity_common": {
+          "mean": 0.44816847616120387,
+          "n": 19
+        },
+        "background_mae_source": {
+          "mean": 9.454231391350428,
+          "n": 24
+        }
+      },
+      "iper": {
+        "n": 12,
+        "pose_pck_002": {
+          "mean": 0.8131127450980392,
+          "n": 12
+        },
+        "pose_nme_diagonal": {
+          "mean": 0.01443859576576259,
+          "n": 12
+        },
+        "identity_common": {
+          "mean": 0.38613322377204895,
+          "n": 2
+        },
+        "background_mae_source": {
+          "mean": 7.121585448582967,
+          "n": 12
+        }
+      }
+    },
+    "6000": {
+      "tiktok": {
+        "n": 24,
+        "pose_pck_002": {
+          "mean": 0.44342020316285025,
+          "n": 24
+        },
+        "pose_nme_diagonal": {
+          "mean": 0.030276305482027314,
+          "n": 24
+        },
+        "identity_common": {
+          "mean": 0.447850122263557,
+          "n": 19
+        },
+        "background_mae_source": {
+          "mean": 4.995231365164121,
+          "n": 24
+        }
+      },
+      "iper": {
+        "n": 12,
+        "pose_pck_002": {
+          "mean": 0.8762254901960785,
+          "n": 12
+        },
+        "pose_nme_diagonal": {
+          "mean": 0.012796009583110236,
+          "n": 12
+        },
+        "identity_common": {
+          "mean": 0.4125712811946869,
+          "n": 2
+        },
+        "background_mae_source": {
+          "mean": 6.890608708063762,
+          "n": 12
+        }
+      }
+    },
+    "8548": {
+      "tiktok": {
+        "n": 24,
+        "pose_pck_002": {
+          "mean": 0.38411385727562203,
+          "n": 24
+        },
+        "pose_nme_diagonal": {
+          "mean": 0.029853553009822426,
+          "n": 24
+        },
+        "identity_common": {
+          "mean": 0.46063018394143956,
+          "n": 19
+        },
+        "background_mae_source": {
+          "mean": 5.418507471680641,
+          "n": 24
+        }
+      },
+      "iper": {
+        "n": 12,
+        "pose_pck_002": {
+          "mean": 0.85171568627451,
+          "n": 12
+        },
+        "pose_nme_diagonal": {
+          "mean": 0.012953905364057055,
+          "n": 12
+        },
+        "identity_common": {
+          "mean": 0.3550303876399994,
+          "n": 2
+        },
+        "background_mae_source": {
+          "mean": 5.634909470876058,
+          "n": 12
+        }
+      }
+    }
+  },
+  "identity_disjointness_certified": false,
+  "validation_groups": 3,
+  "mainline_protocol": "A RGB plus B geometry; no target B RGB as reference",
+  "note": "Historical checkpoints and metrics exist. Reuse eligibility and model/code/metric equivalence still require execution-stage verification."
+}

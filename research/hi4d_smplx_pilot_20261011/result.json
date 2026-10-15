@@ -1,0 +1,430 @@
+{
+  "annotation_type": "fitted_pseudo_annotation_not_official_ground_truth",
+  "model_type": "smplx",
+  "gender": "neutral",
+  "units": "metres",
+  "coordinates": "Hi4D world; Y is up",
+  "use_pca": false,
+  "flat_hand_mean": true,
+  "betas_shared_across_frames": true,
+  "steps": 500,
+  "elapsed_seconds": 9.39788007736206,
+  "body_model_sha256": "376021446ddc86e99acacd795182bbef903e61d33b76b9d8b359c2b0865bd992",
+  "initialization": [
+    {
+      "action": "talk14",
+      "frame": 32,
+      "actor_id": 0,
+      "camera": 4,
+      "body_assignment_error_px": 4.589317140330543,
+      "hands": [
+        {
+          "camera": 52,
+          "mean_dwpose_score": 0.9357419013977051
+        },
+        {
+          "camera": 16,
+          "mean_dwpose_score": 0.9674943089485168
+        }
+      ]
+    },
+    {
+      "action": "talk14",
+      "frame": 32,
+      "actor_id": 1,
+      "camera": 16,
+      "body_assignment_error_px": 5.055675003138665,
+      "hands": [
+        {
+          "camera": 16,
+          "mean_dwpose_score": 0.7609005570411682
+        },
+        {
+          "camera": 64,
+          "mean_dwpose_score": 0.8153156042098999
+        }
+      ]
+    },
+    {
+      "action": "hug14",
+      "frame": 62,
+      "actor_id": 0,
+      "camera": 64,
+      "body_assignment_error_px": 11.895995075879043,
+      "hands": [
+        {
+          "camera": 76,
+          "mean_dwpose_score": 0.7929157018661499
+        },
+        {
+          "camera": 76,
+          "mean_dwpose_score": 0.6191872358322144
+        }
+      ]
+    },
+    {
+      "action": "hug14",
+      "frame": 62,
+      "actor_id": 1,
+      "camera": 28,
+      "body_assignment_error_px": 15.141195575923215,
+      "hands": [
+        {
+          "camera": 16,
+          "mean_dwpose_score": 0.6256689429283142
+        },
+        {
+          "camera": 88,
+          "mean_dwpose_score": 0.45127835869789124
+        }
+      ]
+    }
+  ],
+  "metrics": [
+    {
+      "action": "talk14",
+      "frame": 32,
+      "actors": [
+        {
+          "actor_id": 0,
+          "body_joint_before_mm": 34.80859375,
+          "body_joint_after_mm": 10.437874794006348,
+          "body_surface_nearest_vertex_mean_mm": 11.972929304292414,
+          "hands": [
+            {
+              "triangulated_points": 21,
+              "points_with_3_views": 21,
+              "status": "observed_multiview"
+            },
+            {
+              "triangulated_points": 21,
+              "points_with_3_views": 21,
+              "status": "observed_multiview"
+            }
+          ],
+          "eyes": "default_zero_not_observed"
+        },
+        {
+          "actor_id": 1,
+          "body_joint_before_mm": 50.644168853759766,
+          "body_joint_after_mm": 12.483512878417969,
+          "body_surface_nearest_vertex_mean_mm": 11.373001824194684,
+          "hands": [
+            {
+              "triangulated_points": 21,
+              "points_with_3_views": 21,
+              "status": "observed_multiview"
+            },
+            {
+              "triangulated_points": 21,
+              "points_with_3_views": 21,
+              "status": "observed_multiview"
+            }
+          ],
+          "eyes": "default_zero_not_observed"
+        }
+      ],
+      "contacts": []
+    },
+    {
+      "action": "hug14",
+      "frame": 62,
+      "actors": [
+        {
+          "actor_id": 0,
+          "body_joint_before_mm": 52.72209548950195,
+          "body_joint_after_mm": 11.003944396972656,
+          "body_surface_nearest_vertex_mean_mm": 12.006077082039544,
+          "hands": [
+            {
+              "triangulated_points": 18,
+              "points_with_3_views": 0,
+              "status": "mostly_model_prior"
+            },
+            {
+              "triangulated_points": 0,
+              "points_with_3_views": 0,
+              "status": "mostly_model_prior"
+            }
+          ],
+          "eyes": "default_zero_not_observed"
+        },
+        {
+          "actor_id": 1,
+          "body_joint_before_mm": 97.88507080078125,
+          "body_joint_after_mm": 13.126911163330078,
+          "body_surface_nearest_vertex_mean_mm": 10.88715779919812,
+          "hands": [
+            {
+              "triangulated_points": 0,
+              "points_with_3_views": 0,
+              "status": "mostly_model_prior"
+            },
+            {
+              "triangulated_points": 0,
+              "points_with_3_views": 0,
+              "status": "mostly_model_prior"
+            }
+          ],
+          "eyes": "default_zero_not_observed"
+        }
+      ],
+      "contacts": [
+        {
+          "samples": 160,
+          "original_smpl_mean_mm": 12.398778915405273,
+          "fitted_smplx_mean_mm": 16.497337341308594,
+          "distance_error_mean_mm": 6.1321845054626465,
+          "mapping": "estimated nearest-surface correspondences, not official topology correspondence"
+        }
+      ]
+    }
+  ],
+  "loss_history": [
+    {
+      "step": 0,
+      "loss": 0.5459585189819336,
+      "body_joint_mean_mm": [
+        34.80859375,
+        50.644168853759766,
+        52.72209548950195,
+        97.88507080078125
+      ],
+      "contact_loss_m2": 0.005121935158967972
+    },
+    {
+      "step": 25,
+      "loss": 0.13958746194839478,
+      "body_joint_mean_mm": [
+        16.383079528808594,
+        22.288700103759766,
+        31.671329498291016,
+        42.903263092041016
+      ],
+      "contact_loss_m2": 0.0018404362490400672
+    },
+    {
+      "step": 50,
+      "loss": 0.06096985936164856,
+      "body_joint_mean_mm": [
+        13.609116554260254,
+        17.93773651123047,
+        24.350736618041992,
+        29.58141326904297
+      ],
+      "contact_loss_m2": 0.0003497767902445048
+    },
+    {
+      "step": 75,
+      "loss": 0.04088984429836273,
+      "body_joint_mean_mm": [
+        12.522292137145996,
+        15.227764129638672,
+        19.746253967285156,
+        22.485427856445312
+      ],
+      "contact_loss_m2": 0.0002058619720628485
+    },
+    {
+      "step": 100,
+      "loss": 0.033647987991571426,
+      "body_joint_mean_mm": [
+        11.898052215576172,
+        14.050980567932129,
+        17.061203002929688,
+        18.897335052490234
+      ],
+      "contact_loss_m2": 0.00018881008145399392
+    },
+    {
+      "step": 125,
+      "loss": 0.030426105484366417,
+      "body_joint_mean_mm": [
+        11.521234512329102,
+        13.482816696166992,
+        15.241363525390625,
+        16.760883331298828
+      ],
+      "contact_loss_m2": 0.0001493179443059489
+    },
+    {
+      "step": 150,
+      "loss": 0.02910095453262329,
+      "body_joint_mean_mm": [
+        11.26036262512207,
+        13.207173347473145,
+        14.026371955871582,
+        15.445794105529785
+      ],
+      "contact_loss_m2": 0.0001188558671856299
+    },
+    {
+      "step": 175,
+      "loss": 0.027982445433735847,
+      "body_joint_mean_mm": [
+        11.094915390014648,
+        13.034286499023438,
+        13.043977737426758,
+        14.61967658996582
+      ],
+      "contact_loss_m2": 0.00010779227886814624
+    },
+    {
+      "step": 200,
+      "loss": 0.026924479752779007,
+      "body_joint_mean_mm": [
+        11.076416969299316,
+        12.869117736816406,
+        12.38611888885498,
+        14.119558334350586
+      ],
+      "contact_loss_m2": 9.898169810185209e-05
+    },
+    {
+      "step": 225,
+      "loss": 0.026139233261346817,
+      "body_joint_mean_mm": [
+        10.833473205566406,
+        12.781883239746094,
+        12.046703338623047,
+        13.800339698791504
+      ],
+      "contact_loss_m2": 9.116274304687977e-05
+    },
+    {
+      "step": 250,
+      "loss": 0.025516826659440994,
+      "body_joint_mean_mm": [
+        10.723414421081543,
+        12.690492630004883,
+        11.711761474609375,
+        13.613405227661133
+      ],
+      "contact_loss_m2": 7.941455987747759e-05
+    },
+    {
+      "step": 275,
+      "loss": 0.025139078497886658,
+      "body_joint_mean_mm": [
+        10.595935821533203,
+        12.59841537475586,
+        11.46310806274414,
+        13.470685005187988
+      ],
+      "contact_loss_m2": 7.711511716479436e-05
+    },
+    {
+      "step": 300,
+      "loss": 0.024848289787769318,
+      "body_joint_mean_mm": [
+        10.578680038452148,
+        12.492250442504883,
+        11.250968933105469,
+        13.306878089904785
+      ],
+      "contact_loss_m2": 7.661490235477686e-05
+    },
+    {
+      "step": 325,
+      "loss": 0.0246985275298357,
+      "body_joint_mean_mm": [
+        10.550176620483398,
+        12.52712631225586,
+        11.19508171081543,
+        13.299321174621582
+      ],
+      "contact_loss_m2": 7.199271203717217e-05
+    },
+    {
+      "step": 350,
+      "loss": 0.024584051221609116,
+      "body_joint_mean_mm": [
+        10.533138275146484,
+        12.542204856872559,
+        11.13482666015625,
+        13.288798332214355
+      ],
+      "contact_loss_m2": 6.836421380285174e-05
+    },
+    {
+      "step": 375,
+      "loss": 0.0245415847748518,
+      "body_joint_mean_mm": [
+        10.519485473632812,
+        12.536346435546875,
+        11.102495193481445,
+        13.257803916931152
+      ],
+      "contact_loss_m2": 6.941870378796011e-05
+    },
+    {
+      "step": 400,
+      "loss": 0.024461647495627403,
+      "body_joint_mean_mm": [
+        10.501808166503906,
+        12.52662181854248,
+        11.076510429382324,
+        13.225968360900879
+      ],
+      "contact_loss_m2": 6.789955659769475e-05
+    },
+    {
+      "step": 425,
+      "loss": 0.024448053911328316,
+      "body_joint_mean_mm": [
+        10.489763259887695,
+        12.513017654418945,
+        11.064526557922363,
+        13.18820571899414
+      ],
+      "contact_loss_m2": 7.046278187772259e-05
+    },
+    {
+      "step": 450,
+      "loss": 0.024338016286492348,
+      "body_joint_mean_mm": [
+        10.47187328338623,
+        12.502546310424805,
+        11.046064376831055,
+        13.16713809967041
+      ],
+      "contact_loss_m2": 6.676333578070626e-05
+    },
+    {
+      "step": 475,
+      "loss": 0.02428753301501274,
+      "body_joint_mean_mm": [
+        10.454156875610352,
+        12.49281120300293,
+        11.014071464538574,
+        13.146979331970215
+      ],
+      "contact_loss_m2": 6.693349132547155e-05
+    },
+    {
+      "step": 499,
+      "loss": 0.024215497076511383,
+      "body_joint_mean_mm": [
+        10.43860912322998,
+        12.4838228225708,
+        11.002403259277344,
+        13.126547813415527
+      ],
+      "contact_loss_m2": 6.455417315009981e-05
+    }
+  ],
+  "constraints": [
+    "Hi4D SMPL first 22 body joints",
+    "iterated nearest body surface vertices",
+    "calibrated multiview DWPose with outlier rejection",
+    "robustly triangulated anatomical points",
+    "original contact-pair distances",
+    "network priors for missing details"
+  ],
+  "limitations": [
+    "No official SMPL-to-SMPL-X deformation correspondence",
+    "Face contours are view dependent and excluded from fitting",
+    "Occluded hands can remain prior estimates",
+    "No dedicated signed-distance collision optimizer; inspect meshes before accepting contact quality"
+  ]
+}

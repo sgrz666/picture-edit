@@ -1,0 +1,233 @@
+{
+  "captured_at": "2026-10-14T17:03:36.830544+00:00",
+  "upstream_git_revision": "13bb3c625e8b1e457d7124d92207b49e00e4a6fe",
+  "hf_union_revision": "8a4702014d4dabb5f896fcba917e2ee0a961465f",
+  "remote_evidence_directory": "/data/shangguanrz/pic-edit-research/qwen21_controlnet_transfer_20261015_005429",
+  "source_read_policy": "Project source via scp; public source via pinned raw GitHub; Union tensors via header-only HTTP Range. No model tensor payload downloaded.",
+  "diffusers_snapshot_sha256_verified_on_remote": {
+    "transformer_qwenimage21.py": "0eb0555e21ca93195e1fe9389113cafbf0e8822f6454c3001cebb3d21521ebd7",
+    "pipeline_qwenimage21.py": "6985b2f1f25e8dd09ef85c867ebcad184b981f10c0b4f80757ca9cc135b8fa5e"
+  },
+  "files": [
+    {
+      "path": "README.md",
+      "bytes": 3073,
+      "sha256": "f73ebaaef2198aef85e0a37a0f7e4631437580c3f445acf717d6f2b59032c2b7"
+    },
+    {
+      "path": "remote_audit.json",
+      "bytes": 14028,
+      "sha256": "75b12767d8d595bb0d3dc8876cfaa980c48d5835b7a311d24d5431bc98de2cdd"
+    },
+    {
+      "path": "REPORT.zh-CN.md",
+      "bytes": 30119,
+      "sha256": "a29807da634b04809d0b2f53fcfe0a48909dc680ae7ded9b1cefaf667c56392c"
+    },
+    {
+      "path": "scripts/audit_remote.py",
+      "bytes": 3633,
+      "sha256": "7473ec7968d1b7f3438a265681e51d2f915519325a3aaf1f6d65060fadf935af"
+    },
+    {
+      "path": "scripts/verify_audit.py",
+      "bytes": 4335,
+      "sha256": "b18e75f1825b2b9caad83bce1a7aa7f4e172318713d66be6c286d1a43e2a997b"
+    },
+    {
+      "path": "source_snapshot/remote_20261015/diffusers/pipeline_qwenimage21.py",
+      "bytes": 42067,
+      "sha256": "6985b2f1f25e8dd09ef85c867ebcad184b981f10c0b4f80757ca9cc135b8fa5e"
+    },
+    {
+      "path": "source_snapshot/remote_20261015/diffusers/transformer_qwenimage21.py",
+      "bytes": 47103,
+      "sha256": "0eb0555e21ca93195e1fe9389113cafbf0e8822f6454c3001cebb3d21521ebd7"
+    },
+    {
+      "path": "source_snapshot/remote_20261015/qwen21/__init__.py",
+      "bytes": 300,
+      "sha256": "a5c808f485ede729408460a5be3c8c51767fa4b5aec5a73df10beafe6df610cf"
+    },
+    {
+      "path": "source_snapshot/remote_20261015/qwen21/action_prompts.py",
+      "bytes": 3776,
+      "sha256": "0ba8faa4373ba52f48a0474c54dcf74b6b9236293a2354efeda26be2f8aa7548"
+    },
+    {
+      "path": "source_snapshot/remote_20261015/qwen21/body_adapter.py",
+      "bytes": 8904,
+      "sha256": "9e31bf4b731baaf5b0a309081e099aba121bf88bebe1afbd793d0c528ee440d3"
+    },
+    {
+      "path": "source_snapshot/remote_20261015/qwen21/dual_adapter.py",
+      "bytes": 11082,
+      "sha256": "fa8490abd3f72e05c515ebc378b5e76b480079c94b170d5b62ffef420fb21296"
+    },
+    {
+      "path": "source_snapshot/remote_20261015/qwen21/dual_inference.py",
+      "bytes": 4536,
+      "sha256": "80f5531409ca4a180876dc61b195fe7ec71ccc0f8625c22e9c55d4fca1934e0c"
+    },
+    {
+      "path": "source_snapshot/remote_20261015/qwen21/face_adapter.py",
+      "bytes": 4992,
+      "sha256": "495b36f7b7d33bc8c4cf0d59bfe98e2416cf3bbac315b9a816e1cf4b598f6024"
+    },
+    {
+      "path": "source_snapshot/remote_20261015/qwen21/runtime.py",
+      "bytes": 7321,
+      "sha256": "cb8a151807af6245c76e6c2e4f5608f6d78fab302077edc9a2edabb3544caa84"
+    },
+    {
+      "path": "source_snapshot/remote_20261015/qwen21_full/__init__.py",
+      "bytes": 2363,
+      "sha256": "310ac0f0db6f4c871162c17482b0e1f4c293a50f51bc331598617a81361e60fa"
+    },
+    {
+      "path": "source_snapshot/remote_20261015/qwen21_full/checkpoint.py",
+      "bytes": 14699,
+      "sha256": "42c7517eab3eb64b52b5e2622e2bc1a806b2c946215f4a61a2974432c106a2e3"
+    },
+    {
+      "path": "source_snapshot/remote_20261015/qwen21_full/condition_bridge.py",
+      "bytes": 1996,
+      "sha256": "81b7eed16f9892f58657571a44bd3d0e38a1bce7821725692cbbee92f9f5c2fd"
+    },
+    {
+      "path": "source_snapshot/remote_20261015/qwen21_full/condition_injector.py",
+      "bytes": 13209,
+      "sha256": "f491702332c55f57cfbd67819ebd4da30dec057dae0fc7f685db0ac240895b93"
+    },
+    {
+      "path": "source_snapshot/remote_20261015/qwen21_full/conditions.py",
+      "bytes": 11516,
+      "sha256": "90bf30b06b6d7e3cd3bb3109706ee366f02c5e8d4991051308881bc6f9a9c5d9"
+    },
+    {
+      "path": "source_snapshot/remote_20261015/qwen21_full/control_core.py",
+      "bytes": 21401,
+      "sha256": "e5e551e9ab8696f1d547b9b6a111a5b690a9942913b51cc0eb48a0ed011420c9"
+    },
+    {
+      "path": "source_snapshot/remote_20261015/qwen21_full/controlled_pipeline.py",
+      "bytes": 9559,
+      "sha256": "d7c9afcea9c1b443b8c23a679287d8469a324090688d730d397c96e29f6a9cbc"
+    },
+    {
+      "path": "source_snapshot/remote_20261015/qwen21_full/data_runtime.py",
+      "bytes": 18627,
+      "sha256": "423d41e68029e8163ba8b647750365d8032bd89535a97851202a695b367316de"
+    },
+    {
+      "path": "source_snapshot/remote_20261015/qwen21_full/deepgen_adapter.py",
+      "bytes": 25864,
+      "sha256": "b63ad72639673ea6949ccb32c5831ca22b614a13952196e3ee6d5c904543544d"
+    },
+    {
+      "path": "source_snapshot/remote_20261015/qwen21_full/execution.py",
+      "bytes": 46068,
+      "sha256": "ad9d8b46a467d57865f019b60a08870fb3d2eaa266384661b0bebfb945bd5ecb"
+    },
+    {
+      "path": "source_snapshot/remote_20261015/qwen21_full/experts.py",
+      "bytes": 801,
+      "sha256": "50e0444d19441448ce0701df4800b1d67c5ca98c5953dfcf4587611b4e77c3d6"
+    },
+    {
+      "path": "source_snapshot/remote_20261015/qwen21_full/face/adapter.py",
+      "bytes": 11410,
+      "sha256": "0b9b66c396de155e2bc0d25ca5d885e2e3aa2296a8e3e547e2c69144ee98dc52"
+    },
+    {
+      "path": "source_snapshot/remote_20261015/qwen21_full/face_coordinates.py",
+      "bytes": 2985,
+      "sha256": "cb9dc323ee1a45b09534ec78f696eefac9fdf32630c8879f0ca76495f6525b25"
+    },
+    {
+      "path": "source_snapshot/remote_20261015/qwen21_full/face_loss_alignment.py",
+      "bytes": 7528,
+      "sha256": "178a4f4786c27eb3ea6144a594763393797d274cb1fcc806eebf300f32d2bdbe"
+    },
+    {
+      "path": "source_snapshot/remote_20261015/qwen21_full/face_supervision.py",
+      "bytes": 15256,
+      "sha256": "7a6e9b559a84cb643064e534f7e627ec0244947393913b522b4ab98603920b32"
+    },
+    {
+      "path": "source_snapshot/remote_20261015/qwen21_full/frozen_bfs_lora.py",
+      "bytes": 13325,
+      "sha256": "d364338e603bf257883da51dee1d5bcb4cc8baefaad4b029541bb7b446bc0c1a"
+    },
+    {
+      "path": "source_snapshot/remote_20261015/qwen21_full/geometry_encoder.py",
+      "bytes": 8730,
+      "sha256": "47c073c05d467d7f7c70d5b28e4929c3730e518fa6fe69d20453f29e474ea198"
+    },
+    {
+      "path": "source_snapshot/remote_20261015/qwen21_full/joint_training.py",
+      "bytes": 16414,
+      "sha256": "17f063c77e6e651e2ad6b8396615fb3f4940f8f3c7aa480a6b2a535e8ac36d4b"
+    },
+    {
+      "path": "source_snapshot/remote_20261015/qwen21_full/qwen_adapter.py",
+      "bytes": 39030,
+      "sha256": "f2b7d74db4ca63cca70158b8b9de54c07456909e51dc3ebf77481523adf7c367"
+    },
+    {
+      "path": "source_snapshot/remote_20261015/qwen21_full/qwen_runtime.py",
+      "bytes": 9358,
+      "sha256": "77a1e3655e9042aabb81cc04bca7484c6f0956663b19f4d447ba5a1c3b419931"
+    },
+    {
+      "path": "source_snapshot/remote_20261015/qwen21_full/token_encoders.py",
+      "bytes": 10112,
+      "sha256": "fd609c7fe1f55ad1fd54385fd524d9c00ca9c2adc692749152e007c6d4327f7e"
+    },
+    {
+      "path": "source_snapshot/remote_20261015/transformer_config.json",
+      "bytes": 370,
+      "sha256": "56ae3281c4e6c2d1aa3658252d187488071815fd79bef15808bb0205fc1a2241"
+    },
+    {
+      "path": "source_snapshot/upstream/MODEL_CARD.md",
+      "bytes": 10411,
+      "sha256": "4a3774147b9fb499266b21fc658940bd5a672c12b8fc17169f30af8915129d64"
+    },
+    {
+      "path": "source_snapshot/upstream/pipeline_qwenimage21_control.py",
+      "bytes": 42671,
+      "sha256": "d1ba28286956fe57a911f101fe9668c6ff629e0df4eaf32cad1625cae737152d"
+    },
+    {
+      "path": "source_snapshot/upstream/predict_t2i_control.py",
+      "bytes": 10462,
+      "sha256": "26e626493e7a3c980f54a89ee706a3f60f5ef15365aca5741a581783d92169ed"
+    },
+    {
+      "path": "source_snapshot/upstream/qwenimage21_control.yaml",
+      "bytes": 396,
+      "sha256": "2c543f2eebad82f1d4828d6185da76ae041b350b4f8a0b201cde734f08efeff0"
+    },
+    {
+      "path": "source_snapshot/upstream/qwenimage21_transformer2d.py",
+      "bytes": 54812,
+      "sha256": "7947ce82472804ae8b5643843d39dee3ccf0852768af895a3fd37a5fb700744a"
+    },
+    {
+      "path": "source_snapshot/upstream/qwenimage21_transformer2d_control.py",
+      "bytes": 21343,
+      "sha256": "9a59ed89ea72ab6b4900caa411b756b16d15dcdf53e52dec4610dda1e094f991"
+    },
+    {
+      "path": "source_snapshot/upstream/train_control.py",
+      "bytes": 83422,
+      "sha256": "ebd89488062280c14ab4dc64a8f05a314d59ad2ffb24e900458e7f9094b9b749"
+    },
+    {
+      "path": "source_snapshot/upstream/union_safetensors_header.json",
+      "bytes": 20280,
+      "sha256": "bcc22ee233b36a160111ff6b03b0e8cfef641fcefa9c84aa01383ef0339aa225"
+    }
+  ]
+}

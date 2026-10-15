@@ -1,0 +1,234 @@
+{
+  "schema": "qwen21_full_migration_changes_v1",
+  "audited_utc": "2026-10-01T09:56:41.359889+00:00",
+  "scope": "原控制结构保留审计与训练执行差异；没有借这些差异宣称新基座自动兼容旧语义空间",
+  "copied_module_algorithm_changes": [],
+  "changes": [
+    {
+      "topic": "原控制模块",
+      "category": "原样保留",
+      "deepgen_v65": "v6完整47个Python源文件",
+      "qwen21_full": "完整复制且源文件哈希保持一致；没有删去Attention、DINO、Face/Hand/Detail、双人或强度调度模块",
+      "evidence": [
+        "migration_manifest.json",
+        "acceptance/preservation_results.json"
+      ]
+    },
+    {
+      "topic": "图像输入接口",
+      "category": "基座接口适配",
+      "deepgen_v65": "DeepGen VAE的16通道空间latent",
+      "qwen21_full": "Qwen原生64通道latent经恒等初始化64→64卷积与pixel_shuffle转换到旧控制器16通道；A和噪声Target共享接口；不读取DeepGen latent缓存",
+      "evidence": [
+        "src/pose_control/qwen21_full/qwen_adapter.py",
+        "src/pose_control/qwen21_full/qwen_runtime.py"
+      ]
+    },
+    {
+      "topic": "图文条件接口",
+      "category": "基座接口适配",
+      "deepgen_v65": "DeepGen的4096维序列条件与2048维全局条件",
+      "qwen21_full": "Qwen有效图文序列经恒等初始化线性接口；删除padding后进入旧注意力；有效序列均值经新投影形成2048维条件。维度相同不代表语义空间相同。",
+      "evidence": [
+        "src/pose_control/qwen21_full/qwen_adapter.py"
+      ]
+    },
+    {
+      "topic": "六组残差",
+      "category": "基座接口适配",
+      "deepgen_v65": "六组1536维残差按组施加到DeepGen多个层",
+      "qwen21_full": "保留六组旧头与旧内核；每分支新增无偏置1536→4096输出接口，组floor(6i/32)覆盖Qwen32层，仅修改目标token",
+      "evidence": [
+        "src/pose_control/qwen21_full/qwen_adapter.py"
+      ]
+    },
+    {
+      "topic": "初始化与预热",
+      "category": "已批准的适配训练变化",
+      "deepgen_v65": "旧Face预热训练零头及门控；旧入口默认1000步",
+      "qwen21_full": "Body20k与Face1500步分别加载；新增输出接口预热20步；已训旧头+零输出桥，未训零头+非零输出桥，避免连续零层阻断梯度；不使用简化Qwen权重",
+      "evidence": [
+        "body_512_100/weight_loading.json",
+        "src/pose_control/qwen21_full/execution.py"
+      ]
+    },
+    {
+      "topic": "Face正式阶段参数与学习率",
+      "category": "保留并增加接口参数",
+      "deepgen_v65": "旧Face零头/门控1e-4，编码器5e-5，Attention及阶段适配1e-5",
+      "qwen21_full": "21–100步训练相同Face参数族及新Face输出桥；新桥/旧零头/门控1e-4，编码器5e-5，Face核心1e-5；Body、输入接口及Qwen基座冻结",
+      "evidence": [
+        "train_iper_v65_face.py",
+        "src/pose_control/qwen21_full/execution.py"
+      ]
+    },
+    {
+      "topic": "优化器精度与阶段切换",
+      "category": "训练执行方式变化",
+      "deepgen_v65": "旧BF16参数，FP32 master AdamW；转full阶段重新构建优化器",
+      "qwen21_full": "参数本身FP32，AdamW状态FP32，动态运算混合精度；Face预处理FP32以满足旧类型契约；同一优化器跨20步阶段继续，新解冻参数首次收到梯度时创建状态。weight_decay=.01、clip=1.0保持。",
+      "evidence": [
+        "train_iper_v65_face.py",
+        "train_iper_qwen21_full.py"
+      ]
+    },
+    {
+      "topic": "Face损失项与系数",
+      "category": "保持旧版",
+      "deepgen_v65": "全图velocity MSE + .10身份余弦距离 + .05感知特征MSE + .02脸外Face-on/off预测差异",
+      "qwen21_full": "相同四项、相同系数。身份/感知仅有效脸且aux步计算；没有额外改成仅脸部flow或新增脸部区域权重。",
+      "evidence": [
+        "train_iper_v65_face.py:compute_v65_face_losses",
+        "src/pose_control/qwen21_full/execution.py:run_loss"
+      ]
+    },
+    {
+      "topic": "脸外损失区域及辅助裁剪",
+      "category": "开训前恢复旧数值约定",
+      "deepgen_v65": "脸外loss使用Target硬脸框掩码；112裁剪用端点linspace、zeros padding和align_corners=True",
+      "qwen21_full": "face_loss_mask与crop_batch沿用旧约定；face_mask仍表示Adapter真实羽化ROI支持，仅用于残差支持验收。CPU mask32/64及crop16/112前向、crop输入梯度精确一致。",
+      "evidence": [
+        "src/pose_control/qwen21_full/execution.py:face_loss_mask",
+        "src/pose_control/qwen21_full/execution.py:crop_batch"
+      ]
+    },
+    {
+      "topic": "Face采样与训练数据",
+      "category": "适配训练协议变化",
+      "deepgen_v65": "历史V6.5是同一对图/同一份noise/timestep150的1500步单样本试训；入口max_timestep默认650，aux_fraction=.25",
+      "qwen21_full": "8对固定训练样本、100优化步；每步更换固定seed派生的noise，普通Face步sigma均匀[0,.65)，每第4步aux采用[0,.35)。.65保留旧schedule的激活范围，.35为此次低噪声辅助策略，不冒称旧V6.5原始设置。训练前触发的无梯度失败不计入步数。",
+      "evidence": [
+        "experiments/iper_v65_face_overfit_024_6/metrics.json",
+        "train_iper_qwen21_full.py",
+        "src/pose_control/qwen21_full/execution.py"
+      ]
+    },
+    {
+      "topic": "脸外参考预测",
+      "category": "等价监督逻辑适配",
+      "deepgen_v65": "固定noise/固定样本时预计算Face-off预测",
+      "qwen21_full": "每步对同一新noise、新sigma计算冻结Body的Face-off预测，再与Face-on比较，避免将不同噪声预测相减。",
+      "evidence": [
+        "train_iper_v65_face.py",
+        "src/pose_control/qwen21_full/execution.py"
+      ]
+    },
+    {
+      "topic": "Face辅助监督有效性",
+      "category": "按计划补齐质量过滤",
+      "deepgen_v65": "旧单样本试训仅验证固定已选脸",
+      "qwen21_full": "A可靠身份参考及Target离线可见性同时有效才算ID/感知；Target检测仅决定是否监督，不进入生成条件。当前12个Target均通过512/1024门槛。检测是可见性代理，不等于人工认证无遮挡正脸。",
+      "evidence": [
+        "face_supervision.json",
+        "src/pose_control/qwen21_full/face_supervision.py"
+      ]
+    },
+    {
+      "topic": "A人脸预处理",
+      "category": "明确记录的预处理修复",
+      "deepgen_v65": "旧紧裁剪后二次人脸检测可能失败",
+      "qwen21_full": "失败时使用完整A已检出的五点进行112像素标准对齐；ArcFace权重不变。DINO保持原SMPL-X框扩展.15、crop_scale1.35及256×1536局部特征；没有增加第二张Qwen原生A脸参考。",
+      "evidence": [
+        "preprocess_manifest.json"
+      ]
+    },
+    {
+      "topic": "验证probe的含义",
+      "category": "验收口径说明",
+      "deepgen_v65": "旧单样本固定time150，还报告one-step重建指标",
+      "qwen21_full": "固定probe不包含ID/感知loss；Body为人体加权flow，Face为flow+.02outside。probe下降只证明此固定目标发生学习，不能证明面部身份或泛化改善。",
+      "evidence": [
+        "src/pose_control/qwen21_full/execution.py:probe"
+      ]
+    },
+    {
+      "topic": "恢复与默认CUDA非确定性",
+      "category": "验收口径说明",
+      "deepgen_v65": "不假设CUDA逐位确定",
+      "qwen21_full": "检查点参数和AdamW加载精确一致；默认CUDA下相同loss不保证每个梯度/更新bitwise一致。独立参考验收用等价池化+SDPA MATH，两次下一步梯度/参数/AdamW全exact；该替换不进入正式训练。",
+      "evidence": [
+        "acceptance/resume_summary.json",
+        "acceptance/resume_diagnosis.json",
+        "acceptance/resume_deterministic_reference.json"
+      ]
+    },
+    {
+      "topic": "计时",
+      "category": "验收口径说明",
+      "deepgen_v65": "不适用",
+      "qwen21_full": "Body秒数带elapsed_offset跨中断累计，step100=149.4843s；summary160.8395s还包括末尾probe/hash，排除缓存、模型加载和独立恢复诊断时间。不能视作端到端墙钟耗时。",
+      "evidence": [
+        "body_512_100/summary.json",
+        "body_512_100/train_metrics.jsonl"
+      ]
+    }
+  ],
+  "required_acceptance_evidence": [
+    {
+      "item": "47文件完整性及旧结构forward/gradient",
+      "evidence": "acceptance/preservation_results.json",
+      "claim_limit": "169项CPU测试，不替代Qwen真实GPU生成"
+    },
+    {
+      "item": "Body/Face各100优化步与冻结状态",
+      "evidence": [
+        "body_512_100/summary.json",
+        "face_512_100/summary.json"
+      ],
+      "claim_limit": "8对样本的工程短训，非完整iPER或正式画质训练"
+    },
+    {
+      "item": "512/1024原生parity、目标token和ROI、无效脸回退、梯度",
+      "evidence": [
+        "acceptance/runtime_512.json",
+        "acceptance/runtime_1024.json"
+      ],
+      "claim_limit": "GPU运行验收记录存在且passed后才能算通过；1024Face反传若仅flow，不宣称aux也经过验收"
+    },
+    {
+      "item": "完整30步采样",
+      "evidence": [
+        "validation_512/per_sample.jsonl",
+        "validation_1024/per_sample.jsonl",
+        "cross_person_512/per_sample.jsonl"
+      ],
+      "claim_limit": "完整采样数与每层调用次数均需核对，不用单步重建替代"
+    },
+    {
+      "item": "跨人案例人工核查",
+      "evidence": "最终Word内并排图与逐例说明",
+      "claim_limit": "B无正确像素Target，不计算对B重建质量；可判断的串脸和动作问题据图记录"
+    },
+    {
+      "item": "Hand与双人",
+      "evidence": [
+        "acceptance/preservation_results.json",
+        "tests/test_qwen21_full_bridge.py"
+      ],
+      "claim_limit": "结构/合成forward/gradient；本轮没有真实Hand或双人训练"
+    },
+    {
+      "item": "Word报告措辞",
+      "evidence": "最终结果docx",
+      "claim_limit": "明确迁移保留范围、接口与训练协议变化、probe限制、默认CUDA恢复限制；最终50对未使用"
+    }
+  ],
+  "face_loss_cpu_parity": {
+    "outside_mask_grids": [
+      32,
+      64
+    ],
+    "crop_sizes": [
+      16,
+      112
+    ],
+    "forward_exact": true,
+    "crop_input_gradients_exact": true,
+    "device": "cpu"
+  },
+  "code_snapshot_sha256": {
+    "src/pose_control/qwen21_full/execution.py": "32db9673da095176ea984649b32c34fe714989baabc1cdc5543d8c1ca6140688",
+    "train_iper_qwen21_full.py": "a027ee863856732205772afde6f62e6b4d3a25a83026f7957eaaf8feb736b7c5",
+    "src/pose_control/qwen21_full/qwen_adapter.py": "f8c86ce24683a3b0a5b9ab7a1eaf50509ca8ee2be1d8fd1edf6c62651e5532ac"
+  }
+}

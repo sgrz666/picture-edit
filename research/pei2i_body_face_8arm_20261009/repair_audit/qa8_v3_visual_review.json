@@ -1,0 +1,258 @@
+{
+  "schema": "qwen21_qa8_v3_visual_review_v1",
+  "reviewed_at": "2026-10-11T09:43:54.829385+00:00",
+  "instruction_version": "instruction_v3",
+  "reviewed_records": 24,
+  "verified_unique_input_assets": 40,
+  "raw_answer_parse_and_hash_checks_passed": true,
+  "decision": "release_for_controlled_experiment_with_recorded_prompt_errors",
+  "notes": [
+    "逐条对照了 PG/PB/PBG 各 8 条（24 条）的编译文本与全部八组 A/B/depth/normal/filtered DWPose 图片；原始回答 JSON 与最终文本、请求签名及本地图片 SHA 一致。",
+    "v3 已修复删除源球杆和强制冻结 A 表情的系统性问题。PG 无目标 RGB，没有以裸网格脸宣称闭嘴/微笑/说话；PB/PBG 根据 B 可见表情描述。所有协议均明确要求 A 身份、衣服材质、物品和场景保持，允许姿态褶皱与局部阴影变化。",
+    "放行用于测量自动 PE 的实际收益和错误，不代表 24 条均精确。未手改单条文本、未筛选替换样本、未读独立测试集输出，也未把 v1/v2 记录计为正式结果。",
+    "残余问题：PG 的头向、细手势/腿间距可能猜测；网格与 DWPose 不一致时仍会选定一种；少数输出仍含 skeleton/geometry/guide 的措辞；PB/PBG 有手指、服装类型、水印文本误识别及左右混用，6013 的视线方向不一致。逐条备注已保留。",
+    "Qwen 参考 RGB 仍仅 A，B RGB 仅在 PB/PBG 的 PE 与合法训练监督中读取；几何 adapter 单独提供数值条件。PE 文字不是保证几何正确的硬约束。"
+  ],
+  "records": [
+    {
+      "pair_id": "train_0002794",
+      "protocol": "pg",
+      "request_sha256": "24b30855b098aad2e05420784e0a27efba7edfc7fb8f212814137def643a6388",
+      "raw_sha256": "e62bcade7a5791e2b7d57633211c7b8c8023f219fdc98b24ac2e22236d113a54",
+      "compiled_prompt_sha256": "2c6cdea12fc5ff96fbeef9311a795824c8cafd0bfe6c1588eaf2d1edccd8d21c",
+      "word_count": 271,
+      "seconds": 126.19748673199501,
+      "review_note": "交叉胸前手臂与 normal/depth 一致；未猜测表情；DWPose 与网格手臂不一致，PG 仍给出具体手指/手掌位置。"
+    },
+    {
+      "pair_id": "train_0000092",
+      "protocol": "pg",
+      "request_sha256": "390b9fdef5e05848de62923aab199a29328f07ca5a156af60e34e3dc9365be6d",
+      "raw_sha256": "5d148f4d344dcca456d634c25cf9cde23b142a75f8cce49153e6c3dcbfb1afb4",
+      "compiled_prompt_sha256": "e6483e547804428850dfbbd3c93c2c6c885876e1838ccc248d2c9ee33ea2440b",
+      "word_count": 268,
+      "seconds": 124.70014902899857,
+      "review_note": "viewer-right 手臂举至头顶，另一手臂放下；未臆测表情，但握拳/张指和腿间距仍较肯定。"
+    },
+    {
+      "pair_id": "train_0007286",
+      "protocol": "pg",
+      "request_sha256": "b16533ec4a7a3a63cd29cfdc8595eb5dcb060322d3fa00df882d3a664be17f07",
+      "raw_sha256": "d959f312cb42bfcbbb459c38449d8052652e82089fa8164c5e3acb2ff0df7f71",
+      "compiled_prompt_sha256": "5188949396cf59026ac5092276260b2e2a9f9fbebcf236f14a71bb1830e774bf",
+      "word_count": 299,
+      "seconds": 115.4097079570056,
+      "review_note": "胸前 viewer-right 手、另一臂放下；未把网格脸推断为说话；仍提到 target skeleton/geometry，属残余依赖措辞。"
+    },
+    {
+      "pair_id": "train_0007410",
+      "protocol": "pg",
+      "request_sha256": "dca2be02dc0daf219b4eaf4dd1e058ade63435082a2e8ccdcdfceba6a707d887",
+      "raw_sha256": "6c11cee48d289d19e14abc454dbfbf9ea3bc3a3e73a54f85176c8946dac2c706",
+      "compiled_prompt_sha256": "34f4dc5e64f7c34ed954e5a1542a4fa4ecd2aa6ee49bb331b2f04388b79cf6d1",
+      "word_count": 272,
+      "seconds": 215.20166035898728,
+      "review_note": "已明确保留 A 球杆和白手套，没有延续 v1 删除物品的问题；网格仅近似 B 向镜头伸手，PG 把它写成胸前屈臂/松握。"
+    },
+    {
+      "pair_id": "train_0005242",
+      "protocol": "pg",
+      "request_sha256": "ae4458741ff605d92d5879122189db219614436ea0f7a9bca5dc85d5365d4258",
+      "raw_sha256": "0fa34d54788ca50b2d8854bc4853967d54b8e1ed6614a57d4328cfa723b178fe",
+      "compiled_prompt_sha256": "e0724487253ec29d65bf59498ef56df9dd559f6365b56f6bdf108f606972bdc4",
+      "word_count": 282,
+      "seconds": 112.31750060799823,
+      "review_note": "仅从网格描述一臂胸前、一臂放下，不猜微笑；实际 B 下方手靠大腿/床沿，PG 不能可靠判断接触与表情。"
+    },
+    {
+      "pair_id": "train_0004247",
+      "protocol": "pg",
+      "request_sha256": "19370670bb5befcabf3034df3803630a753622628522a524579fba11633dce6f",
+      "raw_sha256": "adf402952885a766650295415749ddecd4ddae63a2b0ce8476f5ebee617dfb64",
+      "compiled_prompt_sha256": "5e2f303beda62c08ce97a177ab380c5a0fbbdfa325e926363bdf6265a1eed05e",
+      "word_count": 238,
+      "seconds": 113.46503079601098,
+      "review_note": "描述由侧转为正面、一臂胸前一臂放下；未猜 B smirk；把 A 头部白色配件写成耳机，物品分类不可靠。"
+    },
+    {
+      "pair_id": "train_0003344",
+      "protocol": "pg",
+      "request_sha256": "b34532a4b215dc27b196771362f99ffe94ad5f174d08c493e3d8c7c1e5883607",
+      "raw_sha256": "a1834a458c083cfd7e834dbbf9cb89318e9326596fc108ae00932d9629c5321b",
+      "compiled_prompt_sha256": "fe30752d9d8c817b229261e7c9a74b1e27bac47f42c8dccf65e2b4346c9cb17e",
+      "word_count": 306,
+      "seconds": 158.27334382200206,
+      "review_note": "解除交叉手臂；未臆测张嘴；姿态中的具体手指和 head upright 不足以精确表达 B 低头，仍有 geometry controls 措辞。"
+    },
+    {
+      "pair_id": "train_0006013",
+      "protocol": "pg",
+      "request_sha256": "a526ce52617d1d1183abd62dad62586464f774dbe2dd1a9be2f67810d3675acf",
+      "raw_sha256": "f2fde82b35cf2904ecdae2868f05ed3a5ced6c907eebddca8fed674594178caf",
+      "compiled_prompt_sha256": "d07a8d064f4a3221040267b0c8c6cc211236b09ff6704d5af6c7d6a8c04d5374",
+      "word_count": 297,
+      "seconds": 135.2174609020003,
+      "review_note": "保留 A 粉色卫衣和场景；网格头朝向信息弱，PG 写成朝镜头，且 viewer-right 肘弯/大腿外开与 B RGB 存在差异。"
+    },
+    {
+      "pair_id": "train_0002794",
+      "protocol": "pb",
+      "request_sha256": "69792c27c263039656305fbf2d99f4e52d8c21c7993f05332cc534543afe7931",
+      "raw_sha256": "219c5e2291132aee521fbe2fcfdfba47a3348404de74aca76a63fc359fa6f223",
+      "compiled_prompt_sha256": "d55c24608553dbfe9db25fa1a0d706a11ea1611661e2c774c9602e82b5a6a2fe",
+      "word_count": 269,
+      "seconds": 105.75530993600842,
+      "review_note": "描述胸前交叉双臂和 B 张嘴表情，保留 A 格纹衬衣、项链和室内场景；姿态描述无需读取 B RGB 执行。"
+    },
+    {
+      "pair_id": "train_0000092",
+      "protocol": "pb",
+      "request_sha256": "36598a5af840423d126c58a8cf5a5558943d742e4cf2d2c97ebd6472399ab542",
+      "raw_sha256": "bdeb434143581b9067aff1876f4abacfeab4a34da52e1ba43d76f5b3ecb78406",
+      "compiled_prompt_sha256": "25c7338e13f28ced4bac0b49166cc67a7afeba4d0744ff8202d2e1e743df53b9",
+      "word_count": 259,
+      "seconds": 123.99300226099149,
+      "review_note": "举臂侧别与 B 一致并描述张嘴；fully straight above head with elbow bent 用语不严谨；保留 A 黑衣与头巾。"
+    },
+    {
+      "pair_id": "train_0007286",
+      "protocol": "pb",
+      "request_sha256": "47acfe5566a544ee908761b82198219da98b5aca0768eada72515302833e16d9",
+      "raw_sha256": "4096af634b5cba3c84337b6a382d8b9d967fb844bc63e6cb653bb9323dc87fcc",
+      "compiled_prompt_sha256": "ec788815781fa02af8e52c73c308b78ab9a7723307f5554c5720f7248a8e5d4d",
+      "word_count": 312,
+      "seconds": 93.43874104499992,
+      "review_note": "描述 B 低头、张嘴、胸前下垂手指；保留 A 蓝红针织衣和背景。"
+    },
+    {
+      "pair_id": "train_0007410",
+      "protocol": "pb",
+      "request_sha256": "e1221d4b2dbb38cb15b55535e5119c0677e0900d916b3e9c725d7c12c1bd8f02",
+      "raw_sha256": "cbf549cb7c2ac2bafe9a2de8ab12c16d6bf5cdab21eb8f674dfc8c1493bc7720",
+      "compiled_prompt_sha256": "b2fbdaf605e2b1a46dc65bbb831674cee81841bed68d017c2aaaec133f1f0f41",
+      "word_count": 299,
+      "seconds": 122.0922135150031,
+      "review_note": "描述 B 向镜头伸白手套，另一手持球杆放下；保留 A 物品、服装、身份和高尔夫场景。"
+    },
+    {
+      "pair_id": "train_0005242",
+      "protocol": "pb",
+      "request_sha256": "821dd9f6a6eebcf4f70e1204e85947545b706ddd98ac84f21d9b7ea51cc88efc",
+      "raw_sha256": "8697a212b0bba81d90edaf17d17211c796018e23590ec9ce4d37391e192e7a10",
+      "compiled_prompt_sha256": "343da85c7680039faa40389a48391fbe59f6a3f028917ab3643b7b3f8840e02b",
+      "word_count": 218,
+      "seconds": 83.9217593469948,
+      "review_note": "描述 B 前倾、闭嘴微笑、胸前指手；保留 A 白缎上衣、蓝牛仔裤和卧室。"
+    },
+    {
+      "pair_id": "train_0004247",
+      "protocol": "pb",
+      "request_sha256": "c65fc977b668cf8403ef49f45bb51bee14b7d39760fc593a33e5a777385f6931",
+      "raw_sha256": "c87d3988b207f4ad6b8dbebf16973eb2dbaecb334b2a9b16975bf6b6dd4c9ff8",
+      "compiled_prompt_sha256": "3d1fdf876f0d25db2cbf22abc34cade4ad98a84556d2714a07fe54518d84fb92",
+      "word_count": 299,
+      "seconds": 100.42190123999899,
+      "review_note": "描述 B 正面和闭嘴表情，保留 A 灰衣、短裤、背景；头部白色配件称 headband。"
+    },
+    {
+      "pair_id": "train_0003344",
+      "protocol": "pb",
+      "request_sha256": "3acac67a63f75c117a1679d9c03566833cf3cf9fb4de2fcdf234e01d08a0793a",
+      "raw_sha256": "d4f5eb7a10830c270f14b34f5d5b92e9af068037f32aa36608bf917a7d66646e",
+      "compiled_prompt_sha256": "f56aecbb55d595d5da696084156749b45f07fa419942c738166b0a409d8e9652",
+      "word_count": 321,
+      "seconds": 93.10412534599891,
+      "review_note": "描述 B 手臂放下、低头张嘴；保留 A 眼镜、缎面衣服、房间；服装名称/肩带类型仍可能误识别。"
+    },
+    {
+      "pair_id": "train_0006013",
+      "protocol": "pb",
+      "request_sha256": "8a8a58b4e458015ca8636e641dee858772662f6deeb34fd1173d137ec909d83a",
+      "raw_sha256": "232a6c49e547a8cb16758512c4f8e288e801da272f39b0664576c91291587e8f",
+      "compiled_prompt_sha256": "6c2975bcc056c1f92ebeea6e9e3d833bc51abb6ee05f47488f8ffe8513f3b647",
+      "word_count": 316,
+      "seconds": 161.16452447099437,
+      "review_note": "描述 B 双臂外展、仰头；gaze/head 偏 viewer-right；保持 A 原图裁幅，没有要求扩出完整腿脚。"
+    },
+    {
+      "pair_id": "train_0002794",
+      "protocol": "pbg",
+      "request_sha256": "72ff0b140aa446357e418c3d4febeca4eceb61777a317f0ca669e98b53c086a5",
+      "raw_sha256": "9a07b0708825e52449b6b8bd747e7e4645e56c02fcfca0d4337a6724dd9a9716",
+      "compiled_prompt_sha256": "ed96696eadd63a122216d2d801b3d8c47bc9770bbe125a9aaea56ee03c9be296",
+      "word_count": 270,
+      "seconds": 174.59453819600458,
+      "review_note": "描述站直、交叉双臂、B 张嘴表情；保留 A 的身份、格纹和原背景。"
+    },
+    {
+      "pair_id": "train_0000092",
+      "protocol": "pbg",
+      "request_sha256": "109443691db32488151e20e5bbae4df90cb39a4b8ec17815d25a7ff6297366a4",
+      "raw_sha256": "4b728769a93f74cc192327f82b602d397dc62e4afb3abedaef0fe7f6489e7a50",
+      "compiled_prompt_sha256": "6134a3665c3edbed6f7cea1dd55998c4c0c645d158ad69306dbb7ee351398a75",
+      "word_count": 253,
+      "seconds": 125.73310536000645,
+      "review_note": "举臂/下垂手臂与 B 和网格大体一致；B 张嘴；保留 A 黑衣、头巾、项链及场景。"
+    },
+    {
+      "pair_id": "train_0007286",
+      "protocol": "pbg",
+      "request_sha256": "66cf7431de2f991f79816647a142582c01307620004bc2f5d65db8d86408b7c3",
+      "raw_sha256": "d7eb888e0bb04b5cf4095ced057f7b0f16afd69d5104ac33f33ff0a3289f73e0",
+      "compiled_prompt_sha256": "5475277f6bd3d5fbcbe82f21120b27745c385d6dbecadd4b659be9ceecb9897b",
+      "word_count": 293,
+      "seconds": 143.42222859901085,
+      "review_note": "描述 B 低头/张嘴和胸前手部；extended downward 与 relaxed curled fingers 有局部文字歧义。"
+    },
+    {
+      "pair_id": "train_0007410",
+      "protocol": "pbg",
+      "request_sha256": "f3275d5e07fe594f58e3c316f18e762dc4f570a72e4a2d924fa5ecab9e00f17e",
+      "raw_sha256": "23a74cba6d49984daa46d3276a94cb4c0f0190dcbebf9060c147fa0d6bb94215",
+      "compiled_prompt_sha256": "6f662d7b6bdfef19ac25931232c567a94098a5f17be5073a43f8c6ecef4d3a9d",
+      "word_count": 336,
+      "seconds": 122.72149828900001,
+      "review_note": "描述 B 向镜头指手，保留 A 球杆和白手套；混用解剖左右与 viewer-left/right，作为残余误读风险记录。"
+    },
+    {
+      "pair_id": "train_0005242",
+      "protocol": "pbg",
+      "request_sha256": "b7d937cd8a8ce7605b0e67b88115f6d46350e86d643949cf5e1643b3d060ec9d",
+      "raw_sha256": "822fc6b4b23f60bcd67a8dd2832cecded977ccbf34b79abc324161b97e26a0ac",
+      "compiled_prompt_sha256": "0815099c01f8f8e4bb3f2d9dc1815e472adc144a4ce2c19f1e8967dc741eb416",
+      "word_count": 291,
+      "seconds": 107.66260689700721,
+      "review_note": "保留 A 外观并描述 B 前倾/微笑/胸前手；仍有 from the guide images 否定式措辞，未提供这些图给 Qwen RGB。"
+    },
+    {
+      "pair_id": "train_0004247",
+      "protocol": "pbg",
+      "request_sha256": "90f1f9d913b108a9ffed8d734890a8c6c4fb6214bd28a0fcaa2ed7e02592b0f0",
+      "raw_sha256": "bc32713dba54bc401d3c4a11018b30239ad49bd8935df545f8837690ee8a9d97",
+      "compiled_prompt_sha256": "09551b46d96c3ab30eaee3c741fa606fd9d9441296060b200b8850b91d849fcb",
+      "word_count": 286,
+      "seconds": 155.93019787900266,
+      "review_note": "描述 B 正面和闭嘴表情；左右使用解剖与画面混合，水印用户名识别有细微错误，不能承诺文字像素保持。"
+    },
+    {
+      "pair_id": "train_0003344",
+      "protocol": "pbg",
+      "request_sha256": "ca7272dc7aeb0074c01b79bffd94bfc409f3ea2798d78e19e7da08a8be8e78ab",
+      "raw_sha256": "e00bb61fc3ad9ecad6fd4730774c47716bdeb3182625c5c6cd51e2c251ed3f11",
+      "compiled_prompt_sha256": "15ff3ce01be304bccf067d22753ab267417118e6398810a20c93598655857ac4",
+      "word_count": 314,
+      "seconds": 102.47548893200292,
+      "review_note": "描述 B 低头/张嘴；保留 A 眼镜和缎面纹理，但衣服被称 two-piece；仍列举编译后的几何结构指代。"
+    },
+    {
+      "pair_id": "train_0006013",
+      "protocol": "pbg",
+      "request_sha256": "8038567be4e4126bb068e3519ee2496f05ce63f2bc5309cec498583ca41abf69",
+      "raw_sha256": "9880dad313c6218f2d1fa905550f2ddc63bdd5ce0b9a97c55428bc5e3bf580fd",
+      "compiled_prompt_sha256": "9c5e1556ed634f5bd08ca7aa05cdf67a6e0ea6393ec245a8e5f865dd4bd47d62",
+      "word_count": 319,
+      "seconds": 126.9301860449923,
+      "review_note": "描述 B 双臂外展、仰头；gaze 偏 upper-left，与 PB 不一致，需在后续几何/人脸评估检查。"
+    }
+  ]
+}

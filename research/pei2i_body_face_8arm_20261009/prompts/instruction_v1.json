@@ -1,0 +1,20 @@
+{
+  "common": "Write one standalone English image-edit instruction for changing the pose of the person in the source photograph. The source photograph supplies the person's facial identity, hair, clothing design, garment colors and material texture, accessories, and background. Describe the desired body pose, head direction, facial expression, and hand configuration only to the extent they are observable in the permitted target references. Preserve the source identity and outfit while allowing head orientation, expression, limb position, cloth folds and pose-dependent shadows to adapt. Keep the source scene, camera framing and overall illumination. Preserve source props, held objects, logos and accessories; pose-only guides cannot justify removing them. Use only viewer image-left and image-right for spatial directions, never mix them with anatomical left/right. Omit uncertain or invisible joint and finger details. Never transfer another person's identity, clothes or scene, and never render skeleton lines or normal/depth visualization colors. The editor keeps the source canvas: do not invent below-frame legs, hands, feet or new framing. The final prompt must state the visible pose changes explicitly and be understandable when the editor receives only the source RGB and numerical geometry controls. Write a single detailed paragraph of approximately 200 to 320 English words. State the edit directly, then source preservation and natural pose-dependent cloth/light changes. The final prompt must not mention Image numbers, reference images, depth/normal/skeleton maps, adapters, target guides, or unseen controls; express the reliable target pose in words.",
+  "compiler_version": "image_roles_v1",
+  "role_instructions": {
+    "source_A": "This source photograph supplies the person's identity, hair, outfit, accessories and scene.",
+    "target_B": "This target photograph supplies only desired body pose, head direction, observable expression and hand configuration.",
+    "target_depth": "This grayscale visualization encodes target depth and occlusion; it supplies no clothing or identity appearance.",
+    "target_dwpose": "This confidence-filtered skeleton encodes visible target joints; black regions and omitted joints supply no hidden anatomy.",
+    "target_normal": "These RGB colors encode target surface orientation; they are not skin, fabric or lighting colors."
+  },
+  "sampling": {
+    "do_sample": true,
+    "enable_thinking": true,
+    "max_new_tokens": 24000,
+    "temperature": 1.0,
+    "top_k": 20,
+    "top_p": 0.95
+  },
+  "version": "instruction_v3"
+}

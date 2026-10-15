@@ -1,0 +1,3353 @@
+{
+  "checkpoint": "/home/shangguanrz/nihaochen/qwen21_full/face_repair/roi_same_aux/checkpoint_step_000300.pt",
+  "face_boxes": [
+    [
+      [
+        0.49670806527137756,
+        0.159579336643219,
+        0.5734793543815613,
+        0.2363506555557251
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    ]
+  ],
+  "sampler_sigmas": [
+    0.07568359375,
+    0.08349609375,
+    0.1279296875,
+    0.142578125,
+    0.1787109375,
+    0.19921875,
+    0.2265625,
+    0.251953125,
+    0.2734375,
+    0.302734375,
+    0.318359375,
+    0.34765625,
+    0.359375,
+    0.39453125,
+    0.40234375,
+    0.435546875,
+    0.44140625,
+    0.4765625,
+    0.48046875,
+    0.515625,
+    0.55078125,
+    0.5859375
+  ],
+  "rows": [
+    {
+      "sigma": 0.07568359375,
+      "group": 0,
+      "native32": {
+        "support": 6,
+        "local_rms": 0.20316047966480255,
+        "max_abs": 2.1686089038848877,
+        "peak_position_rms": 0.3299652636051178
+      },
+      "native64": {
+        "support": 25,
+        "local_rms": 0.19293208420276642,
+        "max_abs": 2.1839709281921387,
+        "peak_position_rms": 0.3340947926044464
+      },
+      "coarse32_to64": {
+        "support": 25,
+        "local_rms": 0.15557265281677246,
+        "max_abs": 1.8474481105804443,
+        "peak_position_rms": 0.2813069522380829
+      },
+      "native64_peak_vs32": 1.0125150415962287,
+      "native64_rms_vs32": 0.9496536162992324
+    },
+    {
+      "sigma": 0.07568359375,
+      "group": 1,
+      "native32": {
+        "support": 6,
+        "local_rms": 0.15259777009487152,
+        "max_abs": 1.0145550966262817,
+        "peak_position_rms": 0.24767054617404938
+      },
+      "native64": {
+        "support": 25,
+        "local_rms": 0.16646955907344818,
+        "max_abs": 1.2288806438446045,
+        "peak_position_rms": 0.28333449363708496
+      },
+      "coarse32_to64": {
+        "support": 25,
+        "local_rms": 0.11695235222578049,
+        "max_abs": 0.8658500909805298,
+        "peak_position_rms": 0.2109331637620926
+      },
+      "native64_peak_vs32": 1.1439975322619627,
+      "native64_rms_vs32": 1.0909042705535765
+    },
+    {
+      "sigma": 0.07568359375,
+      "group": 2,
+      "native32": {
+        "support": 6,
+        "local_rms": 0.18433023989200592,
+        "max_abs": 1.4018863439559937,
+        "peak_position_rms": 0.30200913548469543
+      },
+      "native64": {
+        "support": 25,
+        "local_rms": 0.23060613870620728,
+        "max_abs": 1.9689080715179443,
+        "peak_position_rms": 0.4590727686882019
+      },
+      "coarse32_to64": {
+        "support": 25,
+        "local_rms": 0.14136728644371033,
+        "max_abs": 1.1872005462646484,
+        "peak_position_rms": 0.25497791171073914
+      },
+      "native64_peak_vs32": 1.520062523775761,
+      "native64_rms_vs32": 1.251048872074995
+    },
+    {
+      "sigma": 0.07568359375,
+      "group": 3,
+      "native32": {
+        "support": 6,
+        "local_rms": 0.14691248536109924,
+        "max_abs": 1.0735399723052979,
+        "peak_position_rms": 0.2427905797958374
+      },
+      "native64": {
+        "support": 25,
+        "local_rms": 0.35431116819381714,
+        "max_abs": 4.942769527435303,
+        "peak_position_rms": 1.0149112939834595
+      },
+      "coarse32_to64": {
+        "support": 25,
+        "local_rms": 0.1128769963979721,
+        "max_abs": 0.8908697962760925,
+        "peak_position_rms": 0.20119188725948334
+      },
+      "native64_peak_vs32": 4.180192225072729,
+      "native64_rms_vs32": 2.4117158410529123
+    },
+    {
+      "sigma": 0.07568359375,
+      "group": 4,
+      "native32": {
+        "support": 6,
+        "local_rms": 0.3360773026943207,
+        "max_abs": 2.685001850128174,
+        "peak_position_rms": 0.5570243000984192
+      },
+      "native64": {
+        "support": 25,
+        "local_rms": 0.6870287656784058,
+        "max_abs": 8.74892807006836,
+        "peak_position_rms": 1.873077154159546
+      },
+      "coarse32_to64": {
+        "support": 25,
+        "local_rms": 0.25861576199531555,
+        "max_abs": 2.219923257827759,
+        "peak_position_rms": 0.46314868330955505
+      },
+      "native64_peak_vs32": 3.3626489074688424,
+      "native64_rms_vs32": 2.0442581518314946
+    },
+    {
+      "sigma": 0.07568359375,
+      "group": 5,
+      "native32": {
+        "support": 6,
+        "local_rms": 0.3661256730556488,
+        "max_abs": 2.992727756500244,
+        "peak_position_rms": 0.6140105128288269
+      },
+      "native64": {
+        "support": 25,
+        "local_rms": 1.1493741273880005,
+        "max_abs": 15.126476287841797,
+        "peak_position_rms": 3.4694747924804688
+      },
+      "coarse32_to64": {
+        "support": 25,
+        "local_rms": 0.2798998951911926,
+        "max_abs": 2.44091796875,
+        "peak_position_rms": 0.5011217594146729
+      },
+      "native64_peak_vs32": 5.650513663839637,
+      "native64_rms_vs32": 3.1392885338944883
+    },
+    {
+      "sigma": 0.08349609375,
+      "group": 0,
+      "native32": {
+        "support": 6,
+        "local_rms": 0.2032858282327652,
+        "max_abs": 2.1698195934295654,
+        "peak_position_rms": 0.3301651179790497
+      },
+      "native64": {
+        "support": 25,
+        "local_rms": 0.19304746389389038,
+        "max_abs": 2.185243844985962,
+        "peak_position_rms": 0.33430513739585876
+      },
+      "coarse32_to64": {
+        "support": 25,
+        "local_rms": 0.155668705701828,
+        "max_abs": 1.848496437072754,
+        "peak_position_rms": 0.28147950768470764
+      },
+      "native64_peak_vs32": 1.0125392392816972,
+      "native64_rms_vs32": 0.9496356217849493
+    },
+    {
+      "sigma": 0.08349609375,
+      "group": 1,
+      "native32": {
+        "support": 6,
+        "local_rms": 0.15283186733722687,
+        "max_abs": 1.0158954858779907,
+        "peak_position_rms": 0.24805106222629547
+      },
+      "native64": {
+        "support": 25,
+        "local_rms": 0.1666300743818283,
+        "max_abs": 1.2290548086166382,
+        "peak_position_rms": 0.2833159267902374
+      },
+      "coarse32_to64": {
+        "support": 25,
+        "local_rms": 0.11713220924139023,
+        "max_abs": 0.8670017719268799,
+        "peak_position_rms": 0.2112586349248886
+      },
+      "native64_peak_vs32": 1.1421677627478573,
+      "native64_rms_vs32": 1.0902835729550788
+    },
+    {
+      "sigma": 0.08349609375,
+      "group": 2,
+      "native32": {
+        "support": 6,
+        "local_rms": 0.18477597832679749,
+        "max_abs": 1.404745101928711,
+        "peak_position_rms": 0.3027440011501312
+      },
+      "native64": {
+        "support": 25,
+        "local_rms": 0.23078522086143494,
+        "max_abs": 1.9684607982635498,
+        "peak_position_rms": 0.458685040473938
+      },
+      "coarse32_to64": {
+        "support": 25,
+        "local_rms": 0.14171212911605835,
+        "max_abs": 1.189655065536499,
+        "peak_position_rms": 0.25560444593429565
+      },
+      "native64_peak_vs32": 1.5150920868171898,
+      "native64_rms_vs32": 1.249000129515022
+    },
+    {
+      "sigma": 0.08349609375,
+      "group": 3,
+      "native32": {
+        "support": 6,
+        "local_rms": 0.14766888320446014,
+        "max_abs": 1.0783103704452515,
+        "peak_position_rms": 0.24406647682189941
+      },
+      "native64": {
+        "support": 25,
+        "local_rms": 0.3543301522731781,
+        "max_abs": 4.940542697906494,
+        "peak_position_rms": 1.0142076015472412
+      },
+      "coarse32_to64": {
+        "support": 25,
+        "local_rms": 0.11346671730279922,
+        "max_abs": 0.8949682116508484,
+        "peak_position_rms": 0.20228177309036255
+      },
+      "native64_peak_vs32": 4.155456393494509,
+      "native64_rms_vs32": 2.3994909732105025
+    },
+    {
+      "sigma": 0.08349609375,
+      "group": 4,
+      "native32": {
+        "support": 6,
+        "local_rms": 0.3379564881324768,
+        "max_abs": 2.700791358947754,
+        "peak_position_rms": 0.5601415038108826
+      },
+      "native64": {
+        "support": 25,
+        "local_rms": 0.687199056148529,
+        "max_abs": 8.737074851989746,
+        "peak_position_rms": 1.871282696723938
+      },
+      "coarse32_to64": {
+        "support": 25,
+        "local_rms": 0.2600662112236023,
+        "max_abs": 2.2334721088409424,
+        "peak_position_rms": 0.4658195674419403
+      },
+      "native64_peak_vs32": 3.340732090003687,
+      "native64_rms_vs32": 2.033395067944816
+    },
+    {
+      "sigma": 0.08349609375,
+      "group": 5,
+      "native32": {
+        "support": 6,
+        "local_rms": 0.3683985471725464,
+        "max_abs": 3.0096490383148193,
+        "peak_position_rms": 0.6178932189941406
+      },
+      "native64": {
+        "support": 25,
+        "local_rms": 1.1490942239761353,
+        "max_abs": 15.116971969604492,
+        "peak_position_rms": 3.466872215270996
+      },
+      "coarse32_to64": {
+        "support": 25,
+        "local_rms": 0.28168296813964844,
+        "max_abs": 2.4554531574249268,
+        "peak_position_rms": 0.5044373869895935
+      },
+      "native64_peak_vs32": 5.610795051149237,
+      "native64_rms_vs32": 3.119160574316639
+    },
+    {
+      "sigma": 0.1279296875,
+      "group": 0,
+      "native32": {
+        "support": 6,
+        "local_rms": 0.20444926619529724,
+        "max_abs": 2.1818108558654785,
+        "peak_position_rms": 0.3320283889770508
+      },
+      "native64": {
+        "support": 25,
+        "local_rms": 0.19411858916282654,
+        "max_abs": 2.1976590156555176,
+        "peak_position_rms": 0.33623823523521423
+      },
+      "coarse32_to64": {
+        "support": 25,
+        "local_rms": 0.15655849874019623,
+        "max_abs": 1.8588271141052246,
+        "peak_position_rms": 0.2830832600593567
+      },
+      "native64_peak_vs32": 1.0126791756305344,
+      "native64_rms_vs32": 0.9494707062308433
+    },
+    {
+      "sigma": 0.1279296875,
+      "group": 1,
+      "native32": {
+        "support": 6,
+        "local_rms": 0.15481995046138763,
+        "max_abs": 1.0272321701049805,
+        "peak_position_rms": 0.251284658908844
+      },
+      "native64": {
+        "support": 25,
+        "local_rms": 0.16805601119995117,
+        "max_abs": 1.2321490049362183,
+        "peak_position_rms": 0.2836219072341919
+      },
+      "coarse32_to64": {
+        "support": 25,
+        "local_rms": 0.11865832656621933,
+        "max_abs": 0.8767306208610535,
+        "peak_position_rms": 0.21402306854724884
+      },
+      "native64_peak_vs32": 1.128687714028251,
+      "native64_rms_vs32": 1.0854932500567143
+    },
+    {
+      "sigma": 0.1279296875,
+      "group": 2,
+      "native32": {
+        "support": 6,
+        "local_rms": 0.18839973211288452,
+        "max_abs": 1.428523063659668,
+        "peak_position_rms": 0.3087097704410553
+      },
+      "native64": {
+        "support": 25,
+        "local_rms": 0.2324535995721817,
+        "max_abs": 1.9677613973617554,
+        "peak_position_rms": 0.4564991593360901
+      },
+      "coarse32_to64": {
+        "support": 25,
+        "local_rms": 0.14451086521148682,
+        "max_abs": 1.2100486755371094,
+        "peak_position_rms": 0.26069116592407227
+      },
+      "native64_peak_vs32": 1.4787324634522818,
+      "native64_rms_vs32": 1.2338319007423066
+    },
+    {
+      "sigma": 0.1279296875,
+      "group": 3,
+      "native32": {
+        "support": 6,
+        "local_rms": 0.1535167396068573,
+        "max_abs": 1.1182568073272705,
+        "peak_position_rms": 0.2538955509662628
+      },
+      "native64": {
+        "support": 25,
+        "local_rms": 0.35495778918266296,
+        "max_abs": 4.930606842041016,
+        "peak_position_rms": 1.0102488994598389
+      },
+      "coarse32_to64": {
+        "support": 25,
+        "local_rms": 0.11801725625991821,
+        "max_abs": 0.9292269945144653,
+        "peak_position_rms": 0.21067917346954346
+      },
+      "native64_peak_vs32": 3.9789941005861853,
+      "native64_rms_vs32": 2.3121764446774877
+    },
+    {
+      "sigma": 0.1279296875,
+      "group": 4,
+      "native32": {
+        "support": 6,
+        "local_rms": 0.35186800360679626,
+        "max_abs": 2.8165316581726074,
+        "peak_position_rms": 0.5831807851791382
+      },
+      "native64": {
+        "support": 25,
+        "local_rms": 0.6894312500953674,
+        "max_abs": 8.659525871276855,
+        "peak_position_rms": 1.8607395887374878
+      },
+      "coarse32_to64": {
+        "support": 25,
+        "local_rms": 0.2707942724227905,
+        "max_abs": 2.3326282501220703,
+        "peak_position_rms": 0.4855484962463379
+      },
+      "native64_peak_vs32": 3.190673691633918,
+      "native64_rms_vs32": 1.9593462407164184
+    },
+    {
+      "sigma": 0.1279296875,
+      "group": 5,
+      "native32": {
+        "support": 6,
+        "local_rms": 0.38526439666748047,
+        "max_abs": 3.13339900970459,
+        "peak_position_rms": 0.6465243101119995
+      },
+      "native64": {
+        "support": 25,
+        "local_rms": 1.1491026878356934,
+        "max_abs": 15.075359344482422,
+        "peak_position_rms": 3.4534690380096436
+      },
+      "coarse32_to64": {
+        "support": 25,
+        "local_rms": 0.29486867785453796,
+        "max_abs": 2.5614943504333496,
+        "peak_position_rms": 0.5288945436477661
+      },
+      "native64_peak_vs32": 5.341591930876332,
+      "native64_rms_vs32": 2.982633998301892
+    },
+    {
+      "sigma": 0.142578125,
+      "group": 0,
+      "native32": {
+        "support": 6,
+        "local_rms": 0.20501789450645447,
+        "max_abs": 2.1878604888916016,
+        "peak_position_rms": 0.33294111490249634
+      },
+      "native64": {
+        "support": 25,
+        "local_rms": 0.19464239478111267,
+        "max_abs": 2.2038774490356445,
+        "peak_position_rms": 0.3371780812740326
+      },
+      "coarse32_to64": {
+        "support": 25,
+        "local_rms": 0.15699292719364166,
+        "max_abs": 1.8640296459197998,
+        "peak_position_rms": 0.28386762738227844
+      },
+      "native64_peak_vs32": 1.0127258730805209,
+      "native64_rms_vs32": 0.9493922237845674
+    },
+    {
+      "sigma": 0.142578125,
+      "group": 1,
+      "native32": {
+        "support": 6,
+        "local_rms": 0.15574398636817932,
+        "max_abs": 1.0324885845184326,
+        "peak_position_rms": 0.2527877390384674
+      },
+      "native64": {
+        "support": 25,
+        "local_rms": 0.16873812675476074,
+        "max_abs": 1.2340326309204102,
+        "peak_position_rms": 0.28389766812324524
+      },
+      "coarse32_to64": {
+        "support": 25,
+        "local_rms": 0.11936715990304947,
+        "max_abs": 0.8812389969825745,
+        "peak_position_rms": 0.2153078317642212
+      },
+      "native64_peak_vs32": 1.123067397189085,
+      "native64_rms_vs32": 1.0834326941899588
+    },
+    {
+      "sigma": 0.142578125,
+      "group": 2,
+      "native32": {
+        "support": 6,
+        "local_rms": 0.19004155695438385,
+        "max_abs": 1.4394168853759766,
+        "peak_position_rms": 0.311408668756485
+      },
+      "native64": {
+        "support": 25,
+        "local_rms": 0.23327955603599548,
+        "max_abs": 1.9683172702789307,
+        "peak_position_rms": 0.455809623003006
+      },
+      "coarse32_to64": {
+        "support": 25,
+        "local_rms": 0.14577704668045044,
+        "max_abs": 1.2193851470947266,
+        "peak_position_rms": 0.2629930078983307
+      },
+      "native64_peak_vs32": 1.463702423003001,
+      "native64_rms_vs32": 1.2275186531543212
+    },
+    {
+      "sigma": 0.142578125,
+      "group": 3,
+      "native32": {
+        "support": 6,
+        "local_rms": 0.15606561303138733,
+        "max_abs": 1.1365768909454346,
+        "peak_position_rms": 0.25816404819488525
+      },
+      "native64": {
+        "support": 25,
+        "local_rms": 0.35539352893829346,
+        "max_abs": 4.92856502532959,
+        "peak_position_rms": 1.0090012550354004
+      },
+      "coarse32_to64": {
+        "support": 25,
+        "local_rms": 0.11999683082103729,
+        "max_abs": 0.9449225068092346,
+        "peak_position_rms": 0.21432700753211975
+      },
+      "native64_peak_vs32": 3.9083724557716737,
+      "native64_rms_vs32": 2.2772058625548603
+    },
+    {
+      "sigma": 0.142578125,
+      "group": 4,
+      "native32": {
+        "support": 6,
+        "local_rms": 0.3577459156513214,
+        "max_abs": 2.8649585247039795,
+        "peak_position_rms": 0.5928972959518433
+      },
+      "native64": {
+        "support": 25,
+        "local_rms": 0.6907169818878174,
+        "max_abs": 8.63027286529541,
+        "peak_position_rms": 1.8572137355804443
+      },
+      "coarse32_to64": {
+        "support": 25,
+        "local_rms": 0.2753225266933441,
+        "max_abs": 2.3740673065185547,
+        "peak_position_rms": 0.4938657879829407
+      },
+      "native64_peak_vs32": 3.132437520395256,
+      "native64_rms_vs32": 1.9307473591425364
+    },
+    {
+      "sigma": 0.142578125,
+      "group": 5,
+      "native32": {
+        "support": 6,
+        "local_rms": 0.3923906981945038,
+        "max_abs": 3.184966564178467,
+        "peak_position_rms": 0.6585504412651062
+      },
+      "native64": {
+        "support": 25,
+        "local_rms": 1.1498099565505981,
+        "max_abs": 15.067262649536133,
+        "peak_position_rms": 3.4497838020324707
+      },
+      "coarse32_to64": {
+        "support": 25,
+        "local_rms": 0.3004220724105835,
+        "max_abs": 2.605602502822876,
+        "peak_position_rms": 0.5391713380813599
+      },
+      "native64_peak_vs32": 5.238450368972914,
+      "native64_rms_vs32": 2.9302681277644607
+    },
+    {
+      "sigma": 0.1787109375,
+      "group": 0,
+      "native32": {
+        "support": 6,
+        "local_rms": 0.2068268358707428,
+        "max_abs": 2.2073779106140137,
+        "peak_position_rms": 0.33584704995155334
+      },
+      "native64": {
+        "support": 25,
+        "local_rms": 0.19630968570709229,
+        "max_abs": 2.2238757610321045,
+        "peak_position_rms": 0.3401598334312439
+      },
+      "coarse32_to64": {
+        "support": 25,
+        "local_rms": 0.15837419033050537,
+        "max_abs": 1.8808009624481201,
+        "peak_position_rms": 0.286363422870636
+      },
+      "native64_peak_vs32": 1.0128415106826536,
+      "native64_rms_vs32": 0.94914997311943
+    },
+    {
+      "sigma": 0.1787109375,
+      "group": 1,
+      "native32": {
+        "support": 6,
+        "local_rms": 0.15861022472381592,
+        "max_abs": 1.048765778541565,
+        "peak_position_rms": 0.25744855403900146
+      },
+      "native64": {
+        "support": 25,
+        "local_rms": 0.17089132964611053,
+        "max_abs": 1.2405269145965576,
+        "peak_position_rms": 0.28497448563575745
+      },
+      "coarse32_to64": {
+        "support": 25,
+        "local_rms": 0.12156467884778976,
+        "max_abs": 0.8951977491378784,
+        "peak_position_rms": 0.21929192543029785
+      },
+      "native64_peak_vs32": 1.1069181829336903,
+      "native64_rms_vs32": 1.077429465494292
+    },
+    {
+      "sigma": 0.1787109375,
+      "group": 2,
+      "native32": {
+        "support": 6,
+        "local_rms": 0.19507713615894318,
+        "max_abs": 1.4728798866271973,
+        "peak_position_rms": 0.3196735978126526
+      },
+      "native64": {
+        "support": 25,
+        "local_rms": 0.23595751821994781,
+        "max_abs": 1.9714019298553467,
+        "peak_position_rms": 0.4542432427406311
+      },
+      "coarse32_to64": {
+        "support": 25,
+        "local_rms": 0.14965595304965973,
+        "max_abs": 1.2480573654174805,
+        "peak_position_rms": 0.27004474401474
+      },
+      "native64_peak_vs32": 1.4209595219898148,
+      "native64_rms_vs32": 1.2095600892341196
+    },
+    {
+      "sigma": 0.1787109375,
+      "group": 3,
+      "native32": {
+        "support": 6,
+        "local_rms": 0.16367408633232117,
+        "max_abs": 1.1926826238632202,
+        "peak_position_rms": 0.2708611786365509
+      },
+      "native64": {
+        "support": 25,
+        "local_rms": 0.3570217490196228,
+        "max_abs": 4.926394462585449,
+        "peak_position_rms": 1.00614333152771
+      },
+      "coarse32_to64": {
+        "support": 25,
+        "local_rms": 0.12589508295059204,
+        "max_abs": 0.9929681420326233,
+        "peak_position_rms": 0.22518204152584076
+      },
+      "native64_peak_vs32": 3.714608850896943,
+      "native64_rms_vs32": 2.181296728272133
+    },
+    {
+      "sigma": 0.1787109375,
+      "group": 4,
+      "native32": {
+        "support": 6,
+        "local_rms": 0.374985009431839,
+        "max_abs": 3.0057287216186523,
+        "peak_position_rms": 0.6213386654853821
+      },
+      "native64": {
+        "support": 25,
+        "local_rms": 0.6952019333839417,
+        "max_abs": 8.551346778869629,
+        "peak_position_rms": 1.848634958267212
+      },
+      "coarse32_to64": {
+        "support": 25,
+        "local_rms": 0.288589209318161,
+        "max_abs": 2.4944498538970947,
+        "peak_position_rms": 0.5182088017463684
+      },
+      "native64_peak_vs32": 2.9752453226503794,
+      "native64_rms_vs32": 1.8539459335648683
+    },
+    {
+      "sigma": 0.1787109375,
+      "group": 5,
+      "native32": {
+        "support": 6,
+        "local_rms": 0.41325175762176514,
+        "max_abs": 3.3340864181518555,
+        "peak_position_rms": 0.6935815215110779
+      },
+      "native64": {
+        "support": 25,
+        "local_rms": 1.1532303094863892,
+        "max_abs": 15.060559272766113,
+        "peak_position_rms": 3.4426703453063965
+      },
+      "coarse32_to64": {
+        "support": 25,
+        "local_rms": 0.3166351616382599,
+        "max_abs": 2.7330234050750732,
+        "peak_position_rms": 0.5691176652908325
+      },
+      "native64_peak_vs32": 4.96361312770558,
+      "native64_rms_vs32": 2.790624088626141
+    },
+    {
+      "sigma": 0.19921875,
+      "group": 0,
+      "native32": {
+        "support": 6,
+        "local_rms": 0.20807456970214844,
+        "max_abs": 2.220947265625,
+        "peak_position_rms": 0.3378521203994751
+      },
+      "native64": {
+        "support": 25,
+        "local_rms": 0.19746045768260956,
+        "max_abs": 2.2377548217773438,
+        "peak_position_rms": 0.3422131836414337
+      },
+      "coarse32_to64": {
+        "support": 25,
+        "local_rms": 0.15932656824588776,
+        "max_abs": 1.8924586772918701,
+        "peak_position_rms": 0.28808504343032837
+      },
+      "native64_peak_vs32": 1.0129082014841349,
+      "native64_rms_vs32": 0.9489889031863307
+    },
+    {
+      "sigma": 0.19921875,
+      "group": 1,
+      "native32": {
+        "support": 6,
+        "local_rms": 0.1605556607246399,
+        "max_abs": 1.0597939491271973,
+        "peak_position_rms": 0.2606101632118225
+      },
+      "native64": {
+        "support": 25,
+        "local_rms": 0.17237240076065063,
+        "max_abs": 1.2451521158218384,
+        "peak_position_rms": 0.28580138087272644
+      },
+      "coarse32_to64": {
+        "support": 25,
+        "local_rms": 0.12305542081594467,
+        "max_abs": 0.9046546220779419,
+        "peak_position_rms": 0.2219950258731842
+      },
+      "native64_peak_vs32": 1.096662453031153,
+      "native64_rms_vs32": 1.0735990246789056
+    },
+    {
+      "sigma": 0.19921875,
+      "group": 2,
+      "native32": {
+        "support": 6,
+        "local_rms": 0.19847655296325684,
+        "max_abs": 1.4953978061676025,
+        "peak_position_rms": 0.3252437114715576
+      },
+      "native64": {
+        "support": 25,
+        "local_rms": 0.23784630000591278,
+        "max_abs": 1.9739758968353271,
+        "peak_position_rms": 0.45344704389572144
+      },
+      "coarse32_to64": {
+        "support": 25,
+        "local_rms": 0.15227146446704865,
+        "max_abs": 1.2673481702804565,
+        "peak_position_rms": 0.2747996151447296
+      },
+      "native64_peak_vs32": 1.3941762066485799,
+      "native64_rms_vs32": 1.1983596876047333
+    },
+    {
+      "sigma": 0.19921875,
+      "group": 3,
+      "native32": {
+        "support": 6,
+        "local_rms": 0.16869188845157623,
+        "max_abs": 1.230247974395752,
+        "peak_position_rms": 0.27920398116111755
+      },
+      "native64": {
+        "support": 25,
+        "local_rms": 0.3582688271999359,
+        "max_abs": 4.926551342010498,
+        "peak_position_rms": 1.0046454668045044
+      },
+      "coarse32_to64": {
+        "support": 25,
+        "local_rms": 0.1297774761915207,
+        "max_abs": 1.0251291990280151,
+        "peak_position_rms": 0.2323177307844162
+      },
+      "native64_peak_vs32": 3.5982490744813673,
+      "native64_rms_vs32": 2.1238058954018917
+    },
+    {
+      "sigma": 0.19921875,
+      "group": 4,
+      "native32": {
+        "support": 6,
+        "local_rms": 0.386218398809433,
+        "max_abs": 3.0966124534606934,
+        "peak_position_rms": 0.6398310661315918
+      },
+      "native64": {
+        "support": 25,
+        "local_rms": 0.6985127925872803,
+        "max_abs": 8.503218650817871,
+        "peak_position_rms": 1.843865156173706
+      },
+      "coarse32_to64": {
+        "support": 25,
+        "local_rms": 0.29722392559051514,
+        "max_abs": 2.572143316268921,
+        "peak_position_rms": 0.5340368151664734
+      },
+      "native64_peak_vs32": 2.881799984051548,
+      "native64_rms_vs32": 1.808595330363686
+    },
+    {
+      "sigma": 0.19921875,
+      "group": 5,
+      "native32": {
+        "support": 6,
+        "local_rms": 0.42680788040161133,
+        "max_abs": 3.4297585487365723,
+        "peak_position_rms": 0.7162342071533203
+      },
+      "native64": {
+        "support": 25,
+        "local_rms": 1.156111478805542,
+        "max_abs": 15.063529968261719,
+        "peak_position_rms": 3.4397106170654297
+      },
+      "coarse32_to64": {
+        "support": 25,
+        "local_rms": 0.3271430730819702,
+        "max_abs": 2.8147237300872803,
+        "peak_position_rms": 0.5884906649589539
+      },
+      "native64_peak_vs32": 4.802494187950884,
+      "native64_rms_vs32": 2.7087397676858296
+    },
+    {
+      "sigma": 0.2265625,
+      "group": 0,
+      "native32": {
+        "support": 6,
+        "local_rms": 0.209866002202034,
+        "max_abs": 2.2404603958129883,
+        "peak_position_rms": 0.3407304883003235
+      },
+      "native64": {
+        "support": 25,
+        "local_rms": 0.19911326467990875,
+        "max_abs": 2.2577106952667236,
+        "peak_position_rms": 0.34516003727912903
+      },
+      "coarse32_to64": {
+        "support": 25,
+        "local_rms": 0.16069366037845612,
+        "max_abs": 1.9092216491699219,
+        "peak_position_rms": 0.2905566692352295
+      },
+      "native64_peak_vs32": 1.0130001544649017,
+      "native64_rms_vs32": 0.948763794948675
+    },
+    {
+      "sigma": 0.2265625,
+      "group": 1,
+      "native32": {
+        "support": 6,
+        "local_rms": 0.16333332657814026,
+        "max_abs": 1.076186180114746,
+        "peak_position_rms": 0.26512113213539124
+      },
+      "native64": {
+        "support": 25,
+        "local_rms": 0.17450080811977386,
+        "max_abs": 1.251692771911621,
+        "peak_position_rms": 0.2870168089866638
+      },
+      "coarse32_to64": {
+        "support": 25,
+        "local_rms": 0.12518297135829926,
+        "max_abs": 0.9181370735168457,
+        "peak_position_rms": 0.22585289180278778
+      },
+      "native64_peak_vs32": 1.0825874447461659,
+      "native64_rms_vs32": 1.0683723387969508
+    },
+    {
+      "sigma": 0.2265625,
+      "group": 2,
+      "native32": {
+        "support": 6,
+        "local_rms": 0.20333410799503326,
+        "max_abs": 1.5273594856262207,
+        "peak_position_rms": 0.3331913948059082
+      },
+      "native64": {
+        "support": 25,
+        "local_rms": 0.24061037600040436,
+        "max_abs": 1.9775481224060059,
+        "peak_position_rms": 0.45244100689888
+      },
+      "coarse32_to64": {
+        "support": 25,
+        "local_rms": 0.15600548684597015,
+        "max_abs": 1.2947320938110352,
+        "peak_position_rms": 0.2815873324871063
+      },
+      "native64_peak_vs32": 1.3579012362022058,
+      "native64_rms_vs32": 1.1833252097886187
+    },
+    {
+      "sigma": 0.2265625,
+      "group": 3,
+      "native32": {
+        "support": 6,
+        "local_rms": 0.17575816810131073,
+        "max_abs": 1.2832739353179932,
+        "peak_position_rms": 0.29091721773147583
+      },
+      "native64": {
+        "support": 25,
+        "local_rms": 0.36013954877853394,
+        "max_abs": 4.926887512207031,
+        "peak_position_rms": 1.0026460886001587
+      },
+      "coarse32_to64": {
+        "support": 25,
+        "local_rms": 0.13523626327514648,
+        "max_abs": 1.0705294609069824,
+        "peak_position_rms": 0.2423405796289444
+      },
+      "native64_peak_vs32": 3.446499648314481,
+      "native64_rms_vs32": 2.049062940681891
+    },
+    {
+      "sigma": 0.2265625,
+      "group": 4,
+      "native32": {
+        "support": 6,
+        "local_rms": 0.4019767642021179,
+        "max_abs": 3.2232089042663574,
+        "peak_position_rms": 0.6657229661941528
+      },
+      "native64": {
+        "support": 25,
+        "local_rms": 0.7034308910369873,
+        "max_abs": 8.436907768249512,
+        "peak_position_rms": 1.837454915046692
+      },
+      "coarse32_to64": {
+        "support": 25,
+        "local_rms": 0.3093247711658478,
+        "max_abs": 2.6803653240203857,
+        "peak_position_rms": 0.5562019348144531
+      },
+      "native64_peak_vs32": 2.7600894191035206,
+      "native64_rms_vs32": 1.749929233927798
+    },
+    {
+      "sigma": 0.2265625,
+      "group": 5,
+      "native32": {
+        "support": 6,
+        "local_rms": 0.4457743465900421,
+        "max_abs": 3.5622730255126953,
+        "peak_position_rms": 0.7478097677230835
+      },
+      "native64": {
+        "support": 25,
+        "local_rms": 1.1604589223861694,
+        "max_abs": 15.0691499710083,
+        "peak_position_rms": 3.4360361099243164
+      },
+      "coarse32_to64": {
+        "support": 25,
+        "local_rms": 0.3418160378932953,
+        "max_abs": 2.927882432937622,
+        "peak_position_rms": 0.6155065298080444
+      },
+      "native64_peak_vs32": 4.594799718097146,
+      "native64_rms_vs32": 2.6032429440211584
+    },
+    {
+      "sigma": 0.251953125,
+      "group": 0,
+      "native32": {
+        "support": 6,
+        "local_rms": 0.21148504316806793,
+        "max_abs": 2.25803804397583,
+        "peak_position_rms": 0.34333035349845886
+      },
+      "native64": {
+        "support": 25,
+        "local_rms": 0.20060721039772034,
+        "max_abs": 2.2757062911987305,
+        "peak_position_rms": 0.3478245139122009
+      },
+      "coarse32_to64": {
+        "support": 25,
+        "local_rms": 0.16192905604839325,
+        "max_abs": 1.9243277311325073,
+        "peak_position_rms": 0.29278990626335144
+      },
+      "native64_peak_vs32": 1.0130899012218046,
+      "native64_rms_vs32": 0.9485645291629302
+    },
+    {
+      "sigma": 0.251953125,
+      "group": 1,
+      "native32": {
+        "support": 6,
+        "local_rms": 0.1658482402563095,
+        "max_abs": 1.09440016746521,
+        "peak_position_rms": 0.2692018449306488
+      },
+      "native64": {
+        "support": 25,
+        "local_rms": 0.1764305680990219,
+        "max_abs": 1.25725257396698,
+        "peak_position_rms": 0.28807273507118225
+      },
+      "coarse32_to64": {
+        "support": 25,
+        "local_rms": 0.12710845470428467,
+        "max_abs": 0.9328852295875549,
+        "peak_position_rms": 0.22934412956237793
+      },
+      "native64_peak_vs32": 1.070099408662652,
+      "native64_rms_vs32": 1.063807296516128
+    },
+    {
+      "sigma": 0.251953125,
+      "group": 2,
+      "native32": {
+        "support": 6,
+        "local_rms": 0.2077600508928299,
+        "max_abs": 1.5561624765396118,
+        "peak_position_rms": 0.3404216170310974
+      },
+      "native64": {
+        "support": 25,
+        "local_rms": 0.24315600097179413,
+        "max_abs": 1.9800171852111816,
+        "peak_position_rms": 0.4514639973640442
+      },
+      "coarse32_to64": {
+        "support": 25,
+        "local_rms": 0.15940479934215546,
+        "max_abs": 1.3194150924682617,
+        "peak_position_rms": 0.28776589035987854
+      },
+      "native64_peak_vs32": 1.3261907434121702,
+      "native64_rms_vs32": 1.1703693752810194
+    },
+    {
+      "sigma": 0.251953125,
+      "group": 3,
+      "native32": {
+        "support": 6,
+        "local_rms": 0.18213500082492828,
+        "max_abs": 1.3307355642318726,
+        "peak_position_rms": 0.3014559745788574
+      },
+      "native64": {
+        "support": 25,
+        "local_rms": 0.361834317445755,
+        "max_abs": 4.925475597381592,
+        "peak_position_rms": 1.0005732774734497
+      },
+      "coarse32_to64": {
+        "support": 25,
+        "local_rms": 0.14015506207942963,
+        "max_abs": 1.1111782789230347,
+        "peak_position_rms": 0.25136345624923706
+      },
+      "native64_peak_vs32": 3.319135667724878,
+      "native64_rms_vs32": 1.9866270393220973
+    },
+    {
+      "sigma": 0.251953125,
+      "group": 4,
+      "native32": {
+        "support": 6,
+        "local_rms": 0.4162359833717346,
+        "max_abs": 3.337085723876953,
+        "peak_position_rms": 0.6891037225723267
+      },
+      "native64": {
+        "support": 25,
+        "local_rms": 0.7079300880432129,
+        "max_abs": 8.374917030334473,
+        "peak_position_rms": 1.8311606645584106
+      },
+      "coarse32_to64": {
+        "support": 25,
+        "local_rms": 0.320263147354126,
+        "max_abs": 2.7777538299560547,
+        "peak_position_rms": 0.5762247443199158
+      },
+      "native64_peak_vs32": 2.657307752921356,
+      "native64_rms_vs32": 1.700790215945771
+    },
+    {
+      "sigma": 0.251953125,
+      "group": 5,
+      "native32": {
+        "support": 6,
+        "local_rms": 0.4628889262676239,
+        "max_abs": 3.6807444095611572,
+        "peak_position_rms": 0.7762020230293274
+      },
+      "native64": {
+        "support": 25,
+        "local_rms": 1.1641781330108643,
+        "max_abs": 15.068063735961914,
+        "peak_position_rms": 3.4315476417541504
+      },
+      "coarse32_to64": {
+        "support": 25,
+        "local_rms": 0.35503315925598145,
+        "max_abs": 3.029109239578247,
+        "peak_position_rms": 0.6398138999938965
+      },
+      "native64_peak_vs32": 4.420946531885676,
+      "native64_rms_vs32": 2.515026968560019
+    },
+    {
+      "sigma": 0.2734375,
+      "group": 0,
+      "native32": {
+        "support": 6,
+        "local_rms": 0.21267405152320862,
+        "max_abs": 2.2708282470703125,
+        "peak_position_rms": 0.34523776173591614
+      },
+      "native64": {
+        "support": 25,
+        "local_rms": 0.20170412957668304,
+        "max_abs": 2.288832187652588,
+        "peak_position_rms": 0.34978410601615906
+      },
+      "coarse32_to64": {
+        "support": 25,
+        "local_rms": 0.16283634305000305,
+        "max_abs": 1.9353268146514893,
+        "peak_position_rms": 0.29442936182022095
+      },
+      "native64_peak_vs32": 1.0131687340845426,
+      "native64_rms_vs32": 0.9484190860711165
+    },
+    {
+      "sigma": 0.2734375,
+      "group": 1,
+      "native32": {
+        "support": 6,
+        "local_rms": 0.1677166372537613,
+        "max_abs": 1.1079127788543701,
+        "peak_position_rms": 0.2722306549549103
+      },
+      "native64": {
+        "support": 25,
+        "local_rms": 0.17785583436489105,
+        "max_abs": 1.260886311531067,
+        "peak_position_rms": 0.28875818848609924
+      },
+      "coarse32_to64": {
+        "support": 25,
+        "local_rms": 0.12853845953941345,
+        "max_abs": 0.9444761276245117,
+        "peak_position_rms": 0.23193663358688354
+      },
+      "native64_peak_vs32": 1.0607115077981444,
+      "native64_rms_vs32": 1.0604543310499888
+    },
+    {
+      "sigma": 0.2734375,
+      "group": 2,
+      "native32": {
+        "support": 6,
+        "local_rms": 0.211090087890625,
+        "max_abs": 1.5775221586227417,
+        "peak_position_rms": 0.34585443139076233
+      },
+      "native64": {
+        "support": 25,
+        "local_rms": 0.245054692029953,
+        "max_abs": 1.980783224105835,
+        "peak_position_rms": 0.4505210816860199
+      },
+      "coarse32_to64": {
+        "support": 25,
+        "local_rms": 0.1619609296321869,
+        "max_abs": 1.3377269506454468,
+        "peak_position_rms": 0.29241126775741577
+      },
+      "native64_peak_vs32": 1.3026320925667145,
+      "native64_rms_vs32": 1.160900990087827
+    },
+    {
+      "sigma": 0.2734375,
+      "group": 3,
+      "native32": {
+        "support": 6,
+        "local_rms": 0.18693295121192932,
+        "max_abs": 1.3657152652740479,
+        "peak_position_rms": 0.30936717987060547
+      },
+      "native64": {
+        "support": 25,
+        "local_rms": 0.36301809549331665,
+        "max_abs": 4.921755790710449,
+        "peak_position_rms": 0.9985134601593018
+      },
+      "coarse32_to64": {
+        "support": 25,
+        "local_rms": 0.14385196566581726,
+        "max_abs": 1.14115571975708,
+        "peak_position_rms": 0.25814089179039
+      },
+      "native64_peak_vs32": 3.227599839701598,
+      "native64_rms_vs32": 1.941969530464195
+    },
+    {
+      "sigma": 0.2734375,
+      "group": 4,
+      "native32": {
+        "support": 6,
+        "local_rms": 0.4270780086517334,
+        "max_abs": 3.423459053039551,
+        "peak_position_rms": 0.7068499326705933
+      },
+      "native64": {
+        "support": 25,
+        "local_rms": 0.7111850380897522,
+        "max_abs": 8.323681831359863,
+        "peak_position_rms": 1.8253859281539917
+      },
+      "coarse32_to64": {
+        "support": 25,
+        "local_rms": 0.3285732865333557,
+        "max_abs": 2.851682186126709,
+        "peak_position_rms": 0.5914307236671448
+      },
+      "native64_peak_vs32": 2.5824235722247137,
+      "native64_rms_vs32": 1.6652345091121228
+    },
+    {
+      "sigma": 0.2734375,
+      "group": 5,
+      "native32": {
+        "support": 6,
+        "local_rms": 0.4758771061897278,
+        "max_abs": 3.7701547145843506,
+        "peak_position_rms": 0.7976937294006348
+      },
+      "native64": {
+        "support": 25,
+        "local_rms": 1.1664185523986816,
+        "max_abs": 15.056897163391113,
+        "peak_position_rms": 3.425999641418457
+      },
+      "coarse32_to64": {
+        "support": 25,
+        "local_rms": 0.36505234241485596,
+        "max_abs": 3.105602741241455,
+        "peak_position_rms": 0.6582273840904236
+      },
+      "native64_peak_vs32": 4.294880998992758,
+      "native64_rms_vs32": 2.4510919672896416
+    },
+    {
+      "sigma": 0.302734375,
+      "group": 0,
+      "native32": {
+        "support": 6,
+        "local_rms": 0.21388475596904755,
+        "max_abs": 2.2835540771484375,
+        "peak_position_rms": 0.3471758961677551
+      },
+      "native64": {
+        "support": 25,
+        "local_rms": 0.20282167196273804,
+        "max_abs": 2.3019514083862305,
+        "peak_position_rms": 0.35178491473197937
+      },
+      "coarse32_to64": {
+        "support": 25,
+        "local_rms": 0.16376027464866638,
+        "max_abs": 1.9462882280349731,
+        "peak_position_rms": 0.2960974872112274
+      },
+      "native64_peak_vs32": 1.0132757447020377,
+      "native64_rms_vs32": 0.948275490900761
+    },
+    {
+      "sigma": 0.302734375,
+      "group": 1,
+      "native32": {
+        "support": 6,
+        "local_rms": 0.16968633234500885,
+        "max_abs": 1.1222009658813477,
+        "peak_position_rms": 0.2754199206829071
+      },
+      "native64": {
+        "support": 25,
+        "local_rms": 0.1793278604745865,
+        "max_abs": 1.263659954071045,
+        "peak_position_rms": 0.28923606872558594
+      },
+      "coarse32_to64": {
+        "support": 25,
+        "local_rms": 0.13004550337791443,
+        "max_abs": 0.9567404389381409,
+        "peak_position_rms": 0.2346682995557785
+      },
+      "native64_peak_vs32": 1.0501639387899813,
+      "native64_rms_vs32": 1.0568197096155885
+    },
+    {
+      "sigma": 0.302734375,
+      "group": 2,
+      "native32": {
+        "support": 6,
+        "local_rms": 0.21471047401428223,
+        "max_abs": 1.600165605545044,
+        "peak_position_rms": 0.35175326466560364
+      },
+      "native64": {
+        "support": 25,
+        "local_rms": 0.24702772498130798,
+        "max_abs": 1.9791617393493652,
+        "peak_position_rms": 0.44891923666000366
+      },
+      "coarse32_to64": {
+        "support": 25,
+        "local_rms": 0.16473862528800964,
+        "max_abs": 1.357158899307251,
+        "peak_position_rms": 0.297459214925766
+      },
+      "native64_peak_vs32": 1.276233319644585,
+      "native64_rms_vs32": 1.1505154842370477
+    },
+    {
+      "sigma": 0.302734375,
+      "group": 3,
+      "native32": {
+        "support": 6,
+        "local_rms": 0.19227588176727295,
+        "max_abs": 1.402842402458191,
+        "peak_position_rms": 0.31816041469573975
+      },
+      "native64": {
+        "support": 25,
+        "local_rms": 0.3640325963497162,
+        "max_abs": 4.911617279052734,
+        "peak_position_rms": 0.9949961304664612
+      },
+      "coarse32_to64": {
+        "support": 25,
+        "local_rms": 0.14796513319015503,
+        "max_abs": 1.1730165481567383,
+        "peak_position_rms": 0.26568061113357544
+      },
+      "native64_peak_vs32": 3.1273410660404966,
+      "native64_rms_vs32": 1.893282678013326
+    },
+    {
+      "sigma": 0.302734375,
+      "group": 4,
+      "native32": {
+        "support": 6,
+        "local_rms": 0.43943431973457336,
+        "max_abs": 3.522207736968994,
+        "peak_position_rms": 0.7270378470420837
+      },
+      "native64": {
+        "support": 25,
+        "local_rms": 0.7142928242683411,
+        "max_abs": 8.25439453125,
+        "peak_position_rms": 1.8163167238235474
+      },
+      "coarse32_to64": {
+        "support": 25,
+        "local_rms": 0.3380360007286072,
+        "max_abs": 2.936340093612671,
+        "peak_position_rms": 0.6087459921836853
+      },
+      "native64_peak_vs32": 2.4982423283920348,
+      "native64_rms_vs32": 1.6254825628999288
+    },
+    {
+      "sigma": 0.302734375,
+      "group": 5,
+      "native32": {
+        "support": 6,
+        "local_rms": 0.4906767010688782,
+        "max_abs": 3.872093677520752,
+        "peak_position_rms": 0.8221358060836792
+      },
+      "native64": {
+        "support": 25,
+        "local_rms": 1.1674128770828247,
+        "max_abs": 15.020604133605957,
+        "peak_position_rms": 3.4145827293395996
+      },
+      "coarse32_to64": {
+        "support": 25,
+        "local_rms": 0.37646132707595825,
+        "max_abs": 3.1930418014526367,
+        "peak_position_rms": 0.6791925430297852
+      },
+      "native64_peak_vs32": 4.153307402587516,
+      "native64_rms_vs32": 2.3791895448464557
+    },
+    {
+      "sigma": 0.318359375,
+      "group": 0,
+      "native32": {
+        "support": 6,
+        "local_rms": 0.2145242691040039,
+        "max_abs": 2.2901859283447266,
+        "peak_position_rms": 0.34819942712783813
+      },
+      "native64": {
+        "support": 25,
+        "local_rms": 0.20342005789279938,
+        "max_abs": 2.3087587356567383,
+        "peak_position_rms": 0.3528377413749695
+      },
+      "coarse32_to64": {
+        "support": 25,
+        "local_rms": 0.164247527718544,
+        "max_abs": 1.9520015716552734,
+        "peak_position_rms": 0.2969784736633301
+      },
+      "native64_peak_vs32": 1.0133208554804096,
+      "native64_rms_vs32": 0.9482379720598368
+    },
+    {
+      "sigma": 0.318359375,
+      "group": 1,
+      "native32": {
+        "support": 6,
+        "local_rms": 0.17077754437923431,
+        "max_abs": 1.130063772201538,
+        "peak_position_rms": 0.27718862891197205
+      },
+      "native64": {
+        "support": 25,
+        "local_rms": 0.18011775612831116,
+        "max_abs": 1.2646918296813965,
+        "peak_position_rms": 0.2893924415111542
+      },
+      "coarse32_to64": {
+        "support": 25,
+        "local_rms": 0.1308794766664505,
+        "max_abs": 0.9634890556335449,
+        "peak_position_rms": 0.23618246614933014
+      },
+      "native64_peak_vs32": 1.0440271040232958,
+      "native64_rms_vs32": 1.0546922710654256
+    },
+    {
+      "sigma": 0.318359375,
+      "group": 2,
+      "native32": {
+        "support": 6,
+        "local_rms": 0.21683086454868317,
+        "max_abs": 1.6132078170776367,
+        "peak_position_rms": 0.3552100956439972
+      },
+      "native64": {
+        "support": 25,
+        "local_rms": 0.24809080362319946,
+        "max_abs": 1.9760420322418213,
+        "peak_position_rms": 0.4475463032722473
+      },
+      "coarse32_to64": {
+        "support": 25,
+        "local_rms": 0.16636362671852112,
+        "max_abs": 1.3683537244796753,
+        "peak_position_rms": 0.3004171550273895
+      },
+      "native64_peak_vs32": 1.2599481511381152,
+      "native64_rms_vs32": 1.1441673865922246
+    },
+    {
+      "sigma": 0.318359375,
+      "group": 3,
+      "native32": {
+        "support": 6,
+        "local_rms": 0.19570830464363098,
+        "max_abs": 1.425770878791809,
+        "peak_position_rms": 0.32381168007850647
+      },
+      "native64": {
+        "support": 25,
+        "local_rms": 0.3643956780433655,
+        "max_abs": 4.900830268859863,
+        "peak_position_rms": 0.9917091727256775
+      },
+      "coarse32_to64": {
+        "support": 25,
+        "local_rms": 0.1506044715642929,
+        "max_abs": 1.192702293395996,
+        "peak_position_rms": 0.27052628993988037
+      },
+      "native64_peak_vs32": 3.062610874583779,
+      "native64_rms_vs32": 1.8619326282903559
+    },
+    {
+      "sigma": 0.318359375,
+      "group": 4,
+      "native32": {
+        "support": 6,
+        "local_rms": 0.4474004805088043,
+        "max_abs": 3.5865585803985596,
+        "peak_position_rms": 0.7400516271591187
+      },
+      "native64": {
+        "support": 25,
+        "local_rms": 0.7156790494918823,
+        "max_abs": 8.19638442993164,
+        "peak_position_rms": 1.8081241846084595
+      },
+      "coarse32_to64": {
+        "support": 25,
+        "local_rms": 0.3441299796104431,
+        "max_abs": 2.9915647506713867,
+        "peak_position_rms": 0.6199111938476562
+      },
+      "native64_peak_vs32": 2.4432406041040897,
+      "native64_rms_vs32": 1.5996385356537377
+    },
+    {
+      "sigma": 0.318359375,
+      "group": 5,
+      "native32": {
+        "support": 6,
+        "local_rms": 0.5002421140670776,
+        "max_abs": 3.9391939640045166,
+        "peak_position_rms": 0.8379302024841309
+      },
+      "native64": {
+        "support": 25,
+        "local_rms": 1.1667344570159912,
+        "max_abs": 14.981115341186523,
+        "peak_position_rms": 3.4029812812805176
+      },
+      "coarse32_to64": {
+        "support": 25,
+        "local_rms": 0.3838285207748413,
+        "max_abs": 3.2507033348083496,
+        "peak_position_rms": 0.692746102809906
+      },
+      "native64_peak_vs32": 4.061175108848001,
+      "native64_rms_vs32": 2.3323395296133413
+    },
+    {
+      "sigma": 0.34765625,
+      "group": 0,
+      "native32": {
+        "support": 6,
+        "local_rms": 0.23931637406349182,
+        "max_abs": 2.5650205612182617,
+        "peak_position_rms": 0.3882002830505371
+      },
+      "native64": {
+        "support": 25,
+        "local_rms": 0.22711648046970367,
+        "max_abs": 2.5840587615966797,
+        "peak_position_rms": 0.39294034242630005
+      },
+      "coarse32_to64": {
+        "support": 25,
+        "local_rms": 0.183053120970726,
+        "max_abs": 2.187239408493042,
+        "peak_position_rms": 0.33120691776275635
+      },
+      "native64_peak_vs32": 1.0122103449758326,
+      "native64_rms_vs32": 0.9490219019006554
+    },
+    {
+      "sigma": 0.34765625,
+      "group": 1,
+      "native32": {
+        "support": 6,
+        "local_rms": 0.21206890046596527,
+        "max_abs": 1.4099732637405396,
+        "peak_position_rms": 0.3442710041999817
+      },
+      "native64": {
+        "support": 25,
+        "local_rms": 0.21288101375102997,
+        "max_abs": 1.4296386241912842,
+        "peak_position_rms": 0.3505859971046448
+      },
+      "coarse32_to64": {
+        "support": 25,
+        "local_rms": 0.16230399906635284,
+        "max_abs": 1.2030061483383179,
+        "peak_position_rms": 0.2934672236442566
+      },
+      "native64_peak_vs32": 1.0183430867764711,
+      "native64_rms_vs32": 1.0038294784538435
+    },
+    {
+      "sigma": 0.34765625,
+      "group": 2,
+      "native32": {
+        "support": 6,
+        "local_rms": 0.29723799228668213,
+        "max_abs": 2.110978364944458,
+        "peak_position_rms": 0.4859282076358795
+      },
+      "native64": {
+        "support": 25,
+        "local_rms": 0.2994770407676697,
+        "max_abs": 2.1567041873931885,
+        "peak_position_rms": 0.5045463442802429
+      },
+      "coarse32_to64": {
+        "support": 25,
+        "local_rms": 0.22760549187660217,
+        "max_abs": 1.7944180965423584,
+        "peak_position_rms": 0.4121614992618561
+      },
+      "native64_peak_vs32": 1.0383145830017642,
+      "native64_rms_vs32": 1.007532847546716
+    },
+    {
+      "sigma": 0.34765625,
+      "group": 3,
+      "native32": {
+        "support": 6,
+        "local_rms": 0.3286222815513611,
+        "max_abs": 2.3706297874450684,
+        "peak_position_rms": 0.5404343605041504
+      },
+      "native64": {
+        "support": 25,
+        "local_rms": 0.4050251245498657,
+        "max_abs": 4.567805290222168,
+        "peak_position_rms": 0.8964473605155945
+      },
+      "coarse32_to64": {
+        "support": 25,
+        "local_rms": 0.2519686818122864,
+        "max_abs": 2.00162935256958,
+        "peak_position_rms": 0.45612454414367676
+      },
+      "native64_peak_vs32": 1.6587534509821569,
+      "native64_rms_vs32": 1.2324944085891616
+    },
+    {
+      "sigma": 0.34765625,
+      "group": 4,
+      "native32": {
+        "support": 6,
+        "local_rms": 0.7309374809265137,
+        "max_abs": 5.8195366859436035,
+        "peak_position_rms": 1.2002558708190918
+      },
+      "native64": {
+        "support": 25,
+        "local_rms": 0.8180446624755859,
+        "max_abs": 6.456279754638672,
+        "peak_position_rms": 1.5576857328414917
+      },
+      "coarse32_to64": {
+        "support": 25,
+        "local_rms": 0.5598092079162598,
+        "max_abs": 4.9044904708862305,
+        "peak_position_rms": 1.0142850875854492
+      },
+      "native64_peak_vs32": 1.297794720869375,
+      "native64_rms_vs32": 1.119171863288031
+    },
+    {
+      "sigma": 0.34765625,
+      "group": 5,
+      "native32": {
+        "support": 6,
+        "local_rms": 0.8384121656417847,
+        "max_abs": 6.258087158203125,
+        "peak_position_rms": 1.3887501955032349
+      },
+      "native64": {
+        "support": 25,
+        "local_rms": 1.202193260192871,
+        "max_abs": 13.880818367004395,
+        "peak_position_rms": 3.0390491485595703
+      },
+      "coarse32_to64": {
+        "support": 25,
+        "local_rms": 0.641821563243866,
+        "max_abs": 5.239187717437744,
+        "peak_position_rms": 1.1653404235839844
+      },
+      "native64_peak_vs32": 2.1883339123191443,
+      "native64_rms_vs32": 1.4338929102640354
+    },
+    {
+      "sigma": 0.359375,
+      "group": 0,
+      "native32": {
+        "support": 6,
+        "local_rms": 0.24005630612373352,
+        "max_abs": 2.572815418243408,
+        "peak_position_rms": 0.3893898129463196
+      },
+      "native64": {
+        "support": 25,
+        "local_rms": 0.22782613337039948,
+        "max_abs": 2.5919129848480225,
+        "peak_position_rms": 0.3941415548324585
+      },
+      "coarse32_to64": {
+        "support": 25,
+        "local_rms": 0.18361423909664154,
+        "max_abs": 2.1939263343811035,
+        "peak_position_rms": 0.33222696185112
+      },
+      "native64_peak_vs32": 1.0122030462229734,
+      "native64_rms_vs32": 0.9490528995017103
+    },
+    {
+      "sigma": 0.359375,
+      "group": 1,
+      "native32": {
+        "support": 6,
+        "local_rms": 0.21345041692256927,
+        "max_abs": 1.4192571640014648,
+        "peak_position_rms": 0.3465047776699066
+      },
+      "native64": {
+        "support": 25,
+        "local_rms": 0.2140011191368103,
+        "max_abs": 1.4389235973358154,
+        "peak_position_rms": 0.35284915566444397
+      },
+      "coarse32_to64": {
+        "support": 25,
+        "local_rms": 0.16335320472717285,
+        "max_abs": 1.210962176322937,
+        "peak_position_rms": 0.2953783869743347
+      },
+      "native64_peak_vs32": 1.0183096407420427,
+      "native64_rms_vs32": 1.0025800006492411
+    },
+    {
+      "sigma": 0.359375,
+      "group": 2,
+      "native32": {
+        "support": 6,
+        "local_rms": 0.30009517073631287,
+        "max_abs": 2.1273083686828613,
+        "peak_position_rms": 0.4905414283275604
+      },
+      "native64": {
+        "support": 25,
+        "local_rms": 0.3014852702617645,
+        "max_abs": 2.1729321479797363,
+        "peak_position_rms": 0.5091469287872314
+      },
+      "coarse32_to64": {
+        "support": 25,
+        "local_rms": 0.22977536916732788,
+        "max_abs": 1.808423638343811,
+        "peak_position_rms": 0.4161152243614197
+      },
+      "native64_peak_vs32": 1.0379284997866625,
+      "native64_rms_vs32": 1.004632195586623
+    },
+    {
+      "sigma": 0.359375,
+      "group": 3,
+      "native32": {
+        "support": 6,
+        "local_rms": 0.3333001434803009,
+        "max_abs": 2.4011592864990234,
+        "peak_position_rms": 0.5479803085327148
+      },
+      "native64": {
+        "support": 25,
+        "local_rms": 0.4069361388683319,
+        "max_abs": 4.549710273742676,
+        "peak_position_rms": 0.8925982117652893
+      },
+      "coarse32_to64": {
+        "support": 25,
+        "local_rms": 0.2555204927921295,
+        "max_abs": 2.027841091156006,
+        "peak_position_rms": 0.4626057744026184
+      },
+      "native64_peak_vs32": 1.6288873849414984,
+      "native64_rms_vs32": 1.2209299840651977
+    },
+    {
+      "sigma": 0.359375,
+      "group": 4,
+      "native32": {
+        "support": 6,
+        "local_rms": 0.7411177754402161,
+        "max_abs": 5.899188041687012,
+        "peak_position_rms": 1.2166317701339722
+      },
+      "native64": {
+        "support": 25,
+        "local_rms": 0.8229315876960754,
+        "max_abs": 6.533577919006348,
+        "peak_position_rms": 1.5482494831085205
+      },
+      "coarse32_to64": {
+        "support": 25,
+        "local_rms": 0.5675260424613953,
+        "max_abs": 4.972971439361572,
+        "peak_position_rms": 1.0283554792404175
+      },
+      "native64_peak_vs32": 1.2725703216989241,
+      "native64_rms_vs32": 1.1103924571330959
+    },
+    {
+      "sigma": 0.359375,
+      "group": 5,
+      "native32": {
+        "support": 6,
+        "local_rms": 0.8505102396011353,
+        "max_abs": 6.338761329650879,
+        "peak_position_rms": 1.408217191696167
+      },
+      "native64": {
+        "support": 25,
+        "local_rms": 1.203924298286438,
+        "max_abs": 13.817615509033203,
+        "peak_position_rms": 3.0224249362945557
+      },
+      "coarse32_to64": {
+        "support": 25,
+        "local_rms": 0.6510076522827148,
+        "max_abs": 5.308740139007568,
+        "peak_position_rms": 1.1820998191833496
+      },
+      "native64_peak_vs32": 2.146277544484534,
+      "native64_rms_vs32": 1.4155318092949047
+    },
+    {
+      "sigma": 0.39453125,
+      "group": 0,
+      "native32": {
+        "support": 6,
+        "local_rms": 0.2395639717578888,
+        "max_abs": 2.5659236907958984,
+        "peak_position_rms": 0.3885778486728668
+      },
+      "native64": {
+        "support": 25,
+        "local_rms": 0.22735874354839325,
+        "max_abs": 2.5852174758911133,
+        "peak_position_rms": 0.3933664560317993
+      },
+      "coarse32_to64": {
+        "support": 25,
+        "local_rms": 0.18324190378189087,
+        "max_abs": 2.1881015300750732,
+        "peak_position_rms": 0.3315425217151642
+      },
+      "native64_peak_vs32": 1.012323418268147,
+      "native64_rms_vs32": 0.9490523215158975
+    },
+    {
+      "sigma": 0.39453125,
+      "group": 1,
+      "native32": {
+        "support": 6,
+        "local_rms": 0.21300546824932098,
+        "max_abs": 1.4166827201843262,
+        "peak_position_rms": 0.3457656502723694
+      },
+      "native64": {
+        "support": 25,
+        "local_rms": 0.21350383758544922,
+        "max_abs": 1.4364951848983765,
+        "peak_position_rms": 0.35218682885169983
+      },
+      "coarse32_to64": {
+        "support": 25,
+        "local_rms": 0.1630152463912964,
+        "max_abs": 1.2088061571121216,
+        "peak_position_rms": 0.29475685954093933
+      },
+      "native64_peak_vs32": 1.0185708978733785,
+      "native64_rms_vs32": 1.0023397020753706
+    },
+    {
+      "sigma": 0.39453125,
+      "group": 2,
+      "native32": {
+        "support": 6,
+        "local_rms": 0.2997644245624542,
+        "max_abs": 2.122325897216797,
+        "peak_position_rms": 0.48996880650520325
+      },
+      "native64": {
+        "support": 25,
+        "local_rms": 0.3009013533592224,
+        "max_abs": 2.168175220489502,
+        "peak_position_rms": 0.508691668510437
+      },
+      "coarse32_to64": {
+        "support": 25,
+        "local_rms": 0.22952517867088318,
+        "max_abs": 1.8042595386505127,
+        "peak_position_rms": 0.4156482219696045
+      },
+      "native64_peak_vs32": 1.0382123550655769,
+      "native64_rms_vs32": 1.0037927409112262
+    },
+    {
+      "sigma": 0.39453125,
+      "group": 3,
+      "native32": {
+        "support": 6,
+        "local_rms": 0.33321771025657654,
+        "max_abs": 2.391713857650757,
+        "peak_position_rms": 0.5477863550186157
+      },
+      "native64": {
+        "support": 25,
+        "local_rms": 0.4058908522129059,
+        "max_abs": 4.528704643249512,
+        "peak_position_rms": 0.8881216645240784
+      },
+      "coarse32_to64": {
+        "support": 25,
+        "local_rms": 0.25545766949653625,
+        "max_abs": 2.0199856758117676,
+        "peak_position_rms": 0.462478369474411
+      },
+      "native64_peak_vs32": 1.6212920537129787,
+      "native64_rms_vs32": 1.2180950763402438
+    },
+    {
+      "sigma": 0.39453125,
+      "group": 4,
+      "native32": {
+        "support": 6,
+        "local_rms": 0.7422473430633545,
+        "max_abs": 5.912210464477539,
+        "peak_position_rms": 1.218298316001892
+      },
+      "native64": {
+        "support": 25,
+        "local_rms": 0.8218382596969604,
+        "max_abs": 6.544597625732422,
+        "peak_position_rms": 1.5393784046173096
+      },
+      "coarse32_to64": {
+        "support": 25,
+        "local_rms": 0.5683766007423401,
+        "max_abs": 4.984785079956055,
+        "peak_position_rms": 1.029879093170166
+      },
+      "native64_peak_vs32": 1.263548003307688,
+      "native64_rms_vs32": 1.1072296416786398
+    },
+    {
+      "sigma": 0.39453125,
+      "group": 5,
+      "native32": {
+        "support": 6,
+        "local_rms": 0.8519954085350037,
+        "max_abs": 6.350728988647461,
+        "peak_position_rms": 1.4104372262954712
+      },
+      "native64": {
+        "support": 25,
+        "local_rms": 1.1997355222702026,
+        "max_abs": 13.734448432922363,
+        "peak_position_rms": 3.0050320625305176
+      },
+      "coarse32_to64": {
+        "support": 25,
+        "local_rms": 0.6521413326263428,
+        "max_abs": 5.319972991943359,
+        "peak_position_rms": 1.1841338872909546
+      },
+      "native64_peak_vs32": 2.1305677463032278,
+      "native64_rms_vs32": 1.408147872924731
+    },
+    {
+      "sigma": 0.40234375,
+      "group": 0,
+      "native32": {
+        "support": 6,
+        "local_rms": 0.23945213854312897,
+        "max_abs": 2.564359664916992,
+        "peak_position_rms": 0.38839346170425415
+      },
+      "native64": {
+        "support": 25,
+        "local_rms": 0.22725257277488708,
+        "max_abs": 2.583698034286499,
+        "peak_position_rms": 0.3931903839111328
+      },
+      "coarse32_to64": {
+        "support": 25,
+        "local_rms": 0.1831573098897934,
+        "max_abs": 2.186779022216797,
+        "peak_position_rms": 0.3313870131969452
+      },
+      "native64_peak_vs32": 1.0123506770320745,
+      "native64_rms_vs32": 0.949052174507748
+    },
+    {
+      "sigma": 0.40234375,
+      "group": 1,
+      "native32": {
+        "support": 6,
+        "local_rms": 0.2129041701555252,
+        "max_abs": 1.4160916805267334,
+        "peak_position_rms": 0.34559735655784607
+      },
+      "native64": {
+        "support": 25,
+        "local_rms": 0.2133907973766327,
+        "max_abs": 1.4359374046325684,
+        "peak_position_rms": 0.35203590989112854
+      },
+      "coarse32_to64": {
+        "support": 25,
+        "local_rms": 0.16293831169605255,
+        "max_abs": 1.2083110809326172,
+        "peak_position_rms": 0.29461535811424255
+      },
+      "native64_peak_vs32": 1.0186302158020262,
+      "native64_rms_vs32": 1.0022856631730228
+    },
+    {
+      "sigma": 0.40234375,
+      "group": 2,
+      "native32": {
+        "support": 6,
+        "local_rms": 0.29968711733818054,
+        "max_abs": 2.1211814880371094,
+        "peak_position_rms": 0.48983514308929443
+      },
+      "native64": {
+        "support": 25,
+        "local_rms": 0.30076733231544495,
+        "max_abs": 2.167081832885742,
+        "peak_position_rms": 0.5085844993591309
+      },
+      "coarse32_to64": {
+        "support": 25,
+        "local_rms": 0.22946672141551971,
+        "max_abs": 1.8033034801483154,
+        "peak_position_rms": 0.4155391752719879
+      },
+      "native64_peak_vs32": 1.0382768703600724,
+      "native64_rms_vs32": 1.0036044758508769
+    },
+    {
+      "sigma": 0.40234375,
+      "group": 3,
+      "native32": {
+        "support": 6,
+        "local_rms": 0.333196222782135,
+        "max_abs": 2.389556884765625,
+        "peak_position_rms": 0.5477375984191895
+      },
+      "native64": {
+        "support": 25,
+        "local_rms": 0.40565264225006104,
+        "max_abs": 4.523929595947266,
+        "peak_position_rms": 0.8871057629585266
+      },
+      "coarse32_to64": {
+        "support": 25,
+        "local_rms": 0.25544124841690063,
+        "max_abs": 2.01819109916687,
+        "peak_position_rms": 0.462445467710495
+      },
+      "native64_peak_vs32": 1.619581649167007,
+      "native64_rms_vs32": 1.2174587060529274
+    },
+    {
+      "sigma": 0.40234375,
+      "group": 4,
+      "native32": {
+        "support": 6,
+        "local_rms": 0.7424925565719604,
+        "max_abs": 5.9150543212890625,
+        "peak_position_rms": 1.2186583280563354
+      },
+      "native64": {
+        "support": 25,
+        "local_rms": 0.8215857744216919,
+        "max_abs": 6.546990394592285,
+        "peak_position_rms": 1.537370204925537
+      },
+      "coarse32_to64": {
+        "support": 25,
+        "local_rms": 0.5685610771179199,
+        "max_abs": 4.987369060516357,
+        "peak_position_rms": 1.0302094221115112
+      },
+      "native64_peak_vs32": 1.2615268525490013,
+      "native64_rms_vs32": 1.10652392020588
+    },
+    {
+      "sigma": 0.40234375,
+      "group": 5,
+      "native32": {
+        "support": 6,
+        "local_rms": 0.8523215055465698,
+        "max_abs": 6.353320121765137,
+        "peak_position_rms": 1.4109222888946533
+      },
+      "native64": {
+        "support": 25,
+        "local_rms": 1.1987879276275635,
+        "max_abs": 13.715646743774414,
+        "peak_position_rms": 3.001100540161133
+      },
+      "coarse32_to64": {
+        "support": 25,
+        "local_rms": 0.6523900628089905,
+        "max_abs": 5.322417259216309,
+        "peak_position_rms": 1.1845797300338745
+      },
+      "native64_peak_vs32": 2.1270487848854236,
+      "native64_rms_vs32": 1.4064973367752986
+    },
+    {
+      "sigma": 0.435546875,
+      "group": 0,
+      "native32": {
+        "support": 6,
+        "local_rms": 0.23896712064743042,
+        "max_abs": 2.5575809478759766,
+        "peak_position_rms": 0.3875938057899475
+      },
+      "native64": {
+        "support": 25,
+        "local_rms": 0.22679220139980316,
+        "max_abs": 2.5771098136901855,
+        "peak_position_rms": 0.3924264907836914
+      },
+      "coarse32_to64": {
+        "support": 25,
+        "local_rms": 0.18279042840003967,
+        "max_abs": 2.181049346923828,
+        "peak_position_rms": 0.33071276545524597
+      },
+      "native64_peak_vs32": 1.0124684267951458,
+      "native64_rms_vs32": 0.9490519063265193
+    },
+    {
+      "sigma": 0.435546875,
+      "group": 1,
+      "native32": {
+        "support": 6,
+        "local_rms": 0.21246418356895447,
+        "max_abs": 1.4135037660598755,
+        "peak_position_rms": 0.34486639499664307
+      },
+      "native64": {
+        "support": 25,
+        "local_rms": 0.21290025115013123,
+        "max_abs": 1.4334938526153564,
+        "peak_position_rms": 0.3513795733451843
+      },
+      "coarse32_to64": {
+        "support": 25,
+        "local_rms": 0.1626039743423462,
+        "max_abs": 1.2061436176300049,
+        "peak_position_rms": 0.29400062561035156
+      },
+      "native64_peak_vs32": 1.0188860916663238,
+      "native64_rms_vs32": 1.0020524286675134
+    },
+    {
+      "sigma": 0.435546875,
+      "group": 2,
+      "native32": {
+        "support": 6,
+        "local_rms": 0.2993435263633728,
+        "max_abs": 2.1161653995513916,
+        "peak_position_rms": 0.48924165964126587
+      },
+      "native64": {
+        "support": 25,
+        "local_rms": 0.30018043518066406,
+        "max_abs": 2.1622884273529053,
+        "peak_position_rms": 0.5081045031547546
+      },
+      "coarse32_to64": {
+        "support": 25,
+        "local_rms": 0.22920657694339752,
+        "max_abs": 1.799109697341919,
+        "peak_position_rms": 0.4150542914867401
+      },
+      "native64_peak_vs32": 1.0385552684277128,
+      "native64_rms_vs32": 1.0027958139848843
+    },
+    {
+      "sigma": 0.435546875,
+      "group": 3,
+      "native32": {
+        "support": 6,
+        "local_rms": 0.3330920338630676,
+        "max_abs": 2.380155563354492,
+        "peak_position_rms": 0.5475080013275146
+      },
+      "native64": {
+        "support": 25,
+        "local_rms": 0.40461671352386475,
+        "max_abs": 4.503207206726074,
+        "peak_position_rms": 0.8827023506164551
+      },
+      "coarse32_to64": {
+        "support": 25,
+        "local_rms": 0.25536155700683594,
+        "max_abs": 2.0103700160980225,
+        "peak_position_rms": 0.4622875452041626
+      },
+      "native64_peak_vs32": 1.6122181748508,
+      "native64_rms_vs32": 1.2147294813126648
+    },
+    {
+      "sigma": 0.435546875,
+      "group": 4,
+      "native32": {
+        "support": 6,
+        "local_rms": 0.7435099482536316,
+        "max_abs": 5.926914215087891,
+        "peak_position_rms": 1.220144510269165
+      },
+      "native64": {
+        "support": 25,
+        "local_rms": 0.8204741477966309,
+        "max_abs": 6.556919097900391,
+        "peak_position_rms": 1.528686285018921
+      },
+      "coarse32_to64": {
+        "support": 25,
+        "local_rms": 0.5693262219429016,
+        "max_abs": 4.998175621032715,
+        "peak_position_rms": 1.0315778255462646
+      },
+      "native64_peak_vs32": 1.2528731409705653,
+      "native64_rms_vs32": 1.103514686957147
+    },
+    {
+      "sigma": 0.435546875,
+      "group": 5,
+      "native32": {
+        "support": 6,
+        "local_rms": 0.8536891937255859,
+        "max_abs": 6.364044189453125,
+        "peak_position_rms": 1.4129477739334106
+      },
+      "native64": {
+        "support": 25,
+        "local_rms": 1.194694995880127,
+        "max_abs": 13.634449005126953,
+        "peak_position_rms": 2.9841272830963135
+      },
+      "coarse32_to64": {
+        "support": 25,
+        "local_rms": 0.6534331440925598,
+        "max_abs": 5.332569122314453,
+        "peak_position_rms": 1.186448097229004
+      },
+      "native64_peak_vs32": 2.1119869666442104,
+      "native64_rms_vs32": 1.3994495943732839
+    },
+    {
+      "sigma": 0.44140625,
+      "group": 0,
+      "native32": {
+        "support": 6,
+        "local_rms": 0.23887990415096283,
+        "max_abs": 2.5563623905181885,
+        "peak_position_rms": 0.3874500095844269
+      },
+      "native64": {
+        "support": 25,
+        "local_rms": 0.22670941054821014,
+        "max_abs": 2.575925827026367,
+        "peak_position_rms": 0.3922891318798065
+      },
+      "coarse32_to64": {
+        "support": 25,
+        "local_rms": 0.1827244609594345,
+        "max_abs": 2.1800193786621094,
+        "peak_position_rms": 0.33059149980545044
+      },
+      "native64_peak_vs32": 1.0124896687977114,
+      "native64_rms_vs32": 0.9490518315217449
+    },
+    {
+      "sigma": 0.44140625,
+      "group": 1,
+      "native32": {
+        "support": 6,
+        "local_rms": 0.21238496899604797,
+        "max_abs": 1.413034439086914,
+        "peak_position_rms": 0.344734787940979
+      },
+      "native64": {
+        "support": 25,
+        "local_rms": 0.21281202137470245,
+        "max_abs": 1.433050513267517,
+        "peak_position_rms": 0.3512612581253052
+      },
+      "coarse32_to64": {
+        "support": 25,
+        "local_rms": 0.16254375874996185,
+        "max_abs": 1.2057499885559082,
+        "peak_position_rms": 0.29388996958732605
+      },
+      "native64_peak_vs32": 1.018931858381068,
+      "native64_rms_vs32": 1.0020107467146717
+    },
+    {
+      "sigma": 0.44140625,
+      "group": 2,
+      "native32": {
+        "support": 6,
+        "local_rms": 0.2992803454399109,
+        "max_abs": 2.1152546405792236,
+        "peak_position_rms": 0.4891326427459717
+      },
+      "native64": {
+        "support": 25,
+        "local_rms": 0.3000739812850952,
+        "max_abs": 2.1614186763763428,
+        "peak_position_rms": 0.5080157518386841
+      },
+      "coarse32_to64": {
+        "support": 25,
+        "local_rms": 0.22915872931480408,
+        "max_abs": 1.7983481884002686,
+        "peak_position_rms": 0.4149651527404785
+      },
+      "native64_peak_vs32": 1.038605293211885,
+      "native64_rms_vs32": 1.0026518141176888
+    },
+    {
+      "sigma": 0.44140625,
+      "group": 3,
+      "native32": {
+        "support": 6,
+        "local_rms": 0.33307144045829773,
+        "max_abs": 2.378457546234131,
+        "peak_position_rms": 0.5474636554718018
+      },
+      "native64": {
+        "support": 25,
+        "local_rms": 0.40442997217178345,
+        "max_abs": 4.499476432800293,
+        "peak_position_rms": 0.8819109797477722
+      },
+      "coarse32_to64": {
+        "support": 25,
+        "local_rms": 0.25534579157829285,
+        "max_abs": 2.008957624435425,
+        "peak_position_rms": 0.4622565805912018
+      },
+      "native64_peak_vs32": 1.610903246148359,
+      "native64_rms_vs32": 1.2142439220105399
+    },
+    {
+      "sigma": 0.44140625,
+      "group": 4,
+      "native32": {
+        "support": 6,
+        "local_rms": 0.743685245513916,
+        "max_abs": 5.928969383239746,
+        "peak_position_rms": 1.2203991413116455
+      },
+      "native64": {
+        "support": 25,
+        "local_rms": 0.8202713131904602,
+        "max_abs": 6.558629035949707,
+        "peak_position_rms": 1.527129054069519
+      },
+      "coarse32_to64": {
+        "support": 25,
+        "local_rms": 0.5694579482078552,
+        "max_abs": 5.0000505447387695,
+        "peak_position_rms": 1.031813144683838
+      },
+      "native64_peak_vs32": 1.251335733019453,
+      "native64_rms_vs32": 1.1029818302010552
+    },
+    {
+      "sigma": 0.44140625,
+      "group": 5,
+      "native32": {
+        "support": 6,
+        "local_rms": 0.8539273738861084,
+        "max_abs": 6.3658857345581055,
+        "peak_position_rms": 1.4132988452911377
+      },
+      "native64": {
+        "support": 25,
+        "local_rms": 1.1939617395401,
+        "max_abs": 13.61989974975586,
+        "peak_position_rms": 2.9810879230499268
+      },
+      "coarse32_to64": {
+        "support": 25,
+        "local_rms": 0.6536146998405457,
+        "max_abs": 5.3343186378479,
+        "peak_position_rms": 1.1867730617523193
+      },
+      "native64_peak_vs32": 2.1093117941632697,
+      "native64_rms_vs32": 1.3982005684002623
+    },
+    {
+      "sigma": 0.4765625,
+      "group": 0,
+      "native32": {
+        "support": 6,
+        "local_rms": 0.23834653198719025,
+        "max_abs": 2.5489163398742676,
+        "peak_position_rms": 0.3865707814693451
+      },
+      "native64": {
+        "support": 25,
+        "local_rms": 0.22620317339897156,
+        "max_abs": 2.5686869621276855,
+        "peak_position_rms": 0.3914487659931183
+      },
+      "coarse32_to64": {
+        "support": 25,
+        "local_rms": 0.18232092261314392,
+        "max_abs": 2.173725128173828,
+        "peak_position_rms": 0.32985004782676697
+      },
+      "native64_peak_vs32": 1.0126186063655203,
+      "native64_rms_vs32": 0.9490516665504857
+    },
+    {
+      "sigma": 0.4765625,
+      "group": 1,
+      "native32": {
+        "support": 6,
+        "local_rms": 0.21189981698989868,
+        "max_abs": 1.4101381301879883,
+        "peak_position_rms": 0.34392866492271423
+      },
+      "native64": {
+        "support": 25,
+        "local_rms": 0.2122722566127777,
+        "max_abs": 1.4303131103515625,
+        "peak_position_rms": 0.3505362272262573
+      },
+      "coarse32_to64": {
+        "support": 25,
+        "local_rms": 0.16217495501041412,
+        "max_abs": 1.203322410583496,
+        "peak_position_rms": 0.29321202635765076
+      },
+      "native64_peak_vs32": 1.0192120139361687,
+      "native64_rms_vs32": 1.0017576212578645
+    },
+    {
+      "sigma": 0.4765625,
+      "group": 2,
+      "native32": {
+        "support": 6,
+        "local_rms": 0.29888516664505005,
+        "max_abs": 2.1096320152282715,
+        "peak_position_rms": 0.48845142126083374
+      },
+      "native64": {
+        "support": 25,
+        "local_rms": 0.2994171679019928,
+        "max_abs": 2.1560416221618652,
+        "peak_position_rms": 0.5074569582939148
+      },
+      "coarse32_to64": {
+        "support": 25,
+        "local_rms": 0.2288593202829361,
+        "max_abs": 1.7936455011367798,
+        "peak_position_rms": 0.41440775990486145
+      },
+      "native64_peak_vs32": 1.0389097793676643,
+      "native64_rms_vs32": 1.0017799520227597
+    },
+    {
+      "sigma": 0.4765625,
+      "group": 3,
+      "native32": {
+        "support": 6,
+        "local_rms": 0.33293411135673523,
+        "max_abs": 2.3680224418640137,
+        "peak_position_rms": 0.547173023223877
+      },
+      "native64": {
+        "support": 25,
+        "local_rms": 0.40328460931777954,
+        "max_abs": 4.476644039154053,
+        "peak_position_rms": 0.8770725131034851
+      },
+      "coarse32_to64": {
+        "support": 25,
+        "local_rms": 0.2552405297756195,
+        "max_abs": 2.000274419784546,
+        "peak_position_rms": 0.4620508849620819
+      },
+      "native64_peak_vs32": 1.6029162182299859,
+      "native64_rms_vs32": 1.211304566162836
+    },
+    {
+      "sigma": 0.4765625,
+      "group": 4,
+      "native32": {
+        "support": 6,
+        "local_rms": 0.7447084784507751,
+        "max_abs": 5.941031455993652,
+        "peak_position_rms": 1.2218774557113647
+      },
+      "native64": {
+        "support": 25,
+        "local_rms": 0.8190140128135681,
+        "max_abs": 6.568605899810791,
+        "peak_position_rms": 1.51763117313385
+      },
+      "coarse32_to64": {
+        "support": 25,
+        "local_rms": 0.5702263116836548,
+        "max_abs": 5.0110907554626465,
+        "peak_position_rms": 1.0331848859786987
+      },
+      "native64_peak_vs32": 1.242048591730748,
+      "native64_rms_vs32": 1.0997780158450345
+    },
+    {
+      "sigma": 0.4765625,
+      "group": 5,
+      "native32": {
+        "support": 6,
+        "local_rms": 0.8553339838981628,
+        "max_abs": 6.376584529876709,
+        "peak_position_rms": 1.4153614044189453
+      },
+      "native64": {
+        "support": 25,
+        "local_rms": 1.1894952058792114,
+        "max_abs": 13.531312942504883,
+        "peak_position_rms": 2.9625792503356934
+      },
+      "coarse32_to64": {
+        "support": 25,
+        "local_rms": 0.6546866297721863,
+        "max_abs": 5.344538688659668,
+        "peak_position_rms": 1.1886894702911377
+      },
+      "native64_peak_vs32": 2.093160970114156,
+      "native64_rms_vs32": 1.3906792297181008
+    },
+    {
+      "sigma": 0.48046875,
+      "group": 0,
+      "native32": {
+        "support": 6,
+        "local_rms": 0.23828621208667755,
+        "max_abs": 2.548074722290039,
+        "peak_position_rms": 0.38647136092185974
+      },
+      "native64": {
+        "support": 25,
+        "local_rms": 0.2261459082365036,
+        "max_abs": 2.5678677558898926,
+        "peak_position_rms": 0.39135366678237915
+      },
+      "coarse32_to64": {
+        "support": 25,
+        "local_rms": 0.18227528035640717,
+        "max_abs": 2.173013210296631,
+        "peak_position_rms": 0.329766184091568
+      },
+      "native64_peak_vs32": 1.0126330340464906,
+      "native64_rms_vs32": 0.9490515890791119
+    },
+    {
+      "sigma": 0.48046875,
+      "group": 1,
+      "native32": {
+        "support": 6,
+        "local_rms": 0.21184490621089935,
+        "max_abs": 1.4098080396652222,
+        "peak_position_rms": 0.3438374102115631
+      },
+      "native64": {
+        "support": 25,
+        "local_rms": 0.21221120655536652,
+        "max_abs": 1.4300007820129395,
+        "peak_position_rms": 0.35045403242111206
+      },
+      "coarse32_to64": {
+        "support": 25,
+        "local_rms": 0.16213321685791016,
+        "max_abs": 1.2030459642410278,
+        "peak_position_rms": 0.29313531517982483
+      },
+      "native64_peak_vs32": 1.0192434622092976,
+      "native64_rms_vs32": 1.0017290967765942
+    },
+    {
+      "sigma": 0.48046875,
+      "group": 2,
+      "native32": {
+        "support": 6,
+        "local_rms": 0.29883959889411926,
+        "max_abs": 2.1089909076690674,
+        "peak_position_rms": 0.48837292194366455
+      },
+      "native64": {
+        "support": 25,
+        "local_rms": 0.2993423044681549,
+        "max_abs": 2.1554276943206787,
+        "peak_position_rms": 0.507392168045044
+      },
+      "coarse32_to64": {
+        "support": 25,
+        "local_rms": 0.22882477939128876,
+        "max_abs": 1.7931089401245117,
+        "peak_position_rms": 0.4143434762954712
+      },
+      "native64_peak_vs32": 1.0389441044881955,
+      "native64_rms_vs32": 1.0016821919715324
+    },
+    {
+      "sigma": 0.48046875,
+      "group": 3,
+      "native32": {
+        "support": 6,
+        "local_rms": 0.33291739225387573,
+        "max_abs": 2.366837501525879,
+        "peak_position_rms": 0.5471382141113281
+      },
+      "native64": {
+        "support": 25,
+        "local_rms": 0.40315476059913635,
+        "max_abs": 4.474059581756592,
+        "peak_position_rms": 0.876525342464447
+      },
+      "coarse32_to64": {
+        "support": 25,
+        "local_rms": 0.2552277147769928,
+        "max_abs": 1.9992883205413818,
+        "peak_position_rms": 0.4620259404182434
+      },
+      "native64_peak_vs32": 1.6020181370224988,
+      "native64_rms_vs32": 1.2109753649989516
+    },
+    {
+      "sigma": 0.48046875,
+      "group": 4,
+      "native32": {
+        "support": 6,
+        "local_rms": 0.7448190450668335,
+        "max_abs": 5.942342758178711,
+        "peak_position_rms": 1.222036361694336
+      },
+      "native64": {
+        "support": 25,
+        "local_rms": 0.818869948387146,
+        "max_abs": 6.569684982299805,
+        "peak_position_rms": 1.5165597200393677
+      },
+      "coarse32_to64": {
+        "support": 25,
+        "local_rms": 0.5703093409538269,
+        "max_abs": 5.012293338775635,
+        "peak_position_rms": 1.0333329439163208
+      },
+      "native64_peak_vs32": 1.241010306711888,
+      "native64_rms_vs32": 1.099421334364064
+    },
+    {
+      "sigma": 0.48046875,
+      "group": 5,
+      "native32": {
+        "support": 6,
+        "local_rms": 0.8554878234863281,
+        "max_abs": 6.377735137939453,
+        "peak_position_rms": 1.4155857563018799
+      },
+      "native64": {
+        "support": 25,
+        "local_rms": 1.188991904258728,
+        "max_abs": 13.521324157714844,
+        "peak_position_rms": 2.96049427986145
+      },
+      "coarse32_to64": {
+        "support": 25,
+        "local_rms": 0.6548038125038147,
+        "max_abs": 5.345641136169434,
+        "peak_position_rms": 1.1888986825942993
+      },
+      "native64_peak_vs32": 2.0913563637398678,
+      "native64_rms_vs32": 1.3898408272058005
+    },
+    {
+      "sigma": 0.515625,
+      "group": 0,
+      "native32": {
+        "support": 6,
+        "local_rms": 0.23773393034934998,
+        "max_abs": 2.5403711795806885,
+        "peak_position_rms": 0.38556107878685
+      },
+      "native64": {
+        "support": 25,
+        "local_rms": 0.2256217896938324,
+        "max_abs": 2.560377359390259,
+        "peak_position_rms": 0.3904832899570465
+      },
+      "coarse32_to64": {
+        "support": 25,
+        "local_rms": 0.18185736238956451,
+        "max_abs": 2.1665005683898926,
+        "peak_position_rms": 0.3289984166622162
+      },
+      "native64_peak_vs32": 1.0127663590569982,
+      "native64_rms_vs32": 0.9490516955753064
+    },
+    {
+      "sigma": 0.515625,
+      "group": 1,
+      "native32": {
+        "support": 6,
+        "local_rms": 0.2113417536020279,
+        "max_abs": 1.4067625999450684,
+        "peak_position_rms": 0.34300124645233154
+      },
+      "native64": {
+        "support": 25,
+        "local_rms": 0.21165241301059723,
+        "max_abs": 1.4271198511123657,
+        "peak_position_rms": 0.3497008681297302
+      },
+      "coarse32_to64": {
+        "support": 25,
+        "local_rms": 0.16175059974193573,
+        "max_abs": 1.2004926204681396,
+        "peak_position_rms": 0.29243215918540955
+      },
+      "native64_peak_vs32": 1.019532353735425,
+      "native64_rms_vs32": 1.0014699386338695
+    },
+    {
+      "sigma": 0.515625,
+      "group": 2,
+      "native32": {
+        "support": 6,
+        "local_rms": 0.29841431975364685,
+        "max_abs": 2.1030685901641846,
+        "peak_position_rms": 0.4876407980918884
+      },
+      "native64": {
+        "support": 25,
+        "local_rms": 0.29865163564682007,
+        "max_abs": 2.1497607231140137,
+        "peak_position_rms": 0.5067847371101379
+      },
+      "coarse32_to64": {
+        "support": 25,
+        "local_rms": 0.2285023033618927,
+        "max_abs": 1.7881537675857544,
+        "peak_position_rms": 0.4137437641620636
+      },
+      "native64_peak_vs32": 1.039258280056055,
+      "native64_rms_vs32": 1.000795256385046
+    },
+    {
+      "sigma": 0.515625,
+      "group": 3,
+      "native32": {
+        "support": 6,
+        "local_rms": 0.33275359869003296,
+        "max_abs": 2.355940341949463,
+        "peak_position_rms": 0.5468011498451233
+      },
+      "native64": {
+        "support": 25,
+        "local_rms": 0.4019630253314972,
+        "max_abs": 4.450355529785156,
+        "peak_position_rms": 0.8715165853500366
+      },
+      "coarse32_to64": {
+        "support": 25,
+        "local_rms": 0.2551020085811615,
+        "max_abs": 1.9902187585830688,
+        "peak_position_rms": 0.4617825448513031
+      },
+      "native64_peak_vs32": 1.5938455608531295,
+      "native64_rms_vs32": 1.2079900169793034
+    },
+    {
+      "sigma": 0.515625,
+      "group": 4,
+      "native32": {
+        "support": 6,
+        "local_rms": 0.7457858920097351,
+        "max_abs": 5.953876972198486,
+        "peak_position_rms": 1.2234160900115967
+      },
+      "native64": {
+        "support": 25,
+        "local_rms": 0.8175345063209534,
+        "max_abs": 6.579100608825684,
+        "peak_position_rms": 1.5067706108093262
+      },
+      "coarse32_to64": {
+        "support": 25,
+        "local_rms": 0.57103431224823,
+        "max_abs": 5.0229058265686035,
+        "peak_position_rms": 1.034624695777893
+      },
+      "native64_peak_vs32": 1.2316092808580306,
+      "native64_rms_vs32": 1.0962053788894706
+    },
+    {
+      "sigma": 0.515625,
+      "group": 5,
+      "native32": {
+        "support": 6,
+        "local_rms": 0.8568483591079712,
+        "max_abs": 6.387730598449707,
+        "peak_position_rms": 1.417559266090393
+      },
+      "native64": {
+        "support": 25,
+        "local_rms": 1.1844009160995483,
+        "max_abs": 13.430255889892578,
+        "peak_position_rms": 2.941476821899414
+      },
+      "coarse32_to64": {
+        "support": 25,
+        "local_rms": 0.6558396220207214,
+        "max_abs": 5.355291843414307,
+        "peak_position_rms": 1.1907469034194946
+      },
+      "native64_peak_vs32": 2.075029166161047,
+      "native64_rms_vs32": 1.3822759926068813
+    },
+    {
+      "sigma": 0.55078125,
+      "group": 0,
+      "native32": {
+        "support": 6,
+        "local_rms": 0.2371651530265808,
+        "max_abs": 2.532442569732666,
+        "peak_position_rms": 0.3846237063407898
+      },
+      "native64": {
+        "support": 25,
+        "local_rms": 0.22508202493190765,
+        "max_abs": 2.552664041519165,
+        "peak_position_rms": 0.38958650827407837
+      },
+      "coarse32_to64": {
+        "support": 25,
+        "local_rms": 0.18142688274383545,
+        "max_abs": 2.1597962379455566,
+        "peak_position_rms": 0.32820770144462585
+      },
+      "native64_peak_vs32": 1.0129030058508441,
+      "native64_rms_vs32": 0.9490518402873507
+    },
+    {
+      "sigma": 0.55078125,
+      "group": 1,
+      "native32": {
+        "support": 6,
+        "local_rms": 0.21082323789596558,
+        "max_abs": 1.4035860300064087,
+        "peak_position_rms": 0.3421393930912018
+      },
+      "native64": {
+        "support": 25,
+        "local_rms": 0.21107728779315948,
+        "max_abs": 1.4241127967834473,
+        "peak_position_rms": 0.34892356395721436
+      },
+      "coarse32_to64": {
+        "support": 25,
+        "local_rms": 0.1613561511039734,
+        "max_abs": 1.197828769683838,
+        "peak_position_rms": 0.29170742630958557
+      },
+      "native64_peak_vs32": 1.0198286751043724,
+      "native64_rms_vs32": 1.001205037450944
+    },
+    {
+      "sigma": 0.55078125,
+      "group": 2,
+      "native32": {
+        "support": 6,
+        "local_rms": 0.2979624569416046,
+        "max_abs": 2.096881866455078,
+        "peak_position_rms": 0.4868638217449188
+      },
+      "native64": {
+        "support": 25,
+        "local_rms": 0.2979311943054199,
+        "max_abs": 2.145688056945801,
+        "peak_position_rms": 0.5061341524124146
+      },
+      "coarse32_to64": {
+        "support": 25,
+        "local_rms": 0.22815948724746704,
+        "max_abs": 1.7829771041870117,
+        "peak_position_rms": 0.4131067395210266
+      },
+      "native64_peak_vs32": 1.0395805352684266,
+      "native64_rms_vs32": 0.9998950786065278
+    },
+    {
+      "sigma": 0.55078125,
+      "group": 3,
+      "native32": {
+        "support": 6,
+        "local_rms": 0.3325660526752472,
+        "max_abs": 2.3446364402770996,
+        "peak_position_rms": 0.5464223623275757
+      },
+      "native64": {
+        "support": 25,
+        "local_rms": 0.4007304608821869,
+        "max_abs": 4.425878524780273,
+        "peak_position_rms": 0.8663560748100281
+      },
+      "coarse32_to64": {
+        "support": 25,
+        "local_rms": 0.2549578845500946,
+        "max_abs": 1.9808094501495361,
+        "peak_position_rms": 0.4615052342414856
+      },
+      "native64_peak_vs32": 1.5855062576861647,
+      "native64_rms_vs32": 1.2049650217110484
+    },
+    {
+      "sigma": 0.55078125,
+      "group": 4,
+      "native32": {
+        "support": 6,
+        "local_rms": 0.7466995120048523,
+        "max_abs": 5.964900016784668,
+        "peak_position_rms": 1.2247029542922974
+      },
+      "native64": {
+        "support": 25,
+        "local_rms": 0.816129207611084,
+        "max_abs": 6.587974548339844,
+        "peak_position_rms": 1.4967247247695923
+      },
+      "coarse32_to64": {
+        "support": 25,
+        "local_rms": 0.5717182159423828,
+        "max_abs": 5.033097267150879,
+        "peak_position_rms": 1.0358407497406006
+      },
+      "native64_peak_vs32": 1.2221124473685006,
+      "native64_rms_vs32": 1.092982109255457
+    },
+    {
+      "sigma": 0.55078125,
+      "group": 5,
+      "native32": {
+        "support": 6,
+        "local_rms": 0.8581627011299133,
+        "max_abs": 6.397041320800781,
+        "peak_position_rms": 1.4194451570510864
+      },
+      "native64": {
+        "support": 25,
+        "local_rms": 1.1797024011611938,
+        "max_abs": 13.337019920349121,
+        "peak_position_rms": 2.922015905380249
+      },
+      "coarse32_to64": {
+        "support": 25,
+        "local_rms": 0.6568393707275391,
+        "max_abs": 5.364386558532715,
+        "peak_position_rms": 1.192527413368225
+      },
+      "native64_peak_vs32": 2.0585620309915815,
+      "native64_rms_vs32": 1.3746838444597047
+    },
+    {
+      "sigma": 0.5859375,
+      "group": 0,
+      "native32": {
+        "support": 6,
+        "local_rms": 0.23658041656017303,
+        "max_abs": 2.524294137954712,
+        "peak_position_rms": 0.3836601674556732
+      },
+      "native64": {
+        "support": 25,
+        "local_rms": 0.22452719509601593,
+        "max_abs": 2.544736623764038,
+        "peak_position_rms": 0.3886643350124359
+      },
+      "coarse32_to64": {
+        "support": 25,
+        "local_rms": 0.1809842735528946,
+        "max_abs": 2.1529059410095215,
+        "peak_position_rms": 0.32739487290382385
+      },
+      "native64_peak_vs32": 1.0130432293504663,
+      "native64_rms_vs32": 0.9490523280015807
+    },
+    {
+      "sigma": 0.5859375,
+      "group": 1,
+      "native32": {
+        "support": 6,
+        "local_rms": 0.21029022336006165,
+        "max_abs": 1.400282382965088,
+        "peak_position_rms": 0.34125325083732605
+      },
+      "native64": {
+        "support": 25,
+        "local_rms": 0.2104867547750473,
+        "max_abs": 1.4209833145141602,
+        "peak_position_rms": 0.3481234610080719
+      },
+      "coarse32_to64": {
+        "support": 25,
+        "local_rms": 0.16095052659511566,
+        "max_abs": 1.19505774974823,
+        "peak_position_rms": 0.2909623384475708
+      },
+      "native64_peak_vs32": 1.0201322922313225,
+      "native64_rms_vs32": 1.00093457228703
+    },
+    {
+      "sigma": 0.5859375,
+      "group": 2,
+      "native32": {
+        "support": 6,
+        "local_rms": 0.29748472571372986,
+        "max_abs": 2.090437412261963,
+        "peak_position_rms": 0.48604312539100647
+      },
+      "native64": {
+        "support": 25,
+        "local_rms": 0.2971818149089813,
+        "max_abs": 2.1422312259674072,
+        "peak_position_rms": 0.5054413676261902
+      },
+      "coarse32_to64": {
+        "support": 25,
+        "local_rms": 0.22779685258865356,
+        "max_abs": 1.7775828838348389,
+        "peak_position_rms": 0.41243335604667664
+      },
+      "native64_peak_vs32": 1.0399105371968351,
+      "native64_rms_vs32": 0.9989817601424013
+    },
+    {
+      "sigma": 0.5859375,
+      "group": 3,
+      "native32": {
+        "support": 6,
+        "local_rms": 0.3323548436164856,
+        "max_abs": 2.3329336643218994,
+        "peak_position_rms": 0.5460020899772644
+      },
+      "native64": {
+        "support": 25,
+        "local_rms": 0.3994581997394562,
+        "max_abs": 4.400627136230469,
+        "peak_position_rms": 0.8610458970069885
+      },
+      "coarse32_to64": {
+        "support": 25,
+        "local_rms": 0.25479546189308167,
+        "max_abs": 1.9710657596588135,
+        "peak_position_rms": 0.46119424700737
+      },
+      "native64_peak_vs32": 1.577001100935058,
+      "native64_rms_vs32": 1.201902747656066
+    },
+    {
+      "sigma": 0.5859375,
+      "group": 4,
+      "native32": {
+        "support": 6,
+        "local_rms": 0.7475574612617493,
+        "max_abs": 5.975379467010498,
+        "peak_position_rms": 1.2258936166763306
+      },
+      "native64": {
+        "support": 25,
+        "local_rms": 0.8146548867225647,
+        "max_abs": 6.596279144287109,
+        "peak_position_rms": 1.4864274263381958
+      },
+      "coarse32_to64": {
+        "support": 25,
+        "local_rms": 0.5723592638969421,
+        "max_abs": 5.04284143447876,
+        "peak_position_rms": 1.0369778871536255
+      },
+      "native64_peak_vs32": 1.212525627116185,
+      "native64_rms_vs32": 1.0897555424670184
+    },
+    {
+      "sigma": 0.5859375,
+      "group": 5,
+      "native32": {
+        "support": 6,
+        "local_rms": 0.8594263792037964,
+        "max_abs": 6.405618667602539,
+        "peak_position_rms": 1.421236276626587
+      },
+      "native64": {
+        "support": 25,
+        "local_rms": 1.1749017238616943,
+        "max_abs": 13.241687774658203,
+        "peak_position_rms": 2.902125120162964
+      },
+      "coarse32_to64": {
+        "support": 25,
+        "local_rms": 0.6577997207641602,
+        "max_abs": 5.372875213623047,
+        "peak_position_rms": 1.194233775138855
+      },
+      "native64_peak_vs32": 2.0419723081171135,
+      "native64_rms_vs32": 1.3670766365702733
+    }
+  ],
+  "scope": "CPU FP32 Face branch only; identical prepared features and sigma, no Qwen inference, no optimizer",
+  "coarse_candidate": "scatter32 then bilinear resize64 align_corners=False, finally multiply hard target-face-box mask64; preserves existing feather without multiplying it twice",
+  "sigma_01992_group5_peak_locations": {
+    "32": [
+      {
+        "token_xy": [
+          17,
+          5
+        ],
+        "normalized_center_xy": [
+          0.546875,
+          0.171875
+        ],
+        "rms": 0.7162342071533203
+      },
+      {
+        "token_xy": [
+          16,
+          6
+        ],
+        "normalized_center_xy": [
+          0.515625,
+          0.203125
+        ],
+        "rms": 0.4756421148777008
+      },
+      {
+        "token_xy": [
+          16,
+          5
+        ],
+        "normalized_center_xy": [
+          0.515625,
+          0.171875
+        ],
+        "rms": 0.4480336308479309
+      },
+      {
+        "token_xy": [
+          17,
+          6
+        ],
+        "normalized_center_xy": [
+          0.546875,
+          0.203125
+        ],
+        "rms": 0.38908734917640686
+      },
+      {
+        "token_xy": [
+          17,
+          7
+        ],
+        "normalized_center_xy": [
+          0.546875,
+          0.234375
+        ],
+        "rms": 0.03767373785376549
+      },
+      {
+        "token_xy": [
+          16,
+          7
+        ],
+        "normalized_center_xy": [
+          0.515625,
+          0.234375
+        ],
+        "rms": 0.014848512597382069
+      }
+    ],
+    "64": [
+      {
+        "token_xy": [
+          34,
+          13
+        ],
+        "normalized_center_xy": [
+          0.5390625,
+          0.2109375
+        ],
+        "rms": 3.4397106170654297
+      },
+      {
+        "token_xy": [
+          32,
+          12
+        ],
+        "normalized_center_xy": [
+          0.5078125,
+          0.1953125
+        ],
+        "rms": 2.6288139820098877
+      },
+      {
+        "token_xy": [
+          32,
+          13
+        ],
+        "normalized_center_xy": [
+          0.5078125,
+          0.2109375
+        ],
+        "rms": 1.8976258039474487
+      },
+      {
+        "token_xy": [
+          32,
+          11
+        ],
+        "normalized_center_xy": [
+          0.5078125,
+          0.1796875
+        ],
+        "rms": 1.8537325859069824
+      },
+      {
+        "token_xy": [
+          32,
+          10
+        ],
+        "normalized_center_xy": [
+          0.5078125,
+          0.1640625
+        ],
+        "rms": 1.482399344444275
+      },
+      {
+        "token_xy": [
+          34,
+          11
+        ],
+        "normalized_center_xy": [
+          0.5390625,
+          0.1796875
+        ],
+        "rms": 0.9157350063323975
+      }
+    ]
+  }
+}

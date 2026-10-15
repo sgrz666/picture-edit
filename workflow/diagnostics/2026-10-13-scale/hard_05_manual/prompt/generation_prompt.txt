@@ -1,0 +1,14 @@
+This is a pose-only edit of the single woman in <image1>. Change nothing about her except the positions of her body joints, which must be moved to exactly match the pose shown by the skeletal guide in <image2>.
+
+About the two references:
+- <image1> (source photograph) is the ONLY source of appearance: her identity, face, hair (long blonde with blue-green streaks), glasses, teal corset top with white fur trim, white flared skirt, red thigh-high sock, white knit leg warmer, black boots, the Christmas-tree lot scene, framing and lighting. All of this must stay unchanged.
+- <image2> is ONLY a body-joint guide: a 2D projection of an estimated skeleton, already scaled and aligned onto this canvas. Read ONLY the joint positions from it. It is not a person, not an object, and not an appearance reference. Never render the skeleton, its joints, its line colors, or any wireframe, doll, mannequin or cartoon figure into the output. Do not treat <image2> as a figure to place into the scene.
+
+The target pose to apply to the woman: she stands in a three-quarters back view with her torso rotated away from the camera; her head turns over her shoulder to glance back toward the camera; her arms are bent with empty hands held in front of her waist (the hand on the viewer's left held away from the body, the hand on the viewer's right near her hip); she stands on both legs with feet apart, one foot angled slightly forward. Match the joint arrangement of <image2>.
+
+Hard constraints:
+- The output must contain exactly ONE person: the woman from <image1>, re-posed at her full original scale and position in the frame. Do not add a second person, a miniature figure, a doll, a mannequin, or any extra character anywhere in the frame.
+- If the skeleton guide appears smaller than the woman in <image1>, still apply its pose to the FULL-SIZE woman. Never create a small figure at the skeleton's location.
+- Do not draw or depict the skeleton itself in any form.
+- Do not add any object from the target photograph (no basketball, no other props). Her hands must stay empty; preserve objects already present in <image1>.
+- Keep the source canvas, framing, background and illumination; allow natural pose-dependent cloth folds and shadows.

@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TikTok 单样本实验 · 客观评测 · 2026-09-23</title>
+<style>
+  :root{
+    --bg:#f6f7f9; --card:#fff; --ink:#16222e; --ink2:#4a5a6a; --ink3:#7b8b9c;
+    --line:#e2e7ec; --brand:#1f3a5f; --accent:#2f6fb0; --ok:#1f7a4d; --warn:#b45309; --bad:#b3261e;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font-family:"Segoe UI","PingFang SC","Microsoft YaHei",system-ui,sans-serif;font-size:15px;line-height:1.68}
+  .wrap{max-width:1150px;margin:0 auto;padding:36px 26px 70px}
+  header{border-bottom:2px solid var(--brand);padding-bottom:20px;margin-bottom:26px}
+  h1{margin:0 0 8px;font-size:26px;color:var(--brand)}
+  .sub{color:var(--ink2);font-size:13.5px}
+  .meta{margin-top:12px;display:flex;flex-wrap:wrap;gap:8px}
+  .chip{background:#eef3f8;color:var(--brand);border:1px solid #d6e2ee;border-radius:20px;padding:3px 12px;font-size:12.5px}
+  h2{font-size:19px;margin:40px 0 14px;padding-left:11px;border-left:4px solid var(--accent);color:var(--brand)}
+  h3{font-size:15.5px;margin:22px 0 10px;color:var(--brand)}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:18px 20px;box-shadow:0 1px 2px rgba(22,34,46,.04)}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  .grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+  @media(max-width:900px){.grid2,.grid3,.grid4{grid-template-columns:1fr}}
+  table{width:100%;border-collapse:collapse;font-size:13.5px;margin:12px 0}
+  th,td{border:1px solid var(--line);padding:7px 9px;text-align:left;vertical-align:top}
+  th{background:#eef3f8;color:var(--brand);font-weight:600;white-space:nowrap}
+  tbody tr:nth-child(even){background:#fafbfc}
+  td.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+  code{background:#eef1f5;padding:1.5px 5px;border-radius:4px;font-size:12.5px;font-family:"Cascadia Mono",Consolas,monospace;color:#26405c}
+  .kpi{background:var(--card);border:1px solid var(--line);border-radius:9px;padding:12px 15px}
+  .kpi .v{font-size:21px;font-weight:700;color:var(--brand);font-variant-numeric:tabular-nums;line-height:1.3}
+  .kpi .k{font-size:12px;color:var(--ink3);margin-top:3px}
+  .tag{display:inline-block;border-radius:5px;padding:1px 8px;font-size:12px;font-weight:600;white-space:nowrap}
+  .t-ok{background:#e3f4eb;color:var(--ok);border:1px solid #bfe4d1}
+  .t-warn{background:#fdf1e0;color:var(--warn);border:1px solid #f3dcb8}
+  .t-bad{background:#fdeceb;color:var(--bad);border:1px solid #f5cbc7}
+  .t-idle{background:#eef1f5;color:var(--ink3);border:1px solid #dde3ea}
+  .br{border-left:4px solid var(--accent);background:#f7fafd;padding:12px 15px;border-radius:0 8px 8px 0;margin:12px 0}
+  .br.warn{border-color:var(--warn);background:#fffaf3}
+  .br.bad{border-color:var(--bad);background:#fff7f6}
+  .br.ok{border-color:var(--ok);background:#f5fbf8}
+  .br b{color:var(--brand)}
+  ul{margin:8px 0 8px 20px;padding:0} li{margin:5px 0}
+  .dim{color:var(--ink2);font-size:13px}
+  footer{margin-top:50px;padding-top:16px;border-top:1px solid var(--line);color:var(--ink3);font-size:12.5px}
+  .flow{overflow-x:auto;padding:6px 0 10px}
+  .verdict{background:linear-gradient(135deg,#fff7f6,#fdecea);border:1.5px solid #f0c4bf;border-radius:11px;padding:20px 22px;margin:18px 0}
+  .verdict h3{margin-top:0;color:var(--bad)}
+  .up{color:var(--ok);font-weight:600}
+  .down{color:var(--bad);font-weight:600}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <h1>TikTok 单样本实验 · 客观评测</h1>
+  <div class="sub">实验对象：<code>tiktok_v65_face_overfit_00001</code> 及其生成对照 <code>tiktok_v65_pure_inference</code>　·　
+  序列 00001，源帧 0014 → 目标帧 0074　·　V6.5 独立 Face 分支，200 步单样本过拟合</div>
+  <div class="meta">
+    <span class="chip">评测时间 2026-09-23 20:55–21:08</span>
+    <span class="chip">只读评测，未改动任何训练产物</span>
+    <span class="chip">离线 + 单步前向 + 28 步生成三重验证</span>
+    <span class="chip">评测器：ArcFace / LPIPS / Landmark</span>
+  </div>
+</header>
+
+<div class="verdict">
+  <h3>客观结论（先看这一条）</h3>
+  <p><b>该实验在“训练点单步指标”上成立，但在“真实多步生成”上不成立，且方向是负面的。</b>
+  32 步真实采样中，开启 Face 分支后——身份相似度下降、LPIPS 变差、关键点误差变大，人脸区域出现肉眼可见的崩坏伪影。
+  成因已定位：<b>Face 分支只在单一时间步（t=150）被训练，却在 t&lt;650 的整个区间都被激活</b>，
+  在未训练区间的输出是有害的。</p>
+</div>
+
+<h2>一、实验配置与评测口径</h2>
+<div class="grid2">
+  <div class="card">
+    <h3>实验设置（实测确认）</h3>
+    <ul class="dim">
+      <li>数据：TikTok 序列 00001，同序列同一人。源帧 <code>0014</code>（索引 13）→ 目标帧 <code>0074</code>（索引 73）</li>
+      <li>分辨率：原生 604×1080 <b>直接各向异性拉伸</b>到 512×512（<code>align_mode="resize"</code>，非等比裁剪）</li>
+      <li>训练：200 步，固定时间步 <code>t=150</code>（σ=0.15），单步去噪监督，耗时 64 s</li>
+      <li>可训练参数仅 3 组：zero_heads_and_gate（13）、face_encoders（149）、face_attention_and_adapters（79）</li>
+      <li>人脸框（归一化）：源 <code>[0.241, 0.109, 0.625, 0.494]</code>，目标 <code>[0.244, 0.201, 0.557, 0.514]</code></li>
+    </ul>
+  </div>
+  <div class="card">
+    <h3>必须说明的两个前提</h3>
+    <p class="dim"><b>① 身份参照本身有差距。</b>源帧与目标帧的 ArcFace 余弦相似度为 <b>0.7313</b>，
+    落在该序列全部帧对分布的中下位置（均值 0.783，p05=0.634，p95=0.943）。原因是舞蹈动作带来的姿态差异。
+    这意味着“与源帧人脸”的可达上限本来就不是 1.0。</p>
+    <p class="dim"><b>② 监督信号与被评参照是同一张图。</b>训练用的 <code>target_crop</code> 与验证用的
+    <code>target_crop</code> 都取自目标帧 0074 的人脸像素——<b>训练集即测试集</b>。
+    这是单样本过拟合实验的固有性质，因此它只能证明“可拟合”，不能证明“学会了泛化”。</p>
+  </div>
+</div>
+
+<h2>二、第一层证据：单步快照（复现 + 扩展）</h2>
+<p>我复用了训练脚本自身的裁剪与度量实现，对 9 个训练快照重算指标，并补上训练脚本没有报告的量。</p>
+
+<table>
+  <thead><tr>
+    <th>快照</th><th>FaceSim vs 目标<br><span class="dim">ON / OFF</span></th>
+    <th>FaceSim vs <b>源</b><br><span class="dim">ON / OFF</span></th>
+    <th>LPIPS vs 目标<br><span class="dim">ON / OFF</span></th>
+    <th>ROI PSNR<br><span class="dim">ON / OFF</span></th>
+    <th>全图 PSNR<br><span class="dim">ON / OFF</span></th>
+    <th>关键点 NME<br><span class="dim">ON / OFF</span></th>
+  </tr></thead>
+  <tbody>
+    <tr><td>step 0（未训练）</td><td class="num">0.97615 / 0.97612</td><td class="num">0.79328 / 0.79328</td><td class="num">0.02870 / 0.02870</td><td class="num">36.04 / 36.04</td><td class="num">36.66 / 36.66</td><td class="num">0.000531 / 0.000531</td></tr>
+    <tr><td>step 75（峰值）</td><td class="num"><b>0.99471</b> / 0.97612</td><td class="num">0.79498 / 0.79328</td><td class="num">0.01746 / 0.02870</td><td class="num">38.18 / 36.04</td><td class="num">37.09 / 36.66</td><td class="num">0.000415 / 0.000531</td></tr>
+    <tr><td>step 125</td><td class="num">0.99428 / 0.97612</td><td class="num"><b>0.80188</b> / 0.79328</td><td class="num">0.01675 / 0.02870</td><td class="num">38.55 / 36.04</td><td class="num">37.20 / 36.66</td><td class="num">0.000396 / 0.000531</td></tr>
+    <tr><td>step 200（末步）</td><td class="num">0.98825 / 0.97612</td><td class="num"><span class="down">0.78842</span> / 0.79328</td><td class="num"><b>0.01575</b> / 0.02870</td><td class="num"><b>38.79</b> / 36.04</td><td class="num">37.33 / 36.66</td><td class="num"><b>0.000258</b> / 0.000531</td></tr>
+  </tbody>
+</table>
+
+<div class="grid4">
+  <div class="kpi"><div class="v">0.976</div><div class="k">未训练时 FaceSim 已达此值 → <b>指标饱和</b></div></div>
+  <div class="kpi"><div class="v">+0.012</div><div class="k">FaceSim 相对基线的最大增益（区间仅 0.019）</div></div>
+  <div class="kpi"><div class="v">−45%</div><div class="k">LPIPS 改善（0.0287→0.0158）<span class="tag t-ok">最强信号</span></div></div>
+  <div class="kpi"><div class="v" style="color:#b3261e">−0.5%</div><div class="k">与<b>源</b>帧身份相似度，末步反而低于基线</div></div>
+</div>
+
+<div class="br warn">
+  <b>三条必须指出的问题：</b>
+  <ol>
+    <li><b>指标饱和。</b>未训练的 step 0 的 FaceSim 已经是 <code>0.976</code>。原因很直接：σ=0.15 时
+    <code>noisy = 0.85·target + 0.15·noise</code>，输入里已含 <b>85% 的目标帧信息</b>，单步 x0 估计天然接近答案。
+    这是<b>输入泄漏</b>，不是模型能力。可提升的区间被压缩在 0.019 之内。</li>
+    <li><b>非单调。</b>FaceSim 峰值在 step 75（0.99471），随后回落到 step 200 的 0.98825。
+    也就是说“训练越久越像目标帧”并不成立，末步不是最优快照。</li>
+    <li><b>身份方向没有改善。</b>与<b>源帧</b>人脸的身份相似度：基线 0.79328 → 末步 <b>0.78842</b>（<span class="down">−0.5%</span>）。
+    峰值也仅 0.80188（+1.1%）。Face 分支让生成向“目标帧的像素”靠拢，但<b>并没有让身份更接近源人物</b>——
+    这与“身份保持的姿态编辑”这一任务目标不是一回事。</li>
+  </ol>
+</div>
+
+<div class="br ok">
+  <b>唯一明确的正向证据：空间选择性良好。</b>ON 与 OFF 的差异，在 ROI 内的单位强度是 ROI 外的
+  <b>28.3 倍</b>（ROI 内 MSE 3.68e-4 vs ROI 外 1.26e-5）。按总面积计，ROI 只占 9.8% 却承载了 75.5% 的差异。
+  说明该分支确实“只动脸”，没有全局污染。<span class="dim">（此前基于 latent 空间 outside 指标提出的“泄漏担忧”，
+  在像素空间按精确 box 重测后应下调等级。）</span>
+</div>
+
+<h2>三、第二层证据：32 步真实生成 —— 结论反转</h2>
+<p>这是本实验唯一的“真实生成”产物：28 步采样、CFG 4.0、从 100% 随机噪声起步，ON/OFF 同 seed 同条件。</p>
+
+<table>
+  <thead><tr><th>指标</th><th>Face OFF</th><th>Face ON</th><th>Δ</th><th>判读</th></tr></thead>
+  <tbody>
+    <tr><td>FaceSim vs 目标帧</td><td class="num">0.46581</td><td class="num">0.43353</td><td class="num down">−0.03228</td><td><span class="tag t-bad">恶化</span></td></tr>
+    <tr><td>FaceSim vs 源帧</td><td class="num">0.42065</td><td class="num">0.41975</td><td class="num down">−0.00090</td><td><span class="tag t-bad">恶化</span></td></tr>
+    <tr><td>LPIPS vs 目标帧</td><td class="num">0.48027</td><td class="num">0.50019</td><td class="num down">+0.01992</td><td><span class="tag t-bad">恶化 4.1%</span></td></tr>
+    <tr><td>关键点 NME</td><td class="num">0.01035</td><td class="num">0.01089</td><td class="num down">+5.2%</td><td><span class="tag t-bad">恶化</span></td></tr>
+    <tr><td>ROI PSNR</td><td class="num">12.05</td><td class="num">12.33</td><td class="num up">+0.28 dB</td><td><span class="tag t-warn">略好</span></td></tr>
+    <tr><td>ROI SSIM</td><td class="num">0.27203</td><td class="num">0.28678</td><td class="num up">+0.0148</td><td><span class="tag t-warn">略好</span></td></tr>
+    <tr><td>ROI 内 ON-OFF 差异强度</td><td colspan="3" class="num">ROI 内 1.46e-2 / ROI 外 2.5e-4 = <b>58.5×</b></td><td><span class="tag t-ok">选择性好</span></td></tr>
+  </tbody>
+</table>
+
+<div class="br bad">
+  <b>三项与人类感知最相关的指标（身份、LPIPS、关键点）一致指向变差</b>，只有 PSNR/SSIM 两个像素保真度指标略好。
+  注意 PSNR/SSIM 在此处本就意义有限：<b>纯生成不是重建任务</b>，生成图与目标帧的姿态虽一致但像素不对齐，
+  基线值本身就低到 12 dB 量级，其微小波动不构成质量证据。
+</div>
+
+<h3>视觉证据（同一张图的四行对照）</h3>
+<img src="tiktok_roi_evidence.png" alt="ROI 对照证据图" style="width:100%;border:1px solid var(--line);border-radius:10px">
+<p class="dim">第 1 行：全图（红框为目标人脸框）；第 2–3 行：ROI 放大（padding 30%）。
+注意第 1 行第 3、4 格与第 3 行最后两格：<b>gen OFF 的脸清晰、可辨认且与源人物一致；
+gen ON 的脸出现明显崩坏、拖影与结构伪影。</b>单步快照（step0/step200）的 ON/OFF 差异则几乎不可见。</p>
+
+<div class="br">
+  <b>一个值得注意的正面事实：</b>gen OFF 的生成质量其实<b>不差</b>——人物姿态、服装（橙色上衣、灰色裤子、蝴蝶图案）
+  与背景都还原得相当好，脸也是同一个人。这反过来说明：<b>纯生成链路本身是可用的，是 Face 分支把它弄坏了。</b>
+  同时它也证明：在纯生成设定下用 PSNR/SSIM 判断质量会严重误导（数值 12 dB 看似灾难，视觉却尚可）。
+</div>
+
+<h2>四、第三层证据：时间步扫描 —— 定位成因</h2>
+<p>我怀疑问题出在 <b>训练与推理的条件不匹配</b>。检查强度调度后发现关键事实：
+Face 分支的生效窗是 <code>progress ∈ [0.35, 1.0]</code>，即 <b>t &lt; 650 的每一步都会介入</b>，
+而训练只在 <code>t=150</code> 一个点上做过。中间是一整片“注入但从未训练”的区域。</p>
+
+<div class="flow">
+<svg viewBox="0 0 1060 400" width="1060" height="400" role="img" aria-label="时间步扫描：LPIPS 与 FaceSim 的 ON/OFF 对比">
+  <!-- 训练点竖线 -->
+  <rect x="70" y="24" width="118.8" height="236" fill="#e8f4ee" opacity="0.55"/>
+  <line x1="188.8" y1="24" x2="188.8" y2="260" stroke="#1f7a4d" stroke-width="1.6" stroke-dasharray="5 3"/>
+  <text x="193" y="38" font-size="11" fill="#1f7a4d">训练条件 t=150</text>
+
+  <!-- 恶化区 -->
+  <rect x="188.8" y="24" width="339.2" height="236" fill="#fdeceb" opacity="0.45"/>
+  <text x="300" y="38" font-size="11" fill="#b3261e">未训练区：Face 分支反而有害</text>
+
+  <!-- axes -->
+  <line x1="70" y1="260" x2="1020" y2="260" stroke="#c9d8e6" stroke-width="1.4"/>
+  <line x1="70" y1="24" x2="70" y2="260" stroke="#c9d8e6" stroke-width="1.4"/>
+  <text x="20" y="34" font-size="11" fill="#7b8b9c">LPIPS</text>
+  <text x="26" y="60" font-size="10" fill="#7b8b9c">0.26</text>
+  <text x="26" y="150" font-size="10" fill="#7b8b9c">0.13</text>
+  <text x="32" y="263" font-size="10" fill="#7b8b9c">0</text>
+
+  <!-- OFF line -->
+  <polyline fill="none" stroke="#7b8b9c" stroke-width="2.2"
+    points="70,239.5 188.8,226.3 358.4,203.6 528,181.6 697.7,156.8 867.3,131.2 1020,38.5"/>
+  <!-- ON line -->
+  <polyline fill="none" stroke="#b3261e" stroke-width="2.6"
+    points="70,239.0 188.8,237.2 358.4,199.3 528,167.4 697.7,151.2 867.3,133.1 1020,38.5"/>
+
+  <!-- markers -->
+  <circle cx="70" cy="239.5" r="3.6" fill="#7b8b9c"/><circle cx="70" cy="239.0" r="3.6" fill="#b3261e"/>
+  <circle cx="188.8" cy="226.3" r="3.6" fill="#7b8b9c"/><circle cx="188.8" cy="237.2" r="4.6" fill="#1f7a4d"/>
+  <circle cx="358.4" cy="203.6" r="3.6" fill="#7b8b9c"/><circle cx="358.4" cy="199.3" r="3.6" fill="#b3261e"/>
+  <circle cx="528" cy="181.6" r="3.6" fill="#7b8b9c"/><circle cx="528" cy="167.4" r="3.6" fill="#b3261e"/>
+  <circle cx="697.7" cy="156.8" r="3.6" fill="#7b8b9c"/><circle cx="697.7" cy="151.2" r="3.6" fill="#b3261e"/>
+  <circle cx="867.3" cy="131.2" r="3.6" fill="#7b8b9c"/><circle cx="867.3" cy="133.1" r="3.6" fill="#b3261e"/>
+  <circle cx="1020" cy="38.5" r="3.6" fill="#7b8b9c"/><circle cx="1020" cy="38.5" r="3.6" fill="#b3261e"/>
+
+  <!-- x labels -->
+  <text x="70" y="278" font-size="11" fill="#4a5a6a" text-anchor="middle">t=80</text>
+  <text x="188.8" y="278" font-size="11" fill="#1f7a4d" text-anchor="middle">150</text>
+  <text x="358.4" y="278" font-size="11" fill="#4a5a6a" text-anchor="middle">250</text>
+  <text x="528" y="278" font-size="11" fill="#4a5a6a" text-anchor="middle">350</text>
+  <text x="697.7" y="278" font-size="11" fill="#4a5a6a" text-anchor="middle">450</text>
+  <text x="867.3" y="278" font-size="11" fill="#4a5a6a" text-anchor="middle">550</text>
+  <text x="1020" y="278" font-size="11" fill="#4a5a6a" text-anchor="middle">640</text>
+
+  <!-- legend -->
+  <line x1="600" y1="40" x2="640" y2="40" stroke="#7b8b9c" stroke-width="2.2"/>
+  <text x="646" y="44" font-size="11.5" fill="#4a5a6a">Face OFF</text>
+  <line x1="600" y1="58" x2="640" y2="58" stroke="#b3261e" stroke-width="2.6"/>
+  <text x="646" y="62" font-size="11.5" fill="#4a5a6a">Face ON（越低越好）</text>
+
+  <!-- delta bars -->
+  <text x="20" y="306" font-size="11" fill="#7b8b9c">ΔLPIPS</text>
+  <line x1="70" y1="320" x2="1020" y2="320" stroke="#c9d8e6" stroke-width="1.2"/>
+  <rect x="62" y="318.6" width="16" height="1.4" fill="#b3261e"/>
+  <rect x="180.8" y="320" width="16" height="32.4" fill="#1f7a4d"/>
+  <rect x="350.4" y="307.3" width="16" height="12.7" fill="#b3261e"/>
+  <rect x="520" y="277.9" width="16" height="42.1" fill="#b3261e"/>
+  <rect x="689.7" y="303.5" width="16" height="16.5" fill="#b3261e"/>
+  <rect x="859.3" y="320" width="16" height="5.75" fill="#1f7a4d"/>
+  <text x="70" y="368" font-size="11" fill="#7b8b9c" text-anchor="middle">↑ 变差</text>
+  <text x="188.8" y="368" font-size="11" fill="#1f7a4d" text-anchor="middle">↓ 改善</text>
+  <text x="358.4" y="368" font-size="10.5" fill="#b3261e" text-anchor="middle">+0.005</text>
+  <text x="528" y="368" font-size="10.5" fill="#b3261e" text-anchor="middle">+0.017</text>
+  <text x="697.7" y="368" font-size="10.5" fill="#b3261e" text-anchor="middle">+0.007</text>
+  <text x="867.3" y="368" font-size="10.5" fill="#1f7a4d" text-anchor="middle">−0.002</text>
+  <text x="188.8" y="352" font-size="10.5" fill="#1f7a4d" text-anchor="middle">−0.013</text>
+  <text x="1020" y="368" font-size="10.5" fill="#7b8b9c" text-anchor="middle">0.000（未介入）</text>
+</svg>
+</div>
+
+<table>
+  <thead><tr><th>t</th><th>σ</th><th>Face 调度乘子</th><th>FaceSim OFF → ON</th><th>LPIPS OFF → ON</th><th>ΔLPIPS</th><th>结论</th></tr></thead>
+  <tbody>
+    <tr><td class="num">80</td><td class="num">0.08</td><td class="num">0.963</td><td class="num">0.98928 → 0.99152</td><td class="num">0.01242 → 0.01298</td><td class="num down">+0.00056</td><td><span class="tag t-warn">轻微变差</span></td></tr>
+    <tr style="background:#f5fbf8"><td class="num"><b>150</b></td><td class="num">0.15</td><td class="num">0.874</td><td class="num">0.97918 → <b>0.98743</b></td><td class="num">0.02805 → <b>0.01509</b></td><td class="num up"><b>−0.01295</b></td><td><span class="tag t-ok">训练点：显著改善 (−46%)</span></td></tr>
+    <tr><td class="num">250</td><td class="num">0.25</td><td class="num">0.677</td><td class="num">0.96083 → 0.95824</td><td class="num">0.05478 → 0.05986</td><td class="num down">+0.00508</td><td><span class="tag t-bad">变差</span></td></tr>
+    <tr><td class="num">350</td><td class="num">0.35</td><td class="num">0.440</td><td class="num">0.94720 → 0.93519</td><td class="num">0.08080 → 0.09762</td><td class="num down">+0.01682</td><td><span class="tag t-bad">最差</span></td></tr>
+    <tr><td class="num">450</td><td class="num">0.45</td><td class="num">0.216</td><td class="num">0.93599 → 0.94413</td><td class="num">0.11018 → 0.11677</td><td class="num down">+0.00659</td><td><span class="tag t-bad">变差</span></td></tr>
+    <tr><td class="num">550</td><td class="num">0.55</td><td class="num">0.057</td><td class="num">0.87896 → 0.90745</td><td class="num">0.14045 → 0.13814</td><td class="num up">−0.00230</td><td><span class="tag t-warn">略好（介入已很弱）</span></td></tr>
+    <tr><td class="num">640</td><td class="num">0.64</td><td class="num">0.001</td><td class="num">0.69756 → 0.69756</td><td class="num">0.25006 → 0.25006</td><td class="num">0.00000</td><td><span class="tag t-idle">未介入，ON≡OFF</span></td></tr>
+  </tbody>
+</table>
+
+<div class="br ok">
+  <b>交叉验证成立。</b>我在 <code>t=150</code> 重跑得到 LPIPS OFF/ON = <b>0.02805 / 0.01509</b>，
+  而实验记录（step 200）为 <b>0.02873 / 0.01510</b>——ON 值几乎完全重合。
+  FaceSim 也吻合（0.97918/0.98743 vs 0.97859/0.98588）。这既验证了我的复现链，
+  也<b>独立证实了实验日志本身是可信的</b>。
+</div>
+
+<div class="br bad">
+  <b>成因确认：训练—推理条件不匹配（train/inference mismatch）。</b>
+  <ul>
+    <li>训练只覆盖 <b>1 个</b>时间步（t=150，σ=0.15）；</li>
+    <li>推理时 Face 分支在 <b>t&lt;650 的全部 ~18 个采样步</b>上激活（σ 从 0.64 一路降到 0）；</li>
+    <li>7 个测点中，<b>只有 t=150 一个点</b>给出明确改善；t=250/350/450 三个点明确恶化，其中 t=350 的 ΔLPIPS 达 +0.01682；</li>
+    <li>多步采样必然经过这些“未训练点”，<b>伤害沿途累积</b>，最终体现为生成图的可见崩坏。</li>
+  </ul>
+</div>
+
+<h2>五、指标可靠性分级</h2>
+<table>
+  <thead><tr><th>指标</th><th>能否支撑结论</th><th>原因</th></tr></thead>
+  <tbody>
+    <tr><td>LPIPS（人脸 ROI）</td><td><span class="tag t-ok">可用</span></td><td>单调、区分度好、跨 ON/OFF 一致、且能独立复现（0.01509 vs 0.01510）</td></tr>
+    <tr><td>FaceSim vs 目标帧</td><td><span class="tag t-warn">谨慎</span></td><td>σ=0.15 时基线已 0.976，动态范围仅 0.019，且非单调；噪声大</td></tr>
+    <tr><td>FaceSim vs <b>源</b>帧</td><td><span class="tag t-ok">可用（关键）</span></td><td>不易饱和（基线 0.793），且直接对应“身份保持”这一任务目标</td></tr>
+    <tr><td>关键点 NME</td><td><span class="tag t-warn">不敏感</span></td><td>绝对值量级仅 2e-4~5e-4（0.02%~0.05%），分辨率不足，难以分辨真实差异</td></tr>
+    <tr><td>全图 PSNR / SSIM</td><td><span class="tag t-bad">不可用</span></td><td>被背景主导；纯生成下与目标帧像素不对齐，12 dB 的数值与视觉质量脱节</td></tr>
+    <tr><td>单步 x0 指标（任何）</td><td><span class="tag t-bad">不可单独用作有效性证据</span></td><td>σ=0.15 时输入含 85% 目标信息，属输入泄漏；与 28 步真实生成结论方向相反</td></tr>
+  </tbody>
+</table>
+
+<h2>六、结论与建议</h2>
+<div class="grid3">
+  <div class="kpi"><div class="v" style="color:#1f7a4d">成立</div><div class="k">Face 分支在<b>训练点 t=150</b> 上确实有效（LPIPS −46%）</div></div>
+  <div class="kpi"><div class="v" style="color:#1f7a4d">成立</div><div class="k">空间选择性良好：ROI 内差异强度是 ROI 外的 28–58 倍</div></div>
+  <div class="kpi"><div class="v" style="color:#b3261e">不成立</div><div class="k">真实多步生成中，Face ON 在身份 / LPIPS / 关键点三项上均劣于 OFF</div></div>
+</div>
+
+<h3>按优先级排列的修改建议</h3>
+<ol>
+  <li><b>（最高）改为多时间步训练。</b>把 <code>fixed_timestep</code> 换成在 [0, 650] 上采样，
+  或至少覆盖 <code>progress∈[0.35,1.0]</code> 对应的 σ 区间。这是当前负结果的直接成因，改起来最便宜。</li>
+  <li><b>（高）引入跨帧 / 跨人的验证集。</b>训练与评测用同一帧导致无法区分“学会迁移”与“记住这一帧”。
+  建议同序列换帧对（如 0014→0060）复测，观察指标是否保持。</li>
+  <li><b>（高）把“与源帧身份相似度”纳入主判据。</b>当前监督只指向目标帧像素，
+  导致分支优化的是“像目标帧”而非“保源身份”，与任务目标存在系统性偏差。</li>
+  <li><b>（中）收紧 Face 调度窗。</b>既然 t=250~450 区间有害，可把 <code>start_progress</code>
+  从 0.35 提到 0.7 附近，让分支只在低噪声端介入，先验证伤害是否消失。</li>
+  <li><b>（中）修正 604×1080 → 512 的对齐方式。</b>当前 <code>align_mode="resize"</code> 属各向异性拉伸
+  （纵向压缩约 1.79 倍），人脸几何被扭曲，会同时污染训练与评测。建议改为 <code>square_crop</code> 或等比缩放。</li>
+  <li><b>（低）修掉单步指标的口径陷阱。</b>单步 x0 结果建议只作调试参考，
+  不写入结论性文档——包括本工作区此前引用“face 分支有效”的报告，都应以本次的 28 步证据为准。</li>
+</ol>
+
+<h3>本次评测的局限（明确声明）</h3>
+<ul class="dim">
+  <li>单样本、单序列、200 步训练。所有结论<b>不构成对 V6.5 Face 架构本身的否决</b>，
+  只说明“该配置 + 该训练方案”在真实生成链路下无效。</li>
+  <li>ArcFace 在 512 分辨率、姿态差异大的生成图上不够稳定：gen 图与源帧的相似度仅 0.42，
+  但视觉上确为同一人。因此生成图上的 <b>绝对</b> 身份数值意义有限，<b>ON/OFF 相对比较</b>仍然有效。</li>
+  <li>时间步扫描是<b>单步</b>前向，不是多步采样。它定位的是“逐点即时效果”，
+  与最终生成质量之间是因果关系而非等价关系。</li>
+</ul>
+
+<footer>
+  评测方式：仅读取既有 PNG 产物与 TorchScript 评测器；时间步扫描为单步前向，未修改任何训练产物、未重新训练。
+  复现命令：<code>python scripts/eval_tiktok_single_sample_objective.py</code>、
+  <code>python scripts/eval_tiktok_timestep_sweep.py</code>、
+  <code>python scripts/visualize_tiktok_objective_eval.py</code>。
+  原始数据：<code>experiments/tiktok_objective_eval/{objective_eval,timestep_sweep}.json</code>。
+</footer>
+
+</div>
+</body>
+</html>

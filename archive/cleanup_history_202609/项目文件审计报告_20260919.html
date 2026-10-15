@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-page-node-id="uhAT8olW6Xwl6rhOucHtOW">
+<head data-page-node-id="hIufO3eZdLoGhY8ZY0HIIA">
+<meta charset="UTF-8" data-page-node-id="ZMCLAZfZmSE4xdaZoeygY0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0" data-page-node-id="zrERXoS1dyV4hEGCnkc7nE">
+<title>人物图像姿态编辑 · 项目文件审计报告</title>
+<style>
+  :root{
+    --bg:#f7f8fa; --panel:#ffffff; --border:#e3e6eb; --text:#1f2328;
+    --muted:#656d76; --accent:#2563eb; --danger:#c0392b;
+    --warn:#b45309; --ok:#15803d; --soft:#f0f4f9;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);
+    font-family:"Segoe UI","PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+    font-size:14px;line-height:1.7;}
+  .wrap{max-width:1080px;margin:0 auto;padding:40px 28px 80px;}
+  header{border-bottom:2px solid var(--border);padding-bottom:20px;margin-bottom:32px;}
+  h1{font-size:26px;margin:0 0 6px;letter-spacing:-.3px;}
+  .sub{color:var(--muted);font-size:13px;}
+  h2{font-size:19px;margin:40px 0 14px;padding-left:11px;border-left:4px solid var(--accent);}
+  h3{font-size:15px;margin:24px 0 10px;color:var(--text);}
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin:24px 0;}
+  .card{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:18px 20px;}
+  .card .k{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.6px;}
+  .card .v{font-size:27px;font-weight:600;margin-top:6px;letter-spacing:-.5px;}
+  .card .d{color:var(--muted);font-size:12px;margin-top:4px;}
+  .v.red{color:var(--danger)} .v.green{color:var(--ok)} .v.amber{color:var(--warn)}
+  table{width:100%;border-collapse:collapse;background:var(--panel);
+    border:1px solid var(--border);border-radius:8px;overflow:hidden;margin:14px 0 8px;}
+  th{background:var(--soft);text-align:left;padding:10px 13px;font-size:12.5px;
+    font-weight:600;color:#31363c;border-bottom:1px solid var(--border);white-space:nowrap;}
+  td{padding:9px 13px;border-bottom:1px solid #eef0f3;vertical-align:top;font-size:13px;}
+  tr:last-child td{border-bottom:none;}
+  td.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap;}
+  code{background:var(--soft);padding:1.5px 5px;border-radius:4px;font-size:12.5px;
+    font-family:Consolas,"SF Mono",monospace;color:#0b4a8f;word-break:break-all;}
+  .tag{display:inline-block;padding:2px 9px;border-radius:11px;font-size:11.5px;
+    font-weight:600;white-space:nowrap;}
+  .t-a{background:#fdecea;color:var(--danger)}
+  .t-b{background:#fef4e6;color:var(--warn)}
+  .t-c{background:#eaf2fd;color:var(--accent)}
+  .t-d{background:#e8f4ee;color:var(--ok)}
+  .box{background:var(--panel);border:1px solid var(--border);border-left:4px solid var(--warn);
+    border-radius:0 8px 8px 0;padding:14px 18px;margin:16px 0;}
+  .box.safe{border-left-color:var(--ok)}
+  .box.info{border-left-color:var(--accent)}
+  .box strong{color:var(--text)}
+  ul{margin:8px 0 8px 20px;padding:0} li{margin:5px 0}
+  .treelist{background:var(--soft);border:1px solid var(--border);border-radius:8px;
+    padding:14px 18px;font-family:Consolas,monospace;font-size:12.5px;
+    white-space:pre;overflow-x:auto;line-height:1.65;color:#31363c;margin:10px 0;}
+  footer{margin-top:50px;padding-top:18px;border-top:1px solid var(--border);
+    color:var(--muted);font-size:12px;}
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+  @media(max-width:760px){.two{grid-template-columns:1fr}}
+  .bar{height:9px;background:var(--soft);border-radius:5px;overflow:hidden;margin-top:6px}
+  .bar i{display:block;height:100%;border-radius:5px}
+</style>
+</head>
+<body data-page-node-id="ZEs9XnSXt9z93aaNDYEXG9">
+<div class="wrap" data-page-node-id="Yapqgs7FVSVgGqDqlENIGP">
+
+<header data-page-node-id="3iYAhRMSVBEH6BqtOzFfuU">
+  <h1 data-page-node-id="IFPp6ipZxkkrmzygfRfVnG">项目文件审计报告</h1>
+  <div class="sub" data-page-node-id="ZX0KMitg3Tqf2Sco1Rvg9o">人物图像姿态编辑 (Picture Edit) &nbsp;·&nbsp; 工作区 <code data-page-node-id="u2LRnsKx38SjFaPGvZ3nMu">D:\codeplus\pictureedit</code> &nbsp;·&nbsp; 审计日期 2026-09-19 &nbsp;·&nbsp; 模式：只读扫描（未执行任何删除）</div>
+</header>
+
+<div class="cards" data-page-node-id="HqJlsswIlSkjAMwXRYGvaT">
+  <div class="card" data-page-node-id="cVO6cQuLPX877UJ2d9moo0"><div class="k" data-page-node-id="TUMDOEeY1Wn5a6uPJjmq5l">工作区总占用</div><div class="v" data-page-node-id="z2WF7ZRu1yrCvF176nfJ8n">1.2 GB</div><div class="d" data-page-node-id="4w5NJ2g6stFY3xDQfjyL4L">含 .git 249 MB</div></div>
+  <div class="card" data-page-node-id="UpG4zz5YV4cmwF75hgu7GK"><div class="k" data-page-node-id="YHCOjWwC0Tll2DtHL6yqPs">A 类 可直接回收</div><div class="v red" data-page-node-id="4lYLSpSzWgZQDMA7LqONfu">556 MB</div><div class="d" data-page-node-id="ZlNxvRIAo0ydxUJEnTXuTd">副本 / 已同步缓存 / 缓存</div></div>
+  <div class="card" data-page-node-id="VORhrExlA0opBBefzDu63L"><div class="k" data-page-node-id="C2ei8FD4dtGSDka3vHh8lh">B 类 待确认回收</div><div class="v amber" data-page-node-id="Uh5j7MU2Enw44yBxW8AJdF">~17 MB</div><div class="d" data-page-node-id="WwtY0Yva6pzeGLH4VDL2pu">探测脚本 / 重复交付件</div></div>
+  <div class="card" data-page-node-id="GMkMF9gUHsuPQH9ZqgONXC"><div class="k" data-page-node-id="48RyzrefZPO5KwAoASec7O">C 类 孤儿脚本</div><div class="v" data-page-node-id="eVN07WHadbcZADYY6vatje">21 个</div><div class="d" data-page-node-id="T8yyVyNzYiU1oLU7VUZhAH">引用计数 0，建议归档</div></div>
+</div>
+
+<h2 data-page-node-id="rB9EUhJem3JSB3BykpuTDj">一、项目现状认知</h2>
+<p data-page-node-id="VrVmrlhpT3o0wfqkvJUUnG">本次审计前已通读 <code data-page-node-id="P6t51F9CM5Ab1NdfqO5TWq">README.md</code> 与目录结构，确认项目性质后开展工作：</p>
+<ul data-page-node-id="EC13nSOoYmSTDTjCbmJLvV">
+  <li data-page-node-id="HC1fbRwl3uhqJhQKBTSVPg"><strong data-page-node-id="P3u6iNR1R4oJrY9aMbor9c">定位</strong>：基于三维人体表示（SMPL-X）的单/双人参考姿态图像编辑研究项目。</li>
+  <li data-page-node-id="hZ4dRz83ZDlZ6KnL6mjiZb"><strong data-page-node-id="EdKj6or2SjYnATZBsJfaLE">生成主干</strong>：DeepGen-1.0-diffusers（DiT ≈ 2.47B），满足任务书 ≤6B 约束；Qwen-Image-Edit-2511 (20B) 作为质量上界与教师模型。</li>
+  <li data-page-node-id="iQU5aEc4aqOKH3SoQUVGig"><strong data-page-node-id="oSEsCHzrhBcAVShGG7XxBS">核心模块</strong>：<code data-page-node-id="HZdG7AlPWVGPYnqJc76Yea">src/adapter</code>（PoseConditionAdapter 零卷积外挂）、<code data-page-node-id="a0jkTHracUqVRQKBOHmd1z">src/controls</code>（骨架/深度/法线/接触图）、<code data-page-node-id="EsbH2ZOE6J9Mq9J97otyeu">vram_lab</code>（显存实验包）、<code data-page-node-id="UHESuLvVxQCexM22Y6HAPi">third_party/champ_guidance</code>。</li>
+  <li data-page-node-id="mZzZSRkoUgOsd91Vc8pm33"><strong data-page-node-id="hK34GlIjMTofTTypBCeQtx">交付物</strong>：根目录 13 份 .docx 任务书/架构/实验报告；<code data-page-node-id="TJdV0GR6GrTSFKn3aEPoib">可视化/</code> 为对外展示素材；<code data-page-node-id="8arIGnoge3AikwbAdZRqhs">results/review_20260908_v2</code> 为正式验收证据。</li>
+  <li data-page-node-id="pjgdvkOyYk1nq6lZTujMSP"><strong data-page-node-id="06GEJmKJ49t6uo0pER8cuU">版本控制</strong>：主仓 HEAD <code data-page-node-id="O3g1lGoYl2ilWHmYB0ywbB">9fc9a71</code>，工作区另有 68 项未跟踪变更。</li>
+</ul>
+<p data-page-node-id="7RLEVPEurkAKWjZPQ4LfFd">据此判断，可清理对象集中在「历史会话副本」「已同步的中间缓存」「一次性产物脚本」三类，核心源码、实验证据与交付文档均未纳入删除建议。</p>
+
+<h2 data-page-node-id="avcf3W5nwKzHSYoX9IUpVJ">二、A 类 · 建议直接回收（零风险，556 MB）</h2>
+<p data-page-node-id="KHAh2cttNvkvr6A28w6IEr">以下对象均经过内容比对确认：与主仓无差异、或已被正式目录完全覆盖、或已在 <code data-page-node-id="7ZHwhcq2VQEaCmS33DGi2T">.gitignore</code> 中。</p>
+<table data-page-node-id="tYbQCGFkMgxIJeEPaRxd4A">
+  <tr data-page-node-id="Tc7ih2gwkYkEQ1GVRLBceu"><th style="width:32%" data-page-node-id="067NyDw7duS0iKMVkodyXY">对象</th><th class="num" data-page-node-id="IFx1SL82agdPXjD6rS1k2n">体积</th><th style="width:13%" data-page-node-id="OLWsLDeKH7tHdgFSPAQ5qY">类别</th><th data-page-node-id="GqYUGWoCNJ4tzqA3sCDjhi">判定依据</th></tr>
+  <tr data-page-node-id="ZvqTiuPS3LHRVpuoYbAuCM">
+    <td data-page-node-id="GssfGVBabCOFkEVW4YDKMp"><code data-page-node-id="sJQX8mmf9wEDzpOVRBG3y7">.codex-work-v63/</code></td><td class="num" data-page-node-id="ivK3iFqvwFpr1On8ICWel9">435 MB</td><td data-page-node-id="MXWKxhrtJ2c5VH1rzISAng"><span class="tag t-a" data-page-node-id="xTu6dzf7O72NXCNYXLxUE1">冗余副本</span></td>
+    <td data-page-node-id="eljYpR16XFVCYZV4sN00vq">完整项目快照，含独立 <code data-page-node-id="3Cw9RXhJzw2HD2FGq44LTp">.git</code>（118 MB）。<strong data-page-node-id="5O2upal6FqfgU4EgzZjCiE">独有文件数 = 0</strong>，HEAD <code data-page-node-id="hB3Z9iKnDtMcZD5Cx0kxwg">303a622</code> 落后主仓 4 个 commit。与主仓做 <code data-page-node-id="jnOw08UzfWzJc6eOO1bAER">diff -rq</code> 比对，无任何主仓缺失内容。</td>
+  </tr>
+  <tr data-page-node-id="AwN6slpJfXjBVvHvkM07sp">
+    <td data-page-node-id="hpQJwCAoP9EXGGQ87Waj1W"><code data-page-node-id="z9QonNYLWccBxu9G1ql3Wa">.codex_tmp/vis_pull/</code></td><td class="num" data-page-node-id="8zG6UQQtW4soev9U9ELsMy">104 MB</td><td data-page-node-id="ZjARFGKS5dYtOziv7nkfL8"><span class="tag t-a" data-page-node-id="BVhzu34T38grqCGP50n3DO">已同步缓存</span></td>
+    <td data-page-node-id="2U9LvkYJbCSdPLhgdHzpR1">可视化素材的中间拉取副本。MD5 校验显示其内容已全部同步进 <code data-page-node-id="0H3dB2emAKNITfIYFa701n">可视化/</code> 正式目录，且内部存在二次嵌套重复（<code data-page-node-id="2FalrvyhG8OVX87FnFbkp1">eval_images/images/</code>、<code data-page-node-id="A8HGY3NFGi8u4kmcjWtPnY">multistage_evolution_showcase/</code> 各存两份）。</td>
+  </tr>
+  <tr data-page-node-id="1Pzyc1POFiwVosMZ9lxliH">
+    <td data-page-node-id="4GyEP0Da1stCEF85HuymVT"><code data-page-node-id="g5li0LhoYHv5PYDNsrfVBh">可视化/anigra/</code></td><td class="num" data-page-node-id="LZxIDGW2MDm4bP14BHGqHo">17 MB</td><td data-page-node-id="RyI05lc8iYoCnRHYEcoLhH"><span class="tag t-a" data-page-node-id="NDD8Plpu8AIpcHEvQbCS12">目录内重复</span></td>
+    <td data-page-node-id="X5QnwBi4c1gSSA2HNzVAHb">与 <code data-page-node-id="15hOylDRzFo64J0XXVYWZ9">可视化/04_编辑效果条带/</code> 的 7 个文件逐一 MD5 一致。全仓检索 <code data-page-node-id="KZZh4zkHqEIXuRD506OGXj">anigra</code> 关键字，无任何 HTML / PY / MD / JSON 引用。</td>
+  </tr>
+  <tr data-page-node-id="KUV7dbrC534zMNAT4ef0rH">
+    <td data-page-node-id="dSIArgSv6iMGtbgL9N6BAj"><code data-page-node-id="N4pg1HwKye7SBcPKq961r5">__pycache__/</code> + <code data-page-node-id="pG79hC5yvEuPCrLc2pw7zT">*.pyc</code>（118 个）</td><td class="num" data-page-node-id="Q7FeHTkIxqAFQVBiGmgRun">&lt; 1 MB</td><td data-page-node-id="XnryJ025uG7HWzIRjXscKy"><span class="tag t-a" data-page-node-id="CRcraElfwNMyYVdA5Bsmgp">编译缓存</span></td>
+    <td data-page-node-id="w6aTjpZhCGS6u2PaqkH85B">Python 字节码缓存，已在 <code data-page-node-id="wwlTArMTWpaNB8JGRABa78">.gitignore</code>，可随时重新生成。</td>
+  </tr>
+  <tr data-page-node-id="NA7WaKCIMPDGSuzS7kBo3h">
+    <td data-page-node-id="60Jsek7YWFDQ12UaSUOJmA">9 个 <code data-page-node-id="S2BeDfkQPX5kKtBO3aygvx">~$*.docx</code></td><td class="num" data-page-node-id="KqnvwmL6viNIrxqhNGDw9E">1.5 KB</td><td data-page-node-id="5eJBn8obY4Rcl56uhpTjuB"><span class="tag t-a" data-page-node-id="EpqE4BZZ8MSGmYauBZSjwo">锁文件</span></td>
+    <td data-page-node-id="940l7lvTavkqv8Ujfq0oAE">Office 异常退出残留（每份 162 字节）。涉及根目录 3 个、<code data-page-node-id="5j4P1CGwLtRUW7znU0jdjk">demooutput/</code> 4 个、<code data-page-node-id="LvEXPvCZkuQDoEMbqaTqAF">research/</code> 2 个。已在 <code data-page-node-id="sNioH4x2ad95RDbAawU0Wy">.gitignore</code>。</td>
+  </tr>
+  <tr data-page-node-id="rrAfe30iNCCOkO4dCFRdOV">
+    <td data-page-node-id="OUQQnkWZPTrqMhSp7b9Fel">根目录 <code data-page-node-id="Cx5hbilzChunh1KRkBfpEr">test_highlight.png</code>、<code data-page-node-id="L7rR796qQCJsr0nmkmwAot">test_plot.png</code></td><td class="num" data-page-node-id="Qf1kIrE4SGlbJgAamFTpZJ">43 KB</td><td data-page-node-id="n2VCV60xxOdcJOTCU36ZKa"><span class="tag t-a" data-page-node-id="8qtjMWqMedRJOrMZcdeNrl">调试产物</span></td>
+    <td data-page-node-id="bkzaRaDMHfbwFuPETxLTEt">散落在根级的绘图调试输出，无任何引用，正式图表已在 <code data-page-node-id="iSXjT5csd0usERTsKNR1IZ">experiments/</code> 与 <code data-page-node-id="HMlSDv4LgbOscrLevRx5aX">可视化/</code> 归档。</td>
+  </tr>
+  <tr data-page-node-id="EezoB3PiLVRCDyjtzTeZRM">
+    <td data-page-node-id="RBJkA1JEW0BmPCPyF9SNLG"><code data-page-node-id="EHIyxtCbeLckGENhNe3ZA7">v6_stage/</code>（含 configs/docs/scripts/src/tests 共 5 层）</td><td class="num" data-page-node-id="eeUKeQL2tvycjQ2gOLsFLB">0 B</td><td data-page-node-id="ErDohvZJqYCXRqTpRBuVkg"><span class="tag t-a" data-page-node-id="M5CDiqOLKGhg7g8BrBOC2u">空目录</span></td>
+    <td data-page-node-id="MhIwF0lub4QLwBbtnDt32n">历史迁移遗留的<strong data-page-node-id="ITjSM05NN8GUQSHmLfx4go">完全空目录树</strong>，扫描结果为 0 个文件。</td>
+  </tr>
+  <tr data-page-node-id="AjgsTlShGTLIRpPaW3l76h">
+    <td data-page-node-id="NwVwoOJ2V2BUFXFRE9Y1Ur"><code data-page-node-id="cSc80Nwvl7kvPh4c0QML4R">可视化/图片编辑对比/</code>、<code data-page-node-id="BHnjm4sKgenNBqOSUvgktE">可视化/科研绘图/</code></td><td class="num" data-page-node-id="N7KpXcqECTnf92OK5okFqa">0 B</td><td data-page-node-id="WeERE2ALgLbOtRSgV2lGf2"><span class="tag t-a" data-page-node-id="5TnWyyDJRkefuJY1Kb5c8w">空目录</span></td>
+    <td data-page-node-id="U2GOZ87KYS1xDCbD5hqt1p">占位用空目录，无内容。</td>
+  </tr>
+  <tr data-page-node-id="coPL8qQXkL2kHyTjJp4Swn">
+    <td data-page-node-id="FV2KkweVOs1ao1Dmk8JCu8"><code data-page-node-id="6E3dpJqkKGH3iFV7k0bbzt">.pytest_cache/</code></td><td class="num" data-page-node-id="1QOWlv5wp1zF8oliekOZhi">15 KB</td><td data-page-node-id="O40uHZZ0h62gskF5q6KC6T"><span class="tag t-a" data-page-node-id="n9U8ECzbHVJocsC8n0x3zt">测试缓存</span></td>
+    <td data-page-node-id="yzmBCQI2jOfREaCxdxSMWE">pytest 运行缓存，可重新生成。</td>
+  </tr>
+</table>
+
+<h2 data-page-node-id="0RFXSffEtRLVwFJH9aTleS">三、B 类 · 待你确认后回收（约 17 MB）</h2>
+<div class="box" data-page-node-id="FXL2lhYeRhv5K6pzTEvsIo">
+  <strong data-page-node-id="Az97IA5xaPgGiu9AJYzGCx">风险评估：</strong>以下对象具备一定业务含义，删除与否取决于你是否仍需要其追溯价值。建议逐项确认，不宜批量执行。
+</div>
+<table data-page-node-id="JE5ItGTFAYenKuTr5XeK5V">
+  <tr data-page-node-id="5BW0kov8vB4FG5W1iknyka"><th style="width:32%" data-page-node-id="XoIqBYAZA1QEBFRxHAuaJ7">对象</th><th class="num" data-page-node-id="nv49kxuXwjBJKyFKLAIEBd">体积</th><th style="width:13%" data-page-node-id="SdJ9BR9WHvivxxjSKUmKSc">类别</th><th data-page-node-id="8NDnpLl1LMidQg6z4p49o0">说明与建议</th></tr>
+  <tr data-page-node-id="vrN8J9xTmqv7llD4rEtwG0">
+    <td data-page-node-id="H0boPexrKbq0pgsHW8uyjN"><code data-page-node-id="MD38qmgpAujxMHmgvpMvrD">scratch/</code></td><td class="num" data-page-node-id="XDSvLHmCNeqJYKxvtzks8c">703 KB</td><td data-page-node-id="unQkESoiRErDIPAGqwGYCz"><span class="tag t-b" data-page-node-id="clEMp4H5tNqRT02wnuzP0k">临时探测</span></td>
+    <td data-page-node-id="jTE77bN2Fjsw5vR7IydN06">4 个一次性调试脚本（<code data-page-node-id="FCvt0QbndafojJXvze19uO">check_coverage.py</code>、<code data-page-node-id="PgWNJPIMasSb2fYsOwlowA">check_depth.py</code>、<code data-page-node-id="oDzjSFqsvmjIm3HHTbgSGC">check_depth_vis.py</code>、<code data-page-node-id="IoiU5CA2GNtAMk9RQlhdKq">test_dataset_depth.py</code>）+ 7 张 <code data-page-node-id="wIhb4k24KujWGusRJ5V8Bw">extracted_imgs/</code> 提取图（Sep 12 生成，7 天未变动）。</td>
+  </tr>
+  <tr data-page-node-id="H4JUg9gM2LRaiMT1EBAA14">
+    <td data-page-node-id="HtTAk8y1XdF7ZaXEemrks4"><code data-page-node-id="7zY7MXgjCDqceyGjAcCFmq">research/audit_checkpoint_headers.py</code><br data-page-node-id="HfyUGVw3HlnG0DGreReRdj"><code data-page-node-id="qs44pncjeAMIJZ6xNE0tfG">research/checkpoint_audit.json</code></td><td class="num" data-page-node-id="EUIOsvJN5zbfWHXqGPxq0x">20 KB</td><td data-page-node-id="oFELlbpufRP5mXJ2MtJhMZ"><span class="tag t-b" data-page-node-id="mdNHvV4EHTtspJd4F2t4EI">一次性产物</span></td>
+    <td data-page-node-id="x1xINYc6SwoP52v66ZukLE">Checkpoint 头部结构审计，引用计数 0，产物 JSON 已固化。</td>
+  </tr>
+  <tr data-page-node-id="ptTjGNm33Sy6Hf6bYhEXvS">
+    <td data-page-node-id="DPrJNDGjSIFRnu5kpqy9rA"><code data-page-node-id="hEFegXHH1OVN8Uvh329llK">research/STAGE_SUMMARY_FOR_AGENT.md</code></td><td class="num" data-page-node-id="oU87c0EWrvYrEDOiuVHhfk">12 KB</td><td data-page-node-id="U9fwTYFADULZLutmi5J5Is"><span class="tag t-b" data-page-node-id="naMK63obrSnEm01eKu7UoD">重复文档</span></td>
+    <td data-page-node-id="d3V9mCAGp6hEbRHeK3akQ0">与根目录同名文件重复，建议保留一处。</td>
+  </tr>
+  <tr data-page-node-id="wdgjOuEeiNHR37pGf8djEu">
+    <td data-page-node-id="19SGfX7arJEwjd26sfuzEr"><code data-page-node-id="Ofk7pRmoq2FYmlRqTdgfDa">.codex_tmp/</code> 剩余部分</td><td class="num" data-page-node-id="OvQEkx5tExSMNa0bxMSLSx">3.6 MB</td><td data-page-node-id="1Bja3v2GpocMgAF0UZoIBo"><span class="tag t-b" data-page-node-id="Z0KIiJObCgrb1X4zKogYs6">调试缓存</span></td>
+    <td data-page-node-id="iCHcEyyWap4PTc9Gk56oC0"><code data-page-node-id="IHwo0CeYGrIlBrJv2wAqx8">iper_eval/</code> 2.5 MB、<code data-page-node-id="0dUy4qoZkzlkuKiRJwLVEO">iper_current/</code> 184 KB、<code data-page-node-id="AOqLaJrIha95Dbmt4id9Eb">preview*.png</code> 3 张调试预览图（最新 Sep 18 23:38）。</td>
+  </tr>
+  <tr data-page-node-id="YqH1bxMO2C8JqZKRs0Nwfx">
+    <td data-page-node-id="rTkVC8IJCrkFLFIcTPGANV"><code data-page-node-id="xeTCEiHMImX10oyVurgmUw">demooutput/</code> 内重复交付件</td><td class="num" data-page-node-id="uCNEYNOgFVgOtp5WdDMMiX">~14 MB</td><td data-page-node-id="1yRC4OecMyKrbHIX2IS6dI"><span class="tag t-b" data-page-node-id="Yp40kDoC7swZ2GEZjBDvfy">重复交付</span></td>
+    <td data-page-node-id="7Cdmk4HAr60NdBBfmdPGu3">4 个 .docx 与根目录/<code data-page-node-id="7bwrHFl3i3CxdzMFbunGYt">research/</code> 完全同名同内容：<code data-page-node-id="IEqhuGwZfoVprcyYgSXRDN">DeepGen最新实验结果与显存分析简报.docx</code>(9.3MB)、<code data-page-node-id="la4fWyYvrZn9mNBCio4G1J">人物图像姿态编辑系统架构设计与核心技术方案.docx</code>(3.1MB)、<code data-page-node-id="YSYGYTEoz5g6NTDy9BzAX0">人物图像姿态编辑项目架构与进展简报_科研同步版.docx</code>(1.6MB)、<code data-page-node-id="wlEw0zV6ggyzj1VGh9oO8b">Qwen_Edit_20B显存预算与可行性分析简报.docx</code>。若 <code data-page-node-id="OfaBU8sqoxKlav3HzAceqF">demooutput/</code> 定位为对外演示包则应<strong data-page-node-id="Bg27JQ0EFlAfDnviOffXl3">保留</strong>。</td>
+  </tr>
+</table>
+
+<h2 data-page-node-id="2FacifvCbcqqijL1NGcvTT">四、C 类 · 孤儿脚本（21 个，引用计数 0）</h2>
+<p data-page-node-id="C0eYmWUrTIknfAbQUrlMhS">通过在全仓（排除 <code data-page-node-id="SaWUevAmHpy2gAEbAPe0RI">.git</code> 与副本目录）检索文件名与 import 路径，得到如下引用关系。<strong data-page-node-id="4kThKSgXpb0WUFmkbT6BCy">引用计数 0 不等于无用</strong>——部分脚本是手动调用的 CLI 分析工具，因此建议「归档」而非「删除」。</p>
+
+<div class="two" data-page-node-id="mF15bUDdKQiwsnLw4dyhVX">
+<div data-page-node-id="F6k0UPGuDhxvAqh7A3yneY">
+<h3 data-page-node-id="35vHHo2TGxElqI6ZwLOnRF">建议归档（产物型，已交付）</h3>
+<table data-page-node-id="qcrg3hvXjvTyycaKShoSIT">
+  <tr data-page-node-id="lAy7sJYB1yLOG1o3IXA3vr"><th data-page-node-id="AliDEtRkp1vp93kk0RCSA0">脚本</th><th data-page-node-id="3X3UZV9Jc2UAv7njanHaK0">用途</th></tr>
+  <tr data-page-node-id="8GniB3jyNczcJXwx5gWLXw"><td data-page-node-id="bq8HiH2puMoLYotc8NirK9"><code data-page-node-id="ejpvm44qAGQhCeoQAMt6t5">build_20b_memory_docx.py</code></td><td data-page-node-id="wvI2RGCLUXu3UQkRMkDEH4">Qwen-20B 显存简报生成</td></tr>
+  <tr data-page-node-id="BRlCuRhyHtAvx8BquVA1rE"><td data-page-node-id="eRLcgtuoC9w7AH591CNx1z"><code data-page-node-id="bjqzGOtJ8InHXjqZXaqbfG">build_architecture_docx.py</code></td><td data-page-node-id="YVIgU8YHaXJ4sdiM7VJBP4">架构设计文档生成</td></tr>
+  <tr data-page-node-id="SZl3LsZXApwcMpioBweWSi"><td data-page-node-id="1oSlVexIf5jkDWAiCDuHi9"><code data-page-node-id="nmtTbOqDteIPv8fEo4gIT5">build_brief_architecture_docx.py</code></td><td data-page-node-id="ENKVLkBr2WCplygK6bOyvY">进展简报生成</td></tr>
+  <tr data-page-node-id="WQktdN1T1labzo3InY9pgD"><td data-page-node-id="WA9VEhBiQlx2DRPypHv3mk"><code data-page-node-id="xWdAWzlTY90q5r3osp0P42">build_latest_experiment_report_docx.py</code></td><td data-page-node-id="mFhyvJ6q6LRBIUHkSuP4FG">实验报告生成</td></tr>
+  <tr data-page-node-id="jyuVRj3n8eYHMtGK9Qdvmy"><td data-page-node-id="HOvxErTBvMrwS4j0yyZtPa"><code data-page-node-id="dtFYxEwlumzjY7tc2Rw56K">plot_vram_requirement_dashboard.py</code></td><td data-page-node-id="aRtAED98Mp3aPS2ancCKTe">显存需求仪表盘</td></tr>
+  <tr data-page-node-id="zcOrRczHy0X21qbejPWdgA"><td data-page-node-id="KvwbBPo32DolwEPvHW0HJG"><code data-page-node-id="1AkHQgSlDQGbCUx5VJCBNK">create_debug_samples.py</code></td><td data-page-node-id="hNM2aTx6GQPkHTZszFyleG">合成调试样本（README 标注为 data 说明）</td></tr>
+</table>
+</div>
+<div data-page-node-id="2yYMQxUDRJpoCytr8kc3Q3">
+<h3 data-page-node-id="PmUFj14MZAfyQNE5dr4lMI">建议归档（探索型 / 一次性）</h3>
+<table data-page-node-id="otV83mw7WEcPApRHrffHQl">
+  <tr data-page-node-id="XNa2Tkc6lECvmBbfcn8M7J"><th data-page-node-id="5e0WlsrJsdk2As3Qm598EN">脚本</th><th data-page-node-id="IoEKNa1sBmK29cAQyRQNuQ">用途</th></tr>
+  <tr data-page-node-id="tr0OAT9RqMRaZHQyldCcVy"><td data-page-node-id="O8TCvelEbBmNgEnRyywENf"><code data-page-node-id="I85WZ58WsxhOLCS6kLyPqK">scripts/check_prior_perm.py</code></td><td data-page-node-id="GHbAxg0bomaEeVWypvWfB7">先验权限检查</td></tr>
+  <tr data-page-node-id="Jhwu9JMaYZexF2W7Lsnd8Z"><td data-page-node-id="IVDWfGP2O1jxTeY9TfMETE"><code data-page-node-id="PIxnx0PFrFInqZkUyNqnDW">scripts/inspect_smplestx_params.py</code></td><td data-page-node-id="fUkXml6pboGPHGIRaBTuPl">SMPLest-X 参数探查</td></tr>
+  <tr data-page-node-id="zNC7WdtRV6bC60U7rye3Kk"><td data-page-node-id="PpBwmIvXQqHx8J7KBl8uwU"><code data-page-node-id="g8ge2YHfrGyOylKCKhrCFR">scripts/extract_baseline_eval_pairs.py</code></td><td data-page-node-id="mdnS6xJIHSPHB7MtZE4Mq8">基线评测对提取</td></tr>
+  <tr data-page-node-id="rpDteAp3AdF6bTrvxZeT2I"><td data-page-node-id="3pEZWzHq2TEFeeDecqR7ob"><code data-page-node-id="TGYplRRJvpSia6icY7ZAzU">scripts/smoke_adapter_reasoner.py</code></td><td data-page-node-id="1DMcuCGXPiyLwIdri36JRK">适配器推理冒烟</td></tr>
+  <tr data-page-node-id="DSim7Wpe24IXENIKDmpwaC"><td data-page-node-id="bmCYAkzdJi23x6gOsdD8zt"><code data-page-node-id="NCUvmP5Gm5rmq3VVBHI6f9">scripts/smoke_adapter_v6.py</code></td><td data-page-node-id="5vcUa2zHNwybGUx0XqD7Gc">v6 适配器冒烟</td></tr>
+  <tr data-page-node-id="wNGCbYfBWr0Ys0QHjLr09o"><td data-page-node-id="U6Z8GxQLn1NBuPCQMhytCF"><code data-page-node-id="lbXUNnR2HLiZcILH7QrqbX">scripts/verify_single_v6_condition.py</code></td><td data-page-node-id="YwTyvN4VP3OB07xO4lndX7">v6 条件校验</td></tr>
+  <tr data-page-node-id="PdMzYkhDSlaqQAmi1s2eLh"><td data-page-node-id="B9pcWChIm44Ql1AwnBA2ue"><code data-page-node-id="2U7qiGT3g440ddDF0YNI1s">scripts/visualize_v6_conditions_sample.py</code></td><td data-page-node-id="C6pfTDlZAcOZIVwFUHb37f">v6 条件可视化</td></tr>
+  <tr data-page-node-id="gluwWcNpTHJzxENhTENi0H"><td data-page-node-id="99APAB13FdXAEeNWEOx9gx"><code data-page-node-id="65UoZlF6SHiU4Nd3D9FbI5">scripts/multi_stage_eval.py</code></td><td data-page-node-id="isIT4tbHF0GdT9odRqivjZ">已被 <code data-page-node-id="mYsTbRRW3megCiETt7DulF">_v6</code> 版取代</td></tr>
+</table>
+</div>
+</div>
+
+<h3 style="margin-top:26px" data-page-node-id="tmLEBBWecOBR4okHQTQhv7">建议保留（仍在被调用链路中）</h3>
+<table data-page-node-id="vYOOaf67huITk5rjdpQTvy">
+  <tr data-page-node-id="TRiyrYrPwkrgracAPy9w1D"><th style="width:34%" data-page-node-id="GcFm9g3OHD2EwzTIUc4ywN">脚本</th><th class="num" data-page-node-id="4ZEP8R7x4x18pesDhJaImJ">引用数</th><th data-page-node-id="EoCsi67MZ48LWXFJKMPHG1">说明</th></tr>
+  <tr data-page-node-id="Nby0jLvZQDhQZpWv5sM7FH"><td data-page-node-id="XofLeEZMQgExzzR7VrgSRf"><code data-page-node-id="ZWdczHnDbB8UICkeGxpgxf">eval_iper_v6.py</code></td><td class="num" data-page-node-id="EjSBXeL3hm2ZEaCWN10r6C">5</td><td data-page-node-id="GCHmGmy7KGMGJSBs5sX4yY">v6 评测主入口，活跃</td></tr>
+  <tr data-page-node-id="epcXDusSxkzpt5CyewKKGk"><td data-page-node-id="HrlLjEWJyPhe4izCNmnW5K"><code data-page-node-id="oBwM3EeYUxs1KtXhQLl467">run_champ_single_overfit.py</code> / <code data-page-node-id="cDs33sd9TBl78M8JlpJRbI">run_deepgen_no_control_ablation.py</code></td><td class="num" data-page-node-id="eRuehYhWLwTHaBjYjtS7Xf">7 / 7</td><td data-page-node-id="riSgm3zVoO6wc6vnWJlXs7">实验主入口，文档多处引用</td></tr>
+  <tr data-page-node-id="S6GPzeZUzlrDfXW3NGChx0"><td data-page-node-id="ZXe2tLmr1Q1uF367okHIgg"><code data-page-node-id="uMQKDAAaSx8lX67xk7Hn8h">train_adapter.py</code></td><td class="num" data-page-node-id="qq6euRsEdr4tXqXowHCqXs">3</td><td data-page-node-id="TiBZ1FpnODh1dO6fi0teAu">训练入口，README 明确登记</td></tr>
+  <tr data-page-node-id="5gIlrO7mksnNgkn5C7GrSF"><td data-page-node-id="e5uHNXXRwUOTKobqPrQCiM"><code data-page-node-id="oH4sBRFC7oBY8IDo6pDX7q">scripts/multi_stage_eval_v6.py</code></td><td class="num" data-page-node-id="B9XXBnqA2IQDAbGQ7C4cd9">3</td><td data-page-node-id="5yRAe8oZGtAibLpFmLd63W">多阶段评测当前版本</td></tr>
+  <tr data-page-node-id="YjahsL9mFO6h7UudDhFH1P"><td data-page-node-id="qQycjua4AonU1kELD89oT9"><code data-page-node-id="cgGF2yUE4cGjm9BJ2xEJBN">scripts/plot_training_dashboard.py</code> / <code data-page-node-id="VyMDt3IHdTDNAcxGAKow9Z">sync_visualization.py</code></td><td class="num" data-page-node-id="hO8fUKnRmNh1ARisreQH1b">3 / 3</td><td data-page-node-id="k0qo3m8kj3BEWuZrkl3bzV">可视化维护链路</td></tr>
+  <tr data-page-node-id="wKGRTJfZ9KfFh96E5Ds0SE"><td data-page-node-id="hDZCb6wLryz3AFvHI9oLQg"><code data-page-node-id="bShUTQam3Iq0jehkAn2HqM">test_control_signals.py</code></td><td class="num" data-page-node-id="BcwGrEoveva3vyOKIFJpTN">1</td><td data-page-node-id="D387HifMqaYjcmOlomVlLG"><strong data-page-node-id="nRYw3KHbfUNpKqzAa0U6my">非一次性测试</strong>，README 明确其被 <code data-page-node-id="wEC4RKfN5kFAZzM4gKHeQk">vram_lab.worker</code> 依赖</td></tr>
+  <tr data-page-node-id="DtXeXzd9pWT6kf9k6w2HL8"><td data-page-node-id="THn9uYVCbMPWJvnigIPoGz"><code data-page-node-id="mlkiVEo14tpQLDFqXiQaAY">launch_when_gpu_ready.sh</code> / <code data-page-node-id="m8Z5tNyWHuBA2SUUPQ4tYT">run_v6_comparative_3000.sh</code></td><td class="num" data-page-node-id="caxhM9eH8ShhpeWbFDrGXM">0 / 2</td><td data-page-node-id="BI7biRFvdGDR9ZTTsdXrXH">GPU 排队启动脚本，属运维入口建议保留</td></tr>
+</table>
+
+<h2 data-page-node-id="g1Dhpbxvg1ouAEVRHCioSK">五、明确建议保留的对象</h2>
+<div class="box safe" data-page-node-id="avbLLukJehi5NSuWY8352B">
+  <ul style="margin:0" data-page-node-id="UMqiujkktm1CxZBu5njpY3">
+    <li data-page-node-id="b3x9bLStUqVkOh0hWfA9In"><code data-page-node-id="0Z27Q1Ak26ySg7H2BWQgwV">results/review_20260908_v2/</code> <strong data-page-node-id="hmLHLMIDCqWzpyLEw7i6MP">458 MB</strong> — 正式验收证据（111/111 通过记录），被 README、RUNBOOK、EXPERIMENT_CONCLUSION 引用。<strong data-page-node-id="UUlEPDcgzRWEw94HwHrHP3">不得删除。</strong></li>
+    <li data-page-node-id="h5ZMc6WmOAHlVSgCRbDkh5"><code data-page-node-id="00EfFNjofUBoDjWMS4GQ4Q">results/review_20260908/</code> 7.3 MB — 初版评测，被 README 与 docs 引用，形成版本对照链。</li>
+    <li data-page-node-id="xsLUFbxZNAlvk7Q4tK8jvJ"><code data-page-node-id="QfnKSfnj8rVx33TqGITtd7">inputs/</code> 38 MB（含 2 段 champ 视频）、<code data-page-node-id="t7ykzSRYex6hcHRYz3LOjM">experiments/</code> 37 MB — 实验输入与训练产物。</li>
+    <li data-page-node-id="1SorEb2hZgxBTKjTb8TVk1"><code data-page-node-id="RgSYVMZUmzbyAZTt2IYcHh">.git/</code> 249 MB — 含约 40 MB 大对象（docx / mp4 / index.html）。如需瘦身须用 <code data-page-node-id="Vnoo7munG047LhKEuB6wLo">filter-repo</code> 重写历史，属高风险操作，本次<strong data-page-node-id="3luWVyvGlEB7ZvsEeSXdqW">不建议</strong>。</li>
+    <li data-page-node-id="n9xCyCcPEnre9Bk68TUfIj"><code data-page-node-id="zv6YtZagEnC6626YimcRLA">src/</code>、<code data-page-node-id="EVpYjIPZ6bxDMP0PAFb8FB">tests/</code>、<code data-page-node-id="ZtXCRO3C3xaUdaL1My5nE6">vram_lab/</code>、<code data-page-node-id="BSvPCoUwHHWjgex1H7LopD">third_party/</code>、<code data-page-node-id="7Gtr9TiYys7DlQXqZb6Wru">docs/</code>、<code data-page-node-id="7pOoGpmGT3DhpWr2gQpiYL">configs/</code> — 全部核心资产。</li>
+  </ul>
+</div>
+
+<h2 data-page-node-id="CLvNsl7PlrtfEjY0POHvbc">六、建议的清理执行方式</h2>
+<div class="box info" data-page-node-id="7RWMBNgJ2AAzicWtOwVFHQ">
+  <strong data-page-node-id="Z5KUdqR0s5uWIb63u3WzA2">说明：</strong>本次审计全程为只读操作，未移动、重命名或删除任何文件。建议按下述顺序分批执行，每批完成后核验：
+</div>
+<div class="treelist" data-page-node-id="DfBmF8sdYFntXzx3UT1XP8">第 1 批 · 零风险（约 556 MB）
+  rm -rf .codex-work-v63/            # 冗余项目副本
+  rm -rf .codex_tmp/vis_pull/        # 已同步至 可视化/
+  rm -rf 可视化/anigra/              # 与 04_编辑效果条带 重复
+  rm -rf v6_stage/                   # 空目录树
+  rmdir  可视化/图片编辑对比/ 可视化/科研绘图/   # 空目录
+  清除 ~$*.docx 锁文件 9 个
+  清除 __pycache__ / *.pyc / .pytest_cache
+  删除 test_highlight.png、test_plot.png
+
+第 2 批 · 经你确认后执行（约 17 MB）
+  scratch/、research/ 云一次性与重复件、.codex_tmp 剩余、demooutput 重复 docx
+
+第 3 批 · 归档而非删除
+  孤儿脚本 21 个 → 移入 scripts/archive/ 并附 README 说明，保留可复现能力</div>
+
+<h2 data-page-node-id="0ECQUF6AlY89L6x9wbjPsH">七、附带发现的问题</h2>
+<ul data-page-node-id="ib8QweapuPbYoxRsGDd0fA">
+  <li data-page-node-id="y8nW4bPZx0Jgt8Sn2vQrtc"><strong data-page-node-id="dehlWTsJ0nBndg8WE6RyZx"><code data-page-node-id="XrYnCqIpBRaEn2USCqYzZY">.codex_tmp/</code> 未被 gitignore</strong>：<code data-page-node-id="kl5gMfqha2ZhqwHGwPKAhg">.codex-work-v63/</code> 已忽略，但 <code data-page-node-id="HVJUnVQhCoGpDEVThtg4xC">.codex_tmp/</code> 未列入，导致它在 <code data-page-node-id="SYcaMN5b5bDIrB1usQtvdC">git status</code> 中显示为未跟踪目录。建议在 <code data-page-node-id="plU4luc0JuR2djQX5b7Kwg">.gitignore</code> 补充该条目。</li>
+  <li data-page-node-id="jK9yEw4v2d8X4QDk3c97nG"><strong data-page-node-id="PVvMeixOhXhwh3QxiNVqEI">可视化同步链路存在重复写入</strong>：<code data-page-node-id="FEdnRXCHXNBQBhisXvsl5p">sync_visualization.py</code> 将素材拉到 <code data-page-node-id="mPB1h8yihJCobMcs1x19sW">.codex_tmp/vis_pull/</code> 后再拷入 <code data-page-node-id="ocwEipmeNPVtBTS37jaYDH">可视化/</code>，且拉取过程中产生了嵌套双份副本，建议后续改为直接同步。</li>
+  <li data-page-node-id="f5Cca0ymk9qVniEopQGiK6"><strong data-page-node-id="2J8qafRBCBtP2o3he6aEYc">MD5 校验显示 571 组重复文件</strong>，重复副本合计占用 560.7 MB，其中绝大多数由上述两个临时目录贡献。</li>
+</ul>
+
+<footer data-page-node-id="QpOiPYg9BIA8nRWCvCVj2e">
+  审计方式：目录遍历 + MD5 内容比对 + 跨文件引用关系检索 + 版本库差异分析。所有结论均可复现。<br data-page-node-id="BSQqM8xBDXzvQErX6oifOr">
+  <strong data-page-node-id="WQLj6JBcSP864gDE82fnhx">本报告为只读审计产出，尚未对项目执行任何写操作。</strong>
+</footer>
+
+</div>
+</body>
+</html>

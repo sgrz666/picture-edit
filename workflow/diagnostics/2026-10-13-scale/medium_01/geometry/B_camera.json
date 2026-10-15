@@ -1,0 +1,124 @@
+{
+  "focal_xy": [
+    17274.4375,
+    17274.439453125
+  ],
+  "principal_xy": [
+    425.3391418457031,
+    864.80322265625
+  ],
+  "B_size": [
+    961,
+    1280
+  ],
+  "generation_canvas": [
+    704,
+    832
+  ],
+  "B_to_generation": {
+    "scale": 1.0234632823231522,
+    "offset_xy": [
+      -52.68165431292374,
+      -450.3796956681566
+    ]
+  },
+  "source_letterbox": {
+    "original_size": [
+      1120,
+      1280
+    ],
+    "canvas_size": [
+      704,
+      832
+    ],
+    "resized_size": [
+      704,
+      805
+    ],
+    "scale_xy": [
+      0.6285714285714286,
+      0.62890625
+    ],
+    "offset_xy": [
+      0,
+      13
+    ],
+    "content_box": [
+      0,
+      13,
+      704,
+      818
+    ]
+  },
+  "coordinate_system": "camera XYZ; pixels x-right y-down; projection uses Z+1e-4",
+  "detections": {
+    "A": {
+      "bbox_xyxy": [
+        168.9998779296875,
+        70.435791015625,
+        1050.09033203125,
+        1275.0390625
+      ],
+      "score": 0.9383543133735657,
+      "persons_detected": 2,
+      "subject_rule": "largest",
+      "subject_index": 0,
+      "all_boxes_xyxy": [
+        [
+          168.9998779296875,
+          70.435791015625,
+          1050.09033203125,
+          1275.0390625
+        ],
+        [
+          944.4391479492188,
+          1.203369140625,
+          1120.0,
+          1114.885986328125
+        ]
+      ],
+      "all_scores": [
+        0.9383543133735657,
+        0.7765545845031738
+      ]
+    },
+    "B": {
+      "bbox_xyxy": [
+        305.296875,
+        496.03851318359375,
+        546.3688354492188,
+        1236.253173828125
+      ],
+      "score": 0.9521623849868774,
+      "persons_detected": 1,
+      "subject_rule": "largest",
+      "subject_index": 0,
+      "all_boxes_xyxy": [
+        [
+          305.296875,
+          496.03851318359375,
+          546.3688354492188,
+          1236.253173828125
+        ]
+      ],
+      "all_scores": [
+        0.9521623849868774
+      ]
+    }
+  },
+  "mesh_max_error_m": 3.814697265625e-06,
+  "projection_max_error_px": 0.00013642993462781305,
+  "valid_B_joints": 134,
+  "visibility_policy": "finite positive depth and in-frame only; not an occlusion confidence",
+  "estimated_hidden_joints": true,
+  "native_estimator_input": "/home/shangguanrz/project/pic-edit/workflow/runs/medium_01/geometry/estimator/workflow_04ac059ded094d01/demo/input_frames/workflow_04ac059ded094d01/000001.jpg",
+  "native_estimator_params": "/home/shangguanrz/project/pic-edit/workflow/runs/medium_01/geometry/estimator/workflow_04ac059ded094d01/demo/output_frames/workflow_04ac059ded094d01/workflow_04ac059ded094d01_params.pt",
+  "estimator_root": "/home/shangguanrz/project/pic-edit/workflow/runs/medium_01/geometry/estimator/workflow_04ac059ded094d01",
+  "subject_consistency": {
+    "B_joint_centroid_px": [
+      433.32317108123175,
+      704.6553518254526
+    ],
+    "inside_selected_box": true
+  }
+}

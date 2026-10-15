@@ -1,0 +1,1537 @@
+{
+  "audit_date": "2026-10-08",
+  "remote_path": "/home/shangguanrz/models/bfs/bfs_body_swap_v1.0_qwen_2.1.safetensors",
+  "size_bytes": 209753576,
+  "sha256": "7dc0a53aba4dbc70c204f498936a619d226559da11011f748c389189af46b664",
+  "scope": "File structure audit only; no pipeline loading or generation in this audit.",
+  "dtype": "BF16",
+  "rank": 64,
+  "serialized_modules": 136,
+  "serialized_tensors": 272,
+  "serialized_parameters": 104857600,
+  "module_blocks": {
+    "attn.to_k": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31
+    ],
+    "attn.to_out.0": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31
+    ],
+    "attn.to_q": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31
+    ],
+    "attn.to_v": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31
+    ],
+    "img_mlp.gate_up": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31
+    ],
+    "img_mlp.out": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31
+    ]
+  },
+  "all_AB_pairs_valid": true,
+  "module_shapes": {
+    "diffusion_model.transformer_blocks.0.attn.to_k": {
+      "A.weight": [
+        64,
+        4096
+      ],
+      "B.weight": [
+        4096,
+        64
+      ]
+    },
+    "diffusion_model.transformer_blocks.0.attn.to_out.0": {
+      "A.weight": [
+        64,
+        4096
+      ],
+      "B.weight": [
+        4096,
+        64
+      ]
+    },
+    "diffusion_model.transformer_blocks.0.attn.to_q": {
+      "A.weight": [
+        64,
+        4096
+      ],
+      "B.weight": [
+        4096,
+        64
+      ]
+    },
+    "diffusion_model.transformer_blocks.0.attn.to_v": {
+      "A.weight": [
+        64,
+        4096
+      ],
+      "B.weight": [
+        4096,
+        64
+      ]
+    },
+    "diffusion_model.transformer_blocks.0.img_mlp.gate_up": {
+      "A.weight": [
+        64,
+        4096
+      ],
+      "B.weight": [
+        24576,
+        64
+      ]
+    },
+    "diffusion_model.transformer_blocks.0.img_mlp.out": {
+      "A.weight": [
+        64,
+        12288
+      ],
+      "B.weight": [
+        4096,
+        64
+      ]
+    },
+    "diffusion_model.transformer_blocks.1.attn.to_k": {
+      "A.weight": [
+        64,
+        4096
+      ],
+      "B.weight": [
+        4096,
+        64
+      ]
+    },
+    "diffusion_model.transformer_blocks.1.attn.to_out.0": {
+      "A.weight": [
+        64,
+        4096
+      ],
+      "B.weight": [
+        4096,
+        64
+      ]
+    },
+    "diffusion_model.transformer_blocks.1.attn.to_q": {
+      "A.weight": [
+        64,
+        4096
+      ],
+      "B.weight": [
+        4096,
+        64
+      ]
+    },
+    "diffusion_model.transformer_blocks.1.attn.to_v": {
+      "A.weight": [
+        64,
+        4096
+      ],
+      "B.weight": [
+        4096,
+        64
+      ]
+    },
+    "diffusion_model.transformer_blocks.1.img_mlp.gate_up": {
+      "A.weight": [
+        64,
+        4096
+      ],
+      "B.weight": [
+        24576,
+        64
+      ]
+    },
+    "diffusion_model.transformer_blocks.1.img_mlp.out": {
+      "A.weight": [
+        64,
+        12288
+      ],
+      "B.weight": [
+        4096,
+        64
+      ]
+    },
+    "diffusion_model.transformer_blocks.10.attn.to_k": {
+      "A.weight": [
+        64,
+        4096
+      ],
+      "B.weight": [
+        4096,
+        64
+      ]
+    },
+    "diffusion_model.transformer_blocks.10.attn.to_out.0": {
+      "A.weight": [
+        64,
+        4096
+      ],
+      "B.weight": [
+        4096,
+        64
+      ]
+    },
+    "diffusion_model.transformer_blocks.10.attn.to_q": {
+      "A.weight": [
+        64,
+        4096
+      ],
+      "B.weight": [
+        4096,
+        64
+      ]
+    },
+    "diffusion_model.transformer_blocks.10.attn.to_v": {
+      "A.weight": [
+        64,
+        4096
+      ],
+      "B.weight": [
+        4096,
+        64
+      ]
+    },
+    "diffusion_model.transformer_blocks.10.img_mlp.out": {
+      "A.weight": [
+        64,
+        12288
+      ],
+      "B.weight": [
+        4096,
+        64
+      ]
+    },
+    "diffusion_model.transformer_blocks.11.attn.to_k": {
+      "A.weight": [
+        64,
+        4096
+      ],
+      "B.weight": [
+        4096,
+        64
+      ]
+    },
+    "diffusion_model.transformer_blocks.11.attn.to_out.0": {
+      "A.weight": [
+        64,
+        4096
+      ],
+      "B.weight": [
+        4096,
+        64
+      ]
+    },
+    "diffusion_model.transformer_blocks.11.attn.to_q": {
+      "A.weight": [
+        64,
+        4096
+      ],
+      "B.weight": [
+        4096,
+        64
+      ]
+    },
+    "diffusion_model.transformer_blocks.11.attn.to_v": {
+      "A.weight": [
+        64,
+        4096
+      ],
+      "B.weight": [
+        4096,
+        64
+      ]
+    },
+    "diffusion_model.transformer_blocks.11.img_mlp.out": {
+      "A.weight": [
+        64,
+        12288
+      ],
+      "B.weight": [
+        4096,
+        64
+      ]
+    },
+    "diffusion_model.transformer_blocks.12.attn.to_k": {
+      "A.weight": [
+        64,
+        4096
+      ],
+      "B.weight": [
+        4096,
+        64
+      ]
+    },
+    "diffusion_model.transformer_blocks.12.attn.to_out.0": {
+      "A.weight": [
+        64,
+        4096
+      ],
+      "B.weight": [
+        4096,
+        64
+      ]
+    },
+    "diffusion_model.transformer_blocks.12.attn.to_q": {
+      "A.weight": [
+        64,
+        4096
+      ],
+      "B.weight": [
+        4096,
+        64
+      ]
+    },
+    "diffusion_model.transformer_blocks.12.attn.to_v": {
+      "A.weight": [
+        64,
+        4096
+      ],
+      "B.weight": [
+        4096,
+        64
+      ]
+    },
+    "diffusion_model.transformer_blocks.12.img_mlp.out": {
+      "A.weight": [
+        64,
+        12288
+      ],
+      "B.weight": [
+        4096,
+        64
+      ]
+    },
+    "diffusion_model.transformer_blocks.13.attn.to_k": {
+      "A.weight": [
+        64,
+        4096
+      ],
+      "B.weight": [
+        4096,
+        64
+      ]
+    },
+    "diffusion_model.transformer_blocks.13.attn.to_out.0": {
+      "A.weight": [
+        64,
+        4096
+      ],
+      "B.weight": [
+        4096,
+        64
+      ]
+    },
+    "diffusion_model.transformer_blocks.13.attn.to_q": {
+      "A.weight": [
+        64,
+        4096
+      ],
+      "B.weight": [
+        4096,
+        64
+      ]
+    },
+    "diffusion_model.transformer_blocks.13.attn.to_v": {
+      "A.weight": [
+        64,
+        4096
+      ],
+      "B.weight": [
+        4096,
+        64
+      ]
+    },
+    "diffusion_model.transformer_blocks.13.img_mlp.out": {
+      "A.weight": [
+        64,
+        12288
+      ],
+      "B.weight": [
+        4096,
+        64
+      ]
+    },
+    "diffusion_model.transformer_blocks.14.attn.to_k": {
+      "A.weight": [
+        64,
+        4096
+      ],
+      "B.weight": [
+        4096,
+        64
+      ]
+    },
+    "diffusion_model.transformer_blocks.14.attn.to_out.0": {
+      "A.weight": [
+        64,
+        4096
+      ],
+      "B.weight": [
+        4096,
+        64
+      ]
+    },
+    "diffusion_model.transformer_blocks.14.attn.to_q": {
+      "A.weight": [
+        64,
+        4096
+      ],
+      "B.weight": [
+        4096,
+        64
+      ]
+    },
+    "diffusion_model.transformer_blocks.14.attn.to_v": {
+      "A.weight": [
+        64,
+        4096
+      ],
+      "B.weight": [
+        4096,
+        64
+      ]
+    },
+    "diffusion_model.transformer_blocks.14.img_mlp.out": {
+      "A.weight": [
+        64,
+        12288
+      ],
+      "B.weight": [
+        4096,
+        64
+      ]
+    },
+    "diffusion_model.transformer_blocks.15.attn.to_k": {
+      "A.weight": [
+        64,
+        4096
+      ],
+      "B.weight": [
+        4096,
+        64
+      ]
+    },
+    "diffusion_model.transformer_blocks.15.attn.to_out.0": {
+      "A.weight": [
+        64,
+        4096
+      ],
+      "B.weight": [
+        4096,
+        64
+      ]
+    },
+    "diffusion_model.transformer_blocks.15.attn.to_q": {
+      "A.weight": [
+        64,
+        4096
+      ],
+      "B.weight": [
+        4096,
+        64
+      ]
+    },
+    "diffusion_model.transformer_blocks.15.attn.to_v": {
+      "A.weight": [
+        64,
+        4096
+      ],
+      "B.weight": [
+        4096,
+        64
+      ]
+    },
+    "diffusion_model.transformer_blocks.15.img_mlp.out": {
+      "A.weight": [
+        64,
+        12288
+      ],
+      "B.weight": [
+        4096,
+        64
+      ]
+    },
+    "diffusion_model.transformer_blocks.2.attn.to_k": {
+      "A.weight": [
+        64,
+        4096
+      ],
+      "B.weight": [
+        4096,
+        64
+      ]
+    },
+    "diffusion_model.transformer_blocks.2.attn.to_out.0": {
+      "A.weight": [
+        64,
+        4096
+      ],
+      "B.weight": [
+        4096,
+        64
+      ]
+    },
+    "diffusion_model.transformer_blocks.2.attn.to_q": {
+      "A.weight": [
+        64,
+        4096
+      ],
+      "B.weight": [
+        4096,
+        64
+      ]
+    },
+    "diffusion_model.transformer_blocks.2.attn.to_v": {
+      "A.weight": [
+        64,
+        4096
+      ],
+      "B.weight": [
+        4096,
+        64
+      ]
+    },
+    "diffusion_model.transformer_blocks.2.img_mlp.gate_up": {
+      "A.weight": [
+        64,
+        4096
+      ],
+      "B.weight": [
+        24576,
+        64
+      ]
+    },
+    "diffusion_model.transformer_blocks.2.img_mlp.out": {
+      "A.weight": [
+        64,
+        12288
+      ],
+      "B.weight": [
+        4096,
+        64
+      ]
+    },
+    "diffusion_model.transformer_blocks.24.attn.to_k": {
+      "A.weight": [
+        64,
+        4096
+      ],
+      "B.weight": [
+        4096,
+        64
+      ]
+    },
+    "diffusion_model.transformer_blocks.24.attn.to_out.0": {
+      "A.weight": [
+        64,
+        4096
+      ],
+      "B.weight": [
+        4096,
+        64
+      ]
+    },
+    "diffusion_model.transformer_blocks.24.attn.to_q": {
+      "A.weight": [
+        64,
+        4096
+      ],
+      "B.weight": [
+        4096,
+        64
+      ]
+    },
+    "diffusion_model.transformer_blocks.24.attn.to_v": {
+      "A.weight": [
+        64,
+        4096
+      ],
+      "B.weight": [
+        4096,
+        64
+      ]
+    },
+    "diffusion_model.transformer_blocks.24.img_mlp.gate_up": {
+      "A.weight": [
+        64,
+        4096
+      ],
+      "B.weight": [
+        24576,
+        64
+      ]
+    },
+    "diffusion_model.transformer_blocks.24.img_mlp.out": {
+      "A.weight": [
+        64,
+        12288
+      ],
+      "B.weight": [
+        4096,
+        64
+      ]
+    },
+    "diffusion_model.transformer_blocks.25.attn.to_k": {
+      "A.weight": [
+        64,
+        4096
+      ],
+      "B.weight": [
+        4096,
+        64
+      ]
+    },
+    "diffusion_model.transformer_blocks.25.attn.to_out.0": {
+      "A.weight": [
+        64,
+        4096
+      ],
+      "B.weight": [
+        4096,
+        64
+      ]
+    },
+    "diffusion_model.transformer_blocks.25.attn.to_q": {
+      "A.weight": [
+        64,
+        4096
+      ],
+      "B.weight": [
+        4096,
+        64
+      ]
+    },
+    "diffusion_model.transformer_blocks.25.attn.to_v": {
+      "A.weight": [
+        64,
+        4096
+      ],
+      "B.weight": [
+        4096,
+        64
+      ]
+    },
+    "diffusion_model.transformer_blocks.25.img_mlp.gate_up": {
+      "A.weight": [
+        64,
+        4096
+      ],
+      "B.weight": [
+        24576,
+        64
+      ]
+    },
+    "diffusion_model.transformer_blocks.25.img_mlp.out": {
+      "A.weight": [
+        64,
+        12288
+      ],
+      "B.weight": [
+        4096,
+        64
+      ]
+    },
+    "diffusion_model.transformer_blocks.26.attn.to_k": {
+      "A.weight": [
+        64,
+        4096
+      ],
+      "B.weight": [
+        4096,
+        64
+      ]
+    },
+    "diffusion_model.transformer_blocks.26.attn.to_out.0": {
+      "A.weight": [
+        64,
+        4096
+      ],
+      "B.weight": [
+        4096,
+        64
+      ]
+    },
+    "diffusion_model.transformer_blocks.26.attn.to_q": {
+      "A.weight": [
+        64,
+        4096
+      ],
+      "B.weight": [
+        4096,
+        64
+      ]
+    },
+    "diffusion_model.transformer_blocks.26.attn.to_v": {
+      "A.weight": [
+        64,
+        4096
+      ],
+      "B.weight": [
+        4096,
+        64
+      ]
+    },
+    "diffusion_model.transformer_blocks.26.img_mlp.gate_up": {
+      "A.weight": [
+        64,
+        4096
+      ],
+      "B.weight": [
+        24576,
+        64
+      ]
+    },
+    "diffusion_model.transformer_blocks.26.img_mlp.out": {
+      "A.weight": [
+        64,
+        12288
+      ],
+      "B.weight": [
+        4096,
+        64
+      ]
+    },
+    "diffusion_model.transformer_blocks.27.attn.to_k": {
+      "A.weight": [
+        64,
+        4096
+      ],
+      "B.weight": [
+        4096,
+        64
+      ]
+    },
+    "diffusion_model.transformer_blocks.27.attn.to_out.0": {
+      "A.weight": [
+        64,
+        4096
+      ],
+      "B.weight": [
+        4096,
+        64
+      ]
+    },
+    "diffusion_model.transformer_blocks.27.attn.to_q": {
+      "A.weight": [
+        64,
+        4096
+      ],
+      "B.weight": [
+        4096,
+        64
+      ]
+    },
+    "diffusion_model.transformer_blocks.27.attn.to_v": {
+      "A.weight": [
+        64,
+        4096
+      ],
+      "B.weight": [
+        4096,
+        64
+      ]
+    },
+    "diffusion_model.transformer_blocks.27.img_mlp.gate_up": {
+      "A.weight": [
+        64,
+        4096
+      ],
+      "B.weight": [
+        24576,
+        64
+      ]
+    },
+    "diffusion_model.transformer_blocks.27.img_mlp.out": {
+      "A.weight": [
+        64,
+        12288
+      ],
+      "B.weight": [
+        4096,
+        64
+      ]
+    },
+    "diffusion_model.transformer_blocks.28.attn.to_k": {
+      "A.weight": [
+        64,
+        4096
+      ],
+      "B.weight": [
+        4096,
+        64
+      ]
+    },
+    "diffusion_model.transformer_blocks.28.attn.to_out.0": {
+      "A.weight": [
+        64,
+        4096
+      ],
+      "B.weight": [
+        4096,
+        64
+      ]
+    },
+    "diffusion_model.transformer_blocks.28.attn.to_q": {
+      "A.weight": [
+        64,
+        4096
+      ],
+      "B.weight": [
+        4096,
+        64
+      ]
+    },
+    "diffusion_model.transformer_blocks.28.attn.to_v": {
+      "A.weight": [
+        64,
+        4096
+      ],
+      "B.weight": [
+        4096,
+        64
+      ]
+    },
+    "diffusion_model.transformer_blocks.28.img_mlp.gate_up": {
+      "A.weight": [
+        64,
+        4096
+      ],
+      "B.weight": [
+        24576,
+        64
+      ]
+    },
+    "diffusion_model.transformer_blocks.28.img_mlp.out": {
+      "A.weight": [
+        64,
+        12288
+      ],
+      "B.weight": [
+        4096,
+        64
+      ]
+    },
+    "diffusion_model.transformer_blocks.29.attn.to_k": {
+      "A.weight": [
+        64,
+        4096
+      ],
+      "B.weight": [
+        4096,
+        64
+      ]
+    },
+    "diffusion_model.transformer_blocks.29.attn.to_out.0": {
+      "A.weight": [
+        64,
+        4096
+      ],
+      "B.weight": [
+        4096,
+        64
+      ]
+    },
+    "diffusion_model.transformer_blocks.29.attn.to_q": {
+      "A.weight": [
+        64,
+        4096
+      ],
+      "B.weight": [
+        4096,
+        64
+      ]
+    },
+    "diffusion_model.transformer_blocks.29.attn.to_v": {
+      "A.weight": [
+        64,
+        4096
+      ],
+      "B.weight": [
+        4096,
+        64
+      ]
+    },
+    "diffusion_model.transformer_blocks.29.img_mlp.gate_up": {
+      "A.weight": [
+        64,
+        4096
+      ],
+      "B.weight": [
+        24576,
+        64
+      ]
+    },
+    "diffusion_model.transformer_blocks.29.img_mlp.out": {
+      "A.weight": [
+        64,
+        12288
+      ],
+      "B.weight": [
+        4096,
+        64
+      ]
+    },
+    "diffusion_model.transformer_blocks.3.attn.to_k": {
+      "A.weight": [
+        64,
+        4096
+      ],
+      "B.weight": [
+        4096,
+        64
+      ]
+    },
+    "diffusion_model.transformer_blocks.3.attn.to_out.0": {
+      "A.weight": [
+        64,
+        4096
+      ],
+      "B.weight": [
+        4096,
+        64
+      ]
+    },
+    "diffusion_model.transformer_blocks.3.attn.to_q": {
+      "A.weight": [
+        64,
+        4096
+      ],
+      "B.weight": [
+        4096,
+        64
+      ]
+    },
+    "diffusion_model.transformer_blocks.3.attn.to_v": {
+      "A.weight": [
+        64,
+        4096
+      ],
+      "B.weight": [
+        4096,
+        64
+      ]
+    },
+    "diffusion_model.transformer_blocks.3.img_mlp.gate_up": {
+      "A.weight": [
+        64,
+        4096
+      ],
+      "B.weight": [
+        24576,
+        64
+      ]
+    },
+    "diffusion_model.transformer_blocks.3.img_mlp.out": {
+      "A.weight": [
+        64,
+        12288
+      ],
+      "B.weight": [
+        4096,
+        64
+      ]
+    },
+    "diffusion_model.transformer_blocks.30.attn.to_k": {
+      "A.weight": [
+        64,
+        4096
+      ],
+      "B.weight": [
+        4096,
+        64
+      ]
+    },
+    "diffusion_model.transformer_blocks.30.attn.to_out.0": {
+      "A.weight": [
+        64,
+        4096
+      ],
+      "B.weight": [
+        4096,
+        64
+      ]
+    },
+    "diffusion_model.transformer_blocks.30.attn.to_q": {
+      "A.weight": [
+        64,
+        4096
+      ],
+      "B.weight": [
+        4096,
+        64
+      ]
+    },
+    "diffusion_model.transformer_blocks.30.attn.to_v": {
+      "A.weight": [
+        64,
+        4096
+      ],
+      "B.weight": [
+        4096,
+        64
+      ]
+    },
+    "diffusion_model.transformer_blocks.30.img_mlp.gate_up": {
+      "A.weight": [
+        64,
+        4096
+      ],
+      "B.weight": [
+        24576,
+        64
+      ]
+    },
+    "diffusion_model.transformer_blocks.30.img_mlp.out": {
+      "A.weight": [
+        64,
+        12288
+      ],
+      "B.weight": [
+        4096,
+        64
+      ]
+    },
+    "diffusion_model.transformer_blocks.31.attn.to_k": {
+      "A.weight": [
+        64,
+        4096
+      ],
+      "B.weight": [
+        4096,
+        64
+      ]
+    },
+    "diffusion_model.transformer_blocks.31.attn.to_out.0": {
+      "A.weight": [
+        64,
+        4096
+      ],
+      "B.weight": [
+        4096,
+        64
+      ]
+    },
+    "diffusion_model.transformer_blocks.31.attn.to_q": {
+      "A.weight": [
+        64,
+        4096
+      ],
+      "B.weight": [
+        4096,
+        64
+      ]
+    },
+    "diffusion_model.transformer_blocks.31.attn.to_v": {
+      "A.weight": [
+        64,
+        4096
+      ],
+      "B.weight": [
+        4096,
+        64
+      ]
+    },
+    "diffusion_model.transformer_blocks.31.img_mlp.gate_up": {
+      "A.weight": [
+        64,
+        4096
+      ],
+      "B.weight": [
+        24576,
+        64
+      ]
+    },
+    "diffusion_model.transformer_blocks.31.img_mlp.out": {
+      "A.weight": [
+        64,
+        12288
+      ],
+      "B.weight": [
+        4096,
+        64
+      ]
+    },
+    "diffusion_model.transformer_blocks.4.attn.to_k": {
+      "A.weight": [
+        64,
+        4096
+      ],
+      "B.weight": [
+        4096,
+        64
+      ]
+    },
+    "diffusion_model.transformer_blocks.4.attn.to_out.0": {
+      "A.weight": [
+        64,
+        4096
+      ],
+      "B.weight": [
+        4096,
+        64
+      ]
+    },
+    "diffusion_model.transformer_blocks.4.attn.to_q": {
+      "A.weight": [
+        64,
+        4096
+      ],
+      "B.weight": [
+        4096,
+        64
+      ]
+    },
+    "diffusion_model.transformer_blocks.4.attn.to_v": {
+      "A.weight": [
+        64,
+        4096
+      ],
+      "B.weight": [
+        4096,
+        64
+      ]
+    },
+    "diffusion_model.transformer_blocks.4.img_mlp.gate_up": {
+      "A.weight": [
+        64,
+        4096
+      ],
+      "B.weight": [
+        24576,
+        64
+      ]
+    },
+    "diffusion_model.transformer_blocks.4.img_mlp.out": {
+      "A.weight": [
+        64,
+        12288
+      ],
+      "B.weight": [
+        4096,
+        64
+      ]
+    },
+    "diffusion_model.transformer_blocks.5.attn.to_k": {
+      "A.weight": [
+        64,
+        4096
+      ],
+      "B.weight": [
+        4096,
+        64
+      ]
+    },
+    "diffusion_model.transformer_blocks.5.attn.to_out.0": {
+      "A.weight": [
+        64,
+        4096
+      ],
+      "B.weight": [
+        4096,
+        64
+      ]
+    },
+    "diffusion_model.transformer_blocks.5.attn.to_q": {
+      "A.weight": [
+        64,
+        4096
+      ],
+      "B.weight": [
+        4096,
+        64
+      ]
+    },
+    "diffusion_model.transformer_blocks.5.attn.to_v": {
+      "A.weight": [
+        64,
+        4096
+      ],
+      "B.weight": [
+        4096,
+        64
+      ]
+    },
+    "diffusion_model.transformer_blocks.5.img_mlp.gate_up": {
+      "A.weight": [
+        64,
+        4096
+      ],
+      "B.weight": [
+        24576,
+        64
+      ]
+    },
+    "diffusion_model.transformer_blocks.5.img_mlp.out": {
+      "A.weight": [
+        64,
+        12288
+      ],
+      "B.weight": [
+        4096,
+        64
+      ]
+    },
+    "diffusion_model.transformer_blocks.6.attn.to_k": {
+      "A.weight": [
+        64,
+        4096
+      ],
+      "B.weight": [
+        4096,
+        64
+      ]
+    },
+    "diffusion_model.transformer_blocks.6.attn.to_out.0": {
+      "A.weight": [
+        64,
+        4096
+      ],
+      "B.weight": [
+        4096,
+        64
+      ]
+    },
+    "diffusion_model.transformer_blocks.6.attn.to_q": {
+      "A.weight": [
+        64,
+        4096
+      ],
+      "B.weight": [
+        4096,
+        64
+      ]
+    },
+    "diffusion_model.transformer_blocks.6.attn.to_v": {
+      "A.weight": [
+        64,
+        4096
+      ],
+      "B.weight": [
+        4096,
+        64
+      ]
+    },
+    "diffusion_model.transformer_blocks.6.img_mlp.gate_up": {
+      "A.weight": [
+        64,
+        4096
+      ],
+      "B.weight": [
+        24576,
+        64
+      ]
+    },
+    "diffusion_model.transformer_blocks.6.img_mlp.out": {
+      "A.weight": [
+        64,
+        12288
+      ],
+      "B.weight": [
+        4096,
+        64
+      ]
+    },
+    "diffusion_model.transformer_blocks.7.attn.to_k": {
+      "A.weight": [
+        64,
+        4096
+      ],
+      "B.weight": [
+        4096,
+        64
+      ]
+    },
+    "diffusion_model.transformer_blocks.7.attn.to_out.0": {
+      "A.weight": [
+        64,
+        4096
+      ],
+      "B.weight": [
+        4096,
+        64
+      ]
+    },
+    "diffusion_model.transformer_blocks.7.attn.to_q": {
+      "A.weight": [
+        64,
+        4096
+      ],
+      "B.weight": [
+        4096,
+        64
+      ]
+    },
+    "diffusion_model.transformer_blocks.7.attn.to_v": {
+      "A.weight": [
+        64,
+        4096
+      ],
+      "B.weight": [
+        4096,
+        64
+      ]
+    },
+    "diffusion_model.transformer_blocks.7.img_mlp.gate_up": {
+      "A.weight": [
+        64,
+        4096
+      ],
+      "B.weight": [
+        24576,
+        64
+      ]
+    },
+    "diffusion_model.transformer_blocks.7.img_mlp.out": {
+      "A.weight": [
+        64,
+        12288
+      ],
+      "B.weight": [
+        4096,
+        64
+      ]
+    },
+    "diffusion_model.transformer_blocks.8.attn.to_k": {
+      "A.weight": [
+        64,
+        4096
+      ],
+      "B.weight": [
+        4096,
+        64
+      ]
+    },
+    "diffusion_model.transformer_blocks.8.attn.to_out.0": {
+      "A.weight": [
+        64,
+        4096
+      ],
+      "B.weight": [
+        4096,
+        64
+      ]
+    },
+    "diffusion_model.transformer_blocks.8.attn.to_q": {
+      "A.weight": [
+        64,
+        4096
+      ],
+      "B.weight": [
+        4096,
+        64
+      ]
+    },
+    "diffusion_model.transformer_blocks.8.attn.to_v": {
+      "A.weight": [
+        64,
+        4096
+      ],
+      "B.weight": [
+        4096,
+        64
+      ]
+    },
+    "diffusion_model.transformer_blocks.8.img_mlp.out": {
+      "A.weight": [
+        64,
+        12288
+      ],
+      "B.weight": [
+        4096,
+        64
+      ]
+    },
+    "diffusion_model.transformer_blocks.9.attn.to_k": {
+      "A.weight": [
+        64,
+        4096
+      ],
+      "B.weight": [
+        4096,
+        64
+      ]
+    },
+    "diffusion_model.transformer_blocks.9.attn.to_out.0": {
+      "A.weight": [
+        64,
+        4096
+      ],
+      "B.weight": [
+        4096,
+        64
+      ]
+    },
+    "diffusion_model.transformer_blocks.9.attn.to_q": {
+      "A.weight": [
+        64,
+        4096
+      ],
+      "B.weight": [
+        4096,
+        64
+      ]
+    },
+    "diffusion_model.transformer_blocks.9.attn.to_v": {
+      "A.weight": [
+        64,
+        4096
+      ],
+      "B.weight": [
+        4096,
+        64
+      ]
+    },
+    "diffusion_model.transformer_blocks.9.img_mlp.out": {
+      "A.weight": [
+        64,
+        12288
+      ],
+      "B.weight": [
+        4096,
+        64
+      ]
+    }
+  },
+  "metadata": {
+    "software": "{\"name\": \"ai-toolkit\", \"repo\": \"https://github.com/ostris/ai-toolkit\", \"version\": \"0.13.23\"}",
+    "training_info": "{\"step\": 7500, \"epoch\": 3}",
+    "surgery": "{\"recipe\": \"comboA_att115\", \"source\": \"bfs_body_qwen_2.1_v3_gate_late_000007500.safetensors\", \"modules\": 136}",
+    "name": "bfs_body_qwen_2.1_v3_gate_late",
+    "version": "1.0"
+  },
+  "expected_diffusers_conversion": {
+    "modules": 152,
+    "tensors": 304,
+    "reason": "16 fused gate_up modules split into gate_layer and proj; actual loading still must be checked."
+  }
+}

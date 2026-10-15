@@ -1,0 +1,265 @@
+{
+  "passed": true,
+  "cases": [
+    {
+      "pair_id": "iper_00",
+      "dataset": "iper",
+      "resolution": 512,
+      "sigma": 0.5,
+      "noise_sha256": "dd7c6d1832acae6f9b4ab5b26b392ed9d220799dde5ce1d9c35106dffef1f9dc",
+      "prompt_sha256": "9d5879b4be7dd1892c6c503aff6e3a11b785c636ebfa908f03e4a3b5db1fe19e",
+      "latent_input_shape": [
+        1,
+        1024,
+        64
+      ],
+      "prediction_shape": [
+        1,
+        2454,
+        64
+      ],
+      "comparisons": {
+        "all_control_disabled_vs_native": {
+          "max_abs": 0.0,
+          "exactly_equal": true,
+          "atol": 0.001,
+          "require_exact": false,
+          "passed": true
+        },
+        "face_checkpoint_Face_off_vs_body_checkpoint": {
+          "max_abs": 0.0,
+          "exactly_equal": true,
+          "atol": 0.001,
+          "require_exact": true,
+          "passed": true
+        },
+        "face_checkpoint_invalid_Face_vs_body_checkpoint": {
+          "max_abs": 0.0,
+          "exactly_equal": true,
+          "atol": 0.001,
+          "require_exact": true,
+          "passed": true
+        }
+      },
+      "Body_condition_parity": {
+        "tensors_compared": 15,
+        "exactly_equal": true
+      },
+      "observations": {
+        "native": {
+          "native_transformer_calls": 1,
+          "control_prefix_bitwise_checks": 0,
+          "native_prefix_image_token_counts": [
+            1024
+          ],
+          "target_token_count": 1024,
+          "target_token_grid": [
+            32,
+            32
+          ],
+          "face_region_checks": 0,
+          "face_outside_target_token_cell_region_max_abs": 0.0,
+          "region_definition": "all token cells intersecting the target face box; includes boundary cells",
+          "control_context_installed": false
+        },
+        "all_control_disabled": {
+          "native_transformer_calls": 1,
+          "control_prefix_bitwise_checks": 32,
+          "native_prefix_image_token_counts": [
+            1024
+          ],
+          "target_token_count": 1024,
+          "target_token_grid": [
+            32,
+            32
+          ],
+          "face_region_checks": 0,
+          "face_outside_target_token_cell_region_max_abs": 0.0,
+          "region_definition": "all token cells intersecting the target face box; includes boundary cells",
+          "control_context_installed": true
+        },
+        "body": {
+          "native_transformer_calls": 1,
+          "control_prefix_bitwise_checks": 32,
+          "native_prefix_image_token_counts": [
+            1024
+          ],
+          "target_token_count": 1024,
+          "target_token_grid": [
+            32,
+            32
+          ],
+          "face_region_checks": 0,
+          "face_outside_target_token_cell_region_max_abs": 0.0,
+          "region_definition": "all token cells intersecting the target face box; includes boundary cells",
+          "control_context_installed": true
+        },
+        "Face_off": {
+          "native_transformer_calls": 1,
+          "control_prefix_bitwise_checks": 32,
+          "native_prefix_image_token_counts": [
+            1024
+          ],
+          "target_token_count": 1024,
+          "target_token_grid": [
+            32,
+            32
+          ],
+          "face_region_checks": 1,
+          "face_outside_target_token_cell_region_max_abs": 0.0,
+          "region_definition": "all token cells intersecting the target face box; includes boundary cells",
+          "control_context_installed": true
+        },
+        "invalid_Face": {
+          "native_transformer_calls": 1,
+          "control_prefix_bitwise_checks": 32,
+          "native_prefix_image_token_counts": [
+            1024
+          ],
+          "target_token_count": 1024,
+          "target_token_grid": [
+            32,
+            32
+          ],
+          "face_region_checks": 1,
+          "face_outside_target_token_cell_region_max_abs": 0.0,
+          "region_definition": "all token cells intersecting the target face box; includes boundary cells",
+          "control_context_installed": true
+        }
+      },
+      "all_models_frozen": true,
+      "parameter_gradients_absent": true,
+      "passed": true
+    },
+    {
+      "pair_id": "tiktok_00",
+      "dataset": "tiktok",
+      "resolution": 512,
+      "sigma": 0.5,
+      "noise_sha256": "dd7c6d1832acae6f9b4ab5b26b392ed9d220799dde5ce1d9c35106dffef1f9dc",
+      "prompt_sha256": "3c4f1f561dbf6bfc79acc4032ef77aae1e8ec677e9b8b1b9a3864f856f136ced",
+      "latent_input_shape": [
+        1,
+        1024,
+        64
+      ],
+      "prediction_shape": [
+        1,
+        2479,
+        64
+      ],
+      "comparisons": {
+        "all_control_disabled_vs_native": {
+          "max_abs": 0.0,
+          "exactly_equal": true,
+          "atol": 0.001,
+          "require_exact": false,
+          "passed": true
+        },
+        "face_checkpoint_Face_off_vs_body_checkpoint": {
+          "max_abs": 0.0,
+          "exactly_equal": true,
+          "atol": 0.001,
+          "require_exact": true,
+          "passed": true
+        },
+        "face_checkpoint_invalid_Face_vs_body_checkpoint": {
+          "max_abs": 0.0,
+          "exactly_equal": true,
+          "atol": 0.001,
+          "require_exact": true,
+          "passed": true
+        }
+      },
+      "Body_condition_parity": {
+        "tensors_compared": 15,
+        "exactly_equal": true
+      },
+      "observations": {
+        "native": {
+          "native_transformer_calls": 1,
+          "control_prefix_bitwise_checks": 0,
+          "native_prefix_image_token_counts": [
+            1024
+          ],
+          "target_token_count": 1024,
+          "target_token_grid": [
+            32,
+            32
+          ],
+          "face_region_checks": 0,
+          "face_outside_target_token_cell_region_max_abs": 0.0,
+          "region_definition": "all token cells intersecting the target face box; includes boundary cells",
+          "control_context_installed": false
+        },
+        "all_control_disabled": {
+          "native_transformer_calls": 1,
+          "control_prefix_bitwise_checks": 32,
+          "native_prefix_image_token_counts": [
+            1024
+          ],
+          "target_token_count": 1024,
+          "target_token_grid": [
+            32,
+            32
+          ],
+          "face_region_checks": 0,
+          "face_outside_target_token_cell_region_max_abs": 0.0,
+          "region_definition": "all token cells intersecting the target face box; includes boundary cells",
+          "control_context_installed": true
+        },
+        "body": {
+          "native_transformer_calls": 1,
+          "control_prefix_bitwise_checks": 32,
+          "native_prefix_image_token_counts": [
+            1024
+          ],
+          "target_token_count": 1024,
+          "target_token_grid": [
+            32,
+            32
+          ],
+          "face_region_checks": 0,
+          "face_outside_target_token_cell_region_max_abs": 0.0,
+          "region_definition": "all token cells intersecting the target face box; includes boundary cells",
+          "control_context_installed": true
+        },
+        "Face_off": {
+          "native_transformer_calls": 1,
+          "control_prefix_bitwise_checks": 32,
+          "native_prefix_image_token_counts": [
+            1024
+          ],
+          "target_token_count": 1024,
+          "target_token_grid": [
+            32,
+            32
+          ],
+          "face_region_checks": 1,
+          "face_outside_target_token_cell_region_max_abs": 0.0,
+          "region_definition": "all token cells intersecting the target face box; includes boundary cells",
+          "control_context_installed": true
+        },
+        "invalid_Face": {
+          "native_transformer_calls": 1,
+          "control_prefix_bitwise_checks": 32,
+          "native_prefix_image_token_counts": [
+            1024
+          ],
+          "target_token_count": 1024,
+          "target_token_grid": [
+            32,
+            32
+          ],
+          "face_region_checks": 1,
+          "face_outside_target_token_cell_region_max_abs": 0.0,
+          "region_definition": "all token cells intersecting the target face box; includes boundary cells",
+          "control_context_installed": true
+        }
+      },
+      "all_models_frozen": true,
+      "parameter_gradients_absent": true,
+      "passed": true
+    }
+  ]
+}

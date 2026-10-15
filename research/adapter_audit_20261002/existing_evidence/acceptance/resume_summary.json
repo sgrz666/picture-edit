@@ -1,0 +1,9 @@
+{
+  "state_loading_exact": true,
+  "default_cuda_loss_equal": true,
+  "default_cuda_update_bitwise": false,
+  "default_cuda_update_max_abs": 1.146271824836731e-05,
+  "deterministic_reference_only": true,
+  "deterministic_reference_next_step_exact": true,
+  "note": "Default CUDA backward uses nondeterministic operators. Checkpoint restoration is exact; the equivalent deterministic reference gives identical next-step loss, gradients, parameter updates and optimizer state."
+}

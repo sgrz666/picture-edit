@@ -1,0 +1,162 @@
+<?xml version='1.0' encoding='utf-8'?>
+<mxfile host="Electron" modified="2026-09-22T00:00:00.000Z" agent="Codex" version="31.4.5" type="device" compressed="false">
+  <diagram id="05_input_condition_architecture.drawio" name="Page-1">
+    <mxGraphModel dx="1422" dy="794" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1900" pageHeight="1230" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="c2" value="05" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#EAF6E7;strokeColor=#4D8A42;strokeWidth=1.6;fontFamily=Microsoft YaHei;fontSize=24;fontColor=#18324A;fontStyle=1;align=center;verticalAlign=middle;spacingLeft=10;spacingRight=10;spacingTop=5;spacingBottom=5;dashed=0;dashPattern=6 4;" vertex="1" parent="1">
+          <mxGeometry x="42" y="30" width="58" height="58" as="geometry" />
+        </mxCell>
+        <mxCell id="c3" value="输入条件架构" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;fontFamily=Microsoft YaHei;fontSize=28;fontColor=#18324A;fontStyle=1;align=left;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="120" y="26" width="1220" height="42" as="geometry" />
+        </mxCell>
+        <mxCell id="c4" value="从 iPER/Hi4D/TikTok 的离线资产到 Adapter 的五类运行时输入对象" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;fontFamily=Microsoft YaHei;fontSize=15;fontColor=#60758A;fontStyle=0;align=left;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="120" y="68" width="1350" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="c5" value="蓝=输入  绿=编码  紫=推理&lt;br&gt;橙=Adapter  红=Detail  灰=冻结" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#B8C5D0;strokeWidth=1.6;fontFamily=Microsoft YaHei;fontSize=12;fontColor=#18324A;fontStyle=0;align=center;verticalAlign=middle;spacingLeft=10;spacingRight=10;spacingTop=5;spacingBottom=5;dashed=0;dashPattern=6 4;" vertex="1" parent="1">
+          <mxGeometry x="1490" y="30" width="365" height="58" as="geometry" />
+        </mxCell>
+        <mxCell id="c6" value="A  离线来源与切片" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#4D86C6;strokeWidth=1.8;dashed=1;dashPattern=7 5;fontFamily=Microsoft YaHei;fontSize=15;fontStyle=1;fontColor=#4D86C6;align=left;verticalAlign=top;spacingLeft=12;spacingTop=8;" vertex="1" parent="1">
+          <mxGeometry x="35" y="130" width="430" height="920" as="geometry" />
+        </mxCell>
+        <mxCell id="c7" value="SMPLest-X params.pt&lt;br&gt;全局组：beta/root/trans/camera → 26D&lt;br&gt;细节组：expression10 + jaw3&lt;br&gt;+ L45 + R45 → 103D" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#EAF3FF;strokeColor=#4D86C6;strokeWidth=1.6;fontFamily=Microsoft YaHei;fontSize=15;fontColor=#18324A;fontStyle=1;align=center;verticalAlign=middle;spacingLeft=10;spacingRight=10;spacingTop=5;spacingBottom=5;dashed=0;dashPattern=6 4;" vertex="1" parent="1">
+          <mxGeometry x="75" y="185" width="350" height="125" as="geometry" />
+        </mxCell>
+        <mxCell id="c8" value="DWPose / 项目 keypoints_134&lt;br&gt;0:18 body · 18:24 foot&lt;br&gt;24:92 face68&lt;br&gt;92:113 left hand21&lt;br&gt;113:134 right hand21" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#EAF3FF;strokeColor=#4D86C6;strokeWidth=1.6;fontFamily=Microsoft YaHei;fontSize=15;fontColor=#18324A;fontStyle=1;align=center;verticalAlign=middle;spacingLeft=10;spacingRight=10;spacingTop=5;spacingBottom=5;dashed=0;dashPattern=6 4;" vertex="1" parent="1">
+          <mxGeometry x="75" y="350" width="350" height="140" as="geometry" />
+        </mxCell>
+        <mxCell id="c9" value="nvdiffrast / geometry assets&lt;br&gt;normal3 · part14 · depth1 · mask1&lt;br&gt;目标 pose heatmaps 25" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#EAF3FF;strokeColor=#4D86C6;strokeWidth=1.6;fontFamily=Microsoft YaHei;fontSize=15;fontColor=#18324A;fontStyle=1;align=center;verticalAlign=middle;spacingLeft=10;spacingRight=10;spacingTop=5;spacingBottom=5;dashed=0;dashPattern=6 4;" vertex="1" parent="1">
+          <mxGeometry x="75" y="530" width="350" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="c10" value="DeepGen VAE encodes source images&lt;br&gt;scene latent [B,16,h,w]&lt;br&gt;person latents [B,2,16,h,w]" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#EAF3FF;strokeColor=#4D86C6;strokeWidth=1.6;fontFamily=Microsoft YaHei;fontSize=15;fontColor=#18324A;fontStyle=1;align=center;verticalAlign=middle;spacingLeft=10;spacingRight=10;spacingTop=5;spacingBottom=5;dashed=0;dashPattern=6 4;" vertex="1" parent="1">
+          <mxGeometry x="75" y="675" width="350" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="c11" value="ROI 条件构建&lt;br&gt;face/hand box: xyxy normalized&lt;br&gt;face expand15%，hand expand25%&lt;br&gt;valid threshold: face≥48/68, hand≥12/21&lt;br&gt;reference crop 224²" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#FFE9EC;strokeColor=#C94C65;strokeWidth=1.6;fontFamily=Microsoft YaHei;fontSize=15;fontColor=#18324A;fontStyle=1;align=center;verticalAlign=middle;spacingLeft=10;spacingRight=10;spacingTop=5;spacingBottom=5;dashed=0;dashPattern=6 4;" vertex="1" parent="1">
+          <mxGeometry x="75" y="815" width="350" height="155" as="geometry" />
+        </mxCell>
+        <mxCell id="c12" value="B  五类输入对象" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#2E8B73;strokeWidth=1.8;dashed=1;dashPattern=7 5;fontFamily=Microsoft YaHei;fontSize=15;fontStyle=1;fontColor=#2E8B73;align=left;verticalAlign=top;spacingLeft=12;spacingTop=8;" vertex="1" parent="1">
+          <mxGeometry x="500" y="130" width="740" height="920" as="geometry" />
+        </mxCell>
+        <mxCell id="c13" value="① ConditionBundle（全局结构）&lt;br&gt;A/B spatial [256,H/8,W/8] + masks&lt;br&gt;A/B global tokens [4,256]&lt;br&gt;relative tokens [2,256]&lt;br&gt;contact spatial/tokens + task token&lt;br&gt;person_valid / person_count" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#E4F7F1;strokeColor=#2E8B73;strokeWidth=1.6;fontFamily=Microsoft YaHei;fontSize=15;fontColor=#18324A;fontStyle=1;align=center;verticalAlign=middle;spacingLeft=10;spacingRight=10;spacingTop=5;spacingBottom=5;dashed=0;dashPattern=6 4;" vertex="1" parent="1">
+          <mxGeometry x="540" y="180" width="310" height="185" as="geometry" />
+        </mxCell>
+        <mxCell id="c14" value="② AdapterIdentityCondition&lt;br&gt;（全局外观）&lt;br&gt;source_person_latents [B,2,16,h,w]&lt;br&gt;source_indices [B,2] ∈ [0,15]&lt;br&gt;同一样本有效人物不可重复" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#E4F7F1;strokeColor=#2E8B73;strokeWidth=1.6;fontFamily=Microsoft YaHei;fontSize=15;fontColor=#18324A;fontStyle=1;align=center;verticalAlign=middle;spacingLeft=10;spacingRight=10;spacingTop=5;spacingBottom=5;dashed=0;dashPattern=6 4;" vertex="1" parent="1">
+          <mxGeometry x="890" y="180" width="310" height="135" as="geometry" />
+        </mxCell>
+        <mxCell id="c15" value="③ FaceHandDetailCondition（局部几何）&lt;br&gt;face [B,2,68,3]&lt;br&gt;hands [B,2,2,21,3]&lt;br&gt;smplx_detail [B,2,103]&lt;br&gt;source/target boxes [B,2,3,4]&lt;br&gt;region_valid [B,2,3] · source_indices" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#FFE9EC;strokeColor=#C94C65;strokeWidth=1.6;fontFamily=Microsoft YaHei;fontSize=15;fontColor=#18324A;fontStyle=1;align=center;verticalAlign=middle;spacingLeft=10;spacingRight=10;spacingTop=5;spacingBottom=5;dashed=0;dashPattern=6 4;" vertex="1" parent="1">
+          <mxGeometry x="540" y="430" width="310" height="200" as="geometry" />
+        </mxCell>
+        <mxCell id="c16" value="④ DetailReferenceBatch（局部外观）&lt;br&gt;images [B,2,3,R,3,224,224]&lt;br&gt;region order = face / left / right&lt;br&gt;R=1…3 · reference_valid 同形槽位" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#FFE9EC;strokeColor=#C94C65;strokeWidth=1.6;fontFamily=Microsoft YaHei;fontSize=15;fontColor=#18324A;fontStyle=1;align=center;verticalAlign=middle;spacingLeft=10;spacingRight=10;spacingTop=5;spacingBottom=5;dashed=0;dashPattern=6 4;" vertex="1" parent="1">
+          <mxGeometry x="890" y="430" width="310" height="150" as="geometry" />
+        </mxCell>
+        <mxCell id="c17" value="⑤ DeepGen step inputs（动态）&lt;br&gt;target noisy latent [B,16,Hlat,Wlat]&lt;br&gt;encoder_hidden_states [B,Ntext,4096]&lt;br&gt;pooled_projections [B,2048]&lt;br&gt;timestep [B] / denoise progress" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#EAF3FF;strokeColor=#4D86C6;strokeWidth=1.6;fontFamily=Microsoft YaHei;fontSize=15;fontColor=#18324A;fontStyle=1;align=center;verticalAlign=middle;spacingLeft=10;spacingRight=10;spacingTop=5;spacingBottom=5;dashed=0;dashPattern=6 4;" vertex="1" parent="1">
+          <mxGeometry x="715" y="710" width="310" height="155" as="geometry" />
+        </mxCell>
+        <mxCell id="c18" value="运行时调节&lt;br&gt;geometry_strength&lt;br&gt;interaction_strength&lt;br&gt;detail / face / hand strength" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#FFF1DF;strokeColor=#D07A24;strokeWidth=1.6;fontFamily=Microsoft YaHei;fontSize=15;fontColor=#18324A;fontStyle=1;align=center;verticalAlign=middle;spacingLeft=10;spacingRight=10;spacingTop=5;spacingBottom=5;dashed=0;dashPattern=6 4;" vertex="1" parent="1">
+          <mxGeometry x="715" y="905" width="310" height="92" as="geometry" />
+        </mxCell>
+        <mxCell id="e19" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#45657F;strokeWidth=2.0;endArrow=block;endFill=1;endSize=8;dashed=0;dashPattern=6 4;fontFamily=Microsoft YaHei;fontSize=13;fontColor=#60758A;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="c7" target="c13">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e20" value="body 25" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#45657F;strokeWidth=2.0;endArrow=block;endFill=1;endSize=8;dashed=0;dashPattern=6 4;fontFamily=Microsoft YaHei;fontSize=13;fontColor=#60758A;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="c8" target="c13">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e21" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#45657F;strokeWidth=2.0;endArrow=block;endFill=1;endSize=8;dashed=0;dashPattern=6 4;fontFamily=Microsoft YaHei;fontSize=13;fontColor=#60758A;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="c9" target="c13">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e22" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#45657F;strokeWidth=2.0;endArrow=block;endFill=1;endSize=8;dashed=0;dashPattern=6 4;fontFamily=Microsoft YaHei;fontSize=13;fontColor=#60758A;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="c10" target="c14">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="480" y="725" />
+              <mxPoint x="480" y="110" />
+              <mxPoint x="870" y="110" />
+              <mxPoint x="870" y="247" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e23" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#45657F;strokeWidth=2.0;endArrow=block;endFill=1;endSize=8;dashed=0;dashPattern=6 4;fontFamily=Microsoft YaHei;fontSize=13;fontColor=#60758A;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="c7" target="c15">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e24" value="face + hands" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#45657F;strokeWidth=2.0;endArrow=block;endFill=1;endSize=8;dashed=0;dashPattern=6 4;fontFamily=Microsoft YaHei;fontSize=13;fontColor=#60758A;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="c8" target="c15">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e25" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#45657F;strokeWidth=2.0;endArrow=block;endFill=1;endSize=8;dashed=0;dashPattern=6 4;fontFamily=Microsoft YaHei;fontSize=13;fontColor=#60758A;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="c11" target="c15">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="480" y="897" />
+              <mxPoint x="480" y="530" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e26" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#45657F;strokeWidth=2.0;endArrow=block;endFill=1;endSize=8;dashed=0;dashPattern=6 4;fontFamily=Microsoft YaHei;fontSize=13;fontColor=#60758A;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="c11" target="c16">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="480" y="897" />
+              <mxPoint x="480" y="650" />
+              <mxPoint x="870" y="650" />
+              <mxPoint x="870" y="505" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="c27" value="C  Adapter 内部准备结果" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#D07A24;strokeWidth=1.8;dashed=1;dashPattern=7 5;fontFamily=Microsoft YaHei;fontSize=15;fontStyle=1;fontColor=#D07A24;align=left;verticalAlign=top;spacingLeft=12;spacingTop=8;" vertex="1" parent="1">
+          <mxGeometry x="1275" y="130" width="590" height="920" as="geometry" />
+        </mxCell>
+        <mxCell id="c28" value="Prepared global conditioning&lt;br&gt;geometry_condition [B,144,Hlat,Wlat]&lt;br&gt;interaction_condition [B,144,Hlat,Wlat]&lt;br&gt;adapter_tokens [B,≤24,1536]&lt;br&gt;adapter_token_mask" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#FFF1DF;strokeColor=#D07A24;strokeWidth=1.6;fontFamily=Microsoft YaHei;fontSize=15;fontColor=#18324A;fontStyle=1;align=center;verticalAlign=middle;spacingLeft=10;spacingRight=10;spacingTop=5;spacingBottom=5;dashed=0;dashPattern=6 4;" vertex="1" parent="1">
+          <mxGeometry x="1320" y="185" width="500" height="145" as="geometry" />
+        </mxCell>
+        <mxCell id="c29" value="PreparedFaceHandDetailConditioning&lt;br&gt;detail_condition [B,144,Hlat,Wlat]&lt;br&gt;detail_tokens [B,48,1536]&lt;br&gt;detail_token_mask [B,48]&lt;br&gt;region_masks [B,2,3,Htok,Wtok]&lt;br&gt;detail_valid [B]" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#FFE9EC;strokeColor=#C94C65;strokeWidth=1.6;fontFamily=Microsoft YaHei;fontSize=15;fontColor=#18324A;fontStyle=1;align=center;verticalAlign=middle;spacingLeft=10;spacingRight=10;spacingTop=5;spacingBottom=5;dashed=0;dashPattern=6 4;" vertex="1" parent="1">
+          <mxGeometry x="1320" y="400" width="500" height="175" as="geometry" />
+        </mxCell>
+        <mxCell id="c30" value="Context 隔离&lt;br&gt;Geometry / Interaction: text + global adapter tokens&lt;br&gt;Detail: text + detail tokens only&lt;br&gt;局部 token 不改变旧分支输出" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#FFF1DF;strokeColor=#D07A24;strokeWidth=1.6;fontFamily=Microsoft YaHei;fontSize=15;fontColor=#18324A;fontStyle=1;align=center;verticalAlign=middle;spacingLeft=10;spacingRight=10;spacingTop=5;spacingBottom=5;dashed=0;dashPattern=6 4;" vertex="1" parent="1">
+          <mxGeometry x="1320" y="650" width="500" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="c31" value="关键校验&lt;br&gt;detail-valid person 必须属于全局 person_valid&lt;br&gt;detail source_indices 必须匹配 identity source_indices&lt;br&gt;无 detail 或 detail_strength=0 → V6.3 路径" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#FFF6D9;strokeColor=#B88A19;strokeWidth=1.6;fontFamily=Microsoft YaHei;fontSize=15;fontColor=#18324A;fontStyle=1;align=center;verticalAlign=middle;spacingLeft=10;spacingRight=10;spacingTop=5;spacingBottom=5;dashed=0;dashPattern=6 4;" vertex="1" parent="1">
+          <mxGeometry x="1320" y="835" width="500" height="125" as="geometry" />
+        </mxCell>
+        <mxCell id="e32" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#45657F;strokeWidth=2.0;endArrow=block;endFill=1;endSize=8;dashed=0;dashPattern=6 4;fontFamily=Microsoft YaHei;fontSize=13;fontColor=#60758A;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="c13" target="c28">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="860" y="165" />
+              <mxPoint x="1285" y="165" />
+              <mxPoint x="1285" y="250" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e33" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#45657F;strokeWidth=2.0;endArrow=block;endFill=1;endSize=8;dashed=0;dashPattern=6 4;fontFamily=Microsoft YaHei;fontSize=13;fontColor=#60758A;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="c14" target="c28">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e34" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#45657F;strokeWidth=2.0;endArrow=block;endFill=1;endSize=8;dashed=0;dashPattern=6 4;fontFamily=Microsoft YaHei;fontSize=13;fontColor=#60758A;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="c15" target="c29">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="860" y="650" />
+              <mxPoint x="1285" y="650" />
+              <mxPoint x="1285" y="487" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e35" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#45657F;strokeWidth=2.0;endArrow=block;endFill=1;endSize=8;dashed=0;dashPattern=6 4;fontFamily=Microsoft YaHei;fontSize=13;fontColor=#60758A;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="c16" target="c29">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e36" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#45657F;strokeWidth=2.0;endArrow=block;endFill=1;endSize=8;dashed=0;dashPattern=6 4;fontFamily=Microsoft YaHei;fontSize=13;fontColor=#60758A;labelBackgroundColor=#FFFFFF;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="c28" target="c30">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e37" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#45657F;strokeWidth=2.0;endArrow=block;endFill=1;endSize=8;dashed=0;dashPattern=6 4;fontFamily=Microsoft YaHei;fontSize=13;fontColor=#60758A;labelBackgroundColor=#FFFFFF;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="c29" target="c30">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e38" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#45657F;strokeWidth=2.0;endArrow=block;endFill=1;endSize=8;dashed=0;dashPattern=6 4;fontFamily=Microsoft YaHei;fontSize=13;fontColor=#60758A;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="c17" target="c30">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e39" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#45657F;strokeWidth=2.0;endArrow=block;endFill=1;endSize=8;dashed=0;dashPattern=6 4;fontFamily=Microsoft YaHei;fontSize=13;fontColor=#60758A;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="c18" target="c31">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="c40" value="维度解释与当前边界" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#B88A19;strokeWidth=1.8;dashed=1;dashPattern=7 5;fontFamily=Microsoft YaHei;fontSize=15;fontStyle=1;fontColor=#B88A19;align=left;verticalAlign=top;spacingLeft=12;spacingTop=8;" vertex="1" parent="1">
+          <mxGeometry x="35" y="1085" width="1830" height="92" as="geometry" />
+        </mxCell>
+        <mxCell id="c41" value="当前代码不是把“137 维关键点”整体塞进一个 encoder：全局分支保留 25 个身体 pose heatmaps；局部分支单独取 68 脸点 + 2×21 手点，并与 SMPL-X detail 103D 编码。这样避免高维局部信号稀释全局姿态条件。" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;fontFamily=Microsoft YaHei;fontSize=15;fontColor=#18324A;fontStyle=1;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="85" y="1105" width="1730" height="48" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

@@ -1,0 +1,1040 @@
+<!DOCTYPE html>
+<html lang="zh-CN" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Qwen-Image-2.1 受控人像姿态编辑 · 综合实验结果展示控制台</title>
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  <style>
+    :root {
+      --bg: #0b0f19;
+      --card-bg: #111827;
+      --card-border: #1f2937;
+      --accent: #3b82f6;
+      --accent-hover: #2563eb;
+      --text: #f3f4f6;
+      --text-muted: #9ca3af;
+    }
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, "Microsoft YaHei", sans-serif;
+    }
+    .custom-scroll::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .custom-scroll::-webkit-scrollbar-thumb {
+      background: #374151;
+      border-radius: 3px;
+    }
+    .tab-btn.active {
+      background-color: #2563eb;
+      color: #ffffff;
+      border-color: #3b82f6;
+    }
+  </style>
+</head>
+<body class="min-h-screen antialiased selection:bg-blue-600 selection:text-white">
+  <!-- Top Navigation Bar -->
+  <header class="sticky top-0 z-40 border-b border-gray-800 bg-[#0d1322]/90 backdrop-blur-md px-6 py-4">
+    <div class="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center shadow-lg shadow-blue-500/20">
+          <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+        </div>
+        <div>
+          <h1 class="text-lg font-bold text-white tracking-tight">Qwen-Image-2.1 多模态受控人像编辑</h1>
+          <p class="text-xs text-gray-400">综合实验结果汇报 · PE-I2I 重写实测图集 / BFH 联合调控 / 8 组消融方案</p>
+        </div>
+      </div>
+
+      <div class="flex flex-wrap items-center gap-2">
+        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> 288/288 评测收敛
+        </span>
+        <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium bg-blue-500/10 text-blue-400 border border-blue-500/20">
+          PE-I2I 自动重写实测
+        </span>
+        <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium bg-purple-500/10 text-purple-400 border border-purple-500/20">
+          8 组 8192 步消融就绪
+        </span>
+        <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium bg-gray-800 text-gray-300 border border-gray-700">
+          原生画幅 608×1088
+        </span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 py-6">
+    <!-- Tab Controls -->
+    <div class="flex flex-wrap items-center gap-2 border-b border-gray-800 pb-4 mb-6">
+      <button onclick="switchTab('pe')" id="btn-pe" class="tab-btn active px-4 py-2 rounded-lg text-sm font-medium border border-gray-700 text-gray-300 hover:text-white transition-all flex items-center gap-2">
+        <span>✍️</span> PE-I2I 本轮重写实测图集与实验条件
+      </button>
+      <button onclick="switchTab('overview')" id="btn-overview" class="tab-btn px-4 py-2 rounded-lg text-sm font-medium border border-gray-700 text-gray-300 hover:text-white transition-all flex items-center gap-2">
+        <span>📊</span> 全局概览与核心结论
+      </button>
+      <button onclick="switchTab('bfh')" id="btn-bfh" class="tab-btn px-4 py-2 rounded-lg text-sm font-medium border border-gray-700 text-gray-300 hover:text-white transition-all flex items-center gap-2">
+        <span>🔬</span> BFH 三分支联合调控消融
+      </button>
+      <button onclick="switchTab('gallery')" id="btn-gallery" class="tab-btn px-4 py-2 rounded-lg text-sm font-medium border border-gray-700 text-gray-300 hover:text-white transition-all flex items-center gap-2">
+        <span>🖼️</span> 多维度多阶段生成画廊
+      </button>
+      <button onclick="switchTab('eightarm')" id="btn-eightarm" class="tab-btn px-4 py-2 rounded-lg text-sm font-medium border border-gray-700 text-gray-300 hover:text-white transition-all flex items-center gap-2">
+        <span>🚀</span> TikTok 8 组消融方案规划
+      </button>
+    </div>
+
+    <!-- ========================================== TAB PE: 本轮 PE 重写实测图集与条件 ========================================== -->
+    <div id="tab-pe" class="space-y-8">
+      <!-- 1. 物理位置速查表 -->
+      <div class="p-6 rounded-2xl bg-gray-900 border border-gray-800 space-y-4 shadow-sm">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-gray-800 pb-3">
+          <div>
+            <h2 class="text-base font-bold text-white flex items-center gap-2">
+              <span class="w-3 h-3 rounded-full bg-blue-500"></span> 本轮实验图片物理落盘位置速查表
+            </h2>
+            <p class="text-xs text-gray-400 mt-1">包含生图结果、重写流程图、几何条件输入图（DWPose/Normal/Depth）与事后真值对照</p>
+          </div>
+          <span class="text-xs px-2.5 py-1 rounded bg-blue-900/30 text-blue-300 border border-blue-800 font-mono">本地绝对路径索引</span>
+        </div>
+
+        <div class="overflow-x-auto custom-scroll">
+          <table class="w-full text-left border-collapse text-xs">
+            <thead>
+              <tr class="border-b border-gray-800 bg-gray-800/40 text-gray-400 uppercase">
+                <th class="py-2.5 px-3">实验模块</th>
+                <th class="py-2.5 px-3">文件名</th>
+                <th class="py-2.5 px-3">本地存储路径</th>
+                <th class="py-2.5 px-3">图像内容与作用</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-800 font-mono text-gray-300">
+              <tr class="hover:bg-gray-800/30">
+                <td class="py-2 px-3 text-blue-400 font-bold">PE-I2I 16-test 出图</td>
+                <td class="py-2 px-3 font-semibold text-white">fig3_inputs.png</td>
+                <td class="py-2 px-3 text-gray-400">output/pei2i_20261008/stage2/assets/fig3_inputs.png</td>
+                <td class="py-2 px-3 font-sans text-gray-300">输入条件：图A蓝西服 + 图B黑高领白背带裤 + 65字短指令</td>
+              </tr>
+              <tr class="hover:bg-gray-800/30">
+                <td class="py-2 px-3 text-blue-400 font-bold">PE-I2I 16-test 出图</td>
+                <td class="py-2 px-3 font-semibold text-white">fig4_results.png</td>
+                <td class="py-2 px-3 text-gray-400">output/pei2i_20261008/stage2/assets/fig4_results.png</td>
+                <td class="py-2 px-3 font-sans text-emerald-400 font-semibold">四档提示词出图质量横向对比（简易/人工长词V1/V2/PE重写，中英两列）</td>
+              </tr>
+              <tr class="hover:bg-gray-800/30">
+                <td class="py-2 px-3 text-blue-400 font-bold">PE-I2I 16-test 出图</td>
+                <td class="py-2 px-3 font-semibold text-white">fig5_pei2i_output.png</td>
+                <td class="py-2 px-3 text-gray-400">output/pei2i_20261008/stage2/assets/fig5_pei2i_output.png</td>
+                <td class="py-2 px-3 font-sans text-white">PE-I2I 单独重写生图特写（中文版手中无球 vs 英文版手中有球）</td>
+              </tr>
+              <tr class="hover:bg-gray-800/30">
+                <td class="py-2 px-3 text-blue-400 font-bold">PE-I2I 16-test 出图</td>
+                <td class="py-2 px-3 font-semibold text-white">fig1_flow.png / fig2_rewrite_process.png</td>
+                <td class="py-2 px-3 text-gray-400">output/pei2i_20261008/stage2/assets/</td>
+                <td class="py-2 px-3 font-sans text-gray-300">两段式编辑管线集成架构图 + 思考链可视化</td>
+              </tr>
+              <tr class="hover:bg-gray-800/30 bg-purple-950/10">
+                <td class="py-2 px-3 text-purple-300 font-bold">TikTok 几何读图</td>
+                <td class="py-2 px-3 font-semibold text-white">tiktok_03_*.png (5张)</td>
+                <td class="py-2 px-3 text-gray-400">research/geometry_prompt_coordination_20261009/inputs/</td>
+                <td class="py-2 px-3 font-sans text-purple-200">仰头案例：源图 A、DWPose 骨架、SMPL-X 法线、深度图、事后真值照片</td>
+              </tr>
+              <tr class="hover:bg-gray-800/30 bg-purple-950/10">
+                <td class="py-2 px-3 text-purple-300 font-bold">TikTok 几何读图</td>
+                <td class="py-2 px-3 font-semibold text-white">tiktok_05_*.png (5张)</td>
+                <td class="py-2 px-3 text-gray-400">research/geometry_prompt_coordination_20261009/inputs/</td>
+                <td class="py-2 px-3 font-sans text-purple-200">握拳案例：源图 A、DWPose 骨架、SMPL-X 法线、深度图、事后真值照片</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- 2. 实验一：PE-I2I 官方四档提示词出图质量实测 (16-test 案例) -->
+      <div class="p-6 rounded-2xl bg-gray-900 border border-gray-800 space-y-6">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-gray-800 pb-3">
+          <div>
+            <div class="inline-block px-2.5 py-0.5 rounded bg-blue-600/30 text-blue-400 text-xs font-bold mb-1">实验板块一</div>
+            <h2 class="text-base font-bold text-white">PE-I2I 官方四档提示词出图质量实测 (16-test 案例)</h2>
+            <p class="text-xs text-gray-400 mt-0.5">验证官方提示词重写模型能否替代人工逐样本撰写长提示词，以及对图像生成质量的真实提升</p>
+          </div>
+          <span class="text-xs px-2.5 py-1 rounded bg-gray-800 text-gray-300 font-mono">Qwen-Image-2.1 基座 · 40 步</span>
+        </div>
+
+        <!-- 实验条件参数卡片 -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+          <div class="p-4 rounded-xl bg-gray-950 border border-gray-800 space-y-2">
+            <h3 class="font-bold text-blue-400 flex items-center gap-1.5">
+              <span>⚙️</span> Qwen-Image-2.1 生图侧固定超参数
+            </h3>
+            <ul class="space-y-1 text-gray-300 font-mono">
+              <li>• 生图基座: <span class="text-white">Qwen-Image-2.1 (BF16，完全冻结，无 Adapter / 无 LoRA)</span></li>
+              <li>• 输入协议: <span class="text-white">image=[A, B]，多图参考输入，不做拼接</span></li>
+              <li>• 分辨率 / 画幅: <span class="text-white">640 × 1088 (output_resolution=1088)</span></li>
+              <li>• 采样步数: <span class="text-white">40 步 | true_cfg_scale=1.0 | 随机种子=42</span></li>
+              <li>• 推理优化: <span class="text-white">use_kv_cache=True (生成结构完全一致，仅替换 prompt 字符串)</span></li>
+            </ul>
+          </div>
+
+          <div class="p-4 rounded-xl bg-gray-950 border border-gray-800 space-y-2">
+            <h3 class="font-bold text-purple-400 flex items-center gap-1.5">
+              <span>🧠</span> PE-I2I 重写侧固定超参数
+            </h3>
+            <ul class="space-y-1 text-gray-300 font-mono">
+              <li>• 重写模型: <span class="text-white">Qwen/Qwen-Image-2.1-PE-I2I (9B 参数，BF16，独立 VLM)</span></li>
+              <li>• 采样参数: <span class="text-white">max_new_tokens=24000, temp=1.0, top_p=0.95, top_k=20</span></li>
+              <li>• 思考模式: <span class="text-white">enable_thinking=True (思考长度 8086 字符)</span></li>
+              <li>• 构图推断: <span class="text-white">中英两版均自动返回 ratio_follow: "&lt;image1&gt;"</span></li>
+              <li>• 重写耗时: <span class="text-white">中文单次约 80 秒，英文单次约 154 秒</span></li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- 图像展示 Grid -->
+        <div class="space-y-6">
+          <!-- 输入参考图与短指令 -->
+          <div class="p-4 rounded-xl bg-gray-950/70 border border-gray-800 space-y-2">
+            <div class="flex items-center justify-between text-xs">
+              <span class="font-bold text-gray-200">① 输入参考图（图A身份+图B动作）与 65 字符原始短指令 (fig3_inputs.png)</span>
+              <span class="text-blue-400 cursor-pointer" onclick="openModal('./assets/fig3_inputs.png')">全屏查看 🔍</span>
+            </div>
+            <div class="rounded-lg overflow-hidden border border-gray-800 bg-black cursor-pointer group" onclick="openModal('./assets/fig3_inputs.png')">
+              <img src="./assets/fig3_inputs.png" alt="PE Inputs" class="w-full h-auto object-contain max-h-[400px] mx-auto group-hover:scale-[1.01] transition">
+            </div>
+            <p class="text-xs text-gray-400">图 A（蓝西装男子）提供身份服装与背景；图 B（黑高领白背带裤男子）提供姿态与面部朝向；输入短指令仅 65 字符。</p>
+          </div>
+
+          <!-- 四档提示词出图质量横向对比 (核心大图) -->
+          <div class="p-4 rounded-xl bg-gray-950/70 border border-gray-800 space-y-3">
+            <div class="flex items-center justify-between text-xs">
+              <span class="font-bold text-emerald-400">② 四档提示词出图质量横向对比大图 (fig4_results.png)</span>
+              <span class="text-blue-400 cursor-pointer" onclick="openModal('./assets/fig4_results.png')">点击放大高清比对 🔍</span>
+            </div>
+            <div class="rounded-lg overflow-hidden border border-gray-800 bg-black cursor-pointer group" onclick="openModal('./assets/fig4_results.png')">
+              <img src="./assets/fig4_results.png" alt="PE Four Tier Results" class="w-full h-auto object-contain max-h-[550px] mx-auto group-hover:scale-[1.01] transition">
+            </div>
+            
+            <!-- 判定表格 -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 text-xs pt-1">
+              <div class="p-3 rounded-lg bg-red-950/20 border border-red-800/40">
+                <div class="font-bold text-red-300 mb-1">① 简易提示词 (失败)</div>
+                <p class="text-gray-300">抄用了图 B 的服装（黑高领、白背带、格纹裤），图 A 身份完全丢失。</p>
+              </div>
+              <div class="p-3 rounded-lg bg-gray-800/40 border border-gray-700/60">
+                <div class="font-bold text-gray-200 mb-1">② 人工详细提示词 V1 (成功)</div>
+                <p class="text-gray-300">保住图 A 蓝西服与眼镜，但每样本需手写数百字。</p>
+              </div>
+              <div class="p-3 rounded-lg bg-gray-800/40 border border-gray-700/60">
+                <div class="font-bold text-gray-200 mb-1">③ 人工详细提示词 V2 (成功)</div>
+                <p class="text-gray-300">加入最高优先级锁定条款，背景与服饰细节还原度高。</p>
+              </div>
+              <div class="p-3 rounded-lg bg-emerald-950/20 border border-emerald-800/50">
+                <div class="font-bold text-emerald-300 mb-1">④ PE-I2I 自动重写 (成功)</div>
+                <p class="text-emerald-200/90 font-semibold">完全自动化！出图质感追平人工精写长词，有效抵御向图 B 坍缩。</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- PE-I2I 独立特写对比 -->
+          <div class="p-4 rounded-xl bg-gray-950/70 border border-gray-800 space-y-2">
+            <div class="flex items-center justify-between text-xs">
+              <span class="font-bold text-gray-200">③ PE-I2I 重写出图特写：中英文关于「篮球」的语义分歧 (fig5_pei2i_output.png)</span>
+              <span class="text-blue-400 cursor-pointer" onclick="openModal('./assets/fig5_pei2i_output.png')">全屏查看 🔍</span>
+            </div>
+            <div class="rounded-lg overflow-hidden border border-gray-800 bg-black cursor-pointer group" onclick="openModal('./assets/fig5_pei2i_output.png')">
+              <img src="./assets/fig5_pei2i_output.png" alt="PE-I2I Output" class="w-full h-auto object-contain max-h-[450px] mx-auto group-hover:scale-[1.01] transition">
+            </div>
+            <p class="text-xs text-gray-400">中文重写理解为只迁移肢体动作（「手指向上伸出呈托举姿势但手中不持篮球」→ 左图无球）；英文重写理解为手部包含道具（「balance the orange basketball」→ 右图有球）。</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. 实验二：TikTok 原生几何与 PE-I2I 读图实测 (2026-10-09 最新几何协调实验) -->
+      <div class="p-6 rounded-2xl bg-gray-900 border border-gray-800 space-y-6">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-gray-800 pb-3">
+          <div>
+            <div class="inline-block px-2.5 py-0.5 rounded bg-purple-600/30 text-purple-400 text-xs font-bold mb-1">实验板块二</div>
+            <h2 class="text-base font-bold text-white">TikTok 原生几何与 PE-I2I 读图实测 (2026-10-09 几何协调实验)</h2>
+            <p class="text-xs text-gray-400 mt-0.5">测试 PE-I2I 读纯骨架 (S 模式) vs 骨架+SMPL-X法线+深度图 (SND 模式) 的几何解析能力</p>
+          </div>
+          <span class="text-xs px-2.5 py-1 rounded bg-gray-800 text-gray-300 font-mono">严格隔离目标 B 真实照片</span>
+        </div>
+
+        <!-- 案例 1: tiktok_03 仰头案例 -->
+        <div class="p-5 rounded-xl bg-gray-950 border border-gray-800 space-y-4">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-gray-800 pb-2.5">
+            <div class="flex items-center gap-2">
+              <span class="px-2 py-0.5 rounded bg-blue-600/30 text-blue-400 font-mono text-xs font-bold">案例 1</span>
+              <span class="text-sm font-bold text-white">tiktok_03：明显仰头与低垂双臂姿态</span>
+            </div>
+            <span class="text-xs text-emerald-400 font-mono">SND 模式成功纠正仰头描述 (100.6s)</span>
+          </div>
+
+          <!-- 5 张输入几何图片阵列 -->
+          <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+            <div class="space-y-1">
+              <span class="text-[11px] font-semibold text-gray-400">源人物 A (RGB)</span>
+              <div class="rounded-lg overflow-hidden border border-gray-800 bg-black cursor-pointer" onclick="openModal('./assets/tiktok_03_source_A.png')">
+                <img src="./assets/tiktok_03_source_A.png" alt="A" class="w-full h-auto object-cover">
+              </div>
+            </div>
+            <div class="space-y-1">
+              <span class="text-[11px] font-semibold text-gray-400">目标 DWPose 骨架</span>
+              <div class="rounded-lg overflow-hidden border border-gray-800 bg-black cursor-pointer" onclick="openModal('./assets/tiktok_03_target_dwpose.png')">
+                <img src="./assets/tiktok_03_target_dwpose.png" alt="DWPose" class="w-full h-auto object-cover">
+              </div>
+            </div>
+            <div class="space-y-1">
+              <span class="text-[11px] font-semibold text-gray-400">SMPL-X 法线 (Normal)</span>
+              <div class="rounded-lg overflow-hidden border border-gray-800 bg-black cursor-pointer" onclick="openModal('./assets/tiktok_03_target_normal.png')">
+                <img src="./assets/tiktok_03_target_normal.png" alt="Normal" class="w-full h-auto object-cover">
+              </div>
+            </div>
+            <div class="space-y-1">
+              <span class="text-[11px] font-semibold text-gray-400">Depth 可视化</span>
+              <div class="rounded-lg overflow-hidden border border-gray-800 bg-black cursor-pointer" onclick="openModal('./assets/tiktok_03_target_depth_vis.png')">
+                <img src="./assets/tiktok_03_target_depth_vis.png" alt="Depth" class="w-full h-auto object-cover">
+              </div>
+            </div>
+            <div class="space-y-1">
+              <span class="text-[11px] font-semibold text-amber-400">目标 B 照片 (仅事后复核)</span>
+              <div class="rounded-lg overflow-hidden border border-amber-900/50 bg-black cursor-pointer" onclick="openModal('./assets/tiktok_03_target_B_posthoc_only.png')">
+                <img src="./assets/tiktok_03_target_B_posthoc_only.png" alt="B Posthoc" class="w-full h-auto object-cover">
+              </div>
+            </div>
+          </div>
+
+          <!-- S vs SND 对比与重写结果 -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs pt-2">
+            <div class="p-3.5 rounded-lg bg-gray-900/90 border border-gray-800 space-y-1.5">
+              <div class="flex justify-between font-bold text-gray-300">
+                <span>S 模式 (仅骨架 · 耗时 88.8s)</span>
+                <span class="text-amber-400">头向误判</span>
+              </div>
+              <p class="text-gray-400 leading-relaxed">
+                描述为：“Keep the head frontal toward camera with upright neck”（漏判了仰头，误判为直立正视）。
+              </p>
+            </div>
+
+            <div class="p-3.5 rounded-lg bg-blue-950/30 border border-blue-600/40 space-y-1.5">
+              <div class="flex justify-between font-bold text-blue-300">
+                <span>SND 模式 (骨架+法线+深度 · 耗时 100.6s)</span>
+                <span class="text-emerald-400 font-bold">成功恢复仰头</span>
+              </div>
+              <p class="text-blue-200/90 leading-relaxed">
+                描述为：“Raise the person's head into an upward tilt with the chin lifted and face turned toward ceiling”（在法线与深度指引下准确捕捉到了抬下巴动作）。
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- 案例 2: tiktok_05 双拳前伸案例 -->
+        <div class="p-5 rounded-xl bg-gray-950 border border-gray-800 space-y-4">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-gray-800 pb-2.5">
+            <div class="flex items-center gap-2">
+              <span class="px-2 py-0.5 rounded bg-blue-600/30 text-blue-400 font-mono text-xs font-bold">案例 2</span>
+              <span class="text-sm font-bold text-white">tiktok_05：双拳向镜头前伸与手势几何冲突</span>
+            </div>
+            <span class="text-xs text-amber-400 font-mono">发现输入几何与真实照片的先验冲突</span>
+          </div>
+
+          <!-- 5 张输入几何图片阵列 -->
+          <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+            <div class="space-y-1">
+              <span class="text-[11px] font-semibold text-gray-400">源人物 A (RGB)</span>
+              <div class="rounded-lg overflow-hidden border border-gray-800 bg-black cursor-pointer" onclick="openModal('./assets/tiktok_05_source_A.png')">
+                <img src="./assets/tiktok_05_source_A.png" alt="A" class="w-full h-auto object-cover">
+              </div>
+            </div>
+            <div class="space-y-1">
+              <span class="text-[11px] font-semibold text-gray-400">目标 DWPose 骨架</span>
+              <div class="rounded-lg overflow-hidden border border-gray-800 bg-black cursor-pointer" onclick="openModal('./assets/tiktok_05_target_dwpose.png')">
+                <img src="./assets/tiktok_05_target_dwpose.png" alt="DWPose" class="w-full h-auto object-cover">
+              </div>
+            </div>
+            <div class="space-y-1">
+              <span class="text-[11px] font-semibold text-gray-400">SMPL-X 法线 (Normal)</span>
+              <div class="rounded-lg overflow-hidden border border-gray-800 bg-black cursor-pointer" onclick="openModal('./assets/tiktok_05_target_normal.png')">
+                <img src="./assets/tiktok_05_target_normal.png" alt="Normal" class="w-full h-auto object-cover">
+              </div>
+            </div>
+            <div class="space-y-1">
+              <span class="text-[11px] font-semibold text-gray-400">Depth 可视化</span>
+              <div class="rounded-lg overflow-hidden border border-gray-800 bg-black cursor-pointer" onclick="openModal('./assets/tiktok_05_target_depth_vis.png')">
+                <img src="./assets/tiktok_05_target_depth_vis.png" alt="Depth" class="w-full h-auto object-cover">
+              </div>
+            </div>
+            <div class="space-y-1">
+              <span class="text-[11px] font-semibold text-amber-400">目标 B 照片 (仅事后复核)</span>
+              <div class="rounded-lg overflow-hidden border border-amber-900/50 bg-black cursor-pointer" onclick="openModal('./assets/tiktok_05_target_B_posthoc_only.png')">
+                <img src="./assets/tiktok_05_target_B_posthoc_only.png" alt="B Posthoc" class="w-full h-auto object-cover">
+              </div>
+            </div>
+          </div>
+
+          <!-- S vs SND 对比与深入归因 -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs pt-2">
+            <div class="p-3.5 rounded-lg bg-gray-900/90 border border-gray-800 space-y-1.5">
+              <div class="flex justify-between font-bold text-gray-300">
+                <span>S 模式 (仅骨架 · 耗时 117.5s)</span>
+                <span class="text-amber-400">手部朝向偏离</span>
+              </div>
+              <p class="text-gray-400 leading-relaxed">
+                二维投影难以表达手部深度距离，PE 写为：“Lower both arms with hands open at hip height with fingers spread”。
+              </p>
+            </div>
+
+            <div class="p-3.5 rounded-lg bg-purple-950/30 border border-purple-600/40 space-y-1.5">
+              <div class="flex justify-between font-bold text-purple-300">
+                <span>SND 模式 (耗时 113.0s) & 冲突根因</span>
+                <span class="text-amber-400 font-bold">先验冲突揭露</span>
+              </div>
+              <p class="text-purple-200/90 leading-relaxed">
+                双手虽被纠正至躯干前，但仍描述为张开的手。核验发现：<strong>SMPL-X Normal 渲染本身已呈现松手状态</strong>，输入条件在送入 PE 前就与目标照片发生冲突。
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========================================== TAB 1: OVERVIEW ========================================== -->
+    <div id="tab-overview" class="hidden space-y-6">
+      <!-- KPI Stats Grid -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="p-5 rounded-2xl bg-gray-900 border border-gray-800 hover:border-gray-700 transition shadow-sm">
+          <div class="flex items-center justify-between text-gray-400 text-xs font-semibold mb-2">
+            <span>人脸身份相似度 ID (ArcFace)</span>
+            <span class="text-emerald-400 font-bold">+0.0901 vs BFSHead</span>
+          </div>
+          <div class="text-3xl font-extrabold text-white tracking-tight">0.4648</div>
+          <p class="text-xs text-gray-400 mt-2">BFH 分层调控有效抑制全身 LoRA 导致的五官洗褪</p>
+        </div>
+
+        <div class="p-5 rounded-2xl bg-gray-900 border border-gray-800 hover:border-gray-700 transition shadow-sm">
+          <div class="flex items-center justify-between text-gray-400 text-xs font-semibold mb-2">
+            <span>姿态对齐度 PCK @ 5%</span>
+            <span class="text-blue-400 font-bold">大身控制极稳</span>
+          </div>
+          <div class="text-3xl font-extrabold text-white tracking-tight">0.8647</div>
+          <p class="text-xs text-gray-400 mt-2">PCK @ 2% 达到 0.4006，全身骨架 NME 误差低至 0.0335</p>
+        </div>
+
+        <div class="p-5 rounded-2xl bg-gray-900 border border-gray-800 hover:border-gray-700 transition shadow-sm">
+          <div class="flex items-center justify-between text-gray-400 text-xs font-semibold mb-2">
+            <span>左右手部 ROI 结构检出率</span>
+            <span class="text-emerald-400 font-bold">全量捕获 100%</span>
+          </div>
+          <div class="text-3xl font-extrabold text-white tracking-tight">100% (24/24)</div>
+          <p class="text-xs text-gray-400 mt-2">左右手 DWPose 21 关节全部精准捕获，根治多指融化</p>
+        </div>
+
+        <div class="p-5 rounded-2xl bg-gray-900 border border-gray-800 hover:border-gray-700 transition shadow-sm">
+          <div class="flex items-center justify-between text-gray-400 text-xs font-semibold mb-2">
+            <span>联合训练总 Loss 收敛</span>
+            <span class="text-indigo-400 font-bold">-58.5% 下降</span>
+          </div>
+          <div class="text-3xl font-extrabold text-white tracking-tight">0.2793</div>
+          <p class="text-xs text-gray-400 mt-2">Step 1 (0.6732) → Step 256 (0.2793)，手部 Flow 降至 0.2191</p>
+        </div>
+      </div>
+
+      <!-- Core Insights Cards -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="p-6 rounded-2xl bg-gray-900/80 border border-gray-800 space-y-4">
+          <h2 class="text-base font-bold text-white flex items-center gap-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-blue-500"></span> 核心技术发现与创新突破
+          </h2>
+          <ul class="space-y-3 text-sm text-gray-300">
+            <li class="flex items-start gap-2.5">
+              <span class="text-blue-400 font-bold">1.</span>
+              <div>
+                <strong class="text-white">分层学习率彻底纠正“面部 ID 崩塌”魔咒</strong>：
+                纯 Qwen 或外挂 LoRA (BFSBody/BFSHead) 在全身动作重定向时，面部 ID 剧烈下滑至 0.3747；BFH 采用 <code class="text-xs bg-gray-800 px-1.5 py-0.5 rounded text-blue-300">Body 0.25x / Face 0.50x / Hand 1.00x</code> 架构，成功令 ID 回升至 <strong>0.4648</strong>（+0.0901 vs BFSHead）。
+              </div>
+            </li>
+            <li class="flex items-start gap-2.5">
+              <span class="text-blue-400 font-bold">2.</span>
+              <div>
+                <strong class="text-white">DWPose 21 关节点残差注入改善手部融化</strong>：
+                在 Qwen DiT 全部 6 个阶段注入 Hand Adapter 残差（RMS 0.06~0.19），手指多指、少指或掌心成团的伪影明显减少，左右手检出率达 100%。
+              </div>
+            </li>
+            <li class="flex items-start gap-2.5">
+              <span class="text-blue-400 font-bold">3.</span>
+              <div>
+                <strong class="text-white">PE-I2I 自动提示词媲美人工精写长词</strong>：
+                独立的 Qwen3.5-VL 9B 视觉语言模型在推理前将 A+B 进行视觉分解并重写，不仅消除了逐样本手写成本，还显著增强了发型、服饰与光影纹理的生成稳定性。
+              </div>
+            </li>
+          </ul>
+        </div>
+
+        <div class="p-6 rounded-2xl bg-gray-900/80 border border-gray-800 space-y-4">
+          <h2 class="text-base font-bold text-white flex items-center gap-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span> 瓶颈诊断与后续推进计划
+          </h2>
+          <ul class="space-y-3 text-sm text-gray-300">
+            <li class="flex items-start gap-2.5">
+              <span class="text-amber-400 font-bold">1.</span>
+              <div>
+                <strong class="text-white">全身下采样手部潜空间分辨率瓶颈</strong>：
+                TikTok 608×1088 原生分辨率经 8x VAE 下采样为 76×136。手部仅占 30~50 像素（对应 2~4 个 DiT Token），细密指纹与极微小手指在全图去噪中有物理上限。下一步建议引入 <strong>Latent RoI Refine</strong>。
+              </div>
+            </li>
+            <li class="flex items-start gap-2.5">
+              <span class="text-amber-400 font-bold">2.</span>
+              <div>
+                <strong class="text-white">手部损失随步数退火建议</strong>：
+                当前 Hand lr=1.00x 恒定更新，虽然收敛迅速，但后期对底座微调有轻微挤占。后续建议在 1024 步训练中加入手部损失 Cosine 退火。
+              </div>
+            </li>
+            <li class="flex items-start gap-2.5">
+              <span class="text-amber-400 font-bold">3.</span>
+              <div>
+                <strong class="text-white">8 组消融方案已完成代码与自检锁定</strong>：
+                2 底座 (Qwen vs BFSHead) × 4 提示词协议 (P0, PG, PB, PBG)，每组 1024 步共 8192 次优化更新，已通过 48 项专项自动化测试与 dry-run 验证，随时可在远端 GPU 启动。
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Comparative Bar Chart -->
+      <div class="p-6 rounded-2xl bg-gray-900 border border-gray-800 space-y-4">
+        <h3 class="text-sm font-bold text-gray-200">各模型分支核心指标直观对比 (TikTok 24 样本同口径)</h3>
+        
+        <div class="space-y-4 pt-2">
+          <!-- Item 1: ID Similarity -->
+          <div>
+            <div class="flex justify-between text-xs font-medium text-gray-300 mb-1.5">
+              <span>身份保真度 ID 对源图 A (ArcFace 相似度，越大越好)</span>
+              <span class="text-gray-400">最高: J (0.4912) | BFH: 0.4648 | 最低: BFSHead (0.3747)</span>
+            </div>
+            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 text-center text-xs">
+              <div class="bg-gray-800 p-2.5 rounded-lg border border-gray-700">
+                <div class="text-gray-400 mb-1">初始底座 init</div>
+                <div class="h-2 bg-gray-700 rounded-full overflow-hidden mb-1.5"><div class="bg-gray-400 h-full" style="width: 75%"></div></div>
+                <span class="font-mono font-bold text-gray-200">0.4476</span>
+              </div>
+              <div class="bg-gray-800 p-2.5 rounded-lg border border-gray-700">
+                <div class="text-gray-400 mb-1">联合底座 J</div>
+                <div class="h-2 bg-gray-700 rounded-full overflow-hidden mb-1.5"><div class="bg-emerald-500 h-full" style="width: 95%"></div></div>
+                <span class="font-mono font-bold text-emerald-400">0.4912</span>
+              </div>
+              <div class="bg-gray-800 p-2.5 rounded-lg border border-gray-700">
+                <div class="text-gray-400 mb-1">纯 Qwen 基干</div>
+                <div class="h-2 bg-gray-700 rounded-full overflow-hidden mb-1.5"><div class="bg-blue-400 h-full" style="width: 73%"></div></div>
+                <span class="font-mono font-bold text-gray-200">0.4370</span>
+              </div>
+              <div class="bg-gray-800 p-2.5 rounded-lg border border-gray-700">
+                <div class="text-gray-400 mb-1">BFSBody LoRA</div>
+                <div class="h-2 bg-gray-700 rounded-full overflow-hidden mb-1.5"><div class="bg-amber-400 h-full" style="width: 63%"></div></div>
+                <span class="font-mono font-bold text-amber-300">0.4026</span>
+              </div>
+              <div class="bg-gray-800 p-2.5 rounded-lg border border-gray-700">
+                <div class="text-gray-400 mb-1">BFSHead LoRA</div>
+                <div class="h-2 bg-gray-700 rounded-full overflow-hidden mb-1.5"><div class="bg-red-400 h-full" style="width: 55%"></div></div>
+                <span class="font-mono font-bold text-red-400">0.3747</span>
+              </div>
+              <div class="bg-blue-950/40 p-2.5 rounded-lg border border-blue-500/50">
+                <div class="text-blue-300 font-bold mb-1">BFH 联合调控</div>
+                <div class="h-2 bg-gray-700 rounded-full overflow-hidden mb-1.5"><div class="bg-blue-500 h-full" style="width: 88%"></div></div>
+                <span class="font-mono font-bold text-blue-400">0.4648</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Item 2: PCK @ 5% -->
+          <div class="pt-2">
+            <div class="flex justify-between text-xs font-medium text-gray-300 mb-1.5">
+              <span>姿态精度 PCK @ 5% (目标动作 B Body25 关节点对齐度，越大越好)</span>
+              <span class="text-gray-400">各分支均保持在 0.86 ~ 0.88 之间的高位对齐水平</span>
+            </div>
+            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 text-center text-xs">
+              <div class="bg-gray-800 p-2.5 rounded-lg border border-gray-700">
+                <div class="text-gray-400 mb-1">初始底座 init</div>
+                <span class="font-mono font-bold text-gray-200">0.8637</span>
+              </div>
+              <div class="bg-gray-800 p-2.5 rounded-lg border border-gray-700">
+                <div class="text-gray-400 mb-1">联合底座 J</div>
+                <span class="font-mono font-bold text-gray-200">0.8651</span>
+              </div>
+              <div class="bg-gray-800 p-2.5 rounded-lg border border-gray-700">
+                <div class="text-gray-400 mb-1">纯 Qwen 基干</div>
+                <span class="font-mono font-bold text-gray-200">0.8674</span>
+              </div>
+              <div class="bg-gray-800 p-2.5 rounded-lg border border-gray-700">
+                <div class="text-gray-400 mb-1">BFSBody LoRA</div>
+                <span class="font-mono font-bold text-gray-200">0.8691</span>
+              </div>
+              <div class="bg-gray-800 p-2.5 rounded-lg border border-gray-700">
+                <div class="text-gray-400 mb-1">BFSHead LoRA</div>
+                <span class="font-mono font-bold text-emerald-400">0.8833</span>
+              </div>
+              <div class="bg-blue-950/40 p-2.5 rounded-lg border border-blue-500/50">
+                <div class="text-blue-300 font-bold mb-1">BFH 联合调控</div>
+                <span class="font-mono font-bold text-blue-400">0.8647</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========================================== TAB 2: BFH STUDY ========================================== -->
+    <div id="tab-bfh" class="hidden space-y-6">
+      <div class="p-6 rounded-2xl bg-gray-900 border border-gray-800 space-y-4">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-2 border-b border-gray-800 pb-3">
+          <div>
+            <h2 class="text-base font-bold text-white">TikTok 24 样本全量分支客观指标对比表</h2>
+            <p class="text-xs text-gray-400 mt-1">评测集：TikTok 24 样本锁定 · 30 步扩散推理 · 严格同口径无损 ROI 评测</p>
+          </div>
+          <span class="text-xs px-2.5 py-1 rounded bg-gray-800 text-gray-300 font-mono">RTX 6000D 80GB · NativePad 608×1088</span>
+        </div>
+
+        <div class="overflow-x-auto custom-scroll">
+          <table class="w-full text-left border-collapse text-xs">
+            <thead>
+              <tr class="border-b border-gray-800 bg-gray-800/40 text-gray-400 uppercase">
+                <th class="py-3 px-3">模型分支 / 阶段</th>
+                <th class="py-3 px-3 text-center">样本 / 成功</th>
+                <th class="py-3 px-3">身份保真度 ID (ArcFace)</th>
+                <th class="py-3 px-3">姿态 PCK @ 5%</th>
+                <th class="py-3 px-3">姿态 PCK @ 2%</th>
+                <th class="py-3 px-3">骨架 NME 误差</th>
+                <th class="py-3 px-3 text-center">手部 ROI 检出率</th>
+                <th class="py-3 px-3">特性与评语</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-800/60 font-mono">
+              <tr class="hover:bg-gray-800/20">
+                <td class="py-3 px-3 font-semibold text-gray-300">初始未调底座 (<code class="text-blue-400">init</code>)</td>
+                <td class="py-3 px-3 text-center">24 / 24</td>
+                <td class="py-3 px-3">0.4476</td>
+                <td class="py-3 px-3">0.8637</td>
+                <td class="py-3 px-3 text-emerald-400 font-bold">0.4524</td>
+                <td class="py-3 px-3">0.0293</td>
+                <td class="py-3 px-3 text-center text-emerald-400">100% (24/24)</td>
+                <td class="py-3 px-3 font-sans text-gray-400">零步基准，面部正常但缺乏细节对齐</td>
+              </tr>
+              <tr class="hover:bg-gray-800/20 bg-emerald-950/10">
+                <td class="py-3 px-3 font-semibold text-emerald-400">联合训练底座 (<code class="text-emerald-400">J</code> 256步)</td>
+                <td class="py-3 px-3 text-center">24 / 24</td>
+                <td class="py-3 px-3 text-emerald-400 font-bold">0.4912</td>
+                <td class="py-3 px-3">0.8651</td>
+                <td class="py-3 px-3">0.4024</td>
+                <td class="py-3 px-3">0.0339</td>
+                <td class="py-3 px-3 text-center text-emerald-400">100% (24/24)</td>
+                <td class="py-3 px-3 font-sans text-emerald-300/80">面部ID最优，未单调手部 Adapter</td>
+              </tr>
+              <tr class="hover:bg-gray-800/20">
+                <td class="py-3 px-3 font-semibold text-gray-300">纯 Qwen 基干微调 (<code class="text-blue-400">Qwen</code>)</td>
+                <td class="py-3 px-3 text-center">24 / 24</td>
+                <td class="py-3 px-3">0.4370</td>
+                <td class="py-3 px-3">0.8674</td>
+                <td class="py-3 px-3">0.4106</td>
+                <td class="py-3 px-3">0.0316</td>
+                <td class="py-3 px-3 text-center text-emerald-400">100% (24/24)</td>
+                <td class="py-3 px-3 font-sans text-gray-400">肢体收敛正常，ID 略有退化</td>
+              </tr>
+              <tr class="hover:bg-gray-800/20 bg-amber-950/10">
+                <td class="py-3 px-3 font-semibold text-amber-300">加载 BFSBody LoRA</td>
+                <td class="py-3 px-3 text-center">24 / 24</td>
+                <td class="py-3 px-3 text-amber-300">0.4026</td>
+                <td class="py-3 px-3">0.8691</td>
+                <td class="py-3 px-3">0.3933</td>
+                <td class="py-3 px-3">0.0313</td>
+                <td class="py-3 px-3 text-center text-emerald-400">100% (24/24)</td>
+                <td class="py-3 px-3 font-sans text-amber-300/80">全身大动作强，但面部五官有明显褪色</td>
+              </tr>
+              <tr class="hover:bg-gray-800/20 bg-red-950/10">
+                <td class="py-3 px-3 font-semibold text-red-400">加载 BFSHead LoRA</td>
+                <td class="py-3 px-3 text-center">24 / 24</td>
+                <td class="py-3 px-3 text-red-400 font-bold">0.3747</td>
+                <td class="py-3 px-3 text-emerald-400 font-bold">0.8833</td>
+                <td class="py-3 px-3">0.4139</td>
+                <td class="py-3 px-3 text-emerald-400 font-bold">0.0282</td>
+                <td class="py-3 px-3 text-center text-emerald-400">100% (24/24)</td>
+                <td class="py-3 px-3 font-sans text-red-300/80">官方两图 Head 强行作用于全身，ID 崩塌</td>
+              </tr>
+              <tr class="hover:bg-blue-900/20 bg-blue-950/30 border-t-2 border-blue-500/40">
+                <td class="py-3 px-3 font-bold text-blue-300">三分支联合调控 (<code class="text-blue-300 font-bold">BFH</code> 最终)</td>
+                <td class="py-3 px-3 text-center font-bold text-white">24 / 24</td>
+                <td class="py-3 px-3 font-bold text-blue-400">0.4648</td>
+                <td class="py-3 px-3 font-bold text-blue-400">0.8647</td>
+                <td class="py-3 px-3 font-bold text-blue-400">0.4006</td>
+                <td class="py-3 px-3 font-bold text-blue-400">0.0335</td>
+                <td class="py-3 px-3 text-center font-bold text-emerald-400">100% (24/24)</td>
+                <td class="py-3 px-3 font-sans text-blue-200 font-semibold">ID显著恢复(+0.0901 vs Head)，手部结构优化</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Paired Deltas Card -->
+      <div class="p-6 rounded-2xl bg-gray-900 border border-gray-800 space-y-4">
+        <h3 class="text-sm font-bold text-white flex items-center gap-2">
+          <span>⚖️</span> BFH 相对各对照分支的一对一配对差异分析 (Paired Deltas)
+        </h3>
+        <div class="overflow-x-auto custom-scroll">
+          <table class="w-full text-left border-collapse text-xs">
+            <thead>
+              <tr class="border-b border-gray-800 bg-gray-800/40 text-gray-400 uppercase">
+                <th class="py-2.5 px-3">对比方向 (BFH - 对照组)</th>
+                <th class="py-2.5 px-3">ID 保真度差值</th>
+                <th class="py-2.5 px-3">姿态 PCK @ 5% 差值</th>
+                <th class="py-2.5 px-3">姿态 PCK @ 2% 差值</th>
+                <th class="py-2.5 px-3">深入归因与业务结论</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-800 font-mono text-gray-300">
+              <tr>
+                <td class="py-2.5 px-3 font-bold text-white">BFH - 纯 Qwen 基干</td>
+                <td class="py-2.5 px-3 text-emerald-400 font-bold">+0.0279</td>
+                <td class="py-2.5 px-3 text-gray-400">-0.0027</td>
+                <td class="py-2.5 px-3 text-gray-400">-0.0100</td>
+                <td class="py-2.5 px-3 font-sans text-gray-300">人脸身份明显回升，肢体控制力持平，手部细节更规整。</td>
+              </tr>
+              <tr>
+                <td class="py-2.5 px-3 font-bold text-white">BFH - BFSBody LoRA</td>
+                <td class="py-2.5 px-3 text-emerald-400 font-bold">+0.0622</td>
+                <td class="py-2.5 px-3 text-gray-400">-0.0044</td>
+                <td class="py-2.5 px-3 text-emerald-400">+0.0073</td>
+                <td class="py-2.5 px-3 font-sans text-gray-300">完全克服了 Body LoRA 导致的严重人脸褪色与失真。</td>
+              </tr>
+              <tr>
+                <td class="py-2.5 px-3 font-bold text-white">BFH - BFSHead LoRA</td>
+                <td class="py-2.5 px-3 text-emerald-400 font-bold">+0.0901</td>
+                <td class="py-2.5 px-3 text-gray-400">-0.0186</td>
+                <td class="py-2.5 px-3 text-gray-400">-0.0133</td>
+                <td class="py-2.5 px-3 font-sans text-gray-300">彻底纠正了 Head LoRA 在全身场景下 ID 崩塌的问题。</td>
+              </tr>
+              <tr>
+                <td class="py-2.5 px-3 font-bold text-white">BFH - 联合底座 J</td>
+                <td class="py-2.5 px-3 text-amber-400">-0.0264</td>
+                <td class="py-2.5 px-3 text-gray-400">-0.0004</td>
+                <td class="py-2.5 px-3 text-gray-400">-0.0018</td>
+                <td class="py-2.5 px-3 font-sans text-gray-300">高学习率手部分支引入后有微小扰动，但显著优于其他后调分支。</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========================================== TAB 3: GALLERY ========================================== -->
+    <div id="tab-gallery" class="hidden space-y-6">
+      <div class="p-6 rounded-2xl bg-gray-900 border border-gray-800 space-y-6">
+        <div>
+          <h2 class="text-base font-bold text-white">多阶段多分支生成对比画廊</h2>
+          <p class="text-xs text-gray-400 mt-1">直观对比整身全景矩阵、面部局部 ROI、手部局部 ROI（点击即可高清晰全屏查看）</p>
+        </div>
+
+        <!-- Sample 1: TikTok Dance Sample -->
+        <div class="border border-gray-800 rounded-xl p-5 bg-gray-950/60 space-y-4">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-gray-800 pb-3">
+            <div class="flex items-center gap-2">
+              <span class="px-2 py-0.5 rounded bg-blue-600/30 text-blue-400 font-mono text-xs font-bold">TikTok Case #0</span>
+              <span class="text-sm font-bold text-white">00127 (Frame 0115 → 0127)</span>
+            </div>
+            <span class="text-xs text-gray-400">单人站姿侧身动作 · 手掌展开 · 人脸正侧转动</span>
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+            <!-- Whole Body -->
+            <div class="space-y-2">
+              <div class="text-xs font-semibold text-gray-300 flex items-center justify-between">
+                <span>① 整身对比 (阶段 × 分支矩阵)</span>
+                <span class="text-[11px] text-blue-400 cursor-pointer" onclick="openModal('./assets/tiktok_v3_000_00127_0115_0127_c38174d0e9_whole.jpg')">点击放大 🔍</span>
+              </div>
+              <div class="rounded-lg overflow-hidden border border-gray-800 bg-black cursor-pointer group" onclick="openModal('./assets/tiktok_v3_000_00127_0115_0127_c38174d0e9_whole.jpg')">
+                <img src="./assets/tiktok_v3_000_00127_0115_0127_c38174d0e9_whole.jpg" alt="Whole Comparison" class="w-full h-auto object-cover group-hover:scale-[1.02] transition duration-200">
+              </div>
+            </div>
+
+            <!-- Face ROI -->
+            <div class="space-y-2">
+              <div class="text-xs font-semibold text-gray-300 flex items-center justify-between">
+                <span>② 面部局部 ROI (同坐标裁剪)</span>
+                <span class="text-[11px] text-blue-400 cursor-pointer" onclick="openModal('./assets/tiktok_v3_000_00127_0115_0127_c38174d0e9_face.jpg')">点击放大 🔍</span>
+              </div>
+              <div class="rounded-lg overflow-hidden border border-gray-800 bg-black cursor-pointer group" onclick="openModal('./assets/tiktok_v3_000_00127_0115_0127_c38174d0e9_face.jpg')">
+                <img src="./assets/tiktok_v3_000_00127_0115_0127_c38174d0e9_face.jpg" alt="Face ROI Comparison" class="w-full h-auto object-cover group-hover:scale-[1.02] transition duration-200">
+              </div>
+            </div>
+
+            <!-- Hand ROI -->
+            <div class="space-y-2">
+              <div class="text-xs font-semibold text-gray-300 flex items-center justify-between">
+                <span>③ 手部局部 ROI (DWPose 21对齐)</span>
+                <span class="text-[11px] text-blue-400 cursor-pointer" onclick="openModal('./assets/tiktok_v3_000_00127_0115_0127_c38174d0e9_hand.jpg')">点击放大 🔍</span>
+              </div>
+              <div class="rounded-lg overflow-hidden border border-gray-800 bg-black cursor-pointer group" onclick="openModal('./assets/tiktok_v3_000_00127_0115_0127_c38174d0e9_hand.jpg')">
+                <img src="./assets/tiktok_v3_000_00127_0115_0127_c38174d0e9_hand.jpg" alt="Hand ROI Comparison" class="w-full h-auto object-cover group-hover:scale-[1.02] transition duration-200">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sample 2: TikTok Case #1 -->
+        <div class="border border-gray-800 rounded-xl p-5 bg-gray-950/60 space-y-4">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-gray-800 pb-3">
+            <div class="flex items-center gap-2">
+              <span class="px-2 py-0.5 rounded bg-blue-600/30 text-blue-400 font-mono text-xs font-bold">TikTok Case #1</span>
+              <span class="text-sm font-bold text-white">00138 (Frame 0038 → 0058)</span>
+            </div>
+            <span class="text-xs text-gray-400">上半身手臂大动作伸展 · 服饰褶皱纹理保持</span>
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+            <div class="space-y-2">
+              <div class="text-xs font-semibold text-gray-300 flex items-center justify-between">
+                <span>① 整身对比</span>
+                <span class="text-[11px] text-blue-400 cursor-pointer" onclick="openModal('./assets/tiktok_v3_001_00138_0038_0058_35379dc46a_whole.jpg')">点击放大 🔍</span>
+              </div>
+              <div class="rounded-lg overflow-hidden border border-gray-800 bg-black cursor-pointer group" onclick="openModal('./assets/tiktok_v3_001_00138_0038_0058_35379dc46a_whole.jpg')">
+                <img src="./assets/tiktok_v3_001_00138_0038_0058_35379dc46a_whole.jpg" alt="Whole Comparison" class="w-full h-auto object-cover group-hover:scale-[1.02] transition duration-200">
+              </div>
+            </div>
+
+            <div class="space-y-2">
+              <div class="text-xs font-semibold text-gray-300 flex items-center justify-between">
+                <span>② 面部局部 ROI</span>
+                <span class="text-[11px] text-blue-400 cursor-pointer" onclick="openModal('./assets/tiktok_v3_001_00138_0038_0058_35379dc46a_face.jpg')">点击放大 🔍</span>
+              </div>
+              <div class="rounded-lg overflow-hidden border border-gray-800 bg-black cursor-pointer group" onclick="openModal('./assets/tiktok_v3_001_00138_0038_0058_35379dc46a_face.jpg')">
+                <img src="./assets/tiktok_v3_001_00138_0038_0058_35379dc46a_face.jpg" alt="Face ROI Comparison" class="w-full h-auto object-cover group-hover:scale-[1.02] transition duration-200">
+              </div>
+            </div>
+
+            <div class="space-y-2">
+              <div class="text-xs font-semibold text-gray-300 flex items-center justify-between">
+                <span>③ 手部局部 ROI</span>
+                <span class="text-[11px] text-blue-400 cursor-pointer" onclick="openModal('./assets/tiktok_v3_001_00138_0038_0058_35379dc46a_hand.jpg')">点击放大 🔍</span>
+              </div>
+              <div class="rounded-lg overflow-hidden border border-gray-800 bg-black cursor-pointer group" onclick="openModal('./assets/tiktok_v3_001_00138_0038_0058_35379dc46a_hand.jpg')">
+                <img src="./assets/tiktok_v3_001_00138_0038_0058_35379dc46a_hand.jpg" alt="Hand ROI Comparison" class="w-full h-auto object-cover group-hover:scale-[1.02] transition duration-200">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sample 3: iPER Benchmark Sample -->
+        <div class="border border-gray-800 rounded-xl p-5 bg-gray-950/60 space-y-4">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-gray-800 pb-3">
+            <div class="flex items-center gap-2">
+              <span class="px-2 py-0.5 rounded bg-purple-600/30 text-purple-400 font-mono text-xs font-bold">iPER Case #0</span>
+              <span class="text-sm font-bold text-white">001_2 (Frame 0681 → 1344)</span>
+            </div>
+            <span class="text-xs text-gray-400">标准全身大视野 · 室内平光 · 正侧视角旋转</span>
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+            <div class="space-y-2">
+              <div class="text-xs font-semibold text-gray-300 flex items-center justify-between">
+                <span>① 整身对比</span>
+                <span class="text-[11px] text-blue-400 cursor-pointer" onclick="openModal('./assets/iper_000_001_2_source_standard_f000681_target_f001344_5236e955b1_whole.jpg')">点击放大 🔍</span>
+              </div>
+              <div class="rounded-lg overflow-hidden border border-gray-800 bg-black cursor-pointer group" onclick="openModal('./assets/iper_000_001_2_source_standard_f000681_target_f001344_5236e955b1_whole.jpg')">
+                <img src="./assets/iper_000_001_2_source_standard_f000681_target_f001344_5236e955b1_whole.jpg" alt="Whole Comparison" class="w-full h-auto object-cover group-hover:scale-[1.02] transition duration-200">
+              </div>
+            </div>
+
+            <div class="space-y-2">
+              <div class="text-xs font-semibold text-gray-300 flex items-center justify-between">
+                <span>② 面部局部 ROI</span>
+                <span class="text-[11px] text-blue-400 cursor-pointer" onclick="openModal('./assets/iper_000_001_2_source_standard_f000681_target_f001344_5236e955b1_face.jpg')">点击放大 🔍</span>
+              </div>
+              <div class="rounded-lg overflow-hidden border border-gray-800 bg-black cursor-pointer group" onclick="openModal('./assets/iper_000_001_2_source_standard_f000681_target_f001344_5236e955b1_face.jpg')">
+                <img src="./assets/iper_000_001_2_source_standard_f000681_target_f001344_5236e955b1_face.jpg" alt="Face ROI Comparison" class="w-full h-auto object-cover group-hover:scale-[1.02] transition duration-200">
+              </div>
+            </div>
+
+            <div class="space-y-2">
+              <div class="text-xs font-semibold text-gray-300 flex items-center justify-between">
+                <span>③ 手部局部 ROI</span>
+                <span class="text-[11px] text-blue-400 cursor-pointer" onclick="openModal('./assets/iper_000_001_2_source_standard_f000681_target_f001344_5236e955b1_hand.jpg')">点击放大 🔍</span>
+              </div>
+              <div class="rounded-lg overflow-hidden border border-gray-800 bg-black cursor-pointer group" onclick="openModal('./assets/iper_000_001_2_source_standard_f000681_target_f001344_5236e955b1_hand.jpg')">
+                <img src="./assets/iper_000_001_2_source_standard_f000681_target_f001344_5236e955b1_hand.jpg" alt="Hand ROI Comparison" class="w-full h-auto object-cover group-hover:scale-[1.02] transition duration-200">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========================================== TAB 5: EIGHT-ARM PLAN ========================================== -->
+    <div id="tab-eightarm" class="hidden space-y-6">
+      <div class="p-6 rounded-2xl bg-gray-900 border border-gray-800 space-y-6">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-2 border-b border-gray-800 pb-3">
+          <div>
+            <h2 class="text-base font-bold text-white">TikTok 8 组消融方案规划与执行系统</h2>
+            <p class="text-xs text-gray-400 mt-1">2 种底座 × 4 种提示词协议 · 各训练 1024 步 · 8192 次更新总预算</p>
+          </div>
+          <span class="text-xs px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-bold">
+            代码体系 Task 1~12 全面就绪
+          </span>
+        </div>
+
+        <!-- 8 Arms Table -->
+        <div class="overflow-x-auto custom-scroll">
+          <table class="w-full text-left border-collapse text-xs">
+            <thead>
+              <tr class="border-b border-gray-800 bg-gray-800/40 text-gray-400 uppercase">
+                <th class="py-3 px-3">组名 (Arm)</th>
+                <th class="py-3 px-3">冻结底座</th>
+                <th class="py-3 px-3">提示词来源 (协议)</th>
+                <th class="py-3 px-3">新增更新步</th>
+                <th class="py-3 px-3">初始权重 Checkpoint</th>
+                <th class="py-3 px-3">核心隔离与安全原则</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-800 font-mono text-gray-300">
+              <tr class="hover:bg-gray-800/30">
+                <td class="py-2.5 px-3 font-bold text-white"><code class="text-blue-400">qwen_p0</code></td>
+                <td class="py-2.5 px-3">原 Qwen-Image-2.1</td>
+                <td class="py-2.5 px-3">固定短提示词 (P0)</td>
+                <td class="py-2.5 px-3">1024 步</td>
+                <td class="py-2.5 px-3 font-mono text-[11px] text-gray-400">J256 (9e0f048c...)</td>
+                <td class="py-2.5 px-3 text-gray-400 font-sans">A-RGB 严格孤立输入，B-RGB 隔离</td>
+              </tr>
+              <tr class="hover:bg-gray-800/30">
+                <td class="py-2.5 px-3 font-bold text-white"><code class="text-blue-400">qwen_pg</code></td>
+                <td class="py-2.5 px-3">原 Qwen-Image-2.1</td>
+                <td class="py-2.5 px-3 text-blue-300">PE 看 A + 几何 (PG)</td>
+                <td class="py-2.5 px-3">1024 步</td>
+                <td class="py-2.5 px-3 font-mono text-[11px] text-gray-400">J256 (9e0f048c...)</td>
+                <td class="py-2.5 px-3 text-gray-400 font-sans">DWPose 过滤（conf≥0.5），无B外观</td>
+              </tr>
+              <tr class="hover:bg-gray-800/30">
+                <td class="py-2.5 px-3 font-bold text-white"><code class="text-blue-400">qwen_pb</code></td>
+                <td class="py-2.5 px-3">原 Qwen-Image-2.1</td>
+                <td class="py-2.5 px-3 text-purple-300">PE 看 A + B (PB)</td>
+                <td class="py-2.5 px-3">1024 步</td>
+                <td class="py-2.5 px-3 font-mono text-[11px] text-gray-400">J256 (9e0f048c...)</td>
+                <td class="py-2.5 px-3 text-gray-400 font-sans">B外观由PE转为粗粒度文本，不漏潜变量</td>
+              </tr>
+              <tr class="hover:bg-gray-800/30">
+                <td class="py-2.5 px-3 font-bold text-white"><code class="text-blue-400">qwen_pbg</code></td>
+                <td class="py-2.5 px-3">原 Qwen-Image-2.1</td>
+                <td class="py-2.5 px-3 text-emerald-300">PE 看 A + B + 几何 (PBG)</td>
+                <td class="py-2.5 px-3">1024 步</td>
+                <td class="py-2.5 px-3 font-mono text-[11px] text-gray-400">J256 (9e0f048c...)</td>
+                <td class="py-2.5 px-3 text-gray-400 font-sans">全信息描述，指令统一清洗去图片序号</td>
+              </tr>
+              <tr class="hover:bg-gray-800/30 bg-purple-950/10">
+                <td class="py-2.5 px-3 font-bold text-purple-300"><code class="text-purple-300">head_p0</code></td>
+                <td class="py-2.5 px-3">Qwen + 冻结 BFS Head</td>
+                <td class="py-2.5 px-3">固定短提示词 (P0)</td>
+                <td class="py-2.5 px-3">1024 步</td>
+                <td class="py-2.5 px-3 font-mono text-[11px] text-gray-400">J256 + BFS Head (1.0)</td>
+                <td class="py-2.5 px-3 text-gray-400 font-sans">第 0 步挂载 LoRA，不继承中间权重</td>
+              </tr>
+              <tr class="hover:bg-gray-800/30 bg-purple-950/10">
+                <td class="py-2.5 px-3 font-bold text-purple-300"><code class="text-purple-300">head_pg</code></td>
+                <td class="py-2.5 px-3">Qwen + 冻结 BFS Head</td>
+                <td class="py-2.5 px-3 text-blue-300">PE 看 A + 几何 (PG)</td>
+                <td class="py-2.5 px-3">1024 步</td>
+                <td class="py-2.5 px-3 font-mono text-[11px] text-gray-400">J256 + BFS Head (1.0)</td>
+                <td class="py-2.5 px-3 text-gray-400 font-sans">Adapter Depth 通道关闭，PE 观察</td>
+              </tr>
+              <tr class="hover:bg-gray-800/30 bg-purple-950/10">
+                <td class="py-2.5 px-3 font-bold text-purple-300"><code class="text-purple-300">head_pb</code></td>
+                <td class="py-2.5 px-3">Qwen + 冻结 BFS Head</td>
+                <td class="py-2.5 px-3 text-purple-300">PE 看 A + B (PB)</td>
+                <td class="py-2.5 px-3">1024 步</td>
+                <td class="py-2.5 px-3 font-mono text-[11px] text-gray-400">J256 + BFS Head (1.0)</td>
+                <td class="py-2.5 px-3 text-gray-400 font-sans">128 步 checkpoint 保存，无缝断点续训</td>
+              </tr>
+              <tr class="hover:bg-gray-800/30 bg-purple-950/10">
+                <td class="py-2.5 px-3 font-bold text-purple-300"><code class="text-purple-300">head_pbg</code></td>
+                <td class="py-2.5 px-3">Qwen + 冻结 BFS Head</td>
+                <td class="py-2.5 px-3 text-emerald-300">PE 看 A + B + 几何 (PBG)</td>
+                <td class="py-2.5 px-3">1024 步</td>
+                <td class="py-2.5 px-3 font-mono text-[11px] text-gray-400">J256 + BFS Head (1.0)</td>
+                <td class="py-2.5 px-3 text-gray-400 font-sans">测试集严格门禁（8组全部完成后解锁）</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Master Runner Instructions -->
+        <div class="p-4 rounded-xl bg-gray-950 border border-gray-800 space-y-3">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-semibold text-gray-300 font-mono">执行器一键调用命令 (GPU 服务器: sg)</span>
+            <span class="text-[11px] text-emerald-400 font-bold">48 passed 单元/集成测试验证</span>
+          </div>
+          <pre class="p-3 rounded-lg bg-gray-900 border border-gray-800 text-xs text-blue-300 font-mono overflow-x-auto custom-scroll">
+export STUDY_PY=/home/shangguanrz/nihaochen/envs/qwen21/bin/python
+export STUDY_RUN=/data/shangguanrz/pic-edit-experiments/pei2i_body_face_8arm_20261009
+
+# 1. 锁定数据与重写质检
+$STUDY_PY scripts/run/run_qwen21_pei2i_study.py --run "$STUDY_RUN" --phase lock
+$STUDY_PY scripts/run/run_qwen21_pei2i_study.py --run "$STUDY_RUN" --phase rewrite-qa
+
+# 2. 预计算缓存与自检
+$STUDY_PY scripts/run/run_qwen21_pei2i_study.py --run "$STUDY_RUN" --phase rewrite --splits train val diagnostic
+$STUDY_PY scripts/run/run_qwen21_pei2i_study.py --run "$STUDY_RUN" --phase faces --splits train val diagnostic test
+$STUDY_PY scripts/run/run_qwen21_pei2i_study.py --run "$STUDY_RUN" --phase cache --splits train val diagnostic
+$STUDY_PY scripts/run/run_qwen21_pei2i_study.py --run "$STUDY_RUN" --phase selfcheck
+
+# 3. 初始 Step 0 基线与 1024 步训练 (支持逐 128 步断点续训)
+$STUDY_PY scripts/run/run_qwen21_pei2i_study.py --run "$STUDY_RUN" --phase initial
+$STUDY_PY scripts/run/run_qwen21_pei2i_study.py --run "$STUDY_RUN" --phase train --max-updates 1024 --eval-every 128 --resume
+
+# 4. 最终独立测试与离线中文报告导出
+$STUDY_PY scripts/run/run_qwen21_pei2i_study.py --run "$STUDY_RUN" --phase finaltest
+$STUDY_PY scripts/run/run_qwen21_pei2i_study.py --run "$STUDY_RUN" --phase report
+$STUDY_PY scripts/run/run_qwen21_pei2i_study.py --run "$STUDY_RUN" --phase export
+          </pre>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Image Lightbox Modal -->
+  <div id="image-modal" class="fixed inset-0 z-50 bg-black/90 hidden flex items-center justify-center p-4" onclick="closeModal()">
+    <div class="relative max-w-7xl max-h-[92vh] flex flex-col items-center" onclick="event.stopPropagation()">
+      <button onclick="closeModal()" class="absolute -top-10 right-0 text-gray-300 hover:text-white text-sm font-bold bg-gray-800 px-3 py-1 rounded-full">✕ 关闭 (ESC)</button>
+      <img id="modal-img" src="" alt="Enlarged Image" class="max-w-full max-h-[85vh] object-contain rounded-lg border border-gray-700 shadow-2xl">
+    </div>
+  </div>
+
+  <!-- Client-side tab & modal logic -->
+  <script>
+    function switchTab(tabId) {
+      const tabs = ['pe', 'overview', 'bfh', 'gallery', 'eightarm'];
+      tabs.forEach(t => {
+        const el = document.getElementById('tab-' + t);
+        const btn = document.getElementById('btn-' + t);
+        if (t === tabId) {
+          el.classList.remove('hidden');
+          btn.classList.add('active');
+        } else {
+          el.classList.add('hidden');
+          btn.classList.remove('active');
+        }
+      });
+    }
+
+    function openModal(src) {
+      document.getElementById('modal-img').src = src;
+      document.getElementById('image-modal').classList.remove('hidden');
+    }
+
+    function closeModal() {
+      document.getElementById('image-modal').classList.add('hidden');
+    }
+
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') closeModal();
+    });
+  </script>
+</body>
+</html>

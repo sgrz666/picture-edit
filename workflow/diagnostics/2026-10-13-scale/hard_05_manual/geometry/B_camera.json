@@ -1,0 +1,120 @@
+{
+  "focal_xy": [
+    22054.16796875,
+    22054.169921875
+  ],
+  "principal_xy": [
+    470.7425537109375,
+    831.058349609375
+  ],
+  "B_size": [
+    968,
+    1280
+  ],
+  "generation_canvas": [
+    640,
+    928
+  ],
+  "B_to_generation": {
+    "scale": 0.9772658913224469,
+    "offset_xy": [
+      -198.15340604977223,
+      -290.94872521021966
+    ],
+    "framing": "source_torso",
+    "B_torso_px": 234.1523090042982,
+    "A_box_height_px": 738.1582740783692
+  },
+  "source_letterbox": {
+    "original_size": [
+      896,
+      1280
+    ],
+    "canvas_size": [
+      640,
+      928
+    ],
+    "resized_size": [
+      640,
+      914
+    ],
+    "scale_xy": [
+      0.7142857142857143,
+      0.7140625
+    ],
+    "offset_xy": [
+      0,
+      7
+    ],
+    "content_box": [
+      0,
+      7,
+      640,
+      921
+    ]
+  },
+  "coordinate_system": "camera XYZ; pixels x-right y-down; projection uses Z+1e-4",
+  "detections": {
+    "A": {
+      "bbox_xyxy": [
+        164.1243896484375,
+        204.040771484375,
+        569.0473022460938,
+        1237.785400390625
+      ],
+      "score": 0.945350170135498,
+      "persons_detected": 1,
+      "subject_rule": "auto",
+      "subject_index": 0,
+      "all_boxes_xyxy": [
+        [
+          164.1243896484375,
+          204.040771484375,
+          569.0473022460938,
+          1237.785400390625
+        ]
+      ],
+      "all_scores": [
+        0.945350170135498
+      ]
+    },
+    "B": {
+      "bbox_xyxy": [
+        117.562255859375,
+        428.3662109375,
+        823.840576171875,
+        1234.8980712890625
+      ],
+      "score": 0.7949548363685608,
+      "persons_detected": 1,
+      "subject_rule": "auto",
+      "subject_index": 0,
+      "all_boxes_xyxy": [
+        [
+          117.562255859375,
+          428.3662109375,
+          823.840576171875,
+          1234.8980712890625
+        ]
+      ],
+      "all_scores": [
+        0.7949548363685608
+      ]
+    }
+  },
+  "mesh_max_error_m": 3.814697265625e-06,
+  "projection_max_error_px": 0.0001359404009804166,
+  "valid_B_joints": 134,
+  "visibility_policy": "finite positive depth and in-frame only; not an occlusion confidence",
+  "estimated_hidden_joints": true,
+  "native_estimator_input": "/home/shangguanrz/project/pic-edit/workflow/runs/hard_05_manual/geometry/estimator/workflow_0362bc80b99c4e9d/demo/input_frames/workflow_0362bc80b99c4e9d/000001.jpg",
+  "native_estimator_params": "/home/shangguanrz/project/pic-edit/workflow/runs/hard_05_manual/geometry/estimator/workflow_0362bc80b99c4e9d/demo/output_frames/workflow_0362bc80b99c4e9d/workflow_0362bc80b99c4e9d_params.pt",
+  "estimator_root": "/home/shangguanrz/project/pic-edit/workflow/runs/hard_05_manual/geometry/estimator/workflow_0362bc80b99c4e9d",
+  "subject_consistency": {
+    "B_joint_centroid_px": [
+      444.9616411053199,
+      629.4258024523515
+    ],
+    "inside_selected_box": true
+  }
+}

@@ -1,0 +1,167 @@
+[
+  {
+    "path": "scripts/data/prepare_qwen21_prompt_study.py",
+    "original_sha256": "01b9683b97309cd1d71566b115395d403e1867deff17baf8ffb03ae0b96e1c1e",
+    "repaired_sha256": "2a4003892d6384e27e634aa331c28d00f031c66ab61c31bc3702d9c6c7f18ae3"
+  },
+  {
+    "path": "scripts/data/prepare_qwen21_prompt_study_faces.py",
+    "original_sha256": "98c653aa834e59a2e36062c3898e69ff6d4589660dd7707fa904032963510957",
+    "repaired_sha256": "6ce586d5df46fafe189db45e1f5e16f6004244b8cf5054323f2431230402d2cc"
+  },
+  {
+    "path": "scripts/eval/eval_qwen21_joint_pilot.py",
+    "original_sha256": "f5efc405f92bc08d01b56e04a796d1db43b89e41857b183e13d4e2475192cd80",
+    "repaired_sha256": "89079901fa6201da8a9cda0f286ceb6a6c7952f0c69dc704d602d9e2f2fb9e52"
+  },
+  {
+    "path": "scripts/precompute_qwen21_pei2i_prompts.py",
+    "original_sha256": "5d8e46a452d75364f449afcfb2dcba10bcbb4ec1261cd203eccd366438f34f91",
+    "repaired_sha256": "f7afcc772505922d69dee93747187d637e98ed37169242156ab48064441af990"
+  },
+  {
+    "path": "scripts/precompute_qwen21_prompt_study_cache.py",
+    "original_sha256": "345fc7ee6213dd6b35c95899715b9a031084410bf5cc11ec7550edc2f5a792f7",
+    "repaired_sha256": "f315c8d73fcec36f7ff07ff5beb9e63a3cc664cb77743459f4303e242f4a8160"
+  },
+  {
+    "path": "scripts/reports/build_qwen21_pei2i_study_report.py",
+    "original_sha256": "ad941352f81c07db462d16eb2a060fa3731e7956016d1cb8d71759054469d4bc",
+    "repaired_sha256": "d40e9d3fb4bb054ddec517962849308a0c4a0b21e0bed06f408e835de2b96ca4"
+  },
+  {
+    "path": "scripts/run/check_qwen21_prompt_study_resume.py",
+    "original_sha256": null,
+    "repaired_sha256": "48a67bd2bf420ffa11b5bd2db432dd7411c1cb37e96e14270605f8e965a03809"
+  },
+  {
+    "path": "scripts/run/run_qwen21_pei2i_study.py",
+    "original_sha256": "bb7d30d14353141139a4e28c5cfa88f99adb2f872e1cf71478e4393a8a6c44cb",
+    "repaired_sha256": "e21ea4e30a3beea47cf4c3a04200e9c6c90a172e09ce110aa0063e763e7e75f3"
+  },
+  {
+    "path": "scripts/train/train_qwen21_joint_pilot.py",
+    "original_sha256": "07b6cf95319ca7b5b1d77a5a1259864e618a83cb3328076917cbfe3427a407a3",
+    "repaired_sha256": "081a6de9eee15dea7c35e0e741f952acf5a5ccd251fc27098e997a2720d0caae"
+  },
+  {
+    "path": "src/pose_control/qwen21_full/data_runtime.py",
+    "original_sha256": "adde6ce2851438d43d698502dc734b78c974261cffc370b18c8626c07eb0e132",
+    "repaired_sha256": "22027d9800014d16a70c75474ad5e27d109f3dee8c4f90615b79a5acd940a4f6"
+  },
+  {
+    "path": "src/pose_control/qwen21_full/prompt_study/pairs.py",
+    "original_sha256": "d3bf0e2f17f5aab71d7b7f13042472db22dc4f3475692258f010df733b62a715",
+    "repaired_sha256": "22f5cd5baf770b48fdc4dc129a0f6f55f911f08fa27cbcde75ae5e99ea52c5b0"
+  },
+  {
+    "path": "src/pose_control/qwen21_full/prompt_study/prompts.py",
+    "original_sha256": "908f3abd71828b1320ba76d6013f7fab4ea437ce91ba4123b983724b32e8e1ba",
+    "repaired_sha256": "6074fb80c6730066b816c9bbba6ee3c4bef2957f7df7fb911f5ac846399ea0bb"
+  },
+  {
+    "path": "src/pose_control/qwen21_full/prompt_study/protocol.py",
+    "original_sha256": "d5e57c064982a51937b623c7f37b8930743a0326486636f3d26ddc87bfe235d5",
+    "repaired_sha256": "a937573e0fe64f139fabfc0f5131e8c986234514312ec3c2a0db3258fc90b11e"
+  },
+  {
+    "path": "src/pose_control/qwen21_full/prompt_study/results.py",
+    "original_sha256": "187a7003d2d9024bca6320695f7d15e390d8471f0c8ce9ef784bd664b3447c4d",
+    "repaired_sha256": "1afb328e232ef609e6bc9b844c7c4edd5bedcdf25bc65fcc9791bcb5adc8707c"
+  },
+  {
+    "path": "src/pose_control/qwen21_full/prompt_study/sampling.py",
+    "original_sha256": "105b341083fb0c3183543ec8da6ba97534c57e8c1bae23e1829e3fbb30d9f6d3",
+    "repaired_sha256": "b25e77e5e0b797af70840b74003825e0e4f43bf9fdf1611469d6efc446357e8c"
+  },
+  {
+    "path": "tests/test_analysis.py",
+    "original_sha256": null,
+    "repaired_sha256": "7d12f1a4b608a36dedd9a2ed594f73894c7f64bcbbae92878cb100dd3b34a76d"
+  },
+  {
+    "path": "tests/test_iper_v6_eval_parity.py",
+    "original_sha256": null,
+    "repaired_sha256": "866fd0eff7369e7bd77fe11dee04d8333d033d145665a54b80cf8c5a0f565947"
+  },
+  {
+    "path": "tests/test_iper_v6_training_pipeline.py",
+    "original_sha256": null,
+    "repaired_sha256": "d11e39b12c7eead3bb634d8e0b35b0e0f857b93127655704a381a7b8bc457eae"
+  },
+  {
+    "path": "tests/test_lab.py",
+    "original_sha256": null,
+    "repaired_sha256": "fa4f2ed80369a79454ae7dbde22ff1382b239771504421eff1afca89ff14155c"
+  },
+  {
+    "path": "tests/test_qwen21_prompt_study_background.py",
+    "original_sha256": null,
+    "repaired_sha256": "8a041ad897e8fae2cd348a51c31c4e3d9c06aa2859a943b0369fbfc8f56a9e38"
+  },
+  {
+    "path": "tests/test_qwen21_prompt_study_cache.py",
+    "original_sha256": "8a8a303b09dc17c7bd000218046d8a4bdf5bb0a64c6f958afa02839529547eb2",
+    "repaired_sha256": "12586d4f27d15d59455ab42490cde4e3ac8962e6560294a865f844369d44c5cc"
+  },
+  {
+    "path": "tests/test_qwen21_prompt_study_eval.py",
+    "original_sha256": "89e2e912d2fb953433d384fa9b4ef012f7b4e2be3f646c82d2f507f15773570e",
+    "repaired_sha256": "22771f66137bc33805bce656ab6b79b8c676ca81ebe17e523fd7248f05a771ad"
+  },
+  {
+    "path": "tests/test_qwen21_prompt_study_faces.py",
+    "original_sha256": "cb091d75a831f4aec9eef38956c5ac94284b4cb9033e714d94f8c8f95901fc01",
+    "repaired_sha256": "81051cc21212b06e501313ed29ed72b8f24b3f8e2386c0d70b7f0a08ebd7b8c5"
+  },
+  {
+    "path": "tests/test_qwen21_prompt_study_integrity.py",
+    "original_sha256": null,
+    "repaired_sha256": "5d1cc0bc04af5982b39b15ab7bb45489556acb0ae7a8096015ac1db65d4e9efb"
+  },
+  {
+    "path": "tests/test_qwen21_prompt_study_pairs.py",
+    "original_sha256": "c4cd3f19edaad652024ceada71628028c7ba4a1884758713fb4e404fac512cec",
+    "repaired_sha256": "689c556b0b7bb398cb716ab487bb79c75f85dd0d73285ce3e9cec2960ae8d5ef"
+  },
+  {
+    "path": "tests/test_qwen21_prompt_study_prompts.py",
+    "original_sha256": "a5301303821c725ac50a7e4b50edd97913454c7ef0d71ecfc8fb8c49fe9cc434",
+    "repaired_sha256": "5971cbdfe7dfd4504263fe29295bd745f37af1b2bd28e5ff40b730fd3794b1ef"
+  },
+  {
+    "path": "tests/test_qwen21_prompt_study_protocol.py",
+    "original_sha256": "ee698a8f194b923179ff1246c1a6fa3f5feddef8ebb7b35af259abf3fb1d3ca6",
+    "repaired_sha256": "9e72866cbecfb837b06f44866e23b4dd7189bc42c0685247c7a473a284b1f7c3"
+  },
+  {
+    "path": "tests/test_qwen21_prompt_study_report.py",
+    "original_sha256": "7995f245bd5fef10ff12cf1a3b31e281874d492a4b0bd6cb0b0095fc5801cfdc",
+    "repaired_sha256": "2e55ffbb48c48ab2d4250d16156215503e4e6a15d677cf95e49087ef6f4e3020"
+  },
+  {
+    "path": "tests/test_qwen21_prompt_study_resume_probe.py",
+    "original_sha256": null,
+    "repaired_sha256": "8edc528c4f4e09d6af9a201c21535a74adf876eeac2fd5d58f7928da410f3361"
+  },
+  {
+    "path": "tests/test_qwen21_prompt_study_runner.py",
+    "original_sha256": "4e8d72ecdb9081c823d28b3940e87968ae1d131dda09f30be25487781cdf9047",
+    "repaired_sha256": "1dbcf88329ea1612f450c9013e27ca74af99fbf2215f64163a56b72866ef5fe6"
+  },
+  {
+    "path": "tests/test_qwen21_prompt_study_training.py",
+    "original_sha256": "2b34fe4cd11e070048467a45caa748f50751311913b217fce54f2b99beaa5dfb",
+    "repaired_sha256": "c922ae90a358646b88360ffdfc0d41bc80d660e69403f33cddf89cc7fa3ac59f"
+  },
+  {
+    "path": "tests/test_report.py",
+    "original_sha256": null,
+    "repaired_sha256": "b5a0a6ac63e588a6060ca9459c45d194837b1cce98e8d6b75a88796221bd50db"
+  },
+  {
+    "path": "configs/adapter_v6_architecture.json",
+    "original_sha256": null,
+    "repaired_sha256": "4f075e902b3c4776e1571f66d3153f6cc52b08dc79b34e32f292184e395b3d03"
+  }
+]

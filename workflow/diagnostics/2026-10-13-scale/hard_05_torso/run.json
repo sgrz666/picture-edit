@@ -1,0 +1,130 @@
+{
+  "schema": "single_person_pose_workflow_v2",
+  "status": "complete",
+  "A_original": "/home/shangguanrz/project/pic-edit/experiments/qwen-2.1-test/data/testset/pairs/hard_05/A_source.png",
+  "B_original": "/home/shangguanrz/project/pic-edit/experiments/qwen-2.1-test/data/testset/pairs/hard_05/B_target.png",
+  "settings": {
+    "project_root": "/home/shangguanrz/project/pic-edit",
+    "geometry_python": "/home/shangguanrz/project/pic-edit/add/envs/smplestx_bw/bin/python",
+    "qwen_python": "/home/shangguanrz/nihaochen/envs/qwen21/bin/python",
+    "smplest_root": "/home/shangguanrz/project/pic-edit/add/tools/SMPLest-X",
+    "smplest_checkpoint": "smplest_x_h",
+    "pe_model": "/data/shangguanrz/pic-edit-models/Qwen-Image-2.1-PE-I2I",
+    "qwen_model": "/data/shangguanrz/pic-edit-models/Qwen-Image-2.1",
+    "person_detection_confidence": 0.5,
+    "subject": "auto",
+    "resolution": 768,
+    "steps": 30,
+    "seed": 42,
+    "pe_seed": 42,
+    "true_cfg_scale": 1.0,
+    "use_kv_cache": false,
+    "pose_framing": "source_torso",
+    "prop_policy": "source_only",
+    "adapter": false,
+    "lora": false
+  },
+  "requested_until": "generate",
+  "prompt_source": null,
+  "stages": [
+    {
+      "stage": "geometry",
+      "cache_hit": false,
+      "record": "/home/shangguanrz/project/pic-edit/workflow/runs/hard_05_torso/geometry/stage.json"
+    },
+    {
+      "stage": "prompt",
+      "cache_hit": false,
+      "record": "/home/shangguanrz/project/pic-edit/workflow/runs/hard_05_torso/prompt/stage.json"
+    },
+    {
+      "stage": "generate",
+      "cache_hit": false,
+      "record": "/home/shangguanrz/project/pic-edit/workflow/runs/hard_05_torso/generation/stage.json"
+    }
+  ],
+  "outputs": {
+    "B_smplx": {
+      "path": "/home/shangguanrz/project/pic-edit/workflow/runs/hard_05_torso/geometry/B_smplx.pt",
+      "sha256": "4f22f3dc65a15751198662f614a7fccaf4710165cd91d66880bd3038a419943a"
+    },
+    "B_keypoints": {
+      "path": "/home/shangguanrz/project/pic-edit/workflow/runs/hard_05_torso/geometry/B_keypoints.npz",
+      "sha256": "4546e541544c7604e1a008593ae22f8518bee4c8dac4fb572eb56b13ae84e7d9"
+    },
+    "B_camera": {
+      "path": "/home/shangguanrz/project/pic-edit/workflow/runs/hard_05_torso/geometry/B_camera.json",
+      "sha256": "57fa43ad59a6bdbc2052208c51ba96d013a4a2e78de0ad40fd0a829bbe93b3a8"
+    },
+    "B_3d_dwpose": {
+      "path": "/home/shangguanrz/project/pic-edit/workflow/runs/hard_05_torso/geometry/B_3d_dwpose.png",
+      "sha256": "77ee8fad230d421462009d0eea41facc71db518c00a10fef71e1e0db79fc6aa9"
+    },
+    "B_poseguide_native": {
+      "path": "/home/shangguanrz/project/pic-edit/workflow/runs/hard_05_torso/geometry/B_poseguide_native.png",
+      "sha256": "c6a0e33f0c87a4b34b80d1b3cd216a909643a75f511ffbf4aaec41cfa2132f28"
+    },
+    "B_overlay": {
+      "path": "/home/shangguanrz/project/pic-edit/workflow/runs/hard_05_torso/geometry/B_poseguide_overlay.png",
+      "sha256": "36d026072222578664e153034cc090b3554750ec856f04a4df6de98eb86fd725"
+    },
+    "A_alignment": {
+      "path": "/home/shangguanrz/project/pic-edit/workflow/runs/hard_05_torso/geometry/A_poseguide_alignment.png",
+      "sha256": "83b976bfd4e4d0309abc8602db98a4a3699a0c0103fb524a529da716264ad9ae"
+    },
+    "pe_compiled_prompt": {
+      "path": "/home/shangguanrz/project/pic-edit/workflow/runs/hard_05_torso/prompt/pe_compiled_prompt.txt",
+      "sha256": "d6a77658b3d39e74d245d17fe8f810e4167ad0517c5f24af0b490b4c016b2c32"
+    },
+    "pe_result": {
+      "path": "/home/shangguanrz/project/pic-edit/workflow/runs/hard_05_torso/prompt/pe_result.json",
+      "sha256": "66990c1e1bf33ec27f6ac7c41b172744f967fa99e21e355461fa018b74769865"
+    },
+    "pe_raw": {
+      "path": "/home/shangguanrz/project/pic-edit/workflow/runs/hard_05_torso/prompt/pe_raw.txt",
+      "sha256": "080e770861aee2d4c77e5a17d0d9bc9d650e87e9aaad3c1b9ffe75714bfcc2a2"
+    },
+    "rewritten_prompt_raw": {
+      "path": "/home/shangguanrz/project/pic-edit/workflow/runs/hard_05_torso/prompt/rewritten_prompt_raw.txt",
+      "sha256": "c42a1ee12c8293abc550a431b516fea9ff5a6cc5f664ea85aa7deda4ec845259"
+    },
+    "pe_attempts": {
+      "path": "/home/shangguanrz/project/pic-edit/workflow/runs/hard_05_torso/prompt/pe_attempts.json",
+      "sha256": "557445d853f5778d72727f081142446c2bba1896fc2dfd1ecc96abc7979ea6df"
+    },
+    "effective_system_prompt": {
+      "path": "/home/shangguanrz/project/pic-edit/workflow/runs/hard_05_torso/prompt/effective_system_prompt.txt",
+      "sha256": "21b31e845e365fb214312235f488ad9e2c71eebcd2fc81d25ebbc9e2d78837c7"
+    },
+    "pe_attempt_1": {
+      "path": "/home/shangguanrz/project/pic-edit/workflow/runs/hard_05_torso/prompt/pe_attempt_1.txt",
+      "sha256": "080e770861aee2d4c77e5a17d0d9bc9d650e87e9aaad3c1b9ffe75714bfcc2a2"
+    },
+    "generation_prompt": {
+      "path": "/home/shangguanrz/project/pic-edit/workflow/runs/hard_05_torso/prompt/generation_prompt.txt",
+      "sha256": "d6a77658b3d39e74d245d17fe8f810e4167ad0517c5f24af0b490b4c016b2c32"
+    },
+    "generation_prompt_provenance": {
+      "path": "/home/shangguanrz/project/pic-edit/workflow/runs/hard_05_torso/prompt/generation_prompt.json",
+      "sha256": "f6bf6de55734614d22d3d302707130c1f19ce39f6c639b0b9ba4517874c064fd"
+    },
+    "final_image": {
+      "path": "/home/shangguanrz/project/pic-edit/workflow/runs/hard_05_torso/generation/final_image.png",
+      "sha256": "b6afc27f13b6783f71e41dbf620e40282c2a40d1087afa16759403bb7e5d8aa2"
+    },
+    "final_canvas": {
+      "path": "/home/shangguanrz/project/pic-edit/workflow/runs/hard_05_torso/generation/final_canvas.png",
+      "sha256": "ec5fa7ab20ecaa06339191bda714ba5965191d83e770b3414734bf4537d43280"
+    },
+    "generation_info": {
+      "path": "/home/shangguanrz/project/pic-edit/workflow/runs/hard_05_torso/generation/generation.json",
+      "sha256": "30471262a8a0ea51846dc1d2fbf51b6be0e159aca83eff898477514bbef249eb"
+    }
+  },
+  "started_at_unix": 1791789899.9475648,
+  "finished_at_unix": 1791790211.6765738,
+  "verification": {
+    "status": "validated",
+    "reasons": {}
+  }
+}

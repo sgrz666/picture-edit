@@ -1,0 +1,53 @@
+{
+  "task": "single_person_cross_identity_pose_reference",
+  "kind": "dataset_example_only_not_model_output",
+  "source": {
+    "id": "028",
+    "frame": 200,
+    "view": "00",
+    "rgb": "/data/shangguanrz/pic-edit-datasets/SynBody/inspection_20261003/extracted/HumanNeRF-subset/028/img/00/0200.jpg",
+    "mask": "/data/shangguanrz/pic-edit-datasets/SynBody/inspection_20261003/extracted/HumanNeRF-subset/028/mask/00/0200.png",
+    "smplx": "/data/shangguanrz/pic-edit-datasets/SynBody/inspection_20261003/extracted/HumanNeRF-subset/028/smplx.npz",
+    "camera": "/data/shangguanrz/pic-edit-datasets/SynBody/inspection_20261003/extracted/HumanNeRF-subset/028/camera.json"
+  },
+  "pose_reference": {
+    "id": "042",
+    "frame": 150,
+    "view": "00",
+    "rgb": "/data/shangguanrz/pic-edit-datasets/SynBody/inspection_20261003/extracted/HumanNeRF-subset/042/img/00/0150.jpg",
+    "mask": "/data/shangguanrz/pic-edit-datasets/SynBody/inspection_20261003/extracted/HumanNeRF-subset/042/mask/00/0150.png",
+    "smplx": "/data/shangguanrz/pic-edit-datasets/SynBody/inspection_20261003/extracted/HumanNeRF-subset/042/smplx.npz",
+    "camera": "/data/shangguanrz/pic-edit-datasets/SynBody/inspection_20261003/extracted/HumanNeRF-subset/042/camera.json"
+  },
+  "supervision_only": {
+    "id": "028",
+    "frame": 150,
+    "rgb": "/data/shangguanrz/pic-edit-datasets/SynBody/inspection_20261003/extracted/HumanNeRF-subset/028/img/00/0150.jpg",
+    "mask": "/data/shangguanrz/pic-edit-datasets/SynBody/inspection_20261003/extracted/HumanNeRF-subset/028/mask/00/0150.png"
+  },
+  "checks": {
+    "different_shape": true,
+    "same_body_pose_at_target": true,
+    "same_left_hand_pose_at_target": true,
+    "same_right_hand_pose_at_target": true,
+    "same_global_orient_at_target": true,
+    "source_target_poses_differ": true
+  },
+  "quality_gate": {
+    "review_type": "manual_visual_review_20261003",
+    "geometry_pairing_valid": true,
+    "eligible_for_photoreal_rgb_training": false,
+    "status": "rejected_for_photoreal_rgb_supervision",
+    "reasons": [
+      "Weak or implausible foot-to-scene contact in source and target RGB.",
+      "Contact shadows and person-scene integration are visually insufficient.",
+      "Rendered person appearance does not meet the everyday-photo source requirement."
+    ],
+    "allowed_usage": [
+      "geometry_and_identity_slot_debug_only"
+    ],
+    "scope": "This A/B/C example; broader subset findings are a limited 28-image visual sample."
+  },
+  "beta_l2": 3.9844908714294434,
+  "caveat": "Copy B local joint rotations; retain A shape. Translation, camera and body projection require A-space alignment. Target RGB is supervision only."
+}

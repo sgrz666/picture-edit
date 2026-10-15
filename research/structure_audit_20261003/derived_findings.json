@@ -1,0 +1,3326 @@
+{
+  "source_file_count": 531,
+  "root_executable_count": 54,
+  "source_syntax_errors": [],
+  "core_copy_pairs": [
+    {
+      "relative_path": "__init__.py",
+      "same_sha256": true
+    },
+    {
+      "relative_path": "checkpoint.py",
+      "same_sha256": true
+    },
+    {
+      "relative_path": "condition_bridge.py",
+      "same_sha256": true
+    },
+    {
+      "relative_path": "condition_injector.py",
+      "same_sha256": true
+    },
+    {
+      "relative_path": "conditions.py",
+      "same_sha256": true
+    },
+    {
+      "relative_path": "control_core.py",
+      "same_sha256": true
+    },
+    {
+      "relative_path": "controlled_pipeline.py",
+      "same_sha256": true
+    },
+    {
+      "relative_path": "deepgen_adapter.py",
+      "same_sha256": true
+    },
+    {
+      "relative_path": "detail/__init__.py",
+      "same_sha256": true
+    },
+    {
+      "relative_path": "detail/binder.py",
+      "same_sha256": true
+    },
+    {
+      "relative_path": "detail/conditions.py",
+      "same_sha256": true
+    },
+    {
+      "relative_path": "detail/encoders.py",
+      "same_sha256": true
+    },
+    {
+      "relative_path": "detail/hand.py",
+      "same_sha256": true
+    },
+    {
+      "relative_path": "detail/preparer.py",
+      "same_sha256": true
+    },
+    {
+      "relative_path": "experts.py",
+      "same_sha256": true
+    },
+    {
+      "relative_path": "face/__init__.py",
+      "same_sha256": true
+    },
+    {
+      "relative_path": "face/adapter.py",
+      "same_sha256": true
+    },
+    {
+      "relative_path": "face/conditions.py",
+      "same_sha256": true
+    },
+    {
+      "relative_path": "face/content_encoder.py",
+      "same_sha256": true
+    },
+    {
+      "relative_path": "face/geometry.py",
+      "same_sha256": true
+    },
+    {
+      "relative_path": "face/iper_dataset.py",
+      "same_sha256": true
+    },
+    {
+      "relative_path": "face/preparer.py",
+      "same_sha256": true
+    },
+    {
+      "relative_path": "face/resampler.py",
+      "same_sha256": true
+    },
+    {
+      "relative_path": "face/spatial.py",
+      "same_sha256": true
+    },
+    {
+      "relative_path": "geometry_encoder.py",
+      "same_sha256": true
+    },
+    {
+      "relative_path": "hand/__init__.py",
+      "same_sha256": true
+    },
+    {
+      "relative_path": "hand/adapter.py",
+      "same_sha256": true
+    },
+    {
+      "relative_path": "hand/conditions.py",
+      "same_sha256": true
+    },
+    {
+      "relative_path": "hand/geometry.py",
+      "same_sha256": true
+    },
+    {
+      "relative_path": "hand/preparer.py",
+      "same_sha256": true
+    },
+    {
+      "relative_path": "hand/quality.py",
+      "same_sha256": true
+    },
+    {
+      "relative_path": "hand/refiner_export.py",
+      "same_sha256": true
+    },
+    {
+      "relative_path": "hand/vton_layers.py",
+      "same_sha256": true
+    },
+    {
+      "relative_path": "interface/__init__.py",
+      "same_sha256": true
+    },
+    {
+      "relative_path": "interface/deepgen_interface.py",
+      "same_sha256": true
+    },
+    {
+      "relative_path": "interface/outputs.py",
+      "same_sha256": true
+    },
+    {
+      "relative_path": "interface/strength.py",
+      "same_sha256": true
+    },
+    {
+      "relative_path": "reasoning/__init__.py",
+      "same_sha256": true
+    },
+    {
+      "relative_path": "reasoning/blocks.py",
+      "same_sha256": true
+    },
+    {
+      "relative_path": "reasoning/config.py",
+      "same_sha256": true
+    },
+    {
+      "relative_path": "reasoning/contact.py",
+      "same_sha256": true
+    },
+    {
+      "relative_path": "reasoning/cross_person.py",
+      "same_sha256": true
+    },
+    {
+      "relative_path": "reasoning/fusion.py",
+      "same_sha256": true
+    },
+    {
+      "relative_path": "reasoning/person_geometry.py",
+      "same_sha256": true
+    },
+    {
+      "relative_path": "reasoning/reasoner.py",
+      "same_sha256": true
+    },
+    {
+      "relative_path": "reasoning/state.py",
+      "same_sha256": true
+    },
+    {
+      "relative_path": "token_encoders.py",
+      "same_sha256": true
+    }
+  ],
+  "checkpoint_file_count": 160,
+  "checkpoint_apparent_total_gib": 169.3450712673366,
+  "checkpoint_unique_blocks_gib": 169.14477920532227,
+  "checkpoint_hardlink_groups": [
+    [
+      "/home/shangguanrz/nihaochen/qwen21_face/face_train_3k/checkpoint_selected.pt",
+      "/home/shangguanrz/nihaochen/qwen21_face/face_train_3k/checkpoint_step_002500.pt"
+    ]
+  ],
+  "references": {
+    "model-qwen-edit": [
+      {
+        "path": "/home/shangguanrz/nihaochen/docs/pic_edit_code_guide_20260923.md",
+        "lines": [
+          177
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/nihaochen/docs/pic_edit_qwen21_deployment_audit_20260925.md",
+        "lines": [
+          80
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/model-qwen-edit/_download.py",
+        "lines": [
+          17
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/model-qwen-edit/_start.sh",
+        "lines": [
+          6,
+          8,
+          9,
+          11,
+          12
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/pytest.ini",
+        "lines": [
+          3
+        ]
+      }
+    ],
+    "iper_adapter_finetune_v1/condition_cache": [
+      {
+        "path": "/home/shangguanrz/nihaochen/docs/pic_edit_code_guide_evidence_20260923/data_and_boundary_audit.md",
+        "lines": [
+          146
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/nihaochen/docs/pic_edit_data_audit_notes.md",
+        "lines": [
+          146
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/docs/iper_v6_training_plan.md",
+        "lines": [
+          110
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/eval_iper_v6.py",
+        "lines": [
+          72
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/run_v6_comparative_3000.sh",
+        "lines": [
+          29,
+          60,
+          72
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/train_iper_v6_native.py",
+        "lines": [
+          905
+        ]
+      }
+    ],
+    "qwen21_hi4d_controls": [
+      {
+        "path": "/home/shangguanrz/project/pic-edit/audit_hi4d_qwen21_prompt_leak.py",
+        "lines": [
+          29
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/eval_hi4d_qwen21_dual.py",
+        "lines": [
+          40
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/train_hi4d_qwen21_dual.py",
+        "lines": [
+          52
+        ]
+      }
+    ],
+    "test_control_signals": [
+      {
+        "path": "/home/shangguanrz/project/pic-edit/README.md",
+        "lines": [
+          26
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/create_debug_samples.py",
+        "lines": [
+          134
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/vram_lab/worker.py",
+        "lines": [
+          135
+        ]
+      }
+    ],
+    "train_iper_v6_native": [
+      {
+        "path": "/home/shangguanrz/nihaochen/docs/pic_edit_code_guide_20260923.md",
+        "lines": [
+          73,
+          133,
+          660,
+          668,
+          702,
+          870,
+          1186
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/nihaochen/docs/pic_edit_code_guide_evidence_20260923/data_and_boundary_audit.md",
+        "lines": [
+          37,
+          129,
+          144,
+          163
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/nihaochen/docs/pic_edit_data_audit_notes.md",
+        "lines": [
+          37,
+          129,
+          144,
+          163
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/docs/iper_v6_training_plan.md",
+        "lines": [
+          120,
+          133,
+          152,
+          164
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/eval_iper_v6.py",
+        "lines": [
+          34
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/experiments/16-test/run_deepgen_adapter.py",
+        "lines": [
+          88
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/multi_stage_eval_v6.py",
+        "lines": [
+          33
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/run_v6_comparative_3000.sh",
+        "lines": [
+          23
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/tests/test_iper_v6_training_pipeline.py",
+        "lines": [
+          16
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/train_iper_v65_face.py",
+        "lines": [
+          681
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/train_iper_v66_hand.py",
+        "lines": [
+          25
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/train_tiktok_v65_face.py",
+        "lines": [
+          61
+        ]
+      }
+    ],
+    "/home/shangguanrz/nihaochen": [
+      {
+        "path": "/home/shangguanrz/nihaochen/audit_iper_face_30.py",
+        "lines": [
+          17
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/nihaochen/docs/Qwen21_面部保持优化_实验记录_20260928.md",
+        "lines": [
+          71,
+          72,
+          73
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/nihaochen/docs/iPER_1024_结果.md",
+        "lines": [
+          39,
+          41,
+          45,
+          47,
+          51,
+          53,
+          57,
+          59,
+          63,
+          65,
+          69,
+          71,
+          75,
+          77,
+          81,
+          83
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/nihaochen/docs/pic_edit_code_guide_20260923.md",
+        "lines": [
+          7,
+          979,
+          984,
+          1282,
+          1286,
+          1287,
+          1288,
+          1289,
+          1290,
+          1291,
+          1292,
+          1293,
+          1294,
+          1295,
+          1296,
+          1297,
+          1304,
+          1306
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/nihaochen/docs/pic_edit_code_guide_evidence_20260923/v65_face_audit.md",
+        "lines": [
+          196
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/nihaochen/docs/pic_edit_qwen21_deployment_audit_20260925.md",
+        "lines": [
+          78
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/nihaochen/generate_iper_face_audit_docx.py",
+        "lines": [
+          19
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/nihaochen/iper1024/continue_experiment.py",
+        "lines": [
+          8,
+          9,
+          136,
+          137
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/nihaochen/reconstruction_summary_20261001/build_summary.py",
+        "lines": [
+          18,
+          20
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/nihaochen/render_equal_step_tables.py",
+        "lines": [
+          10
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/nihaochen/run_qwen21_remaining.sh",
+        "lines": [
+          5,
+          7,
+          8,
+          9,
+          35,
+          45
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/nihaochen/scripts/export_iper1024_word.py",
+        "lines": [
+          9
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/nihaochen/scripts/revise_iper1024_word.py",
+        "lines": [
+          9,
+          10,
+          80
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/nihaochen/summarize_iper_face_30.py",
+        "lines": [
+          14,
+          15
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/audit_hi4d_qwen21_prompt_leak.py",
+        "lines": [
+          29,
+          30
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/docs/qwen21_hi4d_dual.md",
+        "lines": [
+          23
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/eval_hi4d_qwen21_dual.py",
+        "lines": [
+          40,
+          41
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/eval_iper_qwen21_face.py",
+        "lines": [
+          25
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/eval_qwen21_face_cross_person.py",
+        "lines": [
+          25
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/eval_qwen21_face_references.py",
+        "lines": [
+          21
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/eval_qwen21_face_variants.py",
+        "lines": [
+          19
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/scripts/audit_qwen21_face_alignment.py",
+        "lines": [
+          36
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/scripts/audit_qwen21_weight_compatibility.py",
+        "lines": [
+          28
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/scripts/build_iper1024_comparison_panels.py",
+        "lines": [
+          21
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/scripts/build_qwen21_face_panels.py",
+        "lines": [
+          15
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/scripts/check_qwen21_full_preservation.py",
+        "lines": [
+          57,
+          104
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/scripts/eval_qwen21_face_repair.py",
+        "lines": [
+          14
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/scripts/precompute_qwen21_face_features.py",
+        "lines": [
+          30
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/scripts/prepare_qwen21_face_split.py",
+        "lines": [
+          22
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/scripts/prepare_qwen21_full_data.py",
+        "lines": [
+          37,
+          41,
+          42
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/scripts/summarize_qwen21_face_groups.py",
+        "lines": [
+          14
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/scripts/verify_qwen21_full_resume.py",
+        "lines": [
+          158,
+          160
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/scripts/write_qwen21_face_repair_report.py",
+        "lines": [
+          22,
+          24
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/scripts/write_qwen21_face_report.py",
+        "lines": [
+          15,
+          16
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/scripts/write_qwen21_face_single_sample_report.py",
+        "lines": [
+          157
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/scripts/write_qwen21_full_report.py",
+        "lines": [
+          29,
+          30
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/src/pose_control/qwen21_full/execution.py",
+        "lines": [
+          24
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/src/pose_control/qwen21_full/face_supervision.py",
+        "lines": [
+          26
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/tests/test_qwen21_full_preservation.py",
+        "lines": [
+          24
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/train_hi4d_qwen21_dual.py",
+        "lines": [
+          52,
+          53,
+          54
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/train_iper_qwen21_body.py",
+        "lines": [
+          43
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/train_iper_qwen21_face.py",
+        "lines": [
+          27,
+          43
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/run_stage1.sh",
+        "lines": [
+          5
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/run_stage2_both.sh",
+        "lines": [
+          5
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/watch_and_run.sh",
+        "lines": [
+          10
+        ]
+      }
+    ],
+    "/home/shangguanrz/project/pic-edit": [
+      {
+        "path": "/home/shangguanrz/annotate_kps.py",
+        "lines": [
+          4
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/audit_remaining_datasets.sh",
+        "lines": [
+          4
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/build_16grid.py",
+        "lines": [
+          5
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/build_contact_sheets.py",
+        "lines": [
+          9
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/build_full.py",
+        "lines": [
+          3
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/build_interaction_set.py",
+        "lines": [
+          15,
+          17
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/check_ab.py",
+        "lines": [
+          2
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/check_zero.py",
+        "lines": [
+          3
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/collect_commons.py",
+        "lines": [
+          12
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/collect_commons_v2.py",
+        "lines": [
+          17
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/collect_round2.py",
+        "lines": [
+          12
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/collect_round2b.py",
+        "lines": [
+          13
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/compose_conditions.py",
+        "lines": [
+          10,
+          11,
+          14,
+          15
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/curate_testset.py",
+        "lines": [
+          16
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/diag_bbox.py",
+        "lines": [
+          4,
+          19
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/diag_dwpose.py",
+        "lines": [
+          2
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/diag_hard12.py",
+        "lines": [
+          8
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/diag_joints.py",
+        "lines": [
+          6,
+          7,
+          11
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/diag_maskover.py",
+        "lines": [
+          6,
+          7,
+          9
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/diag_mesh.py",
+        "lines": [
+          2
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/diag_metric.py",
+        "lines": [
+          8,
+          10
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/diag_overlay.py",
+        "lines": [
+          6,
+          7,
+          10
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/diag_reframe.py",
+        "lines": [
+          6,
+          7
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/diag_vs_demo.py",
+        "lines": [
+          6
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/diff_loss.py",
+        "lines": [
+          2,
+          3
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/draw_arch.py",
+        "lines": [
+          173
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/draw_arch2.py",
+        "lines": [
+          163
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/dump_contracts.py",
+        "lines": [
+          4
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/dump_last.py",
+        "lines": [
+          3
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/dump_shapes.py",
+        "lines": [
+          5
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/dump_shapes2.py",
+        "lines": [
+          4
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/dump_shapes3.py",
+        "lines": [
+          3
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/eval_overfit.py",
+        "lines": [
+          9,
+          11
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/eval_overfit2.py",
+        "lines": [
+          9,
+          11
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/inspect_hi4d_params.py",
+        "lines": [
+          5
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/inter_review.py",
+        "lines": [
+          8
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/locate_diff.py",
+        "lines": [
+          4
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/measure_person_region.py",
+        "lines": [
+          10
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/measure_wref.py",
+        "lines": [
+          10
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/nihaochen/audit_iper_face_30.py",
+        "lines": [
+          16
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/nihaochen/docs/pic_edit_code_guide_20260923.md",
+        "lines": [
+          5,
+          196,
+          242,
+          243,
+          244,
+          246,
+          262,
+          268,
+          321,
+          327,
+          341,
+          345,
+          351,
+          357,
+          372,
+          374,
+          380,
+          398,
+          400,
+          417,
+          426,
+          441,
+          462,
+          464,
+          476,
+          499,
+          514,
+          523,
+          531,
+          574,
+          575,
+          576,
+          577,
+          592,
+          596,
+          660,
+          668,
+          702,
+          721,
+          735,
+          739,
+          743,
+          884,
+          894,
+          897,
+          920,
+          938,
+          941,
+          942,
+          954,
+          963,
+          982,
+          1055,
+          1057,
+          1068,
+          1074,
+          1081,
+          1262,
+          1302
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/nihaochen/docs/pic_edit_code_guide_evidence_20260923/data_and_boundary_audit.md",
+        "lines": [
+          44,
+          46,
+          62,
+          66,
+          75,
+          88,
+          101,
+          103,
+          107,
+          109,
+          111,
+          123,
+          127,
+          129,
+          142,
+          144,
+          163,
+          169,
+          181,
+          185,
+          189,
+          207,
+          216,
+          224,
+          225,
+          233
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/nihaochen/docs/pic_edit_code_guide_evidence_20260923/v65_face_audit.md",
+        "lines": [
+          3,
+          152,
+          162,
+          163
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/nihaochen/docs/pic_edit_data_audit_notes.md",
+        "lines": [
+          44,
+          46,
+          62,
+          66,
+          75,
+          88,
+          101,
+          103,
+          107,
+          109,
+          111,
+          123,
+          127,
+          129,
+          142,
+          144,
+          163,
+          169,
+          181,
+          185,
+          189,
+          207,
+          216,
+          224,
+          225,
+          233
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/nihaochen/docs/pic_edit_qwen21_deployment_audit_20260925.md",
+        "lines": [
+          3,
+          38,
+          40,
+          43,
+          55,
+          80,
+          125,
+          126,
+          127,
+          128,
+          129
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/nihaochen/evaluate_qwen21_dev_gate.py",
+        "lines": [
+          23
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/nihaochen/iper1024/continue_experiment.py",
+        "lines": [
+          7
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/nihaochen/reconstruction_summary_20261001/build_summary.py",
+        "lines": [
+          7
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/nihaochen/render_equal_step_tables.py",
+        "lines": [
+          9
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/nihaochen/run_qwen21_remaining.sh",
+        "lines": [
+          4
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/nihaochen/scripts/revise_iper1024_word.py",
+        "lines": [
+          75
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/nihaochen/summarize_iper_face_30.py",
+        "lines": [
+          16
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/patch_inference.py",
+        "lines": [
+          2
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/phaseD_delete_old.sh",
+        "lines": [
+          6,
+          81
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/preview_pairs.py",
+        "lines": [
+          8
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/preview_types.py",
+        "lines": [
+          8
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/probe_hi4d_labels.py",
+        "lines": [
+          5
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/proj_smpl.py",
+        "lines": [
+          4
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/README.md",
+        "lines": [
+          59,
+          61
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/add/datasets/dpw_single_pose_edit_dataset.py",
+        "lines": [
+          88,
+          569
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/add/datasets/dpw_single_pose_edit_dataset_before_dwpose_qc_mapping_20260930_090438.py",
+        "lines": [
+          88
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/add/datasets/dpw_single_pose_edit_dataset_before_use_dwpose_render_20260930_090016.py",
+        "lines": [
+          88
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/add/tools/01_download_humanvid_batch_v1.py",
+        "lines": [
+          12
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/add/tools/02_humanvid_sparse_person_census_v1.py",
+        "lines": [
+          11
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/add/tools/03_humanvid_shot_detection_v1.py",
+        "lines": [
+          8
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/add/tools/04_humanvid_dense_person_segments_v1.py",
+        "lines": [
+          11
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/add/tools/05_humanvid_segment_sensitivity_v1.py",
+        "lines": [
+          6
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/add/tools/06_build_humanvid_core_segments_v1.py",
+        "lines": [
+          5
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/add/tools/07_humanvid_adaptive_sampling_v1.py",
+        "lines": [
+          13
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/add/tools/08_prepare_humanvid_dwpose_input_v1.py",
+        "lines": [
+          8
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/add/tools/09_humanvid_dwpose_frame_pool_v1.py",
+        "lines": [
+          11
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/add/tools/10_humanvid_pose_descriptors_v1.py",
+        "lines": [
+          9
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/add/tools/11_humanvid_frame_quality_v1.py",
+        "lines": [
+          9
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/add/tools/12_humanvid_pose_coverage_v1.py",
+        "lines": [
+          8
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/add/tools/13_humanvid_video_split_v1.py",
+        "lines": [
+          7
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/add/tools/14_humanvid_build_pairs_v1.py",
+        "lines": [
+          8
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/add/tools/15_humanvid_pair_background_audit_v1.py",
+        "lines": [
+          9
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/add/tools/16_humanvid_build_local_pairs_v2.py",
+        "lines": [
+          8
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/add/tools/17_visualize_humanvid_pairs_v2.py",
+        "lines": [
+          11
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/add/tools/18_humanvid_single_manual_qc_pack_v1.py",
+        "lines": [
+          9
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/add/tools/19_humanvid_single_robust_pose_audit_v1.py",
+        "lines": [
+          7
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/add/tools/20_humanvid_single_bone_angle_audit_v1.py",
+        "lines": [
+          7
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/add/tools/21_finalize_humanvid_single_pairs_v1.py",
+        "lines": [
+          6
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/add/tools/22_extract_3dpw_single_dwpose_wholebody_v1.py",
+        "lines": [
+          22,
+          51,
+          56
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/add/tools/22_visualize_humanvid_final_single_v1.py",
+        "lines": [
+          9
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/add/tools/23_extract_3dpw_single_person_masks_v1.py",
+        "lines": [
+          14
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/add/tools/23_finalize_humanvid_single_pairs_v2.py",
+        "lines": [
+          6
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/add/tools/24_visualize_humanvid_single_boundary_v2.py",
+        "lines": [
+          9
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/add/tools/25_humanvid_single_pair_exposure_audit_v1.py",
+        "lines": [
+          8
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/add/tools/26_audit_humanvid_pair_usage_v1.py",
+        "lines": [
+          8
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/add/tools/26_humanvid_single_all_candidate_bone_audit_v1.py",
+        "lines": [
+          8
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/add/tools/27_audit_3dpw_single_smpl_geometry_v1.py",
+        "lines": [
+          13
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/add/tools/27_build_3dpw_single_final_handoff_v1.py",
+        "lines": [
+          9
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/add/tools/27_humanvid_single_capacity_matching_v1.py",
+        "lines": [
+          6
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/add/tools/28_humanvid_bone_metric_consistency_audit_v1.py",
+        "lines": [
+          8
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/add/tools/28_render_3dpw_single_smpl_depth_normal_v1.py",
+        "lines": [
+          29
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/add/tools/29_audit_3dpw_single_camera_reprojection_v1.py",
+        "lines": [
+          43
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/add/tools/29_humanvid_single_build_directed_candidates_v1.py",
+        "lines": [
+          6
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/add/tools/30_audit_3dpw_crosscountry_se3_correction_v1.py",
+        "lines": [
+          13
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/add/tools/30_humanvid_single_capacity_matching_final_v1.py",
+        "lines": [
+          6
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/add/tools/31_finalize_humanvid_single_dataset_v1.py",
+        "lines": [
+          7
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/add/tools/31_render_3dpw_single_smpl_depth_normal_official_v2.py",
+        "lines": [
+          29
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/add/tools/32_build_humanvid_full_pipeline_manifest_v1.py",
+        "lines": [
+          7
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/add/tools/32_review_3dpw_single_geometry_tail_v1.py",
+        "lines": [
+          12
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/add/tools/33_build_3dpw_single_handoff_geometry_final_v2.py",
+        "lines": [
+          38
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/add/tools/33_build_humanvid_asset_pilot_manifest_v2.py",
+        "lines": [
+          7
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/add/tools/34_audit_humanvid_pilot_video_resolution_v1.py",
+        "lines": [
+          8
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/add/tools/34_pack_3dpw_single_training_dataset_v1.py",
+        "lines": [
+          17,
+          26
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/add/tools/35_audit_humanvid_pair_resolution_and_crop_v1.py",
+        "lines": [
+          9
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/add/tools/36_audit_humanvid_pair_square_crop_v1.py",
+        "lines": [
+          8
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/add/tools/36_make_3dpw_showcase100_humanvid_pose_v1.py",
+        "lines": [
+          14
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/add/tools/37_run_humanvid_native_asset_pilot_v1.py",
+        "lines": [
+          14
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/add/tools/38_audit_humanvid_native_asset_pilot_v1.py",
+        "lines": [
+          8
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/add/tools/39_make_humanvid_native_asset_smoke_preview_v1.py",
+        "lines": [
+          9
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/add/tools/39_make_humanvid_native_asset_smoke_preview_v2.py",
+        "lines": [
+          9
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/add/tools/39_make_humanvid_native_asset_smoke_preview_v3.py",
+        "lines": [
+          9
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/add/tools/3dpw_dataset_audit.py",
+        "lines": [
+          11,
+          14
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/add/tools/3dpw_frame_quality_audit.py",
+        "lines": [
+          18,
+          31,
+          36
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/add/tools/40_build_humanvid_sapiens2_foreground_pilot_v1.py",
+        "lines": [
+          15
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/add/tools/40_build_humanvid_sapiens_foreground_pilot_v2.py",
+        "lines": [
+          11
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/add/tools/42_audit_humanvid_smplestx_dwpose_v1.py",
+        "lines": [
+          12
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/add/tools/42_audit_humanvid_smplestx_dwpose_v2.py",
+        "lines": [
+          14
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/add/tools/43_build_humanvid_hmr_compare16_v1.py",
+        "lines": [
+          9
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/add/tools/45_run_humanvid_multihmr_compare16_v1.py",
+        "lines": [
+          15
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/add/tools/46_diagnose_multihmr_detection_failures_v1.py",
+        "lines": [
+          7
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/add/tools/47_run_humanvid_multihmr_compare16_thr020_v1.py",
+        "lines": [
+          15
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/add/tools/49_build_humanvid_sam21_foreground_pilot_v1.py",
+        "lines": [
+          74
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/add/tools/49b_build_humanvid_sam21_risk_previews_v1.py",
+        "lines": [
+          9
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/add/tools/50_build_humanvid_yolo11xseg_foreground_pilot_v1.py",
+        "lines": [
+          40
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/add/tools/51a_audit_current_asset_dependencies_v2.py",
+        "lines": [
+          24
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/add/tools/53_run_humanvid_native_assets_full_v1.py",
+        "lines": [
+          67
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/add/tools/53c_isolate_smplestx_batch001_failure_v1.py",
+        "lines": [
+          42
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/add/tools/54_diagnose_all_failed_humanvid_batches_v1.py",
+        "lines": [
+          44
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/add/tools/55_build_humanvid_asset_showcase40_v1.py",
+        "lines": [
+          33
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/add/tools/55b_build_humanvid_pair_showcase40_v1.py",
+        "lines": [
+          32
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/add/tools/55c_build_humanvid_pair_showcase40_v1.py",
+        "lines": [
+          33
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/add/tools/55d_build_humanvid_pair_showcase60_best_v1.py",
+        "lines": [
+          38
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/add/tools/audit_3dpw_single_dynamic_sampler_v1.py",
+        "lines": [
+          10
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/add/tools/audit_3dpw_single_dynamic_sampler_v2.py",
+        "lines": [
+          9
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/add/tools/audit_3dpw_single_relative_motion_blur_v1.py",
+        "lines": [
+          11
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/add/tools/audit_3dpw_single_representatives_final_v1.py",
+        "lines": [
+          9
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/add/tools/audit_3dpw_single_temporal_thinning_v1.py",
+        "lines": [
+          9
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/add/tools/build_3dpw_pairs_v1.py",
+        "lines": [
+          9,
+          14,
+          19
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/add/tools/build_3dpw_single_candidate_pool_v2.py",
+        "lines": [
+          11
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/add/tools/build_3dpw_single_eval_manifests_natural_v1.py",
+        "lines": [
+          10
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/add/tools/build_3dpw_single_final_frame_pool_v2.py",
+        "lines": [
+          9
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/add/tools/build_3dpw_single_frame_descriptors_v2.py",
+        "lines": [
+          9
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/add/tools/build_3dpw_single_sampling_metadata_v1.py",
+        "lines": [
+          9
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/add/tools/build_3dpw_single_sampling_metadata_v2.py",
+        "lines": [
+          9
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/add/tools/build_3dpw_single_temporal_representatives_v1.py",
+        "lines": [
+          13
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/add/tools/build_humanvid_url_manifest_v1.py",
+        "lines": [
+          5
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/add/tools/build_usable_frames.py",
+        "lines": [
+          6,
+          11
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/add/tools/make_3dpw_single_v2_blur_contact_sheets.py",
+        "lines": [
+          9
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/add/tools/refine_3dpw_pairs_v2.py",
+        "lines": [
+          6,
+          11
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/add/tools/run_3dpw_single_conditions_v1.sh",
+        "lines": [
+          5,
+          37,
+          50,
+          55,
+          186
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/add/tools/visualize_3dpw_pairs.py",
+        "lines": [
+          8,
+          13
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/add/tools/visualize_dpw_single_pose_edit_dataset.py",
+        "lines": [
+          11
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/add/tools/visualize_dpw_single_pose_edit_dataset_backup_20260930_083758.py",
+        "lines": [
+          11
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/add/tools/visualize_dpw_single_pose_edit_dataset_before_black_pose_20260930_084339.py",
+        "lines": [
+          11
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/add/tools/visualize_dpw_single_pose_edit_dataset_before_color_pose_20260930_084629.py",
+        "lines": [
+          11
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/add/tools/visualize_dpw_single_pose_edit_dataset_before_dwpose_color_v2_20260930_084922.py",
+        "lines": [
+          11
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/add/tools/visualize_dpw_single_pose_edit_dataset_before_safe_color_pose_20260930_085112.py",
+        "lines": [
+          11
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/audit_tiktok_v3_blur_sample.py",
+        "lines": [
+          12
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/audit_tiktok_v3_final_pairs.py",
+        "lines": [
+          7
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/audit_tiktok_v3_pose_redundancy.py",
+        "lines": [
+          12
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/audit_tiktok_v3_strict_final.py",
+        "lines": [
+          13
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/audit_tiktok_v3_visual_quality_v2.py",
+        "lines": [
+          14
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/audit_tiktok_v3_visual_quality_v3.py",
+        "lines": [
+          13
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/build_tiktok_v3_candidate_pool.py",
+        "lines": [
+          32
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/build_tiktok_v3_condition_inventory.py",
+        "lines": [
+          31
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/build_tiktok_v3_pairs.py",
+        "lines": [
+          12
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/build_tiktok_v3_pairs_strict.py",
+        "lines": [
+          12
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/build_tiktok_v3_strict_visual_pool.py",
+        "lines": [
+          10
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/build_tiktok_v3_usable_pool.py",
+        "lines": [
+          9
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/create_debug_samples.py",
+        "lines": [
+          11
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/docs/adapter_v6_architecture.md",
+        "lines": [
+          125
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/docs/champ_deepgen_single_sample_runbook.md",
+        "lines": [
+          34,
+          40,
+          63,
+          80,
+          81,
+          100,
+          101
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/docs/iper_v6_training_plan.md",
+        "lines": [
+          110
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/docs/qwen21_hi4d_dual.md",
+        "lines": [
+          3,
+          22
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/docs/superpowers/plans/2026-09-12-champ-deepgen-single-sample.md",
+        "lines": [
+          344,
+          352,
+          363,
+          364,
+          365,
+          366,
+          376,
+          398,
+          399,
+          400,
+          401,
+          402,
+          410,
+          418
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/docs/superpowers/plans/2026-09-12-deepgen-no-control-ablation.md",
+        "lines": [
+          396,
+          402,
+          403,
+          404,
+          405,
+          413,
+          414,
+          432,
+          433
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/docs/superpowers/specs/2026-09-12-deepgen-no-control-ablation-design.md",
+        "lines": [
+          48
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/eval_iper_v6.py",
+        "lines": [
+          42,
+          54,
+          60,
+          66,
+          72,
+          78
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/experiments/16-test/derive_camera.py",
+        "lines": [
+          31,
+          75
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/experiments/16-test/mk_prompts.py",
+        "lines": [
+          2,
+          8
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/experiments/16-test/prompts_16test.md",
+        "lines": [
+          3
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/experiments/16-test/render_ab_geometry.py",
+        "lines": [
+          25,
+          89
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/experiments/16-test/run_baseline_16test.py",
+        "lines": [
+          22
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/experiments/16-test/run_deepgen_adapter.py",
+        "lines": [
+          21
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/experiments/16-test/run_qwen_adapter.py",
+        "lines": [
+          24
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/fill_tiktok_v3_missing_geometry.py",
+        "lines": [
+          10
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/finalize_tiktok_v3_visual_quality_v1.py",
+        "lines": [
+          10
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/model-qwen-edit/_download.py",
+        "lines": [
+          17
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/model-qwen-edit/_start.sh",
+        "lines": [
+          3
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/run_demo_pose_edit.py",
+        "lines": [
+          4,
+          13,
+          14
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/run_tiktok_sample_00001_smoke.py",
+        "lines": [
+          43,
+          48,
+          57,
+          62
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/run_tiktok_v3_dwpose.py",
+        "lines": [
+          16
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/run_tiktok_v3_fill_missing_geometry_bg.sh",
+        "lines": [
+          4,
+          6
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/run_v6_comparative_3000.sh",
+        "lines": [
+          5
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/sample_tiktok_v3_dwpose_qc.py",
+        "lines": [
+          9
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/sample_tiktok_v3_geometry_rejects.py",
+        "lines": [
+          9
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/scripts/build_tiktok_v6_conditions.py",
+        "lines": [
+          461,
+          466,
+          471
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/scripts/precompute_iper_face_features_v65.py",
+        "lines": [
+          492,
+          496
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/scripts/precompute_iper_hand_features_v66.py",
+        "lines": [
+          128
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/scripts/precompute_tiktok_face_features_v65.py",
+        "lines": [
+          515,
+          519,
+          523,
+          525
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/scripts/smoke_deepgen_control_interface.py",
+        "lines": [
+          37
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/scripts/split_iper_train_val.py",
+        "lines": [
+          89
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/split_tiktok_v3_groupwise.py",
+        "lines": [
+          12
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/src/data/tiktok_dataset.py",
+        "lines": [
+          574,
+          575,
+          576,
+          823,
+          824,
+          825,
+          826
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/tests/test_iper_v6_data_integrity.py",
+        "lines": [
+          14,
+          15,
+          21,
+          22
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/tests/test_iper_v6_eval_parity.py",
+        "lines": [
+          44,
+          45
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/tests/test_iper_v6_training_pipeline.py",
+        "lines": [
+          179
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/tools/render_3dpw_60_pairs_report_style_v1.py",
+        "lines": [
+          35
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/tools/visualize_3dpw_20_pairs_assets.py",
+        "lines": [
+          39
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/tools/visualize_3dpw_20_pairs_assets_diverse.py",
+        "lines": [
+          19
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/tools/visualize_3dpw_60_pairs_diverse_dinov2_v2.py",
+        "lines": [
+          72
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/tools/visualize_3dpw_60_pairs_large_pose.py",
+        "lines": [
+          37
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/train_adapter.py",
+        "lines": [
+          14,
+          242,
+          247,
+          252
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/train_iper_v65_face.py",
+        "lines": [
+          578,
+          582,
+          586,
+          591,
+          618,
+          622,
+          626,
+          630
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/train_iper_v66_hand.py",
+        "lines": [
+          56,
+          57,
+          58
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/train_iper_v6_native.py",
+        "lines": [
+          53,
+          59,
+          65,
+          71,
+          77,
+          89,
+          905
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/train_tiktok_overfit_sanity.py",
+        "lines": [
+          129,
+          131,
+          135,
+          137,
+          163,
+          165,
+          167,
+          169
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/train_tiktok_v65_face.py",
+        "lines": [
+          186,
+          191,
+          199,
+          204,
+          235,
+          239,
+          243,
+          247
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/visualize_tiktok_v3_final_global_blur.py",
+        "lines": [
+          11
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/vram_lab/README.md",
+        "lines": [
+          9,
+          11
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/vram_lab/common.py",
+        "lines": [
+          11
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/quick_grid.py",
+        "lines": [
+          4
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/qwen21_interaction_probe.py",
+        "lines": [
+          26,
+          28
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/qwen21_recap.py",
+        "lines": [
+          4
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/qwen21_retarget_probe.py",
+        "lines": [
+          23,
+          25
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/render_b_sheet.py",
+        "lines": [
+          8
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/review_sheet.py",
+        "lines": [
+          8,
+          9,
+          10
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/run_smplestx.sh",
+        "lines": [
+          4,
+          5
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/run_stage1.sh",
+        "lines": [
+          3
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/run_stage2_both.sh",
+        "lines": [
+          3
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/showcam.py",
+        "lines": [
+          3
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/sig_qwen.py",
+        "lines": [
+          3
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/survey_hi4d_pairs.py",
+        "lines": [
+          7
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/vae_ceiling.py",
+        "lines": [
+          16,
+          18
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/watch_and_run.sh",
+        "lines": [
+          4,
+          12
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/zoom_A.py",
+        "lines": [
+          2
+        ]
+      }
+    ],
+    "add/outputs/3dpw_assets_all_v1": [],
+    "3dpw_single_final_v2": [
+      {
+        "path": "/home/shangguanrz/project/pic-edit/add/tools/34_pack_3dpw_single_training_dataset_v1.py",
+        "lines": [
+          27,
+          542
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/tools/render_3dpw_60_pairs_report_style_v1.py",
+        "lines": [
+          36
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/tools/visualize_3dpw_20_pairs_assets.py",
+        "lines": [
+          39,
+          677
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/tools/visualize_3dpw_20_pairs_assets_diverse.py",
+        "lines": [
+          20
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/tools/visualize_3dpw_60_pairs_diverse_dinov2_v2.py",
+        "lines": [
+          77,
+          2390
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/tools/visualize_3dpw_60_pairs_large_pose.py",
+        "lines": [
+          38,
+          934
+        ]
+      }
+    ],
+    "TikTok_v3": [
+      {
+        "path": "/home/shangguanrz/project/pic-edit/audit_tiktok_v3_blur_sample.py",
+        "lines": [
+          16,
+          22
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/audit_tiktok_v3_final_pairs.py",
+        "lines": [
+          11
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/audit_tiktok_v3_pose_redundancy.py",
+        "lines": [
+          16,
+          22
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/audit_tiktok_v3_strict_final.py",
+        "lines": [
+          17,
+          23,
+          29
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/audit_tiktok_v3_visual_quality_v2.py",
+        "lines": [
+          18,
+          24
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/audit_tiktok_v3_visual_quality_v3.py",
+        "lines": [
+          17,
+          23
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/build_tiktok_v3_candidate_pool.py",
+        "lines": [
+          42
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/build_tiktok_v3_condition_inventory.py",
+        "lines": [
+          9,
+          46
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/build_tiktok_v3_pairs.py",
+        "lines": [
+          16,
+          21,
+          26
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/build_tiktok_v3_pairs_strict.py",
+        "lines": [
+          16,
+          21,
+          26
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/build_tiktok_v3_strict_visual_pool.py",
+        "lines": [
+          14,
+          20,
+          26,
+          32
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/build_tiktok_v3_usable_pool.py",
+        "lines": [
+          13,
+          19,
+          25,
+          31,
+          37
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/fill_tiktok_v3_missing_geometry.py",
+        "lines": [
+          15,
+          25,
+          30
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/finalize_tiktok_v3_visual_quality_v1.py",
+        "lines": [
+          14,
+          20,
+          26
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/run_tiktok_v3_dwpose.py",
+        "lines": [
+          38,
+          44,
+          49,
+          55
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/sample_tiktok_v3_dwpose_qc.py",
+        "lines": [
+          13,
+          19
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/sample_tiktok_v3_geometry_rejects.py",
+        "lines": [
+          13,
+          19
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/scripts/build_tiktok_v6_conditions.py",
+        "lines": [
+          475
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/scripts/prepare_tiktok_qwen21_training.py",
+        "lines": [
+          98
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/split_tiktok_v3_groupwise.py",
+        "lines": [
+          16,
+          28,
+          33,
+          39
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/src/data/tiktok_dataset.py",
+        "lines": [
+          564,
+          568,
+          576,
+          805
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/visualize_tiktok_v3_final_global_blur.py",
+        "lines": [
+          15,
+          21
+        ]
+      }
+    ],
+    "native_interaction_v4_2": [
+      {
+        "path": "/home/shangguanrz/build_interaction_set.py",
+        "lines": [
+          2,
+          16,
+          103
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/project/pic-edit/tests/test_qwen21_action_prompts.py",
+        "lines": [
+          95
+        ]
+      },
+      {
+        "path": "/home/shangguanrz/survey_hi4d_pairs.py",
+        "lines": [
+          2,
+          7
+        ]
+      }
+    ]
+  },
+  "root_entries": [
+    {
+      "path": "/home/shangguanrz/project/pic-edit/audit_hi4d_qwen21_prompt_leak.py",
+      "git_state": "??",
+      "classification": "审计、验证或诊断入口",
+      "suggested_destination": "scripts/audit/audit_hi4d_qwen21_prompt_leak.py",
+      "lines": 124,
+      "purpose_hint": "Check target-RGB isolation and target-geometry sensitivity on one Hi4D source.",
+      "static_reference_file_count": 0,
+      "referenced_by": "",
+      "root_derivation_lines": "",
+      "sha256": "205f19e9dc0d966aa17094d716107e8129295b18fe31852593a3c00093c2d40d"
+    },
+    {
+      "path": "/home/shangguanrz/project/pic-edit/audit_tiktok_v3_blur_sample.py",
+      "git_state": "??",
+      "classification": "审计、验证或诊断入口",
+      "suggested_destination": "scripts/audit/audit_tiktok_v3_blur_sample.py",
+      "lines": 472,
+      "purpose_hint": "read_jsonl, read_gray, load_binary_mask, sharpness_scores, make_panel",
+      "static_reference_file_count": 0,
+      "referenced_by": "",
+      "root_derivation_lines": "",
+      "sha256": "499464c7fd5a53b60b1ac4d3159d72c8467d55fb0cd42d76289bba118e16e8f3"
+    },
+    {
+      "path": "/home/shangguanrz/project/pic-edit/audit_tiktok_v3_final_pairs.py",
+      "git_state": "??",
+      "classification": "审计、验证或诊断入口",
+      "suggested_destination": "scripts/audit/audit_tiktok_v3_final_pairs.py",
+      "lines": 289,
+      "purpose_hint": "read_jsonl, main",
+      "static_reference_file_count": 0,
+      "referenced_by": "",
+      "root_derivation_lines": "",
+      "sha256": "168851bdcad330eb761e6598b8944a3558b91d2d70d6ddc7299ec5d0390f75a5"
+    },
+    {
+      "path": "/home/shangguanrz/project/pic-edit/audit_tiktok_v3_pose_redundancy.py",
+      "git_state": "??",
+      "classification": "审计、验证或诊断入口",
+      "suggested_destination": "scripts/audit/audit_tiktok_v3_pose_redundancy.py",
+      "lines": 1140,
+      "purpose_hint": "read_jsonl, write_jsonl, load_pose_descriptor, pose_distance, nearest_for_radius",
+      "static_reference_file_count": 0,
+      "referenced_by": "",
+      "root_derivation_lines": "",
+      "sha256": "b9e6403ba28e43a6eb91497a9bbb640f468144ae9311a34fa03443657466bbee"
+    },
+    {
+      "path": "/home/shangguanrz/project/pic-edit/audit_tiktok_v3_strict_final.py",
+      "git_state": "??",
+      "classification": "审计、验证或诊断入口",
+      "suggested_destination": "scripts/audit/audit_tiktok_v3_strict_final.py",
+      "lines": 584,
+      "purpose_hint": "read_jsonl, resize_h, fit_width, make_panel, main",
+      "static_reference_file_count": 0,
+      "referenced_by": "",
+      "root_derivation_lines": "",
+      "sha256": "da8066d16f73230d9389933ee168dc632694824b9c31811a19805f943ae16106"
+    },
+    {
+      "path": "/home/shangguanrz/project/pic-edit/audit_tiktok_v3_visual_quality_v2.py",
+      "git_state": "??",
+      "classification": "审计、验证或诊断入口",
+      "suggested_destination": "scripts/audit/audit_tiktok_v3_visual_quality_v2.py",
+      "lines": 1833,
+      "purpose_hint": "read_jsonl, read_bgr, read_mask, edge_sharpness, load_dwpose_face",
+      "static_reference_file_count": 0,
+      "referenced_by": "",
+      "root_derivation_lines": "",
+      "sha256": "cd8b11f89abf03a108ed605d383c686a058ef8ac1c1dc4e6c448d9997cbb3237"
+    },
+    {
+      "path": "/home/shangguanrz/project/pic-edit/audit_tiktok_v3_visual_quality_v3.py",
+      "git_state": "??",
+      "classification": "审计、验证或诊断入口",
+      "suggested_destination": "scripts/audit/audit_tiktok_v3_visual_quality_v3.py",
+      "lines": 2612,
+      "purpose_hint": "read_jsonl, read_bgr, read_binary_mask, edge_sharpness, load_dwpose",
+      "static_reference_file_count": 0,
+      "referenced_by": "",
+      "root_derivation_lines": "",
+      "sha256": "876eaae46205bb78d70d6017973d0bd15326621c787bf8d858e99512489b8b4b"
+    },
+    {
+      "path": "/home/shangguanrz/project/pic-edit/build_20b_memory_docx.py",
+      "git_state": "已跟踪，未列出改动",
+      "classification": "报告或可视化生成",
+      "suggested_destination": "scripts/reports/build_20b_memory_docx.py",
+      "lines": 299,
+      "purpose_hint": "生成《Qwen-Image-Edit 20B 显存占用预算与单卡可行性分析简报》Word文档",
+      "static_reference_file_count": 0,
+      "referenced_by": "",
+      "root_derivation_lines": "",
+      "sha256": "e64b1351a6f920aa216e5d5053d36e6e9c08cd9645c16d3a36073ffbc2636e4b"
+    },
+    {
+      "path": "/home/shangguanrz/project/pic-edit/build_architecture_docx.py",
+      "git_state": "已跟踪，未列出改动",
+      "classification": "报告或可视化生成",
+      "suggested_destination": "scripts/reports/build_architecture_docx.py",
+      "lines": 598,
+      "purpose_hint": "生成《人物图像姿态编辑系统架构设计与核心技术方案》Word文档",
+      "static_reference_file_count": 0,
+      "referenced_by": "",
+      "root_derivation_lines": "",
+      "sha256": "bc0b755f1f7ae72e5a09e570ba75e4900b740869e2107a0486f5e8b9778cde61"
+    },
+    {
+      "path": "/home/shangguanrz/project/pic-edit/build_brief_architecture_docx.py",
+      "git_state": "已跟踪，未列出改动",
+      "classification": "报告或可视化生成",
+      "suggested_destination": "scripts/reports/build_brief_architecture_docx.py",
+      "lines": 355,
+      "purpose_hint": "生成《人物图像姿态编辑项目技术架构与进展简报（科研同步版）》Word文档",
+      "static_reference_file_count": 0,
+      "referenced_by": "",
+      "root_derivation_lines": "",
+      "sha256": "2f939d9d87bd4685c5897a96a63fd0a2020c4bae4b618c18d7c8c027afe043ee"
+    },
+    {
+      "path": "/home/shangguanrz/project/pic-edit/build_latest_experiment_report_docx.py",
+      "git_state": "已跟踪，未列出改动",
+      "classification": "报告或可视化生成",
+      "suggested_destination": "scripts/reports/build_latest_experiment_report_docx.py",
+      "lines": 377,
+      "purpose_hint": "生成《DeepGen 1.0 图像姿态编辑最新实验结果与显存分析简报》Word文档",
+      "static_reference_file_count": 0,
+      "referenced_by": "",
+      "root_derivation_lines": "",
+      "sha256": "4008970298290f2feacc9494665190d56890528e895adb5208cde052a58073bf"
+    },
+    {
+      "path": "/home/shangguanrz/project/pic-edit/build_tiktok_v3_candidate_pool.py",
+      "git_state": "??",
+      "classification": "数据、条件或实验收尾入口",
+      "suggested_destination": "scripts/data/build_tiktok_v3_candidate_pool.py",
+      "lines": 1228,
+      "purpose_hint": "TikTok V3 formal candidate-pool construction.",
+      "static_reference_file_count": 1,
+      "referenced_by": "/home/shangguanrz/qwen21_recap.py",
+      "root_derivation_lines": "",
+      "sha256": "952410cdfc3a8ee6253ab1fc37895c300b05070b8431bd2673d8ada3b19abc43"
+    },
+    {
+      "path": "/home/shangguanrz/project/pic-edit/build_tiktok_v3_condition_inventory.py",
+      "git_state": "??",
+      "classification": "数据、条件或实验收尾入口",
+      "suggested_destination": "scripts/data/build_tiktok_v3_condition_inventory.py",
+      "lines": 785,
+      "purpose_hint": "TikTok V3 - Step 6",
+      "static_reference_file_count": 0,
+      "referenced_by": "",
+      "root_derivation_lines": "",
+      "sha256": "f5145fb40b26000ee5db5f480c93ecfb773916c0c3619b1d06136b2404522793"
+    },
+    {
+      "path": "/home/shangguanrz/project/pic-edit/build_tiktok_v3_pairs.py",
+      "git_state": "??",
+      "classification": "数据、条件或实验收尾入口",
+      "suggested_destination": "scripts/data/build_tiktok_v3_pairs.py",
+      "lines": 871,
+      "purpose_hint": "read_jsonl, load_dwpose, pose_descriptor, pose_distance, source_quality",
+      "static_reference_file_count": 0,
+      "referenced_by": "",
+      "root_derivation_lines": "",
+      "sha256": "5cd13b9f919394c86dfac0b6fe43e8475be42aed0574f7bc9b9fc69e6b07b251"
+    },
+    {
+      "path": "/home/shangguanrz/project/pic-edit/build_tiktok_v3_pairs_strict.py",
+      "git_state": "??",
+      "classification": "数据、条件或实验收尾入口",
+      "suggested_destination": "scripts/data/build_tiktok_v3_pairs_strict.py",
+      "lines": 871,
+      "purpose_hint": "read_jsonl, load_dwpose, pose_descriptor, pose_distance, source_quality",
+      "static_reference_file_count": 0,
+      "referenced_by": "",
+      "root_derivation_lines": "",
+      "sha256": "ea4cfee1ad044388ae30e01dd64ff485a42599aa1464039257f74748677cf1ca"
+    },
+    {
+      "path": "/home/shangguanrz/project/pic-edit/build_tiktok_v3_strict_visual_pool.py",
+      "git_state": "??",
+      "classification": "数据、条件或实验收尾入口",
+      "suggested_destination": "scripts/data/build_tiktok_v3_strict_visual_pool.py",
+      "lines": 345,
+      "purpose_hint": "read_jsonl, as_bool, main",
+      "static_reference_file_count": 0,
+      "referenced_by": "",
+      "root_derivation_lines": "",
+      "sha256": "b273a94e0c9cdc5de7eff68ba46680e23f15c7fa4adab2b25e1acc63d4fbeb5b"
+    },
+    {
+      "path": "/home/shangguanrz/project/pic-edit/build_tiktok_v3_usable_pool.py",
+      "git_state": "??",
+      "classification": "数据、条件或实验收尾入口",
+      "suggested_destination": "scripts/data/build_tiktok_v3_usable_pool.py",
+      "lines": 321,
+      "purpose_hint": "read_jsonl",
+      "static_reference_file_count": 0,
+      "referenced_by": "",
+      "root_derivation_lines": "",
+      "sha256": "6d8b9e2ddef5888750fd448db1356dc3459cc29ee575dc7821cfa995f39a97f5"
+    },
+    {
+      "path": "/home/shangguanrz/project/pic-edit/complete_hi4d_qwen21_dual.py",
+      "git_state": "??",
+      "classification": "实验编排、运行或辅助工具",
+      "suggested_destination": "scripts/run/complete_hi4d_qwen21_dual.py",
+      "lines": 164,
+      "purpose_hint": "Finish the long Qwen21 dual run, then evaluate the held-out Hi4D test split.",
+      "static_reference_file_count": 0,
+      "referenced_by": "",
+      "root_derivation_lines": "13: ROOT = Path(__file__).resolve().parent",
+      "sha256": "2c32dfccdc8fae54f57ab95ff7f41e0ce683a7bda60697c8247d9aabc2c88976"
+    },
+    {
+      "path": "/home/shangguanrz/project/pic-edit/create_debug_samples.py",
+      "git_state": "已跟踪，未列出改动",
+      "classification": "数据、条件或实验收尾入口",
+      "suggested_destination": "scripts/data/create_debug_samples.py",
+      "lines": 170,
+      "purpose_hint": "generate_debug_dataset",
+      "static_reference_file_count": 1,
+      "referenced_by": "/home/shangguanrz/project/pic-edit/README.md",
+      "root_derivation_lines": "",
+      "sha256": "b560e473e448bba68ed877e59c7300cfb20ef1de6edd65ab85ed73240813f4dd"
+    },
+    {
+      "path": "/home/shangguanrz/project/pic-edit/eval_hi4d_qwen21_dual.py",
+      "git_state": "??",
+      "classification": "评测入口",
+      "suggested_destination": "scripts/eval/eval_hi4d_qwen21_dual.py",
+      "lines": 327,
+      "purpose_hint": "Generate and score native / geometry / full Qwen21 Hi4D controls.",
+      "static_reference_file_count": 2,
+      "referenced_by": "/home/shangguanrz/project/pic-edit/complete_hi4d_qwen21_dual.py; /home/shangguanrz/project/pic-edit/docs/qwen21_hi4d_dual.md",
+      "root_derivation_lines": "",
+      "sha256": "a649d080393d683a3c7b598c0691bfd77e17bc90a7780096489a00b121f30b54"
+    },
+    {
+      "path": "/home/shangguanrz/project/pic-edit/eval_iper_four_arm.py",
+      "git_state": "??",
+      "classification": "评测入口",
+      "suggested_destination": "scripts/eval/eval_iper_four_arm.py",
+      "lines": 320,
+      "purpose_hint": "Evaluate saved DeepGen/Qwen21 images using the same CPU metrics and pairs.",
+      "static_reference_file_count": 7,
+      "referenced_by": "/home/shangguanrz/nihaochen/evaluate_qwen21_dev_gate.py; /home/shangguanrz/nihaochen/run_qwen21_remaining.sh; /home/shangguanrz/project/pic-edit/eval_qwen21_face_cross_person.py; /home/shangguanrz/project/pic-edit/eval_qwen21_face_variants.py; /home/shangguanrz/project/pic-edit/scripts/evaluate_qwen21_weight_inheritance.py; /home/shangguanrz/project/pic-edit/scripts/run_qwen21_face_single_sample.py; /home/shangguanrz/qwen21_recap.py",
+      "root_derivation_lines": "22: ROOT = Path(__file__).resolve().parent",
+      "sha256": "51a7b2d6ae88b94a64e818179fe781a5d117de65d9e7999384b8710fc473feb8"
+    },
+    {
+      "path": "/home/shangguanrz/project/pic-edit/eval_iper_qwen21_body.py",
+      "git_state": "??",
+      "classification": "评测入口",
+      "suggested_destination": "scripts/eval/eval_iper_qwen21_body.py",
+      "lines": 176,
+      "purpose_hint": "Generate Qwen21 adapter OFF/ON images on the fixed iPER comparison pairs.",
+      "static_reference_file_count": 3,
+      "referenced_by": "/home/shangguanrz/nihaochen/iper1024/continue_experiment.py; /home/shangguanrz/nihaochen/run_qwen21_remaining.sh; /home/shangguanrz/qwen21_recap.py",
+      "root_derivation_lines": "23: ROOT = Path(__file__).resolve().parent",
+      "sha256": "dc7cf30538aa0e66cf70733621f8ce5715a18bb485637cb8dc4558158696cd29"
+    },
+    {
+      "path": "/home/shangguanrz/project/pic-edit/eval_iper_qwen21_face.py",
+      "git_state": "??",
+      "classification": "评测入口",
+      "suggested_destination": "scripts/eval/eval_iper_qwen21_face.py",
+      "lines": 139,
+      "purpose_hint": "Sample the frozen Qwen21 Body checkpoint with a separately trained Face branch.",
+      "static_reference_file_count": 2,
+      "referenced_by": "/home/shangguanrz/nihaochen/iper1024/continue_experiment.py; /home/shangguanrz/project/pic-edit/eval_qwen21_face_cross_person.py",
+      "root_derivation_lines": "24: ROOT = Path(__file__).resolve().parent",
+      "sha256": "6897f994241e35dcb11248289cc73de0191a311d36c55f796385d0d2b6892935"
+    },
+    {
+      "path": "/home/shangguanrz/project/pic-edit/eval_iper_qwen21_full.py",
+      "git_state": "??",
+      "classification": "评测入口",
+      "suggested_destination": "scripts/eval/eval_iper_qwen21_full.py",
+      "lines": 185,
+      "purpose_hint": "Complete 30-step sampling for the preserved full controller and Qwen21.",
+      "static_reference_file_count": 5,
+      "referenced_by": "/home/shangguanrz/project/pic-edit/scripts/eval_qwen21_face_repair.py; /home/shangguanrz/project/pic-edit/scripts/finalize_qwen21_face_repair.py; /home/shangguanrz/project/pic-edit/scripts/finalize_qwen21_face_single_sample.py; /home/shangguanrz/project/pic-edit/scripts/run_qwen21_face_single_sample.py; /home/shangguanrz/project/pic-edit/scripts/run_qwen21_weight_inheritance.py",
+      "root_derivation_lines": "",
+      "sha256": "b3541fa0f8580df461d38f3e81732d136642270cc215e7573b71facdf1ec4d75"
+    },
+    {
+      "path": "/home/shangguanrz/project/pic-edit/eval_iper_v6.py",
+      "git_state": " M",
+      "classification": "评测入口",
+      "suggested_destination": "scripts/eval/eval_iper_v6.py",
+      "lines": 414,
+      "purpose_hint": "Evaluate trained UnifiedSMPLXAdapterV6 on iPER validation or test sets.",
+      "static_reference_file_count": 5,
+      "referenced_by": "/home/shangguanrz/nihaochen/docs/pic_edit_code_guide_20260923.md; /home/shangguanrz/nihaochen/run_qwen21_remaining.sh; /home/shangguanrz/project/pic-edit/docs/iper_v6_training_plan.md; /home/shangguanrz/project/pic-edit/run_v6_comparative_3000.sh; /home/shangguanrz/project/pic-edit/tests/test_iper_v6_eval_parity.py",
+      "root_derivation_lines": "26: DEFAULT_PROJECT_ROOT = Path(__file__).resolve().parent; 27: sys.path.insert(0, str(DEFAULT_PROJECT_ROOT))",
+      "sha256": "39811aa5f5add76d97a17f353c8d57f74593c6a5c15f589317b5b14452edb146"
+    },
+    {
+      "path": "/home/shangguanrz/project/pic-edit/eval_qwen21_face_cross_person.py",
+      "git_state": "??",
+      "classification": "评测入口",
+      "suggested_destination": "scripts/eval/eval_qwen21_face_cross_person.py",
+      "lines": 116,
+      "purpose_hint": "Qualitative A/B different-person check: B supplies geometry, never identity pixels.",
+      "static_reference_file_count": 0,
+      "referenced_by": "",
+      "root_derivation_lines": "24: ROOT = Path(__file__).resolve().parent",
+      "sha256": "2f00c7a1a6721034413ade481f407080fd87fb2a4c44c591f2f51cb694861b1e"
+    },
+    {
+      "path": "/home/shangguanrz/project/pic-edit/eval_qwen21_face_references.py",
+      "git_state": "??",
+      "classification": "评测入口",
+      "suggested_destination": "scripts/eval/eval_qwen21_face_references.py",
+      "lines": 137,
+      "purpose_hint": "Paired Qwen21 Body 20k probe: source image with or without its own face crop.",
+      "static_reference_file_count": 2,
+      "referenced_by": "/home/shangguanrz/project/pic-edit/eval_iper_qwen21_face.py; /home/shangguanrz/project/pic-edit/eval_qwen21_face_cross_person.py",
+      "root_derivation_lines": "20: ROOT = Path(__file__).resolve().parent",
+      "sha256": "c9605642b10e633d235c12d1a3fba889138699d53a515422859210ccb56d5dda"
+    },
+    {
+      "path": "/home/shangguanrz/project/pic-edit/eval_qwen21_face_variants.py",
+      "git_state": "??",
+      "classification": "评测入口",
+      "suggested_destination": "scripts/eval/eval_qwen21_face_variants.py",
+      "lines": 188,
+      "purpose_hint": "Measure saved Qwen21 Face variants on the same pairs and valid face subset.",
+      "static_reference_file_count": 1,
+      "referenced_by": "/home/shangguanrz/nihaochen/iper1024/continue_experiment.py",
+      "root_derivation_lines": "18: ROOT = Path(__file__).resolve().parent",
+      "sha256": "abc8da97609c49a0c0767d1dfdb4c1548cc122ee21d6d9b2406628a3d4ea05a0"
+    },
+    {
+      "path": "/home/shangguanrz/project/pic-edit/fill_tiktok_v3_missing_geometry.py",
+      "git_state": "??",
+      "classification": "数据、条件或实验收尾入口",
+      "suggested_destination": "scripts/data/fill_tiktok_v3_missing_geometry.py",
+      "lines": 171,
+      "purpose_hint": "load_jsonl, write_json, main",
+      "static_reference_file_count": 1,
+      "referenced_by": "/home/shangguanrz/project/pic-edit/run_tiktok_v3_fill_missing_geometry_bg.sh",
+      "root_derivation_lines": "",
+      "sha256": "689fbe6ab66f38d22b29d40f22d6a47990c8f8cfd38e0f10e71772bb50672066"
+    },
+    {
+      "path": "/home/shangguanrz/project/pic-edit/finalize_tiktok_v3_visual_quality_v1.py",
+      "git_state": "??",
+      "classification": "数据、条件或实验收尾入口",
+      "suggested_destination": "scripts/data/finalize_tiktok_v3_visual_quality_v1.py",
+      "lines": 538,
+      "purpose_hint": "as_float, as_bool, write_jsonl, main",
+      "static_reference_file_count": 0,
+      "referenced_by": "",
+      "root_derivation_lines": "",
+      "sha256": "f36d9d447ef443e5cd45daec788b99aca09a8c2c434029ea992b47a4fd1f6f48"
+    },
+    {
+      "path": "/home/shangguanrz/project/pic-edit/multi_stage_eval_v6.py",
+      "git_state": "已跟踪，未列出改动",
+      "classification": "评测入口",
+      "suggested_destination": "scripts/eval/multi_stage_eval_v6.py",
+      "lines": 401,
+      "purpose_hint": "Multi-stage checkpoint inference and comparison visualization for UnifiedSMPLXAdapterV6.",
+      "static_reference_file_count": 1,
+      "referenced_by": "/home/shangguanrz/project/pic-edit/run_v6_comparative_3000.sh",
+      "root_derivation_lines": "23: DEFAULT_PROJECT_ROOT = Path(__file__).resolve().parent; 26: sys.path.insert(0, str(DEFAULT_PROJECT_ROOT))",
+      "sha256": "9aa58776036e07bd0b44622b1d1c1f3bfed2355066a53ac548e50f9c36882cc8"
+    },
+    {
+      "path": "/home/shangguanrz/project/pic-edit/plot_vram_requirement_dashboard.py",
+      "git_state": "已跟踪，未列出改动",
+      "classification": "报告或可视化生成",
+      "suggested_destination": "scripts/reports/plot_vram_requirement_dashboard.py",
+      "lines": 173,
+      "purpose_hint": "生成《DeepGen 1.0 姿态编辑实验显存需求全景看板》高清可视化图表",
+      "static_reference_file_count": 0,
+      "referenced_by": "",
+      "root_derivation_lines": "",
+      "sha256": "168218842010b1055cea9986eded622d184f303b51ab3484a98ed4f105a936c4"
+    },
+    {
+      "path": "/home/shangguanrz/project/pic-edit/run_champ_single_overfit.py",
+      "git_state": "已跟踪，未列出改动",
+      "classification": "实验编排、运行或辅助工具",
+      "suggested_destination": "scripts/run/run_champ_single_overfit.py",
+      "lines": 434,
+      "purpose_hint": "Overfit PoseConditionAdapter on one aligned CHAMP source/target pair.",
+      "static_reference_file_count": 5,
+      "referenced_by": "/home/shangguanrz/nihaochen/docs/pic_edit_code_guide_20260923.md; /home/shangguanrz/project/pic-edit/docs/champ_deepgen_single_sample_runbook.md; /home/shangguanrz/project/pic-edit/docs/superpowers/plans/2026-09-12-champ-deepgen-single-sample.md; /home/shangguanrz/project/pic-edit/docs/superpowers/specs/2026-09-12-champ-deepgen-single-sample-design.md; /home/shangguanrz/project/pic-edit/tests/test_champ_deepgen_integration.py",
+      "root_derivation_lines": "17: LOCAL_PROJECT_ROOT = Path(__file__).resolve().parent; 23: sys.path.insert(0, str(DEFAULT_PROJECT_ROOT)); 24: sys.path.insert(0, str(DEFAULT_MODEL_PATH))",
+      "sha256": "505d4db4839aba965fb3242a5ae6e32389ddf13416f6711d3068a585ab33c63d"
+    },
+    {
+      "path": "/home/shangguanrz/project/pic-edit/run_deepgen_no_control_ablation.py",
+      "git_state": "已跟踪，未列出改动",
+      "classification": "实验编排、运行或辅助工具",
+      "suggested_destination": "scripts/run/run_deepgen_no_control_ablation.py",
+      "lines": 219,
+      "purpose_hint": "Run a pure-DeepGen ablation with no Adapter or spatial-control injection.",
+      "static_reference_file_count": 5,
+      "referenced_by": "/home/shangguanrz/nihaochen/docs/pic_edit_code_guide_20260923.md; /home/shangguanrz/project/pic-edit/docs/champ_deepgen_single_sample_runbook.md; /home/shangguanrz/project/pic-edit/docs/superpowers/plans/2026-09-12-deepgen-no-control-ablation.md; /home/shangguanrz/project/pic-edit/docs/superpowers/specs/2026-09-12-deepgen-no-control-ablation-design.md; /home/shangguanrz/project/pic-edit/tests/test_deepgen_no_control_ablation.py",
+      "root_derivation_lines": "14: PROJECT_ROOT = Path(__file__).resolve().parent; 23: sys.path.insert(0, str(DEFAULT_PROJECT_ROOT)); 24: sys.path.insert(0, str(DEFAULT_MODEL_PATH))",
+      "sha256": "9b6c21b235d7f87401916421808853fe3fc43f3f814456d9ed5074c6f2698f0c"
+    },
+    {
+      "path": "/home/shangguanrz/project/pic-edit/run_demo_pose_edit.py",
+      "git_state": "已跟踪，未列出改动",
+      "classification": "实验编排、运行或辅助工具",
+      "suggested_destination": "scripts/run/run_demo_pose_edit.py",
+      "lines": 163,
+      "purpose_hint": "make_comparison_grid",
+      "static_reference_file_count": 2,
+      "referenced_by": "/home/shangguanrz/nihaochen/docs/pic_edit_code_guide_20260923.md; /home/shangguanrz/project/pic-edit/README.md",
+      "root_derivation_lines": "5: sys.path.insert(0, model_path)",
+      "sha256": "e8cf8a618c990511d1595c80a0b64b8ee7d54798e4a46efa4bda33707116504b"
+    },
+    {
+      "path": "/home/shangguanrz/project/pic-edit/run_tiktok_sample_00001_smoke.py",
+      "git_state": "A ",
+      "classification": "实验编排、运行或辅助工具",
+      "suggested_destination": "scripts/run/run_tiktok_sample_00001_smoke.py",
+      "lines": 231,
+      "purpose_hint": "Smoke run runner for TikTok Sequence 00001 (Source 0014 -> Target 0074).",
+      "static_reference_file_count": 1,
+      "referenced_by": "/home/shangguanrz/project/pic-edit/tests/test_tiktok_data_contract.py",
+      "root_derivation_lines": "30: PROJECT_ROOT = Path(__file__).resolve().parent; 33: if str(PROJECT_ROOT) not in sys.path:; 34: sys.path.insert(0, str(PROJECT_ROOT))",
+      "sha256": "1ce41447ff5160f82575721464cff8d8d09f9b49185b6b53482903dddc125beb"
+    },
+    {
+      "path": "/home/shangguanrz/project/pic-edit/run_tiktok_v3_dwpose.py",
+      "git_state": "??",
+      "classification": "实验编排、运行或辅助工具",
+      "suggested_destination": "scripts/run/run_tiktok_v3_dwpose.py",
+      "lines": 479,
+      "purpose_hint": "ensure_dir, load_rows, read_rgb, select_person, normalize_points",
+      "static_reference_file_count": 0,
+      "referenced_by": "",
+      "root_derivation_lines": "26: sys.path.insert(0, str(DWROOT))",
+      "sha256": "97693c195bd631346c3287b40e9a9d69e6b4b1cc054a5abdcb03c150daf28a49"
+    },
+    {
+      "path": "/home/shangguanrz/project/pic-edit/run_tiktok_v3_fill_missing_geometry_bg.sh",
+      "git_state": "??",
+      "classification": "实验编排、运行或辅助工具",
+      "suggested_destination": "scripts/run/run_tiktok_v3_fill_missing_geometry_bg.sh",
+      "lines": 24,
+      "purpose_hint": "",
+      "static_reference_file_count": 0,
+      "referenced_by": "",
+      "root_derivation_lines": "",
+      "sha256": "0c52c5dbb7343ae04ef50999af54c43e268bd4ad076afa7164cd2bdd44e1601c"
+    },
+    {
+      "path": "/home/shangguanrz/project/pic-edit/run_v6_comparative_3000.sh",
+      "git_state": "已跟踪，未列出改动",
+      "classification": "实验编排、运行或辅助工具",
+      "suggested_destination": "scripts/run/run_v6_comparative_3000.sh",
+      "lines": 80,
+      "purpose_hint": "",
+      "static_reference_file_count": 0,
+      "referenced_by": "",
+      "root_derivation_lines": "",
+      "sha256": "5892d258d0be56ca49dcc959b2de99c79f44afa4812940e86d1177f35f1f7172"
+    },
+    {
+      "path": "/home/shangguanrz/project/pic-edit/sample_tiktok_v3_dwpose_qc.py",
+      "git_state": "??",
+      "classification": "审计、验证或诊断入口",
+      "suggested_destination": "scripts/audit/sample_tiktok_v3_dwpose_qc.py",
+      "lines": 146,
+      "purpose_hint": "",
+      "static_reference_file_count": 0,
+      "referenced_by": "",
+      "root_derivation_lines": "",
+      "sha256": "d026d7f99ed60537b0cbb5a46cee96aac7f46451e836700be0f5f8c438b626fd"
+    },
+    {
+      "path": "/home/shangguanrz/project/pic-edit/sample_tiktok_v3_geometry_rejects.py",
+      "git_state": "??",
+      "classification": "审计、验证或诊断入口",
+      "suggested_destination": "scripts/audit/sample_tiktok_v3_geometry_rejects.py",
+      "lines": 262,
+      "purpose_hint": "",
+      "static_reference_file_count": 0,
+      "referenced_by": "",
+      "root_derivation_lines": "",
+      "sha256": "137cd9d93cd0d71084f2c984cf8320ba896e52f70592559be08214300b149824"
+    },
+    {
+      "path": "/home/shangguanrz/project/pic-edit/split_tiktok_v3_groupwise.py",
+      "git_state": "??",
+      "classification": "数据、条件或实验收尾入口",
+      "suggested_destination": "scripts/data/split_tiktok_v3_groupwise.py",
+      "lines": 526,
+      "purpose_hint": "read_jsonl, evaluate",
+      "static_reference_file_count": 0,
+      "referenced_by": "",
+      "root_derivation_lines": "",
+      "sha256": "6fa3c91d3e210ceb092c134e11795fced0d10abd12757d85bddfb29986a6daa5"
+    },
+    {
+      "path": "/home/shangguanrz/project/pic-edit/test_control_signals.py",
+      "git_state": "已跟踪，未列出改动",
+      "classification": "生产依赖：合成控制生成工具（保留）",
+      "suggested_destination": "test_control_signals.py（以后提取到 src/controls/）",
+      "lines": 192,
+      "purpose_hint": "create_synthetic_smplx_human, test_control_signal_generation",
+      "static_reference_file_count": 3,
+      "referenced_by": "/home/shangguanrz/project/pic-edit/README.md; /home/shangguanrz/project/pic-edit/create_debug_samples.py; /home/shangguanrz/project/pic-edit/vram_lab/worker.py",
+      "root_derivation_lines": "",
+      "sha256": "e5e640d5afcd587c1c7f5a63bca9b76883cc1056f2365e241a3a8f362c94da02"
+    },
+    {
+      "path": "/home/shangguanrz/project/pic-edit/train_adapter.py",
+      "git_state": "已跟踪，未列出改动",
+      "classification": "训练入口",
+      "suggested_destination": "scripts/train/train_adapter.py",
+      "lines": 268,
+      "purpose_hint": "PairedPoseDataset, train_adapter",
+      "static_reference_file_count": 2,
+      "referenced_by": "/home/shangguanrz/nihaochen/docs/pic_edit_code_guide_20260923.md; /home/shangguanrz/project/pic-edit/README.md",
+      "root_derivation_lines": "13: # Add project root to sys.path; 14: sys.path.insert(0, \"/home/shangguanrz/project/pic-edit\")",
+      "sha256": "778524af6d0a5ba5f5b4250ea98ff74ae0f85597ac5d1d8ab3d619b2bc0fb0b2"
+    },
+    {
+      "path": "/home/shangguanrz/project/pic-edit/train_hi4d_qwen21_dual.py",
+      "git_state": "??",
+      "classification": "训练入口",
+      "suggested_destination": "scripts/train/train_hi4d_qwen21_dual.py",
+      "lines": 345,
+      "purpose_hint": "Train Qwen21 dual-person control from Hi4D N2C pairs.",
+      "static_reference_file_count": 4,
+      "referenced_by": "/home/shangguanrz/project/pic-edit/audit_hi4d_qwen21_prompt_leak.py; /home/shangguanrz/project/pic-edit/complete_hi4d_qwen21_dual.py; /home/shangguanrz/project/pic-edit/docs/qwen21_hi4d_dual.md; /home/shangguanrz/project/pic-edit/eval_hi4d_qwen21_dual.py",
+      "root_derivation_lines": "28: ROOT = Path(__file__).resolve().parent",
+      "sha256": "d635c873e35a75925372cfb79ce9c9d69cb44b43d7295a8ac46b2600014c8352"
+    },
+    {
+      "path": "/home/shangguanrz/project/pic-edit/train_iper_qwen21_body.py",
+      "git_state": "??",
+      "classification": "训练入口",
+      "suggested_destination": "scripts/train/train_iper_qwen21_body.py",
+      "lines": 355,
+      "purpose_hint": "Train a target-token body adapter on the frozen Qwen-Image-2.1 backbone.",
+      "static_reference_file_count": 5,
+      "referenced_by": "/home/shangguanrz/diff_loss.py; /home/shangguanrz/nihaochen/run_qwen21_remaining.sh; /home/shangguanrz/project/pic-edit/src/data/tiktok_dataset.py; /home/shangguanrz/project/pic-edit/train_iper_qwen21_face.py; /home/shangguanrz/qwen21_recap.py",
+      "root_derivation_lines": "27: ROOT = Path(__file__).resolve().parent",
+      "sha256": "43748e220e55417cb5a04e2bcd3013eb0698122ae42123002be1866a1f4ed803"
+    },
+    {
+      "path": "/home/shangguanrz/project/pic-edit/train_iper_qwen21_face.py",
+      "git_state": "??",
+      "classification": "训练入口",
+      "suggested_destination": "scripts/train/train_iper_qwen21_face.py",
+      "lines": 392,
+      "purpose_hint": "Train a source-identity Qwen21 face ROI branch over the frozen Body 20k adapter.",
+      "static_reference_file_count": 3,
+      "referenced_by": "/home/shangguanrz/nihaochen/iper1024/continue_experiment.py; /home/shangguanrz/project/pic-edit/eval_iper_qwen21_face.py; /home/shangguanrz/project/pic-edit/eval_qwen21_face_cross_person.py",
+      "root_derivation_lines": "26: ROOT = Path(__file__).resolve().parent",
+      "sha256": "2dd5cd01bf6f1062ee621b12c5add77753fd916169512b1f1fe0e2f60d16574d"
+    },
+    {
+      "path": "/home/shangguanrz/project/pic-edit/train_iper_qwen21_full.py",
+      "git_state": "??",
+      "classification": "训练入口",
+      "suggested_destination": "scripts/train/train_iper_qwen21_full.py",
+      "lines": 354,
+      "purpose_hint": "Bounded Body/Face training of the complete V6 architecture on Qwen21.",
+      "static_reference_file_count": 3,
+      "referenced_by": "/home/shangguanrz/project/pic-edit/scripts/finalize_qwen21_face_repair.py; /home/shangguanrz/project/pic-edit/scripts/finalize_qwen21_face_single_sample.py; /home/shangguanrz/project/pic-edit/scripts/run_qwen21_face_single_sample.py",
+      "root_derivation_lines": "",
+      "sha256": "ff29f84fb2ef937f7012b45ce1b708e432009f2c1473de1321d4a9a70d3178cb"
+    },
+    {
+      "path": "/home/shangguanrz/project/pic-edit/train_iper_v65_face.py",
+      "git_state": "已跟踪，未列出改动",
+      "classification": "训练入口",
+      "suggested_destination": "scripts/train/train_iper_v65_face.py",
+      "lines": 1047,
+      "purpose_hint": "V6.5 independent Face Adapter single-sample iPER training entry point.",
+      "static_reference_file_count": 8,
+      "referenced_by": "/home/shangguanrz/nihaochen/docs/pic_edit_code_guide_20260923.md; /home/shangguanrz/nihaochen/docs/pic_edit_code_guide_evidence_20260923/v65_face_audit.md; /home/shangguanrz/project/pic-edit/src/pose_control/qwen21_full/execution.py; /home/shangguanrz/project/pic-edit/tests/test_v65_face_training_gradients.py; /home/shangguanrz/project/pic-edit/tests/test_v65_iper_face_pipeline.py; /home/shangguanrz/project/pic-edit/train_iper_v66_hand.py; /home/shangguanrz/project/pic-edit/train_tiktok_overfit_sanity.py; /home/shangguanrz/project/pic-edit/train_tiktok_v65_face.py",
+      "root_derivation_lines": "",
+      "sha256": "af3c382a0277b80b685cdb1411a990f452ec8f2962648240aa97cb4596957bc6"
+    },
+    {
+      "path": "/home/shangguanrz/project/pic-edit/train_iper_v66_hand.py",
+      "git_state": "已跟踪，未列出改动",
+      "classification": "训练入口",
+      "suggested_destination": "scripts/train/train_iper_v66_hand.py",
+      "lines": 205,
+      "purpose_hint": "Fixed-pair iPER V6.6 Hand overfit; legacy/off/v66 share stochastic state.",
+      "static_reference_file_count": 1,
+      "referenced_by": "/home/shangguanrz/nihaochen/docs/pic_edit_qwen21_deployment_audit_20260925.md",
+      "root_derivation_lines": "",
+      "sha256": "84a310cad3e7eb74152be40955db07008c1c4fb81e53e942f12031cb95bc62fb"
+    },
+    {
+      "path": "/home/shangguanrz/project/pic-edit/train_iper_v6_native.py",
+      "git_state": "已跟踪，未列出改动",
+      "classification": "训练入口",
+      "suggested_destination": "scripts/train/train_iper_v6_native.py",
+      "lines": 1299,
+      "purpose_hint": "Native V6.3 Training Script for iPER Pose Editing (Scheme A: Single-Person Geometry).",
+      "static_reference_file_count": 12,
+      "referenced_by": "/home/shangguanrz/nihaochen/docs/pic_edit_code_guide_20260923.md; /home/shangguanrz/nihaochen/docs/pic_edit_code_guide_evidence_20260923/data_and_boundary_audit.md; /home/shangguanrz/nihaochen/docs/pic_edit_data_audit_notes.md; /home/shangguanrz/project/pic-edit/docs/iper_v6_training_plan.md; /home/shangguanrz/project/pic-edit/eval_iper_v6.py; /home/shangguanrz/project/pic-edit/experiments/16-test/run_deepgen_adapter.py; /home/shangguanrz/project/pic-edit/multi_stage_eval_v6.py; /home/shangguanrz/project/pic-edit/run_v6_comparative_3000.sh; /home/shangguanrz/project/pic-edit/tests/test_iper_v6_training_pipeline.py; /home/shangguanrz/project/pic-edit/train_iper_v65_face.py; /home/shangguanrz/project/pic-edit/train_iper_v66_hand.py; /home/shangguanrz/project/pic-edit/train_tiktok_v65_face.py",
+      "root_derivation_lines": "36: DEFAULT_PROJECT_ROOT = Path(__file__).resolve().parent; 37: sys.path.insert(0, str(DEFAULT_PROJECT_ROOT))",
+      "sha256": "674957cad72273cb354e39cc6fe80825f5a264449314cdde9bb975c527871e51"
+    },
+    {
+      "path": "/home/shangguanrz/project/pic-edit/train_tiktok_overfit_sanity.py",
+      "git_state": "A ",
+      "classification": "训练入口",
+      "suggested_destination": "scripts/train/train_tiktok_overfit_sanity.py",
+      "lines": 810,
+      "purpose_hint": "Two-phase single-sample overfit sanity test for the V6.5 TikTok pipeline.",
+      "static_reference_file_count": 1,
+      "referenced_by": "/home/shangguanrz/nihaochen/docs/pic_edit_qwen21_deployment_audit_20260925.md",
+      "root_derivation_lines": "50: PROJECT_ROOT = Path(__file__).resolve().parent; 51: if str(PROJECT_ROOT) not in sys.path:; 52: sys.path.insert(0, str(PROJECT_ROOT))",
+      "sha256": "2d6a54276ae637eb8d108610165d6b3122c75aa5b181622da64dca1107988e18"
+    },
+    {
+      "path": "/home/shangguanrz/project/pic-edit/train_tiktok_v65_face.py",
+      "git_state": "A ",
+      "classification": "训练入口",
+      "suggested_destination": "scripts/train/train_tiktok_v65_face.py",
+      "lines": 686,
+      "purpose_hint": "V6.5 independent Face Adapter single-sample TikTok training entry point.",
+      "static_reference_file_count": 4,
+      "referenced_by": "/home/shangguanrz/nihaochen/docs/pic_edit_qwen21_deployment_audit_20260925.md; /home/shangguanrz/project/pic-edit/run_tiktok_sample_00001_smoke.py; /home/shangguanrz/project/pic-edit/tests/test_train_tiktok_v65_face_smoke.py; /home/shangguanrz/project/pic-edit/train_tiktok_overfit_sanity.py",
+      "root_derivation_lines": "23: PROJECT_ROOT = Path(__file__).resolve().parent; 24: if str(PROJECT_ROOT) not in sys.path:; 25: sys.path.insert(0, str(PROJECT_ROOT))",
+      "sha256": "c7f153ce7f4253ac1dda7f52ec3f0098005dcf9510d3ba1ade839537697c6090"
+    },
+    {
+      "path": "/home/shangguanrz/project/pic-edit/visualize_tiktok_v3_final_global_blur.py",
+      "git_state": "??",
+      "classification": "报告或可视化生成",
+      "suggested_destination": "scripts/reports/visualize_tiktok_v3_final_global_blur.py",
+      "lines": 362,
+      "purpose_hint": "read_jsonl, read_bgr, build_index, resize_h, fit_width",
+      "static_reference_file_count": 0,
+      "referenced_by": "",
+      "root_derivation_lines": "",
+      "sha256": "3b98df4ec03c989da1145e327011a0679c19757891f7e48f0070e09b803c66f7"
+    }
+  ]
+}

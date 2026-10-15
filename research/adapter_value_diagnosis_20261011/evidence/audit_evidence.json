@@ -1,0 +1,2280 @@
+{
+  "collected_utc": "2026-10-10T16:18:55.359252+00:00",
+  "remote_code_root": "/home/shangguanrz/project/pic-edit",
+  "remote_results_root": "/home/shangguanrz/nihaochen/qwen21_full",
+  "scope": "Read-only collection of historical outputs; no new images or training.",
+  "native_value_metrics": {
+    "iper_512_steps30": {
+      "native_skeleton": {
+        "n_images": 6,
+        "pose_pck_002": {
+          "mean": 1.0,
+          "n": 6
+        },
+        "pose_torso_aligned_pck_002": {
+          "mean": 1.0,
+          "n": 6
+        },
+        "pose_joint_angle_mae_degrees": {
+          "mean": 4.173005722826396,
+          "n": 6
+        },
+        "identity_a_cosine_common": {
+          "mean": null,
+          "n": 0
+        },
+        "identity_a_cosine_reliable": {
+          "mean": 0.4995151389397047,
+          "n": 4
+        },
+        "background_mae_source": {
+          "mean": 6.908329884211223,
+          "n": 6
+        },
+        "seconds": {
+          "mean": 13.37809678383322,
+          "n": 6
+        }
+      },
+      "simple_body": {
+        "n_images": 6,
+        "pose_pck_002": {
+          "mean": 1.0,
+          "n": 6
+        },
+        "pose_torso_aligned_pck_002": {
+          "mean": 0.9509803921568628,
+          "n": 6
+        },
+        "pose_joint_angle_mae_degrees": {
+          "mean": 3.9732351930267544,
+          "n": 6
+        },
+        "identity_a_cosine_common": {
+          "mean": null,
+          "n": 0
+        },
+        "identity_a_cosine_reliable": {
+          "mean": 0.40940646359917254,
+          "n": 4
+        },
+        "background_mae_source": {
+          "mean": 6.6953816413879395,
+          "n": 6
+        },
+        "seconds": {
+          "mean": 9.954293181833387,
+          "n": 6
+        }
+      },
+      "full_body": {
+        "n_images": 6,
+        "pose_pck_002": {
+          "mean": 0.8020833333333334,
+          "n": 6
+        },
+        "pose_torso_aligned_pck_002": {
+          "mean": 0.8302696078431372,
+          "n": 6
+        },
+        "pose_joint_angle_mae_degrees": {
+          "mean": 10.717948945057325,
+          "n": 6
+        },
+        "identity_a_cosine_common": {
+          "mean": null,
+          "n": 0
+        },
+        "identity_a_cosine_reliable": {
+          "mean": 0.32797443151596734,
+          "n": 3
+        },
+        "background_mae_source": {
+          "mean": 7.680067300796509,
+          "n": 6
+        },
+        "seconds": {
+          "mean": 10.53226389666664,
+          "n": 6
+        }
+      },
+      "full_body_face": {
+        "n_images": 6,
+        "pose_pck_002": {
+          "mean": 0.8020833333333334,
+          "n": 6
+        },
+        "pose_torso_aligned_pck_002": {
+          "mean": 0.8302696078431372,
+          "n": 6
+        },
+        "pose_joint_angle_mae_degrees": {
+          "mean": 10.653523111761656,
+          "n": 6
+        },
+        "identity_a_cosine_common": {
+          "mean": null,
+          "n": 0
+        },
+        "identity_a_cosine_reliable": {
+          "mean": 0.2977931170509661,
+          "n": 4
+        },
+        "background_mae_source": {
+          "mean": 7.680825551350911,
+          "n": 6
+        },
+        "seconds": {
+          "mean": 10.844627452166455,
+          "n": 6
+        }
+      }
+    },
+    "tiktok_512_steps30": {
+      "native_skeleton": {
+        "n_images": 6,
+        "pose_pck_002": {
+          "mean": 0.415158371040724,
+          "n": 6
+        },
+        "pose_torso_aligned_pck_002": {
+          "mean": 0.3332076420311714,
+          "n": 6
+        },
+        "pose_joint_angle_mae_degrees": {
+          "mean": 24.220215228333387,
+          "n": 6
+        },
+        "identity_a_cosine_common": {
+          "mean": 0.411134770843365,
+          "n": 6
+        },
+        "identity_a_cosine_reliable": {
+          "mean": 0.411134770843365,
+          "n": 6
+        },
+        "background_mae_source": {
+          "mean": 5.50919783115387,
+          "n": 6
+        },
+        "seconds": {
+          "mean": 13.378774729500037,
+          "n": 6
+        }
+      },
+      "simple_body": {
+        "n_images": 6,
+        "pose_pck_002": {
+          "mean": 0.717885872297637,
+          "n": 6
+        },
+        "pose_torso_aligned_pck_002": {
+          "mean": 0.3113373554550025,
+          "n": 6
+        },
+        "pose_joint_angle_mae_degrees": {
+          "mean": 8.042090464808533,
+          "n": 6
+        },
+        "identity_a_cosine_common": {
+          "mean": 0.3499808923504846,
+          "n": 6
+        },
+        "identity_a_cosine_reliable": {
+          "mean": 0.3499808923504846,
+          "n": 6
+        },
+        "background_mae_source": {
+          "mean": 8.514686663945517,
+          "n": 6
+        },
+        "seconds": {
+          "mean": 9.960174288333596,
+          "n": 6
+        }
+      },
+      "full_body": {
+        "n_images": 6,
+        "pose_pck_002": {
+          "mean": 0.5002513826043238,
+          "n": 6
+        },
+        "pose_torso_aligned_pck_002": {
+          "mean": 0.3015334338863751,
+          "n": 6
+        },
+        "pose_joint_angle_mae_degrees": {
+          "mean": 25.00192178986418,
+          "n": 6
+        },
+        "identity_a_cosine_common": {
+          "mean": 0.3852663755732857,
+          "n": 6
+        },
+        "identity_a_cosine_reliable": {
+          "mean": 0.3852663755732857,
+          "n": 6
+        },
+        "background_mae_source": {
+          "mean": 12.193509658177694,
+          "n": 6
+        },
+        "seconds": {
+          "mean": 10.565583813000103,
+          "n": 6
+        }
+      },
+      "full_body_face": {
+        "n_images": 6,
+        "pose_pck_002": {
+          "mean": 0.47762694821518353,
+          "n": 6
+        },
+        "pose_torso_aligned_pck_002": {
+          "mean": 0.29851684263448974,
+          "n": 6
+        },
+        "pose_joint_angle_mae_degrees": {
+          "mean": 24.134513327376382,
+          "n": 6
+        },
+        "identity_a_cosine_common": {
+          "mean": 0.3949044439412031,
+          "n": 6
+        },
+        "identity_a_cosine_reliable": {
+          "mean": 0.3949044439412031,
+          "n": 6
+        },
+        "background_mae_source": {
+          "mean": 12.196369886398315,
+          "n": 6
+        },
+        "seconds": {
+          "mean": 10.875408239833178,
+          "n": 6
+        }
+      }
+    }
+  },
+  "native_value_observations": {
+    "headline": "Qwen基座已经能做动作迁移。几何输入有明确帮助，但当前完整版Body／Face尚未稳定优于充分发挥基座的对照。",
+    "conclusions": [
+      "1．基座并非做不了。给A、B照片和逐图核对的详细指令，原生Qwen已经能让A抬臂、蹲下和转向，同时保留A衣服和场景；也会出现左右臂反转、头向偏差或姿势不够贴合。此前只给A图和泛化指令的原生结果，不能作为“基座无法完成项目”的证据。",
+      "2．几何条件有价值，但不等于必须加Adapter。把B换成骨架参考后，原生Qwen在iPER六对的动作位置分数达到1.000，与简化Body相同，生成的是自然人物照片。法线／深度能改变动作，却有三例512结果明显染色或丢失衣服；不能把所有条件图视为同样可靠。",
+      "3．Body的额外收益主要是位置控制。TikTok六对中，简化Body动作位置分数0.718，高于原生骨架0.415和当前完整Body0.500；但会损伤脸部保持或添加错误饰物。原生照片路线虽然位置分数很低，肉眼已改变不少动作：人物比例、站位与B不同也会拉低分数。Body不能仅凭PCK更高就判整体更好。",
+      "4．当前Face有小幅身份收益，尚未形成明显整体优势。相对同一完整Body，可评共同脸的身份分数在iPER三对提高0.022、TikTok六对提高0.010，视觉变化较小、头向仍有偏差。本轮原生二次修脸则在12例512结果中均出现全图颗粒或过锐，背景也变差，不能作为现成替代方案；这些观察不否定其他Face方法或其他修脸设置。",
+      "5．下一步先围绕强基线的失败案例工作。将原生Qwen＋详细指令＋骨架纳入今后的固定对照，优先解决左右动作、转头、前后深度和外观保留的具体错误。Face或项目LoRA应证明能补上这些缺陷再投入长训。本轮未训练或加载LoRA；真正按A体型和相机重定向后的条件尚未实测，不能据此宣布其无用。"
+    ],
+    "figure_notes": {
+      "iper_00": "同一个蓝衣A从抬腿改为B的举臂。骨架可直接驱动原生编辑；完整Face相对Body变化很小，二次修脸增加全图纹理。",
+      "iper_01": "同一A改为蹲姿。照片参考已能改动作，骨架更贴近目标布局；1024的完整Body／Face把长袖变为短袖，说明清晰度与外观保持要分开检查。",
+      "tiktok_00": "灰T男A学习另一人的双臂上举。512法线／深度有明显颜色与服装错误，1024此例未复现；A原图未显示腿部，补出的裤鞋无法核验是否保留。",
+      "tiktok_01": "A改为另一人的侧身低蹲。姿势、头向和下肢补全必须分开看；增加A脸图有时把头拉回正面，不能只看“更像A”。",
+      "tiktok_03": "目标要求明显仰头。原生骨架、照片加脸图及简化Body能产生仰头；完整Face未明显修正Body较小的仰头幅度，二次修脸损坏整体纹理。",
+      "tiktok_05": "带太阳镜的A改为双拳前伸。照片路线的动作肉眼成立，即使绝对位置PCK很低；更高位置分数也不保证手臂前后关系、脸和背景都更好。"
+    },
+    "limitations": "这是一组固定案例的价值核对，不能证明基座已完成全部项目要求，也不能凭当前检查点较弱就否定完整控制架构。1024的旧完整权重仍只是512训练权重用于高分辨率推理。",
+    "resolution_sampling_observation": "1024的原生结果通常有更清楚的脸部细节，但仍有动作和头向错误；旧完整Body／Face在其中一例把A长袖变成短袖。固定四对的40步结果与30步整体很接近，未形成稳定任务提升，个别身份分数有变化；采样耗时增加约三分之一。这些是少量案例复核，不表示提高分辨率或步数一定无用。"
+  },
+  "historical_single_prediction_preservation": {
+    "512": {
+      "passed": true,
+      "cases": [
+        {
+          "pair_id": "iper_00",
+          "resolution": 512,
+          "sigma": 0.5,
+          "comparisons": {
+            "all_control_disabled_vs_native": {
+              "max_abs": 0.0,
+              "exactly_equal": true,
+              "atol": 0.001,
+              "require_exact": false,
+              "passed": true
+            },
+            "face_checkpoint_Face_off_vs_body_checkpoint": {
+              "max_abs": 0.0,
+              "exactly_equal": true,
+              "atol": 0.001,
+              "require_exact": true,
+              "passed": true
+            },
+            "face_checkpoint_invalid_Face_vs_body_checkpoint": {
+              "max_abs": 0.0,
+              "exactly_equal": true,
+              "atol": 0.001,
+              "require_exact": true,
+              "passed": true
+            }
+          },
+          "all_models_frozen": true,
+          "parameter_gradients_absent": true,
+          "passed": true
+        },
+        {
+          "pair_id": "tiktok_00",
+          "resolution": 512,
+          "sigma": 0.5,
+          "comparisons": {
+            "all_control_disabled_vs_native": {
+              "max_abs": 0.0,
+              "exactly_equal": true,
+              "atol": 0.001,
+              "require_exact": false,
+              "passed": true
+            },
+            "face_checkpoint_Face_off_vs_body_checkpoint": {
+              "max_abs": 0.0,
+              "exactly_equal": true,
+              "atol": 0.001,
+              "require_exact": true,
+              "passed": true
+            },
+            "face_checkpoint_invalid_Face_vs_body_checkpoint": {
+              "max_abs": 0.0,
+              "exactly_equal": true,
+              "atol": 0.001,
+              "require_exact": true,
+              "passed": true
+            }
+          },
+          "all_models_frozen": true,
+          "parameter_gradients_absent": true,
+          "passed": true
+        }
+      ]
+    },
+    "1024": {
+      "passed": true,
+      "cases": [
+        {
+          "pair_id": "iper_00",
+          "resolution": 1024,
+          "sigma": 0.5,
+          "comparisons": {
+            "all_control_disabled_vs_native": {
+              "max_abs": 0.0,
+              "exactly_equal": true,
+              "atol": 0.001,
+              "require_exact": false,
+              "passed": true
+            },
+            "face_checkpoint_Face_off_vs_body_checkpoint": {
+              "max_abs": 0.0,
+              "exactly_equal": true,
+              "atol": 0.001,
+              "require_exact": true,
+              "passed": true
+            },
+            "face_checkpoint_invalid_Face_vs_body_checkpoint": {
+              "max_abs": 0.0,
+              "exactly_equal": true,
+              "atol": 0.001,
+              "require_exact": true,
+              "passed": true
+            }
+          },
+          "all_models_frozen": true,
+          "parameter_gradients_absent": true,
+          "passed": true
+        },
+        {
+          "pair_id": "tiktok_00",
+          "resolution": 1024,
+          "sigma": 0.5,
+          "comparisons": {
+            "all_control_disabled_vs_native": {
+              "max_abs": 0.0,
+              "exactly_equal": true,
+              "atol": 0.001,
+              "require_exact": false,
+              "passed": true
+            },
+            "face_checkpoint_Face_off_vs_body_checkpoint": {
+              "max_abs": 0.0,
+              "exactly_equal": true,
+              "atol": 0.001,
+              "require_exact": true,
+              "passed": true
+            },
+            "face_checkpoint_invalid_Face_vs_body_checkpoint": {
+              "max_abs": 0.0,
+              "exactly_equal": true,
+              "atol": 0.001,
+              "require_exact": true,
+              "passed": true
+            }
+          },
+          "all_models_frozen": true,
+          "parameter_gradients_absent": true,
+          "passed": true
+        }
+      ]
+    }
+  },
+  "native_value_protocol_examples": {
+    "native_skeleton": {
+      "references": [
+        {
+          "index": 1,
+          "role": "A",
+          "path": "/home/shangguanrz/nihaochen/qwen21_full/native_value_audit_20261008/generations/sampling_512_30/inputs/tiktok_03/A.png",
+          "sha256": "38997a6ec0a40131391181fc0921e8f641e261a665f496102749c46a59e70e76"
+        },
+        {
+          "index": 2,
+          "role": "B_skeleton",
+          "path": "/home/shangguanrz/nihaochen/qwen21_full/native_value_audit_20261008/generations/sampling_512_30/inputs/tiktok_03/B_skeleton.png",
+          "sha256": "eb12e551de941a32c6f66ad16501aa5e4aed10e82bf33ee34f0f7a58402177b5"
+        }
+      ],
+      "prompt": "IMAGE ROLES:\nImage 1 is the source photograph of person A and the scene to edit. Image 2 is a colored skeleton guide for the target pose. Its dots and lines represent body joints and limb directions, not a person's appearance or the colors of the output.\n\nTARGET POSE:\nRepose A to the following target articulation: Tip the head markedly backward so that the chin points upward and the gaze faces toward the ceiling. Keep the upper torso almost frontal, with shoulders drawn slightly back. Lower the image-left arm beside the body and let the image-right elbow bend slightly outward with its hand lowered, matching the visible reference. Do not leave the head looking directly into the camera. Transfer head rotation without borrowing the reference person's hair, face or clothing. Follow the visible torso, arm and leg arrangement and the target head direction, rather than keeping A's original pose. When the description says image-left or image-right, it refers to the viewer's sides of the pose reference.\n\nAPPEARANCE AND SCENE:\nRetain person A from image 1: A is the woman with two long dark braids, a fitted white cropped sleeveless top, blue jeans, small earrings and her existing necklace. Preserve her feminine face, hair, jewelry and the original indoor bedroom background. Keep A's recognizable facial features, hairstyle, skin appearance, glasses if present, clothing, footwear, height and body proportions. Adapt the requested articulation to A's own proportions rather than replacing A with the reference person's body shape. Preserve image 1's background, camera view and lighting. Do not transfer any reference person's identity, hairstyle, clothing, body shape, objects or background.\n\nOUTPUT:\nReturn a single natural edited photograph of A in the original scene. Generate exactly one person, not the reference person or a second copy. Do not output a collage or the condition guides. Keep occlusions anatomically plausible, avoid invented limbs and colored patches, and reconstruct newly uncovered areas consistently with the source scene.",
+      "prompt_sha256": "7dce76ed073fea94ae4957e14b6bab360f4846f6fd87268fdc4eaf0e7e09a2ef",
+      "steps": 30,
+      "seed": 42,
+      "resolution": 512,
+      "use_kv_cache": false,
+      "checkpoint": null,
+      "checkpoint_sha256": null,
+      "checkpoint_training_resolution": null,
+      "last_control_diagnostics": null
+    },
+    "simple_body": {
+      "references": [
+        {
+          "index": 1,
+          "role": "A",
+          "path": "/home/shangguanrz/nihaochen/qwen21_full/native_value_audit_20261008/generations/sampling_512_30/inputs/tiktok_03/A.png",
+          "sha256": "38997a6ec0a40131391181fc0921e8f641e261a665f496102749c46a59e70e76"
+        }
+      ],
+      "prompt": "IMAGE ROLES:\nImage 1 is the source photograph of person A and the scene to edit. The target body and head geometry is supplied through the control branch; the requested articulation is also described below. Person A is the only identity to generate.\n\nTARGET POSE:\nRepose A to the following target articulation: Tip the head markedly backward so that the chin points upward and the gaze faces toward the ceiling. Keep the upper torso almost frontal, with shoulders drawn slightly back. Lower the image-left arm beside the body and let the image-right elbow bend slightly outward with its hand lowered, matching the visible reference. Do not leave the head looking directly into the camera. Transfer head rotation without borrowing the reference person's hair, face or clothing. Follow the visible torso, arm and leg arrangement and the target head direction, rather than keeping A's original pose. When the description says image-left or image-right, it refers to the viewer's sides of the pose reference.\n\nAPPEARANCE AND SCENE:\nRetain person A from image 1: A is the woman with two long dark braids, a fitted white cropped sleeveless top, blue jeans, small earrings and her existing necklace. Preserve her feminine face, hair, jewelry and the original indoor bedroom background. Keep A's recognizable facial features, hairstyle, skin appearance, glasses if present, clothing, footwear, height and body proportions. Adapt the requested articulation to A's own proportions rather than replacing A with the reference person's body shape. Preserve image 1's background, camera view and lighting. Do not transfer any reference person's identity, hairstyle, clothing, body shape, objects or background.\n\nOUTPUT:\nReturn a single natural edited photograph of A in the original scene. Generate exactly one person, not the reference person or a second copy. Do not output a collage or the condition guides. Keep occlusions anatomically plausible, avoid invented limbs and colored patches, and reconstruct newly uncovered areas consistently with the source scene.",
+      "prompt_sha256": "fc77a9948c9bbee446c9275ce87b7e8c44b71ad99080621857a0fb0b2fc42327",
+      "steps": 30,
+      "seed": 42,
+      "resolution": 512,
+      "use_kv_cache": false,
+      "checkpoint": "/home/shangguanrz/project/pic-edit/experiments/qwen21_iper_body/full_20k/checkpoint_last.pt",
+      "checkpoint_sha256": "23be5631cc61c2a0a8c0dd6a8e25a1aeaf10dddcca2a1adaf6c247f855a00ff5",
+      "checkpoint_training_resolution": 512,
+      "last_control_diagnostics": null
+    },
+    "full_body": {
+      "references": [
+        {
+          "index": 1,
+          "role": "A",
+          "path": "/home/shangguanrz/nihaochen/qwen21_full/native_value_audit_20261008/generations/sampling_512_30/inputs/tiktok_03/A.png",
+          "sha256": "38997a6ec0a40131391181fc0921e8f641e261a665f496102749c46a59e70e76"
+        }
+      ],
+      "prompt": "IMAGE ROLES:\nImage 1 is the source photograph of person A and the scene to edit. The target body and head geometry is supplied through the control branch; the requested articulation is also described below. Person A is the only identity to generate.\n\nTARGET POSE:\nRepose A to the following target articulation: Tip the head markedly backward so that the chin points upward and the gaze faces toward the ceiling. Keep the upper torso almost frontal, with shoulders drawn slightly back. Lower the image-left arm beside the body and let the image-right elbow bend slightly outward with its hand lowered, matching the visible reference. Do not leave the head looking directly into the camera. Transfer head rotation without borrowing the reference person's hair, face or clothing. Follow the visible torso, arm and leg arrangement and the target head direction, rather than keeping A's original pose. When the description says image-left or image-right, it refers to the viewer's sides of the pose reference.\n\nAPPEARANCE AND SCENE:\nRetain person A from image 1: A is the woman with two long dark braids, a fitted white cropped sleeveless top, blue jeans, small earrings and her existing necklace. Preserve her feminine face, hair, jewelry and the original indoor bedroom background. Keep A's recognizable facial features, hairstyle, skin appearance, glasses if present, clothing, footwear, height and body proportions. Adapt the requested articulation to A's own proportions rather than replacing A with the reference person's body shape. Preserve image 1's background, camera view and lighting. Do not transfer any reference person's identity, hairstyle, clothing, body shape, objects or background.\n\nOUTPUT:\nReturn a single natural edited photograph of A in the original scene. Generate exactly one person, not the reference person or a second copy. Do not output a collage or the condition guides. Keep occlusions anatomically plausible, avoid invented limbs and colored patches, and reconstruct newly uncovered areas consistently with the source scene.",
+      "prompt_sha256": "fc77a9948c9bbee446c9275ce87b7e8c44b71ad99080621857a0fb0b2fc42327",
+      "steps": 30,
+      "seed": 42,
+      "resolution": 512,
+      "use_kv_cache": false,
+      "checkpoint": "/home/shangguanrz/nihaochen/qwen21_full/tiktok_body_fullpass_20261004/training/checkpoint_step_006000.pt",
+      "checkpoint_sha256": "6213996bb21f1dd7b3c1dea144d7cbad752efc38f82b3cb3409eeb9f799dc489",
+      "checkpoint_training_resolution": 512,
+      "last_control_diagnostics": {
+        "denoise_progress": 0.98046875,
+        "geometry_schedule_multiplier": 1.0,
+        "interaction_schedule_multiplier": 1.0,
+        "detail_schedule_multiplier": 1.0,
+        "face_schedule_multiplier": 1.0,
+        "face_texture_schedule_multiplier": 0.9921875,
+        "geometry_group_scales": [
+          0.7899134159088135,
+          0.7701244950294495,
+          0.7303955554962158,
+          0.6740238070487976,
+          0.7742219567298889,
+          0.6615409255027771
+        ],
+        "interaction_group_scales": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "detail_group_scales": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "face_group_scales": [
+          0.10580166429281235,
+          0.20776399970054626,
+          0.5045678615570068,
+          0.7983289957046509,
+          0.9997768998146057,
+          1.0590507984161377
+        ],
+        "hand_mode": "off",
+        "hand_group_scales": [
+          0.10000000149011612,
+          0.20000000298023224,
+          0.4000000059604645,
+          0.699999988079071,
+          1.0,
+          1.0
+        ],
+        "target_token_hw": [
+          32,
+          32
+        ],
+        "active_block_mapping": [
+          [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          [
+            6,
+            7,
+            8,
+            9,
+            10
+          ],
+          [
+            11,
+            12,
+            13,
+            14,
+            15
+          ],
+          [
+            16,
+            17,
+            18,
+            19,
+            20,
+            21
+          ],
+          [
+            22,
+            23,
+            24,
+            25,
+            26
+          ],
+          [
+            27,
+            28,
+            29,
+            30,
+            31
+          ]
+        ],
+        "face_reference_token_hw": null,
+        "face_scatter_resized": false,
+        "detail_active_rows": 0,
+        "face_active_rows": 0,
+        "hand_active_rows": 0,
+        "raw_branch_rms": {
+          "geometry": [
+            0.13401326537132263,
+            0.19998520612716675,
+            0.18629176914691925,
+            0.14400218427181244,
+            0.18446983397006989,
+            0.16493520140647888
+          ],
+          "interaction": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "detail": null,
+          "face": null,
+          "hand": null
+        },
+        "residual_rms": [
+          0.17558923363685608,
+          0.2076869159936905,
+          0.14794184267520905,
+          0.1013651117682457,
+          0.1800963133573532,
+          0.09272581338882446
+        ],
+        "face_group_gains": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    },
+    "full_body_face": {
+      "references": [
+        {
+          "index": 1,
+          "role": "A",
+          "path": "/home/shangguanrz/nihaochen/qwen21_full/native_value_audit_20261008/generations/sampling_512_30/inputs/tiktok_03/A.png",
+          "sha256": "38997a6ec0a40131391181fc0921e8f641e261a665f496102749c46a59e70e76"
+        }
+      ],
+      "prompt": "IMAGE ROLES:\nImage 1 is the source photograph of person A and the scene to edit. The target body and head geometry is supplied through the control branch; the requested articulation is also described below. Person A is the only identity to generate.\n\nTARGET POSE:\nRepose A to the following target articulation: Tip the head markedly backward so that the chin points upward and the gaze faces toward the ceiling. Keep the upper torso almost frontal, with shoulders drawn slightly back. Lower the image-left arm beside the body and let the image-right elbow bend slightly outward with its hand lowered, matching the visible reference. Do not leave the head looking directly into the camera. Transfer head rotation without borrowing the reference person's hair, face or clothing. Follow the visible torso, arm and leg arrangement and the target head direction, rather than keeping A's original pose. When the description says image-left or image-right, it refers to the viewer's sides of the pose reference.\n\nAPPEARANCE AND SCENE:\nRetain person A from image 1: A is the woman with two long dark braids, a fitted white cropped sleeveless top, blue jeans, small earrings and her existing necklace. Preserve her feminine face, hair, jewelry and the original indoor bedroom background. Keep A's recognizable facial features, hairstyle, skin appearance, glasses if present, clothing, footwear, height and body proportions. Adapt the requested articulation to A's own proportions rather than replacing A with the reference person's body shape. Preserve image 1's background, camera view and lighting. Do not transfer any reference person's identity, hairstyle, clothing, body shape, objects or background.\n\nOUTPUT:\nReturn a single natural edited photograph of A in the original scene. Generate exactly one person, not the reference person or a second copy. Do not output a collage or the condition guides. Keep occlusions anatomically plausible, avoid invented limbs and colored patches, and reconstruct newly uncovered areas consistently with the source scene.",
+      "prompt_sha256": "fc77a9948c9bbee446c9275ce87b7e8c44b71ad99080621857a0fb0b2fc42327",
+      "steps": 30,
+      "seed": 42,
+      "resolution": 512,
+      "use_kv_cache": false,
+      "checkpoint": "/home/shangguanrz/nihaochen/qwen21_full/tiktok_face_v1_20261004/training/checkpoint_step_003000.pt",
+      "checkpoint_sha256": "4f7eb5a161485bcbc7be506963248536ceba574e18991a369f88f169f10a3f2b",
+      "checkpoint_training_resolution": 512,
+      "last_control_diagnostics": {
+        "denoise_progress": 0.98046875,
+        "geometry_schedule_multiplier": 1.0,
+        "interaction_schedule_multiplier": 1.0,
+        "detail_schedule_multiplier": 1.0,
+        "face_schedule_multiplier": 1.0,
+        "face_texture_schedule_multiplier": 0.9921875,
+        "geometry_group_scales": [
+          0.7899134159088135,
+          0.7701244950294495,
+          0.7303955554962158,
+          0.6740238070487976,
+          0.7742219567298889,
+          0.6615409255027771
+        ],
+        "interaction_group_scales": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "detail_group_scales": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "face_group_scales": [
+          0.10228350013494492,
+          0.19617074728012085,
+          0.44247734546661377,
+          0.6880634427070618,
+          0.8671115040779114,
+          0.9261670112609863
+        ],
+        "hand_mode": "off",
+        "hand_group_scales": [
+          0.10000000149011612,
+          0.20000000298023224,
+          0.4000000059604645,
+          0.699999988079071,
+          1.0,
+          1.0
+        ],
+        "target_token_hw": [
+          32,
+          32
+        ],
+        "active_block_mapping": [
+          [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          [
+            6,
+            7,
+            8,
+            9,
+            10
+          ],
+          [
+            11,
+            12,
+            13,
+            14,
+            15
+          ],
+          [
+            16,
+            17,
+            18,
+            19,
+            20,
+            21
+          ],
+          [
+            22,
+            23,
+            24,
+            25,
+            26
+          ],
+          [
+            27,
+            28,
+            29,
+            30,
+            31
+          ]
+        ],
+        "face_reference_token_hw": [
+          32,
+          32
+        ],
+        "face_scatter_resized": false,
+        "detail_active_rows": 0,
+        "face_active_rows": 1,
+        "hand_active_rows": 0,
+        "raw_branch_rms": {
+          "geometry": [
+            0.13399487733840942,
+            0.1999696046113968,
+            0.1862839013338089,
+            0.14399750530719757,
+            0.18446855247020721,
+            0.16492803394794464
+          ],
+          "interaction": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "detail": null,
+          "face": [
+            0.028476417064666748,
+            0.06601029634475708,
+            0.0319366455078125,
+            0.017956962808966637,
+            0.018913062289357185,
+            0.026164144277572632
+          ],
+          "hand": null
+        },
+        "residual_rms": [
+          0.17555901408195496,
+          0.2083805799484253,
+          0.14891530573368073,
+          0.10211142897605896,
+          0.18072853982448578,
+          0.09459389001131058
+        ],
+        "face_group_gains": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    }
+  },
+  "pilot_training": {
+    "J": {
+      "args": {
+        "train_pairs": "/home/shangguanrz/nihaochen/qwen21_full/bfs_body_face_joint_pilot_20261008/data/common256_pairs.jsonl",
+        "val_pairs": "/home/shangguanrz/nihaochen/qwen21_full/bfs_body_face_joint_pilot_20261008/data/val24_pairs.jsonl",
+        "features": "/home/shangguanrz/nihaochen/qwen21_full/tiktok_face_v1_20261004/data/face_cache",
+        "face_supervision": "/home/shangguanrz/nihaochen/qwen21_full/tiktok_face_v1_20261004/data/face_supervision_native.json",
+        "cache": "/home/shangguanrz/nihaochen/qwen21_full/tiktok_face_v1_20261004/native_cache_tiktok_native",
+        "output": "/home/shangguanrz/nihaochen/qwen21_full/bfs_body_face_joint_pilot_20261008/training/J",
+        "init_checkpoint": "/home/shangguanrz/nihaochen/qwen21_full/tiktok_face_v1_20261004/training/checkpoint_step_003000.pt",
+        "resume": null,
+        "model": "/home/shangguanrz/project/pic-edit/models/Qwen-Image-2.1",
+        "lora": null,
+        "strength": 1.0,
+        "steps": 128,
+        "seed": 42,
+        "noise_offset": 0,
+        "body_lr_scale": 0.25,
+        "face_lr_scale": 0.5,
+        "warmup_steps": 20,
+        "face_weight": 0.5,
+        "aux_every": 4,
+        "save_every": 128,
+        "gradient_only": false,
+        "gradient_report": "/home/shangguanrz/nihaochen/qwen21_full/bfs_body_face_joint_pilot_20261008/preflight/J/gradient_only.json",
+        "probe_indices": [
+          0,
+          64,
+          128,
+          192
+        ],
+        "resolution": "native",
+        "align_mode": "native"
+      },
+      "joint_signature": {
+        "schema": "joint_body_face_pilot_v1",
+        "model_revision": "790c92633540aa0cb11d9abf19eb46d861714758",
+        "model": "/data/shangguanrz/pic-edit-models/Qwen-Image-2.1",
+        "lora_sha256": null,
+        "strength": 1.0,
+        "train_sha256": "43cedb569944bc6f98ec046d04f9e11d7cf7d9c8dba5aed7144b558e9dd08508",
+        "val_sha256": "cece883b96dbbc9270fd77d4bb1e973470f52f941af85c2a0746947f5d91e10a",
+        "features": "/home/shangguanrz/nihaochen/qwen21_full/tiktok_face_v1_20261004/data/face_cache",
+        "supervision_sha256": "f96de2a0cec9d6b7fca625de6806f6014f169f3b9bf3a815a3364945b71f3d5f",
+        "cache": "/home/shangguanrz/nihaochen/qwen21_full/tiktok_face_v1_20261004/native_cache_tiktok_native",
+        "resolution": "native",
+        "align_mode": "native",
+        "seed": 42,
+        "noise_offset": 0,
+        "body_lr_scale": 0.25,
+        "face_lr_scale": 0.5,
+        "face_weight": 0.5,
+        "aux_every": 4,
+        "warmup_steps": 20,
+        "joint_code_sha256": "1282e4d2ec8e9c608073a7b92cbcd6d1578de1b96d9ca5af2660f9a1d2d86d95",
+        "trainer_code_sha256": "0156e905e8c77675ca550e853f9025011304e5be89566721f02ddbf79c42720d",
+        "split": {
+          "role": "common",
+          "lock_sha256": "41c62acde89a01b62a494d9da64ff8e488665877e0836985cf62b5a4e6888393",
+          "full512_sha256": "854133776d2067aa392442553f3003ef9e6d45107ccc9cffe5a4af8600fb929f",
+          "common_sha256": "43cedb569944bc6f98ec046d04f9e11d7cf7d9c8dba5aed7144b558e9dd08508",
+          "branch_sha256": "5f27d24e9ca7c6ee9fe4b837850975304026d16097a5c2d588a8e23fcca47d29"
+        },
+        "deterministic_algorithms": "warn_only",
+        "cublas_workspace_config": ":4096:8"
+      },
+      "initialization_provenance": {
+        "mode": "init_checkpoint",
+        "checkpoint_path": "/home/shangguanrz/nihaochen/qwen21_full/tiktok_face_v1_20261004/training/checkpoint_step_003000.pt",
+        "checkpoint_sha256": "4f7eb5a161485bcbc7be506963248536ceba574e18991a369f88f169f10a3f2b",
+        "checkpoint_step": 3000,
+        "checkpoint_branch": "face",
+        "optimizer_state_restored": false
+      },
+      "optimizer_group_names": [
+        "body_heads_and_interface",
+        "body_encoders",
+        "body_control_core",
+        "face_heads_and_interface",
+        "face_encoders",
+        "face_control_core"
+      ],
+      "updates": 256,
+      "unique_training_pairs": 256,
+      "face_active_updates": 159,
+      "hand_active_updates": 0,
+      "aux_requested_updates": 64,
+      "aux_used_updates": 20,
+      "aux_eligible_updates": 20,
+      "mean_first_32_loss": 0.48910796409472823,
+      "mean_last_32_loss": 0.4684708039276302
+    },
+    "Qwen": {
+      "args": {
+        "train_pairs": "/home/shangguanrz/nihaochen/qwen21_full/bfs_body_face_joint_pilot_20261008/data/branch256_pairs.jsonl",
+        "val_pairs": "/home/shangguanrz/nihaochen/qwen21_full/bfs_body_face_joint_pilot_20261008/data/val24_pairs.jsonl",
+        "features": "/home/shangguanrz/nihaochen/qwen21_full/tiktok_face_v1_20261004/data/face_cache",
+        "face_supervision": "/home/shangguanrz/nihaochen/qwen21_full/tiktok_face_v1_20261004/data/face_supervision_native.json",
+        "cache": "/home/shangguanrz/nihaochen/qwen21_full/tiktok_face_v1_20261004/native_cache_tiktok_native",
+        "output": "/home/shangguanrz/nihaochen/qwen21_full/bfs_body_face_joint_pilot_20261008/training/Qwen",
+        "init_checkpoint": "/home/shangguanrz/nihaochen/qwen21_full/bfs_body_face_joint_pilot_20261008/training/J/checkpoint_step_000256.pt",
+        "resume": null,
+        "model": "/home/shangguanrz/project/pic-edit/models/Qwen-Image-2.1",
+        "lora": null,
+        "strength": 1.0,
+        "steps": 128,
+        "seed": 42,
+        "noise_offset": 256,
+        "body_lr_scale": 0.25,
+        "face_lr_scale": 0.5,
+        "warmup_steps": 20,
+        "face_weight": 0.5,
+        "aux_every": 4,
+        "save_every": 128,
+        "gradient_only": false,
+        "gradient_report": "/home/shangguanrz/nihaochen/qwen21_full/bfs_body_face_joint_pilot_20261008/preflight/Qwen/gradient_only.json",
+        "probe_indices": [
+          0,
+          64,
+          128,
+          192
+        ],
+        "resolution": "native",
+        "align_mode": "native"
+      },
+      "joint_signature": {
+        "schema": "joint_body_face_pilot_v1",
+        "model_revision": "790c92633540aa0cb11d9abf19eb46d861714758",
+        "model": "/data/shangguanrz/pic-edit-models/Qwen-Image-2.1",
+        "lora_sha256": null,
+        "strength": 1.0,
+        "train_sha256": "5f27d24e9ca7c6ee9fe4b837850975304026d16097a5c2d588a8e23fcca47d29",
+        "val_sha256": "cece883b96dbbc9270fd77d4bb1e973470f52f941af85c2a0746947f5d91e10a",
+        "features": "/home/shangguanrz/nihaochen/qwen21_full/tiktok_face_v1_20261004/data/face_cache",
+        "supervision_sha256": "f96de2a0cec9d6b7fca625de6806f6014f169f3b9bf3a815a3364945b71f3d5f",
+        "cache": "/home/shangguanrz/nihaochen/qwen21_full/tiktok_face_v1_20261004/native_cache_tiktok_native",
+        "resolution": "native",
+        "align_mode": "native",
+        "seed": 42,
+        "noise_offset": 256,
+        "body_lr_scale": 0.25,
+        "face_lr_scale": 0.5,
+        "face_weight": 0.5,
+        "aux_every": 4,
+        "warmup_steps": 20,
+        "joint_code_sha256": "1282e4d2ec8e9c608073a7b92cbcd6d1578de1b96d9ca5af2660f9a1d2d86d95",
+        "trainer_code_sha256": "0156e905e8c77675ca550e853f9025011304e5be89566721f02ddbf79c42720d",
+        "split": {
+          "role": "branch",
+          "lock_sha256": "41c62acde89a01b62a494d9da64ff8e488665877e0836985cf62b5a4e6888393",
+          "full512_sha256": "854133776d2067aa392442553f3003ef9e6d45107ccc9cffe5a4af8600fb929f",
+          "common_sha256": "43cedb569944bc6f98ec046d04f9e11d7cf7d9c8dba5aed7144b558e9dd08508",
+          "branch_sha256": "5f27d24e9ca7c6ee9fe4b837850975304026d16097a5c2d588a8e23fcca47d29"
+        },
+        "deterministic_algorithms": "warn_only",
+        "cublas_workspace_config": ":4096:8"
+      },
+      "initialization_provenance": {
+        "mode": "init_checkpoint",
+        "checkpoint_path": "/home/shangguanrz/nihaochen/qwen21_full/bfs_body_face_joint_pilot_20261008/training/J/checkpoint_step_000256.pt",
+        "checkpoint_sha256": "9e0f048c585937ab74be792eb6d9730b0621eccda16e1744a6837b0eb9d24651",
+        "checkpoint_step": 256,
+        "checkpoint_branch": "joint",
+        "optimizer_state_restored": false
+      },
+      "optimizer_group_names": [
+        "body_heads_and_interface",
+        "body_encoders",
+        "body_control_core",
+        "face_heads_and_interface",
+        "face_encoders",
+        "face_control_core"
+      ],
+      "updates": 256,
+      "unique_training_pairs": 256,
+      "face_active_updates": 176,
+      "hand_active_updates": 0,
+      "aux_requested_updates": 64,
+      "aux_used_updates": 26,
+      "aux_eligible_updates": 26,
+      "mean_first_32_loss": 0.42907177680172026,
+      "mean_last_32_loss": 0.3961884321179241
+    },
+    "BFSBody": {
+      "args": {
+        "train_pairs": "/home/shangguanrz/nihaochen/qwen21_full/bfs_body_face_joint_pilot_20261008/data/branch256_pairs.jsonl",
+        "val_pairs": "/home/shangguanrz/nihaochen/qwen21_full/bfs_body_face_joint_pilot_20261008/data/val24_pairs.jsonl",
+        "features": "/home/shangguanrz/nihaochen/qwen21_full/tiktok_face_v1_20261004/data/face_cache",
+        "face_supervision": "/home/shangguanrz/nihaochen/qwen21_full/tiktok_face_v1_20261004/data/face_supervision_native.json",
+        "cache": "/home/shangguanrz/nihaochen/qwen21_full/tiktok_face_v1_20261004/native_cache_tiktok_native",
+        "output": "/home/shangguanrz/nihaochen/qwen21_full/bfs_body_face_joint_pilot_20261008/training/BFSBody",
+        "init_checkpoint": "/home/shangguanrz/nihaochen/qwen21_full/bfs_body_face_joint_pilot_20261008/training/J/checkpoint_step_000256.pt",
+        "resume": null,
+        "model": "/home/shangguanrz/project/pic-edit/models/Qwen-Image-2.1",
+        "lora": "/home/shangguanrz/models/bfs/bfs_body_swap_v1.0_qwen_2.1.safetensors",
+        "strength": 1.0,
+        "steps": 128,
+        "seed": 42,
+        "noise_offset": 256,
+        "body_lr_scale": 0.25,
+        "face_lr_scale": 0.5,
+        "warmup_steps": 20,
+        "face_weight": 0.5,
+        "aux_every": 4,
+        "save_every": 128,
+        "gradient_only": false,
+        "gradient_report": "/home/shangguanrz/nihaochen/qwen21_full/bfs_body_face_joint_pilot_20261008/preflight/BFSBody/gradient_only.json",
+        "probe_indices": [
+          0,
+          64,
+          128,
+          192
+        ],
+        "resolution": "native",
+        "align_mode": "native"
+      },
+      "joint_signature": {
+        "schema": "joint_body_face_pilot_v1",
+        "model_revision": "790c92633540aa0cb11d9abf19eb46d861714758",
+        "model": "/data/shangguanrz/pic-edit-models/Qwen-Image-2.1",
+        "lora_sha256": "7dc0a53aba4dbc70c204f498936a619d226559da11011f748c389189af46b664",
+        "strength": 1.0,
+        "train_sha256": "5f27d24e9ca7c6ee9fe4b837850975304026d16097a5c2d588a8e23fcca47d29",
+        "val_sha256": "cece883b96dbbc9270fd77d4bb1e973470f52f941af85c2a0746947f5d91e10a",
+        "features": "/home/shangguanrz/nihaochen/qwen21_full/tiktok_face_v1_20261004/data/face_cache",
+        "supervision_sha256": "f96de2a0cec9d6b7fca625de6806f6014f169f3b9bf3a815a3364945b71f3d5f",
+        "cache": "/home/shangguanrz/nihaochen/qwen21_full/tiktok_face_v1_20261004/native_cache_tiktok_native",
+        "resolution": "native",
+        "align_mode": "native",
+        "seed": 42,
+        "noise_offset": 256,
+        "body_lr_scale": 0.25,
+        "face_lr_scale": 0.5,
+        "face_weight": 0.5,
+        "aux_every": 4,
+        "warmup_steps": 20,
+        "joint_code_sha256": "1282e4d2ec8e9c608073a7b92cbcd6d1578de1b96d9ca5af2660f9a1d2d86d95",
+        "trainer_code_sha256": "0156e905e8c77675ca550e853f9025011304e5be89566721f02ddbf79c42720d",
+        "split": {
+          "role": "branch",
+          "lock_sha256": "41c62acde89a01b62a494d9da64ff8e488665877e0836985cf62b5a4e6888393",
+          "full512_sha256": "854133776d2067aa392442553f3003ef9e6d45107ccc9cffe5a4af8600fb929f",
+          "common_sha256": "43cedb569944bc6f98ec046d04f9e11d7cf7d9c8dba5aed7144b558e9dd08508",
+          "branch_sha256": "5f27d24e9ca7c6ee9fe4b837850975304026d16097a5c2d588a8e23fcca47d29"
+        },
+        "deterministic_algorithms": "warn_only",
+        "cublas_workspace_config": ":4096:8"
+      },
+      "initialization_provenance": {
+        "mode": "init_checkpoint",
+        "checkpoint_path": "/home/shangguanrz/nihaochen/qwen21_full/bfs_body_face_joint_pilot_20261008/training/J/checkpoint_step_000256.pt",
+        "checkpoint_sha256": "9e0f048c585937ab74be792eb6d9730b0621eccda16e1744a6837b0eb9d24651",
+        "checkpoint_step": 256,
+        "checkpoint_branch": "joint",
+        "optimizer_state_restored": false
+      },
+      "optimizer_group_names": [
+        "body_heads_and_interface",
+        "body_encoders",
+        "body_control_core",
+        "face_heads_and_interface",
+        "face_encoders",
+        "face_control_core"
+      ],
+      "updates": 256,
+      "unique_training_pairs": 256,
+      "face_active_updates": 176,
+      "hand_active_updates": 0,
+      "aux_requested_updates": 64,
+      "aux_used_updates": 26,
+      "aux_eligible_updates": 26,
+      "mean_first_32_loss": 0.4307790866587311,
+      "mean_last_32_loss": 0.39570206264033914
+    },
+    "BFSHead": {
+      "args": {
+        "train_pairs": "/home/shangguanrz/nihaochen/qwen21_full/bfs_body_face_joint_pilot_20261008/data/branch256_pairs.jsonl",
+        "val_pairs": "/home/shangguanrz/nihaochen/qwen21_full/bfs_body_face_joint_pilot_20261008/data/val24_pairs.jsonl",
+        "features": "/home/shangguanrz/nihaochen/qwen21_full/tiktok_face_v1_20261004/data/face_cache",
+        "face_supervision": "/home/shangguanrz/nihaochen/qwen21_full/tiktok_face_v1_20261004/data/face_supervision_native.json",
+        "cache": "/home/shangguanrz/nihaochen/qwen21_full/tiktok_face_v1_20261004/native_cache_tiktok_native",
+        "output": "/home/shangguanrz/nihaochen/qwen21_full/bfs_body_face_joint_pilot_20261008/training/BFSHead",
+        "init_checkpoint": "/home/shangguanrz/nihaochen/qwen21_full/bfs_body_face_joint_pilot_20261008/training/J/checkpoint_step_000256.pt",
+        "resume": null,
+        "model": "/home/shangguanrz/project/pic-edit/models/Qwen-Image-2.1",
+        "lora": "/home/shangguanrz/models/bfs/bfs_head_v1.1_qwen_2.1.safetensors",
+        "strength": 1.0,
+        "steps": 128,
+        "seed": 42,
+        "noise_offset": 256,
+        "body_lr_scale": 0.25,
+        "face_lr_scale": 0.5,
+        "warmup_steps": 20,
+        "face_weight": 0.5,
+        "aux_every": 4,
+        "save_every": 128,
+        "gradient_only": false,
+        "gradient_report": "/home/shangguanrz/nihaochen/qwen21_full/bfs_body_face_joint_pilot_20261008/preflight/BFSHead/gradient_only.json",
+        "probe_indices": [
+          0,
+          64,
+          128,
+          192
+        ],
+        "resolution": "native",
+        "align_mode": "native"
+      },
+      "joint_signature": {
+        "schema": "joint_body_face_pilot_v1",
+        "model_revision": "790c92633540aa0cb11d9abf19eb46d861714758",
+        "model": "/data/shangguanrz/pic-edit-models/Qwen-Image-2.1",
+        "lora_sha256": "d1d748d5601077f3b6d05766f6823510e901970d916afa404a97e85dc92fa88e",
+        "strength": 1.0,
+        "train_sha256": "5f27d24e9ca7c6ee9fe4b837850975304026d16097a5c2d588a8e23fcca47d29",
+        "val_sha256": "cece883b96dbbc9270fd77d4bb1e973470f52f941af85c2a0746947f5d91e10a",
+        "features": "/home/shangguanrz/nihaochen/qwen21_full/tiktok_face_v1_20261004/data/face_cache",
+        "supervision_sha256": "f96de2a0cec9d6b7fca625de6806f6014f169f3b9bf3a815a3364945b71f3d5f",
+        "cache": "/home/shangguanrz/nihaochen/qwen21_full/tiktok_face_v1_20261004/native_cache_tiktok_native",
+        "resolution": "native",
+        "align_mode": "native",
+        "seed": 42,
+        "noise_offset": 256,
+        "body_lr_scale": 0.25,
+        "face_lr_scale": 0.5,
+        "face_weight": 0.5,
+        "aux_every": 4,
+        "warmup_steps": 20,
+        "joint_code_sha256": "1282e4d2ec8e9c608073a7b92cbcd6d1578de1b96d9ca5af2660f9a1d2d86d95",
+        "trainer_code_sha256": "0156e905e8c77675ca550e853f9025011304e5be89566721f02ddbf79c42720d",
+        "split": {
+          "role": "branch",
+          "lock_sha256": "41c62acde89a01b62a494d9da64ff8e488665877e0836985cf62b5a4e6888393",
+          "full512_sha256": "854133776d2067aa392442553f3003ef9e6d45107ccc9cffe5a4af8600fb929f",
+          "common_sha256": "43cedb569944bc6f98ec046d04f9e11d7cf7d9c8dba5aed7144b558e9dd08508",
+          "branch_sha256": "5f27d24e9ca7c6ee9fe4b837850975304026d16097a5c2d588a8e23fcca47d29"
+        },
+        "deterministic_algorithms": "warn_only",
+        "cublas_workspace_config": ":4096:8"
+      },
+      "initialization_provenance": {
+        "mode": "init_checkpoint",
+        "checkpoint_path": "/home/shangguanrz/nihaochen/qwen21_full/bfs_body_face_joint_pilot_20261008/training/J/checkpoint_step_000256.pt",
+        "checkpoint_sha256": "9e0f048c585937ab74be792eb6d9730b0621eccda16e1744a6837b0eb9d24651",
+        "checkpoint_step": 256,
+        "checkpoint_branch": "joint",
+        "optimizer_state_restored": false
+      },
+      "optimizer_group_names": [
+        "body_heads_and_interface",
+        "body_encoders",
+        "body_control_core",
+        "face_heads_and_interface",
+        "face_encoders",
+        "face_control_core"
+      ],
+      "updates": 256,
+      "unique_training_pairs": 256,
+      "face_active_updates": 176,
+      "hand_active_updates": 0,
+      "aux_requested_updates": 64,
+      "aux_used_updates": 26,
+      "aux_eligible_updates": 26,
+      "mean_first_32_loss": 0.4306391114369035,
+      "mean_last_32_loss": 0.3969551152549684
+    },
+    "BFH": {
+      "args": {
+        "train_pairs": "/home/shangguanrz/nihaochen/qwen21_full/bfs_body_face_joint_pilot_20261008/data/common256_pairs.jsonl",
+        "val_pairs": "/home/shangguanrz/nihaochen/qwen21_full/bfs_body_face_joint_pilot_20261008/data/val24_pairs.jsonl",
+        "features": "/home/shangguanrz/nihaochen/qwen21_full/tiktok_face_v1_20261004/data/face_cache",
+        "face_supervision": "/home/shangguanrz/nihaochen/qwen21_full/tiktok_face_v1_20261004/data/face_supervision_native.json",
+        "cache": "/home/shangguanrz/nihaochen/qwen21_full/tiktok_face_v1_20261004/native_cache_tiktok_native",
+        "output": "/home/shangguanrz/nihaochen/qwen21_full/bfs_body_face_joint_pilot_20261008/training/BFH",
+        "init_checkpoint": "/home/shangguanrz/nihaochen/qwen21_full/tiktok_face_v1_20261004/training/checkpoint_step_003000.pt",
+        "resume": null,
+        "model": "/home/shangguanrz/project/pic-edit/models/Qwen-Image-2.1",
+        "lora": null,
+        "strength": 1.0,
+        "steps": 256,
+        "seed": 42,
+        "noise_offset": 0,
+        "body_lr_scale": 0.25,
+        "face_lr_scale": 0.5,
+        "warmup_steps": 20,
+        "face_weight": 0.5,
+        "with_hand": true,
+        "hand_lr_scale": 1.0,
+        "hand_weight": 0.5,
+        "tiktok_raw_root": "/home/shangguanrz/project/pic-edit/datasets/TikTokDataset/TikTok_dataset/TikTok_dataset",
+        "tiktok_assets_root": "/home/shangguanrz/project/pic-edit/datasets/TikTokDataset/TikTok_3d_assets_native",
+        "aux_every": 4,
+        "save_every": 128,
+        "gradient_only": false,
+        "gradient_report": "/home/shangguanrz/nihaochen/qwen21_full/bfs_body_face_joint_pilot_20261008/preflight/BFH/gradient_only.json",
+        "probe_indices": [
+          0,
+          64,
+          128,
+          192
+        ],
+        "resolution": "native",
+        "align_mode": "native"
+      },
+      "joint_signature": {
+        "schema": "joint_body_face_hand_pilot_v1",
+        "model_revision": "790c92633540aa0cb11d9abf19eb46d861714758",
+        "model": "/data/shangguanrz/pic-edit-models/Qwen-Image-2.1",
+        "lora_sha256": null,
+        "strength": 1.0,
+        "train_sha256": "43cedb569944bc6f98ec046d04f9e11d7cf7d9c8dba5aed7144b558e9dd08508",
+        "val_sha256": "cece883b96dbbc9270fd77d4bb1e973470f52f941af85c2a0746947f5d91e10a",
+        "features": "/home/shangguanrz/nihaochen/qwen21_full/tiktok_face_v1_20261004/data/face_cache",
+        "supervision_sha256": "f96de2a0cec9d6b7fca625de6806f6014f169f3b9bf3a815a3364945b71f3d5f",
+        "cache": "/home/shangguanrz/nihaochen/qwen21_full/tiktok_face_v1_20261004/native_cache_tiktok_native",
+        "resolution": "native",
+        "align_mode": "native",
+        "seed": 42,
+        "noise_offset": 0,
+        "body_lr_scale": 0.25,
+        "face_lr_scale": 0.5,
+        "face_weight": 0.5,
+        "with_hand": true,
+        "hand_lr_scale": 1.0,
+        "hand_weight": 0.5,
+        "aux_every": 4,
+        "warmup_steps": 20,
+        "joint_code_sha256": "17f063c77e6e651e2ad6b8396615fb3f4940f8f3c7aa480a6b2a535e8ac36d4b",
+        "trainer_code_sha256": "f2ad4a3e3c7de35aaaff4e840ee636980eae675b5dc2b9dc937167e24f33f151",
+        "split": {
+          "role": "common",
+          "lock_sha256": "41c62acde89a01b62a494d9da64ff8e488665877e0836985cf62b5a4e6888393",
+          "full512_sha256": "854133776d2067aa392442553f3003ef9e6d45107ccc9cffe5a4af8600fb929f",
+          "common_sha256": "43cedb569944bc6f98ec046d04f9e11d7cf7d9c8dba5aed7144b558e9dd08508",
+          "branch_sha256": "5f27d24e9ca7c6ee9fe4b837850975304026d16097a5c2d588a8e23fcca47d29"
+        },
+        "deterministic_algorithms": "warn_only",
+        "cublas_workspace_config": ":4096:8"
+      },
+      "initialization_provenance": {
+        "mode": "init_checkpoint",
+        "checkpoint_path": "/home/shangguanrz/nihaochen/qwen21_full/tiktok_face_v1_20261004/training/checkpoint_step_003000.pt",
+        "checkpoint_sha256": "4f7eb5a161485bcbc7be506963248536ceba574e18991a369f88f169f10a3f2b",
+        "checkpoint_step": 3000,
+        "checkpoint_branch": "face",
+        "optimizer_state_restored": false
+      },
+      "optimizer_group_names": [
+        "body_heads_and_interface",
+        "body_encoders",
+        "body_control_core",
+        "face_heads_and_interface",
+        "face_encoders",
+        "face_control_core",
+        "hand_heads_and_interface",
+        "hand_encoders",
+        "hand_control_core"
+      ],
+      "updates": 256,
+      "unique_training_pairs": 256,
+      "face_active_updates": 159,
+      "hand_active_updates": 254,
+      "aux_requested_updates": 64,
+      "aux_used_updates": 20,
+      "aux_eligible_updates": 20,
+      "mean_first_32_loss": 0.9010633383877575,
+      "mean_last_32_loss": 0.7078612688928843
+    }
+  },
+  "pilot_scores": {
+    "init_initial_tiktok": {
+      "config": {
+        "checkpoint": "/home/shangguanrz/nihaochen/qwen21_full/tiktok_face_v1_20261004/training/checkpoint_step_003000.pt",
+        "pairs": "/home/shangguanrz/nihaochen/qwen21_full/bfs_body_face_joint_pilot_20261008/data/val24_pairs.jsonl",
+        "dataset_type": "tiktok_v3",
+        "align_mode": "native",
+        "cache": "/home/shangguanrz/nihaochen/qwen21_full/tiktok_face_v1_20261004/native_cache_tiktok_native",
+        "features": "/home/shangguanrz/nihaochen/qwen21_full/tiktok_face_v1_20261004/data/face_cache",
+        "output": "/home/shangguanrz/nihaochen/qwen21_full/bfs_body_face_joint_pilot_20261008/evaluation/init_initial_tiktok",
+        "lora": null,
+        "label": "init_initial_tiktok",
+        "variant": "init",
+        "stage": "initial",
+        "indices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20,
+          21,
+          22,
+          23
+        ],
+        "resolution": "native",
+        "seed": 42,
+        "steps": 30,
+        "geometry_strength": 1.0,
+        "face_strength": 1.0,
+        "model": "/home/shangguanrz/project/pic-edit/models/Qwen-Image-2.1",
+        "tiktok_raw_root": "/home/shangguanrz/project/pic-edit/datasets/TikTokDataset/TikTok_dataset/TikTok_dataset",
+        "tiktok_assets_root": "/home/shangguanrz/project/pic-edit/datasets/TikTokDataset/TikTok_3d_assets_native",
+        "sampled_root": "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_sampled_6src64tgt",
+        "assets_root": "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_assets_512_nvdiffrast",
+        "progress_mode": "step",
+        "use_kv_cache": true,
+        "schema": "qwen21_joint_pilot_eval_v1",
+        "pairs_sha256": "cece883b96dbbc9270fd77d4bb1e973470f52f941af85c2a0746947f5d91e10a",
+        "checkpoint_sha256": "4f7eb5a161485bcbc7be506963248536ceba574e18991a369f88f169f10a3f2b",
+        "lora_sha256": null,
+        "lora_strength": null,
+        "prompt": "Change the person pose to match the target pose. Preserve identity, clothing, and background.",
+        "true_cfg_scale": 1.0,
+        "generation_rgb_inputs": [
+          "Source A"
+        ],
+        "target_B_rgb": "offline only",
+        "hand_strength": 0,
+        "interaction_strength": 0,
+        "shared_detail_condition": false,
+        "legacy_detail_gate": 1.0,
+        "runner_sha256": "1bdeaaa3a07f2792f99771e0cb2b4733501c94e6ac8f65c3f966fe2b41a84450",
+        "model_revision": "790c92633540aa0cb11d9abf19eb46d861714758",
+        "model_config_sha256": "56ae3281c4e6c2d1aa3658252d187488071815fd79bef15808bb0205fc1a2241",
+        "process_isolation": "one base and one adapter checkpoint per invocation",
+        "base_provenance": {
+          "canonical_variant": "init",
+          "checkpoint_joint_signature": null,
+          "checkpoint_lora_sha256": null,
+          "inference_lora_sha256": null,
+          "base_matches_training": false,
+          "hotload_override": false,
+          "stage": "initial",
+          "joint_signature_present": false
+        }
+      },
+      "n": 24,
+      "averages": {
+        "identity_A": {
+          "mean": 0.44756769730399054,
+          "n": 24
+        },
+        "pose_pck_002": {
+          "mean": 0.45244550520285814,
+          "n": 24
+        },
+        "pose_pck_005": {
+          "mean": 0.8637147302588479,
+          "n": 24
+        },
+        "pose_nme_diagonal": {
+          "mean": 0.029285391507957278,
+          "n": 24
+        }
+      },
+      "metric_resolution": 512
+    },
+    "J_common_tiktok": {
+      "config": {
+        "checkpoint": "/home/shangguanrz/nihaochen/qwen21_full/bfs_body_face_joint_pilot_20261008/training/J/checkpoint_step_000256.pt",
+        "pairs": "/home/shangguanrz/nihaochen/qwen21_full/bfs_body_face_joint_pilot_20261008/data/val24_pairs.jsonl",
+        "dataset_type": "tiktok_v3",
+        "align_mode": "native",
+        "cache": "/home/shangguanrz/nihaochen/qwen21_full/tiktok_face_v1_20261004/native_cache_tiktok_native",
+        "features": "/home/shangguanrz/nihaochen/qwen21_full/tiktok_face_v1_20261004/data/face_cache",
+        "output": "/home/shangguanrz/nihaochen/qwen21_full/bfs_body_face_joint_pilot_20261008/evaluation/J_common_tiktok",
+        "lora": null,
+        "label": "J_common_tiktok",
+        "variant": "J",
+        "stage": "common",
+        "indices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20,
+          21,
+          22,
+          23
+        ],
+        "resolution": "native",
+        "seed": 42,
+        "steps": 30,
+        "geometry_strength": 1.0,
+        "face_strength": 1.0,
+        "model": "/home/shangguanrz/project/pic-edit/models/Qwen-Image-2.1",
+        "tiktok_raw_root": "/home/shangguanrz/project/pic-edit/datasets/TikTokDataset/TikTok_dataset/TikTok_dataset",
+        "tiktok_assets_root": "/home/shangguanrz/project/pic-edit/datasets/TikTokDataset/TikTok_3d_assets_native",
+        "sampled_root": "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_sampled_6src64tgt",
+        "assets_root": "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_assets_512_nvdiffrast",
+        "progress_mode": "step",
+        "use_kv_cache": true,
+        "schema": "qwen21_joint_pilot_eval_v1",
+        "pairs_sha256": "cece883b96dbbc9270fd77d4bb1e973470f52f941af85c2a0746947f5d91e10a",
+        "checkpoint_sha256": "9e0f048c585937ab74be792eb6d9730b0621eccda16e1744a6837b0eb9d24651",
+        "lora_sha256": null,
+        "lora_strength": null,
+        "prompt": "Change the person pose to match the target pose. Preserve identity, clothing, and background.",
+        "true_cfg_scale": 1.0,
+        "generation_rgb_inputs": [
+          "Source A"
+        ],
+        "target_B_rgb": "offline only",
+        "hand_strength": 0,
+        "interaction_strength": 0,
+        "shared_detail_condition": false,
+        "legacy_detail_gate": 1.0,
+        "runner_sha256": "1bdeaaa3a07f2792f99771e0cb2b4733501c94e6ac8f65c3f966fe2b41a84450",
+        "model_revision": "790c92633540aa0cb11d9abf19eb46d861714758",
+        "model_config_sha256": "56ae3281c4e6c2d1aa3658252d187488071815fd79bef15808bb0205fc1a2241",
+        "process_isolation": "one base and one adapter checkpoint per invocation",
+        "base_provenance": {
+          "canonical_variant": "J",
+          "checkpoint_joint_signature": {
+            "schema": "joint_body_face_pilot_v1",
+            "model_revision": "790c92633540aa0cb11d9abf19eb46d861714758",
+            "model": "/data/shangguanrz/pic-edit-models/Qwen-Image-2.1",
+            "lora_sha256": null,
+            "strength": 1.0,
+            "train_sha256": "43cedb569944bc6f98ec046d04f9e11d7cf7d9c8dba5aed7144b558e9dd08508",
+            "val_sha256": "cece883b96dbbc9270fd77d4bb1e973470f52f941af85c2a0746947f5d91e10a",
+            "features": "/home/shangguanrz/nihaochen/qwen21_full/tiktok_face_v1_20261004/data/face_cache",
+            "supervision_sha256": "f96de2a0cec9d6b7fca625de6806f6014f169f3b9bf3a815a3364945b71f3d5f",
+            "cache": "/home/shangguanrz/nihaochen/qwen21_full/tiktok_face_v1_20261004/native_cache_tiktok_native",
+            "resolution": "native",
+            "align_mode": "native",
+            "seed": 42,
+            "noise_offset": 0,
+            "body_lr_scale": 0.25,
+            "face_lr_scale": 0.5,
+            "face_weight": 0.5,
+            "aux_every": 4,
+            "warmup_steps": 20,
+            "joint_code_sha256": "1282e4d2ec8e9c608073a7b92cbcd6d1578de1b96d9ca5af2660f9a1d2d86d95",
+            "trainer_code_sha256": "0156e905e8c77675ca550e853f9025011304e5be89566721f02ddbf79c42720d",
+            "split": {
+              "role": "common",
+              "lock_sha256": "41c62acde89a01b62a494d9da64ff8e488665877e0836985cf62b5a4e6888393",
+              "full512_sha256": "854133776d2067aa392442553f3003ef9e6d45107ccc9cffe5a4af8600fb929f",
+              "common_sha256": "43cedb569944bc6f98ec046d04f9e11d7cf7d9c8dba5aed7144b558e9dd08508",
+              "branch_sha256": "5f27d24e9ca7c6ee9fe4b837850975304026d16097a5c2d588a8e23fcca47d29"
+            },
+            "deterministic_algorithms": "warn_only",
+            "cublas_workspace_config": ":4096:8"
+          },
+          "checkpoint_lora_sha256": null,
+          "inference_lora_sha256": null,
+          "base_matches_training": true,
+          "hotload_override": false,
+          "stage": "common",
+          "joint_signature_present": true
+        }
+      },
+      "n": 24,
+      "averages": {
+        "identity_A": {
+          "mean": 0.4912404250353575,
+          "n": 24
+        },
+        "pose_pck_002": {
+          "mean": 0.4024321743071743,
+          "n": 24
+        },
+        "pose_pck_005": {
+          "mean": 0.8651099037128449,
+          "n": 24
+        },
+        "pose_nme_diagonal": {
+          "mean": 0.033889675432876507,
+          "n": 24
+        }
+      },
+      "metric_resolution": 512
+    },
+    "Qwen_final_tiktok": {
+      "config": {
+        "checkpoint": "/home/shangguanrz/nihaochen/qwen21_full/bfs_body_face_joint_pilot_20261008/training/Qwen/checkpoint_step_000256.pt",
+        "pairs": "/home/shangguanrz/nihaochen/qwen21_full/bfs_body_face_joint_pilot_20261008/data/val24_pairs.jsonl",
+        "dataset_type": "tiktok_v3",
+        "align_mode": "native",
+        "cache": "/home/shangguanrz/nihaochen/qwen21_full/tiktok_face_v1_20261004/native_cache_tiktok_native",
+        "features": "/home/shangguanrz/nihaochen/qwen21_full/tiktok_face_v1_20261004/data/face_cache",
+        "output": "/home/shangguanrz/nihaochen/qwen21_full/bfs_body_face_joint_pilot_20261008/evaluation/Qwen_final_tiktok",
+        "lora": null,
+        "label": "Qwen_final_tiktok",
+        "variant": "Qwen",
+        "stage": "final",
+        "indices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20,
+          21,
+          22,
+          23
+        ],
+        "resolution": "native",
+        "seed": 42,
+        "steps": 30,
+        "geometry_strength": 1.0,
+        "face_strength": 1.0,
+        "model": "/home/shangguanrz/project/pic-edit/models/Qwen-Image-2.1",
+        "tiktok_raw_root": "/home/shangguanrz/project/pic-edit/datasets/TikTokDataset/TikTok_dataset/TikTok_dataset",
+        "tiktok_assets_root": "/home/shangguanrz/project/pic-edit/datasets/TikTokDataset/TikTok_3d_assets_native",
+        "sampled_root": "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_sampled_6src64tgt",
+        "assets_root": "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_assets_512_nvdiffrast",
+        "progress_mode": "step",
+        "use_kv_cache": true,
+        "schema": "qwen21_joint_pilot_eval_v1",
+        "pairs_sha256": "cece883b96dbbc9270fd77d4bb1e973470f52f941af85c2a0746947f5d91e10a",
+        "checkpoint_sha256": "f53bbac35a291ae432ffda4b247d58e991d4ebb4a1146abbe997e827776a7068",
+        "lora_sha256": null,
+        "lora_strength": null,
+        "prompt": "Change the person pose to match the target pose. Preserve identity, clothing, and background.",
+        "true_cfg_scale": 1.0,
+        "generation_rgb_inputs": [
+          "Source A"
+        ],
+        "target_B_rgb": "offline only",
+        "hand_strength": 0,
+        "interaction_strength": 0,
+        "shared_detail_condition": false,
+        "legacy_detail_gate": 1.0,
+        "runner_sha256": "1bdeaaa3a07f2792f99771e0cb2b4733501c94e6ac8f65c3f966fe2b41a84450",
+        "model_revision": "790c92633540aa0cb11d9abf19eb46d861714758",
+        "model_config_sha256": "56ae3281c4e6c2d1aa3658252d187488071815fd79bef15808bb0205fc1a2241",
+        "process_isolation": "one base and one adapter checkpoint per invocation",
+        "base_provenance": {
+          "canonical_variant": "Qwen",
+          "checkpoint_joint_signature": {
+            "schema": "joint_body_face_pilot_v1",
+            "model_revision": "790c92633540aa0cb11d9abf19eb46d861714758",
+            "model": "/data/shangguanrz/pic-edit-models/Qwen-Image-2.1",
+            "lora_sha256": null,
+            "strength": 1.0,
+            "train_sha256": "5f27d24e9ca7c6ee9fe4b837850975304026d16097a5c2d588a8e23fcca47d29",
+            "val_sha256": "cece883b96dbbc9270fd77d4bb1e973470f52f941af85c2a0746947f5d91e10a",
+            "features": "/home/shangguanrz/nihaochen/qwen21_full/tiktok_face_v1_20261004/data/face_cache",
+            "supervision_sha256": "f96de2a0cec9d6b7fca625de6806f6014f169f3b9bf3a815a3364945b71f3d5f",
+            "cache": "/home/shangguanrz/nihaochen/qwen21_full/tiktok_face_v1_20261004/native_cache_tiktok_native",
+            "resolution": "native",
+            "align_mode": "native",
+            "seed": 42,
+            "noise_offset": 256,
+            "body_lr_scale": 0.25,
+            "face_lr_scale": 0.5,
+            "face_weight": 0.5,
+            "aux_every": 4,
+            "warmup_steps": 20,
+            "joint_code_sha256": "1282e4d2ec8e9c608073a7b92cbcd6d1578de1b96d9ca5af2660f9a1d2d86d95",
+            "trainer_code_sha256": "0156e905e8c77675ca550e853f9025011304e5be89566721f02ddbf79c42720d",
+            "split": {
+              "role": "branch",
+              "lock_sha256": "41c62acde89a01b62a494d9da64ff8e488665877e0836985cf62b5a4e6888393",
+              "full512_sha256": "854133776d2067aa392442553f3003ef9e6d45107ccc9cffe5a4af8600fb929f",
+              "common_sha256": "43cedb569944bc6f98ec046d04f9e11d7cf7d9c8dba5aed7144b558e9dd08508",
+              "branch_sha256": "5f27d24e9ca7c6ee9fe4b837850975304026d16097a5c2d588a8e23fcca47d29"
+            },
+            "deterministic_algorithms": "warn_only",
+            "cublas_workspace_config": ":4096:8"
+          },
+          "checkpoint_lora_sha256": null,
+          "inference_lora_sha256": null,
+          "base_matches_training": true,
+          "hotload_override": false,
+          "stage": "final",
+          "joint_signature_present": true
+        }
+      },
+      "n": 24,
+      "averages": {
+        "identity_A": {
+          "mean": 0.4369609896093607,
+          "n": 24
+        },
+        "pose_pck_002": {
+          "mean": 0.41059044441397385,
+          "n": 24
+        },
+        "pose_pck_005": {
+          "mean": 0.867425908786203,
+          "n": 24
+        },
+        "pose_nme_diagonal": {
+          "mean": 0.03160931303632062,
+          "n": 24
+        }
+      },
+      "metric_resolution": 512
+    },
+    "BFSBody_final_tiktok": {
+      "config": {
+        "checkpoint": "/home/shangguanrz/nihaochen/qwen21_full/bfs_body_face_joint_pilot_20261008/training/BFSBody/checkpoint_step_000256.pt",
+        "pairs": "/home/shangguanrz/nihaochen/qwen21_full/bfs_body_face_joint_pilot_20261008/data/val24_pairs.jsonl",
+        "dataset_type": "tiktok_v3",
+        "align_mode": "native",
+        "cache": "/home/shangguanrz/nihaochen/qwen21_full/tiktok_face_v1_20261004/native_cache_tiktok_native",
+        "features": "/home/shangguanrz/nihaochen/qwen21_full/tiktok_face_v1_20261004/data/face_cache",
+        "output": "/home/shangguanrz/nihaochen/qwen21_full/bfs_body_face_joint_pilot_20261008/evaluation/BFSBody_final_tiktok",
+        "lora": "/home/shangguanrz/models/bfs/bfs_body_swap_v1.0_qwen_2.1.safetensors",
+        "label": "BFSBody_final_tiktok",
+        "variant": "BFSBody",
+        "stage": "final",
+        "indices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20,
+          21,
+          22,
+          23
+        ],
+        "resolution": "native",
+        "seed": 42,
+        "steps": 30,
+        "geometry_strength": 1.0,
+        "face_strength": 1.0,
+        "model": "/home/shangguanrz/project/pic-edit/models/Qwen-Image-2.1",
+        "tiktok_raw_root": "/home/shangguanrz/project/pic-edit/datasets/TikTokDataset/TikTok_dataset/TikTok_dataset",
+        "tiktok_assets_root": "/home/shangguanrz/project/pic-edit/datasets/TikTokDataset/TikTok_3d_assets_native",
+        "sampled_root": "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_sampled_6src64tgt",
+        "assets_root": "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_assets_512_nvdiffrast",
+        "progress_mode": "step",
+        "use_kv_cache": true,
+        "schema": "qwen21_joint_pilot_eval_v1",
+        "pairs_sha256": "cece883b96dbbc9270fd77d4bb1e973470f52f941af85c2a0746947f5d91e10a",
+        "checkpoint_sha256": "a91225eab146bd621106b3c4590c31071155135cc783262dc6b47d95da23aa54",
+        "lora_sha256": "7dc0a53aba4dbc70c204f498936a619d226559da11011f748c389189af46b664",
+        "lora_strength": 1.0,
+        "prompt": "Change the person pose to match the target pose. Preserve identity, clothing, and background.",
+        "true_cfg_scale": 1.0,
+        "generation_rgb_inputs": [
+          "Source A"
+        ],
+        "target_B_rgb": "offline only",
+        "hand_strength": 0,
+        "interaction_strength": 0,
+        "shared_detail_condition": false,
+        "legacy_detail_gate": 1.0,
+        "runner_sha256": "1bdeaaa3a07f2792f99771e0cb2b4733501c94e6ac8f65c3f966fe2b41a84450",
+        "model_revision": "790c92633540aa0cb11d9abf19eb46d861714758",
+        "model_config_sha256": "56ae3281c4e6c2d1aa3658252d187488071815fd79bef15808bb0205fc1a2241",
+        "process_isolation": "one base and one adapter checkpoint per invocation",
+        "base_provenance": {
+          "canonical_variant": "BFSBody",
+          "checkpoint_joint_signature": {
+            "schema": "joint_body_face_pilot_v1",
+            "model_revision": "790c92633540aa0cb11d9abf19eb46d861714758",
+            "model": "/data/shangguanrz/pic-edit-models/Qwen-Image-2.1",
+            "lora_sha256": "7dc0a53aba4dbc70c204f498936a619d226559da11011f748c389189af46b664",
+            "strength": 1.0,
+            "train_sha256": "5f27d24e9ca7c6ee9fe4b837850975304026d16097a5c2d588a8e23fcca47d29",
+            "val_sha256": "cece883b96dbbc9270fd77d4bb1e973470f52f941af85c2a0746947f5d91e10a",
+            "features": "/home/shangguanrz/nihaochen/qwen21_full/tiktok_face_v1_20261004/data/face_cache",
+            "supervision_sha256": "f96de2a0cec9d6b7fca625de6806f6014f169f3b9bf3a815a3364945b71f3d5f",
+            "cache": "/home/shangguanrz/nihaochen/qwen21_full/tiktok_face_v1_20261004/native_cache_tiktok_native",
+            "resolution": "native",
+            "align_mode": "native",
+            "seed": 42,
+            "noise_offset": 256,
+            "body_lr_scale": 0.25,
+            "face_lr_scale": 0.5,
+            "face_weight": 0.5,
+            "aux_every": 4,
+            "warmup_steps": 20,
+            "joint_code_sha256": "1282e4d2ec8e9c608073a7b92cbcd6d1578de1b96d9ca5af2660f9a1d2d86d95",
+            "trainer_code_sha256": "0156e905e8c77675ca550e853f9025011304e5be89566721f02ddbf79c42720d",
+            "split": {
+              "role": "branch",
+              "lock_sha256": "41c62acde89a01b62a494d9da64ff8e488665877e0836985cf62b5a4e6888393",
+              "full512_sha256": "854133776d2067aa392442553f3003ef9e6d45107ccc9cffe5a4af8600fb929f",
+              "common_sha256": "43cedb569944bc6f98ec046d04f9e11d7cf7d9c8dba5aed7144b558e9dd08508",
+              "branch_sha256": "5f27d24e9ca7c6ee9fe4b837850975304026d16097a5c2d588a8e23fcca47d29"
+            },
+            "deterministic_algorithms": "warn_only",
+            "cublas_workspace_config": ":4096:8"
+          },
+          "checkpoint_lora_sha256": "7dc0a53aba4dbc70c204f498936a619d226559da11011f748c389189af46b664",
+          "inference_lora_sha256": "7dc0a53aba4dbc70c204f498936a619d226559da11011f748c389189af46b664",
+          "base_matches_training": true,
+          "hotload_override": false,
+          "stage": "final",
+          "joint_signature_present": true
+        }
+      },
+      "n": 24,
+      "averages": {
+        "identity_A": {
+          "mean": 0.4025815023730199,
+          "n": 24
+        },
+        "pose_pck_002": {
+          "mean": 0.3933396464646464,
+          "n": 24
+        },
+        "pose_pck_005": {
+          "mean": 0.8691027450218627,
+          "n": 24
+        },
+        "pose_nme_diagonal": {
+          "mean": 0.031261080699472414,
+          "n": 24
+        }
+      },
+      "metric_resolution": 512
+    },
+    "BFSHead_final_tiktok": {
+      "config": {
+        "checkpoint": "/home/shangguanrz/nihaochen/qwen21_full/bfs_body_face_joint_pilot_20261008/training/BFSHead/checkpoint_step_000256.pt",
+        "pairs": "/home/shangguanrz/nihaochen/qwen21_full/bfs_body_face_joint_pilot_20261008/data/val24_pairs.jsonl",
+        "dataset_type": "tiktok_v3",
+        "align_mode": "native",
+        "cache": "/home/shangguanrz/nihaochen/qwen21_full/tiktok_face_v1_20261004/native_cache_tiktok_native",
+        "features": "/home/shangguanrz/nihaochen/qwen21_full/tiktok_face_v1_20261004/data/face_cache",
+        "output": "/home/shangguanrz/nihaochen/qwen21_full/bfs_body_face_joint_pilot_20261008/evaluation/BFSHead_final_tiktok",
+        "lora": "/home/shangguanrz/models/bfs/bfs_head_v1.1_qwen_2.1.safetensors",
+        "label": "BFSHead_final_tiktok",
+        "variant": "BFSHead",
+        "stage": "final",
+        "indices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20,
+          21,
+          22,
+          23
+        ],
+        "resolution": "native",
+        "seed": 42,
+        "steps": 30,
+        "geometry_strength": 1.0,
+        "face_strength": 1.0,
+        "model": "/home/shangguanrz/project/pic-edit/models/Qwen-Image-2.1",
+        "tiktok_raw_root": "/home/shangguanrz/project/pic-edit/datasets/TikTokDataset/TikTok_dataset/TikTok_dataset",
+        "tiktok_assets_root": "/home/shangguanrz/project/pic-edit/datasets/TikTokDataset/TikTok_3d_assets_native",
+        "sampled_root": "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_sampled_6src64tgt",
+        "assets_root": "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_assets_512_nvdiffrast",
+        "progress_mode": "step",
+        "use_kv_cache": true,
+        "schema": "qwen21_joint_pilot_eval_v1",
+        "pairs_sha256": "cece883b96dbbc9270fd77d4bb1e973470f52f941af85c2a0746947f5d91e10a",
+        "checkpoint_sha256": "62da58c69d088b1f7a52b11c036f25c05e4916e0d774176521d37820fef593f2",
+        "lora_sha256": "d1d748d5601077f3b6d05766f6823510e901970d916afa404a97e85dc92fa88e",
+        "lora_strength": 1.0,
+        "prompt": "Change the person pose to match the target pose. Preserve identity, clothing, and background.",
+        "true_cfg_scale": 1.0,
+        "generation_rgb_inputs": [
+          "Source A"
+        ],
+        "target_B_rgb": "offline only",
+        "hand_strength": 0,
+        "interaction_strength": 0,
+        "shared_detail_condition": false,
+        "legacy_detail_gate": 1.0,
+        "runner_sha256": "1bdeaaa3a07f2792f99771e0cb2b4733501c94e6ac8f65c3f966fe2b41a84450",
+        "model_revision": "790c92633540aa0cb11d9abf19eb46d861714758",
+        "model_config_sha256": "56ae3281c4e6c2d1aa3658252d187488071815fd79bef15808bb0205fc1a2241",
+        "process_isolation": "one base and one adapter checkpoint per invocation",
+        "base_provenance": {
+          "canonical_variant": "BFSHead",
+          "checkpoint_joint_signature": {
+            "schema": "joint_body_face_pilot_v1",
+            "model_revision": "790c92633540aa0cb11d9abf19eb46d861714758",
+            "model": "/data/shangguanrz/pic-edit-models/Qwen-Image-2.1",
+            "lora_sha256": "d1d748d5601077f3b6d05766f6823510e901970d916afa404a97e85dc92fa88e",
+            "strength": 1.0,
+            "train_sha256": "5f27d24e9ca7c6ee9fe4b837850975304026d16097a5c2d588a8e23fcca47d29",
+            "val_sha256": "cece883b96dbbc9270fd77d4bb1e973470f52f941af85c2a0746947f5d91e10a",
+            "features": "/home/shangguanrz/nihaochen/qwen21_full/tiktok_face_v1_20261004/data/face_cache",
+            "supervision_sha256": "f96de2a0cec9d6b7fca625de6806f6014f169f3b9bf3a815a3364945b71f3d5f",
+            "cache": "/home/shangguanrz/nihaochen/qwen21_full/tiktok_face_v1_20261004/native_cache_tiktok_native",
+            "resolution": "native",
+            "align_mode": "native",
+            "seed": 42,
+            "noise_offset": 256,
+            "body_lr_scale": 0.25,
+            "face_lr_scale": 0.5,
+            "face_weight": 0.5,
+            "aux_every": 4,
+            "warmup_steps": 20,
+            "joint_code_sha256": "1282e4d2ec8e9c608073a7b92cbcd6d1578de1b96d9ca5af2660f9a1d2d86d95",
+            "trainer_code_sha256": "0156e905e8c77675ca550e853f9025011304e5be89566721f02ddbf79c42720d",
+            "split": {
+              "role": "branch",
+              "lock_sha256": "41c62acde89a01b62a494d9da64ff8e488665877e0836985cf62b5a4e6888393",
+              "full512_sha256": "854133776d2067aa392442553f3003ef9e6d45107ccc9cffe5a4af8600fb929f",
+              "common_sha256": "43cedb569944bc6f98ec046d04f9e11d7cf7d9c8dba5aed7144b558e9dd08508",
+              "branch_sha256": "5f27d24e9ca7c6ee9fe4b837850975304026d16097a5c2d588a8e23fcca47d29"
+            },
+            "deterministic_algorithms": "warn_only",
+            "cublas_workspace_config": ":4096:8"
+          },
+          "checkpoint_lora_sha256": "d1d748d5601077f3b6d05766f6823510e901970d916afa404a97e85dc92fa88e",
+          "inference_lora_sha256": "d1d748d5601077f3b6d05766f6823510e901970d916afa404a97e85dc92fa88e",
+          "base_matches_training": true,
+          "hotload_override": false,
+          "stage": "final",
+          "joint_signature_present": true
+        }
+      },
+      "n": 24,
+      "averages": {
+        "identity_A": {
+          "mean": 0.3746824666547279,
+          "n": 24
+        },
+        "pose_pck_002": {
+          "mean": 0.4138805570790865,
+          "n": 24
+        },
+        "pose_pck_005": {
+          "mean": 0.8833082902935844,
+          "n": 24
+        },
+        "pose_nme_diagonal": {
+          "mean": 0.02823643098995333,
+          "n": 24
+        }
+      },
+      "metric_resolution": 512
+    },
+    "BFH_final_tiktok": {
+      "config": {
+        "checkpoint": "/home/shangguanrz/nihaochen/qwen21_full/bfs_body_face_joint_pilot_20261008/training/BFH/checkpoint_step_000256.pt",
+        "pairs": "/home/shangguanrz/nihaochen/qwen21_full/bfs_body_face_joint_pilot_20261008/data/val24_pairs.jsonl",
+        "dataset_type": "tiktok_v3",
+        "align_mode": "native",
+        "cache": "/home/shangguanrz/nihaochen/qwen21_full/tiktok_face_v1_20261004/native_cache_tiktok_native",
+        "features": "/home/shangguanrz/nihaochen/qwen21_full/tiktok_face_v1_20261004/data/face_cache",
+        "output": "/home/shangguanrz/nihaochen/qwen21_full/bfs_body_face_joint_pilot_20261008/evaluation/BFH_final_tiktok",
+        "lora": null,
+        "label": "BFH_final_tiktok",
+        "variant": "BFH",
+        "stage": "final",
+        "indices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20,
+          21,
+          22,
+          23
+        ],
+        "resolution": "native",
+        "seed": 42,
+        "steps": 30,
+        "geometry_strength": 1.0,
+        "face_strength": 1.0,
+        "model": "/home/shangguanrz/project/pic-edit/models/Qwen-Image-2.1",
+        "tiktok_raw_root": "/home/shangguanrz/project/pic-edit/datasets/TikTokDataset/TikTok_dataset/TikTok_dataset",
+        "tiktok_assets_root": "/home/shangguanrz/project/pic-edit/datasets/TikTokDataset/TikTok_3d_assets_native",
+        "sampled_root": "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_sampled_6src64tgt",
+        "assets_root": "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_assets_512_nvdiffrast",
+        "progress_mode": "step",
+        "with_hand": true,
+        "hand_strength": 1.0,
+        "hand_mode": "v66",
+        "use_kv_cache": true,
+        "schema": "qwen21_joint_pilot_eval_v1",
+        "pairs_sha256": "cece883b96dbbc9270fd77d4bb1e973470f52f941af85c2a0746947f5d91e10a",
+        "checkpoint_sha256": "c5128bfe6d7328287b4099533c982031ddcfe3399bb2377f8287dee0ffc6a069",
+        "lora_sha256": null,
+        "lora_strength": null,
+        "prompt": "Change the person pose to match the target pose. Preserve identity, clothing, and background.",
+        "true_cfg_scale": 1.0,
+        "generation_rgb_inputs": [
+          "Source A"
+        ],
+        "target_B_rgb": "offline only",
+        "interaction_strength": 0,
+        "shared_detail_condition": false,
+        "legacy_detail_gate": 1.0,
+        "runner_sha256": "7f7651032d9ffa9a1dd724d333d43eaba739971257cc414f2488ad62dcd08c47",
+        "model_revision": "790c92633540aa0cb11d9abf19eb46d861714758",
+        "model_config_sha256": "56ae3281c4e6c2d1aa3658252d187488071815fd79bef15808bb0205fc1a2241",
+        "process_isolation": "one base and one adapter checkpoint per invocation",
+        "base_provenance": {
+          "canonical_variant": "BFH",
+          "checkpoint_joint_signature": {
+            "schema": "joint_body_face_hand_pilot_v1",
+            "model_revision": "790c92633540aa0cb11d9abf19eb46d861714758",
+            "model": "/data/shangguanrz/pic-edit-models/Qwen-Image-2.1",
+            "lora_sha256": null,
+            "strength": 1.0,
+            "train_sha256": "43cedb569944bc6f98ec046d04f9e11d7cf7d9c8dba5aed7144b558e9dd08508",
+            "val_sha256": "cece883b96dbbc9270fd77d4bb1e973470f52f941af85c2a0746947f5d91e10a",
+            "features": "/home/shangguanrz/nihaochen/qwen21_full/tiktok_face_v1_20261004/data/face_cache",
+            "supervision_sha256": "f96de2a0cec9d6b7fca625de6806f6014f169f3b9bf3a815a3364945b71f3d5f",
+            "cache": "/home/shangguanrz/nihaochen/qwen21_full/tiktok_face_v1_20261004/native_cache_tiktok_native",
+            "resolution": "native",
+            "align_mode": "native",
+            "seed": 42,
+            "noise_offset": 0,
+            "body_lr_scale": 0.25,
+            "face_lr_scale": 0.5,
+            "face_weight": 0.5,
+            "with_hand": true,
+            "hand_lr_scale": 1.0,
+            "hand_weight": 0.5,
+            "aux_every": 4,
+            "warmup_steps": 20,
+            "joint_code_sha256": "17f063c77e6e651e2ad6b8396615fb3f4940f8f3c7aa480a6b2a535e8ac36d4b",
+            "trainer_code_sha256": "f2ad4a3e3c7de35aaaff4e840ee636980eae675b5dc2b9dc937167e24f33f151",
+            "split": {
+              "role": "common",
+              "lock_sha256": "41c62acde89a01b62a494d9da64ff8e488665877e0836985cf62b5a4e6888393",
+              "full512_sha256": "854133776d2067aa392442553f3003ef9e6d45107ccc9cffe5a4af8600fb929f",
+              "common_sha256": "43cedb569944bc6f98ec046d04f9e11d7cf7d9c8dba5aed7144b558e9dd08508",
+              "branch_sha256": "5f27d24e9ca7c6ee9fe4b837850975304026d16097a5c2d588a8e23fcca47d29"
+            },
+            "deterministic_algorithms": "warn_only",
+            "cublas_workspace_config": ":4096:8"
+          },
+          "checkpoint_lora_sha256": null,
+          "inference_lora_sha256": null,
+          "base_matches_training": true,
+          "hotload_override": false,
+          "stage": "final",
+          "joint_signature_present": true
+        }
+      },
+      "n": 24,
+      "averages": {
+        "identity_A": {
+          "mean": 0.4648118286083142,
+          "n": 24
+        },
+        "pose_pck_002": {
+          "mean": 0.4005959386474092,
+          "n": 24
+        },
+        "pose_pck_005": {
+          "mean": 0.864698550360315,
+          "n": 24
+        },
+        "pose_nme_diagonal": {
+          "mean": 0.033452147372548,
+          "n": 24
+        }
+      },
+      "metric_resolution": 512
+    }
+  },
+  "bfs_skeleton_observations": {
+    "conclusions": [
+      "这批固定案例中，原生“A＋骨架”综合更稳。直接加载 BFS Body 或 Head，没有形成稳定的动作、身份和背景综合收益。",
+      "Body 的动作几乎不变；Head 会改变脸形和表情，也会影响身体或衣服细节。TikTok 512 的六对共同可评人脸中，两份 LoRA 的平均 A 身份相似度都低于原生，且各有五对下降。",
+      "也存在局部收益：1024 的 tiktok_01 中，Head 的动作 PCK 从0.412升至0.471；iPER 1024 的背景误差也略低。但这不足以证明直接挂载是可靠升级。"
+    ],
+    "interpretation": [
+      "动作分数相近，不代表整张图一样好。iPER 的三组 PCK 都为1.000，原生在这些案例的关节位置上已经接近指标上限；LoRA仍会改变脸形、手部形态或背景。PCK本身不评价皮肤、五官和手指自然度。",
+      "Head 不是自动修脸按钮。它能让表情和轮廓变化，但“脸更平滑”不等于“更像A”。例如512的tiktok_03出现疑似眼镜状线条，tiktok_05的笑容减弱。这些输出均保留，没有因低分剔除。",
+      "1024 更容易看清面部差异，但每个数据集只有两对，而且同一A可对应不同B。这些配对并非同样多的独立人物；1024和iPER 512的共同可靠脸都只有两对，只能作为案例观察，不能稳定排身份优劣。",
+      "后续比较继续保留原生“A＋骨架”作为基线。本轮不建议把这两份LoRA在强度1.0下的直接挂载作为常规增强；没有证据支持由此自动替换当前方案。它们在其他输入、提示词或强度下的能力，本轮没有测试。"
+    ],
+    "captions": {
+      "iper_00_512": "三组目标动作相近；LoRA改变了脸形与画面明暗，不能仅凭姿态相同认定有增益。",
+      "tiktok_00_512": "三组都响应抬手和低头；Head改变了表情，上衣和手部细节也有变化。",
+      "iper_00_1024": "分辨率提高后更容易看清差异：两份LoRA的脸形与原生不同，均未见明显彩斑。",
+      "iper_01_1024": "蹲姿接近；Head背景误差较低，但脸部保持并未随之改善。",
+      "tiktok_00_1024": "动作相近，脸部轮廓和背景仍有变化；并未出现一致的综合提升。",
+      "tiktok_01_1024": "Head在该案例的动作PCK略高，身份相似度与原生接近；这是局部收益，不代表所有案例。"
+    }
+  },
+  "bfs_rgb_observations": {
+    "headline": "结论：给两张真实照片后，两种BFS LoRA仍未显示综合收益；本轮保留原生方案。",
+    "conclusions": [
+      "iPER：Body与Head都把A的蓝色运动服换成B的深色上衣和牛仔裤，脸也明显向B靠拢。Body有局部动作收益，但违背了“只迁移动作、保留A人物和服装”的目标；Head也没有解决这个问题。",
+      "TikTok：两种LoRA仍能改变动作，但面部保持没有稳定提升。Body在下蹲案例中更接近部分目标位置，同时借用了B的下装；Head在该例背景误差减少，但另一例面部及背景表现下降。"
+    ],
+    "identity_interpretation": [
+      "iPER的两对案例证据一致：原生较好保留A，两个LoRA均出现明显B外观转移。原生与A的平均相似度0.639，Body为0.227，Head为0.166；同时与B的分数明显上升，且脸型、胡须及服装变化能够在图中直接核对。",
+      "TikTok仍以A的男性短卷发外观为主，没有足够证据认定换成B的女性身份。但两种LoRA与A的平均相似度都低于原生；tiktok_01的B脸被头发遮挡，其B相似度仅列原始分，不作可靠身份判断。"
+    ],
+    "skeleton_context": [
+      "既有原生“A＋骨架”的四对结果，动作PCK为1.000、1.000、0.231、0.412，背景误差也均低于本轮三组。它仍值得作为当前主路线；但输入条件不同，这是辅助参照，不用于把LoRA自身与输入方式的影响混为一谈。"
+    ],
+    "recommendations": [
+      "暂不扩大这两份现成LoRA在当前输入分工下的直接挂载实验。先保留原生A＋骨架主路线；必须用两张照片时，本轮原生A＋B整体更符合保留A的要求。",
+      "本轮不能证明LoRA训练没有价值。若后续训练项目专用LoRA，应让训练数据明确学习“A负责身份、服装和场景，B只负责动作”，再用独立样本检查收益。"
+    ],
+    "captions": {
+      "iper_00": "原生保留了A的脸和蓝色运动服；Body与Head均采用B的深色卫衣、浅蓝牛仔裤和更接近B的脸。Body的动作位置分数提高，不等于任务整体变好。",
+      "iper_01": "三组都做了下蹲，但两个LoRA都把人物外观转向B，胡须、短发、衣服尤为明显；Head的腿部展开和身体大小偏差更大。",
+      "tiktok_00": "三组均抬臂并低头，未见LoRA稳定优于原生。两个LoRA的脸与A的相似度下降；Body补出的下装借用了B的浅色印花。原A未显示下装，无法验证是否保留原裤子。",
+      "tiktok_01": "Body蹲得更低，但同时借用B的白色下装及花纹高帮鞋；Head与原生动作近似，背景保持改善，表情则变成大笑。B脸被头发遮挡，不可靠判断是否串脸。"
+    }
+  },
+  "hi4d_native_summary": [
+    {
+      "resolution": 512,
+      "method": "rgb",
+      "images": 4,
+      "correspondence_correct": 0,
+      "correspondence_wrong": 4,
+      "correspondence_uncertain": 0,
+      "identifiable_people": 2,
+      "expected_people": 8,
+      "pose_pck_002_common": 0.23529411764705882,
+      "pose_nme_common": 0.04001461641765276,
+      "pose_common_n": 1,
+      "pose_pck_002_identified": 0.36764705882352944,
+      "pose_identified_n": 2,
+      "face_cosine_common": null,
+      "face_common_n": 0,
+      "face_raw_mean": 0.11047979826089682,
+      "face_raw_n": 7,
+      "background_mae": 4.579618981920242,
+      "seconds": 13.835097552500883,
+      "peak_cuda_gib": 31.891928672790527,
+      "artifact_images": 2,
+      "correct_without_recorded_artifacts": 0,
+      "cases_both_assignments_correct": 0,
+      "natural_interaction_images": 3
+    },
+    {
+      "resolution": 512,
+      "method": "combined",
+      "images": 4,
+      "correspondence_correct": 1,
+      "correspondence_wrong": 3,
+      "correspondence_uncertain": 0,
+      "identifiable_people": 8,
+      "expected_people": 8,
+      "pose_pck_002_common": 1.0,
+      "pose_nme_common": 0.006419880083768319,
+      "pose_common_n": 1,
+      "pose_pck_002_identified": 0.46875,
+      "pose_identified_n": 6,
+      "face_cosine_common": null,
+      "face_common_n": 0,
+      "face_raw_mean": 0.18612618239185538,
+      "face_raw_n": 7,
+      "background_mae": 4.179636287491189,
+      "seconds": 13.423130121000213,
+      "peak_cuda_gib": 31.891733169555664,
+      "artifact_images": 4,
+      "correct_without_recorded_artifacts": 0,
+      "cases_both_assignments_correct": 0,
+      "natural_interaction_images": 3
+    },
+    {
+      "resolution": 512,
+      "method": "separate",
+      "images": 4,
+      "correspondence_correct": 3,
+      "correspondence_wrong": 1,
+      "correspondence_uncertain": 0,
+      "identifiable_people": 8,
+      "expected_people": 8,
+      "pose_pck_002_common": 1.0,
+      "pose_nme_common": 0.005965728837859042,
+      "pose_common_n": 1,
+      "pose_pck_002_identified": 0.8033088235294118,
+      "pose_identified_n": 6,
+      "face_cosine_common": null,
+      "face_common_n": 0,
+      "face_raw_mean": 0.1345274361931901,
+      "face_raw_n": 8,
+      "background_mae": 3.97949145507582,
+      "seconds": 17.335530507750263,
+      "peak_cuda_gib": 31.894256114959717,
+      "artifact_images": 0,
+      "correct_without_recorded_artifacts": 3,
+      "cases_both_assignments_correct": 1,
+      "natural_interaction_images": 4
+    },
+    {
+      "resolution": 1024,
+      "method": "rgb",
+      "images": 12,
+      "correspondence_correct": 0,
+      "correspondence_wrong": 12,
+      "correspondence_uncertain": 0,
+      "identifiable_people": 5,
+      "expected_people": 24,
+      "pose_pck_002_common": 0.3235294117647059,
+      "pose_nme_common": 0.0403131390778357,
+      "pose_common_n": 4,
+      "pose_pck_002_identified": 0.3294117647058824,
+      "pose_identified_n": 5,
+      "face_cosine_common": null,
+      "face_common_n": 0,
+      "face_raw_mean": 0.11015201618576537,
+      "face_raw_n": 23,
+      "background_mae": 4.931698108244986,
+      "seconds": 59.21951070174995,
+      "peak_cuda_gib": 36.82690382003784,
+      "artifact_images": 1,
+      "correct_without_recorded_artifacts": 0,
+      "cases_both_assignments_correct": 0,
+      "natural_interaction_images": 11
+    },
+    {
+      "resolution": 1024,
+      "method": "combined",
+      "images": 12,
+      "correspondence_correct": 6,
+      "correspondence_wrong": 6,
+      "correspondence_uncertain": 0,
+      "identifiable_people": 24,
+      "expected_people": 24,
+      "pose_pck_002_common": 0.9852941176470589,
+      "pose_nme_common": 0.0058117671356341626,
+      "pose_common_n": 4,
+      "pose_pck_002_identified": 0.7162224264705883,
+      "pose_identified_n": 16,
+      "face_cosine_common": null,
+      "face_common_n": 0,
+      "face_raw_mean": 0.23133231995653425,
+      "face_raw_n": 24,
+      "background_mae": 4.097961253422375,
+      "seconds": 58.96321237575012,
+      "peak_cuda_gib": 36.82605028152466,
+      "artifact_images": 12,
+      "correct_without_recorded_artifacts": 0,
+      "cases_both_assignments_correct": 2,
+      "natural_interaction_images": 8
+    },
+    {
+      "resolution": 1024,
+      "method": "separate",
+      "images": 12,
+      "correspondence_correct": 9,
+      "correspondence_wrong": 3,
+      "correspondence_uncertain": 0,
+      "identifiable_people": 24,
+      "expected_people": 24,
+      "pose_pck_002_common": 0.9705882352941176,
+      "pose_nme_common": 0.005225446837918708,
+      "pose_common_n": 4,
+      "pose_pck_002_identified": 0.8509803921568628,
+      "pose_identified_n": 15,
+      "face_cosine_common": null,
+      "face_common_n": 0,
+      "face_raw_mean": 0.31475184184475674,
+      "face_raw_n": 24,
+      "background_mae": 3.9313010490759432,
+      "seconds": 82.52671757541611,
+      "peak_cuda_gib": 36.83669137954712,
+      "artifact_images": 6,
+      "correct_without_recorded_artifacts": 4,
+      "cases_both_assignments_correct": 3,
+      "natural_interaction_images": 11
+    }
+  ],
+  "source_sha256": {
+    "/home/shangguanrz/project/pic-edit/src/pose_control/qwen21_full/qwen_adapter.py": "f2b7d74db4ca63cca70158b8b9de54c07456909e51dc3ebf77481523adf7c367",
+    "/home/shangguanrz/project/pic-edit/src/pose_control/qwen21_full/qwen_runtime.py": "77a1e3655e9042aabb81cc04bca7484c6f0956663b19f4d447ba5a1c3b419931",
+    "/home/shangguanrz/project/pic-edit/src/pose_control/qwen21_full/joint_training.py": "17f063c77e6e651e2ad6b8396615fb3f4940f8f3c7aa480a6b2a535e8ac36d4b",
+    "/home/shangguanrz/project/pic-edit/src/pose_control/qwen21_full/execution.py": "ad9d8b46a467d57865f019b60a08870fb3d2eaa266384661b0bebfb945bd5ecb",
+    "/home/shangguanrz/project/pic-edit/src/pose_control/qwen21_full/data_runtime.py": "423d41e68029e8163ba8b647750365d8032bd89535a97851202a695b367316de",
+    "/home/shangguanrz/project/pic-edit/src/pose_control/qwen21_full/control_core.py": "e5e551e9ab8696f1d547b9b6a111a5b690a9942913b51cc0eb48a0ed011420c9",
+    "/home/shangguanrz/project/pic-edit/src/pose_control/qwen21_full/frozen_bfs_lora.py": "d364338e603bf257883da51dee1d5bcb4cc8baefaad4b029541bb7b446bc0c1a"
+  },
+  "evidence_sha256": {
+    "/home/shangguanrz/nihaochen/qwen21_full/native_value_audit_20261008/evaluation/metric_summary.json": "562482506012454c9ae3340bba5040cc8ea41354d445bc2649bd0c4ba9a5abe1",
+    "/home/shangguanrz/nihaochen/qwen21_full/native_value_audit_20261008/acceptance/direct_prediction/results.json": "53dc7ae2f2dc6e00e9ac77b535abf444e98f2be9688aac55b79cfd14ce67b922",
+    "/home/shangguanrz/nihaochen/qwen21_full/native_value_audit_20261008/acceptance/direct_prediction_1024/results.json": "5f668ad3d4880454c72e4c8c6e1083414be1d38bc4a11c4cc52a4f7238bef2f5",
+    "/home/shangguanrz/nihaochen/qwen21_full/native_value_audit_20261008/generations.jsonl": "39339768d711c106f5c2ccd9f81a360a996ddbd0339adea0c57e695cd1a0c4cb",
+    "/home/shangguanrz/nihaochen/qwen21_full/bfs_body_face_joint_pilot_20261008/training/J/run_manifest.json": "e1cf53b61583114f6928a0db78ea8ffed8b8a65ce9b3ff1b6a02d6d54fdc0e2e",
+    "/home/shangguanrz/nihaochen/qwen21_full/bfs_body_face_joint_pilot_20261008/training/J/metrics.jsonl": "ce3758420c8657a7400283e8a4913dbd7a719ee91dc0c94163df56ea0c8bd080",
+    "/home/shangguanrz/nihaochen/qwen21_full/bfs_body_face_joint_pilot_20261008/training/Qwen/run_manifest.json": "cc1f43c8c3a2681e99e53c14e240e6c65629ef3365d6a81edac477f2a09e08df",
+    "/home/shangguanrz/nihaochen/qwen21_full/bfs_body_face_joint_pilot_20261008/training/Qwen/metrics.jsonl": "4bd363cc95f5556f20c67e36a47214c088e06caaae4226bd83d6d510de73fe01",
+    "/home/shangguanrz/nihaochen/qwen21_full/bfs_body_face_joint_pilot_20261008/training/BFSBody/run_manifest.json": "02d8660ad99abc10c73daabf3b809e561acdabf47642c2d0e165b395d8eef884",
+    "/home/shangguanrz/nihaochen/qwen21_full/bfs_body_face_joint_pilot_20261008/training/BFSBody/metrics.jsonl": "2f5a0b00ecd30cb7b6276e413511d1ae7690aa6b477f8b2815a4219fd173781b",
+    "/home/shangguanrz/nihaochen/qwen21_full/bfs_body_face_joint_pilot_20261008/training/BFSHead/run_manifest.json": "742112e17bd06c2c3b5dbd7213ad6d78c824ceb86c26aa090c08f7f415b2211c",
+    "/home/shangguanrz/nihaochen/qwen21_full/bfs_body_face_joint_pilot_20261008/training/BFSHead/metrics.jsonl": "bd4a43b9ab8809407454d5b107c6284b0c62e49629556b1439606856b0f500e2",
+    "/home/shangguanrz/nihaochen/qwen21_full/bfs_body_face_joint_pilot_20261008/training/BFH/run_manifest.json": "cb0556bc94e4c73a54f43b7729fc1ebe9dbf19e22fb095b42d986a7bbc7bd449",
+    "/home/shangguanrz/nihaochen/qwen21_full/bfs_body_face_joint_pilot_20261008/training/BFH/metrics.jsonl": "db9eb262c2859d48b023676bce0514f2e5538a51237b178f0d70bf9cb7f59313",
+    "/home/shangguanrz/nihaochen/qwen21_full/bfs_body_face_joint_pilot_20261008/evaluation/init_initial_tiktok/config.json": "e99cf87443874bdfd4422ae8ba1d8e150bd16f19287c06e251dffe790eb45fe6",
+    "/home/shangguanrz/nihaochen/qwen21_full/bfs_body_face_joint_pilot_20261008/evaluation/init_initial_tiktok/scores.json": "e6025800230b57aaa2f81f0850606872b412242b8077e5f06283dce460b957b3",
+    "/home/shangguanrz/nihaochen/qwen21_full/bfs_body_face_joint_pilot_20261008/evaluation/J_common_tiktok/config.json": "e6be9e63c5c0fe0bfc751eca4fbca23b0c1d06cd9191fbdd38d0030bea4b6c45",
+    "/home/shangguanrz/nihaochen/qwen21_full/bfs_body_face_joint_pilot_20261008/evaluation/J_common_tiktok/scores.json": "408575674ddab85b30aa4521ea4092f2006005e0ff9b1e9e9609495c07875502",
+    "/home/shangguanrz/nihaochen/qwen21_full/bfs_body_face_joint_pilot_20261008/evaluation/Qwen_final_tiktok/config.json": "e443a287a72f7ba41374348b5960532e38718578c0e15f55e44492586be68d27",
+    "/home/shangguanrz/nihaochen/qwen21_full/bfs_body_face_joint_pilot_20261008/evaluation/Qwen_final_tiktok/scores.json": "06e40b43a58b469f4d539f1c71fb75aed4aa14fbeef5cd68e35983f6eb1d59e8",
+    "/home/shangguanrz/nihaochen/qwen21_full/bfs_body_face_joint_pilot_20261008/evaluation/BFSBody_final_tiktok/config.json": "5e91c3d00b5d0b96ec7ad20d61c4e3b50b642b314066c80ee55735d9e0983d8f",
+    "/home/shangguanrz/nihaochen/qwen21_full/bfs_body_face_joint_pilot_20261008/evaluation/BFSBody_final_tiktok/scores.json": "8911bf7ad4917ebcae1d08c46dcb5758913f28a11033f46ab802ab70c74cb143",
+    "/home/shangguanrz/nihaochen/qwen21_full/bfs_body_face_joint_pilot_20261008/evaluation/BFSHead_final_tiktok/config.json": "9277a1142b346f29126e7b47c57c076e213b5a86c537589bf79980091c58ac48",
+    "/home/shangguanrz/nihaochen/qwen21_full/bfs_body_face_joint_pilot_20261008/evaluation/BFSHead_final_tiktok/scores.json": "6ba3494cc1e1c3659ec6f5de2557262659cd538af2d444c1f92a3ef1632b2ced",
+    "/home/shangguanrz/nihaochen/qwen21_full/bfs_body_face_joint_pilot_20261008/evaluation/BFH_final_tiktok/config.json": "4de6d797176b6a2590a6f383066ea83070aecb14d273141e028dd50bbdc99f8e",
+    "/home/shangguanrz/nihaochen/qwen21_full/bfs_body_face_joint_pilot_20261008/evaluation/BFH_final_tiktok/scores.json": "9ee42cd0b292229498f40aec78700c4207ef13e86e191a7307df411c598e4778",
+    "/home/shangguanrz/nihaochen/qwen21_full/native_value_audit_20261008/final_observations.json": "155c308491e1c0025316aa8fae672abc928ea1fe68f37995d7221ad8b113385c",
+    "/home/shangguanrz/nihaochen/qwen21_full/bfs_skeleton_direct_20261010/evaluation/observations.json": "7035e6cfa499b8c9cb4e3e9908747e9ea55762a71e0158b24692ea4897c72f0e",
+    "/home/shangguanrz/nihaochen/qwen21_full/bfs_rgb_direct_20261010/evaluation/observations.json": "866f7a64d9ee0f50adb251dedc0720fc31cfdf93c430e89e4c623b1b9bed7b4e",
+    "/home/shangguanrz/nihaochen/qwen21_full/hi4d_native_binding_20261010/evaluation/summary.json": "2a094cc20d27bc581b285a871ecf7343dc00d16d0008f13a6b1e54b281a312fa"
+  }
+}

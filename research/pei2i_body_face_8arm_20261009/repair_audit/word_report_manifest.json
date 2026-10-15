@@ -1,0 +1,1570 @@
+{
+  "schema": "pictureedit_word_stage_report_v1",
+  "snapshot": "2026年10月11日 16:59",
+  "docx": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\report\\PEI2I_BodyFace_实验报告_阶段版_20261011.docx",
+  "docx_sha256": "6aa4797c986acbfe13293ced8f74794c10f3073ef2248cb3d56603acb1bf024f",
+  "historical_generation_count": 81,
+  "formal_train_updates": 0,
+  "formal_completed_eval_jobs": 0,
+  "qa_v3_counts": {
+    "pg": 6,
+    "pb": 0,
+    "pbg": 0
+  },
+  "sources": [
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\report\\conditions.json",
+      "sha256": "77543ffa607ef48485ece39937452c3d1dbf182d234b64d5857234333f8d2115"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\report\\summary.json",
+      "sha256": "f8022fa325b446f5faedc6dabfc90798ce6753058547db9dd543d0e706fc5ca6"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\report\\history\\references.json",
+      "sha256": "bd2659b8fca857194de728dbc7d9030ca99f825c8d20ae4fd2bd742de23a8d7b"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\report\\development_qa8_v1\\records.json",
+      "sha256": "1e5a10a5ba13291cb17d0d1d75d50ce6820a051d69b1071072ce4a150b51b0fb"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\repair_audit\\word_inputs\\manifest.json",
+      "sha256": "e42768f0bd5f6f66f862e134534c61bde2e513a688512cd4318a55b521cb37f7"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\repair_audit\\qa8_v3_pg_current.jsonl",
+      "sha256": "898f84810c27578db1b3a833e5a3c240758fe0a36ca85044800344acb166becd"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\repair_audit\\measurement_cpu_smoke.json",
+      "sha256": "b7b87eb815a2e146bfa418af0f4615c2c551e8ee6fd7273eb1ec957f4baf98da"
+    }
+  ],
+  "embedded_images": [
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\repair_audit\\word_inputs\\val_0000032\\source_rgb.png",
+      "sha256": "efafbc62d2652867362a79bdc67b23d9f333047a64fc0df699ebadeb0f6b4b59",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "源图 A"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\repair_audit\\word_inputs\\val_0000032\\target_rgb.png",
+      "sha256": "3b5678f65a1545be365b5132c44439deefe4c02e46df6d4f8479ef27348a9c3f",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "目标 B"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\report\\history\\1ea613d347b6ff10e66a8b1e4ffb6504cb9e0cc7bea0f70a6f4de515a26bdeb0.png",
+      "sha256": "1ea613d347b6ff10e66a8b1e4ffb6504cb9e0cc7bea0f70a6f4de515a26bdeb0",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "J256"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\report\\history\\3b03bc1ce35e97775d080d6281c7ee0a54cc3cf988ef8a432a66177d47d6e2aa.png",
+      "sha256": "3b03bc1ce35e97775d080d6281c7ee0a54cc3cf988ef8a432a66177d47d6e2aa",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "Qwen +256"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\report\\history\\258861a5b4cf590646e7ab925a26f7c750a320724d90c565fa608d2c59426a8a.png",
+      "sha256": "258861a5b4cf590646e7ab925a26f7c750a320724d90c565fa608d2c59426a8a",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "Head热挂载"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\report\\history\\5f0be7207edf7c932c6846dc4c64245e6db81acf229146b4b62eab672645427f.png",
+      "sha256": "5f0be7207edf7c932c6846dc4c64245e6db81acf229146b4b62eab672645427f",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "Head +256"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\repair_audit\\word_inputs\\val_0000397\\source_rgb.png",
+      "sha256": "30c7a230d095154b58b8b6d364ad8ff1aaa5075345b0bca498f3aa8ac1a22a47",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "源图 A"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\repair_audit\\word_inputs\\val_0000397\\target_rgb.png",
+      "sha256": "9147869c8271fa33f71faaf165946e94fb77cba70f7eaaaf3e5c5a827d926d66",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "目标 B"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\report\\history\\78b9365dcce36d4f5310058f0a9c5c131eb0c2a5038ce5a1f670ebe18a6c892c.png",
+      "sha256": "78b9365dcce36d4f5310058f0a9c5c131eb0c2a5038ce5a1f670ebe18a6c892c",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "J256"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\report\\history\\24342fd9cba088929a235a3b234a3d5a68aff051077fff5ce0400eefbe0d9d0c.png",
+      "sha256": "24342fd9cba088929a235a3b234a3d5a68aff051077fff5ce0400eefbe0d9d0c",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "Qwen +256"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\report\\history\\eaa68dc0716f96e5f273f0b2a73378946b812a94ca198b898afe29b7e395e4d6.png",
+      "sha256": "eaa68dc0716f96e5f273f0b2a73378946b812a94ca198b898afe29b7e395e4d6",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "Head +256"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\repair_audit\\word_inputs\\val_0000116\\source_rgb.png",
+      "sha256": "7ea3a3b8b169ad1a01e99d4a2494d58c087d47b335bfa16d7ede1ae2815b1be7",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "源图 A"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\repair_audit\\word_inputs\\val_0000116\\target_rgb.png",
+      "sha256": "c2dbf7abf53333fad993a89734af6ded422e60d31465018c38e5ac3f99e60320",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "目标 B"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\report\\history\\a63da5d12276cc66427d18e0bd702c640beeee34fbd9aa61f402a724f853d7b5.png",
+      "sha256": "a63da5d12276cc66427d18e0bd702c640beeee34fbd9aa61f402a724f853d7b5",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "J256"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\report\\history\\92a8ad12abf0b8efdc5b799bbeb33380ec9b34dba7edea7b97cb5d496dcaf7a4.png",
+      "sha256": "92a8ad12abf0b8efdc5b799bbeb33380ec9b34dba7edea7b97cb5d496dcaf7a4",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "Qwen +256"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\report\\history\\1522df30a495dbe4da683bfe1f7181fc54ae51e0016c7899acdd882a8cc47839.png",
+      "sha256": "1522df30a495dbe4da683bfe1f7181fc54ae51e0016c7899acdd882a8cc47839",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "Head +256"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\repair_audit\\word_inputs\\val_0000389\\source_rgb.png",
+      "sha256": "681afbaffb7dc5d71ed96788ad203bb4df5fe649bed749e98e6c13e506510c82",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "源图 A"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\repair_audit\\word_inputs\\val_0000389\\target_rgb.png",
+      "sha256": "bfdf59e120f6f5f2d3e5a64628b8ab964b0c67d39d86862fb46cca32107b0017",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "目标 B"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\report\\history\\0846f85f575a7cd7aec806b5a0bf20fee286843cddf2d735de2e6cde601cdadb.png",
+      "sha256": "0846f85f575a7cd7aec806b5a0bf20fee286843cddf2d735de2e6cde601cdadb",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "J256"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\report\\history\\dfd06d379153abab01dbdf7c730da674315a17e5f330e133de10358d0ffb9848.png",
+      "sha256": "dfd06d379153abab01dbdf7c730da674315a17e5f330e133de10358d0ffb9848",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "Qwen +256"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\report\\history\\84861d043eb3046af8a15e05ba656bc22726b2f117b6761bbd934ce2c2a86294.png",
+      "sha256": "84861d043eb3046af8a15e05ba656bc22726b2f117b6761bbd934ce2c2a86294",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "Head +256"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\repair_audit\\word_inputs\\val_0000192\\source_rgb.png",
+      "sha256": "04e8f71204c986d5d46c381b97ac97d48fce68a9a0ac975dfb0d14b31c190833",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "源图 A"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\repair_audit\\word_inputs\\val_0000192\\target_rgb.png",
+      "sha256": "ae5327465d139209dd81dbd87ec5bae185b9163205244305c301b223fc917d5b",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "目标 B"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\report\\history\\e67833c4202e93c9173f3f97e6841e634955487b9497f0f0b4a1d365fa345f22.png",
+      "sha256": "e67833c4202e93c9173f3f97e6841e634955487b9497f0f0b4a1d365fa345f22",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "J256"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\report\\history\\8a97312d2278fb90dbb11d5cf791c08f5d8b53ceae6ae72e3ca825c41f330a2a.png",
+      "sha256": "8a97312d2278fb90dbb11d5cf791c08f5d8b53ceae6ae72e3ca825c41f330a2a",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "Qwen +256"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\report\\history\\c1d6578a32141ef3dc5aef10f02e37f13a0955cadacc750004559616a7e94e9c.png",
+      "sha256": "c1d6578a32141ef3dc5aef10f02e37f13a0955cadacc750004559616a7e94e9c",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "Head热挂载"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\report\\history\\bb15152cc3d0b332f1e3703807ed7574eb13da70e75e2ec72222f2a52c17bd78.png",
+      "sha256": "bb15152cc3d0b332f1e3703807ed7574eb13da70e75e2ec72222f2a52c17bd78",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "Head +256"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\repair_audit\\word_inputs\\val_0000012\\source_rgb.png",
+      "sha256": "9eb119f13141274a82e0fdb4eae3401813340e619eeb0da5114d6c69b2883099",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "源图 A"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\repair_audit\\word_inputs\\val_0000012\\target_rgb.png",
+      "sha256": "cd15a6ace70da278fd41510b71cd43cdda62d24a4f3d865a117acc885cb40d29",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "目标 B"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\report\\history\\6a28367ef9b6882a0914293b74d056a5a48dc90206eb616b044a1ac9106b89e3.png",
+      "sha256": "6a28367ef9b6882a0914293b74d056a5a48dc90206eb616b044a1ac9106b89e3",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "J256"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\report\\history\\4d35053d3f51008cb5eff50fa34d65543d1756264eedfb4520d8fd3dc53d38c9.png",
+      "sha256": "4d35053d3f51008cb5eff50fa34d65543d1756264eedfb4520d8fd3dc53d38c9",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "Qwen +256"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\report\\history\\028805fb08f5b990e7efe97143c22f70af41fa3b81e88ec9590ae6da451ae2e9.png",
+      "sha256": "028805fb08f5b990e7efe97143c22f70af41fa3b81e88ec9590ae6da451ae2e9",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "Head +256"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\repair_audit\\word_inputs\\val_0000037\\source_rgb.png",
+      "sha256": "dee28692f2117bde6c024a4f0df3770bc9d65b2bf86593864471604ed49fafd7",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "源图 A"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\repair_audit\\word_inputs\\val_0000037\\target_rgb.png",
+      "sha256": "8186ce968d9e960ee93d2774d965fbb0b19844a68272408cf40ad6fd2bc782d8",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "目标 B"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\report\\history\\1475d67bd53b15bece16d19471258a3b70eb3a2812a323177b78bf163847269c.png",
+      "sha256": "1475d67bd53b15bece16d19471258a3b70eb3a2812a323177b78bf163847269c",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "J256"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\report\\history\\3c85c4f67ee3f1162688adb40dd9ee1db8b74300bb27756c764e614804ed64ed.png",
+      "sha256": "3c85c4f67ee3f1162688adb40dd9ee1db8b74300bb27756c764e614804ed64ed",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "Qwen +256"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\report\\history\\dfe80ea1f82a7b5a28b78254c71eff9ed6ab89c61bcea4418bb50c19bd3c14f6.png",
+      "sha256": "dfe80ea1f82a7b5a28b78254c71eff9ed6ab89c61bcea4418bb50c19bd3c14f6",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "Head +256"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\repair_audit\\word_inputs\\val_0000175\\source_rgb.png",
+      "sha256": "a4385621263fc3cb4a8b9cbaf5fd60792242d2e2874a4fa08965bb2bf668a945",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "源图 A"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\repair_audit\\word_inputs\\val_0000175\\target_rgb.png",
+      "sha256": "4959eeea8ad5fff9680f8b41acf711a99327ec4eb89e8e1d3942223dafc2c2eb",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "目标 B"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\report\\history\\eb1024fdaa84aad81f2791942b5317b250e0d8847db4ae27ec90dcb4d9b21547.png",
+      "sha256": "eb1024fdaa84aad81f2791942b5317b250e0d8847db4ae27ec90dcb4d9b21547",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "J256"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\report\\history\\b0cb84fd52e8c2228c6c6a1e6f60c508a44c027d599ba4fbc95b17859f0a126d.png",
+      "sha256": "b0cb84fd52e8c2228c6c6a1e6f60c508a44c027d599ba4fbc95b17859f0a126d",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "Qwen +256"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\report\\history\\5b53c5edb46398827c4771d9115b7c14fc5c14e2437e72e91d16406ed3d4810f.png",
+      "sha256": "5b53c5edb46398827c4771d9115b7c14fc5c14e2437e72e91d16406ed3d4810f",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "Head热挂载"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\report\\history\\393cb97daf3141ef2b1d4ac471109f2060e3a298fd2246c8eb5de039c20276ac.png",
+      "sha256": "393cb97daf3141ef2b1d4ac471109f2060e3a298fd2246c8eb5de039c20276ac",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "Head +256"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\repair_audit\\word_inputs\\val_0000440\\source_rgb.png",
+      "sha256": "05e41f002ea8aac744070da504df312e9aba8942f9c43b087d198f40b78ef48a",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "源图 A"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\repair_audit\\word_inputs\\val_0000440\\target_rgb.png",
+      "sha256": "ae8143bf201bc552837ebe7d96ae85c216cd780a47d8d42af3ebfdccbb17b3a2",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "目标 B"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\report\\history\\0a66cb56de4d6a990fde5ac4a46d9e0c4032ad643f03db566dce5bbd06ae858b.png",
+      "sha256": "0a66cb56de4d6a990fde5ac4a46d9e0c4032ad643f03db566dce5bbd06ae858b",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "J256"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\report\\history\\21a5d1b523bae9864c63095045e6102d90648e56a5286cc332b2103711ee250d.png",
+      "sha256": "21a5d1b523bae9864c63095045e6102d90648e56a5286cc332b2103711ee250d",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "Qwen +256"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\report\\history\\7f76919796f24eb67387ad44d6a026be922b2eff682de84ffc703c1a50fd959d.png",
+      "sha256": "7f76919796f24eb67387ad44d6a026be922b2eff682de84ffc703c1a50fd959d",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "Head热挂载"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\report\\history\\3ebd6ec86fff07651d58a8b9dd31aaf98818170b0506b9830a1a54596b4e30a0.png",
+      "sha256": "3ebd6ec86fff07651d58a8b9dd31aaf98818170b0506b9830a1a54596b4e30a0",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "Head +256"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\repair_audit\\word_inputs\\val_0000666\\source_rgb.png",
+      "sha256": "a3f038a25c14da6494ea1f48d82638abfb1870171a2a15307b4361355e9d72aa",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "源图 A"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\repair_audit\\word_inputs\\val_0000666\\target_rgb.png",
+      "sha256": "b4b18b920f982468c26a4022b3dfbfed0bb1c62db68a3deeda4485f902c64747",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "目标 B"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\report\\history\\0583cb22742b9f773c8718419baf348d435e7d9c4b251fa59db15eff19cf90db.png",
+      "sha256": "0583cb22742b9f773c8718419baf348d435e7d9c4b251fa59db15eff19cf90db",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "J256"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\report\\history\\8c30143276e22c07c748c63b7472fa606ce2bd4bec85c105f072cadc27575a5e.png",
+      "sha256": "8c30143276e22c07c748c63b7472fa606ce2bd4bec85c105f072cadc27575a5e",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "Qwen +256"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\report\\history\\bf108726fd00ef4cc0493ab875a54548c0131c03e270066b92ec6bd7ead0758f.png",
+      "sha256": "bf108726fd00ef4cc0493ab875a54548c0131c03e270066b92ec6bd7ead0758f",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "Head +256"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\repair_audit\\word_inputs\\val_0000594\\source_rgb.png",
+      "sha256": "c411d0a7ae9268334b53d1f5616c8ccf6891391790641b5a0782b7f44b28032e",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "源图 A"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\repair_audit\\word_inputs\\val_0000594\\target_rgb.png",
+      "sha256": "5962bc0bcb633bf315eec41c01beedb63151c902f5b802f4e144e94a5c61082b",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "目标 B"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\report\\history\\151b85d1fb64f12d6a111669c490b8e2561c16df4c0b997c3b9323b7be72040f.png",
+      "sha256": "151b85d1fb64f12d6a111669c490b8e2561c16df4c0b997c3b9323b7be72040f",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "J256"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\report\\history\\2094433fdeb9bcd150233d76ce45df273ca1f73185ae1a6611df79a05f4126a3.png",
+      "sha256": "2094433fdeb9bcd150233d76ce45df273ca1f73185ae1a6611df79a05f4126a3",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "Qwen +256"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\report\\history\\b7df5c6b7d5fd9be9cb5e812969890da2ddc067917e14423a966fd6d8a28d8a6.png",
+      "sha256": "b7df5c6b7d5fd9be9cb5e812969890da2ddc067917e14423a966fd6d8a28d8a6",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "Head +256"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\repair_audit\\word_inputs\\val_0000531\\source_rgb.png",
+      "sha256": "1911616a4c6302ff22115625f0783b66479535865a176a4ca21736c3d4bccc19",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "源图 A"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\repair_audit\\word_inputs\\val_0000531\\target_rgb.png",
+      "sha256": "193a3d3a4a958e42c653b36001de2e51a4a5518f947042486bb2954cbd760bba",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "目标 B"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\report\\history\\9222968e60bc644c4692db489f61f5b1cc2422dba45420d24063948e3c48e38b.png",
+      "sha256": "9222968e60bc644c4692db489f61f5b1cc2422dba45420d24063948e3c48e38b",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "J256"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\report\\history\\ec1cc08807e2833ddbfb2b4926bc9aa7ca18495c133803e6e09fe1e913793734.png",
+      "sha256": "ec1cc08807e2833ddbfb2b4926bc9aa7ca18495c133803e6e09fe1e913793734",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "Qwen +256"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\report\\history\\a7ec4c0289417333150dc89199af92a192f999740ee895d37b98470649bdc356.png",
+      "sha256": "a7ec4c0289417333150dc89199af92a192f999740ee895d37b98470649bdc356",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "Head +256"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\repair_audit\\word_inputs\\val_0000632\\source_rgb.png",
+      "sha256": "35a0afa8d8bf83e025b4833f27ac5aa5f29e0c5caa22beb2fe1e737dc38ec789",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "源图 A"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\repair_audit\\word_inputs\\val_0000632\\target_rgb.png",
+      "sha256": "34b00778455f50f28118a0875f9a51af855e5d7123afd5db6fd8c4b7f8a52cb8",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "目标 B"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\report\\history\\69db54f23cf3fb64daae0f1ba836d540eaa0e7549b3ad23d6286a6d41148daa8.png",
+      "sha256": "69db54f23cf3fb64daae0f1ba836d540eaa0e7549b3ad23d6286a6d41148daa8",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "J256"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\report\\history\\276433559d650a50418fb8b37972e1ed8e5f25b1b2cae9425bb3bb649c36700f.png",
+      "sha256": "276433559d650a50418fb8b37972e1ed8e5f25b1b2cae9425bb3bb649c36700f",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "Qwen +256"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\report\\history\\b8155328a4b684f8dfdf663fd980d03ab10b60a94a81c7e883c338aef7714251.png",
+      "sha256": "b8155328a4b684f8dfdf663fd980d03ab10b60a94a81c7e883c338aef7714251",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "Head +256"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\repair_audit\\word_inputs\\val_0000816\\source_rgb.png",
+      "sha256": "141fc53bcd221be0d4ef14738742a57c6c3febd6bc1daff52b837403fc61f173",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "源图 A"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\repair_audit\\word_inputs\\val_0000816\\target_rgb.png",
+      "sha256": "4ff6781e121f0a97b1ed383e1785ffe105913bcc07a6760366c0a5cf94546f87",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "目标 B"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\report\\history\\f95e31ef0cf92b3c151578ef41bdf570cb5f1fc4783aa83ae75f29c73204fe5c.png",
+      "sha256": "f95e31ef0cf92b3c151578ef41bdf570cb5f1fc4783aa83ae75f29c73204fe5c",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "J256"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\report\\history\\e484b6e961e7634d382ddedf0c35c62a9ba0d805939e610dff999a405b5d4103.png",
+      "sha256": "e484b6e961e7634d382ddedf0c35c62a9ba0d805939e610dff999a405b5d4103",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "Qwen +256"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\report\\history\\8d85271716227d61bea767e6ec01faf3a8a20edb06a1451cba20fd91c2ff8280.png",
+      "sha256": "8d85271716227d61bea767e6ec01faf3a8a20edb06a1451cba20fd91c2ff8280",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "Head热挂载"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\report\\history\\311ab1b79232c3a87e4a1f7cd8bd8cbb374a8f1df0b1396b7ef77839ea9b4c00.png",
+      "sha256": "311ab1b79232c3a87e4a1f7cd8bd8cbb374a8f1df0b1396b7ef77839ea9b4c00",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "Head +256"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\repair_audit\\word_inputs\\val_0000761\\source_rgb.png",
+      "sha256": "e563c8c389d5e79dab1479e43678dc49bf07fc5c752db0be962f75f9f57ce1a8",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "源图 A"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\repair_audit\\word_inputs\\val_0000761\\target_rgb.png",
+      "sha256": "328450d0e59e0680ef862717033ca4763221351224a3a472513468972950c129",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "目标 B"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\report\\history\\d5a239e86d5b8f2d7c8f9fc96acc198af53f48b1c8088affe75a920531bbc771.png",
+      "sha256": "d5a239e86d5b8f2d7c8f9fc96acc198af53f48b1c8088affe75a920531bbc771",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "J256"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\report\\history\\f7abf47effce240244834fe1ea4023ce99d66609df5d1024c9554365bcd40e13.png",
+      "sha256": "f7abf47effce240244834fe1ea4023ce99d66609df5d1024c9554365bcd40e13",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "Qwen +256"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\report\\history\\55eed7bd6440366e59b06d784f698df8b8a4de362c745471904e7fad29e28aee.png",
+      "sha256": "55eed7bd6440366e59b06d784f698df8b8a4de362c745471904e7fad29e28aee",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "Head热挂载"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\report\\history\\717fdcb5225f96c91b38bd1d0306a9fbd8e3b8a2660c3acf85388493619e7fd0.png",
+      "sha256": "717fdcb5225f96c91b38bd1d0306a9fbd8e3b8a2660c3acf85388493619e7fd0",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "Head +256"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\repair_audit\\word_inputs\\val_0000499\\source_rgb.png",
+      "sha256": "c67cc1c8cdf63d1033e749e7e391779839b69f20760a5e308de17e5c438c309e",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "源图 A"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\repair_audit\\word_inputs\\val_0000499\\target_rgb.png",
+      "sha256": "d7c8b290a91d2362ace02827d66d255b1ee959a49d166c7a088ab25d89a5ada5",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "目标 B"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\report\\history\\ece2d449ef188eaf8b6014c26f57cc57cc84eb76ee66c7e4b01a377a4dfa5f49.png",
+      "sha256": "ece2d449ef188eaf8b6014c26f57cc57cc84eb76ee66c7e4b01a377a4dfa5f49",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "J256"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\report\\history\\14f19da5f0cd56ab0f3171dbb67582ef75a8ddeb63c98126e6780c720cac612c.png",
+      "sha256": "14f19da5f0cd56ab0f3171dbb67582ef75a8ddeb63c98126e6780c720cac612c",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "Qwen +256"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\report\\history\\7ef4305a4b59f9981f7b4e8da6f64ed3bd4209e38c865228f7d20ba712987712.png",
+      "sha256": "7ef4305a4b59f9981f7b4e8da6f64ed3bd4209e38c865228f7d20ba712987712",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "Head +256"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\repair_audit\\word_inputs\\val_0000896\\source_rgb.png",
+      "sha256": "9b277d2fead60185030ec404da45a633478d65c51fd799cb31e1e90dbda77f5b",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "源图 A"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\repair_audit\\word_inputs\\val_0000896\\target_rgb.png",
+      "sha256": "28a1648c7b24f048135286b64a42074b1e5eb16464d7715a815703720efef7e1",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "目标 B"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\report\\history\\c758a2e66e09bed77957986abf903d430ea9b8e968e61f379052d018cda4977a.png",
+      "sha256": "c758a2e66e09bed77957986abf903d430ea9b8e968e61f379052d018cda4977a",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "J256"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\report\\history\\99252897bee2cbadf58f92f424ef8635aff3263e5a1c3d14a1bab4fd16d7b2a4.png",
+      "sha256": "99252897bee2cbadf58f92f424ef8635aff3263e5a1c3d14a1bab4fd16d7b2a4",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "Qwen +256"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\report\\history\\7e35e06bc83323d93b6c30496543541f529132fc57414074c16bb83d036e7a44.png",
+      "sha256": "7e35e06bc83323d93b6c30496543541f529132fc57414074c16bb83d036e7a44",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "Head热挂载"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\report\\history\\274ca14b6b4f7c0efa2df1240b9585bbaf721b323e0ad7628423b2b8b81c533d.png",
+      "sha256": "274ca14b6b4f7c0efa2df1240b9585bbaf721b323e0ad7628423b2b8b81c533d",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "Head +256"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\repair_audit\\word_inputs\\val_0001022\\source_rgb.png",
+      "sha256": "f898937cbe3487d70784b79b2d8fdbefd0859776a39ad2c5f06335278c0dde08",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "源图 A"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\repair_audit\\word_inputs\\val_0001022\\target_rgb.png",
+      "sha256": "da7bd3555be6294ed6bac641bf245dc58d11de8b7153592da965c837c97f9d93",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "目标 B"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\report\\history\\a28db99f769b76f74550abc29f69fd9ea28e778553797ebd22678cc3230000ef.png",
+      "sha256": "a28db99f769b76f74550abc29f69fd9ea28e778553797ebd22678cc3230000ef",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "J256"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\report\\history\\890e2f10ea2d121b4e7004160984c63af9c62a1ae787095dae362a33c0d69f4d.png",
+      "sha256": "890e2f10ea2d121b4e7004160984c63af9c62a1ae787095dae362a33c0d69f4d",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "Qwen +256"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\report\\history\\2355b877d2890605d6f19b5cc95ef3e0dd3ff385d9950ec34755578b6509a6f0.png",
+      "sha256": "2355b877d2890605d6f19b5cc95ef3e0dd3ff385d9950ec34755578b6509a6f0",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "Head +256"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\repair_audit\\word_inputs\\val_0000868\\source_rgb.png",
+      "sha256": "484410443a5abcf8ed362144d86e54056b2aa7439f5f049fba2b16e194193ea9",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "源图 A"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\repair_audit\\word_inputs\\val_0000868\\target_rgb.png",
+      "sha256": "6f30fd840bc4b77401f69b841d69b0a15022ee84dec53961a790155766db0add",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "目标 B"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\report\\history\\0c6763662275de545b67f12d20a0de89db0db6678e8340d5dcdd5ff3b571e979.png",
+      "sha256": "0c6763662275de545b67f12d20a0de89db0db6678e8340d5dcdd5ff3b571e979",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "J256"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\report\\history\\9d1c764b43741121b2ecf275e022fbfb571990b6aeb6b1c0ec18b5e84591ec3d.png",
+      "sha256": "9d1c764b43741121b2ecf275e022fbfb571990b6aeb6b1c0ec18b5e84591ec3d",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "Qwen +256"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\report\\history\\a2976ab07e5598269d321fef6bd595021a306ccddc32616d46f1034752cdd835.png",
+      "sha256": "a2976ab07e5598269d321fef6bd595021a306ccddc32616d46f1034752cdd835",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "Head +256"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\repair_audit\\word_inputs\\val_0000974\\source_rgb.png",
+      "sha256": "6d83bb1ebdcc884fc40558e6f2451fc544c8b5dedfd3bd2269e8abfded8e863c",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "源图 A"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\repair_audit\\word_inputs\\val_0000974\\target_rgb.png",
+      "sha256": "063a0ce993762b0a7790b24814a57df46acc395034973d6a0d8354e972a5b951",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "目标 B"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\report\\history\\785c53282487330234bacd42d408c441879b992d7150bdb5fdd1f1b34bfed64a.png",
+      "sha256": "785c53282487330234bacd42d408c441879b992d7150bdb5fdd1f1b34bfed64a",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "J256"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\report\\history\\ace620e673ea59a9d41e0d092bce76374da0bb0ce2a98656993bb0744d7a281b.png",
+      "sha256": "ace620e673ea59a9d41e0d092bce76374da0bb0ce2a98656993bb0744d7a281b",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "Qwen +256"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\report\\history\\37d7934e9e7a022792a146472d5d0342cf873ff8d2ecc12a82bb305dabb768b0.png",
+      "sha256": "37d7934e9e7a022792a146472d5d0342cf873ff8d2ecc12a82bb305dabb768b0",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "Head热挂载"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\report\\history\\1d95e1c52ede4fb79acbcde3044fce3333ef24ca56218939b81dcc1327f69eee.png",
+      "sha256": "1d95e1c52ede4fb79acbcde3044fce3333ef24ca56218939b81dcc1327f69eee",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "Head +256"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\repair_audit\\word_inputs\\val_0001112\\source_rgb.png",
+      "sha256": "79494889aa2dee138d4a62410f14932c28542b9d19454d6cbb9f11ee15bc4edb",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "源图 A"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\repair_audit\\word_inputs\\val_0001112\\target_rgb.png",
+      "sha256": "e0c00ff0de6ca4c61f38e5bf0f9d0c40fd778aa92a9e8ab2e00319d39bd8591f",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "目标 B"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\report\\history\\e990d59211676dd568d1c9356c2b642bfc8bba3813969671478c10273b8c2ff7.png",
+      "sha256": "e990d59211676dd568d1c9356c2b642bfc8bba3813969671478c10273b8c2ff7",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "J256"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\report\\history\\ad7b0dc4ac6cc1b3f83caa5c3fef9136a88979d4c61b0f5b49b48e86daa75fcc.png",
+      "sha256": "ad7b0dc4ac6cc1b3f83caa5c3fef9136a88979d4c61b0f5b49b48e86daa75fcc",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "Qwen +256"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\report\\history\\81dcc80554a16098947852382e9b33c1c867788e71db8e4e72a870301f48dc8d.png",
+      "sha256": "81dcc80554a16098947852382e9b33c1c867788e71db8e4e72a870301f48dc8d",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "Head +256"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\repair_audit\\word_inputs\\val_0000941\\source_rgb.png",
+      "sha256": "08a837c939b88b2641afc8468cdda01c18f070dab3e141c2847fb799342a2c0c",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "源图 A"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\repair_audit\\word_inputs\\val_0000941\\target_rgb.png",
+      "sha256": "7ddba0f9bc29a9a3389e84889a4ca4494a29b51c833709239092cb3cbe2ba8c7",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "目标 B"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\report\\history\\0ea048e2af49008cb904d9ecd34ffd3f20fd0009b6a6a6dec8d4be1db3e33b7e.png",
+      "sha256": "0ea048e2af49008cb904d9ecd34ffd3f20fd0009b6a6a6dec8d4be1db3e33b7e",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "J256"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\report\\history\\cc4bcec4859a0288911fba42a61d688ba3b0db3564df671d4e2d3849f282dde3.png",
+      "sha256": "cc4bcec4859a0288911fba42a61d688ba3b0db3564df671d4e2d3849f282dde3",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "Qwen +256"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\report\\history\\c2ac10e8a1d29714fc0531013929606c61dcdae3cfa219114cf25b82780de47f.png",
+      "sha256": "c2ac10e8a1d29714fc0531013929606c61dcdae3cfa219114cf25b82780de47f",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "Head +256"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\repair_audit\\word_inputs\\val_0000929\\source_rgb.png",
+      "sha256": "9b277d2fead60185030ec404da45a633478d65c51fd799cb31e1e90dbda77f5b",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "源图 A"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\repair_audit\\word_inputs\\val_0000929\\target_rgb.png",
+      "sha256": "77e5e91d6912c60affb372a18e2ee129043ed18195443fb19531864a5a40af69",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "目标 B"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\report\\history\\96a3466876fa8240ece05d2f3f46672026e2ea3646f372809f7882b8c1674fd8.png",
+      "sha256": "96a3466876fa8240ece05d2f3f46672026e2ea3646f372809f7882b8c1674fd8",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "J256"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\report\\history\\abe2afa6da1f91f8993e3071ac19e981de78d8e16eb0eb5b3ca3d51632989c7c.png",
+      "sha256": "abe2afa6da1f91f8993e3071ac19e981de78d8e16eb0eb5b3ca3d51632989c7c",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "Qwen +256"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\report\\history\\8cb0cac582125de35a674ea2575af9a74b867d99a57baf737d9aed675d52230b.png",
+      "sha256": "8cb0cac582125de35a674ea2575af9a74b867d99a57baf737d9aed675d52230b",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "Head热挂载"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\report\\history\\91a27a6b21635fcf0cc68c673488c4f4e81318a7ed217abb492cd8dbbe8c69eb.png",
+      "sha256": "91a27a6b21635fcf0cc68c673488c4f4e81318a7ed217abb492cd8dbbe8c69eb",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "Head +256"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\repair_audit\\word_inputs\\val_0000990\\source_rgb.png",
+      "sha256": "e262d1858cfd64c8cf2a72df7c6dde3efb4bd259c5271ea1203297f2e66f5183",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "源图 A"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\repair_audit\\word_inputs\\val_0000990\\target_rgb.png",
+      "sha256": "4940ba5dbd8bd4f550ce83629fc4315427d428235a7575c02bbbc86fb2945b86",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "目标 B"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\report\\history\\831a4d5aadcf96e8501456a630e6815a2028a886f7eb4b510310bc4bdc831ca9.png",
+      "sha256": "831a4d5aadcf96e8501456a630e6815a2028a886f7eb4b510310bc4bdc831ca9",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "J256"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\report\\history\\7515411ebd245e80f302503b082cc6865f7cb112d164458d74d2c062c1110f54.png",
+      "sha256": "7515411ebd245e80f302503b082cc6865f7cb112d164458d74d2c062c1110f54",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "Qwen +256"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\report\\history\\773335070578732fca9167d24290a1be512d81b71c77707b36fc6733825b4ed4.png",
+      "sha256": "773335070578732fca9167d24290a1be512d81b71c77707b36fc6733825b4ed4",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "Head +256"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\report\\development_qa8_v1\\assets\\986c165f5831c50686ba70017c9d8869253491f4ae1d6b55e93c06f7b410d287.png",
+      "sha256": "986c165f5831c50686ba70017c9d8869253491f4ae1d6b55e93c06f7b410d287",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "源图 A"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\report\\development_qa8_v1\\assets\\ab9f120626fe704092beb2eeecad2a13057538d41cc104bdf811ff8257113ff8.png",
+      "sha256": "ab9f120626fe704092beb2eeecad2a13057538d41cc104bdf811ff8257113ff8",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "目标 B"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\report\\development_qa8_v1\\assets\\09c237ff9ab595539aae96d796d238c18617810943905d697ed936391d3dedd2.png",
+      "sha256": "09c237ff9ab595539aae96d796d238c18617810943905d697ed936391d3dedd2",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "B depth"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\report\\development_qa8_v1\\assets\\f7e7fd6b31aaa3393bbe96519b6906ab61eeb63c99c8f21518b2140c82f89f10.png",
+      "sha256": "f7e7fd6b31aaa3393bbe96519b6906ab61eeb63c99c8f21518b2140c82f89f10",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "B normal"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\report\\development_qa8_v1\\assets\\228b37f2ba00118ebfb1260d0017d532537b6a9281b8b0667a1dec7afeb5708b.png",
+      "sha256": "228b37f2ba00118ebfb1260d0017d532537b6a9281b8b0667a1dec7afeb5708b",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "B DWPose"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\report\\development_qa8_v1\\assets\\7db4899864845524977e89b63dbb32cbddf35514365a0bb9c424dcf6e417d01e.png",
+      "sha256": "7db4899864845524977e89b63dbb32cbddf35514365a0bb9c424dcf6e417d01e",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "源图 A"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\report\\development_qa8_v1\\assets\\f3eccfc162f3984855b3b23d58931eca65d0089512f9886c1132600f4dc2bbde.png",
+      "sha256": "f3eccfc162f3984855b3b23d58931eca65d0089512f9886c1132600f4dc2bbde",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "目标 B"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\report\\development_qa8_v1\\assets\\f6f591b41aadd57bff8feccd396189f9396d2a5985c9c302b89f803e19fb8ec3.png",
+      "sha256": "f6f591b41aadd57bff8feccd396189f9396d2a5985c9c302b89f803e19fb8ec3",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "B depth"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\report\\development_qa8_v1\\assets\\21c5d87c3fec26b4191d001395ceb6129a2c7ff66721e03ca55e8e5ee4f37476.png",
+      "sha256": "21c5d87c3fec26b4191d001395ceb6129a2c7ff66721e03ca55e8e5ee4f37476",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "B normal"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\report\\development_qa8_v1\\assets\\de2cbef89e270901fdf9bb8d5812440d84adb4bef31031683b9306507f888778.png",
+      "sha256": "de2cbef89e270901fdf9bb8d5812440d84adb4bef31031683b9306507f888778",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "B DWPose"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\report\\development_qa8_v1\\assets\\b6274dff1ac61ff6033750cdb6170d7bd60b69505c9e9fdecc0f7e02cb47a338.png",
+      "sha256": "b6274dff1ac61ff6033750cdb6170d7bd60b69505c9e9fdecc0f7e02cb47a338",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "源图 A"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\report\\development_qa8_v1\\assets\\a557693ed1391683bbe5b0e181279676817bbaf925fc916ed3b185153e28d82e.png",
+      "sha256": "a557693ed1391683bbe5b0e181279676817bbaf925fc916ed3b185153e28d82e",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "目标 B"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\report\\development_qa8_v1\\assets\\7037f8ac9322300c78accc7a6797e8b14cd96861d780bd35be8e18ef5f43d1fb.png",
+      "sha256": "7037f8ac9322300c78accc7a6797e8b14cd96861d780bd35be8e18ef5f43d1fb",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "B depth"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\report\\development_qa8_v1\\assets\\13083338e6b5160329282679c841e798445918e184cdc5e6932e3d967f1c6254.png",
+      "sha256": "13083338e6b5160329282679c841e798445918e184cdc5e6932e3d967f1c6254",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "B normal"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\report\\development_qa8_v1\\assets\\e0cecb8f30f9b43528b685c6076f4716f9feeccd73cdbefd9091272dd0d029d9.png",
+      "sha256": "e0cecb8f30f9b43528b685c6076f4716f9feeccd73cdbefd9091272dd0d029d9",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "B DWPose"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\report\\development_qa8_v1\\assets\\1f3a6def13634c4b08999417b0c3ac1df7fb241d2ccf25cc8a2ae82e5493a231.png",
+      "sha256": "1f3a6def13634c4b08999417b0c3ac1df7fb241d2ccf25cc8a2ae82e5493a231",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "源图 A"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\report\\development_qa8_v1\\assets\\2b0ec88974ce074a9f370ef7c59258d571892dac79dae8b045d7036dca886874.png",
+      "sha256": "2b0ec88974ce074a9f370ef7c59258d571892dac79dae8b045d7036dca886874",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "目标 B"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\report\\development_qa8_v1\\assets\\aefa05b8ca11b21960ecb1cd06bbc439f5d0316141284ec1cb3efc2eca23a3a8.png",
+      "sha256": "aefa05b8ca11b21960ecb1cd06bbc439f5d0316141284ec1cb3efc2eca23a3a8",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "B depth"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\report\\development_qa8_v1\\assets\\d2e27de724a9e77753d9b6c924aae660c28bbfa2bf29bd25ab6d316c45fb1569.png",
+      "sha256": "d2e27de724a9e77753d9b6c924aae660c28bbfa2bf29bd25ab6d316c45fb1569",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "B normal"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\report\\development_qa8_v1\\assets\\7442c578277607756df05e1958f8729528403b5a1e6a3ef28e6158589dda90ec.png",
+      "sha256": "7442c578277607756df05e1958f8729528403b5a1e6a3ef28e6158589dda90ec",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "B DWPose"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\report\\development_qa8_v1\\assets\\eb13600887cc62b3fe6014a24ebc81f873d6e09d90f71b2b5f713c7ca8948013.png",
+      "sha256": "eb13600887cc62b3fe6014a24ebc81f873d6e09d90f71b2b5f713c7ca8948013",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "源图 A"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\report\\development_qa8_v1\\assets\\27dc659a55201e90291756cf9f24b42e07c5f337dbefc54fc7630cfe03075115.png",
+      "sha256": "27dc659a55201e90291756cf9f24b42e07c5f337dbefc54fc7630cfe03075115",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "目标 B"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\report\\development_qa8_v1\\assets\\c43099704118f13bc65a9eacfee48f57da132bb16a25afe3b537941adaa35fcc.png",
+      "sha256": "c43099704118f13bc65a9eacfee48f57da132bb16a25afe3b537941adaa35fcc",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "B depth"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\report\\development_qa8_v1\\assets\\fcaa03fb9892e2468e6dbfe0c0feb6c2a28966615b409b23a91603368023b847.png",
+      "sha256": "fcaa03fb9892e2468e6dbfe0c0feb6c2a28966615b409b23a91603368023b847",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "B normal"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\report\\development_qa8_v1\\assets\\ceb98ede48a82558870c10b88bd9c95dec51d8c56ca6aad0c71f7418c732b6c6.png",
+      "sha256": "ceb98ede48a82558870c10b88bd9c95dec51d8c56ca6aad0c71f7418c732b6c6",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "B DWPose"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\report\\development_qa8_v1\\assets\\7355da40a01660f886b79459eae227cca52c2ceb0baf41460752224dbace70ea.png",
+      "sha256": "7355da40a01660f886b79459eae227cca52c2ceb0baf41460752224dbace70ea",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "源图 A"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\report\\development_qa8_v1\\assets\\b51fde984dc0154860a70571074ef1697fdca7c0fa1fe92ba3d8cf39d4603d0d.png",
+      "sha256": "b51fde984dc0154860a70571074ef1697fdca7c0fa1fe92ba3d8cf39d4603d0d",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "目标 B"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\report\\development_qa8_v1\\assets\\42cd310463b1fbb1137630b044bb30dc6c5e4a9aa1b3b341be163882acb9d955.png",
+      "sha256": "42cd310463b1fbb1137630b044bb30dc6c5e4a9aa1b3b341be163882acb9d955",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "B depth"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\report\\development_qa8_v1\\assets\\c73e90d223b3c95f9defbf8a9ed4aa2a299bc5d703b0989a96eeb9579fe7e595.png",
+      "sha256": "c73e90d223b3c95f9defbf8a9ed4aa2a299bc5d703b0989a96eeb9579fe7e595",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "B normal"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\report\\development_qa8_v1\\assets\\ff4eee39e5091313e466ffceef257daddc94164901457fc89bc8eebb3250e715.png",
+      "sha256": "ff4eee39e5091313e466ffceef257daddc94164901457fc89bc8eebb3250e715",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "B DWPose"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\report\\development_qa8_v1\\assets\\cff8a41d719a034031f4a895cf00f87ad7154fd9b7c8603838b13a1d22f4344e.png",
+      "sha256": "cff8a41d719a034031f4a895cf00f87ad7154fd9b7c8603838b13a1d22f4344e",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "源图 A"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\report\\development_qa8_v1\\assets\\e5d26df841af68ff0d2b6689733cb3661a4766df11947ab1280d3dfd563f5b5a.png",
+      "sha256": "e5d26df841af68ff0d2b6689733cb3661a4766df11947ab1280d3dfd563f5b5a",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "目标 B"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\report\\development_qa8_v1\\assets\\a43df9071bfa0e931f0cd2b743b77d19bafc1def878b0095ba585f98638975a1.png",
+      "sha256": "a43df9071bfa0e931f0cd2b743b77d19bafc1def878b0095ba585f98638975a1",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "B depth"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\report\\development_qa8_v1\\assets\\1914d28e21d2d55663367b50efeea50eccc7edf2cccadbc4da7dd4bc0bd501f2.png",
+      "sha256": "1914d28e21d2d55663367b50efeea50eccc7edf2cccadbc4da7dd4bc0bd501f2",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "B normal"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\report\\development_qa8_v1\\assets\\b09d563bbe817f1e6d141f380b465f5cf07861834af0ff0d09199ebf383da8e6.png",
+      "sha256": "b09d563bbe817f1e6d141f380b465f5cf07861834af0ff0d09199ebf383da8e6",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "B DWPose"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\report\\development_qa8_v1\\assets\\d96a258436efc84984ea884afd6cdc05de0ce0e324de0b971745e3bacdd47042.png",
+      "sha256": "d96a258436efc84984ea884afd6cdc05de0ce0e324de0b971745e3bacdd47042",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "源图 A"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\report\\development_qa8_v1\\assets\\e9209431f557163615c380d95b0fac7dea436872d7b9a77df2d16f9c3d2f12fb.png",
+      "sha256": "e9209431f557163615c380d95b0fac7dea436872d7b9a77df2d16f9c3d2f12fb",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "目标 B"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\report\\development_qa8_v1\\assets\\bd141b99a709b48706635b2c0356275d5f7096a39183186ee318ae8d869073b9.png",
+      "sha256": "bd141b99a709b48706635b2c0356275d5f7096a39183186ee318ae8d869073b9",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "B depth"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\report\\development_qa8_v1\\assets\\af4b4cc4898f72eb1cd57629dc0ae64408b2dae9ab08ac2da462a7b61f448094.png",
+      "sha256": "af4b4cc4898f72eb1cd57629dc0ae64408b2dae9ab08ac2da462a7b61f448094",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "B normal"
+    },
+    {
+      "path": "D:\\codeplus\\pictureedit\\research\\pei2i_body_face_8arm_20261009\\report\\development_qa8_v1\\assets\\4ec5b9c537bd2c9d47c2fff451dc9a940a607b3d287ded366ad4d22bbcf3c968.png",
+      "sha256": "4ec5b9c537bd2c9d47c2fff451dc9a940a607b3d287ded366ad4d22bbcf3c968",
+      "size": [
+        604,
+        1080
+      ],
+      "alt": "B DWPose"
+    }
+  ],
+  "page_count": 26,
+  "visual_review_passed": true,
+  "visual_review_sha256": "bad445deed0d65477b12c5f70548a38eb006324082eccdd8129345ac76bdf014"
+}

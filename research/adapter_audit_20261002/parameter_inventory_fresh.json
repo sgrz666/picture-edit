@@ -1,0 +1,46 @@
+{
+  "total_adapter_parameters": 373099568,
+  "legacy_parameters": 316466160,
+  "new_bridge_parameters": 56633408,
+  "body_selected": {
+    "count": 201357754,
+    "interaction_parameter_count": 0,
+    "hand_parameter_count": 0,
+    "detail_parameter_count": 0
+  },
+  "face_selected": {
+    "count": 49244374,
+    "interaction_parameter_count": 0,
+    "hand_parameter_count": 0,
+    "detail_parameter_count": 0
+  },
+  "checkpoint": {
+    "model_revision": "790c92633540aa0cb11d9abf19eb46d861714758",
+    "architecture": "qwen21_full_v1",
+    "step": 100,
+    "resolution": 512,
+    "branch": "face"
+  },
+  "heads_in_delivered_checkpoint": {
+    "geometry": {
+      "tensor_count": 12,
+      "nonzero_elements": 14164992
+    },
+    "interaction": {
+      "tensor_count": 12,
+      "nonzero_elements": 0
+    },
+    "detail": {
+      "tensor_count": 12,
+      "nonzero_elements": 0
+    },
+    "face": {
+      "tensor_count": 12,
+      "nonzero_elements": 4727808
+    },
+    "hand": {
+      "tensor_count": 12,
+      "nonzero_elements": 0
+    }
+  }
+}

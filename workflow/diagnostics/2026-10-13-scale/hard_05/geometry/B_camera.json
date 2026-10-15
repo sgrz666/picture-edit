@@ -1,0 +1,82 @@
+{
+  "focal_xy": [
+    22053.939453125,
+    22053.939453125
+  ],
+  "principal_xy": [
+    470.7449951171875,
+    831.0595092773438
+  ],
+  "B_size": [
+    968,
+    1280
+  ],
+  "generation_canvas": [
+    640,
+    928
+  ],
+  "B_to_generation": {
+    "scale": 0.40951370520263985,
+    "offset_xy": [
+      69.08835190278762,
+      181.21224095434167
+    ]
+  },
+  "source_letterbox": {
+    "original_size": [
+      896,
+      1280
+    ],
+    "canvas_size": [
+      640,
+      928
+    ],
+    "resized_size": [
+      640,
+      914
+    ],
+    "scale_xy": [
+      0.7142857142857143,
+      0.7140625
+    ],
+    "offset_xy": [
+      0,
+      7
+    ],
+    "content_box": [
+      0,
+      7,
+      640,
+      921
+    ]
+  },
+  "coordinate_system": "camera XYZ; pixels x-right y-down; projection uses Z+1e-4",
+  "detections": {
+    "A": {
+      "bbox_xyxy": [
+        164.1243896484375,
+        204.040771484375,
+        569.0473022460938,
+        1237.785400390625
+      ],
+      "score": 0.945350170135498
+    },
+    "B": {
+      "bbox_xyxy": [
+        117.562255859375,
+        428.3662109375,
+        823.840576171875,
+        1234.8980712890625
+      ],
+      "score": 0.7949548363685608
+    }
+  },
+  "mesh_max_error_m": 3.814697265625e-06,
+  "projection_max_error_px": 0.00015867536399127857,
+  "valid_B_joints": 134,
+  "visibility_policy": "finite positive depth and in-frame only; not an occlusion confidence",
+  "estimated_hidden_joints": true,
+  "native_estimator_input": "/home/shangguanrz/project/pic-edit/workflow/runs/hard_05/geometry/estimator/workflow_88f27b4b59584468/demo/input_frames/workflow_88f27b4b59584468/000001.jpg",
+  "native_estimator_params": "/home/shangguanrz/project/pic-edit/workflow/runs/hard_05/geometry/estimator/workflow_88f27b4b59584468/demo/output_frames/workflow_88f27b4b59584468/workflow_88f27b4b59584468_params.pt",
+  "estimator_root": "/home/shangguanrz/project/pic-edit/workflow/runs/hard_05/geometry/estimator/workflow_88f27b4b59584468"
+}

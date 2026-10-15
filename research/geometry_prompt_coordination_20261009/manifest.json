@@ -1,0 +1,159 @@
+{
+  "scope": "prompt rewriting only; no diffusion image generation or Adapter training",
+  "model": "/data/shangguanrz/pic-edit-models/Qwen-Image-2.1-PE-I2I",
+  "system_prompt_sha256": "e378fea686a1431581ba4c654d332ae96adad633f144ae738ec8ce9c4fd66439",
+  "thinking": true,
+  "seed": 42,
+  "sampling": {
+    "max_new_tokens": 24000,
+    "do_sample": true,
+    "temperature": 1.0,
+    "top_p": 0.95,
+    "top_k": 20
+  },
+  "source_images_resized_by_probe": false,
+  "target_B_rgb_given_to_model": false,
+  "comparison_caption_given_to_model": false,
+  "cases": [
+    {
+      "case_id": "tiktok_03",
+      "mode": "skeleton",
+      "instruction": "Edit only the posture and head orientation of the existing person in <image1>. <image1> is the source photograph and the sole source of identity, hairstyle, clothing, accessories and background. <image2> is a target keypoint skeleton guide, not another photograph or a source of appearance. Write an actionable pose edit based only on geometry visible in the guides. Use the viewer's image-left/image-right for spatial descriptions. Preserve the source person's identity and outfit while allowing their posture and head direction to change. Preserve the source scene and framing. Transfer no guide colors or guide lines into the output. Do not invent objects, emotional expressions, or hidden joint positions. Omit pose details you cannot determine. The output is one photograph of the same person.",
+      "images": [
+        {
+          "role": "source_A",
+          "path": "/home/shangguanrz/project/pic-edit/datasets/TikTokDataset/TikTok_dataset/TikTok_dataset/00235/images/0026.png",
+          "sha256": "c411d0a7ae9268334b53d1f5616c8ccf6891391790641b5a0782b7f44b28032e",
+          "size": [
+            604,
+            1080
+          ]
+        },
+        {
+          "role": "target_dwpose",
+          "path": "/home/shangguanrz/project/pic-edit/datasets/TikTokDataset/TikTok_v3/dwpose_v1/00282/dwpose/0166.png",
+          "sha256": "13c6122ce82fca1c70e14b1d827029ada688a83a9f48e96a57584d6d6c62fc67",
+          "size": [
+            604,
+            1080
+          ]
+        }
+      ],
+      "reviewed_pose_for_posthoc_comparison_only": "Tip the head markedly backward so that the chin points upward and the gaze faces toward the ceiling. Keep the upper torso almost frontal, with shoulders drawn slightly back. Lower the image-left arm beside the body and let the image-right elbow bend slightly outward with its hand lowered, matching the visible reference. Do not leave the head looking directly into the camera. Transfer head rotation without borrowing the reference person's hair, face or clothing."
+    },
+    {
+      "case_id": "tiktok_03",
+      "mode": "skeleton_normal_depth",
+      "instruction": "Edit only the posture and head orientation of the existing person in <image1>. <image1> is the source photograph and the sole source of identity, hairstyle, clothing, accessories and background. <image2> is a target keypoint skeleton guide, not another photograph or a source of appearance. <image3> is the target SMPL-X surface-normal visualization: its RGB colors encode surface orientation, not skin or clothing colors. <image4> is the target visualized depth map, not the appearance of a person. These three guides describe the same target pose. Write an actionable pose edit based only on geometry visible in the guides. Use the viewer's image-left/image-right for spatial descriptions. Preserve the source person's identity and outfit while allowing their posture and head direction to change. Preserve the source scene and framing. Transfer no guide colors or guide lines into the output. Do not invent objects, emotional expressions, or hidden joint positions. Omit pose details you cannot determine. The output is one photograph of the same person.",
+      "images": [
+        {
+          "role": "source_A",
+          "path": "/home/shangguanrz/project/pic-edit/datasets/TikTokDataset/TikTok_dataset/TikTok_dataset/00235/images/0026.png",
+          "sha256": "c411d0a7ae9268334b53d1f5616c8ccf6891391790641b5a0782b7f44b28032e",
+          "size": [
+            604,
+            1080
+          ]
+        },
+        {
+          "role": "target_dwpose",
+          "path": "/home/shangguanrz/project/pic-edit/datasets/TikTokDataset/TikTok_v3/dwpose_v1/00282/dwpose/0166.png",
+          "sha256": "13c6122ce82fca1c70e14b1d827029ada688a83a9f48e96a57584d6d6c62fc67",
+          "size": [
+            604,
+            1080
+          ]
+        },
+        {
+          "role": "target_normal",
+          "path": "/home/shangguanrz/project/pic-edit/datasets/TikTokDataset/TikTok_3d_assets_native/00282/normal/0166.png",
+          "sha256": "f94c2cb06ad37cb53909923122e7b44b152d2fb9c8fdea43415559f23ffd7f1e",
+          "size": [
+            604,
+            1080
+          ]
+        },
+        {
+          "role": "target_depth_vis",
+          "path": "/home/shangguanrz/project/pic-edit/datasets/TikTokDataset/TikTok_3d_assets_native/00282/depth_vis/0166.png",
+          "sha256": "569133f648db45d980aa984642e22878749e4318febd9378b29a4d4b60017b96",
+          "size": [
+            604,
+            1080
+          ]
+        }
+      ],
+      "reviewed_pose_for_posthoc_comparison_only": "Tip the head markedly backward so that the chin points upward and the gaze faces toward the ceiling. Keep the upper torso almost frontal, with shoulders drawn slightly back. Lower the image-left arm beside the body and let the image-right elbow bend slightly outward with its hand lowered, matching the visible reference. Do not leave the head looking directly into the camera. Transfer head rotation without borrowing the reference person's hair, face or clothing."
+    },
+    {
+      "case_id": "tiktok_05",
+      "mode": "skeleton",
+      "instruction": "Edit only the posture and head orientation of the existing person in <image1>. <image1> is the source photograph and the sole source of identity, hairstyle, clothing, accessories and background. <image2> is a target keypoint skeleton guide, not another photograph or a source of appearance. Write an actionable pose edit based only on geometry visible in the guides. Use the viewer's image-left/image-right for spatial descriptions. Preserve the source person's identity and outfit while allowing their posture and head direction to change. Preserve the source scene and framing. Transfer no guide colors or guide lines into the output. Do not invent objects, emotional expressions, or hidden joint positions. Omit pose details you cannot determine. The output is one photograph of the same person.",
+      "images": [
+        {
+          "role": "source_A",
+          "path": "/home/shangguanrz/project/pic-edit/datasets/TikTokDataset/TikTok_dataset/TikTok_dataset/00286/images/0281.png",
+          "sha256": "f898937cbe3487d70784b79b2d8fdbefd0859776a39ad2c5f06335278c0dde08",
+          "size": [
+            604,
+            1080
+          ]
+        },
+        {
+          "role": "target_dwpose",
+          "path": "/home/shangguanrz/project/pic-edit/datasets/TikTokDataset/TikTok_v3/dwpose_v1/00236/dwpose/0141.png",
+          "sha256": "1efa4961a3cc7390bd7df5ce1281a12c0ca663d60c69b4809578110e7a7363ac",
+          "size": [
+            604,
+            1080
+          ]
+        }
+      ],
+      "reviewed_pose_for_posthoc_comparison_only": "Face toward the camera and push both arms forward toward the camera, with both fists held side by side at lower-chest height. Keep the elbows softly bent, shoulders slightly forward, legs separated and visible knees softly flexed. Keep the head upright and looking forward. Match the foreshortened forward-reaching arms rather than merely lowering the hands beside the waist."
+    },
+    {
+      "case_id": "tiktok_05",
+      "mode": "skeleton_normal_depth",
+      "instruction": "Edit only the posture and head orientation of the existing person in <image1>. <image1> is the source photograph and the sole source of identity, hairstyle, clothing, accessories and background. <image2> is a target keypoint skeleton guide, not another photograph or a source of appearance. <image3> is the target SMPL-X surface-normal visualization: its RGB colors encode surface orientation, not skin or clothing colors. <image4> is the target visualized depth map, not the appearance of a person. These three guides describe the same target pose. Write an actionable pose edit based only on geometry visible in the guides. Use the viewer's image-left/image-right for spatial descriptions. Preserve the source person's identity and outfit while allowing their posture and head direction to change. Preserve the source scene and framing. Transfer no guide colors or guide lines into the output. Do not invent objects, emotional expressions, or hidden joint positions. Omit pose details you cannot determine. The output is one photograph of the same person.",
+      "images": [
+        {
+          "role": "source_A",
+          "path": "/home/shangguanrz/project/pic-edit/datasets/TikTokDataset/TikTok_dataset/TikTok_dataset/00286/images/0281.png",
+          "sha256": "f898937cbe3487d70784b79b2d8fdbefd0859776a39ad2c5f06335278c0dde08",
+          "size": [
+            604,
+            1080
+          ]
+        },
+        {
+          "role": "target_dwpose",
+          "path": "/home/shangguanrz/project/pic-edit/datasets/TikTokDataset/TikTok_v3/dwpose_v1/00236/dwpose/0141.png",
+          "sha256": "1efa4961a3cc7390bd7df5ce1281a12c0ca663d60c69b4809578110e7a7363ac",
+          "size": [
+            604,
+            1080
+          ]
+        },
+        {
+          "role": "target_normal",
+          "path": "/home/shangguanrz/project/pic-edit/datasets/TikTokDataset/TikTok_3d_assets_native/00236/normal/0141.png",
+          "sha256": "49931aa664db622129d26830fa8571fc9414d475f16c9e50ec9f668b65f58e79",
+          "size": [
+            604,
+            1080
+          ]
+        },
+        {
+          "role": "target_depth_vis",
+          "path": "/home/shangguanrz/project/pic-edit/datasets/TikTokDataset/TikTok_3d_assets_native/00236/depth_vis/0141.png",
+          "sha256": "a8480d0e0e49ea01e3a3318546aded3ec178e500c14a511bd1ecde2c7f0d8681",
+          "size": [
+            604,
+            1080
+          ]
+        }
+      ],
+      "reviewed_pose_for_posthoc_comparison_only": "Face toward the camera and push both arms forward toward the camera, with both fists held side by side at lower-chest height. Keep the elbows softly bent, shoulders slightly forward, legs separated and visible knees softly flexed. Keep the head upright and looking forward. Match the foreshortened forward-reaching arms rather than merely lowering the hands beside the waist."
+    }
+  ]
+}

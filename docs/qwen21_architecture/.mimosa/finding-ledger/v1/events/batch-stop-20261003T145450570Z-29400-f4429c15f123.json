@@ -1,0 +1,37 @@
+{
+  "schemaVersion": "mimosa-finding-ledger-batch/v1",
+  "batchId": "stop-20261003T145450570Z-29400-f4429c15f123",
+  "runId": "20261003T145450570Z-29400-f4429c15f123",
+  "runStatus": "completed",
+  "coverage": {
+    "status": "complete",
+    "reasons": [
+      {
+        "code": "baseline_partial",
+        "stage": "baseline",
+        "target": ".",
+        "detail": "baseline capture had enumeration or snapshot errors",
+        "affectsCompletion": false
+      }
+    ]
+  },
+  "source": {
+    "component": "zcode-hook",
+    "operationId": "Stop"
+  },
+  "revision": "8e01dbc9f793590ef46754e7abcbb2592a8a856a",
+  "diffHash": "0d914e0917f8488cdf525c2643c89019dce195d9fcf289edbdcd22a1e2e16dab",
+  "rulesVersion": "unavailable",
+  "sessionHash": "0775a1e3a0d03e432add76222f0d73ef49cc624170ec3313f7f8357d52e8a1e7",
+  "reportRef": ".mimosa/reports/task-review-sess_8fe3f2d5-a9be-44a6-b43a-a24efe1bcd45-20261003T145450570Z-29400-f4429c15f123.json",
+  "events": [],
+  "observedFindingIds": [],
+  "verifiedFiles": [
+    {
+      "file": "draw_qwen21_arch.py",
+      "direct": "complete",
+      "projectContext": "partial"
+    }
+  ],
+  "recordedAt": "2026-10-03T14:54:50.994Z"
+}

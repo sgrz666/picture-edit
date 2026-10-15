@@ -1,0 +1,290 @@
+{
+  "created_utc": "2026-10-01T09:21:36.155806+00:00",
+  "source": "/home/shangguanrz/project/pic-edit/src/pose_control/v6",
+  "destination": "/home/shangguanrz/project/pic-edit/src/pose_control/qwen21_full",
+  "files": [
+    {
+      "relative_path": "__init__.py",
+      "source_sha256": "310ac0f0db6f4c871162c17482b0e1f4c293a50f51bc331598617a81361e60fa",
+      "copied_sha256": "310ac0f0db6f4c871162c17482b0e1f4c293a50f51bc331598617a81361e60fa",
+      "bytes": 2363
+    },
+    {
+      "relative_path": "checkpoint.py",
+      "source_sha256": "42c7517eab3eb64b52b5e2622e2bc1a806b2c946215f4a61a2974432c106a2e3",
+      "copied_sha256": "42c7517eab3eb64b52b5e2622e2bc1a806b2c946215f4a61a2974432c106a2e3",
+      "bytes": 14699
+    },
+    {
+      "relative_path": "condition_bridge.py",
+      "source_sha256": "81b7eed16f9892f58657571a44bd3d0e38a1bce7821725692cbbee92f9f5c2fd",
+      "copied_sha256": "81b7eed16f9892f58657571a44bd3d0e38a1bce7821725692cbbee92f9f5c2fd",
+      "bytes": 1996
+    },
+    {
+      "relative_path": "condition_injector.py",
+      "source_sha256": "f491702332c55f57cfbd67819ebd4da30dec057dae0fc7f685db0ac240895b93",
+      "copied_sha256": "f491702332c55f57cfbd67819ebd4da30dec057dae0fc7f685db0ac240895b93",
+      "bytes": 13209
+    },
+    {
+      "relative_path": "conditions.py",
+      "source_sha256": "90bf30b06b6d7e3cd3bb3109706ee366f02c5e8d4991051308881bc6f9a9c5d9",
+      "copied_sha256": "90bf30b06b6d7e3cd3bb3109706ee366f02c5e8d4991051308881bc6f9a9c5d9",
+      "bytes": 11516
+    },
+    {
+      "relative_path": "control_core.py",
+      "source_sha256": "e5e551e9ab8696f1d547b9b6a111a5b690a9942913b51cc0eb48a0ed011420c9",
+      "copied_sha256": "e5e551e9ab8696f1d547b9b6a111a5b690a9942913b51cc0eb48a0ed011420c9",
+      "bytes": 21401
+    },
+    {
+      "relative_path": "controlled_pipeline.py",
+      "source_sha256": "d7c9afcea9c1b443b8c23a679287d8469a324090688d730d397c96e29f6a9cbc",
+      "copied_sha256": "d7c9afcea9c1b443b8c23a679287d8469a324090688d730d397c96e29f6a9cbc",
+      "bytes": 9559
+    },
+    {
+      "relative_path": "deepgen_adapter.py",
+      "source_sha256": "b63ad72639673ea6949ccb32c5831ca22b614a13952196e3ee6d5c904543544d",
+      "copied_sha256": "b63ad72639673ea6949ccb32c5831ca22b614a13952196e3ee6d5c904543544d",
+      "bytes": 25864
+    },
+    {
+      "relative_path": "detail/__init__.py",
+      "source_sha256": "c21e3db511029086297287ef8b0897176878509ec66c1eebd3ba95c96c140c94",
+      "copied_sha256": "c21e3db511029086297287ef8b0897176878509ec66c1eebd3ba95c96c140c94",
+      "bytes": 1306
+    },
+    {
+      "relative_path": "detail/binder.py",
+      "source_sha256": "da4e8132a02afaa1f3d880a07f661a057cbee149c4f82508dd77a3fa9415b8b2",
+      "copied_sha256": "da4e8132a02afaa1f3d880a07f661a057cbee149c4f82508dd77a3fa9415b8b2",
+      "bytes": 2088
+    },
+    {
+      "relative_path": "detail/conditions.py",
+      "source_sha256": "55de19e7e2cc5afb8a3c610b7503da7f64d718e137e36324d46096f9f5def15a",
+      "copied_sha256": "55de19e7e2cc5afb8a3c610b7503da7f64d718e137e36324d46096f9f5def15a",
+      "bytes": 11377
+    },
+    {
+      "relative_path": "detail/encoders.py",
+      "source_sha256": "6b68787bb104579ca323f76157d8543f8aef91798c30f6c4bb98e52e350c0629",
+      "copied_sha256": "6b68787bb104579ca323f76157d8543f8aef91798c30f6c4bb98e52e350c0629",
+      "bytes": 7162
+    },
+    {
+      "relative_path": "detail/hand.py",
+      "source_sha256": "5783a338542d8e5e7dca55c7ff39e9708309e222335863150c5e8461fac93f27",
+      "copied_sha256": "5783a338542d8e5e7dca55c7ff39e9708309e222335863150c5e8461fac93f27",
+      "bytes": 8406
+    },
+    {
+      "relative_path": "detail/preparer.py",
+      "source_sha256": "d42a29bb4d342f92d9d8f746c57836c20caf4a68ea34d152dbf901447ebe0bd0",
+      "copied_sha256": "d42a29bb4d342f92d9d8f746c57836c20caf4a68ea34d152dbf901447ebe0bd0",
+      "bytes": 8817
+    },
+    {
+      "relative_path": "experts.py",
+      "source_sha256": "50e0444d19441448ce0701df4800b1d67c5ca98c5953dfcf4587611b4e77c3d6",
+      "copied_sha256": "50e0444d19441448ce0701df4800b1d67c5ca98c5953dfcf4587611b4e77c3d6",
+      "bytes": 801
+    },
+    {
+      "relative_path": "face/__init__.py",
+      "source_sha256": "bfc1ef7085a446646d667c5459b10647ebbdcc40c57caca80bf100936381cafe",
+      "copied_sha256": "bfc1ef7085a446646d667c5459b10647ebbdcc40c57caca80bf100936381cafe",
+      "bytes": 1471
+    },
+    {
+      "relative_path": "face/adapter.py",
+      "source_sha256": "0b9b66c396de155e2bc0d25ca5d885e2e3aa2296a8e3e547e2c69144ee98dc52",
+      "copied_sha256": "0b9b66c396de155e2bc0d25ca5d885e2e3aa2296a8e3e547e2c69144ee98dc52",
+      "bytes": 11410
+    },
+    {
+      "relative_path": "face/conditions.py",
+      "source_sha256": "b4b338b7ceec954c37178cdf05f01b0157c51c6a9ece5f8938b93786a7fee4c0",
+      "copied_sha256": "b4b338b7ceec954c37178cdf05f01b0157c51c6a9ece5f8938b93786a7fee4c0",
+      "bytes": 11004
+    },
+    {
+      "relative_path": "face/content_encoder.py",
+      "source_sha256": "2271eecbd7eb88cfce8ad805d61aaf2f950292a32ad135a9e1fa447ca34548b7",
+      "copied_sha256": "2271eecbd7eb88cfce8ad805d61aaf2f950292a32ad135a9e1fa447ca34548b7",
+      "bytes": 4995
+    },
+    {
+      "relative_path": "face/geometry.py",
+      "source_sha256": "787fd100eb74e82e747e45a6a2bb38c04069e170bb893f07adc3cc63e0a791f6",
+      "copied_sha256": "787fd100eb74e82e747e45a6a2bb38c04069e170bb893f07adc3cc63e0a791f6",
+      "bytes": 7002
+    },
+    {
+      "relative_path": "face/iper_dataset.py",
+      "source_sha256": "033910faa42352926d0eab1cbad0d09b8c3da5c2dcc41609b5a4edf584efd94a",
+      "copied_sha256": "033910faa42352926d0eab1cbad0d09b8c3da5c2dcc41609b5a4edf584efd94a",
+      "bytes": 11009
+    },
+    {
+      "relative_path": "face/preparer.py",
+      "source_sha256": "ae3b218f88a98c5d4efb6e69a8e11f5f8e79efc1f8ae63e3f3118d044b186c93",
+      "copied_sha256": "ae3b218f88a98c5d4efb6e69a8e11f5f8e79efc1f8ae63e3f3118d044b186c93",
+      "bytes": 5512
+    },
+    {
+      "relative_path": "face/resampler.py",
+      "source_sha256": "d149af3f79d1466cefba7e084fbaf88fc6bc08813848de34ff39e4a8267bc576",
+      "copied_sha256": "d149af3f79d1466cefba7e084fbaf88fc6bc08813848de34ff39e4a8267bc576",
+      "bytes": 245
+    },
+    {
+      "relative_path": "face/spatial.py",
+      "source_sha256": "30c7072c4fe66b234bced81e33af3ed2a52b824511a15d0273ce81c3f4938781",
+      "copied_sha256": "30c7072c4fe66b234bced81e33af3ed2a52b824511a15d0273ce81c3f4938781",
+      "bytes": 5055
+    },
+    {
+      "relative_path": "geometry_encoder.py",
+      "source_sha256": "47c073c05d467d7f7c70d5b28e4929c3730e518fa6fe69d20453f29e474ea198",
+      "copied_sha256": "47c073c05d467d7f7c70d5b28e4929c3730e518fa6fe69d20453f29e474ea198",
+      "bytes": 8730
+    },
+    {
+      "relative_path": "hand/__init__.py",
+      "source_sha256": "528230c4db55811bbd08afc45fb4c3bb93174f04321154738f55ef89f30723d7",
+      "copied_sha256": "528230c4db55811bbd08afc45fb4c3bb93174f04321154738f55ef89f30723d7",
+      "bytes": 363
+    },
+    {
+      "relative_path": "hand/adapter.py",
+      "source_sha256": "e4a3acc84321576739bd7150ad37b98b03034c169f54c33cfb5424df4be1cbbd",
+      "copied_sha256": "e4a3acc84321576739bd7150ad37b98b03034c169f54c33cfb5424df4be1cbbd",
+      "bytes": 7717
+    },
+    {
+      "relative_path": "hand/conditions.py",
+      "source_sha256": "015ab92c7bdfff90f6cd55f27ee0b0cbca53c71b46f799894aee0d777ec5b6bd",
+      "copied_sha256": "015ab92c7bdfff90f6cd55f27ee0b0cbca53c71b46f799894aee0d777ec5b6bd",
+      "bytes": 5501
+    },
+    {
+      "relative_path": "hand/geometry.py",
+      "source_sha256": "a7f4192bc267cb0772ffe1b07c9feba3e215d4d3cb835f27dbb60bf826c34179",
+      "copied_sha256": "a7f4192bc267cb0772ffe1b07c9feba3e215d4d3cb835f27dbb60bf826c34179",
+      "bytes": 2665
+    },
+    {
+      "relative_path": "hand/preparer.py",
+      "source_sha256": "7c0947a7469c48572e8b08d83eefc6028337d20e7039804dd34f09749b25ce1d",
+      "copied_sha256": "7c0947a7469c48572e8b08d83eefc6028337d20e7039804dd34f09749b25ce1d",
+      "bytes": 5110
+    },
+    {
+      "relative_path": "hand/quality.py",
+      "source_sha256": "08b460c83740c199c768a4951a973c5505ad72f0d9c18c204f643b2abf2262cf",
+      "copied_sha256": "08b460c83740c199c768a4951a973c5505ad72f0d9c18c204f643b2abf2262cf",
+      "bytes": 1323
+    },
+    {
+      "relative_path": "hand/refiner_export.py",
+      "source_sha256": "204a25859dc8e522e756cf5e4dcfe6e13c47f0679a0f967e0756074fbaec127d",
+      "copied_sha256": "204a25859dc8e522e756cf5e4dcfe6e13c47f0679a0f967e0756074fbaec127d",
+      "bytes": 1389
+    },
+    {
+      "relative_path": "hand/vton_layers.py",
+      "source_sha256": "316e4fb836b64eba23dcb24d233369dbca94cb72cb640121188ec0ee55a6c3d1",
+      "copied_sha256": "316e4fb836b64eba23dcb24d233369dbca94cb72cb640121188ec0ee55a6c3d1",
+      "bytes": 4155
+    },
+    {
+      "relative_path": "interface/__init__.py",
+      "source_sha256": "d67dc02f7f30605bb7b7d4343f90260bf5cf22224003d9d6e8e123b8a72b1a4f",
+      "copied_sha256": "d67dc02f7f30605bb7b7d4343f90260bf5cf22224003d9d6e8e123b8a72b1a4f",
+      "bytes": 548
+    },
+    {
+      "relative_path": "interface/deepgen_interface.py",
+      "source_sha256": "1c2c73755b73c8800cf4097ddefc3a520d7ebe0f5d801c8f64d0e64f202e2475",
+      "copied_sha256": "1c2c73755b73c8800cf4097ddefc3a520d7ebe0f5d801c8f64d0e64f202e2475",
+      "bytes": 18637
+    },
+    {
+      "relative_path": "interface/outputs.py",
+      "source_sha256": "75b1d9f1b644973c1ee16dafba71c7afc5e324c0ec5e8707cb6478dc059ce0aa",
+      "copied_sha256": "75b1d9f1b644973c1ee16dafba71c7afc5e324c0ec5e8707cb6478dc059ce0aa",
+      "bytes": 6948
+    },
+    {
+      "relative_path": "interface/strength.py",
+      "source_sha256": "74f3c3fca143b685666814e04e4598106294d71d9dbfa4a4d93679a53ba84d97",
+      "copied_sha256": "74f3c3fca143b685666814e04e4598106294d71d9dbfa4a4d93679a53ba84d97",
+      "bytes": 13738
+    },
+    {
+      "relative_path": "reasoning/__init__.py",
+      "source_sha256": "df319de41594e018676be54a28ca6990988604afc183f0eb831b44f7db7afb43",
+      "copied_sha256": "df319de41594e018676be54a28ca6990988604afc183f0eb831b44f7db7afb43",
+      "bytes": 768
+    },
+    {
+      "relative_path": "reasoning/blocks.py",
+      "source_sha256": "84a2c3f9e6f8d8388f3066a4c9a221c1516abba2d7dc521c22a3214b614dbad5",
+      "copied_sha256": "84a2c3f9e6f8d8388f3066a4c9a221c1516abba2d7dc521c22a3214b614dbad5",
+      "bytes": 2600
+    },
+    {
+      "relative_path": "reasoning/config.py",
+      "source_sha256": "9b8134b3ee735c0cc9f2331f439de78089decda300bdaa62825c1ffcbfce6169",
+      "copied_sha256": "9b8134b3ee735c0cc9f2331f439de78089decda300bdaa62825c1ffcbfce6169",
+      "bytes": 1649
+    },
+    {
+      "relative_path": "reasoning/contact.py",
+      "source_sha256": "a1d91617cc39ea4cbf3e9ee041aa626bcbc5a73e964027a501520128e5a0113c",
+      "copied_sha256": "a1d91617cc39ea4cbf3e9ee041aa626bcbc5a73e964027a501520128e5a0113c",
+      "bytes": 5549
+    },
+    {
+      "relative_path": "reasoning/cross_person.py",
+      "source_sha256": "46f390c93fe213a00dbbc633f6b180156e92b94f37b3e9fc9c4ed8cbdc533b96",
+      "copied_sha256": "46f390c93fe213a00dbbc633f6b180156e92b94f37b3e9fc9c4ed8cbdc533b96",
+      "bytes": 3229
+    },
+    {
+      "relative_path": "reasoning/fusion.py",
+      "source_sha256": "facc75905b80ff974de9f91a7ba04e72def93155ccb5a56a170db9319182e455",
+      "copied_sha256": "facc75905b80ff974de9f91a7ba04e72def93155ccb5a56a170db9319182e455",
+      "bytes": 4310
+    },
+    {
+      "relative_path": "reasoning/person_geometry.py",
+      "source_sha256": "175f64b6ba08e03f252e38030dc7b5b4a6aa4b4d0b5af9dad994cd168536f54e",
+      "copied_sha256": "175f64b6ba08e03f252e38030dc7b5b4a6aa4b4d0b5af9dad994cd168536f54e",
+      "bytes": 3093
+    },
+    {
+      "relative_path": "reasoning/reasoner.py",
+      "source_sha256": "a9eccf162b5eb0617478db88a9c4c071315dea7b84cbea310f0f5bbf519810df",
+      "copied_sha256": "a9eccf162b5eb0617478db88a9c4c071315dea7b84cbea310f0f5bbf519810df",
+      "bytes": 8367
+    },
+    {
+      "relative_path": "reasoning/state.py",
+      "source_sha256": "cd7e60ea37946d1c6dcf8639cd5f983a0a09a050a3450595ac65a8a71b681e67",
+      "copied_sha256": "cd7e60ea37946d1c6dcf8639cd5f983a0a09a050a3450595ac65a8a71b681e67",
+      "bytes": 4236
+    },
+    {
+      "relative_path": "token_encoders.py",
+      "source_sha256": "fd609c7fe1f55ad1fd54385fd524d9c00ca9c2adc692749152e007c6d4327f7e",
+      "copied_sha256": "fd609c7fe1f55ad1fd54385fd524d9c00ca9c2adc692749152e007c6d4327f7e",
+      "bytes": 10112
+    }
+  ],
+  "git_status_before": " D \"DeepGen\\346\\234\\200\\346\\226\\260\\345\\256\\236\\351\\252\\214\\347\\273\\223\\346\\236\\234\\344\\270\\216\\346\\230\\276\\345\\255\\230\\345\\210\\206\\346\\236\\220\\347\\256\\200\\346\\212\\245.docx\"\n D QWEN_EDIT_20B_MEMORY_ANALYSIS.md\n D \"Qwen_Edit_20B\\346\\230\\276\\345\\255\\230\\351\\242\\204\\347\\256\\227\\344\\270\\216\\345\\217\\257\\350\\241\\214\\346\\200\\247\\345\\210\\206\\346\\236\\220\\347\\256\\200\\346\\212\\245.docx\"\n M eval_iper_v6.py\nA  run_tiktok_sample_00001_smoke.py\nAM scripts/build_tiktok_v6_conditions.py\nA  scripts/precompute_tiktok_face_features_v65.py\nAM src/data/tiktok_dataset.py\nAM tests/test_tiktok_data_contract.py\nA  tests/test_train_tiktok_v65_face_smoke.py\nA  train_tiktok_overfit_sanity.py\nA  train_tiktok_v65_face.py\n D \"\\344\\272\\272\\347\\211\\251\\345\\233\\276\\345\\203\\217\\345\\247\\277\\346\\200\\201\\347\\274\\226\\350\\276\\221\\344\\273\\273\\345\\212\\241\\344\\271\\246_v3.docx\"\n D \"\\344\\272\\272\\347\\211\\251\\345\\233\\276\\345\\203\\217\\345\\247\\277\\346\\200\\201\\347\\274\\226\\350\\276\\221\\347\\263\\273\\347\\273\\237\\346\\236\\266\\346\\236\\204\\350\\256\\276\\350\\256\\241\\344\\270\\216\\346\\240\\270\\345\\277\\203\\346\\212\\200\\346\\234\\257\\346\\226\\271\\346\\241\\210.docx\"\n D \"\\344\\272\\272\\347\\211\\251\\345\\233\\276\\345\\203\\217\\345\\247\\277\\346\\200\\201\\347\\274\\226\\350\\276\\221\\351\\241\\271\\347\\233\\256\\346\\236\\266\\346\\236\\204\\344\\270\\216\\350\\277\\233\\345\\261\\225\\347\\256\\200\\346\\212\\245_\\347\\247\\221\\347\\240\\224\\345\\220\\214\\346\\255\\245\\347\\211\\210.docx\"\n?? audit_hi4d_qwen21_prompt_leak.py\n?? audit_tiktok_v3_blur_sample.py\n?? audit_tiktok_v3_final_pairs.py\n?? audit_tiktok_v3_pose_redundancy.py\n?? audit_tiktok_v3_strict_final.py\n?? audit_tiktok_v3_visual_quality_v2.py\n?? audit_tiktok_v3_visual_quality_v3.py\n?? build_tiktok_v3_candidate_pool.py\n?? build_tiktok_v3_condition_inventory.py\n?? build_tiktok_v3_pairs.py\n?? build_tiktok_v3_pairs_strict.py\n?? build_tiktok_v3_strict_visual_pool.py\n?? build_tiktok_v3_usable_pool.py\n?? complete_hi4d_qwen21_dual.py\n?? docs/qwen21_hi4d_dual.md\n?? eval_hi4d_qwen21_dual.py\n?? eval_iper_four_arm.py\n?? eval_iper_qwen21_body.py\n?? eval_iper_qwen21_face.py\n?? eval_qwen21_face_cross_person.py\n?? eval_qwen21_face_references.py\n?? eval_qwen21_face_variants.py\n?? fill_tiktok_v3_missing_geometry.py\n?? finalize_tiktok_v3_visual_quality_v1.py\n?? requirements_qwen21.txt\n?? run_tiktok_v3_dwpose.py\n?? run_tiktok_v3_fill_missing_geometry_bg.sh\n?? sample_tiktok_v3_dwpose_qc.py\n?? sample_tiktok_v3_geometry_rejects.py\n?? scripts/build_iper1024_comparison_panels.py\n?? scripts/build_qwen21_face_panels.py\n?? scripts/precompute_qwen21_face_features.py\n?? scripts/prepare_qwen21_face_split.py\n?? scripts/summarize_qwen21_face_groups.py\n?? scripts/write_iper1024_result.py\n?? scripts/write_qwen21_face_report.py\n?? split_tiktok_v3_groupwise.py\n?? src/data/__init__.py\n?? src/data/hi4d_qwen21_dataset.py\n?? src/evaluation/\n?? src/pose_control/qwen21/\n?? src/pose_control/qwen21_full/\n?? tests/test_hi4d_geometry_registration.py\n?? tests/test_qwen21_action_prompts.py\n?? tests/test_qwen21_control_contract.py\n?? tests/test_qwen21_dual_control.py\n?? tests/test_qwen21_dual_inference_boundary.py\n?? tests/test_qwen21_face_control.py\n?? tools/\n?? train_hi4d_qwen21_dual.py\n?? train_iper_qwen21_body.py\n?? train_iper_qwen21_face.py\n?? visualize_tiktok_v3_final_global_blur.py\n"
+}

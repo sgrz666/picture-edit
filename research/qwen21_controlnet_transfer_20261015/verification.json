@@ -1,0 +1,65 @@
+{
+  "status": "PASS",
+  "scope": "Source hashes, Python syntax and checkpoint tensor-shape compatibility only; no learned-weight numerics or GPU generation.",
+  "remote_source_hashes_matched": 28,
+  "python_files_parsed": 37,
+  "control_block_core_tensor_shapes_matched": 144,
+  "manifest_files_verified": 44,
+  "control_tensor_count": 180,
+  "control_parameters": 3775479808,
+  "control_bf16_gib": 7.032379150390625,
+  "base_parameters": 7115124736,
+  "base_plus_control_bf16_gib": 20.28533172607422,
+  "full_adapter_layer_groups": [
+    [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    [
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    [
+      11,
+      12,
+      13,
+      14,
+      15
+    ],
+    [
+      16,
+      17,
+      18,
+      19,
+      20,
+      21
+    ],
+    [
+      22,
+      23,
+      24,
+      25,
+      26
+    ],
+    [
+      27,
+      28,
+      29,
+      30,
+      31
+    ]
+  ],
+  "lora_rank_32_qkvo_and_mlp_parameters": 41943040,
+  "lora_rank_32_including_before_after_parameters": 46399488,
+  "training_state_estimates_gib": {
+    "base_bf16_plus_control_12_bytes_per_parameter": 55.447227478027344,
+    "base_bf16_plus_control_16_bytes_per_parameter": 69.5119857788086
+  }
+}

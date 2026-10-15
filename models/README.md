@@ -71,3 +71,27 @@ pipe.to("cuda")
 ```
 
 下载完成后可检查各分片大小是否与上文目录结构一致，并尝试用上面的加载代码实例化 pipeline，以确认权重完整、无损坏。
+
+## 服务器上的完整权重清单
+
+权威副本在 `sg`（node01）`/home/shangguanrz/project/pic-edit/models/`，共 **19 GB**
+（2026-10-15 `du` 实测）。本地 Windows 这份仓库**没有 `models/`，也没有 `datasets/`**——
+两者只存在于服务器，本地需要跑推理时按本节自行下载或建软链。
+
+| 子目录 | 大小 | 是什么 |
+|---|---|---|
+| `DeepGen-1.0-diffusers/` | 14G | 生成主干（即上文的下载目标） |
+| `antelopev2/` | 4.7G | InsightFace antelopev2，面部相似度评测用 |
+| `face_eval/` | 340M | 面部评测其余模型 |
+| `DWPose/` | 335M | 姿态估计 onnx，骨架条件图与 PCK 评测都依赖它 |
+| `smpl/` | 75M | SMPL 体型模型，workflow 几何阶段用 |
+
+> 引用这些路径前先 `ls models/` 核对目录名，别按记忆写。
+
+## 训练产出的 checkpoint 不在本目录
+
+训练自己写出的权重按实验目录约定留在各实验下，例如
+`experiments/tiktok_overfit_sanity_full/checkpoints/` 有 4 个 1.87 GB 的 `.pt`（合计 7.5 GB）。
+它们同样被 `.gitignore` 的 `*.pt` 排除，不进 Git，也不属于 `models/` 的职责——
+`models/` 只放**外部下载的基座与工具模型**。
+

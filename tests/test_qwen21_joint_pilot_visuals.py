@@ -94,7 +94,7 @@ def test_success_raw_output_works_with_saved_image_scorer(portrait, tmp_path):
         generated=portrait, normal=None, pose=None, source_box=[.1, .1, .5, .6], target_box=[.1, .1, .5, .6])
     assert files["image"] == "images/004_case_on.png"
     assert Image.open(tmp_path / files["image"]).size == portrait.size
-    assert all(not Path(value).is_absolute() for value in files.values() if value)
+    assert all(not Path(value).is_absolute() for value in files.values() if isinstance(value, str))
 
 
 def test_cli_body_face_ablation_switches_keep_other_branches_off():

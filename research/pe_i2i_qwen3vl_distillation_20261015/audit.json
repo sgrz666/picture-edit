@@ -1,0 +1,1412 @@
+{
+  "audited_at": "2026-10-15T00:26:40.268393+08:00",
+  "scope": "Existing records and CPU-only tokenization; no inference or training",
+  "project": "/home/shangguanrz/project/pic-edit",
+  "workflow_config": {
+    "project_root": "/home/shangguanrz/project/pic-edit",
+    "geometry_python": "/home/shangguanrz/project/pic-edit/add/envs/smplestx_bw/bin/python",
+    "qwen_python": "/home/shangguanrz/nihaochen/envs/qwen21/bin/python",
+    "smplest_root": "/home/shangguanrz/project/pic-edit/add/tools/SMPLest-X",
+    "smplest_checkpoint": "smplest_x_h",
+    "pe_model": "/data/shangguanrz/pic-edit-models/Qwen-Image-2.1-PE-I2I",
+    "qwen_model": "/data/shangguanrz/pic-edit-models/Qwen-Image-2.1",
+    "person_detection_confidence": 0.5,
+    "subject": "auto",
+    "resolution": 1024,
+    "steps": 30,
+    "seed": 42,
+    "pe_seed": 42,
+    "true_cfg_scale": 1.0,
+    "use_kv_cache": false,
+    "pose_framing": "source_person",
+    "prop_policy": "source_only",
+    "adapter": false,
+    "lora": false,
+    "dwpose_det_model": "/home/shangguanrz/project/pic-edit/add/tools/dwpose_mimicmotion_official/models/yolox_l.onnx",
+    "dwpose_pose_model": "/home/shangguanrz/project/pic-edit/add/tools/dwpose_mimicmotion_official/models/dw-ll_ucoco_384.onnx"
+  },
+  "packages": {
+    "torch": "2.8.0",
+    "transformers": "5.17.0",
+    "diffusers": "0.41.0.dev0",
+    "peft": "0.20.0",
+    "trl": null,
+    "ms-swift": null,
+    "unsloth": null
+  },
+  "code_sha256": {
+    "workflow/run.py": "6f9c2f73617abe03d3c5c091f0267cbb57d69895d76477097ac40c3efdb739bc",
+    "workflow/pe_worker.py": "40e0e85882622cd2361dd94d819df9a64fcd6491e94bbc813eb99ae51b1c2340",
+    "workflow/generate_worker.py": "86c6e4f56bcbf3ee365f307f42c9795c145bff154686815ad015dd851ca19b0c",
+    "workflow/pose_transfer/prompts.py": "4c310e945c9ea0fbf11fcff4d96e35be3346a86e3d347bd84cffed9d5d9726dc",
+    "src/pose_edit/prompt_contract.py": "7697f107d2afda3a0691a7cc3d182ea91a7d80dc22787d5ad3eed7dce54eae70"
+  },
+  "teacher": {
+    "path": "/data/shangguanrz/pic-edit-models/Qwen-Image-2.1-PE-I2I",
+    "config": {
+      "architectures": [
+        "Qwen3_5ForConditionalGeneration"
+      ],
+      "image_token_id": 248056,
+      "model_type": "qwen3_5",
+      "text_config": {
+        "attention_bias": false,
+        "attention_dropout": 0.0,
+        "attn_output_gate": true,
+        "bos_token_id": null,
+        "dtype": "bfloat16",
+        "eos_token_id": 248044,
+        "full_attention_interval": 4,
+        "head_dim": 256,
+        "hidden_act": "silu",
+        "hidden_size": 4096,
+        "initializer_range": 0.02,
+        "intermediate_size": 12288,
+        "layer_types": [
+          "linear_attention",
+          "linear_attention",
+          "linear_attention",
+          "full_attention",
+          "linear_attention",
+          "linear_attention",
+          "linear_attention",
+          "full_attention",
+          "linear_attention",
+          "linear_attention",
+          "linear_attention",
+          "full_attention",
+          "linear_attention",
+          "linear_attention",
+          "linear_attention",
+          "full_attention",
+          "linear_attention",
+          "linear_attention",
+          "linear_attention",
+          "full_attention",
+          "linear_attention",
+          "linear_attention",
+          "linear_attention",
+          "full_attention",
+          "linear_attention",
+          "linear_attention",
+          "linear_attention",
+          "full_attention",
+          "linear_attention",
+          "linear_attention",
+          "linear_attention",
+          "full_attention"
+        ],
+        "linear_conv_kernel_dim": 4,
+        "linear_key_head_dim": 128,
+        "linear_num_key_heads": 16,
+        "linear_num_value_heads": 32,
+        "linear_value_head_dim": 128,
+        "mamba_ssm_dtype": "float32",
+        "max_position_embeddings": 262144,
+        "mlp_only_layers": [],
+        "model_type": "qwen3_5_text",
+        "mtp_num_hidden_layers": null,
+        "mtp_use_dedicated_embeddings": false,
+        "num_attention_heads": 16,
+        "num_hidden_layers": 32,
+        "num_key_value_heads": 4,
+        "pad_token_id": null,
+        "partial_rotary_factor": 0.25,
+        "rms_norm_eps": 1e-06,
+        "rope_parameters": {
+          "mrope_interleaved": true,
+          "mrope_section": [
+            11,
+            11,
+            10
+          ],
+          "partial_rotary_factor": 0.25,
+          "rope_theta": 10000000,
+          "rope_type": "default"
+        },
+        "tie_word_embeddings": false,
+        "use_cache": true,
+        "vocab_size": 248320
+      },
+      "tie_word_embeddings": false,
+      "transformers_version": "5.4.0",
+      "video_token_id": 248057,
+      "vision_config": {
+        "deepstack_visual_indexes": [],
+        "depth": 27,
+        "hidden_act": "gelu_pytorch_tanh",
+        "hidden_size": 1152,
+        "in_channels": 3,
+        "initializer_range": 0.02,
+        "intermediate_size": 4304,
+        "model_type": "qwen3_5",
+        "num_heads": 16,
+        "num_position_embeddings": 2304,
+        "out_hidden_size": 4096,
+        "patch_size": 16,
+        "spatial_merge_size": 2,
+        "temporal_patch_size": 2
+      },
+      "vision_end_token_id": 248054,
+      "vision_start_token_id": 248053,
+      "vision_token_id": 248055
+    },
+    "config_sha256": "9ec8ded376ee90bc4cf86ea1459efc90e704b16c4461c17e232b03857132db49",
+    "index_sha256": "cd170bbfe328839bbec7c241dd2e3179a206c6e6c48c00348b6000e322f53d25",
+    "parameter_count": 9409813744,
+    "tensor_count": 760,
+    "lm_head": {
+      "dtype": "BF16",
+      "shape": [
+        248320,
+        4096
+      ],
+      "data_offsets": [
+        0,
+        2034237440
+      ]
+    },
+    "language_attention_mlp_lora_rank16_parameters": 29097984,
+    "weight_bytes": 18819627488
+  },
+  "student": {
+    "path": "/data/shangguanrz/pic-edit-models/Qwen-Image-2.1/text_encoder",
+    "config": {
+      "architectures": [
+        "Qwen3VLForConditionalGeneration"
+      ],
+      "dtype": "bfloat16",
+      "image_token_id": 151655,
+      "model_type": "qwen3_vl",
+      "text_config": {
+        "attention_bias": false,
+        "attention_dropout": 0.0,
+        "bos_token_id": 151643,
+        "dtype": "bfloat16",
+        "eos_token_id": 151645,
+        "head_dim": 128,
+        "hidden_act": "silu",
+        "hidden_size": 4096,
+        "initializer_range": 0.02,
+        "intermediate_size": 12288,
+        "max_position_embeddings": 262144,
+        "model_type": "qwen3_vl_text",
+        "num_attention_heads": 32,
+        "num_hidden_layers": 36,
+        "num_key_value_heads": 8,
+        "rms_norm_eps": 1e-06,
+        "rope_scaling": {
+          "mrope_interleaved": true,
+          "mrope_section": [
+            24,
+            20,
+            20
+          ],
+          "rope_type": "default"
+        },
+        "rope_theta": 5000000,
+        "use_cache": true,
+        "vocab_size": 151936
+      },
+      "tie_word_embeddings": false,
+      "transformers_version": "4.57.1",
+      "video_token_id": 151656,
+      "vision_config": {
+        "deepstack_visual_indexes": [
+          8,
+          16,
+          24
+        ],
+        "depth": 27,
+        "dtype": "bfloat16",
+        "hidden_act": "gelu_pytorch_tanh",
+        "hidden_size": 1152,
+        "in_channels": 3,
+        "initializer_range": 0.02,
+        "intermediate_size": 4304,
+        "model_type": "qwen3_vl",
+        "num_heads": 16,
+        "num_position_embeddings": 2304,
+        "out_hidden_size": 4096,
+        "patch_size": 16,
+        "spatial_merge_size": 2,
+        "temporal_patch_size": 2
+      },
+      "vision_end_token_id": 151653,
+      "vision_start_token_id": 151652
+    },
+    "config_sha256": "6001331949f7f86ab6d791a80b12246d4f8da5159fa08c3e62368a39f36d63a9",
+    "index_sha256": "859146bff8db1d617fca8b457a5223edff963bb70076b3645f2189fe0540a147",
+    "parameter_count": 8767123696,
+    "tensor_count": 750,
+    "lm_head": {
+      "dtype": "BF16",
+      "shape": [
+        151936,
+        4096
+      ],
+      "data_offsets": [
+        0,
+        1244659712
+      ]
+    },
+    "language_attention_mlp_lora_rank16_parameters": 43646976,
+    "weight_bytes": 17534247392
+  },
+  "stages": {
+    "geometry": {
+      "seconds": {
+        "count": 27,
+        "median": 31.453984537001816,
+        "mean": 33.38696846292738,
+        "min": 27.978022733004764,
+        "max": 44.269551742007025
+      },
+      "records": [
+        {
+          "path": "/home/shangguanrz/project/pic-edit/workflow/runs/q8s_hard_02/geometry/stage.json",
+          "seconds": 37.49207654898055
+        },
+        {
+          "path": "/home/shangguanrz/project/pic-edit/workflow/runs/test/demo/geometry/stage.json",
+          "seconds": 34.105338972993195
+        },
+        {
+          "path": "/home/shangguanrz/project/pic-edit/workflow/runs/test/demo/medium_01/geometry/stage.json",
+          "seconds": 30.63886218701373
+        },
+        {
+          "path": "/home/shangguanrz/project/pic-edit/workflow/runs/test/hard_01/geometry/stage.json",
+          "seconds": 31.552137680002488
+        },
+        {
+          "path": "/home/shangguanrz/project/pic-edit/workflow/runs/test/hard_02/geometry/stage.json",
+          "seconds": 35.16118442598963
+        },
+        {
+          "path": "/home/shangguanrz/project/pic-edit/workflow/runs/test/hard_03/geometry/stage.json",
+          "seconds": 30.623341188009363
+        },
+        {
+          "path": "/home/shangguanrz/project/pic-edit/workflow/runs/test/hard_04/geometry/stage.json",
+          "seconds": 30.880670954007655
+        },
+        {
+          "path": "/home/shangguanrz/project/pic-edit/workflow/runs/test/hard_05/geometry/stage.json",
+          "seconds": 30.34667828999227
+        },
+        {
+          "path": "/home/shangguanrz/project/pic-edit/workflow/runs/test/hard_05_manual/geometry/stage.json",
+          "seconds": 31.388396798982285
+        },
+        {
+          "path": "/home/shangguanrz/project/pic-edit/workflow/runs/test/hard_05_torso/geometry/stage.json",
+          "seconds": 31.468287447001785
+        },
+        {
+          "path": "/home/shangguanrz/project/pic-edit/workflow/runs/test/medium_02/geometry/stage.json",
+          "seconds": 31.089583988010418
+        },
+        {
+          "path": "/home/shangguanrz/project/pic-edit/workflow/runs/test/testset_hard05/geometry/stage.json",
+          "seconds": 42.20498262900219
+        },
+        {
+          "path": "/home/shangguanrz/project/pic-edit/workflow/runs/test/testset_hard05_768/geometry/stage.json",
+          "seconds": 44.269551742007025
+        },
+        {
+          "path": "/home/shangguanrz/project/pic-edit/workflow/runs/test/testset_hard05_fitgeo/geometry/stage.json",
+          "seconds": 31.453984537001816
+        },
+        {
+          "path": "/home/shangguanrz/project/pic-edit/workflow/runs/test/testset_hard05_promptv2/geometry/stage.json",
+          "seconds": 31.453984537001816
+        },
+        {
+          "path": "/home/shangguanrz/project/pic-edit/workflow/runs/test/testset_medium02_768/geometry/stage.json",
+          "seconds": 41.888100972995744
+        },
+        {
+          "path": "/home/shangguanrz/project/pic-edit/workflow/runs/tiktok/tt_00012_0264_0003/geometry/stage.json",
+          "seconds": 36.588897066016216
+        },
+        {
+          "path": "/home/shangguanrz/project/pic-edit/workflow/runs/tiktok/tt_00027_0049_0032/geometry/stage.json",
+          "seconds": 30.605990099953488
+        },
+        {
+          "path": "/home/shangguanrz/project/pic-edit/workflow/runs/tiktok/tt_00244_0016_0194/geometry/stage.json",
+          "seconds": 29.473947837017477
+        },
+        {
+          "path": "/home/shangguanrz/project/pic-edit/workflow/runs/tiktok/tt_00244_0194_0002/geometry/stage.json",
+          "seconds": 30.68183490401134
+        },
+        {
+          "path": "/home/shangguanrz/project/pic-edit/workflow/runs/tiktok/tt_00291_0375_0126/geometry/stage.json",
+          "seconds": 35.15534444502555
+        },
+        {
+          "path": "/home/shangguanrz/project/pic-edit/workflow/runs/tiktok/tt_00302_0367_0013/geometry/stage.json",
+          "seconds": 31.424636830983218
+        },
+        {
+          "path": "/home/shangguanrz/project/pic-edit/workflow/runs/tiktok/tt_00303_0180_0098/geometry/stage.json",
+          "seconds": 29.319747905014083
+        },
+        {
+          "path": "/home/shangguanrz/project/pic-edit/workflow/runs/tiktok/tt_00304_0147_0405/geometry/stage.json",
+          "seconds": 34.44075447303476
+        },
+        {
+          "path": "/home/shangguanrz/project/pic-edit/workflow/runs/torso_check_person_20261014/geometry/stage.json",
+          "seconds": 27.978022733004764
+        },
+        {
+          "path": "/home/shangguanrz/project/pic-edit/workflow/runs/torso_measured_hard02_20261014/geometry/stage.json",
+          "seconds": 32.299596891971305
+        },
+        {
+          "path": "/home/shangguanrz/project/pic-edit/workflow/runs/wp1_accept_hard02/geometry/stage.json",
+          "seconds": 37.462212414015085
+        }
+      ]
+    },
+    "prompt": {
+      "seconds": {
+        "count": 24,
+        "median": 238.1534081044956,
+        "mean": 251.45836567445744,
+        "min": 140.5650776620023,
+        "max": 400.66583248903044
+      },
+      "records": [
+        {
+          "path": "/home/shangguanrz/project/pic-edit/workflow/runs/test/demo/medium_01/prompt/stage.json",
+          "seconds": 206.59971539099934
+        },
+        {
+          "path": "/home/shangguanrz/project/pic-edit/workflow/runs/test/demo/prompt/stage.json",
+          "seconds": 167.78932552799233
+        },
+        {
+          "path": "/home/shangguanrz/project/pic-edit/workflow/runs/test/hard_01/prompt/stage.json",
+          "seconds": 140.5650776620023
+        },
+        {
+          "path": "/home/shangguanrz/project/pic-edit/workflow/runs/test/hard_02/prompt/stage.json",
+          "seconds": 218.29947635400458
+        },
+        {
+          "path": "/home/shangguanrz/project/pic-edit/workflow/runs/test/hard_03/prompt/stage.json",
+          "seconds": 234.16604548000032
+        },
+        {
+          "path": "/home/shangguanrz/project/pic-edit/workflow/runs/test/hard_04/prompt/stage.json",
+          "seconds": 242.68553005199647
+        },
+        {
+          "path": "/home/shangguanrz/project/pic-edit/workflow/runs/test/hard_05/prompt/stage.json",
+          "seconds": 242.1407707289909
+        },
+        {
+          "path": "/home/shangguanrz/project/pic-edit/workflow/runs/test/hard_05_manual/prompt/stage.json",
+          "seconds": 176.6717194619996
+        },
+        {
+          "path": "/home/shangguanrz/project/pic-edit/workflow/runs/test/hard_05_torso/prompt/stage.json",
+          "seconds": 218.22041599598015
+        },
+        {
+          "path": "/home/shangguanrz/project/pic-edit/workflow/runs/test/medium_02/prompt/stage.json",
+          "seconds": 264.5250503809948
+        },
+        {
+          "path": "/home/shangguanrz/project/pic-edit/workflow/runs/test/testset_hard05/prompt/stage.json",
+          "seconds": 298.82114838200505
+        },
+        {
+          "path": "/home/shangguanrz/project/pic-edit/workflow/runs/test/testset_hard05_768/prompt/stage.json",
+          "seconds": 362.22149564699794
+        },
+        {
+          "path": "/home/shangguanrz/project/pic-edit/workflow/runs/test/testset_hard05_fitgeo/prompt/stage.json",
+          "seconds": 213.31933560599282
+        },
+        {
+          "path": "/home/shangguanrz/project/pic-edit/workflow/runs/test/testset_hard05_promptv2/prompt/stage.json",
+          "seconds": 213.31933560599282
+        },
+        {
+          "path": "/home/shangguanrz/project/pic-edit/workflow/runs/test/testset_medium02_768/prompt/stage.json",
+          "seconds": 328.819570296997
+        },
+        {
+          "path": "/home/shangguanrz/project/pic-edit/workflow/runs/tiktok/tt_00012_0264_0003/prompt/stage.json",
+          "seconds": 356.3471275080228
+        },
+        {
+          "path": "/home/shangguanrz/project/pic-edit/workflow/runs/tiktok/tt_00027_0049_0032/prompt/stage.json",
+          "seconds": 195.72098717297195
+        },
+        {
+          "path": "/home/shangguanrz/project/pic-edit/workflow/runs/tiktok/tt_00244_0016_0194/prompt/stage.json",
+          "seconds": 400.66583248903044
+        },
+        {
+          "path": "/home/shangguanrz/project/pic-edit/workflow/runs/tiktok/tt_00244_0194_0002/prompt/stage.json",
+          "seconds": 155.5166187370196
+        },
+        {
+          "path": "/home/shangguanrz/project/pic-edit/workflow/runs/tiktok/tt_00291_0375_0126/prompt/stage.json",
+          "seconds": 210.10764915897744
+        },
+        {
+          "path": "/home/shangguanrz/project/pic-edit/workflow/runs/tiktok/tt_00302_0367_0013/prompt/stage.json",
+          "seconds": 332.31072140304605
+        },
+        {
+          "path": "/home/shangguanrz/project/pic-edit/workflow/runs/tiktok/tt_00303_0180_0098/prompt/stage.json",
+          "seconds": 356.7121614799835
+        },
+        {
+          "path": "/home/shangguanrz/project/pic-edit/workflow/runs/tiktok/tt_00304_0147_0405/prompt/stage.json",
+          "seconds": 255.79927782400046
+        },
+        {
+          "path": "/home/shangguanrz/project/pic-edit/workflow/runs/wp1_accept_hard02/prompt/stage.json",
+          "seconds": 243.65638784097973
+        }
+      ]
+    },
+    "generation": {
+      "seconds": {
+        "count": 29,
+        "median": 47.56931113998871,
+        "mean": 53.37155728982932,
+        "min": 44.939419391041156,
+        "max": 100.03986687799625
+      },
+      "records": [
+        {
+          "path": "/home/shangguanrz/project/pic-edit/workflow/runs/scale_anchor_20261013/hard_01/generation/stage.json",
+          "seconds": 44.939419391041156
+        },
+        {
+          "path": "/home/shangguanrz/project/pic-edit/workflow/runs/scale_anchor_20261013/hard_02/generation/stage.json",
+          "seconds": 45.83122761902632
+        },
+        {
+          "path": "/home/shangguanrz/project/pic-edit/workflow/runs/scale_anchor_20261013/hard_02_pose_consistent/generation/stage.json",
+          "seconds": 49.96371932904003
+        },
+        {
+          "path": "/home/shangguanrz/project/pic-edit/workflow/runs/scale_anchor_20261013/hard_04/generation/stage.json",
+          "seconds": 47.19478248298401
+        },
+        {
+          "path": "/home/shangguanrz/project/pic-edit/workflow/runs/scale_anchor_20261013/hard_05/generation/stage.json",
+          "seconds": 46.48908264795318
+        },
+        {
+          "path": "/home/shangguanrz/project/pic-edit/workflow/runs/scale_anchor_20261013/medium_02/generation/stage.json",
+          "seconds": 49.22139300103299
+        },
+        {
+          "path": "/home/shangguanrz/project/pic-edit/workflow/runs/test/demo/generation/stage.json",
+          "seconds": 83.34401029300352
+        },
+        {
+          "path": "/home/shangguanrz/project/pic-edit/workflow/runs/test/demo/medium_01/generation/stage.json",
+          "seconds": 45.73824330701609
+        },
+        {
+          "path": "/home/shangguanrz/project/pic-edit/workflow/runs/test/hard_01/generation/stage.json",
+          "seconds": 50.17890223002178
+        },
+        {
+          "path": "/home/shangguanrz/project/pic-edit/workflow/runs/test/hard_02/generation/stage.json",
+          "seconds": 47.56931113998871
+        },
+        {
+          "path": "/home/shangguanrz/project/pic-edit/workflow/runs/test/hard_03/generation/stage.json",
+          "seconds": 44.98544733400922
+        },
+        {
+          "path": "/home/shangguanrz/project/pic-edit/workflow/runs/test/hard_04/generation/stage.json",
+          "seconds": 48.16716698301025
+        },
+        {
+          "path": "/home/shangguanrz/project/pic-edit/workflow/runs/test/hard_05/generation/stage.json",
+          "seconds": 46.56903710300685
+        },
+        {
+          "path": "/home/shangguanrz/project/pic-edit/workflow/runs/test/hard_05_manual/generation/stage.json",
+          "seconds": 47.023182422009995
+        },
+        {
+          "path": "/home/shangguanrz/project/pic-edit/workflow/runs/test/hard_05_torso/generation/stage.json",
+          "seconds": 45.47612908898736
+        },
+        {
+          "path": "/home/shangguanrz/project/pic-edit/workflow/runs/test/medium_02/generation/stage.json",
+          "seconds": 50.340216188982595
+        },
+        {
+          "path": "/home/shangguanrz/project/pic-edit/workflow/runs/test/testset_hard05_768/generation/stage.json",
+          "seconds": 100.03986687799625
+        },
+        {
+          "path": "/home/shangguanrz/project/pic-edit/workflow/runs/test/testset_hard05_fitgeo/generation/stage.json",
+          "seconds": 46.7855473600066
+        },
+        {
+          "path": "/home/shangguanrz/project/pic-edit/workflow/runs/test/testset_hard05_promptv2/generation/stage.json",
+          "seconds": 46.713303787008044
+        },
+        {
+          "path": "/home/shangguanrz/project/pic-edit/workflow/runs/test/testset_medium02_768/generation/stage.json",
+          "seconds": 71.2042394559976
+        },
+        {
+          "path": "/home/shangguanrz/project/pic-edit/workflow/runs/tiktok/tt_00012_0264_0003/generation/stage.json",
+          "seconds": 70.40602534799837
+        },
+        {
+          "path": "/home/shangguanrz/project/pic-edit/workflow/runs/tiktok/tt_00027_0049_0032/generation/stage.json",
+          "seconds": 71.21910308697261
+        },
+        {
+          "path": "/home/shangguanrz/project/pic-edit/workflow/runs/tiktok/tt_00244_0016_0194/generation/stage.json",
+          "seconds": 52.258240446972195
+        },
+        {
+          "path": "/home/shangguanrz/project/pic-edit/workflow/runs/tiktok/tt_00244_0194_0002/generation/stage.json",
+          "seconds": 52.03478028503014
+        },
+        {
+          "path": "/home/shangguanrz/project/pic-edit/workflow/runs/tiktok/tt_00291_0375_0126/generation/stage.json",
+          "seconds": 47.251761897990946
+        },
+        {
+          "path": "/home/shangguanrz/project/pic-edit/workflow/runs/tiktok/tt_00302_0367_0013/generation/stage.json",
+          "seconds": 52.63718553900253
+        },
+        {
+          "path": "/home/shangguanrz/project/pic-edit/workflow/runs/tiktok/tt_00303_0180_0098/generation/stage.json",
+          "seconds": 51.21879315801198
+        },
+        {
+          "path": "/home/shangguanrz/project/pic-edit/workflow/runs/tiktok/tt_00304_0147_0405/generation/stage.json",
+          "seconds": 47.08350657997653
+        },
+        {
+          "path": "/home/shangguanrz/project/pic-edit/workflow/runs/wp1_accept_hard02/generation/stage.json",
+          "seconds": 45.891537020972464
+        }
+      ]
+    },
+    "evaluation": {
+      "seconds": {
+        "count": 18,
+        "median": 30.322664610488573,
+        "mean": 31.61442676688926,
+        "min": 28.96352006099187,
+        "max": 37.33518453699071
+      },
+      "records": [
+        {
+          "path": "/home/shangguanrz/project/pic-edit/workflow/runs/test/demo/medium_01/evaluation/stage.json",
+          "seconds": 30.128954698011512
+        },
+        {
+          "path": "/home/shangguanrz/project/pic-edit/workflow/runs/test/hard_01/evaluation/stage.json",
+          "seconds": 31.414976161002414
+        },
+        {
+          "path": "/home/shangguanrz/project/pic-edit/workflow/runs/test/hard_02/evaluation/stage.json",
+          "seconds": 31.22510159801459
+        },
+        {
+          "path": "/home/shangguanrz/project/pic-edit/workflow/runs/test/hard_03/evaluation/stage.json",
+          "seconds": 29.98366020200774
+        },
+        {
+          "path": "/home/shangguanrz/project/pic-edit/workflow/runs/test/hard_04/evaluation/stage.json",
+          "seconds": 30.094121596979676
+        },
+        {
+          "path": "/home/shangguanrz/project/pic-edit/workflow/runs/test/hard_05/evaluation/stage.json",
+          "seconds": 29.49231771999621
+        },
+        {
+          "path": "/home/shangguanrz/project/pic-edit/workflow/runs/test/hard_05_manual/evaluation/stage.json",
+          "seconds": 31.190687966998667
+        },
+        {
+          "path": "/home/shangguanrz/project/pic-edit/workflow/runs/test/hard_05_torso/evaluation/stage.json",
+          "seconds": 29.941526716022054
+        },
+        {
+          "path": "/home/shangguanrz/project/pic-edit/workflow/runs/test/medium_02/evaluation/stage.json",
+          "seconds": 29.8810196230188
+        },
+        {
+          "path": "/home/shangguanrz/project/pic-edit/workflow/runs/tiktok/tt_00012_0264_0003/evaluation/stage.json",
+          "seconds": 30.217506171029527
+        },
+        {
+          "path": "/home/shangguanrz/project/pic-edit/workflow/runs/tiktok/tt_00027_0049_0032/evaluation/stage.json",
+          "seconds": 30.42782304994762
+        },
+        {
+          "path": "/home/shangguanrz/project/pic-edit/workflow/runs/tiktok/tt_00244_0016_0194/evaluation/stage.json",
+          "seconds": 34.94370775599964
+        },
+        {
+          "path": "/home/shangguanrz/project/pic-edit/workflow/runs/tiktok/tt_00244_0194_0002/evaluation/stage.json",
+          "seconds": 35.24267766700359
+        },
+        {
+          "path": "/home/shangguanrz/project/pic-edit/workflow/runs/tiktok/tt_00291_0375_0126/evaluation/stage.json",
+          "seconds": 33.5659219599911
+        },
+        {
+          "path": "/home/shangguanrz/project/pic-edit/workflow/runs/tiktok/tt_00302_0367_0013/evaluation/stage.json",
+          "seconds": 29.08209594595246
+        },
+        {
+          "path": "/home/shangguanrz/project/pic-edit/workflow/runs/tiktok/tt_00303_0180_0098/evaluation/stage.json",
+          "seconds": 28.96352006099187
+        },
+        {
+          "path": "/home/shangguanrz/project/pic-edit/workflow/runs/tiktok/tt_00304_0147_0405/evaluation/stage.json",
+          "seconds": 37.33518453699071
+        },
+        {
+          "path": "/home/shangguanrz/project/pic-edit/workflow/runs/wp1_accept_hard02/evaluation/stage.json",
+          "seconds": 35.92887837404851
+        }
+      ]
+    }
+  },
+  "complete_runs": [
+    {
+      "run": "/home/shangguanrz/project/pic-edit/workflow/runs/test/demo",
+      "geometry": 34.105338972993195,
+      "prompt": 167.78932552799233,
+      "generation": 83.34401029300352
+    },
+    {
+      "run": "/home/shangguanrz/project/pic-edit/workflow/runs/test/demo/medium_01",
+      "geometry": 30.63886218701373,
+      "prompt": 206.59971539099934,
+      "generation": 45.73824330701609,
+      "evaluation": 30.128954698011512
+    },
+    {
+      "run": "/home/shangguanrz/project/pic-edit/workflow/runs/test/hard_01",
+      "geometry": 31.552137680002488,
+      "prompt": 140.5650776620023,
+      "generation": 50.17890223002178,
+      "evaluation": 31.414976161002414
+    },
+    {
+      "run": "/home/shangguanrz/project/pic-edit/workflow/runs/test/hard_02",
+      "geometry": 35.16118442598963,
+      "prompt": 218.29947635400458,
+      "generation": 47.56931113998871,
+      "evaluation": 31.22510159801459
+    },
+    {
+      "run": "/home/shangguanrz/project/pic-edit/workflow/runs/test/hard_03",
+      "geometry": 30.623341188009363,
+      "prompt": 234.16604548000032,
+      "generation": 44.98544733400922,
+      "evaluation": 29.98366020200774
+    },
+    {
+      "run": "/home/shangguanrz/project/pic-edit/workflow/runs/test/hard_04",
+      "geometry": 30.880670954007655,
+      "prompt": 242.68553005199647,
+      "generation": 48.16716698301025,
+      "evaluation": 30.094121596979676
+    },
+    {
+      "run": "/home/shangguanrz/project/pic-edit/workflow/runs/test/hard_05",
+      "geometry": 30.34667828999227,
+      "prompt": 242.1407707289909,
+      "generation": 46.56903710300685,
+      "evaluation": 29.49231771999621
+    },
+    {
+      "run": "/home/shangguanrz/project/pic-edit/workflow/runs/test/hard_05_manual",
+      "geometry": 31.388396798982285,
+      "prompt": 176.6717194619996,
+      "generation": 47.023182422009995,
+      "evaluation": 31.190687966998667
+    },
+    {
+      "run": "/home/shangguanrz/project/pic-edit/workflow/runs/test/hard_05_torso",
+      "geometry": 31.468287447001785,
+      "prompt": 218.22041599598015,
+      "generation": 45.47612908898736,
+      "evaluation": 29.941526716022054
+    },
+    {
+      "run": "/home/shangguanrz/project/pic-edit/workflow/runs/test/medium_02",
+      "geometry": 31.089583988010418,
+      "prompt": 264.5250503809948,
+      "generation": 50.340216188982595,
+      "evaluation": 29.8810196230188
+    },
+    {
+      "run": "/home/shangguanrz/project/pic-edit/workflow/runs/test/testset_hard05_768",
+      "geometry": 44.269551742007025,
+      "prompt": 362.22149564699794,
+      "generation": 100.03986687799625
+    },
+    {
+      "run": "/home/shangguanrz/project/pic-edit/workflow/runs/test/testset_hard05_fitgeo",
+      "geometry": 31.453984537001816,
+      "prompt": 213.31933560599282,
+      "generation": 46.7855473600066
+    },
+    {
+      "run": "/home/shangguanrz/project/pic-edit/workflow/runs/test/testset_hard05_promptv2",
+      "geometry": 31.453984537001816,
+      "prompt": 213.31933560599282,
+      "generation": 46.713303787008044
+    },
+    {
+      "run": "/home/shangguanrz/project/pic-edit/workflow/runs/test/testset_medium02_768",
+      "geometry": 41.888100972995744,
+      "prompt": 328.819570296997,
+      "generation": 71.2042394559976
+    },
+    {
+      "run": "/home/shangguanrz/project/pic-edit/workflow/runs/tiktok/tt_00012_0264_0003",
+      "geometry": 36.588897066016216,
+      "prompt": 356.3471275080228,
+      "generation": 70.40602534799837,
+      "evaluation": 30.217506171029527
+    },
+    {
+      "run": "/home/shangguanrz/project/pic-edit/workflow/runs/tiktok/tt_00027_0049_0032",
+      "geometry": 30.605990099953488,
+      "prompt": 195.72098717297195,
+      "generation": 71.21910308697261,
+      "evaluation": 30.42782304994762
+    },
+    {
+      "run": "/home/shangguanrz/project/pic-edit/workflow/runs/tiktok/tt_00244_0016_0194",
+      "geometry": 29.473947837017477,
+      "prompt": 400.66583248903044,
+      "generation": 52.258240446972195,
+      "evaluation": 34.94370775599964
+    },
+    {
+      "run": "/home/shangguanrz/project/pic-edit/workflow/runs/tiktok/tt_00244_0194_0002",
+      "geometry": 30.68183490401134,
+      "prompt": 155.5166187370196,
+      "generation": 52.03478028503014,
+      "evaluation": 35.24267766700359
+    },
+    {
+      "run": "/home/shangguanrz/project/pic-edit/workflow/runs/tiktok/tt_00291_0375_0126",
+      "geometry": 35.15534444502555,
+      "prompt": 210.10764915897744,
+      "generation": 47.251761897990946,
+      "evaluation": 33.5659219599911
+    },
+    {
+      "run": "/home/shangguanrz/project/pic-edit/workflow/runs/tiktok/tt_00302_0367_0013",
+      "geometry": 31.424636830983218,
+      "prompt": 332.31072140304605,
+      "generation": 52.63718553900253,
+      "evaluation": 29.08209594595246
+    },
+    {
+      "run": "/home/shangguanrz/project/pic-edit/workflow/runs/tiktok/tt_00303_0180_0098",
+      "geometry": 29.319747905014083,
+      "prompt": 356.7121614799835,
+      "generation": 51.21879315801198,
+      "evaluation": 28.96352006099187
+    },
+    {
+      "run": "/home/shangguanrz/project/pic-edit/workflow/runs/tiktok/tt_00304_0147_0405",
+      "geometry": 34.44075447303476,
+      "prompt": 255.79927782400046,
+      "generation": 47.08350657997653,
+      "evaluation": 37.33518453699071
+    },
+    {
+      "run": "/home/shangguanrz/project/pic-edit/workflow/runs/wp1_accept_hard02",
+      "geometry": 37.462212414015085,
+      "prompt": 243.65638784097973,
+      "generation": 45.891537020972464,
+      "evaluation": 35.92887837404851
+    }
+  ],
+  "pe_fraction_within_complete_runs": {
+    "count": 23,
+    "median": 0.7393171270576236,
+    "mean": 0.7308722497808163,
+    "min": 0.5882418492133881,
+    "max": 0.8305710538508891
+  },
+  "prompt_records": [
+    {
+      "path": "/home/shangguanrz/project/pic-edit/workflow/runs/test/demo/medium_01/prompt/pe_result.json",
+      "seconds": 206.59917318998487,
+      "output_tokens": 4376,
+      "attempts": [
+        {
+          "attempt": 1,
+          "seed": 42,
+          "raw_path": "/home/shangguanrz/project/pic-edit/workflow/runs/medium_01/prompt/pe_attempt_1.txt",
+          "raw_sha256": "85db92c3a9ee6eaf4dc6bd75096aac17d364ac729c05762fd74bf19e3b63db2a",
+          "output_tokens": 4376,
+          "status": "accepted"
+        }
+      ],
+      "input_signature": [
+        "00f389c23186f85ace8f42bd2746e4f36c85081373ec2976b513fa76d6eb6658",
+        "5663f2c086a565fbf7d63db0d9adee14712dd83ad16d85c5921dac055bf2f120",
+        "0ca89d6c6d76c43b4c4bd54047042aaae832fc94b3c703cf1c7d9ac1de5ac32f"
+      ],
+      "peak_gpu_memory_gib": 19.68630599975586
+    },
+    {
+      "path": "/home/shangguanrz/project/pic-edit/workflow/runs/test/demo/prompt/pe_result.json",
+      "seconds": 167.78875461799907,
+      "output_tokens": 3456,
+      "attempts": [
+        {
+          "attempt": 1,
+          "seed": 42,
+          "raw_path": "/home/shangguanrz/project/pic-edit/workflow/runs/demo/prompt/pe_attempt_1.txt",
+          "raw_sha256": "d95f6df9fa5b96e29925a59b1318d94926812c334af3007b82449b83acd995dd",
+          "output_tokens": 3456,
+          "status": "accepted"
+        }
+      ],
+      "input_signature": [
+        "363a8dbac264d41eb1bbd09239fa88ed67ec1af8b445086057b8cf8adf384136",
+        "54d917a1890a1244281bd238581d7650a6841c5bd07c241dc658cc57f4947c41",
+        "cccb952eb12925ceea65fd15c4baf87475ac716c2a01f08bcbf753dfab66410e"
+      ],
+      "peak_gpu_memory_gib": 20.08589220046997
+    },
+    {
+      "path": "/home/shangguanrz/project/pic-edit/workflow/runs/test/hard_01/prompt/pe_result.json",
+      "seconds": 140.56454663397744,
+      "output_tokens": 2915,
+      "attempts": [
+        {
+          "attempt": 1,
+          "seed": 42,
+          "raw_path": "/home/shangguanrz/project/pic-edit/workflow/runs/hard_01/prompt/pe_attempt_1.txt",
+          "raw_sha256": "7b39a2b8efa110ddd9a209e7f5a78c59a37ebdc0b6ff0f35a83b986f541e5256",
+          "output_tokens": 2915,
+          "status": "accepted"
+        }
+      ],
+      "input_signature": [
+        "af6bfdda9a1b5edecefe729f29e0b32bdeaf03f31e2391bc527f23efb9e07567",
+        "5569c9e164b8089dea3546de99f87b385dcae8d2ba5a9cdefe984c01f19c770a",
+        "c49400c3eb1e3d65fe53c5b8dd89ea6de9825abd825a319fe0ea62dd7085693b"
+      ],
+      "peak_gpu_memory_gib": 19.650563716888428
+    },
+    {
+      "path": "/home/shangguanrz/project/pic-edit/workflow/runs/test/hard_02/prompt/pe_result.json",
+      "seconds": 218.29897403798532,
+      "output_tokens": 4479,
+      "attempts": [
+        {
+          "attempt": 1,
+          "seed": 42,
+          "raw_path": "/home/shangguanrz/project/pic-edit/workflow/runs/hard_02/prompt/pe_attempt_1.txt",
+          "raw_sha256": "368c04cfa11a8b258f3448251ebb8779b910fcd70c81e7203b68cb5bf5e22e27",
+          "output_tokens": 4479,
+          "status": "accepted"
+        }
+      ],
+      "input_signature": [
+        "8708b8159be270edf4b2155ebd8b222f9363c855441d2157e11ee53845d848c8",
+        "bfae88f57e9b87666a53e998318844ed69bf8f79973292b8517eda8d70d09d51",
+        "ac66cf26fc4cdcf35ff5f0e09d7df8b83bbcdcc644ae090bd35b2d6391531fa0"
+      ],
+      "peak_gpu_memory_gib": 19.652669429779053
+    },
+    {
+      "path": "/home/shangguanrz/project/pic-edit/workflow/runs/test/hard_03/prompt/pe_result.json",
+      "seconds": 234.16553828999167,
+      "output_tokens": 4989,
+      "attempts": [
+        {
+          "attempt": 1,
+          "seed": 42,
+          "raw_path": "/home/shangguanrz/project/pic-edit/workflow/runs/hard_03/prompt/pe_attempt_1.txt",
+          "raw_sha256": "a631d7c39250e055a9acfc3ab9349e777e2a6959ca896c9b514cd2062f123c24",
+          "output_tokens": 4989,
+          "status": "accepted"
+        }
+      ],
+      "input_signature": [
+        "f7992f84667749162dddad213c032654ee7e0bc08a5cd6df37f4dd23be331a33",
+        "e5a880f58a7dc2148b33831a5c0b5b3fb43ae5c5fd3f15d14df0c688fcff27dd",
+        "d961ed0c4812fd33de64f8bc471c06e62c28f3891a6a4bd7083ce29fd3a4bd80"
+      ],
+      "peak_gpu_memory_gib": 19.64915657043457
+    },
+    {
+      "path": "/home/shangguanrz/project/pic-edit/workflow/runs/test/hard_04/prompt/pe_result.json",
+      "seconds": 242.68500076199416,
+      "output_tokens": 5172,
+      "attempts": [
+        {
+          "attempt": 1,
+          "seed": 42,
+          "raw_path": "/home/shangguanrz/project/pic-edit/workflow/runs/hard_04/prompt/pe_attempt_1.txt",
+          "raw_sha256": "19370b7785549533526cadd995b3ffda9c069507c01b5f942c7fea4ff5ebd447",
+          "output_tokens": 5172,
+          "status": "accepted"
+        }
+      ],
+      "input_signature": [
+        "67eeab7767d4d306d5079fdcee22f86969ec74848fd770a8f58ba1f6990db28c",
+        "3f9417700d4a797f65457e60dd188ec7b5d51f38de4edbee7aadca97047951cf",
+        "ad22a122e994acca98c803a02a0a4a3877f02a591292e56b27c4b129f88616e3"
+      ],
+      "peak_gpu_memory_gib": 19.727365970611572
+    },
+    {
+      "path": "/home/shangguanrz/project/pic-edit/workflow/runs/test/hard_05/prompt/pe_result.json",
+      "seconds": 242.14024932598113,
+      "output_tokens": 5156,
+      "attempts": [
+        {
+          "attempt": 1,
+          "seed": 42,
+          "raw_path": "/home/shangguanrz/project/pic-edit/workflow/runs/hard_05/prompt/pe_attempt_1.txt",
+          "raw_sha256": "295a48dcb9c803ae3137186235300733124a58f435a2bf9b7fe0bdb9f6307e44",
+          "output_tokens": 5156,
+          "status": "accepted"
+        }
+      ],
+      "input_signature": [
+        "deeef9d0447f718f7402a7d1af48228bde55a15eb90919a8cab1d9805e6d9440",
+        "2db6befd3bb63013cd233bb3820f93b0cfbae32b8c09b58c26941f66b5c321c6",
+        "e6a2aa60044aeeb2870846b0eb8e68c23216048c0ba7b83a3eb4b17f24292959"
+      ],
+      "peak_gpu_memory_gib": 19.691823482513428
+    },
+    {
+      "path": "/home/shangguanrz/project/pic-edit/workflow/runs/test/hard_05_manual/prompt/pe_result.json",
+      "seconds": 176.67117981100455,
+      "output_tokens": 3611,
+      "attempts": [
+        {
+          "attempt": 1,
+          "seed": 42,
+          "raw_path": "/home/shangguanrz/project/pic-edit/workflow/runs/hard_05_manual/prompt/pe_attempt_1.txt",
+          "raw_sha256": "dc0d120bfd07d167987787989d03f19e407be2b9c9fd49c448194b9fcf12a7d1",
+          "output_tokens": 3611,
+          "status": "accepted"
+        }
+      ],
+      "input_signature": [
+        "deeef9d0447f718f7402a7d1af48228bde55a15eb90919a8cab1d9805e6d9440",
+        "2db6befd3bb63013cd233bb3820f93b0cfbae32b8c09b58c26941f66b5c321c6",
+        "5d7ffb99011c4f4afd1812ab41246c64bc1046dcd61dee0792ac7853e7bf4b7f"
+      ],
+      "peak_gpu_memory_gib": 19.691823482513428
+    },
+    {
+      "path": "/home/shangguanrz/project/pic-edit/workflow/runs/test/hard_05_torso/prompt/pe_result.json",
+      "seconds": 218.2198928099824,
+      "output_tokens": 4554,
+      "attempts": [
+        {
+          "attempt": 1,
+          "seed": 42,
+          "raw_path": "/home/shangguanrz/project/pic-edit/workflow/runs/hard_05_torso/prompt/pe_attempt_1.txt",
+          "raw_sha256": "080e770861aee2d4c77e5a17d0d9bc9d650e87e9aaad3c1b9ffe75714bfcc2a2",
+          "output_tokens": 4554,
+          "status": "accepted"
+        }
+      ],
+      "input_signature": [
+        "deeef9d0447f718f7402a7d1af48228bde55a15eb90919a8cab1d9805e6d9440",
+        "2db6befd3bb63013cd233bb3820f93b0cfbae32b8c09b58c26941f66b5c321c6",
+        "77ee8fad230d421462009d0eea41facc71db518c00a10fef71e1e0db79fc6aa9"
+      ],
+      "peak_gpu_memory_gib": 19.691823482513428
+    },
+    {
+      "path": "/home/shangguanrz/project/pic-edit/workflow/runs/test/medium_02/prompt/pe_result.json",
+      "seconds": 264.5245275880152,
+      "output_tokens": 5659,
+      "attempts": [
+        {
+          "attempt": 1,
+          "seed": 42,
+          "raw_path": "/home/shangguanrz/project/pic-edit/workflow/runs/medium_02/prompt/pe_attempt_1.txt",
+          "raw_sha256": "271b101a0d1c92a2585e97559258e68386b9189d1117128cbf4811cd80c33082",
+          "output_tokens": 5659,
+          "status": "accepted"
+        }
+      ],
+      "input_signature": [
+        "c2be2d59d2d6521ceabb075ef983c6b35d8ed5b68eaab2a68100c962aeec196e",
+        "0813cab4cf56ddc347f1c4073686924c72c24ff73fa79a1aa8fc33382e0d3f4d",
+        "7ed9c3bc9ad4cb9bda8e5cc9fcf6385a6c5105dd49851c4910a8307d2a911ede"
+      ],
+      "peak_gpu_memory_gib": 19.727906227111816
+    },
+    {
+      "path": "/home/shangguanrz/project/pic-edit/workflow/runs/test/testset_hard05/prompt/pe_result.json",
+      "seconds": 298.82062883600884,
+      "output_tokens": 3781,
+      "attempts": [
+        {
+          "attempt": 1,
+          "seed": 42,
+          "raw_path": "/home/shangguanrz/project/pic-edit/workflow/runs/testset_hard05/prompt/pe_attempt_1.txt",
+          "raw_sha256": "9f62e72c06bcc7d743cebde91bdead8b9dde470b80d4649f003d64a3fb2780f8",
+          "output_tokens": 3781,
+          "status": "accepted"
+        }
+      ],
+      "input_signature": [
+        "6697393f917b6707e4f46e37cb5521f92629a1ee0b8c23838e6bd7ca10db7271",
+        "2db6befd3bb63013cd233bb3820f93b0cfbae32b8c09b58c26941f66b5c321c6",
+        "7559388ee290d449968f5bc156249fdc9303d669b6fd5197ff530ad8f14843a7"
+      ],
+      "peak_gpu_memory_gib": 19.97154998779297
+    },
+    {
+      "path": "/home/shangguanrz/project/pic-edit/workflow/runs/test/testset_hard05_768/prompt/pe_result.json",
+      "seconds": 362.22095673400327,
+      "output_tokens": 5156,
+      "attempts": [
+        {
+          "attempt": 1,
+          "seed": 42,
+          "raw_path": "/home/shangguanrz/project/pic-edit/workflow/runs/testset_hard05_768/prompt/pe_attempt_1.txt",
+          "raw_sha256": "295a48dcb9c803ae3137186235300733124a58f435a2bf9b7fe0bdb9f6307e44",
+          "output_tokens": 5156,
+          "status": "accepted"
+        }
+      ],
+      "input_signature": [
+        "deeef9d0447f718f7402a7d1af48228bde55a15eb90919a8cab1d9805e6d9440",
+        "2db6befd3bb63013cd233bb3820f93b0cfbae32b8c09b58c26941f66b5c321c6",
+        "e6a2aa60044aeeb2870846b0eb8e68c23216048c0ba7b83a3eb4b17f24292959"
+      ],
+      "peak_gpu_memory_gib": 19.691823482513428
+    },
+    {
+      "path": "/home/shangguanrz/project/pic-edit/workflow/runs/test/testset_hard05_fitgeo/prompt/pe_result.json",
+      "seconds": 213.31874903998687,
+      "output_tokens": 4524,
+      "attempts": [
+        {
+          "attempt": 1,
+          "seed": 42,
+          "raw_path": "/home/shangguanrz/project/pic-edit/workflow/runs/testset_hard05_promptv2/prompt/pe_attempt_1.txt",
+          "raw_sha256": "f19042cd66483470a767c5b7a39469d18eb91a35fd11fb4bff8f3f49f319291e",
+          "output_tokens": 4524,
+          "status": "accepted"
+        }
+      ],
+      "input_signature": [
+        "deeef9d0447f718f7402a7d1af48228bde55a15eb90919a8cab1d9805e6d9440",
+        "2db6befd3bb63013cd233bb3820f93b0cfbae32b8c09b58c26941f66b5c321c6",
+        "a4a670099eadef2ba57ced403d71e63cd394b722c01c79d8dd45458ef06aa8cf"
+      ],
+      "peak_gpu_memory_gib": 19.691823482513428
+    },
+    {
+      "path": "/home/shangguanrz/project/pic-edit/workflow/runs/test/testset_hard05_promptv2/prompt/pe_result.json",
+      "seconds": 213.31874903998687,
+      "output_tokens": 4524,
+      "attempts": [
+        {
+          "attempt": 1,
+          "seed": 42,
+          "raw_path": "/home/shangguanrz/project/pic-edit/workflow/runs/testset_hard05_promptv2/prompt/pe_attempt_1.txt",
+          "raw_sha256": "f19042cd66483470a767c5b7a39469d18eb91a35fd11fb4bff8f3f49f319291e",
+          "output_tokens": 4524,
+          "status": "accepted"
+        }
+      ],
+      "input_signature": [
+        "deeef9d0447f718f7402a7d1af48228bde55a15eb90919a8cab1d9805e6d9440",
+        "2db6befd3bb63013cd233bb3820f93b0cfbae32b8c09b58c26941f66b5c321c6",
+        "a4a670099eadef2ba57ced403d71e63cd394b722c01c79d8dd45458ef06aa8cf"
+      ],
+      "peak_gpu_memory_gib": 19.691823482513428
+    },
+    {
+      "path": "/home/shangguanrz/project/pic-edit/workflow/runs/test/testset_medium02_768/prompt/pe_result.json",
+      "seconds": 328.8190211799956,
+      "output_tokens": 5659,
+      "attempts": [
+        {
+          "attempt": 1,
+          "seed": 42,
+          "raw_path": "/home/shangguanrz/project/pic-edit/workflow/runs/testset_medium02_768/prompt/pe_attempt_1.txt",
+          "raw_sha256": "271b101a0d1c92a2585e97559258e68386b9189d1117128cbf4811cd80c33082",
+          "output_tokens": 5659,
+          "status": "accepted"
+        }
+      ],
+      "input_signature": [
+        "c2be2d59d2d6521ceabb075ef983c6b35d8ed5b68eaab2a68100c962aeec196e",
+        "0813cab4cf56ddc347f1c4073686924c72c24ff73fa79a1aa8fc33382e0d3f4d",
+        "7ed9c3bc9ad4cb9bda8e5cc9fcf6385a6c5105dd49851c4910a8307d2a911ede"
+      ],
+      "peak_gpu_memory_gib": 19.727906227111816
+    },
+    {
+      "path": "/home/shangguanrz/project/pic-edit/workflow/runs/tiktok/tt_00012_0264_0003/prompt/pe_result.json",
+      "seconds": 356.34648251201725,
+      "output_tokens": 4564,
+      "attempts": [
+        {
+          "attempt": 1,
+          "seed": 42,
+          "raw_path": "/home/shangguanrz/project/pic-edit/workflow/runs/tt_00012_0264_0003/prompt/pe_attempt_1.txt",
+          "raw_sha256": "bdd11d4058ea26fe67724e612ddea1e2b5a0ee7f1825d483c2fde9081c115fc9",
+          "output_tokens": 3315,
+          "status": "rejected",
+          "error": "PE prompt refers to B RGB, which the generator cannot see; describe the target body/head/hand action explicitly instead"
+        },
+        {
+          "attempt": 2,
+          "seed": 43,
+          "raw_path": "/home/shangguanrz/project/pic-edit/workflow/runs/tt_00012_0264_0003/prompt/pe_attempt_2.txt",
+          "raw_sha256": "21376382ffba2faa5a29e1e29cea421caefe5887957204957fa62c1e93003201",
+          "output_tokens": 4564,
+          "status": "accepted"
+        }
+      ],
+      "input_signature": [
+        "4dd0120abebb9f2aeb829bba0a94252f54e3d10ba526f7981d629d088ee05923",
+        "0619bcaa38f83a952dcc016e4be09d71d98b9c92f5251a7ec1e3c1cddd1f40da",
+        "ad7297002559a02b82adccda4605b6993c58cd1a175aee76bdb092d59002f342"
+      ],
+      "peak_gpu_memory_gib": 19.529688358306885
+    },
+    {
+      "path": "/home/shangguanrz/project/pic-edit/workflow/runs/tiktok/tt_00027_0049_0032/prompt/pe_result.json",
+      "seconds": 195.72046803799458,
+      "output_tokens": 4249,
+      "attempts": [
+        {
+          "attempt": 1,
+          "seed": 42,
+          "raw_path": "/home/shangguanrz/project/pic-edit/workflow/runs/tt_00027_0049_0032/prompt/pe_attempt_1.txt",
+          "raw_sha256": "d4e088a4aa736462871eb183b750429bd1399c79e56ce07e65316abc8f8d7052",
+          "output_tokens": 4249,
+          "status": "accepted"
+        }
+      ],
+      "input_signature": [
+        "b5c496ae91c8a9a2ff270f149328953ada399d90b34a24377ba21d0c7ca82fea",
+        "eb4f35bcec869b9d26cd5555121ba46b417b08199e2231971923cd26c51c001a",
+        "39186c75e1d8971400ce69ae61e388c880eaca465b3d27d3e978998bd2b9654a"
+      ],
+      "peak_gpu_memory_gib": 19.52391767501831
+    },
+    {
+      "path": "/home/shangguanrz/project/pic-edit/workflow/runs/tiktok/tt_00244_0016_0194/prompt/pe_result.json",
+      "seconds": 400.6652724929736,
+      "output_tokens": 4182,
+      "attempts": [
+        {
+          "attempt": 1,
+          "seed": 42,
+          "raw_path": "/home/shangguanrz/project/pic-edit/workflow/runs/tt_00244_0016_0194/prompt/pe_attempt_1.txt",
+          "raw_sha256": "193ad6d8bde5766c1595ecc4ada3407737efb25460c85868ac8a78951851b81a",
+          "output_tokens": 4583,
+          "status": "rejected",
+          "error": "PE prompt refers to B RGB, which the generator cannot see; describe the target body/head/hand action explicitly instead"
+        },
+        {
+          "attempt": 2,
+          "seed": 43,
+          "raw_path": "/home/shangguanrz/project/pic-edit/workflow/runs/tt_00244_0016_0194/prompt/pe_attempt_2.txt",
+          "raw_sha256": "883c8b9e0fc0d56ebbbc2105688693bee8cba7b599f664fe1c1a652896dc81cf",
+          "output_tokens": 4182,
+          "status": "accepted"
+        }
+      ],
+      "input_signature": [
+        "648b57f154a43449b06c62043a92b13a3a03cafd4dcc5aa673a526b65ed73792",
+        "58e340a5a6b462ea55964b447040d9041784e09aa355d916824f2ce20c4a59d8",
+        "2ebb8772b78e2701747920549075393ac82fcbd69d73643a584b907755981ca9"
+      ],
+      "peak_gpu_memory_gib": 19.52969789505005
+    },
+    {
+      "path": "/home/shangguanrz/project/pic-edit/workflow/runs/tiktok/tt_00244_0194_0002/prompt/pe_result.json",
+      "seconds": 155.51608947099885,
+      "output_tokens": 3242,
+      "attempts": [
+        {
+          "attempt": 1,
+          "seed": 42,
+          "raw_path": "/home/shangguanrz/project/pic-edit/workflow/runs/tt_00244_0194_0002/prompt/pe_attempt_1.txt",
+          "raw_sha256": "17c9ae1e79862040bb263bb02c998329a42e617dde80d61e867ccda75346b85e",
+          "output_tokens": 3242,
+          "status": "accepted"
+        }
+      ],
+      "input_signature": [
+        "50fc3cef899b9ca14e3252fa857e79a2539d70681e35593f2e628a92ec18c48f",
+        "a7565cca29be0f6cdb52d7ead063f125a89679c733a37057de8e719772bdbb76",
+        "5b4ec457f764102571b9495ee9b6f51ecbf47619881fa8e4e53c7c69d8ce4d1f"
+      ],
+      "peak_gpu_memory_gib": 19.52391767501831
+    },
+    {
+      "path": "/home/shangguanrz/project/pic-edit/workflow/runs/tiktok/tt_00291_0375_0126/prompt/pe_result.json",
+      "seconds": 210.10712151700864,
+      "output_tokens": 4524,
+      "attempts": [
+        {
+          "attempt": 1,
+          "seed": 42,
+          "raw_path": "/home/shangguanrz/project/pic-edit/workflow/runs/tt_00291_0375_0126/prompt/pe_attempt_1.txt",
+          "raw_sha256": "61f7be745527c4a9505c235d560cce308569565a5f1ec14b1f407d72ae3cc8d9",
+          "output_tokens": 4524,
+          "status": "accepted"
+        }
+      ],
+      "input_signature": [
+        "50e08400efbc0eb8d6969188b2b66e79137a81c5f6d21ee2e66e2292f2c5368a",
+        "c51c0a9e4fd8ee883f6ff607776b2a0fe93c81d92dc9cd0f2e1e1bcb9a37298d",
+        "0ed9fb976cd0b9693074cb56d5153858f0e1a2b8e85ea02240af925b4ed11a78"
+      ],
+      "peak_gpu_memory_gib": 19.52391767501831
+    },
+    {
+      "path": "/home/shangguanrz/project/pic-edit/workflow/runs/tiktok/tt_00302_0367_0013/prompt/pe_result.json",
+      "seconds": 332.31017928401707,
+      "output_tokens": 4076,
+      "attempts": [
+        {
+          "attempt": 1,
+          "seed": 42,
+          "raw_path": "/home/shangguanrz/project/pic-edit/workflow/runs/tt_00302_0367_0013/prompt/pe_attempt_1.txt",
+          "raw_sha256": "3ecd6bdaef4be8976e2d6d80a034b332678d24241df361c1edeabeaa713a9ae7",
+          "output_tokens": 3142,
+          "status": "rejected",
+          "error": "PE prompt refers to B RGB, which the generator cannot see; describe the target body/head/hand action explicitly instead"
+        },
+        {
+          "attempt": 2,
+          "seed": 43,
+          "raw_path": "/home/shangguanrz/project/pic-edit/workflow/runs/tt_00302_0367_0013/prompt/pe_attempt_2.txt",
+          "raw_sha256": "296b112afd739a8d52694e4e4102764178a583ad2fdc8cf728d02fec08207cf4",
+          "output_tokens": 4076,
+          "status": "accepted"
+        }
+      ],
+      "input_signature": [
+        "7009ac802b6173e68f2d1b101ea3df5bda1b5c984ec0321e4218fac0bcfd418e",
+        "6e839c2b67c12f4018a80dad11aba716a04aa2040ed4950214bb2554ae07d8aa",
+        "8d72e6e84f6b83bfb5fd2c77b1779fba4ee6a6128cba38323457ae9bbbdf7e69"
+      ],
+      "peak_gpu_memory_gib": 19.52968740463257
+    },
+    {
+      "path": "/home/shangguanrz/project/pic-edit/workflow/runs/tiktok/tt_00303_0180_0098/prompt/pe_result.json",
+      "seconds": 356.71157261298504,
+      "output_tokens": 4164,
+      "attempts": [
+        {
+          "attempt": 1,
+          "seed": 42,
+          "raw_path": "/home/shangguanrz/project/pic-edit/workflow/runs/tt_00303_0180_0098/prompt/pe_attempt_1.txt",
+          "raw_sha256": "595035f4963103fced9a289cf8c31744fc22657e7dda01ad2119fbe8e7910539",
+          "output_tokens": 3725,
+          "status": "rejected",
+          "error": "PE prompt refers to B RGB, which the generator cannot see; describe the target body/head/hand action explicitly instead"
+        },
+        {
+          "attempt": 2,
+          "seed": 43,
+          "raw_path": "/home/shangguanrz/project/pic-edit/workflow/runs/tt_00303_0180_0098/prompt/pe_attempt_2.txt",
+          "raw_sha256": "2a4f9de0a42f7a38423234b896f6cdb75a6ab9ddfb4fedad2391b39b1dbeb058",
+          "output_tokens": 4164,
+          "status": "accepted"
+        }
+      ],
+      "input_signature": [
+        "97a2b20b6c5467d0c27c3fa044b21225d01caf1f597c09953aa141380d416571",
+        "bed8c8326ba3809b0475e559574927078babbce03bba8b741be4ecf55c596238",
+        "c88427b9d3bf4e8e9c2c7a412a72ee3598d4b8eef439dfb694512fe78cdb6ee6"
+      ],
+      "peak_gpu_memory_gib": 19.529691696166992
+    },
+    {
+      "path": "/home/shangguanrz/project/pic-edit/workflow/runs/tiktok/tt_00304_0147_0405/prompt/pe_result.json",
+      "seconds": 255.79874176898738,
+      "output_tokens": 5697,
+      "attempts": [
+        {
+          "attempt": 1,
+          "seed": 42,
+          "raw_path": "/home/shangguanrz/project/pic-edit/workflow/runs/tt_00304_0147_0405/prompt/pe_attempt_1.txt",
+          "raw_sha256": "2fbf20be78adf13af0580738a290e629f4bb5821f16f62be99f2be2076cbbc73",
+          "output_tokens": 5697,
+          "status": "accepted"
+        }
+      ],
+      "input_signature": [
+        "d0ac2fc82e6e7cd22cadca5d52dae7ff384ce524aa948973bc5b69e222f9ea9b",
+        "1fdf928454c6a8beb928379d8d0e41b1eb0749b666856683c8ffd32558a240de",
+        "c5220ad2e1d1ae175eab329788496f8f01cc9d3ae4892fd5f537a89864f74df1"
+      ],
+      "peak_gpu_memory_gib": 19.52391767501831
+    },
+    {
+      "path": "/home/shangguanrz/project/pic-edit/workflow/runs/wp1_accept_hard02/prompt/pe_result.json",
+      "seconds": 243.65588721696986,
+      "output_tokens": 4479,
+      "attempts": [
+        {
+          "attempt": 1,
+          "seed": 42,
+          "raw_path": "/home/shangguanrz/project/pic-edit/workflow/runs/wp1_accept_hard02/prompt/pe_attempt_1.txt",
+          "raw_sha256": "368c04cfa11a8b258f3448251ebb8779b910fcd70c81e7203b68cb5bf5e22e27",
+          "output_tokens": 4479,
+          "status": "accepted"
+        }
+      ],
+      "input_signature": [
+        "8708b8159be270edf4b2155ebd8b222f9363c855441d2157e11ee53845d848c8",
+        "bfae88f57e9b87666a53e998318844ed69bf8f79973292b8517eda8d70d09d51",
+        "ac66cf26fc4cdcf35ff5f0e09d7df8b83bbcdcc644ae090bd35b2d6391531fa0"
+      ],
+      "peak_gpu_memory_gib": 19.652669429779053
+    }
+  ],
+  "unique_prompt_image_triples": 20,
+  "sample_token_counts": {
+    "run": "wp1_accept_hard02",
+    "recorded_generated_tokens": 4479,
+    "decoded_raw_teacher_tokens": 4478,
+    "final_answer_teacher_tokens": 320,
+    "rewritten_teacher_tokens": 299,
+    "compiled_student_tokens": 400,
+    "compiled_words": 310,
+    "seconds_including_loading": 243.65588721696986
+  }
+}

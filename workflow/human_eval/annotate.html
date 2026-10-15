@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<title>姿态编辑成对盲评</title>
+<style>
+  body { font-family: system-ui, "Microsoft YaHei", sans-serif; margin: 1em; background: #1b1d21; color: #e8e8e8; }
+  h1 { font-size: 1.1em; margin: 0 0 .6em; }
+  .row { display: flex; gap: 1em; align-items: flex-start; }
+  .side { flex: 1; }
+  .side img { width: 100%; height: auto; background: #000; border: 2px solid #444; cursor: zoom-in; }
+  .side.win img { border-color: #3fbf6f; }
+  fieldset { border: 1px solid #3a3f46; margin: .5em 0; padding: .5em; }
+  legend { padding: 0 .4em; color: #9fb4cc; font-size: .9em; }
+  button { font: inherit; margin: .15em; padding: .3em .7em; background: #2c313a; color: #e8e8e8; border: 1px solid #454c57; cursor: pointer; }
+  button.on { background: #3a6ea5; border-color: #6ea8dd; }
+  #bar { display: flex; gap: .5em; align-items: center; flex-wrap: wrap; margin: .6em 0; }
+  #status { color: #ffd479; font-size: .9em; }
+  .hint { color: #8b93a0; font-size: .85em; }
+</style>
+</head>
+<body>
+<h1>姿态编辑成对盲评 <span class="hint">左右顺序已随机化，不知道哪张是哪个方案</span></h1>
+<div id="bar">
+  <label>标注者 <input id="who" size="14"></label>
+  <span id="progress"></span>
+  <span id="status"></span>
+  <button id="prev">上一题</button><button id="next">下一题 (Enter)</button>
+  <button id="dump">导出 jsonl</button>
+</div>
+<div class="hint">键盘：先点/按 <code>L</code> 或 <code>R</code> 选当前边，再按 <code>1</code>–<code>5</code> 给高亮轴打分；
+  <code>←</code>/<code>→</code> 选更好的一张，<code>0</code> 记 tie，<code>U</code> 撤销上一题，<code>Enter</code> 下一题。
+  四轴与"哪张更好"都必须答完才能进下一题。</div>
+<div class="row">
+  <div class="side"><div id="labels-l"></div><img id="img-l" alt="left"></div>
+  <div class="side"><div id="labels-r"></div><img id="img-r" alt="right"></div>
+</div>
+<fieldset id="axes"></fieldset>
+<fieldset><legend>哪张更符合任务要求（保持 A 的身份/服装/场景，同时做出 B 的动作）</legend>
+  <button data-pick="left">左边更好 (←)</button>
+  <button data-pick="tie">看不出差别 (0)</button>
+  <button data-pick="right">右边更好 (→)</button>
+</fieldset>
+<div id="done"></div>
+<script src="questions.js"></script>
+<script>
+const AXES = [['identity','还是不是同一个人'],['action','动作是否落到请求姿态'],
+              ['interaction','接触/遮挡是否自然，有无穿模'],['hand','手部结构是否可信']];
+const SIDE_NAMES = {left:'左边', right:'右边'};
+let qs = window.QUESTIONS || [], store = {}, cur = 0, focus = {side:'left', axis:0};
+const KEY = 'poseval.v1.' + (location.pathname.split('/').pop() || 'bundle');
+
+function load() { try { store = JSON.parse(localStorage.getItem(KEY) || '{}'); } catch (e) { store = {}; } }
+function save() { localStorage.setItem(KEY, JSON.stringify(store)); }
+function rec(id) { store[id] = store[id] || {id, ratings:{left:{},right:{}}, pick:null}; return store[id]; }
+
+function renderAxes() {
+  const box = document.getElementById('axes');
+  box.innerHTML = '';
+  AXES.forEach(([key, label], i) => {
+    ['left','right'].forEach(side => {
+      const wrap = document.createElement('span');
+      const value = (store[qs[cur].id] || {ratings:{left:{},right:{}}}).ratings[side][key];
+      wrap.textContent = `${SIDE_NAMES[side]}·${label} `;
+      for (let s = 1; s <= 5; s++) {
+        const b = document.createElement('button');
+        b.textContent = s;
+        if (value === s) b.className = 'on';
+        b.onclick = () => { rate(side, key, s); };
+        wrap.appendChild(b);
+      }
+      if (side === focus.side && i === focus.axis) wrap.style.outline = '1px solid #6ea8dd';
+      box.appendChild(wrap);
+      box.appendChild(document.createElement('br'));
+    });
+  });
+}
+
+function rate(side, key, value) {
+  const item = rec(qs[cur].id);
+  item.ratings[side][key] = value;
+  advanceFocus(side);
+  save(); render();
+}
+
+function advanceFocus(side) {
+  focus.side = side;
+  const item = store[qs[cur].id];
+  for (let i = 0; i < AXES.length; i++) {
+    if (item.ratings[side][AXES[i][0]] === undefined) { focus.axis = i; return; }
+  }
+  focus = {side: side, axis: AXES.length - 1};
+}
+
+function incomplete() {
+  const item = store[qs[cur].id] || {ratings:{left:{},right:{}}, pick:null};
+  const missing = [];
+  ['left','right'].forEach(s => AXES.forEach(([k]) => {
+    if (item.ratings[s][k] === undefined) missing.push(SIDE_NAMES[s] + '·' + k);
+  }));
+  if (!item.pick) missing.push('配对选择');
+  return missing;
+}
+
+function render() {
+  if (!qs.length) { document.getElementById('done').textContent = '没有题目，先跑 prepare.py'; return; }
+  const q = qs[cur];
+  document.getElementById('progress').textContent = `${cur + 1} / ${qs.length} (${q.pair})`;
+  document.getElementById('img-l').src = 'img/' + q.left;
+  document.getElementById('img-r').src = 'img/' + q.right;
+  const item = store[q.id];
+  document.getElementById('labels-l').textContent = '左' + (item && item.pick === 'left' ? ' ▲' : '');
+  document.getElementById('labels-r').textContent = '右' + (item && item.pick === 'right' ? ' ▲' : '');
+  renderAxes();
+  const missing = incomplete();
+  document.getElementById('status').textContent = missing.length
+      ? `还差 ${missing.length} 项：${missing.slice(0, 4).join(', ')}${missing.length > 4 ? ' …' : ''}`
+      : '本题答完，可进下一题';
+}
+
+function pick(side) {
+  const item = rec(qs[cur].id);
+  item.pick = side;
+  save(); render();
+}
+
+function next(force) {
+  if (!force && incomplete().length) { return false; }
+  cur = Math.min(cur + 1, qs.length - 1); render(); return true;
+}
+
+function dump() {
+  const lines = Object.values(store).filter(r => r.pick && Object.keys(r.ratings.left).length === 4
+      && Object.keys(r.ratings.right).length === 4);
+  const q = qs.find(x => x.id === (lines[0] && lines[0].id));
+  const byId = {}; qs.forEach(x => byId[x.id] = x);
+  const body = lines.map(r => JSON.stringify({
+    annotator: document.getElementById('who').value || 'anonymous', id: r.id,
+    pair: byId[r.id].pair, pick: r.pick, ratings: r.ratings,
+    left_sha256: byId[r.id].left_sha256, right_sha256: byId[r.id].right_sha256
+  })).join('\n');
+  const blob = new Blob([body + (body ? '\n' : '')], {type: 'application/jsonl'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `poseval_${(document.getElementById('who').value || 'anon')}_${qs.length}q.jsonl`;
+  a.click();
+  document.getElementById('status').textContent = `导出 ${lines.length} 题（未完成的不导出）`;
+}
+
+document.getElementById('next').onclick = () => next(false);
+document.getElementById('dump').onclick = dump;
+document.querySelectorAll('[data-pick]').forEach(b => b.onclick = () => pick(b.dataset.pick));
+window.onkeydown = e => {
+  const tag = (e.target.tagName || '').toLowerCase();
+  if (tag === 'input') return;
+  if (e.key === 'Enter') { if (!next(false)) e.preventDefault(); return; }
+  if (e.key === 'ArrowLeft') pick('left');
+  else if (e.key === 'ArrowRight') pick('right');
+  else if (e.key === '0') pick('tie');
+  else if (e.key.toLowerCase() === 'u') { delete store[qs[cur].id]; save(); render(); }
+  else if (e.key.toLowerCase() === 'l') { focus.side = 'left'; renderAxes(); }
+  else if (e.key.toLowerCase() === 'r') { focus.side = 'right'; renderAxes(); }
+  else if (/^[1-5]$/.test(e.key)) rate(focus.side, AXES[focus.axis][0], Number(e.key));
+};
+load(); if (qs.length) { rec(qs[0].id); } render();
+</script>
+</body>
+</html>

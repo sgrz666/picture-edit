@@ -49,9 +49,10 @@ class FaceSupervisionStore:
             raise KeyError(f'Target {key} is missing from the supervision-only cache {self.path}')
         return self.records[key]
 
-    def valid_mask(self, metadata: Sequence[Mapping[str, Any]], resolution: int, device=None, *, align_mode=None) -> torch.Tensor:
-        if resolution not in (512, 1024):
-            raise ValueError('Face supervision supports the explicit 512/1024 image contracts')
+    def valid_mask(self, metadata: Sequence[Mapping[str, Any]], resolution: int | str, device=None, *, align_mode=None) -> torch.Tensor:
+        res_key = str(resolution)
+        if resolution not in (512, 1024, '512', '1024', 'native'):
+            raise ValueError('Face supervision supports the explicit 512/1024 image contracts or native')
         if align_mode is not None and self.data.get('align_mode', 'resize') != align_mode:
             raise ValueError('Face supervision preprocessing differs from RGB/geometry preprocessing')
         values = []
@@ -60,7 +61,9 @@ class FaceSupervisionStore:
             # Cross-person B images are pose examples, never paired identity
             # reconstruction supervision for A.
             cross_person = str(row['source_appearance']).split('_')[0] != str(row['target_appearance']).split('_')[0]
-            values.append(not cross_person and bool(self.record(row)['by_resolution'][str(resolution)]['valid']))
+            by_res = self.record(row)['by_resolution']
+            valid_flag = bool(by_res[res_key]['valid']) if res_key in by_res else (bool(by_res['512']['valid']) if '512' in by_res else True)
+            values.append(not cross_person and valid_flag)
         return torch.tensor(values, device=device, dtype=torch.bool)
 
 
@@ -91,26 +94,41 @@ def detection_record(box, keypoints, geometry_box, image_hw, *, score_threshold,
         reasons.append('target_detection_center_outside_geometry_box')
     if iou < iou_threshold:
         reasons.append('target_detection_geometry_iou_below_threshold')
-    if align_mode not in ('resize', 'letterbox'):
+    if align_mode not in ('resize', 'letterbox', 'native'):
         raise ValueError('Unsupported Face supervision preprocessing')
     output_boxes, output_points, output_sides = {}, {}, {}
-    for resolution in (512, 1024):
+    resolutions = [512, 1024]
+    if align_mode == 'native':
+        resolutions.append('native')
+    for resolution in resolutions:
+        res_str = str(resolution)
         if align_mode == 'letterbox':
             from src.data.letterbox import Letterbox
-            transform = Letterbox.from_size((width, height), resolution)
+            transform = Letterbox.from_size((width, height), int(resolution))
             normalized = torch.tensor(coordinates).reshape(2, 2) / torch.tensor([width, height])
-            mapped = transform.points(normalized) * resolution
-            output_boxes[str(resolution)] = mapped.reshape(4).tolist()
-            output_sides[str(resolution)] = float((mapped[1] - mapped[0]).min())
+            mapped = transform.points(normalized) * int(resolution)
+            output_boxes[res_str] = mapped.reshape(4).tolist()
+            output_sides[res_str] = float((mapped[1] - mapped[0]).min())
             if keypoints is not None:
                 points = torch.as_tensor(np.asarray(keypoints), dtype=torch.float32) / torch.tensor([width, height])
-                output_points[str(resolution)] = (transform.points(points) * resolution).tolist()
-        else:
-            output_boxes[str(resolution)] = [coordinates[0]*resolution/width, coordinates[1]*resolution/height,
-                                             coordinates[2]*resolution/width, coordinates[3]*resolution/height]
-            output_sides[str(resolution)] = min(face_w * resolution / width, face_h * resolution / height)
+                output_points[res_str] = (transform.points(points) * int(resolution)).tolist()
+        elif align_mode == 'native':
+            from src.data.letterbox import NativePad
+            transform = NativePad.from_size((width, height))
+            normalized = torch.tensor(coordinates).reshape(2, 2) / torch.tensor([width, height])
+            mapped = transform.points(normalized) * torch.tensor([transform.padded_width, transform.padded_height])
+            output_boxes[res_str] = mapped.reshape(4).tolist()
+            output_sides[res_str] = float((mapped[1] - mapped[0]).min())
             if keypoints is not None:
-                output_points[str(resolution)] = (np.asarray(keypoints) * [resolution/width, resolution/height]).tolist()
+                points = torch.as_tensor(np.asarray(keypoints), dtype=torch.float32) / torch.tensor([width, height])
+                output_points[res_str] = (transform.points(points) * torch.tensor([transform.padded_width, transform.padded_height])).tolist()
+        else:
+            res_val = int(resolution)
+            output_boxes[res_str] = [coordinates[0]*res_val/width, coordinates[1]*res_val/height,
+                                     coordinates[2]*res_val/width, coordinates[3]*res_val/height]
+            output_sides[res_str] = min(face_w * res_val / width, face_h * res_val / height)
+            if keypoints is not None:
+                output_points[res_str] = (np.asarray(keypoints) * [res_val/width, res_val/height]).tolist()
     return dict(bbox_original_px=coordinates, bbox_output_px=output_boxes, landmarks5_output_px=output_points, score=score,
                 short_side_original_px=min(face_w, face_h),
                 short_side_output_px=output_sides,
@@ -122,10 +140,12 @@ def detection_record(box, keypoints, geometry_box, image_hw, *, score_threshold,
 
 def evaluate_detections(candidates, *, geometry_valid, min_output_short_side=32.):
     result = {}
-    for resolution in (512, 1024):
-        key = str(resolution)
+    resolutions = ['512', '1024']
+    if candidates and 'native' in candidates[0].get('short_side_output_px', {}):
+        resolutions.append('native')
+    for key in resolutions:
         accepted = [i for i, detection in enumerate(candidates)
-                    if not detection['base_reasons'] and detection['short_side_output_px'][key] >= min_output_short_side]
+                    if not detection['base_reasons'] and detection['short_side_output_px'].get(key, 0) >= min_output_short_side]
         if not geometry_valid:
             result[key] = dict(valid=False, reason='invalid_target_geometry', reasons=['invalid_target_geometry'], selected_detection=None)
         elif accepted:
@@ -137,7 +157,7 @@ def evaluate_detections(candidates, *, geometry_valid, min_output_short_side=32.
             matching = [i for i, item in enumerate(candidates) if not item['base_reasons']]
             selected = max(matching or list(range(len(candidates))), key=lambda i: candidates[i]['score'])
             reasons = list(candidates[selected]['base_reasons'])
-            if candidates[selected]['short_side_output_px'][key] < min_output_short_side:
+            if candidates[selected]['short_side_output_px'].get(key, 0) < min_output_short_side:
                 reasons.append('target_face_too_small_at_output_resolution')
             result[key] = dict(valid=False, reason=reasons[0], reasons=reasons, selected_detection=selected)
     return result
@@ -196,6 +216,7 @@ def build_cache(pair_paths, feature_root, detector_path, output, *, score_thresh
                 geometry_cache_fingerprint=cache.get('metadata', {}).get('cache_fingerprint'),
                 detected_faces=len(candidates), detections=candidates, by_resolution=eligibility)
         print(f"{key}: " + ', '.join(f"{res}={value['reason']}" for res, value in eligibility.items()), flush=True)
+    summary_keys = [512, 1024] + (['native'] if align_mode == 'native' else [])
     payload = dict(schema=SCHEMA, align_mode=align_mode, purpose='Target-RGB eligibility for offline ID/perceptual losses only',
             prohibited_uses=['generation conditioning', 'adapter identity or texture features', 'checkpoint selection by final test set'],
             source_validity='caller must also require existing A-source validity / prepared.face.face_valid',
@@ -207,8 +228,8 @@ def build_cache(pair_paths, feature_root, detector_path, output, *, score_thresh
                             min_short_side_at_actual_output_px=min_output_short_side),
             visibility_limit='A confident geometrically matched SCRFD detection is a visibility proxy; no manual frontal/occlusion certification is implied.',
             pair_manifest_sha256=pair_hashes, records=records,
-            summary={str(res): dict(total=len(records), valid=sum(r['by_resolution'][str(res)]['valid'] for r in records.values()),
-                     reasons=dict(Counter(r['by_resolution'][str(res)]['reason'] for r in records.values()))) for res in (512, 1024)})
+            summary={str(res): dict(total=len(records), valid=sum(r['by_resolution'].get(str(res), {}).get('valid', False) for r in records.values()),
+                     reasons=dict(Counter(r['by_resolution'].get(str(res), {}).get('reason', 'unknown') for r in records.values()))) for res in summary_keys})
     destination = Path(output)
     destination.parent.mkdir(parents=True, exist_ok=True)
     temporary = destination.with_suffix(destination.suffix + '.tmp')
@@ -224,7 +245,7 @@ def main():
     parser.add_argument('--features', type=Path, default=RUN_ROOT / 'face_cache')
     parser.add_argument('--detector', type=Path, default=ROOT / 'models/antelopev2/scrfd_10g_bnkps.onnx')
     parser.add_argument('--output', type=Path, default=DEFAULT_CACHE)
-    parser.add_argument('--align-mode', choices=('resize','letterbox'), default='resize')
+    parser.add_argument('--align-mode', choices=('resize', 'letterbox', 'native'), default='resize')
     args = parser.parse_args()
     torch.set_num_threads(4)
     result = build_cache(args.pairs, args.features, args.detector, args.output, align_mode=args.align_mode)

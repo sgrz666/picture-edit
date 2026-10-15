@@ -1,0 +1,39 @@
+{
+  "multi_flat_hand_mean": true,
+  "multihmr_people": [
+    {
+      "index": 0,
+      "canonical_transl": [
+        [
+          -0.17969141900539398,
+          0.2140277624130249,
+          2.892026662826538
+        ]
+      ],
+      "mesh_conversion_max_abs_m": 4.76837158203125e-07,
+      "using_pelvis_as_transl_max_abs_m": 0.3720850944519043,
+      "float32_vs_amp_native_mesh_max_abs_m": 0.0023511648178100586
+    },
+    {
+      "index": 1,
+      "canonical_transl": [
+        [
+          0.3565845489501953,
+          0.25688636302948,
+          2.7985832691192627
+        ]
+      ],
+      "mesh_conversion_max_abs_m": 4.76837158203125e-07,
+      "using_pelvis_as_transl_max_abs_m": 0.35005611181259155,
+      "float32_vs_amp_native_mesh_max_abs_m": 0.0028717517852783203
+    }
+  ],
+  "smplestx_hand_mean_conversion": {
+    "uncorrected_max_abs_m": 0.07770156860351562,
+    "corrected_max_abs_m": 3.814697265625e-06
+  },
+  "body_model_sha256": {
+    "multihmr": "376021446ddc86e99acacd795182bbef903e61d33b76b9d8b359c2b0865bd992",
+    "smplestx": "376021446ddc86e99acacd795182bbef903e61d33b76b9d8b359c2b0865bd992"
+  }
+}

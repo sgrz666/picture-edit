@@ -1,0 +1,12 @@
+{
+  "case": "/home/shangguanrz/project/pic-edit/workflow/runs/wp1_accept_hard02",
+  "model": "qwen3.5_9b_qwen_image_2.1_pe_i2i.mtp.Q8_0.gguf",
+  "mtp": true,
+  "seconds": 248.4,
+  "completion_tokens": 4821,
+  "prompt_tokens": 7358,
+  "tok_per_s": 19.4,
+  "answer_words": 314,
+  "raw_path": "/data/shangguanrz/pic-edit-experiments/pe_i2i_gguf_selection_20261014/output/answer_20261014T231113.txt",
+  "contract": "rejected: PE prompt refers to B RGB, which the generator cannot see; describe the target body/head/hand action explicitly instead"
+}

@@ -1,0 +1,4289 @@
+{
+  "schema_version": 1,
+  "variant": "bfs",
+  "path": "/home/shangguanrz/models/bfs/bfs_body_swap_v1.0_qwen_2.1.safetensors",
+  "file_sha256": "7dc0a53aba4dbc70c204f498936a619d226559da11011f748c389189af46b664",
+  "adapter_name": "bfs_joint",
+  "gate_first": true,
+  "strength": 1.0,
+  "source_tensors": 272,
+  "tensors_checked": 304,
+  "modules_checked": 152,
+  "tensor_checks": [
+    {
+      "key": "transformer.transformer_blocks.0.attn.to_k.lora_A.weight",
+      "shape": [
+        64,
+        4096
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.0.attn.to_k.lora_B.weight",
+      "shape": [
+        4096,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.0.attn.to_out.0.lora_A.weight",
+      "shape": [
+        64,
+        4096
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.0.attn.to_out.0.lora_B.weight",
+      "shape": [
+        4096,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.0.attn.to_q.lora_A.weight",
+      "shape": [
+        64,
+        4096
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.0.attn.to_q.lora_B.weight",
+      "shape": [
+        4096,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.0.attn.to_v.lora_A.weight",
+      "shape": [
+        64,
+        4096
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.0.attn.to_v.lora_B.weight",
+      "shape": [
+        4096,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.0.img_mlp.gate_layer.lora_A.weight",
+      "shape": [
+        64,
+        4096
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.0.img_mlp.gate_layer.lora_B.weight",
+      "shape": [
+        12288,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.0.img_mlp.out.lora_A.weight",
+      "shape": [
+        64,
+        12288
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.0.img_mlp.out.lora_B.weight",
+      "shape": [
+        4096,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.0.img_mlp.proj.lora_A.weight",
+      "shape": [
+        64,
+        4096
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.0.img_mlp.proj.lora_B.weight",
+      "shape": [
+        12288,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.1.attn.to_k.lora_A.weight",
+      "shape": [
+        64,
+        4096
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.1.attn.to_k.lora_B.weight",
+      "shape": [
+        4096,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.1.attn.to_out.0.lora_A.weight",
+      "shape": [
+        64,
+        4096
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.1.attn.to_out.0.lora_B.weight",
+      "shape": [
+        4096,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.1.attn.to_q.lora_A.weight",
+      "shape": [
+        64,
+        4096
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.1.attn.to_q.lora_B.weight",
+      "shape": [
+        4096,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.1.attn.to_v.lora_A.weight",
+      "shape": [
+        64,
+        4096
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.1.attn.to_v.lora_B.weight",
+      "shape": [
+        4096,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.1.img_mlp.gate_layer.lora_A.weight",
+      "shape": [
+        64,
+        4096
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.1.img_mlp.gate_layer.lora_B.weight",
+      "shape": [
+        12288,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.1.img_mlp.out.lora_A.weight",
+      "shape": [
+        64,
+        12288
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.1.img_mlp.out.lora_B.weight",
+      "shape": [
+        4096,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.1.img_mlp.proj.lora_A.weight",
+      "shape": [
+        64,
+        4096
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.1.img_mlp.proj.lora_B.weight",
+      "shape": [
+        12288,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.10.attn.to_k.lora_A.weight",
+      "shape": [
+        64,
+        4096
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.10.attn.to_k.lora_B.weight",
+      "shape": [
+        4096,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.10.attn.to_out.0.lora_A.weight",
+      "shape": [
+        64,
+        4096
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.10.attn.to_out.0.lora_B.weight",
+      "shape": [
+        4096,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.10.attn.to_q.lora_A.weight",
+      "shape": [
+        64,
+        4096
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.10.attn.to_q.lora_B.weight",
+      "shape": [
+        4096,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.10.attn.to_v.lora_A.weight",
+      "shape": [
+        64,
+        4096
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.10.attn.to_v.lora_B.weight",
+      "shape": [
+        4096,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.10.img_mlp.out.lora_A.weight",
+      "shape": [
+        64,
+        12288
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.10.img_mlp.out.lora_B.weight",
+      "shape": [
+        4096,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.11.attn.to_k.lora_A.weight",
+      "shape": [
+        64,
+        4096
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.11.attn.to_k.lora_B.weight",
+      "shape": [
+        4096,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.11.attn.to_out.0.lora_A.weight",
+      "shape": [
+        64,
+        4096
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.11.attn.to_out.0.lora_B.weight",
+      "shape": [
+        4096,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.11.attn.to_q.lora_A.weight",
+      "shape": [
+        64,
+        4096
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.11.attn.to_q.lora_B.weight",
+      "shape": [
+        4096,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.11.attn.to_v.lora_A.weight",
+      "shape": [
+        64,
+        4096
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.11.attn.to_v.lora_B.weight",
+      "shape": [
+        4096,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.11.img_mlp.out.lora_A.weight",
+      "shape": [
+        64,
+        12288
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.11.img_mlp.out.lora_B.weight",
+      "shape": [
+        4096,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.12.attn.to_k.lora_A.weight",
+      "shape": [
+        64,
+        4096
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.12.attn.to_k.lora_B.weight",
+      "shape": [
+        4096,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.12.attn.to_out.0.lora_A.weight",
+      "shape": [
+        64,
+        4096
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.12.attn.to_out.0.lora_B.weight",
+      "shape": [
+        4096,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.12.attn.to_q.lora_A.weight",
+      "shape": [
+        64,
+        4096
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.12.attn.to_q.lora_B.weight",
+      "shape": [
+        4096,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.12.attn.to_v.lora_A.weight",
+      "shape": [
+        64,
+        4096
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.12.attn.to_v.lora_B.weight",
+      "shape": [
+        4096,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.12.img_mlp.out.lora_A.weight",
+      "shape": [
+        64,
+        12288
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.12.img_mlp.out.lora_B.weight",
+      "shape": [
+        4096,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.13.attn.to_k.lora_A.weight",
+      "shape": [
+        64,
+        4096
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.13.attn.to_k.lora_B.weight",
+      "shape": [
+        4096,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.13.attn.to_out.0.lora_A.weight",
+      "shape": [
+        64,
+        4096
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.13.attn.to_out.0.lora_B.weight",
+      "shape": [
+        4096,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.13.attn.to_q.lora_A.weight",
+      "shape": [
+        64,
+        4096
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.13.attn.to_q.lora_B.weight",
+      "shape": [
+        4096,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.13.attn.to_v.lora_A.weight",
+      "shape": [
+        64,
+        4096
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.13.attn.to_v.lora_B.weight",
+      "shape": [
+        4096,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.13.img_mlp.out.lora_A.weight",
+      "shape": [
+        64,
+        12288
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.13.img_mlp.out.lora_B.weight",
+      "shape": [
+        4096,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.14.attn.to_k.lora_A.weight",
+      "shape": [
+        64,
+        4096
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.14.attn.to_k.lora_B.weight",
+      "shape": [
+        4096,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.14.attn.to_out.0.lora_A.weight",
+      "shape": [
+        64,
+        4096
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.14.attn.to_out.0.lora_B.weight",
+      "shape": [
+        4096,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.14.attn.to_q.lora_A.weight",
+      "shape": [
+        64,
+        4096
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.14.attn.to_q.lora_B.weight",
+      "shape": [
+        4096,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.14.attn.to_v.lora_A.weight",
+      "shape": [
+        64,
+        4096
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.14.attn.to_v.lora_B.weight",
+      "shape": [
+        4096,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.14.img_mlp.out.lora_A.weight",
+      "shape": [
+        64,
+        12288
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.14.img_mlp.out.lora_B.weight",
+      "shape": [
+        4096,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.15.attn.to_k.lora_A.weight",
+      "shape": [
+        64,
+        4096
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.15.attn.to_k.lora_B.weight",
+      "shape": [
+        4096,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.15.attn.to_out.0.lora_A.weight",
+      "shape": [
+        64,
+        4096
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.15.attn.to_out.0.lora_B.weight",
+      "shape": [
+        4096,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.15.attn.to_q.lora_A.weight",
+      "shape": [
+        64,
+        4096
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.15.attn.to_q.lora_B.weight",
+      "shape": [
+        4096,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.15.attn.to_v.lora_A.weight",
+      "shape": [
+        64,
+        4096
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.15.attn.to_v.lora_B.weight",
+      "shape": [
+        4096,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.15.img_mlp.out.lora_A.weight",
+      "shape": [
+        64,
+        12288
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.15.img_mlp.out.lora_B.weight",
+      "shape": [
+        4096,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.2.attn.to_k.lora_A.weight",
+      "shape": [
+        64,
+        4096
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.2.attn.to_k.lora_B.weight",
+      "shape": [
+        4096,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.2.attn.to_out.0.lora_A.weight",
+      "shape": [
+        64,
+        4096
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.2.attn.to_out.0.lora_B.weight",
+      "shape": [
+        4096,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.2.attn.to_q.lora_A.weight",
+      "shape": [
+        64,
+        4096
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.2.attn.to_q.lora_B.weight",
+      "shape": [
+        4096,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.2.attn.to_v.lora_A.weight",
+      "shape": [
+        64,
+        4096
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.2.attn.to_v.lora_B.weight",
+      "shape": [
+        4096,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.2.img_mlp.gate_layer.lora_A.weight",
+      "shape": [
+        64,
+        4096
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.2.img_mlp.gate_layer.lora_B.weight",
+      "shape": [
+        12288,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.2.img_mlp.out.lora_A.weight",
+      "shape": [
+        64,
+        12288
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.2.img_mlp.out.lora_B.weight",
+      "shape": [
+        4096,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.2.img_mlp.proj.lora_A.weight",
+      "shape": [
+        64,
+        4096
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.2.img_mlp.proj.lora_B.weight",
+      "shape": [
+        12288,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.24.attn.to_k.lora_A.weight",
+      "shape": [
+        64,
+        4096
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.24.attn.to_k.lora_B.weight",
+      "shape": [
+        4096,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.24.attn.to_out.0.lora_A.weight",
+      "shape": [
+        64,
+        4096
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.24.attn.to_out.0.lora_B.weight",
+      "shape": [
+        4096,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.24.attn.to_q.lora_A.weight",
+      "shape": [
+        64,
+        4096
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.24.attn.to_q.lora_B.weight",
+      "shape": [
+        4096,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.24.attn.to_v.lora_A.weight",
+      "shape": [
+        64,
+        4096
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.24.attn.to_v.lora_B.weight",
+      "shape": [
+        4096,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.24.img_mlp.gate_layer.lora_A.weight",
+      "shape": [
+        64,
+        4096
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.24.img_mlp.gate_layer.lora_B.weight",
+      "shape": [
+        12288,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.24.img_mlp.out.lora_A.weight",
+      "shape": [
+        64,
+        12288
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.24.img_mlp.out.lora_B.weight",
+      "shape": [
+        4096,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.24.img_mlp.proj.lora_A.weight",
+      "shape": [
+        64,
+        4096
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.24.img_mlp.proj.lora_B.weight",
+      "shape": [
+        12288,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.25.attn.to_k.lora_A.weight",
+      "shape": [
+        64,
+        4096
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.25.attn.to_k.lora_B.weight",
+      "shape": [
+        4096,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.25.attn.to_out.0.lora_A.weight",
+      "shape": [
+        64,
+        4096
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.25.attn.to_out.0.lora_B.weight",
+      "shape": [
+        4096,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.25.attn.to_q.lora_A.weight",
+      "shape": [
+        64,
+        4096
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.25.attn.to_q.lora_B.weight",
+      "shape": [
+        4096,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.25.attn.to_v.lora_A.weight",
+      "shape": [
+        64,
+        4096
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.25.attn.to_v.lora_B.weight",
+      "shape": [
+        4096,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.25.img_mlp.gate_layer.lora_A.weight",
+      "shape": [
+        64,
+        4096
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.25.img_mlp.gate_layer.lora_B.weight",
+      "shape": [
+        12288,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.25.img_mlp.out.lora_A.weight",
+      "shape": [
+        64,
+        12288
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.25.img_mlp.out.lora_B.weight",
+      "shape": [
+        4096,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.25.img_mlp.proj.lora_A.weight",
+      "shape": [
+        64,
+        4096
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.25.img_mlp.proj.lora_B.weight",
+      "shape": [
+        12288,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.26.attn.to_k.lora_A.weight",
+      "shape": [
+        64,
+        4096
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.26.attn.to_k.lora_B.weight",
+      "shape": [
+        4096,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.26.attn.to_out.0.lora_A.weight",
+      "shape": [
+        64,
+        4096
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.26.attn.to_out.0.lora_B.weight",
+      "shape": [
+        4096,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.26.attn.to_q.lora_A.weight",
+      "shape": [
+        64,
+        4096
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.26.attn.to_q.lora_B.weight",
+      "shape": [
+        4096,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.26.attn.to_v.lora_A.weight",
+      "shape": [
+        64,
+        4096
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.26.attn.to_v.lora_B.weight",
+      "shape": [
+        4096,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.26.img_mlp.gate_layer.lora_A.weight",
+      "shape": [
+        64,
+        4096
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.26.img_mlp.gate_layer.lora_B.weight",
+      "shape": [
+        12288,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.26.img_mlp.out.lora_A.weight",
+      "shape": [
+        64,
+        12288
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.26.img_mlp.out.lora_B.weight",
+      "shape": [
+        4096,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.26.img_mlp.proj.lora_A.weight",
+      "shape": [
+        64,
+        4096
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.26.img_mlp.proj.lora_B.weight",
+      "shape": [
+        12288,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.27.attn.to_k.lora_A.weight",
+      "shape": [
+        64,
+        4096
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.27.attn.to_k.lora_B.weight",
+      "shape": [
+        4096,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.27.attn.to_out.0.lora_A.weight",
+      "shape": [
+        64,
+        4096
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.27.attn.to_out.0.lora_B.weight",
+      "shape": [
+        4096,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.27.attn.to_q.lora_A.weight",
+      "shape": [
+        64,
+        4096
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.27.attn.to_q.lora_B.weight",
+      "shape": [
+        4096,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.27.attn.to_v.lora_A.weight",
+      "shape": [
+        64,
+        4096
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.27.attn.to_v.lora_B.weight",
+      "shape": [
+        4096,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.27.img_mlp.gate_layer.lora_A.weight",
+      "shape": [
+        64,
+        4096
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.27.img_mlp.gate_layer.lora_B.weight",
+      "shape": [
+        12288,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.27.img_mlp.out.lora_A.weight",
+      "shape": [
+        64,
+        12288
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.27.img_mlp.out.lora_B.weight",
+      "shape": [
+        4096,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.27.img_mlp.proj.lora_A.weight",
+      "shape": [
+        64,
+        4096
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.27.img_mlp.proj.lora_B.weight",
+      "shape": [
+        12288,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.28.attn.to_k.lora_A.weight",
+      "shape": [
+        64,
+        4096
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.28.attn.to_k.lora_B.weight",
+      "shape": [
+        4096,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.28.attn.to_out.0.lora_A.weight",
+      "shape": [
+        64,
+        4096
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.28.attn.to_out.0.lora_B.weight",
+      "shape": [
+        4096,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.28.attn.to_q.lora_A.weight",
+      "shape": [
+        64,
+        4096
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.28.attn.to_q.lora_B.weight",
+      "shape": [
+        4096,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.28.attn.to_v.lora_A.weight",
+      "shape": [
+        64,
+        4096
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.28.attn.to_v.lora_B.weight",
+      "shape": [
+        4096,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.28.img_mlp.gate_layer.lora_A.weight",
+      "shape": [
+        64,
+        4096
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.28.img_mlp.gate_layer.lora_B.weight",
+      "shape": [
+        12288,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.28.img_mlp.out.lora_A.weight",
+      "shape": [
+        64,
+        12288
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.28.img_mlp.out.lora_B.weight",
+      "shape": [
+        4096,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.28.img_mlp.proj.lora_A.weight",
+      "shape": [
+        64,
+        4096
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.28.img_mlp.proj.lora_B.weight",
+      "shape": [
+        12288,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.29.attn.to_k.lora_A.weight",
+      "shape": [
+        64,
+        4096
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.29.attn.to_k.lora_B.weight",
+      "shape": [
+        4096,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.29.attn.to_out.0.lora_A.weight",
+      "shape": [
+        64,
+        4096
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.29.attn.to_out.0.lora_B.weight",
+      "shape": [
+        4096,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.29.attn.to_q.lora_A.weight",
+      "shape": [
+        64,
+        4096
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.29.attn.to_q.lora_B.weight",
+      "shape": [
+        4096,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.29.attn.to_v.lora_A.weight",
+      "shape": [
+        64,
+        4096
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.29.attn.to_v.lora_B.weight",
+      "shape": [
+        4096,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.29.img_mlp.gate_layer.lora_A.weight",
+      "shape": [
+        64,
+        4096
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.29.img_mlp.gate_layer.lora_B.weight",
+      "shape": [
+        12288,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.29.img_mlp.out.lora_A.weight",
+      "shape": [
+        64,
+        12288
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.29.img_mlp.out.lora_B.weight",
+      "shape": [
+        4096,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.29.img_mlp.proj.lora_A.weight",
+      "shape": [
+        64,
+        4096
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.29.img_mlp.proj.lora_B.weight",
+      "shape": [
+        12288,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.3.attn.to_k.lora_A.weight",
+      "shape": [
+        64,
+        4096
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.3.attn.to_k.lora_B.weight",
+      "shape": [
+        4096,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.3.attn.to_out.0.lora_A.weight",
+      "shape": [
+        64,
+        4096
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.3.attn.to_out.0.lora_B.weight",
+      "shape": [
+        4096,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.3.attn.to_q.lora_A.weight",
+      "shape": [
+        64,
+        4096
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.3.attn.to_q.lora_B.weight",
+      "shape": [
+        4096,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.3.attn.to_v.lora_A.weight",
+      "shape": [
+        64,
+        4096
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.3.attn.to_v.lora_B.weight",
+      "shape": [
+        4096,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.3.img_mlp.gate_layer.lora_A.weight",
+      "shape": [
+        64,
+        4096
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.3.img_mlp.gate_layer.lora_B.weight",
+      "shape": [
+        12288,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.3.img_mlp.out.lora_A.weight",
+      "shape": [
+        64,
+        12288
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.3.img_mlp.out.lora_B.weight",
+      "shape": [
+        4096,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.3.img_mlp.proj.lora_A.weight",
+      "shape": [
+        64,
+        4096
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.3.img_mlp.proj.lora_B.weight",
+      "shape": [
+        12288,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.30.attn.to_k.lora_A.weight",
+      "shape": [
+        64,
+        4096
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.30.attn.to_k.lora_B.weight",
+      "shape": [
+        4096,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.30.attn.to_out.0.lora_A.weight",
+      "shape": [
+        64,
+        4096
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.30.attn.to_out.0.lora_B.weight",
+      "shape": [
+        4096,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.30.attn.to_q.lora_A.weight",
+      "shape": [
+        64,
+        4096
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.30.attn.to_q.lora_B.weight",
+      "shape": [
+        4096,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.30.attn.to_v.lora_A.weight",
+      "shape": [
+        64,
+        4096
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.30.attn.to_v.lora_B.weight",
+      "shape": [
+        4096,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.30.img_mlp.gate_layer.lora_A.weight",
+      "shape": [
+        64,
+        4096
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.30.img_mlp.gate_layer.lora_B.weight",
+      "shape": [
+        12288,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.30.img_mlp.out.lora_A.weight",
+      "shape": [
+        64,
+        12288
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.30.img_mlp.out.lora_B.weight",
+      "shape": [
+        4096,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.30.img_mlp.proj.lora_A.weight",
+      "shape": [
+        64,
+        4096
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.30.img_mlp.proj.lora_B.weight",
+      "shape": [
+        12288,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.31.attn.to_k.lora_A.weight",
+      "shape": [
+        64,
+        4096
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.31.attn.to_k.lora_B.weight",
+      "shape": [
+        4096,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.31.attn.to_out.0.lora_A.weight",
+      "shape": [
+        64,
+        4096
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.31.attn.to_out.0.lora_B.weight",
+      "shape": [
+        4096,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.31.attn.to_q.lora_A.weight",
+      "shape": [
+        64,
+        4096
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.31.attn.to_q.lora_B.weight",
+      "shape": [
+        4096,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.31.attn.to_v.lora_A.weight",
+      "shape": [
+        64,
+        4096
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.31.attn.to_v.lora_B.weight",
+      "shape": [
+        4096,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.31.img_mlp.gate_layer.lora_A.weight",
+      "shape": [
+        64,
+        4096
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.31.img_mlp.gate_layer.lora_B.weight",
+      "shape": [
+        12288,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.31.img_mlp.out.lora_A.weight",
+      "shape": [
+        64,
+        12288
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.31.img_mlp.out.lora_B.weight",
+      "shape": [
+        4096,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.31.img_mlp.proj.lora_A.weight",
+      "shape": [
+        64,
+        4096
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.31.img_mlp.proj.lora_B.weight",
+      "shape": [
+        12288,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.4.attn.to_k.lora_A.weight",
+      "shape": [
+        64,
+        4096
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.4.attn.to_k.lora_B.weight",
+      "shape": [
+        4096,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.4.attn.to_out.0.lora_A.weight",
+      "shape": [
+        64,
+        4096
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.4.attn.to_out.0.lora_B.weight",
+      "shape": [
+        4096,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.4.attn.to_q.lora_A.weight",
+      "shape": [
+        64,
+        4096
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.4.attn.to_q.lora_B.weight",
+      "shape": [
+        4096,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.4.attn.to_v.lora_A.weight",
+      "shape": [
+        64,
+        4096
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.4.attn.to_v.lora_B.weight",
+      "shape": [
+        4096,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.4.img_mlp.gate_layer.lora_A.weight",
+      "shape": [
+        64,
+        4096
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.4.img_mlp.gate_layer.lora_B.weight",
+      "shape": [
+        12288,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.4.img_mlp.out.lora_A.weight",
+      "shape": [
+        64,
+        12288
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.4.img_mlp.out.lora_B.weight",
+      "shape": [
+        4096,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.4.img_mlp.proj.lora_A.weight",
+      "shape": [
+        64,
+        4096
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.4.img_mlp.proj.lora_B.weight",
+      "shape": [
+        12288,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.5.attn.to_k.lora_A.weight",
+      "shape": [
+        64,
+        4096
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.5.attn.to_k.lora_B.weight",
+      "shape": [
+        4096,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.5.attn.to_out.0.lora_A.weight",
+      "shape": [
+        64,
+        4096
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.5.attn.to_out.0.lora_B.weight",
+      "shape": [
+        4096,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.5.attn.to_q.lora_A.weight",
+      "shape": [
+        64,
+        4096
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.5.attn.to_q.lora_B.weight",
+      "shape": [
+        4096,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.5.attn.to_v.lora_A.weight",
+      "shape": [
+        64,
+        4096
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.5.attn.to_v.lora_B.weight",
+      "shape": [
+        4096,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.5.img_mlp.gate_layer.lora_A.weight",
+      "shape": [
+        64,
+        4096
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.5.img_mlp.gate_layer.lora_B.weight",
+      "shape": [
+        12288,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.5.img_mlp.out.lora_A.weight",
+      "shape": [
+        64,
+        12288
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.5.img_mlp.out.lora_B.weight",
+      "shape": [
+        4096,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.5.img_mlp.proj.lora_A.weight",
+      "shape": [
+        64,
+        4096
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.5.img_mlp.proj.lora_B.weight",
+      "shape": [
+        12288,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.6.attn.to_k.lora_A.weight",
+      "shape": [
+        64,
+        4096
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.6.attn.to_k.lora_B.weight",
+      "shape": [
+        4096,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.6.attn.to_out.0.lora_A.weight",
+      "shape": [
+        64,
+        4096
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.6.attn.to_out.0.lora_B.weight",
+      "shape": [
+        4096,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.6.attn.to_q.lora_A.weight",
+      "shape": [
+        64,
+        4096
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.6.attn.to_q.lora_B.weight",
+      "shape": [
+        4096,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.6.attn.to_v.lora_A.weight",
+      "shape": [
+        64,
+        4096
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.6.attn.to_v.lora_B.weight",
+      "shape": [
+        4096,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.6.img_mlp.gate_layer.lora_A.weight",
+      "shape": [
+        64,
+        4096
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.6.img_mlp.gate_layer.lora_B.weight",
+      "shape": [
+        12288,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.6.img_mlp.out.lora_A.weight",
+      "shape": [
+        64,
+        12288
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.6.img_mlp.out.lora_B.weight",
+      "shape": [
+        4096,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.6.img_mlp.proj.lora_A.weight",
+      "shape": [
+        64,
+        4096
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.6.img_mlp.proj.lora_B.weight",
+      "shape": [
+        12288,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.7.attn.to_k.lora_A.weight",
+      "shape": [
+        64,
+        4096
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.7.attn.to_k.lora_B.weight",
+      "shape": [
+        4096,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.7.attn.to_out.0.lora_A.weight",
+      "shape": [
+        64,
+        4096
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.7.attn.to_out.0.lora_B.weight",
+      "shape": [
+        4096,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.7.attn.to_q.lora_A.weight",
+      "shape": [
+        64,
+        4096
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.7.attn.to_q.lora_B.weight",
+      "shape": [
+        4096,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.7.attn.to_v.lora_A.weight",
+      "shape": [
+        64,
+        4096
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.7.attn.to_v.lora_B.weight",
+      "shape": [
+        4096,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.7.img_mlp.gate_layer.lora_A.weight",
+      "shape": [
+        64,
+        4096
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.7.img_mlp.gate_layer.lora_B.weight",
+      "shape": [
+        12288,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.7.img_mlp.out.lora_A.weight",
+      "shape": [
+        64,
+        12288
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.7.img_mlp.out.lora_B.weight",
+      "shape": [
+        4096,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.7.img_mlp.proj.lora_A.weight",
+      "shape": [
+        64,
+        4096
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.7.img_mlp.proj.lora_B.weight",
+      "shape": [
+        12288,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.8.attn.to_k.lora_A.weight",
+      "shape": [
+        64,
+        4096
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.8.attn.to_k.lora_B.weight",
+      "shape": [
+        4096,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.8.attn.to_out.0.lora_A.weight",
+      "shape": [
+        64,
+        4096
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.8.attn.to_out.0.lora_B.weight",
+      "shape": [
+        4096,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.8.attn.to_q.lora_A.weight",
+      "shape": [
+        64,
+        4096
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.8.attn.to_q.lora_B.weight",
+      "shape": [
+        4096,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.8.attn.to_v.lora_A.weight",
+      "shape": [
+        64,
+        4096
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.8.attn.to_v.lora_B.weight",
+      "shape": [
+        4096,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.8.img_mlp.out.lora_A.weight",
+      "shape": [
+        64,
+        12288
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.8.img_mlp.out.lora_B.weight",
+      "shape": [
+        4096,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.9.attn.to_k.lora_A.weight",
+      "shape": [
+        64,
+        4096
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.9.attn.to_k.lora_B.weight",
+      "shape": [
+        4096,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.9.attn.to_out.0.lora_A.weight",
+      "shape": [
+        64,
+        4096
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.9.attn.to_out.0.lora_B.weight",
+      "shape": [
+        4096,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.9.attn.to_q.lora_A.weight",
+      "shape": [
+        64,
+        4096
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.9.attn.to_q.lora_B.weight",
+      "shape": [
+        4096,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.9.attn.to_v.lora_A.weight",
+      "shape": [
+        64,
+        4096
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.9.attn.to_v.lora_B.weight",
+      "shape": [
+        4096,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.9.img_mlp.out.lora_A.weight",
+      "shape": [
+        64,
+        12288
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    },
+    {
+      "key": "transformer.transformer_blocks.9.img_mlp.out.lora_B.weight",
+      "shape": [
+        4096,
+        64
+      ],
+      "source_dtype": "torch.bfloat16",
+      "loaded_dtype": "torch.bfloat16",
+      "value_check": "direct_dtype"
+    }
+  ],
+  "module_checks": {
+    "transformer_blocks.0.attn.to_k": {
+      "rank": 64,
+      "base_shape": [
+        4096,
+        4096
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.0.attn.to_out.0": {
+      "rank": 64,
+      "base_shape": [
+        4096,
+        4096
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.0.attn.to_q": {
+      "rank": 64,
+      "base_shape": [
+        4096,
+        4096
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.0.attn.to_v": {
+      "rank": 64,
+      "base_shape": [
+        4096,
+        4096
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.0.img_mlp.gate_layer": {
+      "rank": 64,
+      "base_shape": [
+        12288,
+        4096
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.0.img_mlp.out": {
+      "rank": 64,
+      "base_shape": [
+        4096,
+        12288
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.0.img_mlp.proj": {
+      "rank": 64,
+      "base_shape": [
+        12288,
+        4096
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.1.attn.to_k": {
+      "rank": 64,
+      "base_shape": [
+        4096,
+        4096
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.1.attn.to_out.0": {
+      "rank": 64,
+      "base_shape": [
+        4096,
+        4096
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.1.attn.to_q": {
+      "rank": 64,
+      "base_shape": [
+        4096,
+        4096
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.1.attn.to_v": {
+      "rank": 64,
+      "base_shape": [
+        4096,
+        4096
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.1.img_mlp.gate_layer": {
+      "rank": 64,
+      "base_shape": [
+        12288,
+        4096
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.1.img_mlp.out": {
+      "rank": 64,
+      "base_shape": [
+        4096,
+        12288
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.1.img_mlp.proj": {
+      "rank": 64,
+      "base_shape": [
+        12288,
+        4096
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.10.attn.to_k": {
+      "rank": 64,
+      "base_shape": [
+        4096,
+        4096
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.10.attn.to_out.0": {
+      "rank": 64,
+      "base_shape": [
+        4096,
+        4096
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.10.attn.to_q": {
+      "rank": 64,
+      "base_shape": [
+        4096,
+        4096
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.10.attn.to_v": {
+      "rank": 64,
+      "base_shape": [
+        4096,
+        4096
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.10.img_mlp.out": {
+      "rank": 64,
+      "base_shape": [
+        4096,
+        12288
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.11.attn.to_k": {
+      "rank": 64,
+      "base_shape": [
+        4096,
+        4096
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.11.attn.to_out.0": {
+      "rank": 64,
+      "base_shape": [
+        4096,
+        4096
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.11.attn.to_q": {
+      "rank": 64,
+      "base_shape": [
+        4096,
+        4096
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.11.attn.to_v": {
+      "rank": 64,
+      "base_shape": [
+        4096,
+        4096
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.11.img_mlp.out": {
+      "rank": 64,
+      "base_shape": [
+        4096,
+        12288
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.12.attn.to_k": {
+      "rank": 64,
+      "base_shape": [
+        4096,
+        4096
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.12.attn.to_out.0": {
+      "rank": 64,
+      "base_shape": [
+        4096,
+        4096
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.12.attn.to_q": {
+      "rank": 64,
+      "base_shape": [
+        4096,
+        4096
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.12.attn.to_v": {
+      "rank": 64,
+      "base_shape": [
+        4096,
+        4096
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.12.img_mlp.out": {
+      "rank": 64,
+      "base_shape": [
+        4096,
+        12288
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.13.attn.to_k": {
+      "rank": 64,
+      "base_shape": [
+        4096,
+        4096
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.13.attn.to_out.0": {
+      "rank": 64,
+      "base_shape": [
+        4096,
+        4096
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.13.attn.to_q": {
+      "rank": 64,
+      "base_shape": [
+        4096,
+        4096
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.13.attn.to_v": {
+      "rank": 64,
+      "base_shape": [
+        4096,
+        4096
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.13.img_mlp.out": {
+      "rank": 64,
+      "base_shape": [
+        4096,
+        12288
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.14.attn.to_k": {
+      "rank": 64,
+      "base_shape": [
+        4096,
+        4096
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.14.attn.to_out.0": {
+      "rank": 64,
+      "base_shape": [
+        4096,
+        4096
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.14.attn.to_q": {
+      "rank": 64,
+      "base_shape": [
+        4096,
+        4096
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.14.attn.to_v": {
+      "rank": 64,
+      "base_shape": [
+        4096,
+        4096
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.14.img_mlp.out": {
+      "rank": 64,
+      "base_shape": [
+        4096,
+        12288
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.15.attn.to_k": {
+      "rank": 64,
+      "base_shape": [
+        4096,
+        4096
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.15.attn.to_out.0": {
+      "rank": 64,
+      "base_shape": [
+        4096,
+        4096
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.15.attn.to_q": {
+      "rank": 64,
+      "base_shape": [
+        4096,
+        4096
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.15.attn.to_v": {
+      "rank": 64,
+      "base_shape": [
+        4096,
+        4096
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.15.img_mlp.out": {
+      "rank": 64,
+      "base_shape": [
+        4096,
+        12288
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.2.attn.to_k": {
+      "rank": 64,
+      "base_shape": [
+        4096,
+        4096
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.2.attn.to_out.0": {
+      "rank": 64,
+      "base_shape": [
+        4096,
+        4096
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.2.attn.to_q": {
+      "rank": 64,
+      "base_shape": [
+        4096,
+        4096
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.2.attn.to_v": {
+      "rank": 64,
+      "base_shape": [
+        4096,
+        4096
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.2.img_mlp.gate_layer": {
+      "rank": 64,
+      "base_shape": [
+        12288,
+        4096
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.2.img_mlp.out": {
+      "rank": 64,
+      "base_shape": [
+        4096,
+        12288
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.2.img_mlp.proj": {
+      "rank": 64,
+      "base_shape": [
+        12288,
+        4096
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.24.attn.to_k": {
+      "rank": 64,
+      "base_shape": [
+        4096,
+        4096
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.24.attn.to_out.0": {
+      "rank": 64,
+      "base_shape": [
+        4096,
+        4096
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.24.attn.to_q": {
+      "rank": 64,
+      "base_shape": [
+        4096,
+        4096
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.24.attn.to_v": {
+      "rank": 64,
+      "base_shape": [
+        4096,
+        4096
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.24.img_mlp.gate_layer": {
+      "rank": 64,
+      "base_shape": [
+        12288,
+        4096
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.24.img_mlp.out": {
+      "rank": 64,
+      "base_shape": [
+        4096,
+        12288
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.24.img_mlp.proj": {
+      "rank": 64,
+      "base_shape": [
+        12288,
+        4096
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.25.attn.to_k": {
+      "rank": 64,
+      "base_shape": [
+        4096,
+        4096
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.25.attn.to_out.0": {
+      "rank": 64,
+      "base_shape": [
+        4096,
+        4096
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.25.attn.to_q": {
+      "rank": 64,
+      "base_shape": [
+        4096,
+        4096
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.25.attn.to_v": {
+      "rank": 64,
+      "base_shape": [
+        4096,
+        4096
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.25.img_mlp.gate_layer": {
+      "rank": 64,
+      "base_shape": [
+        12288,
+        4096
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.25.img_mlp.out": {
+      "rank": 64,
+      "base_shape": [
+        4096,
+        12288
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.25.img_mlp.proj": {
+      "rank": 64,
+      "base_shape": [
+        12288,
+        4096
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.26.attn.to_k": {
+      "rank": 64,
+      "base_shape": [
+        4096,
+        4096
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.26.attn.to_out.0": {
+      "rank": 64,
+      "base_shape": [
+        4096,
+        4096
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.26.attn.to_q": {
+      "rank": 64,
+      "base_shape": [
+        4096,
+        4096
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.26.attn.to_v": {
+      "rank": 64,
+      "base_shape": [
+        4096,
+        4096
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.26.img_mlp.gate_layer": {
+      "rank": 64,
+      "base_shape": [
+        12288,
+        4096
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.26.img_mlp.out": {
+      "rank": 64,
+      "base_shape": [
+        4096,
+        12288
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.26.img_mlp.proj": {
+      "rank": 64,
+      "base_shape": [
+        12288,
+        4096
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.27.attn.to_k": {
+      "rank": 64,
+      "base_shape": [
+        4096,
+        4096
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.27.attn.to_out.0": {
+      "rank": 64,
+      "base_shape": [
+        4096,
+        4096
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.27.attn.to_q": {
+      "rank": 64,
+      "base_shape": [
+        4096,
+        4096
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.27.attn.to_v": {
+      "rank": 64,
+      "base_shape": [
+        4096,
+        4096
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.27.img_mlp.gate_layer": {
+      "rank": 64,
+      "base_shape": [
+        12288,
+        4096
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.27.img_mlp.out": {
+      "rank": 64,
+      "base_shape": [
+        4096,
+        12288
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.27.img_mlp.proj": {
+      "rank": 64,
+      "base_shape": [
+        12288,
+        4096
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.28.attn.to_k": {
+      "rank": 64,
+      "base_shape": [
+        4096,
+        4096
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.28.attn.to_out.0": {
+      "rank": 64,
+      "base_shape": [
+        4096,
+        4096
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.28.attn.to_q": {
+      "rank": 64,
+      "base_shape": [
+        4096,
+        4096
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.28.attn.to_v": {
+      "rank": 64,
+      "base_shape": [
+        4096,
+        4096
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.28.img_mlp.gate_layer": {
+      "rank": 64,
+      "base_shape": [
+        12288,
+        4096
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.28.img_mlp.out": {
+      "rank": 64,
+      "base_shape": [
+        4096,
+        12288
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.28.img_mlp.proj": {
+      "rank": 64,
+      "base_shape": [
+        12288,
+        4096
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.29.attn.to_k": {
+      "rank": 64,
+      "base_shape": [
+        4096,
+        4096
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.29.attn.to_out.0": {
+      "rank": 64,
+      "base_shape": [
+        4096,
+        4096
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.29.attn.to_q": {
+      "rank": 64,
+      "base_shape": [
+        4096,
+        4096
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.29.attn.to_v": {
+      "rank": 64,
+      "base_shape": [
+        4096,
+        4096
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.29.img_mlp.gate_layer": {
+      "rank": 64,
+      "base_shape": [
+        12288,
+        4096
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.29.img_mlp.out": {
+      "rank": 64,
+      "base_shape": [
+        4096,
+        12288
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.29.img_mlp.proj": {
+      "rank": 64,
+      "base_shape": [
+        12288,
+        4096
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.3.attn.to_k": {
+      "rank": 64,
+      "base_shape": [
+        4096,
+        4096
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.3.attn.to_out.0": {
+      "rank": 64,
+      "base_shape": [
+        4096,
+        4096
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.3.attn.to_q": {
+      "rank": 64,
+      "base_shape": [
+        4096,
+        4096
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.3.attn.to_v": {
+      "rank": 64,
+      "base_shape": [
+        4096,
+        4096
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.3.img_mlp.gate_layer": {
+      "rank": 64,
+      "base_shape": [
+        12288,
+        4096
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.3.img_mlp.out": {
+      "rank": 64,
+      "base_shape": [
+        4096,
+        12288
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.3.img_mlp.proj": {
+      "rank": 64,
+      "base_shape": [
+        12288,
+        4096
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.30.attn.to_k": {
+      "rank": 64,
+      "base_shape": [
+        4096,
+        4096
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.30.attn.to_out.0": {
+      "rank": 64,
+      "base_shape": [
+        4096,
+        4096
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.30.attn.to_q": {
+      "rank": 64,
+      "base_shape": [
+        4096,
+        4096
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.30.attn.to_v": {
+      "rank": 64,
+      "base_shape": [
+        4096,
+        4096
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.30.img_mlp.gate_layer": {
+      "rank": 64,
+      "base_shape": [
+        12288,
+        4096
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.30.img_mlp.out": {
+      "rank": 64,
+      "base_shape": [
+        4096,
+        12288
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.30.img_mlp.proj": {
+      "rank": 64,
+      "base_shape": [
+        12288,
+        4096
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.31.attn.to_k": {
+      "rank": 64,
+      "base_shape": [
+        4096,
+        4096
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.31.attn.to_out.0": {
+      "rank": 64,
+      "base_shape": [
+        4096,
+        4096
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.31.attn.to_q": {
+      "rank": 64,
+      "base_shape": [
+        4096,
+        4096
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.31.attn.to_v": {
+      "rank": 64,
+      "base_shape": [
+        4096,
+        4096
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.31.img_mlp.gate_layer": {
+      "rank": 64,
+      "base_shape": [
+        12288,
+        4096
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.31.img_mlp.out": {
+      "rank": 64,
+      "base_shape": [
+        4096,
+        12288
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.31.img_mlp.proj": {
+      "rank": 64,
+      "base_shape": [
+        12288,
+        4096
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.4.attn.to_k": {
+      "rank": 64,
+      "base_shape": [
+        4096,
+        4096
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.4.attn.to_out.0": {
+      "rank": 64,
+      "base_shape": [
+        4096,
+        4096
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.4.attn.to_q": {
+      "rank": 64,
+      "base_shape": [
+        4096,
+        4096
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.4.attn.to_v": {
+      "rank": 64,
+      "base_shape": [
+        4096,
+        4096
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.4.img_mlp.gate_layer": {
+      "rank": 64,
+      "base_shape": [
+        12288,
+        4096
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.4.img_mlp.out": {
+      "rank": 64,
+      "base_shape": [
+        4096,
+        12288
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.4.img_mlp.proj": {
+      "rank": 64,
+      "base_shape": [
+        12288,
+        4096
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.5.attn.to_k": {
+      "rank": 64,
+      "base_shape": [
+        4096,
+        4096
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.5.attn.to_out.0": {
+      "rank": 64,
+      "base_shape": [
+        4096,
+        4096
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.5.attn.to_q": {
+      "rank": 64,
+      "base_shape": [
+        4096,
+        4096
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.5.attn.to_v": {
+      "rank": 64,
+      "base_shape": [
+        4096,
+        4096
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.5.img_mlp.gate_layer": {
+      "rank": 64,
+      "base_shape": [
+        12288,
+        4096
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.5.img_mlp.out": {
+      "rank": 64,
+      "base_shape": [
+        4096,
+        12288
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.5.img_mlp.proj": {
+      "rank": 64,
+      "base_shape": [
+        12288,
+        4096
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.6.attn.to_k": {
+      "rank": 64,
+      "base_shape": [
+        4096,
+        4096
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.6.attn.to_out.0": {
+      "rank": 64,
+      "base_shape": [
+        4096,
+        4096
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.6.attn.to_q": {
+      "rank": 64,
+      "base_shape": [
+        4096,
+        4096
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.6.attn.to_v": {
+      "rank": 64,
+      "base_shape": [
+        4096,
+        4096
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.6.img_mlp.gate_layer": {
+      "rank": 64,
+      "base_shape": [
+        12288,
+        4096
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.6.img_mlp.out": {
+      "rank": 64,
+      "base_shape": [
+        4096,
+        12288
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.6.img_mlp.proj": {
+      "rank": 64,
+      "base_shape": [
+        12288,
+        4096
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.7.attn.to_k": {
+      "rank": 64,
+      "base_shape": [
+        4096,
+        4096
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.7.attn.to_out.0": {
+      "rank": 64,
+      "base_shape": [
+        4096,
+        4096
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.7.attn.to_q": {
+      "rank": 64,
+      "base_shape": [
+        4096,
+        4096
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.7.attn.to_v": {
+      "rank": 64,
+      "base_shape": [
+        4096,
+        4096
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.7.img_mlp.gate_layer": {
+      "rank": 64,
+      "base_shape": [
+        12288,
+        4096
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.7.img_mlp.out": {
+      "rank": 64,
+      "base_shape": [
+        4096,
+        12288
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.7.img_mlp.proj": {
+      "rank": 64,
+      "base_shape": [
+        12288,
+        4096
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.8.attn.to_k": {
+      "rank": 64,
+      "base_shape": [
+        4096,
+        4096
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.8.attn.to_out.0": {
+      "rank": 64,
+      "base_shape": [
+        4096,
+        4096
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.8.attn.to_q": {
+      "rank": 64,
+      "base_shape": [
+        4096,
+        4096
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.8.attn.to_v": {
+      "rank": 64,
+      "base_shape": [
+        4096,
+        4096
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.8.img_mlp.out": {
+      "rank": 64,
+      "base_shape": [
+        4096,
+        12288
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.9.attn.to_k": {
+      "rank": 64,
+      "base_shape": [
+        4096,
+        4096
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.9.attn.to_out.0": {
+      "rank": 64,
+      "base_shape": [
+        4096,
+        4096
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.9.attn.to_q": {
+      "rank": 64,
+      "base_shape": [
+        4096,
+        4096
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.9.attn.to_v": {
+      "rank": 64,
+      "base_shape": [
+        4096,
+        4096
+      ],
+      "effective_scale": 1.0
+    },
+    "transformer_blocks.9.img_mlp.out": {
+      "rank": 64,
+      "base_shape": [
+        4096,
+        12288
+      ],
+      "effective_scale": 1.0
+    }
+  },
+  "module_scales": [
+    1.0
+  ],
+  "all_values_match_after_dtype_conversion": true,
+  "tensors_cast_through_base_dtype": 0,
+  "converted_lora_sha256": "3584826b23183d355752220ee5d6b77f1e1b733d2d3290adab1ce231ed1d3c38",
+  "freeze": {
+    "all_parameters_frozen": true,
+    "trainable_parameter_names": [],
+    "parameter_tensors": 601,
+    "parameter_elements": 7224176640,
+    "lora_parameter_tensors": 304,
+    "lora_parameter_elements": 109051904,
+    "parameter_names_sha256": "c498e5db4bf9c08ecd4bee20a176c6f5b5fae9cb075974637db8bb85ee5b23fe"
+  },
+  "loaded_lora_sha256": "96d5fbaa23b9db4b358e952aeb5ed4e3405d2299607a567c19f82da49bcfc23d",
+  "loaded_lora_digest_scope": "lora_parameters_only"
+}

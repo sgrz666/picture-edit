@@ -1,0 +1,145 @@
+{
+  "model": "multiHMR_896_L",
+  "image": "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/raw/pair22/hug22/images/4/000005.jpg",
+  "original_size_wh": [
+    940,
+    1280
+  ],
+  "canvas_size": 896,
+  "camera": {
+    "source": "assumed_fov",
+    "fov_degrees": 60,
+    "K_canvas": [
+      [
+        [
+          775.958740234375,
+          0.0,
+          448.0
+        ],
+        [
+          0.0,
+          775.958740234375,
+          448.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0
+        ]
+      ]
+    ]
+  },
+  "threshold": 0.3,
+  "nms_kernel_size": 3,
+  "person_count": 2,
+  "people": [
+    {
+      "index": 0,
+      "fields": {
+        "scores": [],
+        "loc": [
+          2
+        ],
+        "transl": [
+          3
+        ],
+        "transl_pelvis": [
+          1,
+          3
+        ],
+        "rotvec": [
+          53,
+          3
+        ],
+        "expression": [
+          10
+        ],
+        "shape": [
+          10
+        ],
+        "v3d": [
+          10475,
+          3
+        ],
+        "j3d": [
+          127,
+          3
+        ],
+        "j2d": [
+          127,
+          2
+        ]
+      },
+      "finite": true,
+      "scores": 0.56884765625,
+      "transl": [
+        -0.1562291383743286,
+        -0.7989396452903748,
+        2.789818286895752
+      ],
+      "transl_pelvis": [
+        [
+          -0.1767674684524536,
+          -0.15782636404037476,
+          2.903709888458252
+        ]
+      ]
+    },
+    {
+      "index": 1,
+      "fields": {
+        "scores": [],
+        "loc": [
+          2
+        ],
+        "transl": [
+          3
+        ],
+        "transl_pelvis": [
+          1,
+          3
+        ],
+        "rotvec": [
+          53,
+          3
+        ],
+        "expression": [
+          10
+        ],
+        "shape": [
+          10
+        ],
+        "v3d": [
+          10475,
+          3
+        ],
+        "j3d": [
+          127,
+          3
+        ],
+        "j2d": [
+          127,
+          2
+        ]
+      },
+      "finite": true,
+      "scores": 0.7333984375,
+      "transl": [
+        0.2715018689632416,
+        -0.6886394619941711,
+        2.6992030143737793
+      ],
+      "transl_pelvis": [
+        [
+          0.3599418103694916,
+          -0.09342461824417114,
+          2.8109583854675293
+        ]
+      ]
+    }
+  ],
+  "load_seconds": 6.723076996997406,
+  "first_forward_seconds": 1.0253429430013057,
+  "max_cuda_allocated_bytes": 3701292032,
+  "torch": "2.8.0+cu128"
+}

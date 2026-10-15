@@ -1,0 +1,24 @@
+{
+  "train": {
+    "pairs_checked": 8,
+    "source_identity_and_B_geometry": true,
+    "target_identity_zero": true
+  },
+  "geometry_bundle_valid": true,
+  "val": {
+    "pairs_checked": 4,
+    "source_identity_and_B_geometry": true,
+    "target_identity_zero": true
+  },
+  "cross_person": {
+    "pairs_checked": 2,
+    "source_identity_and_B_geometry": true,
+    "target_identity_zero": true
+  },
+  "invalid_source_face_fallback": true,
+  "all_cache_fingerprints_valid": true,
+  "resolutions_checked": [
+    512,
+    1024
+  ]
+}

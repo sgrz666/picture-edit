@@ -1,0 +1,161 @@
+<?xml version='1.0' encoding='utf-8'?>
+<mxfile host="Electron" modified="2026-09-22T00:00:00.000Z" agent="Codex" version="31.4.5" type="device" compressed="false">
+  <diagram id="04_hand_adapter_with_encoder.drawio" name="Page-1">
+    <mxGraphModel dx="1422" dy="794" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1900" pageHeight="1190" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="c2" value="04" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#EAF6E7;strokeColor=#4D8A42;strokeWidth=1.6;fontFamily=Microsoft YaHei;fontSize=24;fontColor=#18324A;fontStyle=1;align=center;verticalAlign=middle;spacingLeft=10;spacingRight=10;spacingTop=5;spacingBottom=5;dashed=0;dashPattern=6 4;" vertex="1" parent="1">
+          <mxGeometry x="42" y="30" width="58" height="58" as="geometry" />
+        </mxCell>
+        <mxCell id="c3" value="Hand Adapter 架构（含 Encoder）" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;fontFamily=Microsoft YaHei;fontSize=28;fontColor=#18324A;fontStyle=1;align=left;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="120" y="26" width="1220" height="42" as="geometry" />
+        </mxCell>
+        <mxCell id="c4" value="左右手共享一个 Hand encoder；左手先规范化到右手坐标系，控制核心与 Face 共用 Detail Branch" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;fontFamily=Microsoft YaHei;fontSize=15;fontColor=#60758A;fontStyle=0;align=left;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="120" y="68" width="1350" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="c5" value="蓝=输入  绿=编码  紫=推理&lt;br&gt;橙=Adapter  红=Detail  灰=冻结" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#B8C5D0;strokeWidth=1.6;fontFamily=Microsoft YaHei;fontSize=12;fontColor=#18324A;fontStyle=0;align=center;verticalAlign=middle;spacingLeft=10;spacingRight=10;spacingTop=5;spacingBottom=5;dashed=0;dashPattern=6 4;" vertex="1" parent="1">
+          <mxGeometry x="1490" y="30" width="365" height="58" as="geometry" />
+        </mxCell>
+        <mxCell id="c6" value="A  目标手部几何编码" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#2E8B73;strokeWidth=1.8;dashed=1;dashPattern=7 5;fontFamily=Microsoft YaHei;fontSize=15;fontStyle=1;fontColor=#2E8B73;align=left;verticalAlign=top;spacingLeft=12;spacingTop=8;" vertex="1" parent="1">
+          <mxGeometry x="35" y="135" width="640" height="720" as="geometry" />
+        </mxCell>
+        <mxCell id="c7" value="左手条件&lt;br&gt;21×(x,y,confidence)&lt;br&gt;+ 45D SMPL-X hand pose" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#EAF3FF;strokeColor=#4D86C6;strokeWidth=1.6;fontFamily=Microsoft YaHei;fontSize=15;fontColor=#18324A;fontStyle=1;align=center;verticalAlign=middle;spacingLeft=10;spacingRight=10;spacingTop=5;spacingBottom=5;dashed=0;dashPattern=6 4;" vertex="1" parent="1">
+          <mxGeometry x="75" y="195" width="255" height="95" as="geometry" />
+        </mxCell>
+        <mxCell id="c8" value="左手规范化&lt;br&gt;x → 1-x&lt;br&gt;axis-angle [rx,ry,rz]&lt;br&gt;→ [rx,-ry,-rz]" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#FFF6D9;strokeColor=#B88A19;strokeWidth=1.6;fontFamily=Microsoft YaHei;fontSize=15;fontColor=#18324A;fontStyle=1;align=center;verticalAlign=middle;spacingLeft=10;spacingRight=10;spacingTop=5;spacingBottom=5;dashed=0;dashPattern=6 4;" vertex="1" parent="1">
+          <mxGeometry x="375" y="195" width="255" height="95" as="geometry" />
+        </mxCell>
+        <mxCell id="c9" value="右手条件&lt;br&gt;21×(x,y,confidence) + 45D pose&lt;br&gt;保持原坐标" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#EAF3FF;strokeColor=#4D86C6;strokeWidth=1.6;fontFamily=Microsoft YaHei;fontSize=15;fontColor=#18324A;fontStyle=1;align=center;verticalAlign=middle;spacingLeft=10;spacingRight=10;spacingTop=5;spacingBottom=5;dashed=0;dashPattern=6 4;" vertex="1" parent="1">
+          <mxGeometry x="75" y="345" width="255" height="95" as="geometry" />
+        </mxCell>
+        <mxCell id="c10" value="共享 Hand Encoder&lt;br&gt;输入 21×3 +45 =108D&lt;br&gt;LayerNorm108 → Linear256&lt;br&gt;→ SiLU → Linear128" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#E4F7F1;strokeColor=#2E8B73;strokeWidth=1.6;fontFamily=Microsoft YaHei;fontSize=15;fontColor=#18324A;fontStyle=1;align=center;verticalAlign=middle;spacingLeft=10;spacingRight=10;spacingTop=5;spacingBottom=5;dashed=0;dashPattern=6 4;" vertex="1" parent="1">
+          <mxGeometry x="375" y="345" width="255" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="c11" value="left/right target boxes&lt;br&gt;+ region_valid&lt;br&gt;soft masks @ latent/token" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#E4F7F1;strokeColor=#2E8B73;strokeWidth=1.6;fontFamily=Microsoft YaHei;fontSize=15;fontColor=#18324A;fontStyle=1;align=center;verticalAlign=middle;spacingLeft=10;spacingRight=10;spacingTop=5;spacingBottom=5;dashed=0;dashPattern=6 4;" vertex="1" parent="1">
+          <mxGeometry x="75" y="520" width="255" height="95" as="geometry" />
+        </mxCell>
+        <mxCell id="c12" value="局部几何 canvas&lt;br&gt;左/右 128D region feature&lt;br&gt;× mask&lt;br&gt;多区域按权重平均" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#E4F7F1;strokeColor=#2E8B73;strokeWidth=1.6;fontFamily=Microsoft YaHei;fontSize=15;fontColor=#18324A;fontStyle=1;align=center;verticalAlign=middle;spacingLeft=10;spacingRight=10;spacingTop=5;spacingBottom=5;dashed=0;dashPattern=6 4;" vertex="1" parent="1">
+          <mxGeometry x="375" y="520" width="255" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="c13" value="Hand geometry contribution&lt;br&gt;[B,128,Hlat,Wlat]" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#E4F7F1;strokeColor=#2E8B73;strokeWidth=1.6;fontFamily=Microsoft YaHei;fontSize=15;fontColor=#18324A;fontStyle=1;align=center;verticalAlign=middle;spacingLeft=10;spacingRight=10;spacingTop=5;spacingBottom=5;dashed=0;dashPattern=6 4;" vertex="1" parent="1">
+          <mxGeometry x="220" y="700" width="270" height="75" as="geometry" />
+        </mxCell>
+        <mxCell id="e14" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#45657F;strokeWidth=2.0;endArrow=block;endFill=1;endSize=8;dashed=0;dashPattern=6 4;fontFamily=Microsoft YaHei;fontSize=13;fontColor=#60758A;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="c7" target="c8">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e15" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#45657F;strokeWidth=2.0;endArrow=block;endFill=1;endSize=8;dashed=0;dashPattern=6 4;fontFamily=Microsoft YaHei;fontSize=13;fontColor=#60758A;labelBackgroundColor=#FFFFFF;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="c8" target="c10">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e16" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#45657F;strokeWidth=2.0;endArrow=block;endFill=1;endSize=8;dashed=0;dashPattern=6 4;fontFamily=Microsoft YaHei;fontSize=13;fontColor=#60758A;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="c9" target="c10">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e17" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#45657F;strokeWidth=2.0;endArrow=block;endFill=1;endSize=8;dashed=0;dashPattern=6 4;fontFamily=Microsoft YaHei;fontSize=13;fontColor=#60758A;labelBackgroundColor=#FFFFFF;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="c10" target="c12">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e18" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#45657F;strokeWidth=2.0;endArrow=block;endFill=1;endSize=8;dashed=0;dashPattern=6 4;fontFamily=Microsoft YaHei;fontSize=13;fontColor=#60758A;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="c11" target="c12">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e19" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#45657F;strokeWidth=2.0;endArrow=block;endFill=1;endSize=8;dashed=0;dashPattern=6 4;fontFamily=Microsoft YaHei;fontSize=13;fontColor=#60758A;labelBackgroundColor=#FFFFFF;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="c12" target="c13">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="c20" value="B  源手外观与绑定" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#C94C65;strokeWidth=1.8;dashed=1;dashPattern=7 5;fontFamily=Microsoft YaHei;fontSize=15;fontStyle=1;fontColor=#C94C65;align=left;verticalAlign=top;spacingLeft=12;spacingTop=8;" vertex="1" parent="1">
+          <mxGeometry x="705" y="135" width="535" height="720" as="geometry" />
+        </mxCell>
+        <mxCell id="c21" value="源左手 / 右手 ROI crops&lt;br&gt;每侧 R=1…3，224×224&lt;br&gt;source boxes + reference_valid" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#EAF3FF;strokeColor=#4D86C6;strokeWidth=1.6;fontFamily=Microsoft YaHei;fontSize=15;fontColor=#18324A;fontStyle=1;align=center;verticalAlign=middle;spacingLeft=10;spacingRight=10;spacingTop=5;spacingBottom=5;dashed=0;dashPattern=6 4;" vertex="1" parent="1">
+          <mxGeometry x="745" y="195" width="455" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="c22" value="当前默认局部外观特征&lt;br&gt;每 crop: RGB mean + sqrt variance = 6D" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#FFE9EC;strokeColor=#C94C65;strokeWidth=1.6;fontFamily=Microsoft YaHei;fontSize=15;fontColor=#18324A;fontStyle=1;align=center;verticalAlign=middle;spacingLeft=10;spacingRight=10;spacingTop=5;spacingBottom=5;dashed=0;dashPattern=6 4;" vertex="1" parent="1">
+          <mxGeometry x="745" y="345" width="455" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="c23" value="共享 DetailAppearanceEncoder&lt;br&gt;6→256→8×1536 tokens / hand&lt;br&gt;缺失源手 → anatomical null appearance token" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#FFE9EC;strokeColor=#C94C65;strokeWidth=1.6;fontFamily=Microsoft YaHei;fontSize=15;fontColor=#18324A;fontStyle=1;align=center;verticalAlign=middle;spacingLeft=10;spacingRight=10;spacingTop=5;spacingBottom=5;dashed=0;dashPattern=6 4;" vertex="1" parent="1">
+          <mxGeometry x="745" y="475" width="455" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="c24" value="DetailTokenBinder&lt;br&gt;person/source binding + region embedding&lt;br&gt;+ anatomical side embedding(left/right)&lt;br&gt;固定键 = (source_index, person_slot, side)" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#FFE9EC;strokeColor=#C94C65;strokeWidth=1.6;fontFamily=Microsoft YaHei;fontSize=15;fontColor=#18324A;fontStyle=1;align=center;verticalAlign=middle;spacingLeft=10;spacingRight=10;spacingTop=5;spacingBottom=5;dashed=0;dashPattern=6 4;" vertex="1" parent="1">
+          <mxGeometry x="745" y="635" width="455" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="e25" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#45657F;strokeWidth=2.0;endArrow=block;endFill=1;endSize=8;dashed=0;dashPattern=6 4;fontFamily=Microsoft YaHei;fontSize=13;fontColor=#60758A;labelBackgroundColor=#FFFFFF;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="c21" target="c22">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e26" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#45657F;strokeWidth=2.0;endArrow=block;endFill=1;endSize=8;dashed=0;dashPattern=6 4;fontFamily=Microsoft YaHei;fontSize=13;fontColor=#60758A;labelBackgroundColor=#FFFFFF;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="c22" target="c23">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e27" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#45657F;strokeWidth=2.0;endArrow=block;endFill=1;endSize=8;dashed=0;dashPattern=6 4;fontFamily=Microsoft YaHei;fontSize=13;fontColor=#60758A;labelBackgroundColor=#FFFFFF;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="c23" target="c24">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="c28" value="C  Shared Detail Control" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#D07A24;strokeWidth=1.8;dashed=1;dashPattern=7 5;fontFamily=Microsoft YaHei;fontSize=15;fontStyle=1;fontColor=#D07A24;align=left;verticalAlign=top;spacingLeft=12;spacingTop=8;" vertex="1" parent="1">
+          <mxGeometry x="1270" y="135" width="595" height="720" as="geometry" />
+        </mxCell>
+        <mxCell id="c29" value="源 hand VAE ROI warp&lt;br&gt;source left/right box → target left/right box&lt;br&gt;16ch source canvas；重叠区域求平均" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#FFF1DF;strokeColor=#D07A24;strokeWidth=1.6;fontFamily=Microsoft YaHei;fontSize=15;fontColor=#18324A;fontStyle=1;align=center;verticalAlign=middle;spacingLeft=10;spacingRight=10;spacingTop=5;spacingBottom=5;dashed=0;dashPattern=6 4;" vertex="1" parent="1">
+          <mxGeometry x="1310" y="190" width="515" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="c30" value="detail_condition&lt;br&gt;16ch source canvas + 128ch detail geometry&lt;br&gt;= [B,144,Hlat,Wlat]" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#FFF1DF;strokeColor=#D07A24;strokeWidth=1.6;fontFamily=Microsoft YaHei;fontSize=15;fontColor=#18324A;fontStyle=1;align=center;verticalAlign=middle;spacingLeft=10;spacingRight=10;spacingTop=5;spacingBottom=5;dashed=0;dashPattern=6 4;" vertex="1" parent="1">
+          <mxGeometry x="1310" y="350" width="515" height="95" as="geometry" />
+        </mxCell>
+        <mxCell id="c31" value="detail_tokens&lt;br&gt;最多 2 people × 2 hands × 8 tokens&lt;br&gt;作为独立 Detail context 的一部分" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#FFE9EC;strokeColor=#C94C65;strokeWidth=1.6;fontFamily=Microsoft YaHei;fontSize=15;fontColor=#18324A;fontStyle=1;align=center;verticalAlign=middle;spacingLeft=10;spacingRight=10;spacingTop=5;spacingBottom=5;dashed=0;dashPattern=6 4;" vertex="1" parent="1">
+          <mxGeometry x="1310" y="500" width="515" height="95" as="geometry" />
+        </mxCell>
+        <mxCell id="c32" value="FaceHandDetailBranch × 6 stages&lt;br&gt;共享 DeepGen joint block&lt;br&gt;每 stage 独立 rank-64 adapter / CrossNorm / zero head" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#FFF1DF;strokeColor=#D07A24;strokeWidth=1.6;fontFamily=Microsoft YaHei;fontSize=15;fontColor=#18324A;fontStyle=1;align=center;verticalAlign=middle;spacingLeft=10;spacingRight=10;spacingTop=5;spacingBottom=5;dashed=0;dashPattern=6 4;" vertex="1" parent="1">
+          <mxGeometry x="1310" y="650" width="515" height="115" as="geometry" />
+        </mxCell>
+        <mxCell id="e33" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#45657F;strokeWidth=2.0;endArrow=block;endFill=1;endSize=8;dashed=0;dashPattern=6 4;fontFamily=Microsoft YaHei;fontSize=13;fontColor=#60758A;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="c13" target="c30">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="650" y="738" />
+              <mxPoint x="650" y="840" />
+              <mxPoint x="1260" y="840" />
+              <mxPoint x="1260" y="385" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e34" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#45657F;strokeWidth=2.0;endArrow=block;endFill=1;endSize=8;dashed=0;dashPattern=6 4;fontFamily=Microsoft YaHei;fontSize=13;fontColor=#60758A;labelBackgroundColor=#FFFFFF;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="c29" target="c30">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e35" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#45657F;strokeWidth=2.0;endArrow=block;endFill=1;endSize=8;dashed=0;dashPattern=6 4;fontFamily=Microsoft YaHei;fontSize=13;fontColor=#60758A;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="c24" target="c31">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e36" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#45657F;strokeWidth=2.0;endArrow=block;endFill=1;endSize=8;dashed=0;dashPattern=6 4;fontFamily=Microsoft YaHei;fontSize=13;fontColor=#60758A;labelBackgroundColor=#FFFFFF;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="c30" target="c32">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1290" y="470" />
+              <mxPoint x="1290" y="705" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e37" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#45657F;strokeWidth=2.0;endArrow=block;endFill=1;endSize=8;dashed=0;dashPattern=6 4;fontFamily=Microsoft YaHei;fontSize=13;fontColor=#60758A;labelBackgroundColor=#FFFFFF;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="c31" target="c32">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="c38" value="D  手部门控与 DiT 注入" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#4D8A42;strokeWidth=1.8;dashed=1;dashPattern=7 5;fontFamily=Microsoft YaHei;fontSize=15;fontStyle=1;fontColor=#4D8A42;align=left;verticalAlign=top;spacingLeft=12;spacingTop=8;" vertex="1" parent="1">
+          <mxGeometry x="35" y="900" width="1830" height="215" as="geometry" />
+        </mxCell>
+        <mxCell id="c39" value="有效性规则&lt;br&gt;源手不可见：null token，目标几何仍可用&lt;br&gt;目标手 invalid：区域残差严格为 0" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#FFF6D9;strokeColor=#B88A19;strokeWidth=1.6;fontFamily=Microsoft YaHei;fontSize=15;fontColor=#18324A;fontStyle=1;align=center;verticalAlign=middle;spacingLeft=10;spacingRight=10;spacingTop=5;spacingBottom=5;dashed=0;dashPattern=6 4;" vertex="1" parent="1">
+          <mxGeometry x="95" y="945" width="390" height="112" as="geometry" />
+        </mxCell>
+        <mxCell id="c40" value="Hand region gate&lt;br&gt;max(left mask, right mask)&lt;br&gt;× hand_strength × detail_strength&lt;br&gt;× cosine schedule × group gate" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#FFE9EC;strokeColor=#C94C65;strokeWidth=1.6;fontFamily=Microsoft YaHei;fontSize=15;fontColor=#18324A;fontStyle=1;align=center;verticalAlign=middle;spacingLeft=10;spacingRight=10;spacingTop=5;spacingBottom=5;dashed=0;dashPattern=6 4;" vertex="1" parent="1">
+          <mxGeometry x="600" y="945" width="390" height="112" as="geometry" />
+        </mxCell>
+        <mxCell id="c41" value="6 组 residuals 对齐到 Nfull&lt;br&gt;注入 DeepGen blocks 0–22" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#FFF1DF;strokeColor=#D07A24;strokeWidth=1.6;fontFamily=Microsoft YaHei;fontSize=15;fontColor=#18324A;fontStyle=1;align=center;verticalAlign=middle;spacingLeft=10;spacingRight=10;spacingTop=5;spacingBottom=5;dashed=0;dashPattern=6 4;" vertex="1" parent="1">
+          <mxGeometry x="1110" y="960" width="310" height="82" as="geometry" />
+        </mxCell>
+        <mxCell id="c42" value="输出&lt;br&gt;手部结构/外观细节增强&lt;br&gt;禁止跨人物或跨左右手借用" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#EAF6E7;strokeColor=#4D8A42;strokeWidth=1.6;fontFamily=Microsoft YaHei;fontSize=15;fontColor=#18324A;fontStyle=1;align=center;verticalAlign=middle;spacingLeft=10;spacingRight=10;spacingTop=5;spacingBottom=5;dashed=0;dashPattern=6 4;" vertex="1" parent="1">
+          <mxGeometry x="1540" y="950" width="270" height="102" as="geometry" />
+        </mxCell>
+        <mxCell id="e43" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#45657F;strokeWidth=2.0;endArrow=block;endFill=1;endSize=8;dashed=0;dashPattern=6 4;fontFamily=Microsoft YaHei;fontSize=13;fontColor=#60758A;labelBackgroundColor=#FFFFFF;exitX=0;exitY=0.5;entryX=1;entryY=0.5;" edge="1" parent="1" source="c32" target="c40">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e44" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#45657F;strokeWidth=2.0;endArrow=block;endFill=1;endSize=8;dashed=0;dashPattern=6 4;fontFamily=Microsoft YaHei;fontSize=13;fontColor=#60758A;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="c39" target="c40">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e45" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#45657F;strokeWidth=2.0;endArrow=block;endFill=1;endSize=8;dashed=0;dashPattern=6 4;fontFamily=Microsoft YaHei;fontSize=13;fontColor=#60758A;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="c40" target="c41">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e46" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#45657F;strokeWidth=2.0;endArrow=block;endFill=1;endSize=8;dashed=0;dashPattern=6 4;fontFamily=Microsoft YaHei;fontSize=13;fontColor=#60758A;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="c41" target="c42">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="c47" value="说明：左右手只共享编码器参数，不共享绑定身份；side embedding 与 source/person binding 保留解剖侧和人物归属。" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;fontFamily=Microsoft YaHei;fontSize=15;fontColor=#60758A;fontStyle=0;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="250" y="1080" width="1400" height="28" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

@@ -1,0 +1,16 @@
+{
+  "passed": true,
+  "test_scope": "CPU mapping and projection parity; no new generation or training",
+  "weight_path": "/home/shangguanrz/models/bfs/bfs_head_v1.1_qwen_2.1.safetensors",
+  "original_tensor_keys": 352,
+  "converted_tensor_keys": 384,
+  "converted_target_modules": 192,
+  "rank": 64,
+  "shapes_match_installed_qwen21": true,
+  "split_projection_max_absolute_error": 0.0,
+  "split_order": "gate first, up/proj second",
+  "diffusers": "0.41.0.dev0",
+  "peft": "0.20.0",
+  "torch": "2.8.0",
+  "transformers": "5.17.0"
+}

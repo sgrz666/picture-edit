@@ -1,0 +1,1293 @@
+{
+  "created_utc": "2026-10-01T09:27:18.463395+00:00",
+  "scope": "CPU architecture preservation; not Qwen GPU bridge or training acceptance",
+  "device": "cpu",
+  "threads": 4,
+  "torch_version": "2.8.0+cu128",
+  "source_namespace": "src.pose_control.v6",
+  "tested_namespace": "src.pose_control.qwen21_full",
+  "file_manifest": "/home/shangguanrz/nihaochen/qwen21_full/migration_manifest.json",
+  "copied_source_files": 47,
+  "parity": "Identical inputs and state_dict; exact FP32 forward and parameter-gradient parity with activated residual heads",
+  "coverage": [
+    "geometry",
+    "single/mixed/dual reasoner",
+    "appearance and identity binding",
+    "recurrent control attention",
+    "detail",
+    "Face preprocessing and Adapter",
+    "Hand preprocessing and Adapter",
+    "strength schedules",
+    "checkpoint migration"
+  ],
+  "not_claimed": [
+    "Real-data Hand training",
+    "Real-data dual-person training",
+    "Qwen interface acceptance",
+    "Image quality or generalization"
+  ],
+  "test_source_transforms": [
+    "src.pose_control.v6 -> src.pose_control.qwen21_full",
+    "Keep original repo path for config assertions",
+    "Route tests.test_* fixture imports to mirrored test_* modules"
+  ],
+  "reused_suites": [
+    {
+      "original": "/home/shangguanrz/project/pic-edit/tests/test_adapter_reasoning_v1.py",
+      "executed_copy": "/home/shangguanrz/nihaochen/qwen21_full/acceptance/legacy_tests_new_namespace/test_adapter_reasoning_v1.py",
+      "original_sha256": "8fb73085902138efaa86a6cc45d50019aff6b0d9606cd8bc302ed53567905e95",
+      "executed_sha256": "e71ca6cf62bcbc2b78a810516908062c8e7aea9d5d763b9859dc93c2986983b7"
+    },
+    {
+      "original": "/home/shangguanrz/project/pic-edit/tests/test_adapter_v6_architecture.py",
+      "executed_copy": "/home/shangguanrz/nihaochen/qwen21_full/acceptance/legacy_tests_new_namespace/test_adapter_v6_architecture.py",
+      "original_sha256": "eb106e4142d8688a87b416109fd7276d55fd2d26f397942a36f23d742cba89d6",
+      "executed_sha256": "ea58dc8820ae58d586014bdc1aff3460e8c64295f0126f7f6b1f826b39cbe75d"
+    },
+    {
+      "original": "/home/shangguanrz/project/pic-edit/tests/test_condition_bridge_contract.py",
+      "executed_copy": "/home/shangguanrz/nihaochen/qwen21_full/acceptance/legacy_tests_new_namespace/test_condition_bridge_contract.py",
+      "original_sha256": "5f81e2cf03cd9e19f9e89cc574cf2b2bc07f0c89d02b9cdb56229868a330834b",
+      "executed_sha256": "963ee13ba9addcdb3fe00ab484d42770d06114fa327b5a620ebca3bd68aca713"
+    },
+    {
+      "original": "/home/shangguanrz/project/pic-edit/tests/test_condition_injector_v1.py",
+      "executed_copy": "/home/shangguanrz/nihaochen/qwen21_full/acceptance/legacy_tests_new_namespace/test_condition_injector_v1.py",
+      "original_sha256": "e50ffe96288ae0254d72d50684879509dffe22f15abafaa39019729ba6e2b739",
+      "executed_sha256": "91f9df49b2ec1ca642b1892aefa66bd821f0e7e213adecf221fa3fb3409e7a44"
+    },
+    {
+      "original": "/home/shangguanrz/project/pic-edit/tests/test_deepgen_control_interface_v1.py",
+      "executed_copy": "/home/shangguanrz/nihaochen/qwen21_full/acceptance/legacy_tests_new_namespace/test_deepgen_control_interface_v1.py",
+      "original_sha256": "48a24d931a717f9e62424fec13fe29a4eef096e4fcabbb94dae6251d43d70acd",
+      "executed_sha256": "3cfec8b1b1ccb8f8ef361df619b07163e811de1906b436df4658f96a7242162e"
+    },
+    {
+      "original": "/home/shangguanrz/project/pic-edit/tests/test_v65_face_foundation.py",
+      "executed_copy": "/home/shangguanrz/nihaochen/qwen21_full/acceptance/legacy_tests_new_namespace/test_v65_face_foundation.py",
+      "original_sha256": "d5a39ce15ba53b9506d4d1f9e35f6ce950e36bd5858d35252f7c56544e4640f5",
+      "executed_sha256": "019d0c494400f38e61728922066e4d61c9db21184ddaf52f0e73510f7b217a2e"
+    },
+    {
+      "original": "/home/shangguanrz/project/pic-edit/tests/test_v65_face_integration.py",
+      "executed_copy": "/home/shangguanrz/nihaochen/qwen21_full/acceptance/legacy_tests_new_namespace/test_v65_face_integration.py",
+      "original_sha256": "20b39d5247f3e11a2642e243bde4a632bc4536c9371e5c2b163ea1c3bf0be5b4",
+      "executed_sha256": "80d8ccc261a1d96b4aafb0af84a8e03b0312e26641d03ecefe0498c18b009c88"
+    },
+    {
+      "original": "/home/shangguanrz/project/pic-edit/tests/test_v66_hand_core.py",
+      "executed_copy": "/home/shangguanrz/nihaochen/qwen21_full/acceptance/legacy_tests_new_namespace/test_v66_hand_core.py",
+      "original_sha256": "5014fdc17a19f1d73a019cec4174462dff76a004ffc36e7d0a38b656f1529e94",
+      "executed_sha256": "b0f6c3bb54eea78c5640f29e34f35ada58edb3df077a0abb787afe08e037515e"
+    },
+    {
+      "original": "/home/shangguanrz/project/pic-edit/tests/test_v6_detail_branch.py",
+      "executed_copy": "/home/shangguanrz/nihaochen/qwen21_full/acceptance/legacy_tests_new_namespace/test_v6_detail_branch.py",
+      "original_sha256": "e87fc7db395980a94a43b657c8f939fb13bb6b97597e6cf2a8f1b279079f3099",
+      "executed_sha256": "f62f3cc0a9eebb57e1b6091961c4e7c523ca39a928d3d77077203af6204f6a65"
+    },
+    {
+      "original": "/home/shangguanrz/project/pic-edit/tests/test_v6_detail_contracts.py",
+      "executed_copy": "/home/shangguanrz/nihaochen/qwen21_full/acceptance/legacy_tests_new_namespace/test_v6_detail_contracts.py",
+      "original_sha256": "a981bf54980311e3237f1ae18b460d9bdafdfdca80d69612527e2a2aab15f2c2",
+      "executed_sha256": "793cd0f0fee6b4599f545f04ce736c068cd5103d79f35fb00a07eeae4b1ee71f"
+    },
+    {
+      "original": "/home/shangguanrz/project/pic-edit/tests/test_v6_detail_preparer.py",
+      "executed_copy": "/home/shangguanrz/nihaochen/qwen21_full/acceptance/legacy_tests_new_namespace/test_v6_detail_preparer.py",
+      "original_sha256": "013e46b8f30719f818145657f2c2dd084d86ebb23b78d529afa5b7fb1b4ab17b",
+      "executed_sha256": "d8ca7fb658a3d8dd94eeed5326a8c1d54fa5846a321d7979464f0a994bc16b93"
+    }
+  ],
+  "counts": {
+    "passed": 169
+  },
+  "exit_code": 0,
+  "seconds": 22.825643560965545,
+  "collection_errors": [],
+  "tests": [
+    {
+      "nodeid": "tests/test_qwen21_full_preservation.py::test_manifest_preserves_every_original_file_and_hash",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.004741014039609581,
+      "failure": null
+    },
+    {
+      "nodeid": "tests/test_qwen21_full_preservation.py::test_copied_modules_do_not_import_old_namespace",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.0821819890406914,
+      "failure": null
+    },
+    {
+      "nodeid": "tests/test_qwen21_full_preservation.py::test_reasoner_same_weights_forward_and_gradients[counts0]",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.03407312702620402,
+      "failure": null
+    },
+    {
+      "nodeid": "tests/test_qwen21_full_preservation.py::test_reasoner_same_weights_forward_and_gradients[counts1]",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.04700111196143553,
+      "failure": null
+    },
+    {
+      "nodeid": "tests/test_qwen21_full_preservation.py::test_reasoner_same_weights_forward_and_gradients[counts2]",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.0632477619801648,
+      "failure": null
+    },
+    {
+      "nodeid": "tests/test_qwen21_full_preservation.py::test_control_core_same_weights_active_forward_and_gradients",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.050291929044760764,
+      "failure": null
+    },
+    {
+      "nodeid": "tests/test_qwen21_full_preservation.py::test_appearance_binding_and_strength_same_weights",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.006219302013050765,
+      "failure": null
+    },
+    {
+      "nodeid": "tests/test_qwen21_full_preservation.py::test_face_preprocessing_adapter_same_weights_and_gradients",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.4676647040178068,
+      "failure": null
+    },
+    {
+      "nodeid": "tests/test_qwen21_full_preservation.py::test_hand_preprocessing_adapter_same_weights_and_gradients",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.12427856802241877,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_condition_injector_module_is_available",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.0002424800186417997,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_single_person_bundle_has_stable_shapes",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.05732687498675659,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_mixed_dual_batch_masks_invalid_person_and_interaction_conditions",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.05693294299999252,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_human_mask_blocks_background_changes",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.05605534597998485,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_depth_is_ignored_when_disabled_and_jointly_normalized_when_enabled",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.12050793902017176,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_joint_depth_normalization_excludes_a_missing_modality",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.0007772750104777515,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_invalid_contracts_fail_loudly",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.03642955800751224,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_contact_padding_and_global_task_sensitivity",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.06799495400628075,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_contact_padding_may_use_negative_sentinel_indices",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.05292574898339808,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_zero_contact_raster_stays_zero_per_batch_row",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.054460167011711746,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_champ_backend_is_opt_in_and_runs_without_weights_or_video_dependencies",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.05534671194618568,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_reasoning_public_contract_is_available",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.00025604397524148226,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_single_dual_and_mixed_outputs_have_stable_shapes[counts0-8-4]",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.008435524010565132,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_single_dual_and_mixed_outputs_have_stable_shapes[counts1-8-4]",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.012792696012184024,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_single_dual_and_mixed_outputs_have_stable_shapes[counts2-4-2]",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.018341659975703806,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_reasoner_rejects_odd_condition_resolution",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.00710752495797351,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_reasoner_masks_background_and_rejects_empty_valid_person",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.013310351001564413,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_shared_person_reasoner_uses_global_task_and_role_binding",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.03298334701685235,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_dual_person_and_relative_changes_do_not_affect_single_rows",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.029478967015165836,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_mixed_batch_rows_match_standalone_reasoning",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.03391285898396745,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_contact_gate_and_relation_mask_behavior",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.052134230034425855,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_relation_padding_does_not_couple_batch_rows",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.030417000991292298,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_internal_control_state_to_and_index_select_preserve_discrete_dtypes",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.016283693024888635,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_reasoning_smoke_and_current_config_are_declared",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.0009115199791267514,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_both_high_resolution_paths_receive_integrated_gradients",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.022169873991515487,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_reasoner_bridge_projects_independent_geometry_and_interaction_scenes",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.0022161079687066376,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_interaction_projection_has_no_bias_and_single_rows_ignore_interaction",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.001621624978724867,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_bridge_consumes_both_high_resolution_control_paths",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.0045605230261571705,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_bridge_keeps_all_four_reasoner_paths_on_the_gradient_graph",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.0028032519621774554,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_smoke_report_names_preserve_backend_results",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.0009230450377799571,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_adapter_public_boundary_consumes_bundle_and_separate_identity",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.07092161697801203,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_legacy_raw_condition_contract_is_removed",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.00028929696418344975,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_router_uses_only_bundle_person_count",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.0003751550102606416,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_old_experts_and_raw_condition_bridge_are_removed",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.00023803900694474578,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_single_route_ignores_invalid_person_b_contact_and_appearance",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.09236861002864316,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_source_appearance_remains_condition_sensitive",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.06904044200200588,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_control_core_context_contains_only_bound_person_tokens",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.0803640530211851,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_zero_heads_emit_six_target_only_residuals_and_alignment_is_exact",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.09491979697486386,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_contact_padding_mask_does_not_couple_batch_rows",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.11232711398042738,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_architecture_config_reports_parameters_without_a_size_gate",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.06150695099495351,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_smoke_parameter_report_uses_reasoner_instead_of_removed_experts",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.0558070539846085,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_from_deepgen_freezes_backbone",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.04855352296726778,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_builders_forward_condition_backend_options",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.058340515999589115,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_pipeline_freeze_helper_covers_vae_vlm_and_connector",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.0004849520046263933,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_frozen_consumer_preserves_gradients_to_reasoner_and_identity_path",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.1417679800069891,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_branch_control_residuals_validate_dynamic_token_shape",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.0006326030124910176,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_strength_schedule_curves[constant-0.5-1.0]",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.0007452280260622501,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_strength_schedule_curves[linear-0.5-0.5]",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.00023567397147417068,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_strength_schedule_curves[cosine-0.5-0.5]",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.0002652709954418242,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_strength_schedule_is_zero_outside_its_window",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.00029523303965106606,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_strength_controller_scales_branches_and_groups_independently",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.0011668120278045535,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_deepgen_control_output_requires_six_aligned_residuals",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.00038755295099690557,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_dynamic_core_has_independent_zero_heads_per_branch",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.012324320035986602,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_dynamic_core_runs_interaction_only_for_valid_dual_rows",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.012735255004372448,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_dynamic_core_is_sensitive_to_latent_text_and_timestep",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.018664113013073802,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_deepgen_interface_aligns_target_source_and_padding_tokens",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.015079897013492882,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_deepgen_interface_reports_native_group_mapping_and_skips_last_block",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.0046907729702070355,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_prepared_control_conditioning_expands_in_cfg_order",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.001182346954010427,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_unified_adapter_prepares_static_identity_bound_control",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.05487019300926477,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_unified_adapter_single_preparation_has_exact_zero_interaction",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.057059620041400194,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_unified_adapter_forward_returns_control_output",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.059219330025371164,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_controlled_pipeline_injects_each_step_and_restores_hook",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.0767294520046562,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_controlled_pipeline_restores_hook_after_failure",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.3212654400267638,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_controlled_pipeline_rejects_duplicate_external_control",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.05265039496589452,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_controlled_pipeline_resets_active_state_if_hook_registration_fails",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.056168233044445515,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_controlled_pipeline_rejects_nested_or_concurrent_call",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.04935695300810039,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_detail_condition_contract_to_and_index_select_preserve_discrete_dtypes",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.0010158729855902493,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_reference_contract_to_and_index_select",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.06462169898441061,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_detail_condition_rejects_invalid_inputs[<lambda>-face_keypoints]",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.000614285992924124,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_detail_condition_rejects_invalid_inputs[<lambda>-floating tensors]",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.0005294199800118804,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_detail_condition_rejects_invalid_inputs[<lambda>-finite]",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.000550359021872282,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_detail_condition_rejects_invalid_inputs[<lambda>-normalized0]",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.0008065100410021842,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_detail_condition_rejects_invalid_inputs[<lambda>-xyxy]",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.000746340025216341,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_detail_condition_rejects_invalid_inputs[<lambda>-normalized1]",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.0005300709744915366,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_detail_condition_rejects_invalid_inputs[<lambda>-int64]",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.00048172997776418924,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_reference_contract_rejects_invalid_count_shape_and_mask_dtype",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.05974563100608066,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_left_hand_canonicalization_has_explicit_inverse_and_is_an_involution",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.0009208830306306481,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_person_binding_validates_source_range_and_uniqueness_without_state_key_changes",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.0019276830134913325,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_detail_token_binding_order_and_invalid_region_zeroing",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.001500893966294825,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_axis_angle_left_hand_canonicalization_is_an_involution",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.0007564590196125209,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_mirrored_left_and_right_hands_share_pre_binding_region_features",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.002104539016727358,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_constant_reference_images_have_finite_backward_gradients",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.0071180310333147645,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_masked_nan_reference_features_are_zeroed_before_projection",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.009923116012942046,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_common_owner_registers_person_binding_weights_only_once",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.0013865350047126412,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_preparer_emits_exact_shapes_masks_and_zero_optional_canvas",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.030088721949141473,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_missing_references_use_null_appearance_but_target_invalid_tokens_stay_zero",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.03421203000470996,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_source_canvas_is_gated_and_overlap_does_not_additively_amplify",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.032344475970603526,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_prepared_to_index_select_and_cfg_expansion_preserve_order",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.034074397990480065,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_empty_sample_is_exactly_zero_and_marked_invalid",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.03270122001413256,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_zero_sized_prepared_batches_are_rejected_before_expansion",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.029445388994645327,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_detail_branch_is_independent_zero_initialized_and_skips_invalid_rows",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.03764823998790234,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_missing_detail_skips_branch",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.011709257028996944,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_per_sample_late_cosine_and_separate_region_strengths",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.0024109749938361347,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_detail_strength_zero_and_missing_detail_are_exact_old_parity[0.0]",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.0009533490519970655,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_detail_strength_zero_and_missing_detail_are_exact_old_parity[detail_strength1]",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.0009620730415917933,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_detail_strength_zero_and_missing_detail_are_exact_old_parity[detail_strength2]",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.0009559749742038548,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_all_zero_detail_strength_rejects_unsupported_tensor_shapes[invalid_strength0]",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.0007956790504977107,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_all_zero_detail_strength_rejects_unsupported_tensor_shapes[invalid_strength1]",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.0006671500159427524,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_all_zero_detail_strength_rejects_unsupported_tensor_shapes[invalid_strength2]",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.0006996149895712733,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_mixed_batch_detail_strength_requires_masks_and_applies_per_sample",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.0015749839949421585,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_prepared_control_preserves_optional_detail_and_cfg_order",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.0018451979849487543,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_legacy_allowlist_strict_roundtrip_and_detail_only_freeze",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.9733584629721008,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_detail_only_optimizer_step_keeps_every_v63_parameter_byte_identical",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.07994915696326643,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_adapter_prepares_null_references_without_duplicate_person_binder",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.06711535499198362,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_v63_loader_preflight_failures_are_atomic[unexpected]",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.1267388720298186,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_v63_loader_preflight_failures_are_atomic[missing]",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.1260370880481787,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_v63_loader_preflight_failures_are_atomic[shape]",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.13040220399852842,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_v63_loader_preflight_failures_are_atomic[non_tensor]",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.12577836000127718,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_v64_loader_preflight_failures_are_atomic[unexpected]",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.12394446198595688,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_v64_loader_preflight_failures_are_atomic[missing]",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.39322753000305966,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_v64_loader_preflight_failures_are_atomic[shape]",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.12746450799750164,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_v64_loader_preflight_failures_are_atomic[non_tensor]",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.12178689299616963,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_v63_loader_rejects_v64_metadata_and_detail_keys",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.060976609995123,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_v64_checkpoint_clones_tensors_and_rejects_reserved_extras",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.05742253799689934,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_detail_context_groups_distinct_masks_and_omits_masked_token_gradients",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.03639538801508024,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_tensor_progress_must_be_finite[progress0]",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.0006116440054029226,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_tensor_progress_must_be_finite[progress1]",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.0004990960005670786,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_detail_region_mask_validation_is_explicit",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.0011447109864093363,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_detail_identity_must_match_state_and_identity_condition",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.05955026199808344,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_detail_compute_fast_path_reports_only_active_rows",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.10936520696850494,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_checkpoint_dtype_and_layout_preflight_is_atomic[layout-v63]",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.1322894020122476,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_checkpoint_dtype_and_layout_preflight_is_atomic[layout-v64]",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.14792987698456272,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_checkpoint_dtype_and_layout_preflight_is_atomic[dtype-v63]",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.12818795902421698,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_checkpoint_dtype_and_layout_preflight_is_atomic[dtype-v64]",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.14978192001581192,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_checkpoint_runtime_copy_failure_rolls_back_every_tensor[v63]",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.14505620900308713,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_checkpoint_runtime_copy_failure_rolls_back_every_tensor[v64]",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.3957014979678206,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_face_condition_contract_preserves_discrete_dtypes_and_validates_binding",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.002263373986352235,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_reference_contract_enforces_one_to_three_references_and_dtype_device",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.06751446099951863,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_prepared_contract_cfg_expansion_keeps_target_box_order_and_invalid_zero",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.011493942001834512,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_landmark_conversions_and_roi_normalization_are_correct",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.0013676619855687022,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_geometry_tokenizer_zeros_invalid_people_and_their_gradients",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.021677477983757854,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_geometry_tokenizer_ignores_zero_confidence_landmark_slots",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.024633948982227594,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_resampler_outputs_eight_tokens_and_honors_context_mask",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.031111683987546712,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_content_encoder_masked_pooling_zero_init_delta_and_missing_reference_gradients",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.14380408497527242,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_spatial_heatmaps_masks_and_encoder_reach_16_by_16",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.05415473796892911,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_preparer_combines_all_face_features_and_masks_invalid_target_boxes",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.14792325597954914,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_preparer_accepts_fp16_reference_cache_with_fp32_geometry",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.1402791540022008,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_source_and_person_slot_bindings_are_local_and_invalid_safe",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.3763330359943211,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_legacy_condition_splits_face_and_hand_and_hand_roundtrips_without_face",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.011129882012028247,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_hand_condition_contract_preserves_discrete_types_and_cfg_order",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.0024876599782146513,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_face_adapter_zero_init_invalid_gradients_and_activated_signal",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.040620011975988746,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_texture_inputs_are_exactly_inactive_before_texture_schedule",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.034514834987930954,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_scatter_overlap_is_weighted_average_times_max_mask_not_double_sum",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.001111574994865805,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_face_and_hand_strengths_are_independent_and_detail_is_total_switch",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.0022275979863479733,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_face_and_texture_schedules_have_independent_late_windows",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.0005163209862075746,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_v65_checkpoint_roundtrip_v64_migration_and_face_only_freeze",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 1.996604724030476,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_prepared_face_cfg_expansion_and_branch_validation",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.007915552007034421,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_face_input_changes_only_face_raw_residual_and_padding_stays_zero",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.2009927459876053,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_face_branch_is_not_executed_when_face_strength_is_zero",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.15730249602347612,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_legacy_prepare_is_operationally_hand_only",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.062233682023361325,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_face_optimizer_step_keeps_every_old_parameter_byte_identical",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.16867583303246647,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_hand_pose_and_confident_heatmap",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.001490879978518933,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_hand_branch_zero_init_and_invalid_gradients",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.06895986699964851,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_source_index_binding_rejects_cross_person_reference",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.004874739039223641,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_mode_fusion_is_exclusive_and_preserves_global",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.002246977004688233,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_v65_migration_only_new_hand_keys_and_v66_roundtrip",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 4.641748927009758,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_unified_v66_preparation_and_mode_switch_preserve_body_raw_residuals",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.14921630005119368,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_quality_gate_and_precompute_use_only_source_crops",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.010319588996935636,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_optional_refiner_export_never_modifies_image",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.0019515319727361202,
+      "failure": null
+    },
+    {
+      "nodeid": "::test_overlap_blends_by_visibility_and_depth_without_double_strength",
+      "phase": "call",
+      "outcome": "passed",
+      "seconds": 0.0010433190036565065,
+      "failure": null
+    }
+  ]
+}

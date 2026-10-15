@@ -1,0 +1,443 @@
+{
+  "scope": "Existing checkpoint and data readiness only; no dual_v8 implementation or training",
+  "date": "2026-10-11",
+  "checkpoints": [
+    {
+      "path": "/home/shangguanrz/project/pic-edit/experiments/qwen21_iper_body/full_20k/checkpoint_best.pt",
+      "step": 19500,
+      "micro_step": 73500,
+      "best_validation": 0.346193490922451,
+      "source_v6_checkpoint": "/home/shangguanrz/project/pic-edit/experiments/iper_v6_native_20k_v1/checkpoint_last.pt",
+      "state_keys_match_current_adapter": true,
+      "shape_mismatches": [],
+      "groups": {
+        "condition_injector.spatial_encoder": {
+          "tensors": 141,
+          "parameters": 5061152,
+          "optimizer_state_tensors": 141,
+          "nonzero_momentum_tensors": 141
+        },
+        "condition_injector.global_encoder": {
+          "tensors": 8,
+          "parameters": 1588788,
+          "optimizer_state_tensors": 8,
+          "nonzero_momentum_tensors": 8
+        },
+        "condition_injector.relative_encoder": {
+          "tensors": 6,
+          "parameters": 268822,
+          "optimizer_state_tensors": 0,
+          "nonzero_momentum_tensors": 0
+        },
+        "condition_injector.contact_raster_encoder": {
+          "tensors": 12,
+          "parameters": 93408,
+          "optimizer_state_tensors": 0,
+          "nonzero_momentum_tensors": 0
+        },
+        "condition_injector.contact_relation_encoder": {
+          "tensors": 11,
+          "parameters": 140800,
+          "optimizer_state_tensors": 0,
+          "nonzero_momentum_tensors": 0
+        },
+        "condition_injector.task_encoder": {
+          "tensors": 1,
+          "parameters": 1792,
+          "optimizer_state_tensors": 1,
+          "nonzero_momentum_tensors": 1
+        },
+        "reasoner.person_reasoner": {
+          "tensors": 36,
+          "parameters": 15219712,
+          "optimizer_state_tensors": 36,
+          "nonzero_momentum_tensors": 36
+        },
+        "reasoner.role_embedding": {
+          "tensors": 1,
+          "parameters": 1024,
+          "optimizer_state_tensors": 1,
+          "nonzero_momentum_tensors": 1
+        },
+        "reasoner.cross_person_reasoner": {
+          "tensors": 31,
+          "parameters": 6439424,
+          "optimizer_state_tensors": 0,
+          "nonzero_momentum_tensors": 0
+        },
+        "reasoner.contact_reasoner": {
+          "tensors": 18,
+          "parameters": 5709314,
+          "optimizer_state_tensors": 0,
+          "nonzero_momentum_tensors": 0
+        },
+        "reasoner.dual_fusion": {
+          "tensors": 44,
+          "parameters": 26755328,
+          "optimizer_state_tensors": 0,
+          "nonzero_momentum_tensors": 0
+        },
+        "reasoner.single_geometry_block": {
+          "tensors": 8,
+          "parameters": 4721664,
+          "optimizer_state_tensors": 8,
+          "nonzero_momentum_tensors": 8
+        },
+        "reasoner.single_high_projection": {
+          "tensors": 2,
+          "parameters": 524800,
+          "optimizer_state_tensors": 2,
+          "nonzero_momentum_tensors": 2
+        },
+        "reasoner.single_high_block": {
+          "tensors": 8,
+          "parameters": 4721664,
+          "optimizer_state_tensors": 8,
+          "nonzero_momentum_tensors": 8
+        },
+        "condition_bridge.geometry_projection": {
+          "tensors": 2,
+          "parameters": 65664,
+          "optimizer_state_tensors": 2,
+          "nonzero_momentum_tensors": 2
+        },
+        "condition_bridge.interaction_projection": {
+          "tensors": 1,
+          "parameters": 65536,
+          "optimizer_state_tensors": 0,
+          "nonzero_momentum_tensors": 0
+        },
+        "condition_bridge.geometry_high_downsample": {
+          "tensors": 1,
+          "parameters": 2359296,
+          "optimizer_state_tensors": 1,
+          "nonzero_momentum_tensors": 1
+        },
+        "condition_bridge.interaction_high_downsample": {
+          "tensors": 1,
+          "parameters": 2359296,
+          "optimizer_state_tensors": 0,
+          "nonzero_momentum_tensors": 0
+        },
+        "geometry_in.weight": {
+          "tensors": 1,
+          "parameters": 65536,
+          "optimizer_state_tensors": 1,
+          "nonzero_momentum_tensors": 1
+        },
+        "geometry_in.bias": {
+          "tensors": 1,
+          "parameters": 512,
+          "optimizer_state_tensors": 1,
+          "nonzero_momentum_tensors": 1
+        },
+        "hidden_in.weight": {
+          "tensors": 1,
+          "parameters": 2097152,
+          "optimizer_state_tensors": 1,
+          "nonzero_momentum_tensors": 1
+        },
+        "time_in.0": {
+          "tensors": 2,
+          "parameters": 1024,
+          "optimizer_state_tensors": 2,
+          "nonzero_momentum_tensors": 2
+        },
+        "time_in.2": {
+          "tensors": 2,
+          "parameters": 262656,
+          "optimizer_state_tensors": 2,
+          "nonzero_momentum_tensors": 2
+        },
+        "stage_embedding.weight": {
+          "tensors": 1,
+          "parameters": 3072,
+          "optimizer_state_tensors": 1,
+          "nonzero_momentum_tensors": 1
+        },
+        "fusion.0": {
+          "tensors": 2,
+          "parameters": 1024,
+          "optimizer_state_tensors": 2,
+          "nonzero_momentum_tensors": 2
+        },
+        "fusion.1": {
+          "tensors": 2,
+          "parameters": 525312,
+          "optimizer_state_tensors": 2,
+          "nonzero_momentum_tensors": 2
+        },
+        "fusion.3": {
+          "tensors": 2,
+          "parameters": 524800,
+          "optimizer_state_tensors": 2,
+          "nonzero_momentum_tensors": 2
+        },
+        "zero_heads.3": {
+          "tensors": 2,
+          "parameters": 2101248,
+          "optimizer_state_tensors": 2,
+          "nonzero_momentum_tensors": 2
+        },
+        "zero_heads.8": {
+          "tensors": 2,
+          "parameters": 2101248,
+          "optimizer_state_tensors": 2,
+          "nonzero_momentum_tensors": 2
+        },
+        "zero_heads.13": {
+          "tensors": 2,
+          "parameters": 2101248,
+          "optimizer_state_tensors": 2,
+          "nonzero_momentum_tensors": 2
+        },
+        "zero_heads.18": {
+          "tensors": 2,
+          "parameters": 2101248,
+          "optimizer_state_tensors": 2,
+          "nonzero_momentum_tensors": 2
+        },
+        "zero_heads.23": {
+          "tensors": 2,
+          "parameters": 2101248,
+          "optimizer_state_tensors": 2,
+          "nonzero_momentum_tensors": 2
+        },
+        "zero_heads.28": {
+          "tensors": 2,
+          "parameters": 2101248,
+          "optimizer_state_tensors": 2,
+          "nonzero_momentum_tensors": 2
+        }
+      }
+    },
+    {
+      "path": "/home/shangguanrz/project/pic-edit/experiments/qwen21_iper_body/full_20k/checkpoint_last.pt",
+      "step": 20000,
+      "micro_step": 75500,
+      "best_validation": 0.346193490922451,
+      "source_v6_checkpoint": "/home/shangguanrz/project/pic-edit/experiments/iper_v6_native_20k_v1/checkpoint_last.pt",
+      "state_keys_match_current_adapter": true,
+      "shape_mismatches": [],
+      "groups": {
+        "condition_injector.spatial_encoder": {
+          "tensors": 141,
+          "parameters": 5061152,
+          "optimizer_state_tensors": 141,
+          "nonzero_momentum_tensors": 141
+        },
+        "condition_injector.global_encoder": {
+          "tensors": 8,
+          "parameters": 1588788,
+          "optimizer_state_tensors": 8,
+          "nonzero_momentum_tensors": 8
+        },
+        "condition_injector.relative_encoder": {
+          "tensors": 6,
+          "parameters": 268822,
+          "optimizer_state_tensors": 0,
+          "nonzero_momentum_tensors": 0
+        },
+        "condition_injector.contact_raster_encoder": {
+          "tensors": 12,
+          "parameters": 93408,
+          "optimizer_state_tensors": 0,
+          "nonzero_momentum_tensors": 0
+        },
+        "condition_injector.contact_relation_encoder": {
+          "tensors": 11,
+          "parameters": 140800,
+          "optimizer_state_tensors": 0,
+          "nonzero_momentum_tensors": 0
+        },
+        "condition_injector.task_encoder": {
+          "tensors": 1,
+          "parameters": 1792,
+          "optimizer_state_tensors": 1,
+          "nonzero_momentum_tensors": 1
+        },
+        "reasoner.person_reasoner": {
+          "tensors": 36,
+          "parameters": 15219712,
+          "optimizer_state_tensors": 36,
+          "nonzero_momentum_tensors": 36
+        },
+        "reasoner.role_embedding": {
+          "tensors": 1,
+          "parameters": 1024,
+          "optimizer_state_tensors": 1,
+          "nonzero_momentum_tensors": 1
+        },
+        "reasoner.cross_person_reasoner": {
+          "tensors": 31,
+          "parameters": 6439424,
+          "optimizer_state_tensors": 0,
+          "nonzero_momentum_tensors": 0
+        },
+        "reasoner.contact_reasoner": {
+          "tensors": 18,
+          "parameters": 5709314,
+          "optimizer_state_tensors": 0,
+          "nonzero_momentum_tensors": 0
+        },
+        "reasoner.dual_fusion": {
+          "tensors": 44,
+          "parameters": 26755328,
+          "optimizer_state_tensors": 0,
+          "nonzero_momentum_tensors": 0
+        },
+        "reasoner.single_geometry_block": {
+          "tensors": 8,
+          "parameters": 4721664,
+          "optimizer_state_tensors": 8,
+          "nonzero_momentum_tensors": 8
+        },
+        "reasoner.single_high_projection": {
+          "tensors": 2,
+          "parameters": 524800,
+          "optimizer_state_tensors": 2,
+          "nonzero_momentum_tensors": 2
+        },
+        "reasoner.single_high_block": {
+          "tensors": 8,
+          "parameters": 4721664,
+          "optimizer_state_tensors": 8,
+          "nonzero_momentum_tensors": 8
+        },
+        "condition_bridge.geometry_projection": {
+          "tensors": 2,
+          "parameters": 65664,
+          "optimizer_state_tensors": 2,
+          "nonzero_momentum_tensors": 2
+        },
+        "condition_bridge.interaction_projection": {
+          "tensors": 1,
+          "parameters": 65536,
+          "optimizer_state_tensors": 0,
+          "nonzero_momentum_tensors": 0
+        },
+        "condition_bridge.geometry_high_downsample": {
+          "tensors": 1,
+          "parameters": 2359296,
+          "optimizer_state_tensors": 1,
+          "nonzero_momentum_tensors": 1
+        },
+        "condition_bridge.interaction_high_downsample": {
+          "tensors": 1,
+          "parameters": 2359296,
+          "optimizer_state_tensors": 0,
+          "nonzero_momentum_tensors": 0
+        },
+        "geometry_in.weight": {
+          "tensors": 1,
+          "parameters": 65536,
+          "optimizer_state_tensors": 1,
+          "nonzero_momentum_tensors": 1
+        },
+        "geometry_in.bias": {
+          "tensors": 1,
+          "parameters": 512,
+          "optimizer_state_tensors": 1,
+          "nonzero_momentum_tensors": 1
+        },
+        "hidden_in.weight": {
+          "tensors": 1,
+          "parameters": 2097152,
+          "optimizer_state_tensors": 1,
+          "nonzero_momentum_tensors": 1
+        },
+        "time_in.0": {
+          "tensors": 2,
+          "parameters": 1024,
+          "optimizer_state_tensors": 2,
+          "nonzero_momentum_tensors": 2
+        },
+        "time_in.2": {
+          "tensors": 2,
+          "parameters": 262656,
+          "optimizer_state_tensors": 2,
+          "nonzero_momentum_tensors": 2
+        },
+        "stage_embedding.weight": {
+          "tensors": 1,
+          "parameters": 3072,
+          "optimizer_state_tensors": 1,
+          "nonzero_momentum_tensors": 1
+        },
+        "fusion.0": {
+          "tensors": 2,
+          "parameters": 1024,
+          "optimizer_state_tensors": 2,
+          "nonzero_momentum_tensors": 2
+        },
+        "fusion.1": {
+          "tensors": 2,
+          "parameters": 525312,
+          "optimizer_state_tensors": 2,
+          "nonzero_momentum_tensors": 2
+        },
+        "fusion.3": {
+          "tensors": 2,
+          "parameters": 524800,
+          "optimizer_state_tensors": 2,
+          "nonzero_momentum_tensors": 2
+        },
+        "zero_heads.3": {
+          "tensors": 2,
+          "parameters": 2101248,
+          "optimizer_state_tensors": 2,
+          "nonzero_momentum_tensors": 2
+        },
+        "zero_heads.8": {
+          "tensors": 2,
+          "parameters": 2101248,
+          "optimizer_state_tensors": 2,
+          "nonzero_momentum_tensors": 2
+        },
+        "zero_heads.13": {
+          "tensors": 2,
+          "parameters": 2101248,
+          "optimizer_state_tensors": 2,
+          "nonzero_momentum_tensors": 2
+        },
+        "zero_heads.18": {
+          "tensors": 2,
+          "parameters": 2101248,
+          "optimizer_state_tensors": 2,
+          "nonzero_momentum_tensors": 2
+        },
+        "zero_heads.23": {
+          "tensors": 2,
+          "parameters": 2101248,
+          "optimizer_state_tensors": 2,
+          "nonzero_momentum_tensors": 2
+        },
+        "zero_heads.28": {
+          "tensors": 2,
+          "parameters": 2101248,
+          "optimizer_state_tensors": 2,
+          "nonzero_momentum_tensors": 2
+        }
+      }
+    }
+  ],
+  "cuda": {
+    "available": true,
+    "kernel_driver": "NVRM version: NVIDIA UNIX Open Kernel Module for x86_64  580.173.02  Release Build  (dvs-builder@U22-I3-AK02-24-4)  Tue Jun 23 08:17:01 UTC 2026",
+    "nvml_observation": "nvidia-smi failed: driver 580.173.02 / NVML library 580.178 mismatch",
+    "tensor_operation_passed": true,
+    "device_name": "NVIDIA RTX 6000D",
+    "free_bytes": 88584159232,
+    "total_bytes": 89171099648
+  },
+  "smplx_tests": {
+    "command": "/home/shangguanrz/nihaochen/envs/qwen21/bin/python -m unittest discover -s research/hi4d_smplx_pilot_20261011 -p test_*.py",
+    "passed": 12,
+    "scope": "existing geometry/export tests, not dual_v8 tests"
+  },
+  "source_sha256": {
+    "src/pose_control/qwen21/body_adapter.py": "9e31bf4b731baaf5b0a309081e099aba121bf88bebe1afbd793d0c528ee440d3",
+    "src/pose_control/v6/reasoning/reasoner.py": "a9eccf162b5eb0617478db88a9c4c071315dea7b84cbea310f0f5bbf519810df",
+    "scripts/train/train_iper_qwen21_body.py": "43748e220e55417cb5a04e2bcd3013eb0698122ae42123002be1866a1f4ed803"
+  }
+}

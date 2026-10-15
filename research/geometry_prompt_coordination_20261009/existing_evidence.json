@@ -1,0 +1,142 @@
+{
+  "16_test_source": "/home/shangguanrz/project/pic-edit/experiments/16-test",
+  "old_pe_rewrites": [
+    {
+      "tag": "zh",
+      "instruction": "把 <image1> 中人物的姿态改为 <image2> 中人物的姿态，严格保留 <image1> 中人物的身份、外貌、服装和背景",
+      "rewritten_prompt": "在<image1>上，将人物的姿态替换为<image2>中人物的姿态：身体正面站立、双腿自然分开、双脚平稳踩地，头部转向其左侧（画面右侧），左臂弯曲抬起至肩部高度、手指向上伸出呈托举姿势但手中不持篮球，右臂向身体外侧下方自然伸展、手指放松微曲，双臂微微张开，重心均衡稳定。严格保留<image1>中人物的面部身份、五官、发型、黑框眼镜、蓝色西装外套、白色衬衫、深蓝条纹领带、左手腕金属手表、浅灰色西裤和黑色皮鞋完全不变；西装褶皱、衬衫与领带垂坠跟随新姿态自然形变，裤管褶皱随站姿更新，衣物高光与阴影方向与<image1>的户外阴天漫射光保持一致，双脚在新站姿下于湿滑路面上产生对应的接触阴影与倒影。保持<image1>的整个背景——湿润反光的路面、虚化的城市建筑、路灯、绿色植物和车辆——完全不变。",
+      "wh_ratio": "",
+      "ratio_follow": "<image1>",
+      "gen_seconds": 22.0
+    },
+    {
+      "tag": "en",
+      "instruction": "Change the pose of the person in <image1> to match the pose of the person in <image2>, strictly preserving the identity, appearance, clothing and background of the person in <image1>",
+      "rewritten_prompt": "On <image1> (canvas), re-pose the man to exactly replicate the body configuration of the person in <image2>, while strictly preserving the identity, appearance, clothing and background of <image1>. Target pose extracted from <image2>: stand upright with legs apart at shoulder width and both feet flat on the floor, turn the head sharply toward the viewer's right with the gaze directed sideways and the mouth partially open, raise the left arm with a bent elbow so the hand reaches head height and the fingertips extend upward to balance the orange basketball with white printed graphics from <image2>, extend the right arm downward and outward away from the torso with a softly bent elbow and relaxed curled fingers, and keep the shoulders relaxed with the torso facing forward. Apply this configuration to the man in <image1>: the sleeves of his royal blue blazer must follow the new arm positions with natural fabric folds at the elbows and shoulders, the white dress shirt and the dark blue striped tie must drape and shift according to the new torso and head orientation, the light gray trousers must form natural creases at the hips and knees for the legs-apart stance, and the black leather shoes must rest firmly on the wet pavement with contact shadows matching the cool overcast daylight of <image1>. The transferred pose must be anatomically coherent on the man's body proportions, with garment tension and wrinkles responding to the new joint angles. Render the face in the new sideways head orientation while retaining the exact facial identity, rectangular glasses, slicked-back black hair of the man in <image1>. Preserve unchanged from <image1>: the man's identity, facial features, glasses, slicked-back hairstyle, the wristwatch on his left wrist, the white pocket square, the royal blue blazer, the white dress shirt, the dark blue striped tie, the light gray trousers, the black leather shoes, and the entire background of the wet city street with blurred buildings, palm trees and reflective pavement. The orange basketball from <image2> appears only as the object balanced on the raised fingertips, relit to match the cool diffuse lighting of <image1>.",
+      "wh_ratio": "",
+      "ratio_follow": "<image1>",
+      "gen_seconds": 22.7
+    }
+  ],
+  "old_detailed_generation_metadata": [
+    {
+      "tag": "zh_detailed",
+      "prompt_chars": 1262,
+      "seconds": 22.84,
+      "size": [
+        640,
+        1088
+      ],
+      "model": "Qwen-Image-2.1 base (NO adapter)",
+      "refs": "[A, B]",
+      "steps": 40,
+      "true_cfg": 1.0,
+      "seed": 42,
+      "output_resolution": 1088,
+      "kv_cache": true,
+      "source_a": "/home/shangguanrz/project/pic-edit/experiments/16-test/source/p-A/f2ce3842f4dcda48ddce7e78f4ff5835.jpg",
+      "source_b": "/home/shangguanrz/project/pic-edit/experiments/16-test/source/p-B/d8898693ef1e7672c739335de57ef44c.jpg"
+    },
+    {
+      "tag": "en_detailed",
+      "prompt_chars": 4835,
+      "seconds": 21.92,
+      "size": [
+        640,
+        1088
+      ],
+      "model": "Qwen-Image-2.1 base (NO adapter)",
+      "refs": "[A, B]",
+      "steps": 40,
+      "true_cfg": 1.0,
+      "seed": 42,
+      "output_resolution": 1088,
+      "kv_cache": true,
+      "source_a": "/home/shangguanrz/project/pic-edit/experiments/16-test/source/p-A/f2ce3842f4dcda48ddce7e78f4ff5835.jpg",
+      "source_b": "/home/shangguanrz/project/pic-edit/experiments/16-test/source/p-B/d8898693ef1e7672c739335de57ef44c.jpg"
+    }
+  ],
+  "native_prompt_calibration": {
+    "selected_variant": "structured",
+    "selection_rule": "correct action and A appearance together; tie selects explicit structured roles",
+    "used_only_development_cases": true,
+    "formal_outputs_seen_before_selection": false,
+    "case_review": [
+      {
+        "pair_id": "dev_iper_00",
+        "structured": "A clothing/background retained; requested asymmetric arms and forward step appear",
+        "narrative": "A clothing/background retained; similar arms and step; no clear superiority",
+        "winner": "tie"
+      },
+      {
+        "pair_id": "dev_iper_01",
+        "structured": "A retained; arms lowered/crossed at waist, modest body/head turn; only approximate pose",
+        "narrative": "Very similar to structured, including approximate rather than exact arm arrangement",
+        "winner": "tie"
+      },
+      {
+        "pair_id": "dev_tiktok_00",
+        "structured": "Arms lowered to waist, head tilt and A appearance retained",
+        "narrative": "Same major gesture and head tilt; face/expression somewhat different but no decisive joint advantage",
+        "winner": "tie"
+      },
+      {
+        "pair_id": "dev_tiktok_01",
+        "structured": "A retained and arms lowered, but requested pronounced head turn was not achieved",
+        "narrative": "Same limitation: head remains nearly frontal rather than reference right turn",
+        "winner": "tie"
+      }
+    ],
+    "limitations": [
+      "Only four independent development cases; selection does not establish an optimal prompt for every task",
+      "Head-turn failure is retained, not patched by extra prompt trials"
+    ],
+    "calibration_images": 8,
+    "locked_utc": "2026-10-08T04:20:40.306503+00:00"
+  },
+  "native_combination_observations": {
+    "headline": "原生A＋骨架已是有竞争力的方案；深度有局部增益，更多参考图并不自动更好。",
+    "conclusions": [
+      "① 骨架仍是强基线。512的iPER动作PCK为1.000；加入B照片没有提高动作分数。TikTok的动作、手部及头向更复杂，需要同时看外观保持与逐图表现。",
+      "② 深度有独立的增量。512的TikTok中，骨架＋深度的PCK从0.415提高到0.637，12张512结果未见明显几何染色或骨架覆盖。但共同6张可靠脸的A相似度从0.411降到0.365，背景误差从5.51增至6.06，所以不能称为全面改善。",
+      "③ B照片没有带来稳定优势。512的TikTok动作PCK只从0.415升到0.435，A身份相似度下降；1024四张A＋B＋骨架均出现骨架线覆盖。部分图还更接近B的鞋或胡须，原图未展示的细节只能记录为疑问。",
+      "④ 法线与深度确实不同。单独加入法线有时保住自然外观，也有染色；骨架＋法线＋深度在512的12张、1024的4张中都出现明显染色，部分还有重复人物或多余手臂。五图全组合能在少数案例减轻干扰，却没有稳定超过骨架或骨架＋深度。",
+      "⑤ Adapter的价值要具体判断。512的TikTok中，简化版Body的动作PCK为0.718，比最好的原生组合0.637更高，但背景误差更大；iPER里它与骨架基线同为1.000。当前完整Body/Face没有全面胜过原生方案，旧Face的可靠收益仍有限。",
+      "⑥ 提高分辨率没有自动解决条件冲突。1024的两个TikTok案例中，骨架＋深度的PCK为0.566，高于骨架0.321；五图全组合仍有染色或多余肢体。每组只有2对，面部身份不作稳定排名。512八路线在iPER没有共同合格脸，身份增量只能看各前后方案单独共有的样本。",
+      "⑦ 后续方向应由明确缺陷决定。优先保留A＋骨架与A＋骨架＋深度作为候选，再针对稳定失败的动作、身份或手部问题比较训练方法。此次没有证据支持继续堆更多条件，也不能据此证明Adapter或LoRA普遍无用。 成本方面，五图全组合平均每张约27秒（512）、135秒（1024），骨架基线分别约13秒、59秒；当前峰值显存差别较小。"
+    ],
+    "figure_notes": {
+      "iper_00": "举臂任务；查看蓝外套、眼镜是否保持，以及骨架线与法线颜色是否进入结果。",
+      "iper_01": "下蹲任务；身体分数相近时，脸部、服装和颜色错误仍有明显差别。",
+      "tiktok_00": "复杂举手任务；同时比较双手轮廓、头向和A外观，彩色或多出人物的结果不能算整体成功。",
+      "tiktok_01": "下蹲任务；A原图没有展示鞋，不能仅凭生成鞋的变化认定串用B外观。",
+      "tiktok_03": "上仰头向；注意A的辫子、上衣、面部自然度与颜色干扰。",
+      "tiktok_05": "双拳前举；动作相近时看人脸、表情、手指和A服装是否仍自然。"
+    },
+    "limitations": "固定少量跨人物案例；身份可评数不足时不作稳定结论。未测试真正上游重定向前后的可追溯输出，未评条件图估计准确性，未训练或加载LoRA。"
+  },
+  "fixed_training_prompt": "Change the person pose to match the target pose. Preserve identity, clothing, and background.",
+  "actual_input_roles": {
+    "pilot_generation": [
+      "A_RGB"
+    ],
+    "pilot_geometry": "B via Adapter; depth disabled in completed pilot",
+    "native_skeleton": [
+      "A_RGB",
+      "B_DWPose_RGB"
+    ],
+    "PE_probe": [
+      "A_RGB",
+      "B_DWPose_RGB",
+      "optional B_normal_RGB",
+      "optional B_depth_vis_RGB"
+    ]
+  },
+  "current_files_sha256": {
+    "src/pose_control/qwen21_full/qwen_runtime.py": "77a1e3655e9042aabb81cc04bca7484c6f0956663b19f4d447ba5a1c3b419931",
+    "src/pose_control/qwen21_full/qwen_adapter.py": "f2b7d74db4ca63cca70158b8b9de54c07456909e51dc3ebf77481523adf7c367",
+    "src/pose_control/qwen21_full/joint_training.py": "17f063c77e6e651e2ad6b8396615fb3f4940f8f3c7aa480a6b2a535e8ac36d4b",
+    "src/pose_control/qwen21_full/data_runtime.py": "423d41e68029e8163ba8b647750365d8032bd89535a97851202a695b367316de",
+    "scripts/build_tiktok_v6_conditions.py": "9bf620824d1d24704ceea225eb35b8f0bdfddc73e5a62e3bfecdf955f7d3c1f9"
+  }
+}

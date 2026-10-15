@@ -187,7 +187,7 @@ def transform_box_for_crop(
 def _pose_heatmaps(
     keypoints: torch.Tensor,
     *,
-    resolution: int,
+    resolution: int | tuple[int, int] | Sequence[int],
     sigma: float,
 ) -> torch.Tensor:
     if tuple(keypoints.shape) != (25, 3):
@@ -195,18 +195,20 @@ def _pose_heatmaps(
     keypoints = keypoints.float()
     if not torch.isfinite(keypoints).all():
         raise ValueError("kps_25_coords must contain finite values")
+    h, w = (resolution, resolution) if isinstance(resolution, int) else (resolution[0], resolution[1])
     yy, xx = torch.meshgrid(
-        torch.arange(resolution, dtype=torch.float32),
-        torch.arange(resolution, dtype=torch.float32),
+        torch.arange(h, dtype=torch.float32),
+        torch.arange(w, dtype=torch.float32),
         indexing="ij",
     )
-    x = keypoints[:, 0, None, None] * resolution
-    y = keypoints[:, 1, None, None] * resolution
+    x = keypoints[:, 0, None, None] * w
+    y = keypoints[:, 1, None, None] * h
     confidence = keypoints[:, 2, None, None]
     heatmaps = confidence * torch.exp(
         -((xx[None] - x).square() + (yy[None] - y).square()) / (2.0 * sigma**2)
     )
     return torch.where(confidence > 0.05, heatmaps, 0.0).clamp_(0.0, 1.0)
+
 
 
 def apply_tiktok_condition_override(
@@ -585,14 +587,14 @@ class TikTokV3PoseDataset(Dataset):
         self.assets_root = Path(assets_root)
         self.dwpose_root = Path(dwpose_root)
         self.sampled_root = ""
-        self.resolution = int(resolution)
+        self.resolution = resolution if isinstance(resolution, str) else int(resolution)
         self.heatmap_sigma = float(heatmap_sigma)
         self.align_mode = str(align_mode)
         self.augment = bool(augment)
         self.strict_conditions = bool(strict_conditions)
         self._v6_cache: Dict[str, Mapping[str, Any]] = {}
 
-        if self.align_mode not in ("resize", "square_crop", "letterbox"):
+        if self.align_mode not in ("resize", "square_crop", "letterbox", "native"):
             raise ValueError(f"Unsupported align_mode: {self.align_mode!r}")
 
         self.samples: List[Dict[str, Any]] = []
@@ -701,6 +703,9 @@ class TikTokV3PoseDataset(Dataset):
         if self.align_mode == 'letterbox':
             from .letterbox import Letterbox
             resized = Letterbox.from_size(image.size, self.resolution).image(image, fill=(128,128,128))
+        elif self.align_mode == 'native':
+            from .letterbox import NativePad
+            resized = NativePad.from_size(image.size).image(image, fill=(128,128,128))
         else:
             resized = image.resize((self.resolution, self.resolution), Image.Resampling.BILINEAR)
         array = np.asarray(resized, dtype=np.float32).copy()
@@ -722,9 +727,12 @@ class TikTokV3PoseDataset(Dataset):
         sample = self.samples[idx]
         if self.align_mode == 'letterbox':
             return self._letterbox_item(sample)
+        if self.align_mode == 'native':
+            return self._native_item(sample)
         seq_id = sample["sequence_id"]
         src_stem = sample["source_stem"]
         tgt_stem = sample["target_stem"]
+
 
         src_pil = self._load_image(sample["source_rgb"])
         tgt_pil = self._load_image(sample["target_rgb"])
@@ -853,6 +861,72 @@ class TikTokV3PoseDataset(Dataset):
                 'task_id':torch.tensor(0,dtype=torch.long),'appearance':seq,
                 'source_stem':sample['source_stem'],'target_stem':stem,
                 'alignment_meta':json.dumps({'source':a.metadata(),'target':b.metadata()},sort_keys=True)}
+
+    def _native_item(self, sample):
+        from .letterbox import NativePad
+        source = _read_image(Path(sample['source_rgb']), 'RGB')
+        target = _read_image(Path(sample['target_rgb']), 'RGB')
+        a = NativePad.from_size(source.size)
+        b = NativePad.from_size(target.size)
+        seq, stem = sample['sequence_id'], sample['target_stem']
+        bundle = self._get_v6_bundle(seq)
+        if bundle is None or stem not in bundle.get('stem_to_idx', {}):
+            raise ValueError(f'Missing native geometry: {seq}/{stem}')
+        index = int(bundle['stem_to_idx'][stem])
+        vector = _tensor(bundle, 'smplx_global')[index].float().clone()
+        points = _tensor(bundle, 'kps_25_coords')[index].float().clone()
+        if vector.shape != (26,) or points.shape != (25, 3) or not torch.isfinite(vector).all() or not torch.isfinite(points).all():
+            raise ValueError(f'Invalid native geometry: {seq}/{stem}')
+        visible = (points[:, 2] > .05) & ((points[:, :2] >= 0) & (points[:, :2] <= 1)).all(-1)
+        if int(visible.sum()) < 8:
+            raise ValueError(f'Body condition has fewer than 8 visible keypoints: {seq}/{stem}')
+        def raster(path, mode, *, nearest=False):
+            img = _read_image(Path(path), mode)
+            if img.size != (b.width, b.height):
+                resample = Image.Resampling.NEAREST if nearest else Image.Resampling.BILINEAR
+                img = img.resize((b.width, b.height), resample)
+            padded = b.image(img, nearest=nearest, fill=0)
+            array = np.asarray(padded, dtype=np.float32).copy()
+            tensor = torch.from_numpy(array).unsqueeze(0) if mode == 'L' else torch.from_numpy(array).permute(2, 0, 1)
+            return tensor / 255
+        mask = raster(sample['target_person_mask'], 'L', nearest=True)
+        raw_normal = raster(sample['target_normal'], 'RGB')
+        normal = (raw_normal * 2 - 1) * mask
+        part_path = self.assets_root / seq / 'part_512' / f'{stem}.png'
+        if not part_path.is_file():
+            part_path = part_path.with_suffix('.jpg')
+        part_img = _read_image(part_path, 'L')
+        if part_img.size != (b.width, b.height):
+            part_img = part_img.resize((b.width, b.height), Image.Resampling.NEAREST)
+        labels = torch.from_numpy(np.asarray(b.image(part_img, nearest=True), dtype=np.int64).copy())
+        if (labels < 0).any() or (labels > 14).any():
+            raise ValueError(f'Invalid part labels: {part_path}')
+        part = F.one_hot(labels, num_classes=15)[..., 1:].permute(2, 0, 1).float()
+        if not bool((mask.sum() > 0) & (part.sum() > 0)):
+            raise ValueError(f'Empty body mask/part: {seq}/{stem}')
+        depth = raster(sample['target_depth_vis'], 'L') if sample.get('target_depth_vis') and Path(sample['target_depth_vis']).is_file() else torch.zeros_like(mask)
+        dwpose = raster(sample['target_dwpose'], 'RGB') if sample.get('target_dwpose') and Path(sample['target_dwpose']).is_file() else torch.zeros(3, b.padded_height, b.padded_width)
+        points = b.points(points)
+        points[:, 2] = torch.where(visible, points[:, 2], torch.zeros_like(points[:, 2]))
+        valid = b.valid_mask()
+        return {
+            'src_image': self.rgb_transform(source),
+            'tgt_image': self.rgb_transform(target),
+            'control_map': torch.cat([raw_normal, depth, dwpose, mask]),
+            'normal': normal,
+            'depth': depth,
+            'part_onehot': part,
+            'pose_heatmap': _pose_heatmaps(points, resolution=(b.padded_height, b.padded_width), sigma=self.heatmap_sigma) * valid,
+            'smplx_global': b.global_camera(vector),
+            'human_mask': mask,
+            'valid_image_mask': valid,
+            'task_id': torch.tensor(0, dtype=torch.long),
+            'appearance': seq,
+            'source_stem': sample['source_stem'],
+            'target_stem': stem,
+            'alignment_meta': json.dumps({'source': a.metadata(), 'target': b.metadata()}, sort_keys=True)
+        }
+
 
 
 def is_tiktok_v3_manifest(pairs_jsonl: str | Path) -> bool:

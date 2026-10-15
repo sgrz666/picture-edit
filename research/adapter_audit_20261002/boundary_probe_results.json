@@ -1,0 +1,92 @@
+{
+  "checkpoint_1_forward": {
+    "eager_loss": 0.33572885394096375,
+    "checkpoint_loss": 0.33572885394096375,
+    "gradient_max_abs_difference": 0.0,
+    "gradient_allclose": true
+  },
+  "checkpoint_2_forward": {
+    "eager_loss": 0.6829262375831604,
+    "checkpoint_loss": 0.6829262375831604,
+    "gradient_max_abs_difference": 0.0,
+    "gradient_allclose": true
+  },
+  "cache_different_model": {
+    "selected_model": "different-model",
+    "returned_previous_cache": true,
+    "cached_pipeline_accessed": false
+  },
+  "mixed_face_activity": {
+    "face_active_rows": 1,
+    "first_row_raw_face_max_abs": 0.0,
+    "second_row_raw_face_max_abs": 0.3434799611568451
+  },
+  "native_tiny_qwen32": {
+    "prefix_exactly_preserved": true,
+    "controlled_target_changed": true,
+    "cached_uncached_target_max_abs": 0.0,
+    "checkpoint_output_bridge_gradient_norm": 0.17952017486095428
+  },
+  "face_training_defaults": {
+    "evaluator_range": "legacy",
+    "flow_loss": "global",
+    "alignment": "box",
+    "auxiliary_every": 4,
+    "example_face_token_fraction": 0.005859375,
+    "roi_vs_global_face_gradient_ratio": 170.6666717529297
+  },
+  "saved_evaluator_forward_code": {
+    "identity": "def forward(self,\n    x: Tensor) -> Tensor:\n  glintr100 = self.glintr100\n  input = torch.upsample_bilinear2d(x, [112, 112], False)\n  _0 = (glintr100).forward(input, )\n  _1 = torch.linalg_vector_norm(_0, 2., [-1], True)\n  _2 = torch.clamp_min(_1, 9.9999999999999998e-13)\n  denom = torch.expand_as(_2, _0)\n  return torch.div(_0, denom)\n",
+    "perceptual": "def forward(self,\n    x: Tensor) -> Tensor:\n  slice4 = self.slice4\n  slice3 = self.slice3\n  slice2 = self.slice2\n  slice1 = self.slice1\n  std = self.std\n  mean = self.mean\n  _0 = torch.mul(torch.add(x, CONSTANTS.c0), CONSTANTS.c1)\n  input = torch.div(torch.sub(_0, mean), std)\n  _1 = (slice1).forward(input, )\n  _2 = (slice2).forward(_1, )\n  _3 = (slice3).forward(_2, )\n  _4 = (slice4).forward(_3, )\n  p1 = torch.flatten(torch.adaptive_avg_pool2d(_1, [4, 4]), 1)\n  p2 = torch.flatten(torch.adaptive_avg_pool2d(_2, [4, 4]), 1)\n  p3 = torch.flatten(torch.adaptive_avg_pool2d(_3, [4, 4]), 1)\n  p4 = torch.flatten(torch.adaptive_avg_pool2d(_4, [4, 4]), 1)\n  return torch.cat([p1, p2, p3, p4], 1)\n"
+  },
+  "schedule_512_30_steps": [
+    {
+      "index": 10,
+      "sigma": 0.7655801177024841,
+      "train_progress": 0.23441988229751587,
+      "default_inference_progress": 0.3448275923728943,
+      "train_face_multiplier": 0.0,
+      "default_inference_face_multiplier": 0.0
+    },
+    {
+      "index": 11,
+      "sigma": 0.7379129528999329,
+      "train_progress": 0.26208704710006714,
+      "default_inference_progress": 0.37931033968925476,
+      "train_face_multiplier": 0.0,
+      "default_inference_face_multiplier": 0.005008727312088013
+    },
+    {
+      "index": 12,
+      "sigma": 0.7093240022659302,
+      "train_progress": 0.2906759977340698,
+      "default_inference_progress": 0.4137931168079376,
+      "train_face_multiplier": 0.0,
+      "default_inference_face_multiplier": 0.02357858419418335
+    },
+    {
+      "index": 13,
+      "sigma": 0.6797662973403931,
+      "train_progress": 0.32023370265960693,
+      "default_inference_progress": 0.4482758641242981,
+      "train_face_multiplier": 0.0,
+      "default_inference_face_multiplier": 0.05535110831260681
+    },
+    {
+      "index": 14,
+      "sigma": 0.6491899490356445,
+      "train_progress": 0.35081005096435547,
+      "default_inference_progress": 0.48275861144065857,
+      "train_face_multiplier": 3.844499588012695e-06,
+      "default_inference_face_multiplier": 0.09944581985473633
+    }
+  ],
+  "full_bridge_dual_and_hand_synthetic": {
+    "dual_missing_person_latents_rejected": "dual-person control requires explicitly bound source_person_latents",
+    "dual_interaction_valid": true,
+    "dual_raw_interaction_max_abs": 0.22635436058044434,
+    "hand_active_rows": 1,
+    "hand_enabled_vs_off_residual_max_abs": 0.01674654893577099,
+    "trained_quality_claim": false
+  }
+}

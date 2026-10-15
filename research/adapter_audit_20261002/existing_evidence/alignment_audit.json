@@ -1,0 +1,492 @@
+{
+  "schema": "qwen21_full_face_alignment_audit_v1",
+  "created_at_utc": "2026-10-01T16:14:44.179263+00:00",
+  "cpu_only": true,
+  "no_generation_or_training": true,
+  "target_landmarks_enter_generation_conditions": false,
+  "scope": "one existing fixed training pair; not a test-set or generalization claim",
+  "metadata": {
+    "pair_id": "train_003",
+    "source_appearance": "001_13",
+    "target_appearance": "001_13",
+    "source_stem": "source_standard_f000275",
+    "target_stem": "target_f000052",
+    "source_rgb": "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_sampled_6src64tgt/001_13/rgb_1024/source_standard/source_standard_f000275.png",
+    "target_rgb": "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_sampled_6src64tgt/001_13/rgb_1024/target/target_f000052.png",
+    "cross_person": false
+  },
+  "resolution": 512,
+  "fixed_sample": "/home/shangguanrz/nihaochen/qwen21_full/face_single_sample/single_pair.jsonl",
+  "audit_script": "/home/shangguanrz/project/pic-edit/scripts/audit_qwen21_face_alignment.py",
+  "audit_script_sha256": "e420f8ed46d76015c1e5fdb9d6f898f11b51c161c5f64e5ddfb059c9b6574128",
+  "alignment_implementation": "/home/shangguanrz/project/pic-edit/src/pose_control/qwen21_full/face_loss_alignment.py",
+  "alignment_implementation_sha256": "178a4f4786c27eb3ea6144a594763393797d274cb1fcc806eebf300f32d2bdbe",
+  "source_image": "/home/shangguanrz/nihaochen/qwen21_full/face_single_sample/body_stages/step_000500/images/000_001_13_source_standard_f000275_target_f000052_source.png",
+  "target_image": "/home/shangguanrz/nihaochen/qwen21_full/face_single_sample/body_stages/step_000500/images/000_001_13_source_standard_f000275_target_f000052_target.png",
+  "source_sha256": "6d2c0bfaada1d25ac462cf3d1ba4c80d1ca519662110abe5229953d20f0081df",
+  "target_sha256": "4cf9fbf66530beee2cce8b999de09ed7fbd1522ec862918238f3a1293bbbe10a",
+  "face_supervision": "/home/shangguanrz/nihaochen/qwen21_full/face_supervision.json",
+  "face_supervision_sha256": "1af080fda83ee244ccf4d41141885d792e66a6bb3535165bc255cb1d8c56ed8e",
+  "landmarks_original_px": [
+    [
+      531.8453979492188,
+      184.43577575683594
+    ],
+    [
+      561.833984375,
+      185.68417358398438
+    ],
+    [
+      545.3314208984375,
+      197.47750854492188
+    ],
+    [
+      532.8912353515625,
+      213.2859649658203
+    ],
+    [
+      556.9905395507812,
+      214.38418579101562
+    ]
+  ],
+  "landmarks_at_512_px": [
+    [
+      265.9226989746094,
+      92.21788787841797
+    ],
+    [
+      280.9169921875,
+      92.84208679199219
+    ],
+    [
+      272.66571044921875,
+      98.73875427246094
+    ],
+    [
+      266.44561767578125,
+      106.64298248291016
+    ],
+    [
+      278.4952697753906,
+      107.19209289550781
+    ]
+  ],
+  "target_box_normalized": [
+    0.49670806527137756,
+    0.159579336643219,
+    0.5734793543815613,
+    0.2363506555557251
+  ],
+  "target_supervision_eligibility": {
+    "valid": true,
+    "reason": "accepted",
+    "reasons": [],
+    "selected_detection": 0
+  },
+  "models": {
+    "torchscript": "/home/shangguanrz/project/pic-edit/models/face_eval/identity_encoder.ts",
+    "torchscript_sha256": "bf059ec89614024682639ef3eaffecd3ef0933aae9c114df4097636d800269d6",
+    "onnx": "/home/shangguanrz/project/pic-edit/models/antelopev2/glintr100.onnx",
+    "onnx_sha256": "4ab1d6435d639628a6f3e5008dd4f929edf4c4124b1a7169e1048f9fef534cdf",
+    "detector": "/home/shangguanrz/project/pic-edit/models/antelopev2/scrfd_10g_bnkps.onnx",
+    "providers": [
+      "CPUExecutionProvider"
+    ]
+  },
+  "methods": {
+    "legacy_box_ts": "SMPL-X normalized square box, 112 endpoint grid, align_corners=True; RGB[-1,1] TorchScript",
+    "fixed_target5_opencv_ts": "Both images use Target five points and cv2 norm_crop; RGB[-1,1] TorchScript",
+    "fixed_target5_differentiable_ts": "Both images share detached Target5 inverse affine float grid; bilinear grid_sample align_corners=False; RGB[-1,1] TorchScript",
+    "official_detection_onnx": "Each image detected independently by existing SCRFD; own five points; existing norm_crop and glintr100 ONNX; raw and reliable counts reported separately"
+  },
+  "source_face_detection": {
+    "detections": [
+      {
+        "box": [
+          254.2908477783203,
+          80.85044860839844,
+          288.48870849609375,
+          126.8983383178711
+        ],
+        "score": 0.8565833568572998,
+        "short_side_at_512": 34.19786071777344,
+        "head_iou": 0.7425616370761631,
+        "center_in_expected_head": true,
+        "reliable_detection_proxy": true,
+        "exclusion_reasons": []
+      }
+    ],
+    "raw_largest_index": 0,
+    "reliable_index": 0,
+    "detected": true,
+    "reliable": true,
+    "reason": "accepted"
+  },
+  "target_face_detection": {
+    "detections": [
+      {
+        "box": [
+          257.1824645996094,
+          74.4842758178711,
+          290.5920104980469,
+          118.61970520019531
+        ],
+        "score": 0.8244494795799255,
+        "short_side_at_512": 33.4095458984375,
+        "head_iou": 0.6904455340433318,
+        "center_in_expected_head": true,
+        "reliable_detection_proxy": true,
+        "exclusion_reasons": []
+      }
+    ],
+    "raw_largest_index": 0,
+    "reliable_index": 0,
+    "detected": true,
+    "reliable": true,
+    "reason": "accepted"
+  },
+  "source_target_identity_official_raw": 0.7680728435516357,
+  "source_target_identity_official_reliable": 0.7680728435516357,
+  "evaluator_parity": {
+    "source_image": "/home/shangguanrz/nihaochen/qwen21_full/face_single_sample/body_stages/step_000500/images/000_001_13_source_standard_f000275_target_f000052_source.png",
+    "source_reliable_detection_index": 0,
+    "same_pixels_and_five_point_alignment": true,
+    "onnx_input_mean": 127.5,
+    "onnx_input_std": 127.5,
+    "normalized_rgb_ts_vs_onnx_cosine": 1.0,
+    "normalized_feature_max_abs_difference": 1.1222437024116516e-07,
+    "raw_feature_relative_l2_difference": 0.959295928478241,
+    "torchscript_feature_norm": 1.0,
+    "onnx_raw_feature_norm": 24.56751823425293,
+    "output_scale_note": "TorchScript explicitly L2-normalizes its embedding; ONNX returns the raw vector. Raw-vector L2 difference is expected and is not a parity failure. Compare normalized embeddings and cosine, as the identity losses and evaluation do.",
+    "legacy_zero_one_ts_vs_onnx_cosine": 0.9552813172340393,
+    "tolerance": {
+      "cosine_at_least": 0.999,
+      "normalized_max_abs_at_most": 0.001
+    },
+    "passed": true
+  },
+  "interpolation_note": "OpenCV INTER_LINEAR uses quantized fractions and uint8 rounding; PyTorch samples floating-point RGB continuously. Matching geometry does not mean bitwise equal crops.",
+  "interpolation_comparison": [
+    {
+      "case": "body_500",
+      "rgb_mae_zero_one": 0.0010241582058370113,
+      "rgb_max_abs_zero_one": 0.005505621433258057,
+      "same_image_alignment_feature_cosine": 0.9974523782730103
+    },
+    {
+      "case": "old_face_300",
+      "rgb_mae_zero_one": 0.001086552394554019,
+      "rgb_max_abs_zero_one": 0.006361603736877441,
+      "same_image_alignment_feature_cosine": 0.9982107877731323
+    },
+    {
+      "case": "old_face_2000",
+      "rgb_mae_zero_one": 0.0010265784803777933,
+      "rgb_max_abs_zero_one": 0.005332648754119873,
+      "same_image_alignment_feature_cosine": 0.998305082321167
+    },
+    {
+      "case": "roi_same_aux_300",
+      "rgb_mae_zero_one": 0.0010246221208944917,
+      "rgb_max_abs_zero_one": 0.005539417266845703,
+      "same_image_alignment_feature_cosine": 0.997790515422821
+    },
+    {
+      "case": "roi_aligned_aux_300",
+      "rgb_mae_zero_one": 0.0010244479635730386,
+      "rgb_max_abs_zero_one": 0.0058820247650146484,
+      "same_image_alignment_feature_cosine": 0.9979844689369202
+    }
+  ],
+  "rows": [
+    {
+      "case": "body_500",
+      "image": "/home/shangguanrz/nihaochen/qwen21_full/face_single_sample/body_stages/step_000500/images/000_001_13_source_standard_f000275_target_f000052_body.png",
+      "image_sha256": "6dea8163ea89cb3459269c8cd0fb1e1ff5eb11f90cb1708025ed0c45e0f27ebd",
+      "metrics_path": "/home/shangguanrz/nihaochen/qwen21_full/face_single_sample/body_stage_metrics.json",
+      "methods": {
+        "legacy_box_ts": {
+          "target_cosine": 0.9283545613288879,
+          "effective_n": 1,
+          "validity": "fixed reliable Target metadata; not generated-face detection certification"
+        },
+        "fixed_target5_opencv_ts": {
+          "target_cosine": 0.8237206935882568,
+          "effective_n": 1,
+          "validity": "fixed reliable Target metadata; not generated-face detection certification"
+        },
+        "fixed_target5_differentiable_ts": {
+          "target_cosine": 0.8394116163253784,
+          "effective_n": 1,
+          "validity": "fixed reliable Target metadata; not generated-face detection certification"
+        },
+        "official_detection_onnx": {
+          "target_cosine_raw": 0.8249491453170776,
+          "target_cosine_reliable": 0.8249491453170776,
+          "source_cosine_raw": 0.6984924674034119,
+          "source_cosine_reliable": 0.6984924674034119,
+          "raw_effective_n": 1,
+          "reliable_effective_n": 1
+        }
+      },
+      "generated_face_detection": {
+        "detections": [
+          {
+            "box": [
+              257.2591247558594,
+              74.21610260009766,
+              290.82635498046875,
+              118.5096435546875
+            ],
+            "score": 0.8304662704467773,
+            "short_side_at_512": 33.567230224609375,
+            "head_iou": 0.687731828421122,
+            "center_in_expected_head": true,
+            "reliable_detection_proxy": true,
+            "exclusion_reasons": []
+          }
+        ],
+        "raw_largest_index": 0,
+        "reliable_index": 0,
+        "detected": true,
+        "reliable": true,
+        "reason": "accepted"
+      },
+      "historical_target_cosine_raw": 0.8255223035812378,
+      "historical_reference_note": "Historical formal evaluation may read 1024 originals then resize; this audit uses the same saved 512 Source/Target for every method."
+    },
+    {
+      "case": "old_face_300",
+      "image": "/home/shangguanrz/nihaochen/qwen21_full/face_single_sample/face_stages/step_000300/images/000_001_13_source_standard_f000275_target_f000052_body_face.png",
+      "image_sha256": "26bad33a276e10eb8c3ca0816638786bf26f4844c1bd85b7a751fc76972d1261",
+      "metrics_path": "/home/shangguanrz/nihaochen/qwen21_full/face_single_sample/face_stage_metrics.json",
+      "methods": {
+        "legacy_box_ts": {
+          "target_cosine": 0.5173487663269043,
+          "effective_n": 1,
+          "validity": "fixed reliable Target metadata; not generated-face detection certification"
+        },
+        "fixed_target5_opencv_ts": {
+          "target_cosine": 0.09364749491214752,
+          "effective_n": 1,
+          "validity": "fixed reliable Target metadata; not generated-face detection certification"
+        },
+        "fixed_target5_differentiable_ts": {
+          "target_cosine": 0.0980655774474144,
+          "effective_n": 1,
+          "validity": "fixed reliable Target metadata; not generated-face detection certification"
+        },
+        "official_detection_onnx": {
+          "target_cosine_raw": 0.09269078075885773,
+          "target_cosine_reliable": 0.09269078075885773,
+          "source_cosine_raw": 0.11726797372102737,
+          "source_cosine_reliable": 0.11726797372102737,
+          "raw_effective_n": 1,
+          "reliable_effective_n": 1
+        }
+      },
+      "generated_face_detection": {
+        "detections": [
+          {
+            "box": [
+              256.31304931640625,
+              75.14403533935547,
+              290.3209533691406,
+              118.7683334350586
+            ],
+            "score": 0.8047180771827698,
+            "short_side_at_512": 34.007904052734375,
+            "head_iou": 0.7128710523025754,
+            "center_in_expected_head": true,
+            "reliable_detection_proxy": true,
+            "exclusion_reasons": []
+          }
+        ],
+        "raw_largest_index": 0,
+        "reliable_index": 0,
+        "detected": true,
+        "reliable": true,
+        "reason": "accepted"
+      },
+      "historical_target_cosine_raw": 0.09248541295528412,
+      "historical_reference_note": "Historical formal evaluation may read 1024 originals then resize; this audit uses the same saved 512 Source/Target for every method."
+    },
+    {
+      "case": "old_face_2000",
+      "image": "/home/shangguanrz/nihaochen/qwen21_full/face_single_sample/face_stages/step_002000/images/000_001_13_source_standard_f000275_target_f000052_body_face.png",
+      "image_sha256": "43a88e66bc0b8f0b7c3c48679c5aa7dfce5e00c57d3ec2030aa737179633eada",
+      "metrics_path": "/home/shangguanrz/nihaochen/qwen21_full/face_single_sample/face_stage_metrics.json",
+      "methods": {
+        "legacy_box_ts": {
+          "target_cosine": 0.8165433406829834,
+          "effective_n": 1,
+          "validity": "fixed reliable Target metadata; not generated-face detection certification"
+        },
+        "fixed_target5_opencv_ts": {
+          "target_cosine": 0.5142040848731995,
+          "effective_n": 1,
+          "validity": "fixed reliable Target metadata; not generated-face detection certification"
+        },
+        "fixed_target5_differentiable_ts": {
+          "target_cosine": 0.5268251299858093,
+          "effective_n": 1,
+          "validity": "fixed reliable Target metadata; not generated-face detection certification"
+        },
+        "official_detection_onnx": {
+          "target_cosine_raw": 0.5040197968482971,
+          "target_cosine_reliable": 0.5040197968482971,
+          "source_cosine_raw": 0.4391332268714905,
+          "source_cosine_reliable": 0.4391332268714905,
+          "raw_effective_n": 1,
+          "reliable_effective_n": 1
+        }
+      },
+      "generated_face_detection": {
+        "detections": [
+          {
+            "box": [
+              256.9782409667969,
+              74.46849060058594,
+              290.50006103515625,
+              118.65034484863281
+            ],
+            "score": 0.8322920799255371,
+            "short_side_at_512": 33.521820068359375,
+            "head_iou": 0.6928211439848295,
+            "center_in_expected_head": true,
+            "reliable_detection_proxy": true,
+            "exclusion_reasons": []
+          }
+        ],
+        "raw_largest_index": 0,
+        "reliable_index": 0,
+        "detected": true,
+        "reliable": true,
+        "reason": "accepted"
+      },
+      "historical_target_cosine_raw": 0.5040652751922607,
+      "historical_reference_note": "Historical formal evaluation may read 1024 originals then resize; this audit uses the same saved 512 Source/Target for every method."
+    },
+    {
+      "case": "roi_same_aux_300",
+      "image": "/home/shangguanrz/nihaochen/qwen21_full/face_repair/generations/roi_same_aux/step_000300/images/000_001_13_source_standard_f000275_target_f000052_body_face.png",
+      "image_sha256": "c6788efdc8e344edafd2f003a47c5070c88fa9b4a862eb2933d30663e77543a9",
+      "metrics_path": "/home/shangguanrz/nihaochen/qwen21_full/face_repair/generations/roi_same_aux/step_000300/metrics.json",
+      "methods": {
+        "legacy_box_ts": {
+          "target_cosine": 0.9368601441383362,
+          "effective_n": 1,
+          "validity": "fixed reliable Target metadata; not generated-face detection certification"
+        },
+        "fixed_target5_opencv_ts": {
+          "target_cosine": 0.8650000095367432,
+          "effective_n": 1,
+          "validity": "fixed reliable Target metadata; not generated-face detection certification"
+        },
+        "fixed_target5_differentiable_ts": {
+          "target_cosine": 0.873339056968689,
+          "effective_n": 1,
+          "validity": "fixed reliable Target metadata; not generated-face detection certification"
+        },
+        "official_detection_onnx": {
+          "target_cosine_raw": 0.8671783804893494,
+          "target_cosine_reliable": 0.8671783804893494,
+          "source_cosine_raw": 0.7545351982116699,
+          "source_cosine_reliable": 0.7545351982116699,
+          "raw_effective_n": 1,
+          "reliable_effective_n": 1
+        }
+      },
+      "generated_face_detection": {
+        "detections": [
+          {
+            "box": [
+              257.38983154296875,
+              74.01238250732422,
+              290.9485778808594,
+              118.65853118896484
+            ],
+            "score": 0.826481819152832,
+            "short_side_at_512": 33.558746337890625,
+            "head_iou": 0.6877463496582742,
+            "center_in_expected_head": true,
+            "reliable_detection_proxy": true,
+            "exclusion_reasons": []
+          }
+        ],
+        "raw_largest_index": 0,
+        "reliable_index": 0,
+        "detected": true,
+        "reliable": true,
+        "reason": "accepted"
+      },
+      "historical_target_cosine_raw": 0.8673549890518188,
+      "historical_reference_note": "Historical formal evaluation may read 1024 originals then resize; this audit uses the same saved 512 Source/Target for every method."
+    },
+    {
+      "case": "roi_aligned_aux_300",
+      "image": "/home/shangguanrz/nihaochen/qwen21_full/face_repair/generations/roi_aligned_aux/step_000300/images/000_001_13_source_standard_f000275_target_f000052_body_face.png",
+      "image_sha256": "3a2a24188b66443f0ea59a8d9c8690387fcad97a0c3f965da6480ff5481228fb",
+      "metrics_path": "/home/shangguanrz/nihaochen/qwen21_full/face_repair/generations/roi_aligned_aux/step_000300/metrics.json",
+      "methods": {
+        "legacy_box_ts": {
+          "target_cosine": 0.9313886761665344,
+          "effective_n": 1,
+          "validity": "fixed reliable Target metadata; not generated-face detection certification"
+        },
+        "fixed_target5_opencv_ts": {
+          "target_cosine": 0.8936762809753418,
+          "effective_n": 1,
+          "validity": "fixed reliable Target metadata; not generated-face detection certification"
+        },
+        "fixed_target5_differentiable_ts": {
+          "target_cosine": 0.9004412889480591,
+          "effective_n": 1,
+          "validity": "fixed reliable Target metadata; not generated-face detection certification"
+        },
+        "official_detection_onnx": {
+          "target_cosine_raw": 0.8936002254486084,
+          "target_cosine_reliable": 0.8936002254486084,
+          "source_cosine_raw": 0.7393789887428284,
+          "source_cosine_reliable": 0.7393789887428284,
+          "raw_effective_n": 1,
+          "reliable_effective_n": 1
+        }
+      },
+      "generated_face_detection": {
+        "detections": [
+          {
+            "box": [
+              257.35772705078125,
+              74.06153869628906,
+              291.0002746582031,
+              118.60679626464844
+            ],
+            "score": 0.8283924460411072,
+            "short_side_at_512": 33.642547607421875,
+            "head_iou": 0.6888840411817917,
+            "center_in_expected_head": true,
+            "reliable_detection_proxy": true,
+            "exclusion_reasons": []
+          }
+        ],
+        "raw_largest_index": 0,
+        "reliable_index": 0,
+        "detected": true,
+        "reliable": true,
+        "reason": "accepted"
+      },
+      "historical_target_cosine_raw": 0.8938474655151367,
+      "historical_reference_note": "Historical formal evaluation may read 1024 originals then resize; this audit uses the same saved 512 Source/Target for every method."
+    }
+  ],
+  "pending_cases": [],
+  "counts": {
+    "generated_cases": 5,
+    "unique_source_target_pairs": 1,
+    "fixed_target_landmark_faces": 1,
+    "reliable_generated_target_comparisons": 5,
+    "common_reliable_sample_n_across_all_cases": 1
+  }
+}

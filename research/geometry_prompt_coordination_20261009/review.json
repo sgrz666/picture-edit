@@ -1,0 +1,64 @@
+{
+  "date": "2026-10-09",
+  "scope": "Human review of four PE-I2I rewrites; no downstream diffusion generation or Adapter training",
+  "target_B_rgb_was_given_to_PE": false,
+  "reviewed_action_caption_was_given_to_PE": false,
+  "input_condition_audit": {
+    "tiktok_03": {
+      "target_photo": "Markedly backward head tilt; chin upward",
+      "normal_visualization": "Upward head orientation is visually present",
+      "legs": "Body25 knees and ankles are invalid; DWPose includes out-of-frame knee coordinates and low-confidence ankle/foot estimates, yet leg segments remain in the rendered skeleton"
+    },
+    "tiktok_05": {
+      "target_photo": "Both fists reach forward toward the camera",
+      "normal_visualization": "Hands appear loose/open rather than the target fists; condition already differs from the target photograph",
+      "legs": "Body25 knees and ankles are invalid; DWPose knee coordinates are outside the frame and ankle/foot estimates have low confidence, yet leg segments remain in the rendered skeleton"
+    }
+  },
+  "cases": [
+    {
+      "case_id": "tiktok_03",
+      "mode": "skeleton",
+      "head": "Rewritten as frontal head and upright neck; does not match reviewed target head tilt",
+      "arms": "Coarse lowering of arms; finer details are not established as accurate",
+      "interpretation": "2D face keypoints alone did not resolve head pitch in this case"
+    },
+    {
+      "case_id": "tiktok_03",
+      "mode": "skeleton_normal_depth",
+      "head": "Rewritten as chin lifted and face toward ceiling; high-level head direction matches the target",
+      "legs": "Specifies standing with feet apart, without reliable foot evidence",
+      "interpretation": "Adding normal and depth jointly improved one head description; contribution of each modality is not isolated"
+    },
+    {
+      "case_id": "tiktok_05",
+      "mode": "skeleton",
+      "hands": "Open spread hands at hip height; does not recover forward fists",
+      "legs": "Specifies straight legs and feet apart, without reliable foot evidence",
+      "interpretation": "Do not attribute solely to PE: skeleton hand estimates and perspective cues are imperfect"
+    },
+    {
+      "case_id": "tiktok_05",
+      "mode": "skeleton_normal_depth",
+      "hands": "Hands move in front of torso between waist and chest, but fingers remain relaxed/open rather than forward fists",
+      "legs": "Specifies separated legs and bent knees; exact pose is not supported by reliable knee/foot keypoints",
+      "interpretation": "Input normal already depicts loose hands; text-versus-geometry conflict must be audited upstream"
+    }
+  ],
+  "conclusions": [
+    "Geometry-conditioned PE rewriting is feasible as a candidate generator",
+    "Valid JSON does not establish semantic correctness",
+    "Filter unreliable visualization segments and extract confidence-aware facts before rewriting",
+    "Compile image-role references for the actual downstream protocol; current full Adapter RGB input is A only",
+    "Keep geometry camera and native pixel-canvas contract independent of PE ratio suggestions"
+  ],
+  "limitations": [
+    "Two selected cases, one PE sampling seed, four rewrites; not a statistical accuracy benchmark",
+    "Normal and depth were added together; no independent modality attribution",
+    "Some geometry estimates differ from the actual target photograph",
+    "Probe requested posture/head editing, not expression transfer; preserving source expression here is not an expression-transfer test",
+    "No evidence yet that these rewrites improve downstream generated images",
+    "Validator/compiler and follow-up image ablation are proposed, not implemented"
+  ],
+  "recommendation": "Task attribute contract + audited actual geometry + reliable facts + PE candidate + semantic checks + downstream-role compilation; compare against manually verified prompts with model and Adapter frozen"
+}

@@ -1,0 +1,526 @@
+{
+  "architecture": "qwen21_full_v1",
+  "model_revision": "790c92633540aa0cb11d9abf19eb46d861714758",
+  "args": {
+    "checkpoint": "/home/shangguanrz/nihaochen/qwen21_full/face_512_100/checkpoint_last.pt",
+    "body_checkpoint": "/home/shangguanrz/nihaochen/qwen21_full/body_512_100/checkpoint_last.pt",
+    "resolution": 1024,
+    "max_samples": 2,
+    "output": "/home/shangguanrz/nihaochen/qwen21_full/acceptance/runtime_1024.json",
+    "pairs": "/home/shangguanrz/nihaochen/qwen21_full/val_pairs.jsonl",
+    "features": "/home/shangguanrz/nihaochen/qwen21_full/face_cache",
+    "cache": "/home/shangguanrz/nihaochen/qwen21_full/native_cache",
+    "model": "/home/shangguanrz/project/pic-edit/models/Qwen-Image-2.1",
+    "prompt": "Change the person pose to match the target pose. Preserve identity, clothing, and background.",
+    "seed": 42,
+    "atol": 0.001
+  },
+  "resolution": 1024,
+  "optimizer_steps": 0,
+  "scope": "validation engineering acceptance; no final test set; no training updates; no complete sampling",
+  "face_1024_auxiliary_vae_backward_tested": false,
+  "native_parity": [
+    {
+      "pair_index": 0,
+      "sigma": 0.2001953125,
+      "initialized_vs_native": {
+        "max_abs": 0.0,
+        "exactly_equal": true,
+        "atol": 0.001,
+        "passed": true
+      },
+      "disabled_vs_native": {
+        "max_abs": 0.0,
+        "exactly_equal": true,
+        "atol": 0.001,
+        "passed": true
+      },
+      "raw_branch_rms": {
+        "geometry": [
+          0.31353917717933655,
+          0.5587138533592224,
+          0.669306218624115,
+          0.7287779450416565,
+          0.8105219602584839,
+          1.8907381296157837
+        ],
+        "interaction": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "detail": null,
+        "face": [
+          0.3365495800971985,
+          0.5429195761680603,
+          0.5199270844459534,
+          0.6002752184867859,
+          0.7692105770111084,
+          1.4561728239059448
+        ],
+        "hand": null
+      },
+      "inherited_nonzero_heads_exercised": true,
+      "initialized_residual_rms": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "passed": true
+    },
+    {
+      "pair_index": 1,
+      "sigma": 0.2001953125,
+      "initialized_vs_native": {
+        "max_abs": 0.0,
+        "exactly_equal": true,
+        "atol": 0.001,
+        "passed": true
+      },
+      "disabled_vs_native": {
+        "max_abs": 0.0,
+        "exactly_equal": true,
+        "atol": 0.001,
+        "passed": true
+      },
+      "raw_branch_rms": {
+        "geometry": [
+          0.31254053115844727,
+          0.5592585802078247,
+          0.6693330407142639,
+          0.7265991568565369,
+          0.806235671043396,
+          1.887643575668335
+        ],
+        "interaction": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "detail": null,
+        "face": [
+          0.3767373859882355,
+          0.6057010293006897,
+          0.5811678767204285,
+          0.6731996536254883,
+          0.8676658272743225,
+          1.6494972705841064
+        ],
+        "hand": null
+      },
+      "inherited_nonzero_heads_exercised": true,
+      "initialized_residual_rms": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "passed": true
+    }
+  ],
+  "samples": [
+    {
+      "pair_index": 0,
+      "pair": {
+        "pair_id": "val_000",
+        "source_appearance": "001_2",
+        "target_appearance": "001_2",
+        "source_stem": "source_standard_f000681",
+        "target_stem": "target_f001344",
+        "source_rgb": "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_sampled_6src64tgt/001_2/rgb_1024/source_standard/source_standard_f000681.png",
+        "target_rgb": "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_sampled_6src64tgt/001_2/rgb_1024/target/target_f001344.png",
+        "cross_person": false
+      },
+      "target_rgb_isolation": {
+        "checked_tensors": 23,
+        "changed_tensors": [],
+        "exactly_equal": true
+      },
+      "note": "Target geometry remains a condition; only Target RGB and clean supervised latent were replaced.",
+      "comparisons": {
+        "face_off_vs_body": {
+          "max_abs": 0.0,
+          "exactly_equal": true,
+          "atol": 0.001,
+          "passed": true
+        },
+        "invalid_face_vs_body": {
+          "max_abs": 0.0,
+          "exactly_equal": true,
+          "atol": 0.001,
+          "passed": true
+        }
+      },
+      "face_roi": {
+        "outside_max_abs": 0.0,
+        "outside_exactly_zero": true,
+        "projected_face_rms": [
+          0.022161416709423065,
+          0.05372479930520058,
+          0.06053787097334862,
+          0.0563562847673893,
+          0.09683932363986969,
+          0.1653982400894165
+        ],
+        "support_tokens": 25,
+        "total_tokens": 4096,
+        "output_projection_nonzero": true,
+        "raw_branch_rms": {
+          "geometry": [
+            0.21808655560016632,
+            0.31325238943099976,
+            0.33286139369010925,
+            0.2557857930660248,
+            0.20235426723957062,
+            0.2548786699771881
+          ],
+          "interaction": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "detail": null,
+          "face": [
+            0.10097484290599823,
+            0.1672370731830597,
+            0.16121052205562592,
+            0.1568073034286499,
+            0.24583293497562408,
+            0.41224294900894165
+          ],
+          "hand": null
+        }
+      },
+      "passed": true
+    },
+    {
+      "pair_index": 1,
+      "pair": {
+        "pair_id": "val_001",
+        "source_appearance": "001_5",
+        "target_appearance": "001_5",
+        "source_stem": "source_motion_f000815",
+        "target_stem": "target_f000135",
+        "source_rgb": "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_sampled_6src64tgt/001_5/rgb_1024/source_motion/source_motion_f000815.png",
+        "target_rgb": "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_sampled_6src64tgt/001_5/rgb_1024/target/target_f000135.png",
+        "cross_person": false
+      },
+      "target_rgb_isolation": {
+        "checked_tensors": 23,
+        "changed_tensors": [],
+        "exactly_equal": true
+      },
+      "note": "Target geometry remains a condition; only Target RGB and clean supervised latent were replaced.",
+      "comparisons": {
+        "face_off_vs_body": {
+          "max_abs": 0.0,
+          "exactly_equal": true,
+          "atol": 0.001,
+          "passed": true
+        },
+        "invalid_face_vs_body": {
+          "max_abs": 0.0,
+          "exactly_equal": true,
+          "atol": 0.001,
+          "passed": true
+        }
+      },
+      "face_roi": {
+        "outside_max_abs": 0.0,
+        "outside_exactly_zero": true,
+        "projected_face_rms": [
+          0.025392353534698486,
+          0.06098992004990578,
+          0.06812490522861481,
+          0.06144529581069946,
+          0.10836558043956757,
+          0.18215402960777283
+        ],
+        "support_tokens": 25,
+        "total_tokens": 4096,
+        "output_projection_nonzero": true,
+        "raw_branch_rms": {
+          "geometry": [
+            0.21822333335876465,
+            0.3137997090816498,
+            0.3334455192089081,
+            0.2563599646091461,
+            0.20249873399734497,
+            0.2551271617412567
+          ],
+          "interaction": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "detail": null,
+          "face": [
+            0.1130804568529129,
+            0.18161530792713165,
+            0.16682113707065582,
+            0.1533522754907608,
+            0.2500322759151459,
+            0.4115298092365265
+          ],
+          "hand": null
+        }
+      },
+      "passed": true
+    }
+  ],
+  "backward": [
+    {
+      "branch": "body",
+      "pair_index": 0,
+      "sigma": 0.5,
+      "loss": 0.17553889751434326,
+      "loss_definition": "human-weighted flow only",
+      "auxiliary_vae_backward_tested": false,
+      "optimizer_steps": 0,
+      "gradient_checkpointing": true,
+      "group_grad_norms": {
+        "heads_and_interface": 0.6791173815727234,
+        "encoders": 0.0004314709804020822,
+        "control_core": 0.017759738489985466
+      },
+      "nonzero_grad_tensor_counts": {
+        "heads_and_interface": 20,
+        "encoders": 218,
+        "control_core": 81
+      },
+      "nonfinite_gradients": [],
+      "forbidden_adapter_gradients": [],
+      "base_parameter_gradients": [],
+      "raw_branch_rms": {
+        "geometry": [
+          0.22053338587284088,
+          0.3186034560203552,
+          0.33913207054138184,
+          0.2613309919834137,
+          0.2077147662639618,
+          0.2677396237850189
+        ],
+        "interaction": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "detail": null,
+        "face": null,
+        "hand": null
+      },
+      "output_projection_gradient_nonzero": true,
+      "peak_allocated_gib": 30.13897180557251,
+      "peak_reserved_gib": 31.466796875,
+      "elapsed_seconds": 6.201695042022038,
+      "passed": true
+    },
+    {
+      "branch": "face",
+      "pair_index": 0,
+      "sigma": 0.2001953125,
+      "loss": 0.3755868673324585,
+      "loss_definition": "flow only",
+      "auxiliary_vae_backward_tested": false,
+      "optimizer_steps": 0,
+      "gradient_checkpointing": true,
+      "group_grad_norms": {
+        "heads_and_interface": 0.09510324895381927,
+        "encoders": 0.0051405783742666245,
+        "control_core": 0.012159529142081738
+      },
+      "nonzero_grad_tensor_counts": {
+        "heads_and_interface": 14,
+        "encoders": 149,
+        "control_core": 79
+      },
+      "nonfinite_gradients": [],
+      "forbidden_adapter_gradients": [],
+      "base_parameter_gradients": [],
+      "raw_branch_rms": {
+        "geometry": [
+          0.2180762141942978,
+          0.31323927640914917,
+          0.3328438103199005,
+          0.25577086210250854,
+          0.20233772695064545,
+          0.25484326481819153
+        ],
+        "interaction": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "detail": null,
+        "face": [
+          0.10097484290599823,
+          0.1672370731830597,
+          0.16121052205562592,
+          0.1568073034286499,
+          0.24583293497562408,
+          0.41224294900894165
+        ],
+        "hand": null
+      },
+      "output_projection_gradient_nonzero": true,
+      "peak_allocated_gib": 21.07921838760376,
+      "peak_reserved_gib": 22.705078125,
+      "elapsed_seconds": 5.985955990036018,
+      "passed": true
+    },
+    {
+      "branch": "body",
+      "pair_index": 1,
+      "sigma": 0.5,
+      "loss": 0.17333482205867767,
+      "loss_definition": "human-weighted flow only",
+      "auxiliary_vae_backward_tested": false,
+      "optimizer_steps": 0,
+      "gradient_checkpointing": true,
+      "group_grad_norms": {
+        "heads_and_interface": 0.6671663522720337,
+        "encoders": 0.0008470273460261524,
+        "control_core": 0.025916004553437233
+      },
+      "nonzero_grad_tensor_counts": {
+        "heads_and_interface": 20,
+        "encoders": 218,
+        "control_core": 81
+      },
+      "nonfinite_gradients": [],
+      "forbidden_adapter_gradients": [],
+      "base_parameter_gradients": [],
+      "raw_branch_rms": {
+        "geometry": [
+          0.22062580287456512,
+          0.31909680366516113,
+          0.3396487534046173,
+          0.2618596851825714,
+          0.2078479528427124,
+          0.26781347393989563
+        ],
+        "interaction": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "detail": null,
+        "face": null,
+        "hand": null
+      },
+      "output_projection_gradient_nonzero": true,
+      "peak_allocated_gib": 30.13824701309204,
+      "peak_reserved_gib": 31.470703125,
+      "elapsed_seconds": 6.061239833012223,
+      "passed": true
+    },
+    {
+      "branch": "face",
+      "pair_index": 1,
+      "sigma": 0.2001953125,
+      "loss": 0.3895532488822937,
+      "loss_definition": "flow only",
+      "auxiliary_vae_backward_tested": false,
+      "optimizer_steps": 0,
+      "gradient_checkpointing": true,
+      "group_grad_norms": {
+        "heads_and_interface": 0.06663819402456284,
+        "encoders": 0.015223992057144642,
+        "control_core": 0.010135234333574772
+      },
+      "nonzero_grad_tensor_counts": {
+        "heads_and_interface": 14,
+        "encoders": 149,
+        "control_core": 79
+      },
+      "nonfinite_gradients": [],
+      "forbidden_adapter_gradients": [],
+      "base_parameter_gradients": [],
+      "raw_branch_rms": {
+        "geometry": [
+          0.21820828318595886,
+          0.3137858510017395,
+          0.33343175053596497,
+          0.2563503086566925,
+          0.202492356300354,
+          0.2551242709159851
+        ],
+        "interaction": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "detail": null,
+        "face": [
+          0.1130804568529129,
+          0.18161530792713165,
+          0.16682113707065582,
+          0.1533522754907608,
+          0.2500322759151459,
+          0.4115298092365265
+        ],
+        "hand": null
+      },
+      "output_projection_gradient_nonzero": true,
+      "peak_allocated_gib": 21.07921838760376,
+      "peak_reserved_gib": 22.705078125,
+      "elapsed_seconds": 5.97227169101825,
+      "passed": true
+    }
+  ],
+  "passed": true,
+  "status": "complete",
+  "body_preserved_by_face_checkpoint": {
+    "body_step": 100,
+    "face_step": 100,
+    "body_branch": "body",
+    "face_branch": "face",
+    "checked_tensors": 734,
+    "face_tensors_excluded": 243,
+    "changed_nonface_tensors": [],
+    "passed": true
+  },
+  "selected_indices": [
+    0,
+    1
+  ],
+  "validation_manifest_sha256": "bed33bfb665b130a324994c02982d10850ee8c5891d4aed6af2a3bc7418ed1e2",
+  "loaded_checkpoint": {
+    "step": 100,
+    "branch": "face",
+    "training_resolution": 512
+  },
+  "adapter_weights_sha256_before": "ee2f9f11d4fb04f3edac09af91a4eb75098451fd188dca9be35d40cb8797faf3",
+  "adapter_weights_sha256_after": "ee2f9f11d4fb04f3edac09af91a4eb75098451fd188dca9be35d40cb8797faf3",
+  "weights_unchanged": true,
+  "base_frozen": true
+}

@@ -1,0 +1,14 @@
+{
+  "checkpoint": "/home/shangguanrz/nihaochen/qwen21_full/bfs_body_face_joint_pilot_20261008/training/J/checkpoint_step_000256.pt",
+  "counting_method": "Read-only torch.load(map_location=cpu, mmap=True); numel from adapter_state_dict using run_manifest optimizer_parameters names.",
+  "state_elements_including_buffers": 599591996,
+  "trainable_parameter_elements": 250602128,
+  "groups": {
+    "body_heads_and_interface": 45632582,
+    "body_encoders": 37468148,
+    "body_control_core": 118257024,
+    "face_heads_and_interface": 11019270,
+    "face_encoders": 32548048,
+    "face_control_core": 5677056
+  }
+}

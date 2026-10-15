@@ -1,0 +1,51 @@
+{
+  "checks": {
+    "512 单案例脸部、身份、姿态、背景验收": true,
+    "1024 绿色斑点及明显重影（同一案例人工检查）": "修正训练网格映射后未见明显异常；脸仍偏糊",
+    "1024 身份改善": "无法可靠判断：共同可靠样本 n=0",
+    "原完整控制模块 47 份保留": true,
+    "Body 和 Qwen 基座冻结": true,
+    "全部控制关闭与原生预测一致": true,
+    "Face 关闭／无效脸退回同一 Body": true,
+    "注入仅作用于目标 token，Face 脸外残差为零": true,
+    "Target RGB 未进入生成条件": true,
+    "37 项针对性代码测试": true,
+    "恢复核对": "确定性参考实现下一步精确一致；不声明默认 CUDA 逐位一致"
+  },
+  "512_results": {
+    "roi_same_aux": {
+      "reliable_identity_n": 1,
+      "identity_gain": 0.05670619010925293,
+      "pose_pck_change": 0.0,
+      "background_mae_increase": 0.0012636184692382812,
+      "no_obvious_colored_blocks_or_severe_face_ghosting_manual": true,
+      "fine_detail_still_blurry_manual": true,
+      "single_case_passed": true
+    },
+    "roi_aligned_aux": {
+      "reliable_identity_n": 1,
+      "identity_gain": 0.04165703058242798,
+      "pose_pck_change": 0.0,
+      "background_mae_increase": 0.0024306774139404297,
+      "no_obvious_colored_blocks_or_severe_face_ghosting_manual": true,
+      "fine_detail_still_blurry_manual": true,
+      "single_case_passed": true
+    }
+  },
+  "1024": {
+    "reliable_common_n": 0,
+    "identity_improvement_conclusion": "无法判断",
+    "native_grid_manual": "明显绿色斑点与面部重影",
+    "checkpoint_grid_manual": "未见原先明显绿色斑点和严重重影；细节仍模糊",
+    "face_training_resolution": 512,
+    "training_at_1024_performed": false,
+    "metrics_paths": [
+      "/home/shangguanrz/nihaochen/qwen21_full/face_repair/generations_1024/roi_same_aux/step_000000/body/metrics.json",
+      "/home/shangguanrz/nihaochen/qwen21_full/face_repair/generations_1024/roi_same_aux/step_000300/metrics.json",
+      "/home/shangguanrz/nihaochen/qwen21_full/face_repair/generations_1024/roi_same_aux/step_000300/checkpoint_grid/metrics.json"
+    ]
+  },
+  "conclusions": [
+    "两组 512 修复均通过这一对训练图片的验收。1024 的修正通过了接口、完整采样和异常外观检查；由于可靠身份样本不足，不宣布 1024 身份改善已得到验证。"
+  ]
+}

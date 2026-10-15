@@ -1,0 +1,139 @@
+{
+  "formal_generation_count": 0,
+  "input_checks": [
+    {
+      "pair_id": "train_0002794",
+      "source_faces": 1,
+      "source_identity_self_cosine": 0.9999999403953552,
+      "source_size": [
+        604,
+        1080
+      ],
+      "target_pose_detected": true,
+      "target_pose_visible_joints": 15,
+      "target_size": [
+        604,
+        1080
+      ]
+    },
+    {
+      "pair_id": "train_0000092",
+      "source_faces": 1,
+      "source_identity_self_cosine": 1.0,
+      "source_size": [
+        604,
+        1080
+      ],
+      "target_pose_detected": true,
+      "target_pose_visible_joints": 15,
+      "target_size": [
+        604,
+        1080
+      ]
+    },
+    {
+      "pair_id": "train_0007286",
+      "source_faces": 1,
+      "source_identity_self_cosine": 1.0,
+      "source_size": [
+        604,
+        1080
+      ],
+      "target_pose_detected": true,
+      "target_pose_visible_joints": 13,
+      "target_size": [
+        604,
+        1080
+      ]
+    },
+    {
+      "pair_id": "train_0007410",
+      "source_faces": 1,
+      "source_identity_self_cosine": 1.0,
+      "source_size": [
+        604,
+        1080
+      ],
+      "target_pose_detected": true,
+      "target_pose_visible_joints": 17,
+      "target_size": [
+        604,
+        1080
+      ]
+    },
+    {
+      "pair_id": "train_0005242",
+      "source_faces": 1,
+      "source_identity_self_cosine": 0.9999999403953552,
+      "source_size": [
+        604,
+        1080
+      ],
+      "target_pose_detected": true,
+      "target_pose_visible_joints": 13,
+      "target_size": [
+        604,
+        1080
+      ]
+    },
+    {
+      "pair_id": "train_0004247",
+      "source_faces": 1,
+      "source_identity_self_cosine": 1.0,
+      "source_size": [
+        604,
+        1080
+      ],
+      "target_pose_detected": true,
+      "target_pose_visible_joints": 13,
+      "target_size": [
+        604,
+        1080
+      ]
+    },
+    {
+      "pair_id": "train_0003344",
+      "source_faces": 1,
+      "source_identity_self_cosine": 1.0000001192092896,
+      "source_size": [
+        604,
+        1080
+      ],
+      "target_pose_detected": true,
+      "target_pose_visible_joints": 15,
+      "target_size": [
+        604,
+        1080
+      ]
+    },
+    {
+      "pair_id": "train_0006013",
+      "source_faces": 1,
+      "source_identity_self_cosine": 0.9999998807907104,
+      "source_size": [
+        604,
+        1080
+      ],
+      "target_pose_detected": true,
+      "target_pose_visible_joints": 12,
+      "target_size": [
+        604,
+        1080
+      ]
+    }
+  ],
+  "loss_models": {
+    "face_eval/identity_encoder.ts": {
+      "loaded": true,
+      "sha256": "bf059ec89614024682639ef3eaffecd3ef0933aae9c114df4097636d800269d6"
+    },
+    "face_eval/perceptual_encoder.ts": {
+      "loaded": true,
+      "sha256": "1cc07b8a2c39e7ae0ff40fdfa1d4f124b41318f6000cbbc88ebc564338dd793c"
+    }
+  },
+  "passed": true,
+  "schema": "measurement_cpu_input_smoke_v1",
+  "scoring_signature_sha256": "61940e2d04761292950fbbdb307770764ed4e763177e492aca8892dcd351886b",
+  "seconds": 14.56156849861145
+}

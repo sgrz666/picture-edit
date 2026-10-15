@@ -1,0 +1,130 @@
+{
+  "schema": "single_person_pose_workflow_v2",
+  "status": "complete",
+  "A_original": "/home/shangguanrz/project/pic-edit/experiments/qwen-2.1-test/data/testset/pairs/hard_05/A_source.png",
+  "B_original": "/home/shangguanrz/project/pic-edit/experiments/qwen-2.1-test/data/testset/pairs/hard_05/B_target.png",
+  "settings": {
+    "project_root": "/home/shangguanrz/project/pic-edit",
+    "geometry_python": "/home/shangguanrz/project/pic-edit/add/envs/smplestx_bw/bin/python",
+    "qwen_python": "/home/shangguanrz/nihaochen/envs/qwen21/bin/python",
+    "smplest_root": "/home/shangguanrz/project/pic-edit/add/tools/SMPLest-X",
+    "smplest_checkpoint": "smplest_x_h",
+    "pe_model": "/data/shangguanrz/pic-edit-models/Qwen-Image-2.1-PE-I2I",
+    "qwen_model": "/data/shangguanrz/pic-edit-models/Qwen-Image-2.1",
+    "person_detection_confidence": 0.5,
+    "subject": "auto",
+    "resolution": 768,
+    "steps": 30,
+    "seed": 42,
+    "pe_seed": 42,
+    "true_cfg_scale": 1.0,
+    "use_kv_cache": false,
+    "pose_framing": "source_torso",
+    "prop_policy": "source_only",
+    "adapter": false,
+    "lora": false
+  },
+  "requested_until": "generate",
+  "prompt_source": "runs/testset_hard05_promptv2/prompt/refined_prompt.txt",
+  "stages": [
+    {
+      "stage": "geometry",
+      "cache_hit": false,
+      "record": "/home/shangguanrz/project/pic-edit/workflow/runs/hard_05_manual/geometry/stage.json"
+    },
+    {
+      "stage": "prompt",
+      "cache_hit": false,
+      "record": "/home/shangguanrz/project/pic-edit/workflow/runs/hard_05_manual/prompt/stage.json"
+    },
+    {
+      "stage": "generate",
+      "cache_hit": false,
+      "record": "/home/shangguanrz/project/pic-edit/workflow/runs/hard_05_manual/generation/stage.json"
+    }
+  ],
+  "outputs": {
+    "B_smplx": {
+      "path": "/home/shangguanrz/project/pic-edit/workflow/runs/hard_05_manual/geometry/B_smplx.pt",
+      "sha256": "ac439e667ad4b5f6444e6d8235b261e19c575ad8b0132b85fdfad0d9ea3b7922"
+    },
+    "B_keypoints": {
+      "path": "/home/shangguanrz/project/pic-edit/workflow/runs/hard_05_manual/geometry/B_keypoints.npz",
+      "sha256": "978361ce4c19edc6e47c1bd335a65a2c6e7714834e4c4f7cf2c6e2a407bc6c29"
+    },
+    "B_camera": {
+      "path": "/home/shangguanrz/project/pic-edit/workflow/runs/hard_05_manual/geometry/B_camera.json",
+      "sha256": "617fbfaf38f4c6d4e9d7afd06e6c069a02c3fc4afb535e0b0ae7a69e18bdb552"
+    },
+    "B_3d_dwpose": {
+      "path": "/home/shangguanrz/project/pic-edit/workflow/runs/hard_05_manual/geometry/B_3d_dwpose.png",
+      "sha256": "5d7ffb99011c4f4afd1812ab41246c64bc1046dcd61dee0792ac7853e7bf4b7f"
+    },
+    "B_poseguide_native": {
+      "path": "/home/shangguanrz/project/pic-edit/workflow/runs/hard_05_manual/geometry/B_poseguide_native.png",
+      "sha256": "9d4ad09ce89d11064f5b8670c96ba50253245964f5598484bf945735822422c3"
+    },
+    "B_overlay": {
+      "path": "/home/shangguanrz/project/pic-edit/workflow/runs/hard_05_manual/geometry/B_poseguide_overlay.png",
+      "sha256": "86c94e8e6b45b01777ac64e339f467982f459b5c5372dd8cb94fe28c0ea9070f"
+    },
+    "A_alignment": {
+      "path": "/home/shangguanrz/project/pic-edit/workflow/runs/hard_05_manual/geometry/A_poseguide_alignment.png",
+      "sha256": "b749888526aa47377826b92676a61a433bc6a83b0786f3c7f937c468e410a259"
+    },
+    "pe_compiled_prompt": {
+      "path": "/home/shangguanrz/project/pic-edit/workflow/runs/hard_05_manual/prompt/pe_compiled_prompt.txt",
+      "sha256": "a661a7245cd713f38efd48f66ee42ea369c0b6b6b09bcb50a05b8b7168de0e55"
+    },
+    "pe_result": {
+      "path": "/home/shangguanrz/project/pic-edit/workflow/runs/hard_05_manual/prompt/pe_result.json",
+      "sha256": "69dce734ad6dd19f34203e71b9e16ee62cca906b02327d199199e7e3aedd9b1b"
+    },
+    "pe_raw": {
+      "path": "/home/shangguanrz/project/pic-edit/workflow/runs/hard_05_manual/prompt/pe_raw.txt",
+      "sha256": "dc0d120bfd07d167987787989d03f19e407be2b9c9fd49c448194b9fcf12a7d1"
+    },
+    "rewritten_prompt_raw": {
+      "path": "/home/shangguanrz/project/pic-edit/workflow/runs/hard_05_manual/prompt/rewritten_prompt_raw.txt",
+      "sha256": "15ddc7cb9bf8986cc4b20b227b98a8601de80588e49f09ab3f339582bad0a718"
+    },
+    "pe_attempts": {
+      "path": "/home/shangguanrz/project/pic-edit/workflow/runs/hard_05_manual/prompt/pe_attempts.json",
+      "sha256": "49113a89972a3578a901445b7ede0417b5a94476819b66032f072d2944157e5f"
+    },
+    "effective_system_prompt": {
+      "path": "/home/shangguanrz/project/pic-edit/workflow/runs/hard_05_manual/prompt/effective_system_prompt.txt",
+      "sha256": "21b31e845e365fb214312235f488ad9e2c71eebcd2fc81d25ebbc9e2d78837c7"
+    },
+    "pe_attempt_1": {
+      "path": "/home/shangguanrz/project/pic-edit/workflow/runs/hard_05_manual/prompt/pe_attempt_1.txt",
+      "sha256": "dc0d120bfd07d167987787989d03f19e407be2b9c9fd49c448194b9fcf12a7d1"
+    },
+    "generation_prompt": {
+      "path": "/home/shangguanrz/project/pic-edit/workflow/runs/hard_05_manual/prompt/generation_prompt.txt",
+      "sha256": "17b9c6084d0b8ecd87e870fabf8f7895ec7715e54d3bbc0781a9b542cd5ca60b"
+    },
+    "generation_prompt_provenance": {
+      "path": "/home/shangguanrz/project/pic-edit/workflow/runs/hard_05_manual/prompt/generation_prompt.json",
+      "sha256": "328351d5766f1ee628dbb23af15c7fe3be523ab3319eaf8b2f6ac5138da61038"
+    },
+    "final_image": {
+      "path": "/home/shangguanrz/project/pic-edit/workflow/runs/hard_05_manual/generation/final_image.png",
+      "sha256": "e8543afc22b0b8be211e7d01c1e7811046cdc0bad9b3c6928174d2c710571e4a"
+    },
+    "final_canvas": {
+      "path": "/home/shangguanrz/project/pic-edit/workflow/runs/hard_05_manual/generation/final_canvas.png",
+      "sha256": "d6551f489e950237c1705467a97f6b8ac6b8c64da239a0df52380da10f2576ab"
+    },
+    "generation_info": {
+      "path": "/home/shangguanrz/project/pic-edit/workflow/runs/hard_05_manual/generation/generation.json",
+      "sha256": "32ded4af558fec8aa98d863ce6774b9562442f38ed48e35be2762eebc227886f"
+    }
+  },
+  "started_at_unix": 1791790484.5460234,
+  "finished_at_unix": 1791790756.2025187,
+  "verification": {
+    "status": "validated",
+    "reasons": {}
+  }
+}

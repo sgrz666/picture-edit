@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="docx-page-size" content="A4">
+<title>PE-I2I 自动重写模型实验报告</title>
+<style>
+@page {
+  @bottom-center { content: counter(page); }
+}
+@page cover {
+  @bottom-center { content: none; }
+}
+section[role="cover"] { page: cover; }
+
+:root {
+  --fs-h1: var(--typography-fontSize-h1, 20pt);
+  --fs-h2: var(--typography-fontSize-h2, 11pt);
+  --fs-h3: var(--typography-fontSize-h3, 10pt);
+  --fs-body: var(--typography-fontSize-body, 9pt);
+  --fs-small: var(--typography-fontSize-small, 8pt);
+  --fs-caption: var(--typography-fontSize-caption, 9pt);
+  --fs-title: var(--typography-fontSize-title, 28pt);
+  --ff-heading: var(--typography-fontFamily-heading, "微软雅黑", sans-serif);
+  --ff-body: var(--typography-fontFamily-body, "微软雅黑", sans-serif);
+  --ff-code: var(--typography-fontFamily-code, Consolas, monospace);
+  --lh-body: var(--typography-lineHeight-body, 1.6);
+  --fw-bold: var(--typography-fontWeight-heading, 600);
+  --color-primary: var(--color-primary, #1565C0);
+  --color-heading: var(--color-heading, #1A237E);
+  --color-text: var(--color-text, #212121);
+  --color-muted: var(--color-textSecondary, #616161);
+  --color-border: var(--color-divider, #E0E0E0);
+  --color-bg: var(--color-background, #FFFFFF);
+  --color-highlight: var(--color-surface, #F5F7FA);
+  --color-accent: var(--color-accent, #00897B);
+  --color-emphasis: #C62828;
+  --spacing-paragraph: var(--spacing-paragraph, 0.75em);
+  --spacing-section: var(--spacing-sectionGap, 2.5em);
+  --spacing-block: var(--spacing-cardPadding, 1.5em);
+  --margin-page: var(--layout-marginTop, 2.5cm);
+  --radius-card: 8px;
+  --spacing-tight: 0.3em;
+  --spacing-snug: 0.35em;
+  --spacing-base: 0.4em;
+  --spacing-item: 0.5em;
+  --spacing-half: 0.5em 0.7em;
+  --spacing-list: 1.6em;
+  --spacing-inline: 0.1em 0.3em;
+  --spacing-lead: 1.0em;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: var(--ff-body); font-size: var(--fs-body); line-height: var(--lh-body); color: var(--color-text); background: var(--color-bg); }
+
+.report-cover { padding: var(--margin-page); min-height: 60vh; background: var(--color-highlight); }
+.cover-rule { width: 80px; height: 4px; background: var(--color-primary); margin-bottom: var(--spacing-section); }
+.cover-category { font-size: var(--typography-fontSize-coverCategory, 14pt); font-family: var(--ff-heading); font-weight: var(--fw-bold); color: var(--color-primary); letter-spacing: 0.08em; margin-bottom: var(--spacing-lead); }
+.cover-title { font-size: var(--fs-title); font-family: var(--ff-heading); font-weight: var(--fw-bold); color: var(--color-heading); margin-bottom: var(--spacing-item); line-height: 1.3; }
+.cover-subtitle { font-size: var(--fs-h1); color: var(--color-muted); margin-bottom: var(--spacing-section); }
+.cover-meta { font-size: var(--fs-caption); color: var(--color-muted); }
+.cover-meta p { margin-bottom: var(--spacing-snug); }
+
+.report-body { padding: var(--spacing-section) var(--margin-page); }
+.report-body h2 { font-size: var(--fs-h1); font-family: var(--ff-heading); font-weight: var(--fw-bold); color: var(--color-heading); margin-top: var(--spacing-section); margin-bottom: var(--spacing-paragraph); padding-bottom: var(--spacing-tight); border-bottom: 1px solid var(--color-border); }
+.report-body h3 { font-size: var(--fs-h1); font-family: var(--ff-heading); font-weight: var(--fw-bold); color: var(--color-primary); margin-top: var(--spacing-block); margin-bottom: var(--spacing-paragraph); }
+.report-body h4 { font-size: var(--fs-h2); font-family: var(--ff-heading); font-weight: var(--fw-bold); color: var(--color-text); margin-top: var(--spacing-block); margin-bottom: var(--spacing-paragraph); }
+.report-body p { margin-bottom: var(--spacing-paragraph); }
+.report-body ul, .report-body ol { margin: 0 0 var(--spacing-paragraph) var(--spacing-list); }
+.report-body li { margin-bottom: var(--spacing-snug); }
+.report-body strong { font-weight: var(--fw-bold); color: var(--color-heading); }
+.report-body code { font-family: var(--ff-code); font-size: var(--fs-caption); background: var(--color-highlight); padding: var(--spacing-inline); }
+
+.doc-toc { margin-bottom: var(--spacing-section); padding: var(--spacing-block); background: var(--color-highlight); }
+.toc-title { font-weight: var(--fw-bold); font-family: var(--ff-heading); color: var(--color-heading); margin-bottom: var(--spacing-item); }
+.toc-list { list-style: none; padding-left: 0; }
+.toc-list li { margin-bottom: var(--spacing-tight); }
+.toc-list a { color: var(--color-primary); text-decoration: none; }
+
+.executive-summary { margin-bottom: var(--spacing-section); padding: var(--spacing-block); border-left: 4px solid var(--color-primary); background: var(--color-highlight); }
+.summary-header { margin-bottom: var(--spacing-block); }
+.summary-header h2 { font-size: var(--fs-h1); font-family: var(--ff-heading); font-weight: var(--fw-bold); color: var(--color-heading); border: none; margin: 0; padding: 0; }
+.summary-badge { font-size: var(--fs-small); color: var(--color-muted); font-style: italic; }
+
+table { width: 100%; border-collapse: collapse; margin-bottom: var(--spacing-block); }
+th, td { padding: var(--spacing-half); border: 1px solid var(--color-border); text-align: left; vertical-align: top; font-size: var(--fs-caption); }
+th { background: var(--color-highlight); font-family: var(--ff-heading); font-weight: var(--fw-bold); color: var(--color-heading); }
+td code { font-size: var(--fs-small); }
+
+.figure { margin: var(--spacing-block) 0; text-align: center; }
+.figure img { max-width: 100%; height: auto; }
+.figcaption { font-size: var(--fs-caption); color: var(--color-muted); margin-top: var(--spacing-item); text-align: center; }
+
+.callout { padding: var(--spacing-block); margin: var(--spacing-block) 0; border-left: 4px solid var(--color-accent); background: var(--color-highlight); }
+.callout-title { font-family: var(--ff-heading); font-weight: var(--fw-bold); color: var(--color-accent); margin-bottom: var(--spacing-base); }
+
+.abstract-card { border: 1px solid var(--color-border); background: var(--color-highlight); }
+.abstract-card td { padding: var(--spacing-block); border: none; }
+.abstract-card p { margin-bottom: var(--spacing-item); }
+.abstract-card p:last-child { margin-bottom: 0; }
+
+divider { display: block; border-top: 1px solid var(--color-border); margin: var(--spacing-section) 0; }
+</style>
+</head>
+<body>
+
+<section role="cover" class="report-cover">
+  <div class="cover-rule"></div>
+  <p class="cover-category">技术实验报告</p>
+  <h1 class="cover-title">PE-I2I 自动重写模型实验报告</h1>
+  <p class="cover-subtitle">官方提示词重写模型对姿态迁移任务的影响评估</p>
+  <div class="cover-meta">
+    <p>对象模型：Qwen/Qwen-Image-2.1-PE-I2I</p>
+    <p>基座模型：Qwen-Image-2.1</p>
+    <p>报告日期：2026-10-08</p>
+  </div>
+</section>
+
+<section role="body" class="report-body" data-page-restart="1">
+
+  <nav class="doc-toc">
+    <p class="toc-title">目录</p>
+    <ol class="toc-list">
+      <li><a href="#sec1">一、PE-I2I 自动重写模型介绍</a></li>
+      <li><a href="#sec2">二、重写原理与后续生图的衔接</a></li>
+      <li><a href="#sec3">三、重写过程</a></li>
+      <li><a href="#sec4">四、生图效果</a></li>
+    </ol>
+  </nav>
+
+  <div class="executive-summary">
+    <div class="summary-header">
+      <h2>摘要</h2>
+      <span class="summary-badge">Executive Summary</span>
+    </div>
+    <table class="abstract-card">
+      <tbody><tr><td>
+        <p>本报告围绕 Qwen 官方随 <strong>Qwen-Image-2.1</strong> 同期发布的提示词重写模型 <strong>PE-I2I</strong> 展开。实验以同一组「人物姿态迁移」任务为基准——图 A 提供身份与场景、图 B 提供姿态——对比了四档提示词条件下的出图结果：简易提示词、两版人工详细提示词、以及 PE-I2I 自动重写。</p>
+        <p>核心结论有三点：其一，<strong>PE-I2I 是独立的前处理模型，不修改图像生成管线</strong>，它只做文本生成；其二，<strong>它的重写质量可与人工撰写的详细提示词持平</strong>，价值在于把逐样本手写长提示词这件事自动化；其三，<strong>模型在重写时会先逐图描述所见细节，再规划迁移</strong>，这既是它效果优于简单扩写的原因，也意味着其输出并非完全确定，关键属性仍需人工核对。</p>
+      </td></tr></tbody>
+    </table>
+  </div>
+
+  <h2 id="sec1">一、PE-I2I 自动重写模型介绍</h2>
+  <p>PE-I2I 是 Qwen 官方为图像编辑场景提供的提示词重写模型。本章说明它的模型定位、与姊妹模型的分工、调用方式、官方采样参数，以及本地部署时已验证的资源结论。</p>
+
+  <h3>1.1　定位：一个独立的视觉语言模型</h3>
+  <p>PE-I2I 的完整标识为 <code>Qwen/Qwen-Image-2.1-PE-I2I</code>，其中 PE 是 Prompt Enhancement（提示词增强）的缩写，I2I 表示面向图生图与图像编辑场景。它<strong>不是图像生成模型的一部分</strong>，而是一个独立的<strong>视觉语言模型</strong>。</p>
+
+  <table>
+    <thead><tr><th>项目</th><th>说明</th></tr></thead>
+    <tbody>
+      <tr><td>底座架构</td><td>微调自 <strong>Qwen3.5-VL 9B</strong>（<code>AutoModelForImageTextToText</code>）</td></tr>
+      <tr><td>参数规模</td><td>9B，BF16 精度</td></tr>
+      <tr><td>发布时点</td><td>2026-09-20，与 Qwen-Image-2.1 基座<strong>同期发布</strong></td></tr>
+      <tr><td>输入</td><td>系统提示词 + 最多 <strong>10 张</strong>参考图像 + 一条编辑指令</td></tr>
+      <tr><td>输出</td><td>一段结构化 JSON，含重写后的提示词与宽高比策略</td></tr>
+      <tr><td>许可</td><td>Qwen Research License</td></tr>
+    </tbody>
+  </table>
+
+  <p>官方在 Qwen-Image-2.1 的说明中明确推荐将其作为准备提示词的默认方式，并指出对描述较简单的输入提升明显。</p>
+
+  <h3>1.2　姊妹模型的分工</h3>
+  <p>官方同时发布了两个重写模型，按任务类型分流：</p>
+  <table>
+    <thead><tr><th>模型</th><th>标识</th><th>用途</th></tr></thead>
+    <tbody>
+      <tr><td>PE-T2I</td><td><code>Qwen/Qwen-Image-2.1-PE-T2I</code></td><td>文生图需求展开，输出长英文提示词与推荐宽高比</td></tr>
+      <tr><td><strong>PE-I2I</strong></td><td><code>Qwen/Qwen-Image-2.1-PE-I2I</code></td><td><strong>编辑指令展开</strong>，接收编辑指令与多张参考图</td></tr>
+    </tbody>
+  </table>
+  <p>本项目的姿态迁移任务属于图像编辑，因此使用 <strong>PE-I2I</strong>。</p>
+
+  <h3>1.3　调用方式</h3>
+  <p>参考图在指令中按 <code>&lt;image1&gt;</code>、<code>&lt;image2&gt;</code> 的顺序引用。调用采用 transformers 的标准聊天模板：</p>
+  <pre><code>messages = [
+    {"role": "system", "content": [{"type": "text", "text": system_prompt}]},
+    {"role": "user", "content": [
+        {"type": "image", "image": img_A},   # &lt;image1&gt;
+        {"type": "image", "image": img_B},   # &lt;image2&gt;
+        {"type": "text",  "text": instruction},
+    ]},
+]
+inputs = processor.apply_chat_template(
+    messages, add_generation_prompt=True, tokenize=True,
+    return_dict=True, return_tensors="pt", enable_thinking=True,
+)</code></pre>
+  <p>其中 <code>system_prompt</code> 由模型自带的 <code>system_prompt.txt</code> 提供，<strong>必须原样使用</strong>。</p>
+
+  <h3>1.4　官方采样参数</h3>
+  <p>官方给出的两套采样参数<strong>并不共用</strong>，这一点容易误用：</p>
+  <table>
+    <thead><tr><th>参数</th><th>PE-I2I</th><th>PE-T2I</th></tr></thead>
+    <tbody>
+      <tr><td><code>max_new_tokens</code></td><td>24000</td><td>16256</td></tr>
+      <tr><td><code>temperature</code></td><td>1.0</td><td>1.0</td></tr>
+      <tr><td><code>top_p</code> / <code>top_k</code></td><td>0.95 / 20</td><td>0.95 / 20</td></tr>
+      <tr><td><code>presence_penalty</code></td><td><strong>不设置</strong></td><td><strong>1.5</strong>（抑制重复输出）</td></tr>
+      <tr><td><code>enable_thinking</code></td><td>开启</td><td>开启</td></tr>
+    </tbody>
+  </table>
+  <div class="callout">
+    <p class="callout-title">注意</p>
+    <p>PE-T2I 依赖 <code>presence_penalty=1.5</code> 来避免文生图提示词的重复输出，而 <strong>PE-I2I 必须不启用该惩罚项</strong>。</p>
+  </div>
+
+  <h3>1.5　资源与部署</h3>
+  <p>本次实测中，权重落盘于 <code>/data/shangguanrz/pic-edit-models/Qwen-Image-2.1-PE-I2I</code>，体积 <span class="data-emphasis">18.84 GB</span>，共 15 个文件，逐一与官方元数据比对<strong>完全一致</strong>。</p>
+  <p>部署方面有两项已验证的结论：其一，项目现有 <code>qwen21</code> 环境（transformers 5.17.0）<strong>已包含 <code>Qwen3_5ForConditionalGeneration</code> 实现，无需新建环境</strong>；其二，模型加载耗时约 78 秒，单次重写推理耗时中文约 80 秒、英文约 154 秒。</p>
+  <p>需要指出的是，当前环境未安装 <code>flash-linear-attention</code> 与 <code>causal_conv1d</code> 两个优化内核，推理时回退到参考 PyTorch 实现，上述耗时尚有优化空间。</p>
+
+  <h2 id="sec2">二、重写原理与后续生图的衔接</h2>
+  <p>本章回答两个问题：PE-I2I 在整条生成链路中具体做了什么，以及它与 Qwen-Image-2.1 之间是如何衔接的。其中「只替换 prompt 字符串」一点是本报告最需要澄清的结论。</p>
+
+  <h3>2.1　两段式流程</h3>
+  <p>整个链路可以清晰划分为两个独立阶段：PE-I2I 负责把「短指令」变成「长提示词」，Qwen-Image-2.1 负责根据这段长提示词出图。</p>
+  <div class="figure">
+    <img src="images/fig1.png" alt="PE-I2I 自动重写的两段式流程">
+    <p class="figcaption">图 1　PE-I2I 自动重写的两段式流程</p>
+  </div>
+
+  <h3>2.2　衔接方式：只替换 prompt 字符串</h3>
+  <p>这是本报告最需要澄清的一点——<strong>PE-I2I 没有替换 Qwen-Image-2.1 的任何组件</strong>。</p>
+  <p>对比两次生成调用的代码可以看得更清楚：</p>
+  <pre><code># 对照组：使用人工撰写的提示词
+pipe(prompt=&lt;人工提示词&gt;, image=[A, B], width=640, height=1088,
+     output_resolution=1088, num_inference_steps=40,
+     true_cfg_scale=1.0, use_kv_cache=True, generator=gen)
+
+# 实验组：使用 PE-I2I 重写后的提示词
+pipe(prompt=&lt;重写后提示词&gt;, image=[A, B], width=640, height=1088,
+     output_resolution=1088, num_inference_steps=40,
+     true_cfg_scale=1.0, use_kv_cache=True, generator=gen)</code></pre>
+  <p>两次调用的<strong>结构完全一致</strong>，唯一的差异是 <code>prompt</code> 参数所指向的字符串。这意味着：</p>
+  <ul>
+    <li>Qwen-Image-2.1 的模型权重<strong>未被写入或修改</strong>，PE-I2I 从不触及图像模型；</li>
+    <li>参考图、输出尺寸、采样步数、引导系数、随机种子、KV cache 设置<strong>全部保持不变</strong>；</li>
+    <li>PE-I2I 在整条链路中的角色是<strong>纯粹的前处理步骤</strong>。</li>
+  </ul>
+  <p>因此，本节实验的对比是干净的——出图差异只可能来自提示词本身。</p>
+
+  <h3>2.3　ratio_follow：官方对输出构图的判断</h3>
+  <p>PE-I2I 的输出 JSON 中包含一个值得单独讨论的字段：</p>
+  <pre><code>{ "rewritten_prompt": "...", "wh_ratio": "", "ratio_follow": "&lt;image1&gt;" }</code></pre>
+  <p>其中 <code>wh_ratio</code> 与 <code>ratio_follow</code> <strong>互斥</strong>，有且仅有一个非空。<code>wh_ratio</code> 用于新建构图时指定宽高比，而 <code>ratio_follow</code> 用于<strong>就地编辑</strong>时指定输出应继承哪张输入图的宽高比。</p>
+  <p>本项目此前的任务定义中，「输出应沿用图 A 的竖幅构图」是人工硬性指定的。而本次实验中，PE-I2I 在<strong>中英文两次重写中一致返回 <code>ratio_follow: "&lt;image1&gt;"</code></strong>——即模型自行判断输出应继承图 A 的宽高比。</p>
+  <p>这一结果有两层意义：其一，它<strong>印证了项目此前的人工选择是正确的</strong>；其二，官方模型对该字段的训练，使「输出构图口径」这一问题有了标准化答案，无需再手工指定。</p>
+
+  <h3>2.4　在 Qwen 生态中的位置</h3>
+  <p>从生态视角看，Qwen-Image-2.1 的文本编码器本身是 Qwen3-VL 系列，对长而结构化的提示词有良好的承载能力。PE-I2I 与基座同源于 Qwen3.5-VL，两者在语言空间上是一致的——这解释了为什么重写后的长提示词能够被基座有效消化，而不会像对待通用长文本那样出现语义衰减。</p>
+
+  <h2 id="sec3">三、重写过程</h2>
+  <p>本章还原一次完整的重写过程：从输入的一张短指令出发，经过模型的中间推理，最终产出可以直接驱动出图的长提示词。其中模型「先看写、再规划」的行为是理解其效果来源的关键。</p>
+
+  <h3>3.1　输入</h3>
+  <p>本次实验的输入由三部分组成：图 A 提供身份、服装与背景，图 B 提供姿态、头部朝向与表情，以及一条仅 <span class="data-emphasis">65 个字符</span>的中文短指令。</p>
+  <div class="figure">
+    <img src="images/fig3.png" alt="输入参考图与短指令">
+    <p class="figcaption">图 2　输入参考图与短指令</p>
+  </div>
+
+  <h3>3.2　三段式过程可视化</h3>
+  <p>重写的过程可以拆为「输入—中间推理—输出」三段。下面的图完整呈现了这一链路，其中中间列保留了模型思考过程的原文摘录。</p>
+  <div class="figure">
+    <img src="images/fig2.png" alt="重写过程可视化">
+    <p class="figcaption">图 3　重写过程可视化（中文组）</p>
+  </div>
+
+  <h3>3.3　关键观察：模型先「看写」，再规划</h3>
+  <p>重写过程中最值得注意的现象是：<strong>模型并不是在扩写我的指令，而是先去读两张图</strong>。其思考过程（thinking 部分共 8086 字符）的开头几段如实记录了这一点：</p>
+  <div class="callout">
+    <p class="callout-title">thinking 原文摘录</p>
+    <p><code>&lt;image1&gt;</code>: A man standing on a wet street... wearing a blue suit jacket (royal blue blazer), white dress shirt, dark blue striped tie, light gray trousers, black leather dress shoes. He wears glasses (rectangular frames), has short black hair slicked back, and a wristwatch on his left wrist...</p>
+    <p><code>&lt;image2&gt;</code>: A young man... wearing a black turtleneck sweater, white suspenders, gray checkered trousers... head turned to his left (viewer's right), looking at the basketball balanced on his left hand's fingertips...</p>
+  </div>
+  <p><strong>这些细节在我的短指令里一个都没有出现。</strong>眼镜、西装颜色、领带样式、手表、发型、两条手臂的具体姿态——全部是模型从图像中读出来并写入重写结果的。</p>
+  <p>这解释了为什么它的效果能够追平人工撰写的长提示词：人工撰写长提示词的实质工作，正是「看图并逐项描述」，而 PE-I2I 把这一步自动化了。</p>
+
+  <h3>3.4　产出对照</h3>
+  <table>
+    <thead><tr><th>项目</th><th>中文组</th><th>英文组</th></tr></thead>
+    <tbody>
+      <tr><td>输入指令长度</td><td>65 字符</td><td>182 字符</td></tr>
+      <tr><td>中间推理长度</td><td>8,086 字符</td><td>—</td></tr>
+      <tr><td>重写输出长度</td><td>349 字符</td><td>2,175 字符</td></tr>
+      <tr><td>扩写倍数</td><td>5.4 倍</td><td>12.0 倍</td></tr>
+      <tr><td><code>ratio_follow</code></td><td><code>&lt;image1&gt;</code></td><td><code>&lt;image1&gt;</code></td></tr>
+    </tbody>
+  </table>
+  <p>中文组的合并结果如下（节选）：</p>
+  <div class="callout">
+    <p>在 <code>&lt;image1&gt;</code> 上，将人物的姿态替换为 <code>&lt;image2&gt;</code> 中人物的姿态：身体正面站立、双腿自然分开、双脚平稳踩地，头部转向其左侧（画面右侧），左臂弯曲抬起至肩部高度、手指向上伸出呈托举姿势但手中不持篮球，右臂向身体外侧下方自然伸展……严格保留 <code>&lt;image1&gt;</code> 中人物的面部身份、五官、发型、黑框眼镜、蓝色西装外套、白色衬衫、深蓝条纹领带、左手腕金属手表、浅灰色西裤和黑色皮鞋完全不变；西装褶皱、衬衫与领带垂坠跟随新姿态自然形变……保持 <code>&lt;image1&gt;</code> 的整个背景——湿润反光的路面、虚化的城市建筑、路灯、绿色植物和车辆——完全不变。</p>
+  </div>
+
+  <h3>3.5　一项值得注意的分歧</h3>
+  <p>中英文两次重写在<strong>「篮球」这一属性上给出了相反的判断</strong>：</p>
+  <ul>
+    <li>中文重写：「左臂弯曲抬起至肩部高度、手指向上伸出呈托举姿势<strong>但手中不持篮球</strong>」——理解为只迁移姿态，不迁移手中物体；</li>
+    <li>英文重写：「the fingertips extend upward to balance <strong>the orange basketball</strong> with white printed graphics from <code>&lt;image2&gt;</code>」——理解为姿态包含手中物体。</li>
+  </ul>
+  <p>出图结果与两版重写完全对应：中文版手中无球，英文版手中有球。</p>
+  <p>这一现象说明：<strong>PE-I2I 的输出并非完全确定，同一多模态模型在不同语言下可能对边界属性产生不同理解</strong>。因此，重写结果虽可直接使用，但对关键属性仍需人工核对——这是落地时必须保留的一道校验。</p>
+
+  <h2 id="sec4">四、生图效果</h2>
+  <p>本章给出四档提示词条件下的出图对照结果。所有对比在完全相同的生成参数下完成，唯一变量为提示词本身。</p>
+
+  <h3>4.1　实验条件</h3>
+  <p>本节所有对比均在同一条件下完成，各项参数完全一致，唯一变量为提示词。</p>
+  <table>
+    <thead><tr><th>项目</th><th>设置</th></tr></thead>
+    <tbody>
+      <tr><td>图像生成模型</td><td>Qwen-Image-2.1 基座（<code>models/Qwen-Image-2.1</code>）</td></tr>
+      <tr><td>是否加载 adapter</td><td><strong>否</strong></td></tr>
+      <tr><td>是否加载 LoRA</td><td><strong>否</strong></td></tr>
+      <tr><td>参考图</td><td><code>image=[A, B]</code>，多图输入，不做拼接</td></tr>
+      <tr><td>输出分辨率</td><td>640 × 1088</td></tr>
+      <tr><td>采样步数</td><td>40</td></tr>
+      <tr><td><code>true_cfg_scale</code></td><td>1.0</td></tr>
+      <tr><td>随机种子</td><td>42</td></tr>
+      <tr><td><code>use_kv_cache</code></td><td>开启</td></tr>
+      <tr><td><code>output_resolution</code></td><td>1088</td></tr>
+    </tbody>
+  </table>
+  <p>提示词重写侧的条件为：</p>
+  <table>
+    <thead><tr><th>项目</th><th>设置</th></tr></thead>
+    <tbody>
+      <tr><td>重写模型</td><td><code>Qwen/Qwen-Image-2.1-PE-I2I</code></td></tr>
+      <tr><td>采样参数</td><td><code>max_new_tokens=24000</code>、<code>temperature=1.0</code>、<code>top_p=0.95</code>、<code>top_k=20</code></td></tr>
+      <tr><td>thinking</td><td>开启</td></tr>
+      <tr><td><code>presence_penalty</code></td><td>不设置</td></tr>
+    </tbody>
+  </table>
+
+  <h3>4.2　四档提示词对照</h3>
+  <p>四个档位分别为：简易提示词、人工详细提示词 V1（六段式）、人工详细提示词 V2（含身份锁定最高优先级的长六段式）、以及 PE-I2I 自动重写。每档均包含中文与英文两版。</p>
+  <div class="figure">
+    <img src="images/fig4.png" alt="四档提示词对照">
+    <p class="figcaption">图 4　四档提示词条件下的出图对照（左列为中文组，右列为英文组）</p>
+  </div>
+  <p>各档结果判定如下：</p>
+  <table>
+    <thead><tr><th>档位</th><th>身份与服装保持</th><th>场景保持</th><th>备注</th></tr></thead>
+    <tbody>
+      <tr><td>① 简易提示词</td><td><strong>失败</strong></td><td><strong>失败</strong></td><td>抄用了图 B 的服装（黑高领、白背带、格纹裤）</td></tr>
+      <tr><td>② 人工详细提示词 V1</td><td>成功</td><td>成功</td><td>保住图 A 的蓝西装与眼镜</td></tr>
+      <tr><td>③ 人工详细提示词 V2</td><td>成功</td><td>成功</td><td>与 V1 相当，身份锁定条款更细</td></tr>
+      <tr><td>④ PE-I2I 自动重写</td><td>成功</td><td>成功</td><td>质量与人工详细版相当</td></tr>
+    </tbody>
+  </table>
+  <p>结论清晰：<strong>简易提示词在两个维度上同时失败，而详细提示词与自动重写均能保住图 A 的身份与场景</strong>。这再次印证了本项目此前反复观察到的规律——提示词的信息量对该任务具有决定性影响。</p>
+
+  <h3>4.3　PE-I2I 单独结果</h3>
+  <p>下图放大展示 PE-I2I 重写后的两版结果。如 3.5 节所述，两版重写对「篮球」的处理不同，出图结果也随之不同——左侧手中无球，右侧手中有球。</p>
+  <div class="figure">
+    <img src="images/fig5.png" alt="PE-I2I 重写后的出图结果">
+    <p class="figcaption">图 5　PE-I2I 重写后由基座生成的结果（左：中文重写，右：英文重写）</p>
+  </div>
+
+  <h3>4.4　结论与适用边界</h3>
+  <p><strong>PE-I2I 在本任务上的定位可以明确为「替代人工撰写长提示词」。</strong>它的产出质量与人工详细提示词相当，但成本从「每样本手写数百字」降到「一条短指令」，对需要规模化跑样本的实验是刚需。</p>
+  <p>同时需要明确其边界。其一，PE-I2I 的价值集中在<strong>提示词工程</strong>这一层，它无法弥补模型本身在姿态控制、身份保持等方面的能力上限——本项目正在推进的 adapter 路线与它并不冲突，两者作用在不同层面。其二，其输出存在语言间的不确定性（如篮球分歧），关键属性仍需核对。其三，重写带来的收益主要体现在<strong>抑制模型向参考图 B 坍缩</strong>这一具体失败模式上，对于提示词本就足够详尽的场景，增量有限。</p>
+
+  <h3>4.5　复现信息</h3>
+  <table>
+    <thead><tr><th>项目</th><th>路径</th></tr></thead>
+    <tbody>
+      <tr><td>重写脚本</td><td><code>experiments/16-test/run_pei2i.py</code></td></tr>
+      <tr><td>重写结果与完整思考过程</td><td><code>experiments/16-test/stage6_pei2i/</code></td></tr>
+      <tr><td>输入参考图</td><td><code>experiments/16-test/source/p-A/</code>、<code>p-B/</code></td></tr>
+      <tr><td>PE-I2I 权重</td><td><code>/data/shangguanrz/pic-edit-models/Qwen-Image-2.1-PE-I2I</code></td></tr>
+    </tbody>
+  </table>
+
+</section>
+</body>
+</html>

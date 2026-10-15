@@ -1,0 +1,58 @@
+request_id: pei2i_20261008
+entry_type: full_pipeline
+current_stage: 3
+output_docx_path: "D:/codeplus/pictureedit/output/pei2i_20261008/stage3/PE-I2I自动重写实验报告.docx"
+output_docx_user_specified: false
+
+stage_0:
+  status: completed
+  intent: 从零创作一份 PE-I2I 自动重写实验报告 Word 文档（4 个章节，含可视化配图）
+  intent_length: 156
+  decision: full_pipeline
+  reason: 无既有文档 + 创作动词（整理/生成文档），走 S1→S2→S3
+
+stage_1:
+  status: completed
+  producer: doc-writer
+  route_tag: general_writing
+  genre: general
+  expert_used: general-writer
+  fallback: true
+  fallback_reason: "无 L2 命中。tech-blog-expert 的产出契约要求 TL;DR / 目标读者 / 阅读时长等面向开发者社区的结构，与内部实验报告体裁不符，故降级 L1 兜底"
+  critic_decision: null
+  critic_skip_reason: "genre=general 属低风险档，按风险分档表默认 skip"
+  output_path: "stage1/final_draft.md"
+  chars: 8228
+  figures: 5
+
+stage_2:
+  status: completed
+  producer: doc-formatter
+  route: html
+  html_sub: template
+  genre: business-report
+  theme_name: business-modern
+  skills_invoked: [design-token, doc-typeset, html-review]
+  html_review_attempts: 1
+  review_score_before: 67
+  review_score_after: 95
+  output_path: "stage2/formatted-PE-I2I实验报告.html"
+  output_format: html
+  design_tokens_path: "stage2/design_tokens.json"
+  fallback: false
+  intermediate_dir: "D:/codeplus/pictureedit/output/pei2i_20261008/stage2/intermediate/"
+
+stage_3:
+  status: completed
+  producer: doc-converter
+  input_html: "stage2/formatted-PE-I2I实验报告.html"
+  output_path: "stage3/PE-I2I自动重写实验报告.docx"
+  success: true
+  warnings: 0
+  images_embedded: 5
+  tables: 9
+  paragraphs: 95
+  footer_page_field: true
+
+updated_at: "2026-10-08 16:20:00"
+consistency_check: passed

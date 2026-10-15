@@ -1,0 +1,641 @@
+[
+  {
+    "run": "hard_01",
+    "source": {
+      "path": "/home/shangguanrz/project/pic-edit/workflow/runs/hard_01/inputs/A_reference.png",
+      "selected_bbox": [
+        159.10552978515625,
+        57.50205993652344,
+        496.3684997558594,
+        861.5087280273438
+      ],
+      "subject_iou_to_A_box": 0.9434792533990889,
+      "persons_detected": 3,
+      "torso_px": 371.51754833889595,
+      "shoulder_width_px": 105.08836424317322,
+      "neck_canvas": [
+        313.3423641373714,
+        324.0648175701499
+      ],
+      "pelvis_canvas": [
+        366.3408505593737,
+        691.7827110166352
+      ],
+      "torso_landmark_scores": [
+        0.3426057994365692,
+        0.6063557267189026,
+        0.43562495708465576,
+        0.40392711758613586
+      ],
+      "face_contour_height_px": 90.29371760785568,
+      "ankle_scores": [
+        0.12636220455169678,
+        0.11240710318088531
+      ]
+    },
+    "generated": {
+      "path": "/home/shangguanrz/project/pic-edit/workflow/runs/hard_01/generation/final_canvas.png",
+      "selected_bbox": [
+        183.25413513183594,
+        32.06402587890625,
+        493.18792724609375,
+        852.4569702148438
+      ],
+      "subject_iou_to_A_box": 0.9300588315010637,
+      "persons_detected": 4,
+      "torso_px": 216.0599107208844,
+      "shoulder_width_px": 156.43246405312163,
+      "neck_canvas": [
+        326.8711939056715,
+        211.25792745749152
+      ],
+      "pelvis_canvas": [
+        313.51844416062033,
+        426.90483584006626
+      ],
+      "torso_landmark_scores": [
+        0.7039206027984619,
+        0.7455798387527466,
+        0.6081909537315369,
+        0.5885069370269775
+      ],
+      "face_contour_height_px": 53.41099898020434,
+      "ankle_scores": [
+        0.8239543437957764,
+        0.8088399171829224
+      ]
+    },
+    "output_to_A_torso": 0.5815604449558758,
+    "guide_to_A_torso": 0.7269881313873946,
+    "desired_A_torso_scale": 1.3755382747330216,
+    "estimate_kind": "DWPose observed 2D; pose/viewpoint affect projected lengths; not 3D anthropometry"
+  },
+  {
+    "run": "hard_02",
+    "source": {
+      "path": "/home/shangguanrz/project/pic-edit/workflow/runs/hard_02/inputs/A_reference.png",
+      "selected_bbox": [
+        21.78278923034668,
+        117.26317596435547,
+        484.638916015625,
+        922.2379760742188
+      ],
+      "subject_iou_to_A_box": 0.942621030453694,
+      "persons_detected": 1,
+      "torso_px": 430.18829226911186,
+      "shoulder_width_px": 242.67001642164408,
+      "neck_canvas": [
+        246.00486076002318,
+        441.79484586541855
+      ],
+      "pelvis_canvas": [
+        265.65756584083033,
+        871.5339969657362
+      ],
+      "torso_landmark_scores": [
+        0.49346697330474854,
+        0.5218577980995178,
+        0.4468628764152527,
+        0.3953636586666107
+      ],
+      "face_contour_height_px": 104.81442709763849,
+      "ankle_scores": [
+        0.09683791548013687,
+        0.07761859148740768
+      ]
+    },
+    "generated": {
+      "path": "/home/shangguanrz/project/pic-edit/workflow/runs/hard_02/generation/final_canvas.png",
+      "selected_bbox": [
+        57.414676666259766,
+        85.51132202148438,
+        455.25653076171875,
+        917.7188110351562
+      ],
+      "subject_iou_to_A_box": 0.8194210955915698,
+      "persons_detected": 1,
+      "torso_px": 214.14131604381913,
+      "shoulder_width_px": 149.1493229607793,
+      "neck_canvas": [
+        250.91758620738983,
+        244.9364871531725
+      ],
+      "pelvis_canvas": [
+        258.36736027896404,
+        458.94817866384983
+      ],
+      "torso_landmark_scores": [
+        0.7090754508972168,
+        0.6754258871078491,
+        0.5551835894584656,
+        0.48724883794784546
+      ],
+      "face_contour_height_px": 52.825670689344406,
+      "ankle_scores": [
+        0.40204331278800964,
+        0.48016005754470825
+      ]
+    },
+    "output_to_A_torso": 0.49778508595454585,
+    "guide_to_A_torso": 0.615647323588527,
+    "desired_A_torso_scale": 1.624306582169694,
+    "estimate_kind": "DWPose observed 2D; pose/viewpoint affect projected lengths; not 3D anthropometry"
+  },
+  {
+    "run": "hard_03",
+    "source": {
+      "path": "/home/shangguanrz/project/pic-edit/workflow/runs/hard_03/inputs/A_reference.png",
+      "selected_bbox": [
+        87.4251480102539,
+        80.915283203125,
+        572.4310913085938,
+        887.75146484375
+      ],
+      "subject_iou_to_A_box": 0.9813569379024581,
+      "persons_detected": 1,
+      "torso_px": 315.5873254036112,
+      "shoulder_width_px": 137.33564276219835,
+      "neck_canvas": [
+        325.98848986625666,
+        298.5141687790553
+      ],
+      "pelvis_canvas": [
+        364.72818283239997,
+        611.7147373358408
+      ],
+      "torso_landmark_scores": [
+        0.6163363456726074,
+        0.6176285743713379,
+        0.57370525598526,
+        0.5072425007820129
+      ],
+      "face_contour_height_px": 76.16617600123072,
+      "ankle_scores": [
+        0.1963837742805481,
+        0.15347498655319214
+      ]
+    },
+    "generated": {
+      "path": "/home/shangguanrz/project/pic-edit/workflow/runs/hard_03/generation/final_canvas.png",
+      "selected_bbox": [
+        190.4947967529297,
+        69.86058807373047,
+        550.906494140625,
+        882.4899291992188
+      ],
+      "subject_iou_to_A_box": 0.7289102492871826,
+      "persons_detected": 1,
+      "torso_px": 194.0552880846218,
+      "shoulder_width_px": 123.18306361307567,
+      "neck_canvas": [
+        370.0393259959917,
+        217.59935337925947
+      ],
+      "pelvis_canvas": [
+        350.86106192320585,
+        410.7046330086887
+      ],
+      "torso_landmark_scores": [
+        0.7438926100730896,
+        0.7011415362358093,
+        0.5653402805328369,
+        0.5778229236602783
+      ],
+      "face_contour_height_px": 54.22819496442867,
+      "ankle_scores": [
+        0.5140061378479004,
+        0.5467216968536377
+      ]
+    },
+    "output_to_A_torso": 0.6149020333324238,
+    "guide_to_A_torso": 0.7720280016453405,
+    "desired_A_torso_scale": 1.2952898053811612,
+    "estimate_kind": "DWPose observed 2D; pose/viewpoint affect projected lengths; not 3D anthropometry"
+  },
+  {
+    "run": "hard_04",
+    "source": {
+      "path": "/home/shangguanrz/project/pic-edit/workflow/runs/hard_04/inputs/A_reference.png",
+      "selected_bbox": [
+        55.60641860961914,
+        55.73468017578125,
+        665.8470458984375,
+        886.8035888671875
+      ],
+      "subject_iou_to_A_box": 0.9828769873608567,
+      "persons_detected": 1,
+      "torso_px": 369.9476354173725,
+      "shoulder_width_px": 278.24532037884023,
+      "neck_canvas": [
+        332.9973822732767,
+        310.97996512055397
+      ],
+      "pelvis_canvas": [
+        355.3161273797353,
+        680.2537477910519
+      ],
+      "torso_landmark_scores": [
+        0.680863618850708,
+        0.7237603068351746,
+        0.7213025689125061,
+        0.7305442094802856
+      ],
+      "face_contour_height_px": 106.8594462672869,
+      "ankle_scores": [
+        0.12375027686357498,
+        0.13014118373394012
+      ]
+    },
+    "generated": {
+      "path": "/home/shangguanrz/project/pic-edit/workflow/runs/hard_04/generation/final_canvas.png",
+      "selected_bbox": [
+        155.29412841796875,
+        34.932281494140625,
+        553.430419921875,
+        877.631103515625
+      ],
+      "subject_iou_to_A_box": 0.6294478630217917,
+      "persons_detected": 2,
+      "torso_px": 235.38588623357776,
+      "shoulder_width_px": 138.5363813448604,
+      "neck_canvas": [
+        341.33226308723295,
+        189.50936033825081
+      ],
+      "pelvis_canvas": [
+        373.56439576546353,
+        422.677979712685
+      ],
+      "torso_landmark_scores": [
+        0.7500105500221252,
+        0.7607621550559998,
+        0.7003610134124756,
+        0.6441741585731506
+      ],
+      "face_contour_height_px": 60.34952501455939,
+      "ankle_scores": [
+        0.8894598484039307,
+        0.7729670405387878
+      ]
+    },
+    "output_to_A_torso": 0.6362681193191488,
+    "guide_to_A_torso": 0.6492178474115893,
+    "desired_A_torso_scale": 1.5403150175044755,
+    "estimate_kind": "DWPose observed 2D; pose/viewpoint affect projected lengths; not 3D anthropometry"
+  },
+  {
+    "run": "hard_05",
+    "source": {
+      "path": "/home/shangguanrz/project/pic-edit/workflow/runs/hard_05/inputs/A_reference.png",
+      "selected_bbox": [
+        114.71917724609375,
+        152.51058959960938,
+        407.6083068847656,
+        890.1226196289062
+      ],
+      "subject_iou_to_A_box": 0.9862897166645734,
+      "persons_detected": 1,
+      "torso_px": 191.48995935932254,
+      "shoulder_width_px": 126.33655894821955,
+      "neck_canvas": [
+        253.36022937794525,
+        292.6136558502913
+      ],
+      "pelvis_canvas": [
+        254.56076979140448,
+        484.09985179702437
+      ],
+      "torso_landmark_scores": [
+        0.6745122075080872,
+        0.7143226265907288,
+        0.5703751444816589,
+        0.5215482711791992
+      ],
+      "face_contour_height_px": 52.82377819220221,
+      "ankle_scores": [
+        0.7704933285713196,
+        0.7928209900856018
+      ]
+    },
+    "generated": {
+      "path": "/home/shangguanrz/project/pic-edit/workflow/runs/hard_05/generation/final_canvas.png",
+      "selected_bbox": [
+        115.72160339355469,
+        150.3454132080078,
+        405.8703308105469,
+        889.2438354492188
+      ],
+      "subject_iou_to_A_box": 0.9874719276177658,
+      "persons_detected": 2,
+      "torso_px": 191.82391702588865,
+      "shoulder_width_px": 128.04524363498473,
+      "neck_canvas": [
+        252.37752804656827,
+        293.6994039813677
+      ],
+      "pelvis_canvas": [
+        251.17489389578498,
+        485.5195510312915
+      ],
+      "torso_landmark_scores": [
+        0.6643116474151611,
+        0.7121554613113403,
+        0.5759989023208618,
+        0.530893862247467
+      ],
+      "face_contour_height_px": 52.91590263446187,
+      "ankle_scores": [
+        0.7509104609489441,
+        0.7814883589744568
+      ]
+    },
+    "output_to_A_torso": 1.0017439957044403,
+    "guide_to_A_torso": 0.5007406028831803,
+    "desired_A_torso_scale": 1.9970419699184923,
+    "estimate_kind": "DWPose observed 2D; pose/viewpoint affect projected lengths; not 3D anthropometry"
+  },
+  {
+    "run": "medium_01",
+    "source": {
+      "path": "/home/shangguanrz/project/pic-edit/workflow/runs/medium_01/inputs/A_reference.png",
+      "selected_bbox": [
+        111.81993103027344,
+        53.87156677246094,
+        626.9179077148438,
+        799.0750122070312
+      ],
+      "subject_iou_to_A_box": 0.9068503539740495,
+      "persons_detected": 2,
+      "torso_px": 199.63936711012684,
+      "shoulder_width_px": 82.08359826235608,
+      "neck_canvas": [
+        289.31776800751686,
+        228.77120354274905
+      ],
+      "pelvis_canvas": [
+        225.64071578532457,
+        417.9830158601205
+      ],
+      "torso_landmark_scores": [
+        0.43784427642822266,
+        0.593265950679779,
+        0.2915321886539459,
+        0.5193551778793335
+      ],
+      "face_contour_height_px": 58.219019174575806,
+      "ankle_scores": [
+        0.758280873298645,
+        0.7100639939308167
+      ]
+    },
+    "generated": {
+      "path": "/home/shangguanrz/project/pic-edit/workflow/runs/medium_01/generation/final_canvas.png",
+      "selected_bbox": [
+        230.954833984375,
+        54.24568176269531,
+        535.8663940429688,
+        785.1558837890625
+      ],
+      "subject_iou_to_A_box": 0.5277807741004443,
+      "persons_detected": 2,
+      "torso_px": 222.50023750528018,
+      "shoulder_width_px": 139.19208516913102,
+      "neck_canvas": [
+        393.52249018102884,
+        201.40322080999613
+      ],
+      "pelvis_canvas": [
+        389.3587764650583,
+        423.8644964918494
+      ],
+      "torso_landmark_scores": [
+        0.7429701089859009,
+        0.7063422203063965,
+        0.6684289574623108,
+        0.5952246785163879
+      ],
+      "face_contour_height_px": 45.20603463053703,
+      "ankle_scores": [
+        0.868084728717804,
+        0.8660313487052917
+      ]
+    },
+    "output_to_A_torso": 1.114510833840415,
+    "guide_to_A_torso": 1.1597935684320693,
+    "desired_A_torso_scale": 0.8622224051060268,
+    "estimate_kind": "DWPose observed 2D; pose/viewpoint affect projected lengths; not 3D anthropometry"
+  },
+  {
+    "run": "medium_02",
+    "source": {
+      "path": "/home/shangguanrz/project/pic-edit/workflow/runs/medium_02/inputs/A_reference.png",
+      "selected_bbox": [
+        105.8761978149414,
+        118.70087432861328,
+        534.711181640625,
+        925.6481323242188
+      ],
+      "subject_iou_to_A_box": 0.9791431336732119,
+      "persons_detected": 1,
+      "torso_px": 247.37898115639774,
+      "shoulder_width_px": 181.48094391951025,
+      "neck_canvas": [
+        315.04012685020757,
+        367.85109379763406
+      ],
+      "pelvis_canvas": [
+        330.14412012323737,
+        614.7685490436852
+      ],
+      "torso_landmark_scores": [
+        0.6670256853103638,
+        0.7212491631507874,
+        0.6264463663101196,
+        0.6448556780815125
+      ],
+      "face_contour_height_px": 77.4900524442395,
+      "ankle_scores": [
+        0.3113461434841156,
+        0.4471873939037323
+      ]
+    },
+    "generated": {
+      "path": "/home/shangguanrz/project/pic-edit/workflow/runs/medium_02/generation/final_canvas.png",
+      "selected_bbox": [
+        184.85023498535156,
+        85.23710632324219,
+        462.120849609375,
+        908.6315307617188
+      ],
+      "subject_iou_to_A_box": 0.6051546354382243,
+      "persons_detected": 1,
+      "torso_px": 219.3466030500788,
+      "shoulder_width_px": 141.02917794951784,
+      "neck_canvas": [
+        309.41386023908854,
+        283.178767276307
+      ],
+      "pelvis_canvas": [
+        319.4650617092848,
+        502.2949593265851
+      ],
+      "torso_landmark_scores": [
+        0.7619179487228394,
+        0.7272718548774719,
+        0.6596312522888184,
+        0.6426686644554138
+      ],
+      "face_contour_height_px": 60.30720882117748,
+      "ankle_scores": [
+        0.5627045035362244,
+        0.7469848990440369
+      ]
+    },
+    "output_to_A_torso": 0.8866824579223394,
+    "guide_to_A_torso": 0.9817860105776044,
+    "desired_A_torso_scale": 1.0185518934127813,
+    "estimate_kind": "DWPose observed 2D; pose/viewpoint affect projected lengths; not 3D anthropometry"
+  },
+  {
+    "run": "hard_05_torso",
+    "source": {
+      "path": "/home/shangguanrz/project/pic-edit/workflow/runs/hard_05/inputs/A_reference.png",
+      "selected_bbox": [
+        114.71917724609375,
+        152.51058959960938,
+        407.6083068847656,
+        890.1226196289062
+      ],
+      "subject_iou_to_A_box": 0.9862897166645734,
+      "persons_detected": 1,
+      "torso_px": 191.48995935932254,
+      "shoulder_width_px": 126.33655894821955,
+      "neck_canvas": [
+        253.36022937794525,
+        292.6136558502913
+      ],
+      "pelvis_canvas": [
+        254.56076979140448,
+        484.09985179702437
+      ],
+      "torso_landmark_scores": [
+        0.6745122075080872,
+        0.7143226265907288,
+        0.5703751444816589,
+        0.5215482711791992
+      ],
+      "face_contour_height_px": 52.82377819220221,
+      "ankle_scores": [
+        0.7704933285713196,
+        0.7928209900856018
+      ]
+    },
+    "generated": {
+      "path": "/home/shangguanrz/project/pic-edit/workflow/runs/hard_05_torso/generation/final_canvas.png",
+      "selected_bbox": [
+        139.00674438476562,
+        129.0400390625,
+        422.8465576171875,
+        887.108642578125
+      ],
+      "subject_iou_to_A_box": 0.8457518587156052,
+      "persons_detected": 1,
+      "torso_px": 203.58661578217857,
+      "shoulder_width_px": 102.41578874417273,
+      "neck_canvas": [
+        263.036034544309,
+        268.0933131774267
+      ],
+      "pelvis_canvas": [
+        261.80219892660784,
+        471.6761900981267
+      ],
+      "torso_landmark_scores": [
+        0.6938272714614868,
+        0.6949671506881714,
+        0.5476586222648621,
+        0.5540717244148254
+      ],
+      "face_contour_height_px": 46.885753472646,
+      "ankle_scores": [
+        0.8375322818756104,
+        0.8458696603775024
+      ]
+    },
+    "output_to_A_torso": 1.0631712308223804,
+    "guide_to_A_torso": 1.1949924984573561,
+    "desired_A_torso_scale": 0.8368253368041418,
+    "estimate_kind": "DWPose observed 2D; pose/viewpoint affect projected lengths; not 3D anthropometry"
+  },
+  {
+    "run": "hard_05_manual",
+    "source": {
+      "path": "/home/shangguanrz/project/pic-edit/workflow/runs/hard_05/inputs/A_reference.png",
+      "selected_bbox": [
+        114.71917724609375,
+        152.51058959960938,
+        407.6083068847656,
+        890.1226196289062
+      ],
+      "subject_iou_to_A_box": 0.9862897166645734,
+      "persons_detected": 1,
+      "torso_px": 191.48995935932254,
+      "shoulder_width_px": 126.33655894821955,
+      "neck_canvas": [
+        253.36022937794525,
+        292.6136558502913
+      ],
+      "pelvis_canvas": [
+        254.56076979140448,
+        484.09985179702437
+      ],
+      "torso_landmark_scores": [
+        0.6745122075080872,
+        0.7143226265907288,
+        0.5703751444816589,
+        0.5215482711791992
+      ],
+      "face_contour_height_px": 52.82377819220221,
+      "ankle_scores": [
+        0.7704933285713196,
+        0.7928209900856018
+      ]
+    },
+    "generated": {
+      "path": "/home/shangguanrz/project/pic-edit/workflow/runs/hard_05_manual/generation/final_canvas.png",
+      "selected_bbox": [
+        166.0205535888672,
+        130.2412872314453,
+        407.510009765625,
+        858.4086303710938
+      ],
+      "subject_iou_to_A_box": 0.7724760527346046,
+      "persons_detected": 1,
+      "torso_px": 203.27794107915483,
+      "shoulder_width_px": 68.74997190811385,
+      "neck_canvas": [
+        272.5432632565498,
+        269.73558457444113
+      ],
+      "pelvis_canvas": [
+        275.5061837608615,
+        472.99193117022514
+      ],
+      "torso_landmark_scores": [
+        0.6310694217681885,
+        0.4891941547393799,
+        0.5099815726280212,
+        0.3937065601348877
+      ],
+      "face_contour_height_px": 49.777064472436905,
+      "ankle_scores": [
+        0.7176802754402161,
+        0.7652780413627625
+      ]
+    },
+    "output_to_A_torso": 1.0615592679599073,
+    "guide_to_A_torso": 1.1949924984573557,
+    "desired_A_torso_scale": 0.8368253368041421,
+    "estimate_kind": "DWPose observed 2D; pose/viewpoint affect projected lengths; not 3D anthropometry"
+  }
+]

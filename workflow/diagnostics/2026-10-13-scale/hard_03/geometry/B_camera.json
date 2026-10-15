@@ -1,0 +1,82 @@
+{
+  "focal_xy": [
+    22001.689453125,
+    22001.69140625
+  ],
+  "principal_xy": [
+    366.0650634765625,
+    782.9091796875
+  ],
+  "B_size": [
+    854,
+    1280
+  ],
+  "generation_canvas": [
+    640,
+    896
+  ],
+  "B_to_generation": {
+    "scale": 0.863123300902491,
+    "offset_xy": [
+      14.652125340356918,
+      -195.78067152130996
+    ]
+  },
+  "source_letterbox": {
+    "original_size": [
+      931,
+      1280
+    ],
+    "canvas_size": [
+      640,
+      896
+    ],
+    "resized_size": [
+      640,
+      880
+    ],
+    "scale_xy": [
+      0.6874328678839957,
+      0.6875
+    ],
+    "offset_xy": [
+      0,
+      8
+    ],
+    "content_box": [
+      0,
+      8,
+      640,
+      888
+    ]
+  },
+  "coordinate_system": "camera XYZ; pixels x-right y-down; projection uses Z+1e-4",
+  "detections": {
+    "A": {
+      "bbox_xyxy": [
+        125.10711669921875,
+        97.638916015625,
+        837.6244506835938,
+        1277.485595703125
+      ],
+      "score": 0.9546588063240051
+    },
+    "B": {
+      "bbox_xyxy": [
+        214.0780029296875,
+        313.8687438964844,
+        518.7362670898438,
+        1253.6470947265625
+      ],
+      "score": 0.9536253213882446
+    }
+  },
+  "mesh_max_error_m": 3.814697265625e-06,
+  "projection_max_error_px": 0.00018206643068197081,
+  "valid_B_joints": 134,
+  "visibility_policy": "finite positive depth and in-frame only; not an occlusion confidence",
+  "estimated_hidden_joints": true,
+  "native_estimator_input": "/home/shangguanrz/project/pic-edit/workflow/runs/hard_03/geometry/estimator/workflow_829367cedf6545c7/demo/input_frames/workflow_829367cedf6545c7/000001.jpg",
+  "native_estimator_params": "/home/shangguanrz/project/pic-edit/workflow/runs/hard_03/geometry/estimator/workflow_829367cedf6545c7/demo/output_frames/workflow_829367cedf6545c7/workflow_829367cedf6545c7_params.pt",
+  "estimator_root": "/home/shangguanrz/project/pic-edit/workflow/runs/hard_03/geometry/estimator/workflow_829367cedf6545c7"
+}

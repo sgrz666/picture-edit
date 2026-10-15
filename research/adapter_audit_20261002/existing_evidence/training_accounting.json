@@ -1,0 +1,42 @@
+{
+  "body": {
+    "iterations": 100,
+    "optimizer_calls": 100,
+    "nonzero_gradient_updates": 100,
+    "sample_uses": {
+      "6": 13,
+      "3": 12,
+      "0": 12,
+      "7": 13,
+      "2": 12,
+      "1": 13,
+      "4": 13,
+      "5": 12
+    },
+    "auxiliary_loss_calls": 0,
+    "inactive_iterations": []
+  },
+  "face": {
+    "iterations": 100,
+    "optimizer_calls": 100,
+    "nonzero_gradient_updates": 99,
+    "sample_uses": {
+      "6": 13,
+      "3": 12,
+      "0": 12,
+      "7": 13,
+      "2": 12,
+      "1": 13,
+      "4": 13,
+      "5": 12
+    },
+    "auxiliary_loss_calls": 25,
+    "inactive_iterations": [
+      {
+        "step": 45,
+        "sigma": 0.6484375,
+        "reason": "inherited BF16 schedule is zero near its start boundary"
+      }
+    ]
+  }
+}

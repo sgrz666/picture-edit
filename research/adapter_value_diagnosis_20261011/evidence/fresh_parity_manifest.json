@@ -1,0 +1,36 @@
+{
+  "pairs": "/home/shangguanrz/nihaochen/qwen21_full/native_value_audit_20261008/data/pairs.jsonl",
+  "pairs_sha256": "b91754cc490a62520ef89914639a1dc7c170b49cd5cbaac0b42fb6022b8a9694",
+  "prompts": "/home/shangguanrz/nihaochen/qwen21_full/native_value_audit_20261008/prompts/locked_prompts.json",
+  "prompts_sha256": "966eacdf202a9c615e10ade292e0da8ed7aa982687206e91e614d39a245ea803",
+  "pair_ids": [
+    "iper_00",
+    "tiktok_00"
+  ],
+  "resolution": 512,
+  "sigma": 0.5,
+  "seed": 42,
+  "atol": 0.001,
+  "body_checkpoint": "/home/shangguanrz/nihaochen/qwen21_full/tiktok_body_fullpass_20261004/training/checkpoint_step_006000.pt",
+  "face_checkpoint": "/home/shangguanrz/nihaochen/qwen21_full/tiktok_face_v1_20261004/training/checkpoint_step_003000.pt",
+  "body_checkpoint_sha256": "6213996bb21f1dd7b3c1dea144d7cbad752efc38f82b3cb3409eeb9f799dc489",
+  "face_checkpoint_sha256": "4f7eb5a161485bcbc7be506963248536ceba574e18991a369f88f169f10a3f2b",
+  "latent_source": "fixed synthetic noise; no B RGB/Target clean latent encoded",
+  "inference_steps": 0,
+  "optimizer_steps": 0,
+  "weight_check": {
+    "body_sha256": "6213996bb21f1dd7b3c1dea144d7cbad752efc38f82b3cb3409eeb9f799dc489",
+    "face_sha256": "4f7eb5a161485bcbc7be506963248536ceba574e18991a369f88f169f10a3f2b",
+    "frozen_tensors_bitwise_equal": 734,
+    "changed_face_tensors": 242,
+    "allowed_face_prefixes": [
+      "output_bridges.face.",
+      "legacy.face_preparer.",
+      "legacy.control_interface.face_adapter.",
+      "legacy.control_interface.strength_controller.face_"
+    ],
+    "body_training_resolution": 512,
+    "face_training_resolution": 512,
+    "scope": "All non-Face state tensors match exactly; Face-only disabled/invalid computation uses this same Body"
+  }
+}

@@ -1,0 +1,101 @@
+{
+  "checkpoint": "/home/shangguanrz/nihaochen/qwen21_full/face_512_100/checkpoint_last.pt",
+  "checkpoint_step": 100,
+  "branch": "face",
+  "next_step": 101,
+  "pair_index": 0,
+  "scope": "Repeat one checkpoint continuation step; no training checkpoint changes",
+  "torch_version": "2.8.0+cu128",
+  "trials": {
+    "deterministic_reference": {
+      "first_loss": 0.13074183464050293,
+      "second_loss": 0.13074183464050293,
+      "first_grad_norm": 0.006083655636757612,
+      "second_grad_norm": 0.006083655636757612,
+      "input_reload_parameters": {
+        "keys_equal": true,
+        "exact_equal": true,
+        "tensor_count": 242,
+        "total_values": 49244374,
+        "changed_values": 0,
+        "changed_tensors": 0,
+        "max_abs": 0.0,
+        "max_tensor_relative": 0.0,
+        "relative_l2": 0.0,
+        "left_sha256": "b959533e04a959dcfa68b96ac3bb295faf93236b8f851dc9c2f593670d70e8bc",
+        "right_sha256": "b959533e04a959dcfa68b96ac3bb295faf93236b8f851dc9c2f593670d70e8bc",
+        "differences": []
+      },
+      "input_reload_optimizer": {
+        "keys_equal": true,
+        "exact_equal": true,
+        "tensor_count": 726,
+        "total_values": 98488990,
+        "changed_values": 0,
+        "changed_tensors": 0,
+        "max_abs": 0.0,
+        "max_tensor_relative": 0.0,
+        "relative_l2": 0.0,
+        "left_sha256": "ac871013de85fddf84b8bb85ebace80f010a115f84e3316c536c1972e75977ab",
+        "right_sha256": "ac871013de85fddf84b8bb85ebace80f010a115f84e3316c536c1972e75977ab",
+        "differences": []
+      },
+      "gradients": {
+        "keys_equal": true,
+        "exact_equal": true,
+        "tensor_count": 242,
+        "total_values": 49244374,
+        "changed_values": 0,
+        "changed_tensors": 0,
+        "max_abs": 0.0,
+        "max_tensor_relative": 0.0,
+        "relative_l2": 0.0,
+        "left_sha256": "dae7f5e0ba2613bc3c84644a92b5bc36fb3354e65010e87faf0791ca348d9505",
+        "right_sha256": "dae7f5e0ba2613bc3c84644a92b5bc36fb3354e65010e87faf0791ca348d9505",
+        "differences": []
+      },
+      "parameters": {
+        "keys_equal": true,
+        "exact_equal": true,
+        "tensor_count": 242,
+        "total_values": 49244374,
+        "changed_values": 0,
+        "changed_tensors": 0,
+        "max_abs": 0.0,
+        "max_tensor_relative": 0.0,
+        "relative_l2": 0.0,
+        "left_sha256": "780790ace98f102146aec7155a16c69d07d41a4e8fd46496ba6071bda44f493d",
+        "right_sha256": "780790ace98f102146aec7155a16c69d07d41a4e8fd46496ba6071bda44f493d",
+        "differences": []
+      },
+      "optimizer": {
+        "keys_equal": true,
+        "exact_equal": true,
+        "tensor_count": 726,
+        "total_values": 98488990,
+        "changed_values": 0,
+        "changed_tensors": 0,
+        "max_abs": 0.0,
+        "max_tensor_relative": 0.0,
+        "relative_l2": 0.0,
+        "left_sha256": "6c10c0b0af623612a4e4be8c63666787e2ef9591edeb6eec6b23bc7bc530d0c4",
+        "right_sha256": "6c10c0b0af623612a4e4be8c63666787e2ef9591edeb6eec6b23bc7bc530d0c4",
+        "differences": []
+      },
+      "reference_implementation": {
+        "adaptive_pool": "disjoint avg_pool2d on divisible grids; original adaptive pooling on CPU otherwise",
+        "sdpa_backend": "MATH",
+        "pool_calls": {
+          "equivalent_nonoverlap_pool": 6,
+          "cpu_adaptive_fallback": 0,
+          "cpu_grid_sample": 24
+        },
+        "grid_sample": "CPU reference only; formal training remains CUDA",
+        "formal_training_changed": false,
+        "limitation": "Verifies checkpoint continuation against a deterministic reference, not default CUDA bitwise determinism"
+      }
+    }
+  },
+  "seconds": 9.936644183006138,
+  "peak_cuda_gib": 18.361877918243408
+}

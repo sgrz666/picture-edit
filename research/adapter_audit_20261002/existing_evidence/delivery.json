@@ -1,0 +1,41 @@
+{
+  "implementation_completed": true,
+  "engineering_acceptance_passed": true,
+  "quality_improvement_established": false,
+  "new_training_steps": 0,
+  "final_test_set_used": false,
+  "candidate_checkpoints": [
+    "/home/shangguanrz/nihaochen/qwen21_full/weight_inheritance/inherit_body512.pt",
+    "/home/shangguanrz/nihaochen/qwen21_full/weight_inheritance/inherit_body1024.pt"
+  ],
+  "images_generated": 60,
+  "images_evaluated": 60,
+  "images_visually_reviewed": 60,
+  "all_comparison_panels": 20,
+  "word_embedded_panels": 12,
+  "local_forward_cases": 16,
+  "unit_tests_passed": 14,
+  "gpu_runtime_cases_passed": 6,
+  "original_checkpoints_unchanged": 7,
+  "face_artifact_images": 30,
+  "default_checkpoint_replaced": false,
+  "report": {
+    "report": "/home/shangguanrz/nihaochen/docs/Qwen完整版_继承Body权重与直接出图比较.docx",
+    "sha256": "d8b0707559676a77b4cd088fbb74d91c65578b5395d5a21840c4d1bf9a28e57a",
+    "tables": 8,
+    "embedded_panels": 12,
+    "all_panels": 20,
+    "images_evaluated": 60,
+    "manual_review_present": true,
+    "training_performed": false,
+    "final_test_used": false,
+    "architecture_preserved": true
+  },
+  "metric_summary": "/home/shangguanrz/nihaochen/qwen21_full/weight_inheritance/metric_summary.json",
+  "identity_common_subset_n": {
+    "512": 1,
+    "1024": 2,
+    "cross_person_1024": 0
+  },
+  "conclusion": "Compatible shared weights loaded correctly. Direct inference has no stable overall improvement; target pose remains insufficient and Face artifacts persist."
+}

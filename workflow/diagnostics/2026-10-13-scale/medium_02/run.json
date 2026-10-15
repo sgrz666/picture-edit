@@ -1,0 +1,129 @@
+{
+  "schema": "single_person_pose_workflow_v2",
+  "status": "complete",
+  "A_original": "/home/shangguanrz/project/pic-edit/experiments/qwen-2.1-test/data/testset/pairs/medium_02/A_source.png",
+  "B_original": "/home/shangguanrz/project/pic-edit/experiments/qwen-2.1-test/data/testset/pairs/medium_02/B_target.png",
+  "settings": {
+    "project_root": "/home/shangguanrz/project/pic-edit",
+    "geometry_python": "/home/shangguanrz/project/pic-edit/add/envs/smplestx_bw/bin/python",
+    "qwen_python": "/home/shangguanrz/nihaochen/envs/qwen21/bin/python",
+    "smplest_root": "/home/shangguanrz/project/pic-edit/add/tools/SMPLest-X",
+    "smplest_checkpoint": "smplest_x_h",
+    "pe_model": "/data/shangguanrz/pic-edit-models/Qwen-Image-2.1-PE-I2I",
+    "qwen_model": "/data/shangguanrz/pic-edit-models/Qwen-Image-2.1",
+    "person_detection_confidence": 0.5,
+    "resolution": 768,
+    "steps": 30,
+    "seed": 42,
+    "pe_seed": 42,
+    "true_cfg_scale": 1.0,
+    "use_kv_cache": false,
+    "pose_framing": "source_person",
+    "prop_policy": "source_only",
+    "adapter": false,
+    "lora": false
+  },
+  "requested_until": "generate",
+  "prompt_source": null,
+  "stages": [
+    {
+      "stage": "geometry",
+      "cache_hit": false,
+      "record": "/home/shangguanrz/project/pic-edit/workflow/runs/medium_02/geometry/stage.json"
+    },
+    {
+      "stage": "prompt",
+      "cache_hit": false,
+      "record": "/home/shangguanrz/project/pic-edit/workflow/runs/medium_02/prompt/stage.json"
+    },
+    {
+      "stage": "generate",
+      "cache_hit": false,
+      "record": "/home/shangguanrz/project/pic-edit/workflow/runs/medium_02/generation/stage.json"
+    }
+  ],
+  "outputs": {
+    "B_smplx": {
+      "path": "/home/shangguanrz/project/pic-edit/workflow/runs/medium_02/geometry/B_smplx.pt",
+      "sha256": "ea77915fbe872d40bd6757fbfccd780d83f7c0919a9e9839a383ba00c0aa3c88"
+    },
+    "B_keypoints": {
+      "path": "/home/shangguanrz/project/pic-edit/workflow/runs/medium_02/geometry/B_keypoints.npz",
+      "sha256": "fe721730856f21b8fd6273a3e1cb25b5da61179d76532136847fa4097fc013df"
+    },
+    "B_camera": {
+      "path": "/home/shangguanrz/project/pic-edit/workflow/runs/medium_02/geometry/B_camera.json",
+      "sha256": "57fc495e5278c13b9c5d3409d7625b02b5f2df4b8ab9016564e431299df17bf6"
+    },
+    "B_3d_dwpose": {
+      "path": "/home/shangguanrz/project/pic-edit/workflow/runs/medium_02/geometry/B_3d_dwpose.png",
+      "sha256": "7ed9c3bc9ad4cb9bda8e5cc9fcf6385a6c5105dd49851c4910a8307d2a911ede"
+    },
+    "B_poseguide_native": {
+      "path": "/home/shangguanrz/project/pic-edit/workflow/runs/medium_02/geometry/B_poseguide_native.png",
+      "sha256": "9e856bf3bcaa807c84efd85b8f5f8465da5bdcfd5fe4fb69db529cc84bbd1195"
+    },
+    "B_overlay": {
+      "path": "/home/shangguanrz/project/pic-edit/workflow/runs/medium_02/geometry/B_poseguide_overlay.png",
+      "sha256": "45ece40c79e22fd0f82303a54959471874c3535c02fd5910db5ea01f9d38e4ab"
+    },
+    "A_alignment": {
+      "path": "/home/shangguanrz/project/pic-edit/workflow/runs/medium_02/geometry/A_poseguide_alignment.png",
+      "sha256": "645239f45db4f60b219c197d08616c92e99c188f7d6f952087320e1d63e5a694"
+    },
+    "pe_compiled_prompt": {
+      "path": "/home/shangguanrz/project/pic-edit/workflow/runs/medium_02/prompt/pe_compiled_prompt.txt",
+      "sha256": "9e942c88f09858271c04b926140dae4fbbcf8b95da36a983576a966872128427"
+    },
+    "pe_result": {
+      "path": "/home/shangguanrz/project/pic-edit/workflow/runs/medium_02/prompt/pe_result.json",
+      "sha256": "3f98eab96fb97727763cac2f12ac3eb547fa15c801979cdfb5f36d96b0edaefb"
+    },
+    "pe_raw": {
+      "path": "/home/shangguanrz/project/pic-edit/workflow/runs/medium_02/prompt/pe_raw.txt",
+      "sha256": "271b101a0d1c92a2585e97559258e68386b9189d1117128cbf4811cd80c33082"
+    },
+    "rewritten_prompt_raw": {
+      "path": "/home/shangguanrz/project/pic-edit/workflow/runs/medium_02/prompt/rewritten_prompt_raw.txt",
+      "sha256": "36f8333830b632e45fd6f737729a4ec309ac3e19ceb1f047156e4329745719ef"
+    },
+    "pe_attempts": {
+      "path": "/home/shangguanrz/project/pic-edit/workflow/runs/medium_02/prompt/pe_attempts.json",
+      "sha256": "006e477a6c51647dbf61b2e31b9cd126ea849709c25671c2169a7aba629b078f"
+    },
+    "effective_system_prompt": {
+      "path": "/home/shangguanrz/project/pic-edit/workflow/runs/medium_02/prompt/effective_system_prompt.txt",
+      "sha256": "21b31e845e365fb214312235f488ad9e2c71eebcd2fc81d25ebbc9e2d78837c7"
+    },
+    "pe_attempt_1": {
+      "path": "/home/shangguanrz/project/pic-edit/workflow/runs/medium_02/prompt/pe_attempt_1.txt",
+      "sha256": "271b101a0d1c92a2585e97559258e68386b9189d1117128cbf4811cd80c33082"
+    },
+    "generation_prompt": {
+      "path": "/home/shangguanrz/project/pic-edit/workflow/runs/medium_02/prompt/generation_prompt.txt",
+      "sha256": "9e942c88f09858271c04b926140dae4fbbcf8b95da36a983576a966872128427"
+    },
+    "generation_prompt_provenance": {
+      "path": "/home/shangguanrz/project/pic-edit/workflow/runs/medium_02/prompt/generation_prompt.json",
+      "sha256": "42285c7d348427f7ee7709585ef4e39e32a7318f279961babdad945f45b79987"
+    },
+    "final_image": {
+      "path": "/home/shangguanrz/project/pic-edit/workflow/runs/medium_02/generation/final_image.png",
+      "sha256": "8a3a5912c4ab466c10c5d6e5fc0071f42dcbd3eafffdd84f9f800c5399145bd9"
+    },
+    "final_canvas": {
+      "path": "/home/shangguanrz/project/pic-edit/workflow/runs/medium_02/generation/final_canvas.png",
+      "sha256": "b287ac3588dcf313b3cf4710e7026373465855da7d6eec1576e343d4433263a0"
+    },
+    "generation_info": {
+      "path": "/home/shangguanrz/project/pic-edit/workflow/runs/medium_02/generation/generation.json",
+      "sha256": "db2076315f956cdb38e9e0e0bd77a39d38629121eacc8e6eb6918d3f29a22901"
+    }
+  },
+  "started_at_unix": 1791788135.991054,
+  "finished_at_unix": 1791788498.8984606,
+  "verification": {
+    "status": "validated",
+    "reasons": {}
+  }
+}

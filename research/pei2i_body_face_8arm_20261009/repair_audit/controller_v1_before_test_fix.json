@@ -1,0 +1,37 @@
+{
+  "state": {
+    "schema": "qwen21_repair_full_pipeline_v1",
+    "pid": 3498770,
+    "status": "running",
+    "script_sha256": "9b429108b74a7277711d48d1dd79d688c26fc2433614b99c361d4d08e8b65c74",
+    "stages": [
+      {
+        "phase": "rewrite",
+        "status": "running",
+        "started_at": 1791712009.9184976,
+        "argv": [
+          "/home/shangguanrz/nihaochen/envs/qwen21/bin/python",
+          "/data/shangguanrz/pic-edit-experiments/pei2i_body_face_8arm_20261009/code/scripts/run/run_qwen21_pei2i_study.py",
+          "--run",
+          "/data/shangguanrz/pic-edit-experiments/pei2i_body_face_8arm_20261009",
+          "--phase",
+          "rewrite",
+          "--splits",
+          "train",
+          "val",
+          "diagnostic"
+        ],
+        "log": "logs/full_pipeline_rewrite.log",
+        "pid": 3678862
+      }
+    ],
+    "review_sha256": "f4ead9d7e5f23ee80764a7b64d0f296ca79bf52b6a0489bb4153e35a668afe6f",
+    "lock_sha256": "4e851090805188941cbe2bd6c78aa95be20a4b6f5412cf7bd8e00279034bde83",
+    "phase": "rewrite"
+  },
+  "process_group": 3498760,
+  "reason": "Old orchestration omitted rewrite --splits test and cache --splits test before finaltest; production CLI/geometry/training protocol unchanged.",
+  "formal_optimizer_updates": 0,
+  "stopped_at": 1791712186.7038186,
+  "old_controller_script_sha256": "9b429108b74a7277711d48d1dd79d688c26fc2433614b99c361d4d08e8b65c74"
+}

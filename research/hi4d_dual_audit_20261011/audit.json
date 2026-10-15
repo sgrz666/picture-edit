@@ -1,0 +1,635 @@
+{
+  "audit_date": "2026-10-11",
+  "project": "/home/shangguanrz/project/pic-edit",
+  "read_only": true,
+  "archives": {
+    "path": "/data/shangguanrz/pic-edit-datasets/Hi4D-origin",
+    "count": 32,
+    "gib": 358.217,
+    "pair_ids": [
+      "pair00",
+      "pair01",
+      "pair02",
+      "pair09",
+      "pair10",
+      "pair12",
+      "pair13",
+      "pair14",
+      "pair15",
+      "pair16",
+      "pair17",
+      "pair18",
+      "pair19",
+      "pair21",
+      "pair22",
+      "pair23",
+      "pair27",
+      "pair28",
+      "pair32",
+      "pair37"
+    ]
+  },
+  "raw_extracted_pair_ids": [
+    "pair00",
+    "pair01",
+    "pair02",
+    "pair09",
+    "pair10",
+    "pair12",
+    "pair14",
+    "pair16",
+    "pair22",
+    "pair28"
+  ],
+  "splits": {
+    "train": {
+      "rows": 1312,
+      "pair_ids": [
+        "pair01",
+        "pair09",
+        "pair10",
+        "pair12",
+        "pair14",
+        "pair16"
+      ],
+      "camera_ids": [
+        4,
+        16,
+        28,
+        52,
+        76,
+        88
+      ],
+      "unique_sources": 46,
+      "unique_targets": 774,
+      "missing_paths": {
+        "source_rgb": 0,
+        "source_person_mask_A": 0,
+        "source_person_mask_B": 0,
+        "target_rgb": 0,
+        "target_person_mask_A": 0,
+        "target_person_mask_B": 0,
+        "target_dwpose_A": 0,
+        "target_dwpose_B": 0,
+        "target_smpl": 0,
+        "target_camera": 0,
+        "target_geometry_npz": 0
+      },
+      "zero_contact_vertex_rows": 28,
+      "manifest_sha256": "79cc5928bd47848af6423a1bb5e955b8a18e2a8d90a78dfadec9125392cc5ad0"
+    },
+    "val": {
+      "rows": 822,
+      "pair_ids": [
+        "pair22",
+        "pair28"
+      ],
+      "camera_ids": [
+        4
+      ],
+      "unique_sources": 24,
+      "unique_targets": 274,
+      "missing_paths": {
+        "source_rgb": 0,
+        "source_person_mask_A": 0,
+        "source_person_mask_B": 0,
+        "target_rgb": 0,
+        "target_person_mask_A": 0,
+        "target_person_mask_B": 0,
+        "target_dwpose_A": 0,
+        "target_dwpose_B": 0,
+        "target_smpl": 0,
+        "target_camera": 0,
+        "target_geometry_npz": 0
+      },
+      "zero_contact_vertex_rows": 60,
+      "manifest_sha256": "a8c617ac214d26cb500266ded99cf3981f55f6d1348de2b2d7c2ddfa87185d23"
+    },
+    "test": {
+      "rows": 606,
+      "pair_ids": [
+        "pair00",
+        "pair02"
+      ],
+      "camera_ids": [
+        4,
+        52,
+        64
+      ],
+      "unique_sources": 18,
+      "unique_targets": 330,
+      "missing_paths": {
+        "source_rgb": 0,
+        "source_person_mask_A": 0,
+        "source_person_mask_B": 0,
+        "target_rgb": 0,
+        "target_person_mask_A": 0,
+        "target_person_mask_B": 0,
+        "target_dwpose_A": 0,
+        "target_dwpose_B": 0,
+        "target_smpl": 0,
+        "target_camera": 0,
+        "target_geometry_npz": 0
+      },
+      "zero_contact_vertex_rows": 4,
+      "manifest_sha256": "5d45bd564e4ce7db7b8dbf95d4f288755abd33234312bad75da5bdb9836e9453"
+    }
+  },
+  "total_pairs": 2740,
+  "unique_sources": 88,
+  "unique_targets": 1378,
+  "pair_relations": {
+    "SAME_ACTION": 1378,
+    "CROSS_ACTION": 1362
+  },
+  "controls": {
+    "path": "/data/shangguanrz/pic-edit-caches/qwen21_hi4d_controls",
+    "version": "hi4d_qwen21_dual_v2",
+    "required_unique": 1378,
+    "missing": 0
+  },
+  "sample": {
+    "pair": "pair01",
+    "source_frame": 16,
+    "target_frame": 48,
+    "images": {
+      "source_rgb": {
+        "size": [
+          940,
+          1280
+        ],
+        "mode": "RGB"
+      },
+      "target_rgb": {
+        "size": [
+          940,
+          1280
+        ],
+        "mode": "RGB"
+      },
+      "source_person_mask_A": {
+        "size": [
+          940,
+          1280
+        ],
+        "mode": "L"
+      },
+      "target_person_mask_A": {
+        "size": [
+          940,
+          1280
+        ],
+        "mode": "L"
+      }
+    },
+    "npz": {
+      "target_smpl": {
+        "betas": {
+          "shape": [
+            2,
+            10
+          ],
+          "dtype": "float32"
+        },
+        "global_orient": {
+          "shape": [
+            2,
+            3
+          ],
+          "dtype": "float32"
+        },
+        "body_pose": {
+          "shape": [
+            2,
+            69
+          ],
+          "dtype": "float32"
+        },
+        "transl": {
+          "shape": [
+            2,
+            3
+          ],
+          "dtype": "float32"
+        },
+        "verts": {
+          "shape": [
+            2,
+            6890,
+            3
+          ],
+          "dtype": "float32"
+        },
+        "joints_3d": {
+          "shape": [
+            2,
+            24,
+            3
+          ],
+          "dtype": "float32"
+        },
+        "contact": {
+          "shape": [
+            2,
+            6890
+          ],
+          "dtype": "float64"
+        }
+      },
+      "target_camera": {
+        "ids": {
+          "shape": [
+            8
+          ],
+          "dtype": "int64"
+        },
+        "intrinsics": {
+          "shape": [
+            8,
+            3,
+            3
+          ],
+          "dtype": "float64"
+        },
+        "extrinsics": {
+          "shape": [
+            8,
+            3,
+            4
+          ],
+          "dtype": "float64"
+        },
+        "dist_coeffs": {
+          "shape": [
+            8,
+            5
+          ],
+          "dtype": "float64"
+        }
+      },
+      "target_geometry_npz": {
+        "height": {
+          "shape": [],
+          "dtype": "int64"
+        },
+        "width": {
+          "shape": [],
+          "dtype": "int64"
+        },
+        "K_runtime": {
+          "shape": [
+            3,
+            3
+          ],
+          "dtype": "float32"
+        },
+        "depth_scene": {
+          "shape": [
+            1280,
+            940
+          ],
+          "dtype": "float32"
+        },
+        "normal_scene": {
+          "shape": [
+            1280,
+            940,
+            3
+          ],
+          "dtype": "float32"
+        },
+        "semantic_A": {
+          "shape": [
+            1280,
+            940
+          ],
+          "dtype": "uint8"
+        },
+        "semantic_B": {
+          "shape": [
+            1280,
+            940
+          ],
+          "dtype": "uint8"
+        },
+        "front_owner": {
+          "shape": [
+            1280,
+            940
+          ],
+          "dtype": "uint8"
+        },
+        "contact_A": {
+          "shape": [
+            1280,
+            940
+          ],
+          "dtype": "float32"
+        },
+        "contact_B": {
+          "shape": [
+            1280,
+            940
+          ],
+          "dtype": "float32"
+        },
+        "surface_layer_count": {
+          "shape": [
+            1280,
+            940
+          ],
+          "dtype": "uint8"
+        },
+        "occlusion_mask": {
+          "shape": [
+            1280,
+            940
+          ],
+          "dtype": "uint8"
+        },
+        "occlusion_depth_gradient": {
+          "shape": [
+            1280,
+            940
+          ],
+          "dtype": "float32"
+        },
+        "interperson_overlap": {
+          "shape": [
+            1280,
+            940
+          ],
+          "dtype": "uint8"
+        },
+        "A_occluded_by_B": {
+          "shape": [
+            1280,
+            940
+          ],
+          "dtype": "uint8"
+        },
+        "B_occluded_by_A": {
+          "shape": [
+            1280,
+            940
+          ],
+          "dtype": "uint8"
+        },
+        "depth_A": {
+          "shape": [
+            1280,
+            940
+          ],
+          "dtype": "float32"
+        },
+        "depth_B": {
+          "shape": [
+            1280,
+            940
+          ],
+          "dtype": "float32"
+        },
+        "asset_version": {
+          "shape": [],
+          "dtype": "<U46"
+        }
+      },
+      "target_dwpose_A": {
+        "xy_native": {
+          "shape": [
+            134,
+            2
+          ],
+          "dtype": "float32"
+        },
+        "xy_normalized": {
+          "shape": [
+            134,
+            2
+          ],
+          "dtype": "float32"
+        },
+        "scores": {
+          "shape": [
+            134
+          ],
+          "dtype": "float32"
+        },
+        "width": {
+          "shape": [],
+          "dtype": "int32"
+        },
+        "height": {
+          "shape": [],
+          "dtype": "int32"
+        },
+        "generator": {
+          "shape": [],
+          "dtype": "<U30"
+        }
+      }
+    },
+    "control_shapes": {
+      "normal_a": {
+        "shape": [
+          3,
+          512,
+          512
+        ],
+        "dtype": "torch.float16"
+      },
+      "human_mask_a": {
+        "shape": [
+          1,
+          512,
+          512
+        ],
+        "dtype": "torch.float16"
+      },
+      "part_onehot_a": {
+        "shape": [
+          14,
+          512,
+          512
+        ],
+        "dtype": "torch.float16"
+      },
+      "pose_heatmap_a": {
+        "shape": [
+          25,
+          512,
+          512
+        ],
+        "dtype": "torch.float16"
+      },
+      "depth_a": {
+        "shape": [
+          1,
+          512,
+          512
+        ],
+        "dtype": "torch.float16"
+      },
+      "smplx_global_a": {
+        "shape": [
+          26
+        ],
+        "dtype": "torch.float16"
+      },
+      "normal_b": {
+        "shape": [
+          3,
+          512,
+          512
+        ],
+        "dtype": "torch.float16"
+      },
+      "human_mask_b": {
+        "shape": [
+          1,
+          512,
+          512
+        ],
+        "dtype": "torch.float16"
+      },
+      "part_onehot_b": {
+        "shape": [
+          14,
+          512,
+          512
+        ],
+        "dtype": "torch.float16"
+      },
+      "pose_heatmap_b": {
+        "shape": [
+          25,
+          512,
+          512
+        ],
+        "dtype": "torch.float16"
+      },
+      "depth_b": {
+        "shape": [
+          1,
+          512,
+          512
+        ],
+        "dtype": "torch.float16"
+      },
+      "smplx_global_b": {
+        "shape": [
+          26
+        ],
+        "dtype": "torch.float16"
+      },
+      "relative_geometry": {
+        "shape": [
+          11
+        ],
+        "dtype": "torch.float16"
+      },
+      "contact_raster": {
+        "shape": [
+          2,
+          512,
+          512
+        ],
+        "dtype": "torch.float16"
+      },
+      "human_mask": {
+        "shape": [
+          1,
+          512,
+          512
+        ],
+        "dtype": "torch.float16"
+      },
+      "task_id": {
+        "shape": [],
+        "dtype": "torch.int64"
+      },
+      "contact_src_person": {
+        "shape": [
+          8
+        ],
+        "dtype": "torch.int64"
+      },
+      "contact_src_part": {
+        "shape": [
+          8
+        ],
+        "dtype": "torch.int64"
+      },
+      "contact_dst_person": {
+        "shape": [
+          8
+        ],
+        "dtype": "torch.int64"
+      },
+      "contact_dst_part": {
+        "shape": [
+          8
+        ],
+        "dtype": "torch.int64"
+      },
+      "contact_contact_type": {
+        "shape": [
+          8
+        ],
+        "dtype": "torch.int64"
+      },
+      "contact_distance": {
+        "shape": [
+          8,
+          1
+        ],
+        "dtype": "torch.float16"
+      },
+      "contact_valid_mask": {
+        "shape": [
+          8
+        ],
+        "dtype": "torch.bool"
+      },
+      "person_b_valid": {
+        "shape": [],
+        "dtype": "torch.bool"
+      }
+    }
+  },
+  "checks": {
+    "all_manifest_paths_present": true,
+    "all_current_control_caches_present": true,
+    "pair_ids_disjoint_between_splits": true,
+    "sample_load_target_false_has_no_target_image_tensor": true,
+    "sample_has_two_source_masks": true,
+    "sample_has_two_25_channel_pose_maps": true
+  },
+  "disk": {
+    "archives_disk": {
+      "path": "/data/shangguanrz/pic-edit-datasets/Hi4D-origin",
+      "available_gib": 21250.22
+    },
+    "pilot_disk": {
+      "path": "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/raw",
+      "available_gib": 77.17
+    }
+  },
+  "source_sha256": {
+    "train_hi4d_qwen21_dual.py": "d635c873e35a75925372cfb79ce9c9d69cb44b43d7295a8ac46b2600014c8352",
+    "src/data/hi4d_qwen21_dataset.py": "fcc47094e1a8f3d5326e90596487d71560697ab18b906dd16ccb1cadac56d126",
+    "src/pose_control/qwen21/dual_adapter.py": "fa8490abd3f72e05c515ebc378b5e76b480079c94b170d5b62ffef420fb21296",
+    "src/pose_control/qwen21/dual_inference.py": "80f5531409ca4a180876dc61b195fe7ec71ccc0f8625c22e9c55d4fca1934e0c",
+    "src/pose_control/qwen21/action_prompts.py": "0ba8faa4373ba52f48a0474c54dcf74b6b9236293a2354efeda26be2f8aa7548",
+    "src/pose_control/qwen21_full/qwen_adapter.py": "f2b7d74db4ca63cca70158b8b9de54c07456909e51dc3ebf77481523adf7c367",
+    "src/pose_control/qwen21_full/execution.py": "ad9d8b46a467d57865f019b60a08870fb3d2eaa266384661b0bebfb945bd5ecb",
+    "src/pose_control/qwen21_full/data_runtime.py": "423d41e68029e8163ba8b647750365d8032bd89535a97851202a695b367316de",
+    "src/pose_control/qwen21_full/joint_training.py": "17f063c77e6e651e2ad6b8396615fb3f4940f8f3c7aa480a6b2a535e8ac36d4b",
+    "scripts/eval/eval_hi4d_native_binding.py": "d540416690424e2c7c1419835e1d039ae05739fe021a6ae2ee8213d994987710"
+  },
+  "limits": [
+    "Path checks do not establish every file's semantic correctness.",
+    "Only one sample's NPZ and cached tensor contents were inspected.",
+    "No GPU generation, training or complete archive integrity scan was run."
+  ]
+}

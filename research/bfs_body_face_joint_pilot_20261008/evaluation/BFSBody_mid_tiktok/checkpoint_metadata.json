@@ -1,0 +1,39 @@
+{
+  "architecture": "qwen21_full_v1",
+  "resolution": "native",
+  "step": 128,
+  "branch": "joint",
+  "model_revision": "790c92633540aa0cb11d9abf19eb46d861714758",
+  "joint_signature": {
+    "schema": "joint_body_face_pilot_v1",
+    "model_revision": "790c92633540aa0cb11d9abf19eb46d861714758",
+    "model": "/data/shangguanrz/pic-edit-models/Qwen-Image-2.1",
+    "lora_sha256": "7dc0a53aba4dbc70c204f498936a619d226559da11011f748c389189af46b664",
+    "strength": 1.0,
+    "train_sha256": "5f27d24e9ca7c6ee9fe4b837850975304026d16097a5c2d588a8e23fcca47d29",
+    "val_sha256": "cece883b96dbbc9270fd77d4bb1e973470f52f941af85c2a0746947f5d91e10a",
+    "features": "/home/shangguanrz/nihaochen/qwen21_full/tiktok_face_v1_20261004/data/face_cache",
+    "supervision_sha256": "f96de2a0cec9d6b7fca625de6806f6014f169f3b9bf3a815a3364945b71f3d5f",
+    "cache": "/home/shangguanrz/nihaochen/qwen21_full/tiktok_face_v1_20261004/native_cache_tiktok_native",
+    "resolution": "native",
+    "align_mode": "native",
+    "seed": 42,
+    "noise_offset": 256,
+    "body_lr_scale": 0.25,
+    "face_lr_scale": 0.5,
+    "face_weight": 0.5,
+    "aux_every": 4,
+    "warmup_steps": 20,
+    "joint_code_sha256": "1282e4d2ec8e9c608073a7b92cbcd6d1578de1b96d9ca5af2660f9a1d2d86d95",
+    "trainer_code_sha256": "0156e905e8c77675ca550e853f9025011304e5be89566721f02ddbf79c42720d",
+    "split": {
+      "role": "branch",
+      "lock_sha256": "41c62acde89a01b62a494d9da64ff8e488665877e0836985cf62b5a4e6888393",
+      "full512_sha256": "854133776d2067aa392442553f3003ef9e6d45107ccc9cffe5a4af8600fb929f",
+      "common_sha256": "43cedb569944bc6f98ec046d04f9e11d7cf7d9c8dba5aed7144b558e9dd08508",
+      "branch_sha256": "5f27d24e9ca7c6ee9fe4b837850975304026d16097a5c2d588a8e23fcca47d29"
+    },
+    "deterministic_algorithms": "warn_only",
+    "cublas_workspace_config": ":4096:8"
+  }
+}

@@ -1,0 +1,82 @@
+{
+  "focal_xy": [
+    26183.75,
+    26183.75
+  ],
+  "principal_xy": [
+    453.53741455078125,
+    709.67333984375
+  ],
+  "B_size": [
+    1024,
+    1280
+  ],
+  "generation_canvas": [
+    640,
+    928
+  ],
+  "B_to_generation": {
+    "scale": 0.7192936164565303,
+    "offset_xy": [
+      -5.384591712318581,
+      15.006806967638283
+    ]
+  },
+  "source_letterbox": {
+    "original_size": [
+      853,
+      1280
+    ],
+    "canvas_size": [
+      640,
+      928
+    ],
+    "resized_size": [
+      618,
+      928
+    ],
+    "scale_xy": [
+      0.7245017584994138,
+      0.725
+    ],
+    "offset_xy": [
+      11,
+      0
+    ],
+    "content_box": [
+      11,
+      0,
+      629,
+      928
+    ]
+  },
+  "coordinate_system": "camera XYZ; pixels x-right y-down; projection uses Z+1e-4",
+  "detections": {
+    "A": {
+      "bbox_xyxy": [
+        128.33392333984375,
+        171.762451171875,
+        726.9999389648438,
+        1279.59912109375
+      ],
+      "score": 0.8714577555656433
+    },
+    "B": {
+      "bbox_xyxy": [
+        283.5579833984375,
+        152.2618408203125,
+        623.5264892578125,
+        1268.8873291015625
+      ],
+      "score": 0.9222843647003174
+    }
+  },
+  "mesh_max_error_m": 3.814697265625e-06,
+  "projection_max_error_px": 0.0002244298665345923,
+  "valid_B_joints": 134,
+  "visibility_policy": "finite positive depth and in-frame only; not an occlusion confidence",
+  "estimated_hidden_joints": true,
+  "native_estimator_input": "/home/shangguanrz/project/pic-edit/workflow/runs/medium_02/geometry/estimator/workflow_fcf5f424eaf04ef4/demo/input_frames/workflow_fcf5f424eaf04ef4/000001.jpg",
+  "native_estimator_params": "/home/shangguanrz/project/pic-edit/workflow/runs/medium_02/geometry/estimator/workflow_fcf5f424eaf04ef4/demo/output_frames/workflow_fcf5f424eaf04ef4/workflow_fcf5f424eaf04ef4_params.pt",
+  "estimator_root": "/home/shangguanrz/project/pic-edit/workflow/runs/medium_02/geometry/estimator/workflow_fcf5f424eaf04ef4"
+}

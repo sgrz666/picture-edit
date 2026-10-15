@@ -1,0 +1,122 @@
+{
+  "observed_at": "2026-10-11T16:38:39.063436+00:00",
+  "host": "node01",
+  "run_dir": "/data/shangguanrz/pic-edit-experiments/pei2i_body_face_8arm_20261009",
+  "state": {
+    "schema": "qwen21_repair_full_pipeline_v2",
+    "pid": 3682236,
+    "status": "running",
+    "script_sha256": "83256233f6dab59ae82d450acdd68baae0c2a6e8d10c25771e40662070f48e08",
+    "stages": [
+      {
+        "phase": "rewrite",
+        "cli_phase": "rewrite",
+        "status": "running",
+        "started_at": 1791712211.6978738,
+        "argv": [
+          "/home/shangguanrz/nihaochen/envs/qwen21/bin/python",
+          "/data/shangguanrz/pic-edit-experiments/pei2i_body_face_8arm_20261009/code/scripts/run/run_qwen21_pei2i_study.py",
+          "--run",
+          "/data/shangguanrz/pic-edit-experiments/pei2i_body_face_8arm_20261009",
+          "--phase",
+          "rewrite",
+          "--splits",
+          "train",
+          "val",
+          "diagnostic"
+        ],
+        "log": "logs/full_pipeline_v2_rewrite.log",
+        "pid": 3682929
+      }
+    ],
+    "planned_stages": [
+      "rewrite",
+      "cache",
+      "selfcheck",
+      "preflight",
+      "initial",
+      "train",
+      "rewrite_test",
+      "cache_test",
+      "finaltest",
+      "report",
+      "export"
+    ],
+    "previous_controller_evidence": "repair_audit/controller_v1_before_test_fix.json",
+    "review_sha256": "f4ead9d7e5f23ee80764a7b64d0f296ca79bf52b6a0489bb4153e35a668afe6f",
+    "lock_sha256": "4e851090805188941cbe2bd6c78aa95be20a4b6f5412cf7bd8e00279034bde83",
+    "phase": "rewrite"
+  },
+  "formal_prompt_counts": {
+    "p0": {
+      "train": 512,
+      "val": 0,
+      "diagnostic": 0,
+      "test": 0
+    },
+    "pg": {
+      "train": 183,
+      "val": 0,
+      "diagnostic": 0,
+      "test": 0
+    },
+    "pb": {
+      "train": 0,
+      "val": 0,
+      "diagnostic": 0,
+      "test": 0
+    },
+    "pbg": {
+      "train": 0,
+      "val": 0,
+      "diagnostic": 0,
+      "test": 0
+    }
+  },
+  "formal_optimizer_updates": 0,
+  "arms": {
+    "qwen_p0": {
+      "formal_logged_updates": 0,
+      "last_logged_step": 0,
+      "summary": null
+    },
+    "qwen_pg": {
+      "formal_logged_updates": 0,
+      "last_logged_step": 0,
+      "summary": null
+    },
+    "qwen_pb": {
+      "formal_logged_updates": 0,
+      "last_logged_step": 0,
+      "summary": null
+    },
+    "qwen_pbg": {
+      "formal_logged_updates": 0,
+      "last_logged_step": 0,
+      "summary": null
+    },
+    "head_p0": {
+      "formal_logged_updates": 0,
+      "last_logged_step": 0,
+      "summary": null
+    },
+    "head_pg": {
+      "formal_logged_updates": 0,
+      "last_logged_step": 0,
+      "summary": null
+    },
+    "head_pb": {
+      "formal_logged_updates": 0,
+      "last_logged_step": 0,
+      "summary": null
+    },
+    "head_pbg": {
+      "formal_logged_updates": 0,
+      "last_logged_step": 0,
+      "summary": null
+    }
+  },
+  "processes": "    PID    PPID STAT     ELAPSED COMMAND\n3682236       1 SLsl    06:48:51 /home/shangguanrz/nihaochen/envs/qwen21/bin/python /data/shangguanrz/pic-edit-experiments/pei2i_body_face_8arm_20261009/repair_audit/full_pipeline_v2_remote.py\n3682929 3682236 SLl     06:48:27 /home/shangguanrz/nihaochen/envs/qwen21/bin/python /data/shangguanrz/pic-edit-experiments/pei2i_body_face_8arm_20261009/code/scripts/run/run_qwen21_pei2i_study.py --run /data/shangguanrz/pic-edit-experiments/pei2i_body_face_8arm_20261009 --phase rewrite --splits train val diagnostic\n3682987 3682929 Sl      06:48:22 /home/shangguanrz/nihaochen/envs/qwen21/bin/python /home/shangguanrz/nihaochen/envs/qwen21/lib/python3.12/site-packages/torch/_inductor/compile_worker/__main__.py --pickler=torch._inductor.compile_worker.subproc_pool.SubprocPickler --kind=fork --workers=32 --parent=3682929 --read-fd=17 --write-fd=20 --torch-key=H4QweOk00IXhifNSBFt33pU0hqEJ8U7VJTQvH3venIU=\n3683318 3682929 RLl     06:48:04 /home/shangguanrz/nihaochen/envs/qwen21/bin/python /data/shangguanrz/pic-edit-experiments/pei2i_body_face_8arm_20261009/code/scripts/precompute_qwen21_pei2i_prompts.py --run /data/shangguanrz/pic-edit-experiments/pei2i_body_face_8arm_20261009 --splits train val diagnostic --protocols p0 pg pb pbg\n",
+  "current_log_tail": "/home/shangguanrz/nihaochen/envs/qwen21/lib/python3.12/site-packages/torch/cuda/__init__.py:829: UserWarning: Can't initialize NVML\n  warnings.warn(\"Can't initialize NVML\")\nRUN: /home/shangguanrz/nihaochen/envs/qwen21/bin/python /data/shangguanrz/pic-edit-experiments/pei2i_body_face_8arm_20261009/code/scripts/precompute_qwen21_pei2i_prompts.py --run /data/shangguanrz/pic-edit-experiments/pei2i_body_face_8arm_20261009 --splits train val diagnostic --protocols p0 pg pb pbg\n/home/shangguanrz/nihaochen/envs/qwen21/lib/python3.12/site-packages/torch/cuda/__init__.py:829: UserWarning: Can't initialize NVML\n  warnings.warn(\"Can't initialize NVML\")\n[transformers] `torch_dtype` is deprecated! Use `dtype` instead!\n\nLoading weights:   0%|          | 0/760 [00:00<?, ?it/s]\nLoading weights: 100%|██████████| 760/760 [00:00<00:00, 11220.72it/s]\n[transformers] `causal_conv1d_fn` is falling back to its reference PyTorch implementation because `causal_conv1d` is not installed. This is correct but much slower; install `causal_conv1d` for the optimized kernel.\n[transformers] `chunk_gated_delta_rule` is falling back to its reference PyTorch implementation because `flash-linear-attention` is not installed. This is correct but much slower; install `flash-linear-attention` for the optimized kernel.\n[transformers] `causal_conv1d_update` is falling back to its reference PyTorch implementation because `causal_conv1d` is not installed. This is correct but much slower; install `causal_conv1d` for the optimized kernel.\n[transformers] `fused_recurrent_gated_delta_rule` is falling back to its reference PyTorch implementation because `flash-linear-attention` is not installed. This is correct but much slower; install `flash-linear-attention` for the optimized kernel.\n",
+  "disk_free_gib": 21247.54
+}

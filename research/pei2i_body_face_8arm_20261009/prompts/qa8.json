@@ -1,0 +1,86 @@
+{
+  "compiler_sha256": "c1836f9c6002167ace68fe0d400d730ea983a1e85e36f58e7eb600b31b9a72f7",
+  "compiler_version": "image_roles_v1",
+  "controller_pid": 3498770,
+  "decision": "release_for_controlled_experiment_with_recorded_prompt_errors",
+  "instruction_sha256": "1cd132d71a7b788bdbbd15e5c925e359aa25999f83fdff9dd2b3248a8b3f6cf7",
+  "manifest": "prompts/qa8/manifest.json",
+  "model_dir": "/data/shangguanrz/pic-edit-models/Qwen-Image-2.1-PE-I2I",
+  "model_files_sha256": {
+    "chat_template.jinja": "a4aee8afcf2e0711942cf848899be66016f8d14a889ff9ede07bca099c28f715",
+    "config.json": "9ec8ded376ee90bc4cf86ea1459efc90e704b16c4461c17e232b03857132db49",
+    "generation_config.json": "2d92457211a50894a21ea309b73c86db69672350709c864e32744ca377a3e503",
+    "model-00001.safetensors": "e8af5c5a8df58bbd30f01e61d555f03a937e1083dcd1fd8fdedfe7adea8b2245",
+    "model-00002.safetensors": "1e9d25e9548c226eee3ea259eb3716ed48229dab41fda1676881d34a8ab94dac",
+    "model-00003.safetensors": "01937bc79db056bcb277f9524fcc853e1757a199cd4fa604b342f9a6c8601470",
+    "model-00004.safetensors": "4354c647339ab93206b9891f16056d7557637013074f4ed021a26beab869fbc3",
+    "model.safetensors.index.json": "cd170bbfe328839bbec7c241dd2e3179a206c6e6c48c00348b6000e322f53d25",
+    "processor_config.json": "e612ca25e93af6072f0c3f6dec5913b8a1326332503ca66d7b4c9ef8336c4b38",
+    "system_prompt.txt": "e378fea686a1431581ba4c654d332ae96adad633f144ae738ec8ce9c4fd66439",
+    "tokenizer.json": "87a7830d63fcf43bf241c3c5242e96e62dd3fdc29224ca26fed8ea333db72de4",
+    "tokenizer_config.json": "b0130c1a11528a8a2d6a079d51a38ca357d4100e97ee3d4c02da034771e85430"
+  },
+  "model_manifest_sha256": "d5ed61587b3016b9d0a1ee477142f3647c66d11674c9d5c423bc5c67041a60c8",
+  "model_revision": null,
+  "notes": [
+    "逐条对照了 PG/PB/PBG 各 8 条（24 条）的编译文本与全部八组 A/B/depth/normal/filtered DWPose 图片；原始回答 JSON 与最终文本、请求签名及本地图片 SHA 一致。",
+    "v3 已修复删除源球杆和强制冻结 A 表情的系统性问题。PG 无目标 RGB，没有以裸网格脸宣称闭嘴/微笑/说话；PB/PBG 根据 B 可见表情描述。所有协议均明确要求 A 身份、衣服材质、物品和场景保持，允许姿态褶皱与局部阴影变化。",
+    "放行用于测量自动 PE 的实际收益和错误，不代表 24 条均精确。未手改单条文本、未筛选替换样本、未读独立测试集输出，也未把 v1/v2 记录计为正式结果。",
+    "残余问题：PG 的头向、细手势/腿间距可能猜测；网格与 DWPose 不一致时仍会选定一种；少数输出仍含 skeleton/geometry/guide 的措辞；PB/PBG 有手指、服装类型、水印文本误识别及左右混用，6013 的视线方向不一致。逐条备注已保留。",
+    "Qwen 参考 RGB 仍仅 A，B RGB 仅在 PB/PBG 的 PE 与合法训练监督中读取；几何 adapter 单独提供数值条件。PE 文字不是保证几何正确的硬约束。"
+  ],
+  "pair_ids": [
+    "train_0002794",
+    "train_0000092",
+    "train_0007286",
+    "train_0007410",
+    "train_0005242",
+    "train_0004247",
+    "train_0003344",
+    "train_0006013"
+  ],
+  "prompt_manifests_sha256": {
+    "pb": "5efe766a138a73753e6d94413dfa2c5e5c2b9be4555203af11b15fcc39f03d96",
+    "pbg": "042f9a788c9a4adef1ac048958a38305b8561afd6339cfb9b0fdb564f9554d22",
+    "pg": "7d30b1212dba8ebd2d2e3d14cfdaacf3235ef3239f886531c06ef126866ef078"
+  },
+  "qa_manifest_sha256": "c8ec850156f0c16cbc17c3c7143d3a4d3ba18e1d6dc1ca128d35854fb9066dd9",
+  "request_sha256": {
+    "pb": {
+      "train_0000092": "36598a5af840423d126c58a8cf5a5558943d742e4cf2d2c97ebd6472399ab542",
+      "train_0002794": "69792c27c263039656305fbf2d99f4e52d8c21c7993f05332cc534543afe7931",
+      "train_0003344": "3acac67a63f75c117a1679d9c03566833cf3cf9fb4de2fcdf234e01d08a0793a",
+      "train_0004247": "c65fc977b668cf8403ef49f45bb51bee14b7d39760fc593a33e5a777385f6931",
+      "train_0005242": "821dd9f6a6eebcf4f70e1204e85947545b706ddd98ac84f21d9b7ea51cc88efc",
+      "train_0006013": "8a8a58b4e458015ca8636e641dee858772662f6deeb34fd1173d137ec909d83a",
+      "train_0007286": "47acfe5566a544ee908761b82198219da98b5aca0768eada72515302833e16d9",
+      "train_0007410": "e1221d4b2dbb38cb15b55535e5119c0677e0900d916b3e9c725d7c12c1bd8f02"
+    },
+    "pbg": {
+      "train_0000092": "109443691db32488151e20e5bbae4df90cb39a4b8ec17815d25a7ff6297366a4",
+      "train_0002794": "72ff0b140aa446357e418c3d4febeca4eceb61777a317f0ca669e98b53c086a5",
+      "train_0003344": "ca7272dc7aeb0074c01b79bffd94bfc409f3ea2798d78e19e7da08a8be8e78ab",
+      "train_0004247": "90f1f9d913b108a9ffed8d734890a8c6c4fb6214bd28a0fcaa2ed7e02592b0f0",
+      "train_0005242": "b7d937cd8a8ce7605b0e67b88115f6d46350e86d643949cf5e1643b3d060ec9d",
+      "train_0006013": "8038567be4e4126bb068e3519ee2496f05ce63f2bc5309cec498583ca41abf69",
+      "train_0007286": "66cf7431de2f991f79816647a142582c01307620004bc2f5d65db8d86408b7c3",
+      "train_0007410": "f3275d5e07fe594f58e3c316f18e762dc4f570a72e4a2d924fa5ecab9e00f17e"
+    },
+    "pg": {
+      "train_0000092": "390b9fdef5e05848de62923aab199a29328f07ca5a156af60e34e3dc9365be6d",
+      "train_0002794": "24b30855b098aad2e05420784e0a27efba7edfc7fb8f212814137def643a6388",
+      "train_0003344": "b34532a4b215dc27b196771362f99ffe94ad5f174d08c493e3d8c7c1e5883607",
+      "train_0004247": "19370670bb5befcabf3034df3803630a753622628522a524579fba11633dce6f",
+      "train_0005242": "ae4458741ff605d92d5879122189db219614436ea0f7a9bca5dc85d5365d4258",
+      "train_0006013": "a526ce52617d1d1183abd62dad62586464f774dbe2dd1a9be2f67810d3675acf",
+      "train_0007286": "b16533ec4a7a3a63cd29cfdc8595eb5dcb060322d3fa00df882d3a664be17f07",
+      "train_0007410": "dca2be02dc0daf219b4eaf4dd1e058ade63435082a2e8ccdcdfceba6a707d887"
+    }
+  },
+  "review_signature_sha256": "2ebd3db168f966d86823c814efed24ef6066cda0aec70a40b75807e4602e1f1f",
+  "reviewed": true,
+  "reviewed_at": "2026-10-11T09:46:28.173199+00:00",
+  "schema": "qwen21_pei2i_qa_review_v1",
+  "visual_review_path": "repair_audit/qa8_v3_visual_review.json",
+  "visual_review_sha256": "9424f4f540037a32609ff55667ff04c945204202abd804bac6c36c4e0638f2e7"
+}

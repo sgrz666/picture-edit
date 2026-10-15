@@ -1,0 +1,212 @@
+{
+  "schema": "single_person_pose_stage_v2",
+  "status": "complete",
+  "identity": {
+    "settings": {
+      "smplest_root": "/home/shangguanrz/project/pic-edit/add/tools/SMPLest-X",
+      "smplest_checkpoint": "smplest_x_h",
+      "person_detection_confidence": 0.5,
+      "pose_framing": "source_person"
+    },
+    "inputs_sha256": {
+      "A_rgb": "3a8094345699a63d3766fc5669697b66e396b58214cadcf7acad3d09fa921772",
+      "B_rgb": "bfae88f57e9b87666a53e998318844ed69bf8f79973292b8517eda8d70d09d51",
+      "A_reference": "8708b8159be270edf4b2155ebd8b222f9363c855441d2157e11ee53845d848c8",
+      "source_preprocess": "5deb3cd2d257a90d3f8e2fbb5d9a8c7396e98be8355d00d28a86eefaab8e91cc"
+    },
+    "model_identity": {
+      "checkpoint": {
+        "path": "/home/shangguanrz/project/pic-edit/add/tools/SMPLest-X/pretrained_models/smplest_x_h",
+        "files": [
+          {
+            "name": "config_base.py",
+            "size": 2657,
+            "mtime_ns": 1789265415891607509,
+            "sha256": "39383dde0e806b9537377f6f8e18e54cce96e09da524cb987d7adade95e976bf"
+          },
+          {
+            "name": "smplest_x_h.pth.tar",
+            "size": 8246417153,
+            "mtime_ns": 1789266297754852700
+          }
+        ]
+      },
+      "detector": {
+        "path": "/home/shangguanrz/project/pic-edit/add/tools/SMPLest-X/pretrained_models/yolov8x.pt",
+        "files": [
+          {
+            "name": "yolov8x.pt",
+            "size": 136890692,
+            "mtime_ns": 1789265432147382041
+          }
+        ]
+      },
+      "human_models": {
+        "path": "/home/shangguanrz/project/pic-edit/add/tools/SMPLest-X/human_models/human_model_files/smplx",
+        "files": [
+          {
+            "name": "MANO_SMPLX_vertex_ids.pkl",
+            "size": 13535,
+            "mtime_ns": 1789266204959685585
+          },
+          {
+            "name": "SMPLX_FEMALE.npz",
+            "size": 108794146,
+            "mtime_ns": 1789265916888205332
+          },
+          {
+            "name": "SMPLX_MALE.npz",
+            "size": 108753445,
+            "mtime_ns": 1789265933639946101
+          },
+          {
+            "name": "SMPLX_NEUTRAL.npz",
+            "size": 108752058,
+            "mtime_ns": 1789265950443685544
+          },
+          {
+            "name": "SMPLX_NEUTRAL.pkl",
+            "size": 544173380,
+            "mtime_ns": 1789266033582389254
+          },
+          {
+            "name": "SMPLX_to_J14.pkl",
+            "size": 4692193,
+            "mtime_ns": 1789266206043668370
+          }
+        ]
+      },
+      "estimator_source": {
+        "main/inference.py": "f4ad2b834b6555514a8cdf358d6eabcf1350db535c39b4f7a989110fb954f7fc",
+        "main/base.py": "1f258522001f25c9a9c0cf766dc5727e8d26953789dabc9b783efb2f1643e3bc",
+        "models/SMPLest_X.py": "b00a67b779ab0436320539dff464770651bd152817567318cd6979849b4c7c5b",
+        "human_models/human_models.py": "309d369f44825e9e9304ac8f3b4e2a17d3b870cb8c5155c2c666363c6b5ac415",
+        "scripts/run_smplestx_params_only.py": "cbce3276ee6446ac7f1a91ec66927673ec9db5ea2785c5526ce1e66725937a93"
+      }
+    },
+    "code": {
+      "pose_transfer/common.py": "ca76a12450a6cceedacef63e13fd66c7bdb19169d0bf7182d0de0d755cf932a4",
+      "smplx_worker.py": "2f969263dc77f0e523b74f81f5cf838028be5243aa6cbb779f7ad60bb0152c4b",
+      "pose_transfer/estimator.py": "369e83ba89e2678d7180d048be8b2717f9312d0578eb1ea5e3f429cb81193890",
+      "pose_transfer/geometry.py": "6603a819f10fd37197b0925bd0bad0571fff1df904cf1d4ab52cf7ecaf4743d4"
+    }
+  },
+  "request_sha256": "802b92788e359223bb60e811d18a5f5351be5adea1160c6853f684358972d865",
+  "outputs": {
+    "B_smplx": {
+      "file": "geometry/B_smplx.pt",
+      "sha256": "fea78b7fb040e8229ce870989f0ea5259c4d7f22e723a053ff346e8d63fdccb9"
+    },
+    "B_keypoints": {
+      "file": "geometry/B_keypoints.npz",
+      "sha256": "83eeb78c811b22ae4c012fbfbca2dca4d331c174af92b6322cbc15d1977dfd37"
+    },
+    "B_camera": {
+      "file": "geometry/B_camera.json",
+      "sha256": "644427ccbc5424c64208e76e2288ea600287a51506bb7dbd576c4df4fb683d08"
+    },
+    "B_3d_dwpose": {
+      "file": "geometry/B_3d_dwpose.png",
+      "sha256": "ac66cf26fc4cdcf35ff5f0e09d7df8b83bbcdcc644ae090bd35b2d6391531fa0"
+    },
+    "B_poseguide_native": {
+      "file": "geometry/B_poseguide_native.png",
+      "sha256": "24f1ea80dcb806781a328d2f6d499ae2aca98994ec889a7711f008647eaa9b58"
+    },
+    "B_overlay": {
+      "file": "geometry/B_poseguide_overlay.png",
+      "sha256": "0b7d54f45406fd9a31c9fe5c7781937718a19987ae8dbf36c23b51de385a1346"
+    },
+    "A_alignment": {
+      "file": "geometry/A_poseguide_alignment.png",
+      "sha256": "15d56fe47ab5a463733a3d8b3f8c681f8365a54ae7a82db4e22501f5af740cc7"
+    }
+  },
+  "metadata": {
+    "seconds": 35.16118442598963,
+    "camera_checks": {
+      "focal_xy": [
+        28216.5234375,
+        28216.5234375
+      ],
+      "principal_xy": [
+        448.8798828125,
+        633.8765869140625
+      ],
+      "B_size": [
+        855,
+        1280
+      ],
+      "generation_canvas": [
+        640,
+        928
+      ],
+      "B_to_generation": {
+        "scale": 0.6900232044179867,
+        "offset_xy": [
+          -55.38901902560866,
+          73.43189983644601
+        ]
+      },
+      "source_letterbox": {
+        "original_size": [
+          853,
+          1280
+        ],
+        "canvas_size": [
+          640,
+          928
+        ],
+        "resized_size": [
+          618,
+          928
+        ],
+        "scale_xy": [
+          0.7245017584994138,
+          0.725
+        ],
+        "offset_xy": [
+          11,
+          0
+        ],
+        "content_box": [
+          11,
+          0,
+          629,
+          928
+        ]
+      },
+      "coordinate_system": "camera XYZ; pixels x-right y-down; projection uses Z+1e-4",
+      "detections": {
+        "A": {
+          "bbox_xyxy": [
+            8.55987548828125,
+            131.65966796875,
+            664.6755981445312,
+            1278.580078125
+          ],
+          "score": 0.9305002093315125
+        },
+        "B": {
+          "bbox_xyxy": [
+            260.0294189453125,
+            31.9139404296875,
+            639.271240234375,
+            1236.970947265625
+          ],
+          "score": 0.9537181258201599
+        }
+      },
+      "mesh_max_error_m": 3.814697265625e-06,
+      "projection_max_error_px": 0.0003001662032602326,
+      "valid_B_joints": 134,
+      "visibility_policy": "finite positive depth and in-frame only; not an occlusion confidence",
+      "estimated_hidden_joints": true,
+      "native_estimator_input": "/home/shangguanrz/project/pic-edit/workflow/runs/hard_02/geometry/estimator/workflow_1e91e951513647af/demo/input_frames/workflow_1e91e951513647af/000001.jpg",
+      "native_estimator_params": "/home/shangguanrz/project/pic-edit/workflow/runs/hard_02/geometry/estimator/workflow_1e91e951513647af/demo/output_frames/workflow_1e91e951513647af/workflow_1e91e951513647af_params.pt",
+      "estimator_root": "/home/shangguanrz/project/pic-edit/workflow/runs/hard_02/geometry/estimator/workflow_1e91e951513647af"
+    },
+    "poseguide_kind": "SMPL-X 3D joints projected to DWPose-style 2D RGB guide"
+  },
+  "completed_at_unix": 1791786720.0483456
+}

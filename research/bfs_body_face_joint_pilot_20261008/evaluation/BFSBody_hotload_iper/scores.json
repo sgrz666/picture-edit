@@ -1,0 +1,58 @@
+{
+  "metric_resolution": 512,
+  "identity_definition": "unique-face ArcFace output versus Source A",
+  "pose_definition": "trusted PoseMetric versus transformed B Body25",
+  "per_sample": [
+    {
+      "pair_index": 0,
+      "image_stem": "000_001_2_source_standard_f000681_target_f001344_5236e955b1",
+      "status": "complete",
+      "image": "images/000_001_2_source_standard_f000681_target_f001344_5236e955b1_on.png",
+      "failure": null,
+      "identity_A": 0.17716535925865173,
+      "face_count": 1,
+      "source_face_count": 1,
+      "face_unique": true,
+      "pose_detected": true,
+      "pose_nme_diagonal": 0.009556651002218239,
+      "pose_pck_002": 0.9411764705882353,
+      "pose_pck_005": 1.0,
+      "pose_joint_recall": 1.0,
+      "pose_matched_joints": 17
+    },
+    {
+      "pair_index": 2,
+      "image_stem": "002_006_1_source_motion_f001625_target_f001189_d146897ead",
+      "status": "complete",
+      "image": "images/002_006_1_source_motion_f001625_target_f001189_d146897ead_on.png",
+      "failure": null,
+      "identity_A": 0.4957118034362793,
+      "face_count": 1,
+      "source_face_count": 1,
+      "face_unique": true,
+      "pose_detected": true,
+      "pose_nme_diagonal": 0.009668899537032859,
+      "pose_pck_002": 0.9411764705882353,
+      "pose_pck_005": 1.0,
+      "pose_joint_recall": 1.0,
+      "pose_matched_joints": 17
+    },
+    {
+      "pair_index": 3,
+      "image_stem": "003_009_3_source_motion_f000168_target_f000420_6ad164b82a",
+      "status": "complete",
+      "image": "images/003_009_3_source_motion_f000168_target_f000420_6ad164b82a_on.png",
+      "failure": null,
+      "identity_A": 0.5807548761367798,
+      "face_count": 1,
+      "source_face_count": 1,
+      "face_unique": true,
+      "pose_detected": true,
+      "pose_nme_diagonal": 0.010560691506365339,
+      "pose_pck_002": 0.9411764705882353,
+      "pose_pck_005": 1.0,
+      "pose_joint_recall": 1.0,
+      "pose_matched_joints": 17
+    }
+  ]
+}

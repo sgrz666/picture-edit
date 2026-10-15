@@ -1,0 +1,202 @@
+[
+  {
+    "path": "docs/experiments/2026-10-10-pei2i-eight-arm-runbook.md",
+    "original_sha256": "10b2e451c0112707f1e9d1ab3605731c11da1db1784cacd66145ca64eb43dd89",
+    "repaired_sha256": "7e70bf4632f17df85252213b73801cf42f4a29cc7429721a590fc2c7a3617fdb"
+  },
+  {
+    "path": "scripts/data/prepare_qwen21_prompt_study.py",
+    "original_sha256": "01b9683b97309cd1d71566b115395d403e1867deff17baf8ffb03ae0b96e1c1e",
+    "repaired_sha256": "aabf99854fc45b744ccb3bceb3feca3f641fae42f5e5c0366549c85f27c1feb5"
+  },
+  {
+    "path": "scripts/data/prepare_qwen21_prompt_study_faces.py",
+    "original_sha256": "98c653aa834e59a2e36062c3898e69ff6d4589660dd7707fa904032963510957",
+    "repaired_sha256": "6ce586d5df46fafe189db45e1f5e16f6004244b8cf5054323f2431230402d2cc"
+  },
+  {
+    "path": "scripts/eval/eval_qwen21_joint_pilot.py",
+    "original_sha256": "f5efc405f92bc08d01b56e04a796d1db43b89e41857b183e13d4e2475192cd80",
+    "repaired_sha256": "d4db49e17abf8113b199b1bbb8acc4e8598dcb5c1592563a8dc5a3a6f3e8d2db"
+  },
+  {
+    "path": "scripts/precompute_qwen21_pei2i_prompts.py",
+    "original_sha256": "5d8e46a452d75364f449afcfb2dcba10bcbb4ec1261cd203eccd366438f34f91",
+    "repaired_sha256": "eb1670d08accf903dca8f88f1e3d38e386b1fcf9f515fe86061d844228b03d53"
+  },
+  {
+    "path": "scripts/precompute_qwen21_prompt_study_cache.py",
+    "original_sha256": "345fc7ee6213dd6b35c95899715b9a031084410bf5cc11ec7550edc2f5a792f7",
+    "repaired_sha256": "f315c8d73fcec36f7ff07ff5beb9e63a3cc664cb77743459f4303e242f4a8160"
+  },
+  {
+    "path": "scripts/reports/build_qwen21_pei2i_study_report.py",
+    "original_sha256": "ad941352f81c07db462d16eb2a060fa3731e7956016d1cb8d71759054469d4bc",
+    "repaired_sha256": "e2f3a7f677e8c405f0ddaad50dfc13665d303d60152d2bb9c2d56145bb12bb77"
+  },
+  {
+    "path": "scripts/run/check_qwen21_prompt_study_resume.py",
+    "original_sha256": null,
+    "repaired_sha256": "48a67bd2bf420ffa11b5bd2db432dd7411c1cb37e96e14270605f8e965a03809"
+  },
+  {
+    "path": "scripts/run/run_qwen21_pei2i_study.py",
+    "original_sha256": "bb7d30d14353141139a4e28c5cfa88f99adb2f872e1cf71478e4393a8a6c44cb",
+    "repaired_sha256": "7863b1d7207afe2510fd193028ed35fceb8b932a5479cf5b25f5594276fda7de"
+  },
+  {
+    "path": "scripts/train/train_qwen21_joint_pilot.py",
+    "original_sha256": "07b6cf95319ca7b5b1d77a5a1259864e618a83cb3328076917cbfe3427a407a3",
+    "repaired_sha256": "081a6de9eee15dea7c35e0e741f952acf5a5ccd251fc27098e997a2720d0caae"
+  },
+  {
+    "path": "src/pose_control/qwen21_full/data_runtime.py",
+    "original_sha256": "adde6ce2851438d43d698502dc734b78c974261cffc370b18c8626c07eb0e132",
+    "repaired_sha256": "d0e543d2b13840b217a4a100a1c2f9ca67a59b56c12fd908e00dc3b82e3a55dc"
+  },
+  {
+    "path": "src/pose_control/qwen21_full/prompt_study/__init__.py",
+    "original_sha256": "c2b64816fc3f6fd902c107c3b240bf65b91d9d23ccf374be794c0d8ea2c63219",
+    "repaired_sha256": "c2b64816fc3f6fd902c107c3b240bf65b91d9d23ccf374be794c0d8ea2c63219"
+  },
+  {
+    "path": "src/pose_control/qwen21_full/prompt_study/geometry.py",
+    "original_sha256": "f360d4a2d7c8470e6a1b99473e64473530b8cd39776f2abddbd09bf74667a7e2",
+    "repaired_sha256": "f360d4a2d7c8470e6a1b99473e64473530b8cd39776f2abddbd09bf74667a7e2"
+  },
+  {
+    "path": "src/pose_control/qwen21_full/prompt_study/measurement.py",
+    "original_sha256": null,
+    "repaired_sha256": "e6f3c661b77cc257e5c62c6b6426977709e868e95ae9fb1718d089496c2a807e"
+  },
+  {
+    "path": "src/pose_control/qwen21_full/prompt_study/pairs.py",
+    "original_sha256": "d3bf0e2f17f5aab71d7b7f13042472db22dc4f3475692258f010df733b62a715",
+    "repaired_sha256": "22f5cd5baf770b48fdc4dc129a0f6f55f911f08fa27cbcde75ae5e99ea52c5b0"
+  },
+  {
+    "path": "src/pose_control/qwen21_full/prompt_study/prompts.py",
+    "original_sha256": "908f3abd71828b1320ba76d6013f7fab4ea437ce91ba4123b983724b32e8e1ba",
+    "repaired_sha256": "e169c5f5ba8bcfb282eec01efb40ec8fbe4bf3bdbe158686d8233acfe71a7f26"
+  },
+  {
+    "path": "src/pose_control/qwen21_full/prompt_study/protocol.py",
+    "original_sha256": "d5e57c064982a51937b623c7f37b8930743a0326486636f3d26ddc87bfe235d5",
+    "repaired_sha256": "d831f4c8eaf4a19bd41a3fc27bbfc11738a433fe74d93393f47d4d94c29a4534"
+  },
+  {
+    "path": "src/pose_control/qwen21_full/prompt_study/results.py",
+    "original_sha256": "187a7003d2d9024bca6320695f7d15e390d8471f0c8ce9ef784bd664b3447c4d",
+    "repaired_sha256": "604473a9163e8e2edb4a693419a339a28a5fc1ca5d0710b759867ede580f5e38"
+  },
+  {
+    "path": "src/pose_control/qwen21_full/prompt_study/sampling.py",
+    "original_sha256": "105b341083fb0c3183543ec8da6ba97534c57e8c1bae23e1829e3fbb30d9f6d3",
+    "repaired_sha256": "b25e77e5e0b797af70840b74003825e0e4f43bf9fdf1611469d6efc446357e8c"
+  },
+  {
+    "path": "src/pose_control/qwen21_full/prompt_study/source_assets.py",
+    "original_sha256": null,
+    "repaired_sha256": "60c6c72c61d3f7086732e8c5d4fbfbdfb28266795fa817fb2612b8e11322e71e"
+  },
+  {
+    "path": "tests/test_qwen21_joint_pilot_visuals.py",
+    "original_sha256": "65d3ef2aeff0fc0ba2348acfd13316de9af3a97d68c0a26776446cff9c477938",
+    "repaired_sha256": "ad25cd71ca6aca62c384f30993bf8ef490610fa56502b502188afae6f45005fe"
+  },
+  {
+    "path": "tests/test_qwen21_prompt_study_background.py",
+    "original_sha256": null,
+    "repaired_sha256": "8a041ad897e8fae2cd348a51c31c4e3d9c06aa2859a943b0369fbfc8f56a9e38"
+  },
+  {
+    "path": "tests/test_qwen21_prompt_study_cache.py",
+    "original_sha256": "8a8a303b09dc17c7bd000218046d8a4bdf5bb0a64c6f958afa02839529547eb2",
+    "repaired_sha256": "12586d4f27d15d59455ab42490cde4e3ac8962e6560294a865f844369d44c5cc"
+  },
+  {
+    "path": "tests/test_qwen21_prompt_study_committed_state.py",
+    "original_sha256": null,
+    "repaired_sha256": "95c3d0dcd3b289a9d7176cd4166042dda3ba5d39afa57a05284d4b468315f0a6"
+  },
+  {
+    "path": "tests/test_qwen21_prompt_study_eval.py",
+    "original_sha256": "89e2e912d2fb953433d384fa9b4ef012f7b4e2be3f646c82d2f507f15773570e",
+    "repaired_sha256": "37eea16831ed7f9574f08483a2321719d0c29de0f0181ae2c9908be13b0b5b18"
+  },
+  {
+    "path": "tests/test_qwen21_prompt_study_export.py",
+    "original_sha256": "2b77eb2d0beb15c1714c6d4468968846c7bf92a75511527e0337b2437564e8ff",
+    "repaired_sha256": "2b77eb2d0beb15c1714c6d4468968846c7bf92a75511527e0337b2437564e8ff"
+  },
+  {
+    "path": "tests/test_qwen21_prompt_study_faces.py",
+    "original_sha256": "cb091d75a831f4aec9eef38956c5ac94284b4cb9033e714d94f8c8f95901fc01",
+    "repaired_sha256": "81051cc21212b06e501313ed29ed72b8f24b3f8e2386c0d70b7f0a08ebd7b8c5"
+  },
+  {
+    "path": "tests/test_qwen21_prompt_study_geometry.py",
+    "original_sha256": "ebe968694e6e962546867603e925e09ce2e9cea0cd1e1806922d21fa04bac661",
+    "repaired_sha256": "ebe968694e6e962546867603e925e09ce2e9cea0cd1e1806922d21fa04bac661"
+  },
+  {
+    "path": "tests/test_qwen21_prompt_study_integrity.py",
+    "original_sha256": null,
+    "repaired_sha256": "ca05e6c9d6b7fde5f9413483bd273045f1b5ad210f5d9b7830c37aef61ea9147"
+  },
+  {
+    "path": "tests/test_qwen21_prompt_study_lock_immutability.py",
+    "original_sha256": null,
+    "repaired_sha256": "ab2c599c2d035cf5f17d4fa3551f6150a1b77c85fa03afefe90b01f96bd96dfc"
+  },
+  {
+    "path": "tests/test_qwen21_prompt_study_measurement.py",
+    "original_sha256": null,
+    "repaired_sha256": "6ef029e9b4cef51f2e0d067826097e34b922e271310d0ec5292d18a157de18fc"
+  },
+  {
+    "path": "tests/test_qwen21_prompt_study_pairs.py",
+    "original_sha256": "c4cd3f19edaad652024ceada71628028c7ba4a1884758713fb4e404fac512cec",
+    "repaired_sha256": "689c556b0b7bb398cb716ab487bb79c75f85dd0d73285ce3e9cec2960ae8d5ef"
+  },
+  {
+    "path": "tests/test_qwen21_prompt_study_prompts.py",
+    "original_sha256": "a5301303821c725ac50a7e4b50edd97913454c7ef0d71ecfc8fb8c49fe9cc434",
+    "repaired_sha256": "5971cbdfe7dfd4504263fe29295bd745f37af1b2bd28e5ff40b730fd3794b1ef"
+  },
+  {
+    "path": "tests/test_qwen21_prompt_study_protocol.py",
+    "original_sha256": "ee698a8f194b923179ff1246c1a6fa3f5feddef8ebb7b35af259abf3fb1d3ca6",
+    "repaired_sha256": "9e72866cbecfb837b06f44866e23b4dd7189bc42c0685247c7a473a284b1f7c3"
+  },
+  {
+    "path": "tests/test_qwen21_prompt_study_report.py",
+    "original_sha256": "7995f245bd5fef10ff12cf1a3b31e281874d492a4b0bd6cb0b0095fc5801cfdc",
+    "repaired_sha256": "4d0149fdaaa914a19cef9dd6c6863db9eea4a6f7c26d4e1ab86e69b1d7e9cbf5"
+  },
+  {
+    "path": "tests/test_qwen21_prompt_study_resume_probe.py",
+    "original_sha256": null,
+    "repaired_sha256": "8edc528c4f4e09d6af9a201c21535a74adf876eeac2fd5d58f7928da410f3361"
+  },
+  {
+    "path": "tests/test_qwen21_prompt_study_runner.py",
+    "original_sha256": "4e8d72ecdb9081c823d28b3940e87968ae1d131dda09f30be25487781cdf9047",
+    "repaired_sha256": "1dbcf88329ea1612f450c9013e27ca74af99fbf2215f64163a56b72866ef5fe6"
+  },
+  {
+    "path": "tests/test_qwen21_prompt_study_selfcheck.py",
+    "original_sha256": "950be7d2dfcdc6cfb5b81b1b79fa8b614f840e04bcd710d5020110a28f29f0a9",
+    "repaired_sha256": "950be7d2dfcdc6cfb5b81b1b79fa8b614f840e04bcd710d5020110a28f29f0a9"
+  },
+  {
+    "path": "tests/test_qwen21_prompt_study_source_assets.py",
+    "original_sha256": null,
+    "repaired_sha256": "421eff890e7b2dcc6f784a388ca6d4ee65b7162c8c80c6b791e622354c2399a0"
+  },
+  {
+    "path": "tests/test_qwen21_prompt_study_training.py",
+    "original_sha256": "2b34fe4cd11e070048467a45caa748f50751311913b217fce54f2b99beaa5dfb",
+    "repaired_sha256": "52451ba50872430b0a46d651dd4ab6abc6ae3626ebe019a415cf8bee02c774a4"
+  }
+]

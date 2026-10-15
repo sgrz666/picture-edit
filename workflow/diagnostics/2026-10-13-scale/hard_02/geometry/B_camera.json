@@ -1,0 +1,82 @@
+{
+  "focal_xy": [
+    28216.5234375,
+    28216.5234375
+  ],
+  "principal_xy": [
+    448.8798828125,
+    633.8765869140625
+  ],
+  "B_size": [
+    855,
+    1280
+  ],
+  "generation_canvas": [
+    640,
+    928
+  ],
+  "B_to_generation": {
+    "scale": 0.6900232044179867,
+    "offset_xy": [
+      -55.38901902560866,
+      73.43189983644601
+    ]
+  },
+  "source_letterbox": {
+    "original_size": [
+      853,
+      1280
+    ],
+    "canvas_size": [
+      640,
+      928
+    ],
+    "resized_size": [
+      618,
+      928
+    ],
+    "scale_xy": [
+      0.7245017584994138,
+      0.725
+    ],
+    "offset_xy": [
+      11,
+      0
+    ],
+    "content_box": [
+      11,
+      0,
+      629,
+      928
+    ]
+  },
+  "coordinate_system": "camera XYZ; pixels x-right y-down; projection uses Z+1e-4",
+  "detections": {
+    "A": {
+      "bbox_xyxy": [
+        8.55987548828125,
+        131.65966796875,
+        664.6755981445312,
+        1278.580078125
+      ],
+      "score": 0.9305002093315125
+    },
+    "B": {
+      "bbox_xyxy": [
+        260.0294189453125,
+        31.9139404296875,
+        639.271240234375,
+        1236.970947265625
+      ],
+      "score": 0.9537181258201599
+    }
+  },
+  "mesh_max_error_m": 3.814697265625e-06,
+  "projection_max_error_px": 0.0003001662032602326,
+  "valid_B_joints": 134,
+  "visibility_policy": "finite positive depth and in-frame only; not an occlusion confidence",
+  "estimated_hidden_joints": true,
+  "native_estimator_input": "/home/shangguanrz/project/pic-edit/workflow/runs/hard_02/geometry/estimator/workflow_1e91e951513647af/demo/input_frames/workflow_1e91e951513647af/000001.jpg",
+  "native_estimator_params": "/home/shangguanrz/project/pic-edit/workflow/runs/hard_02/geometry/estimator/workflow_1e91e951513647af/demo/output_frames/workflow_1e91e951513647af/workflow_1e91e951513647af_params.pt",
+  "estimator_root": "/home/shangguanrz/project/pic-edit/workflow/runs/hard_02/geometry/estimator/workflow_1e91e951513647af"
+}

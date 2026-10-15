@@ -1,0 +1,37 @@
+{
+  "schemaVersion": "mimosa-finding-ledger-batch/v1",
+  "batchId": "stop-20261003T155949320Z-10792-0443310ef67e",
+  "runId": "20261003T155949320Z-10792-0443310ef67e",
+  "runStatus": "completed",
+  "coverage": {
+    "status": "complete",
+    "reasons": [
+      {
+        "code": "baseline_partial",
+        "stage": "baseline",
+        "target": ".",
+        "detail": "baseline capture had enumeration or snapshot errors",
+        "affectsCompletion": false
+      }
+    ]
+  },
+  "source": {
+    "component": "zcode-hook",
+    "operationId": "Stop"
+  },
+  "revision": "8e01dbc9f793590ef46754e7abcbb2592a8a856a",
+  "diffHash": "1f8cfd9712d417fdebb316713b8e36311af49961249c0e187449ce4441b2d25c",
+  "rulesVersion": "unavailable",
+  "sessionHash": "0775a1e3a0d03e432add76222f0d73ef49cc624170ec3313f7f8357d52e8a1e7",
+  "reportRef": ".mimosa/reports/task-review-sess_8fe3f2d5-a9be-44a6-b43a-a24efe1bcd45-20261003T155949320Z-10792-0443310ef67e.json",
+  "events": [],
+  "observedFindingIds": [],
+  "verifiedFiles": [
+    {
+      "file": "draw_adapter_arch.py",
+      "direct": "complete",
+      "projectContext": "partial"
+    }
+  ],
+  "recordedAt": "2026-10-03T15:59:50.012Z"
+}

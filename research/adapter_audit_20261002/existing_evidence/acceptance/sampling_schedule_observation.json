@@ -1,0 +1,65 @@
+{
+  "training_progress": "1-sigma",
+  "inference_progress": "step/(num_steps-1), as approved",
+  "face_training_sigma_ranges": {
+    "regular": [
+      0,
+      0.65
+    ],
+    "auxiliary": [
+      0,
+      0.35
+    ]
+  },
+  "inference_face_active_above_training_sigma": [
+    {
+      "index": 11,
+      "sigma": [
+        0.734375
+      ],
+      "progress": 0.3793103448275862,
+      "face_schedule_multiplier": 0.00390625,
+      "residual_rms": [
+        0.08799069374799728,
+        0.15353719890117645,
+        0.1631907820701599,
+        0.10219685733318329,
+        0.057425059378147125,
+        0.06042484566569328
+      ]
+    },
+    {
+      "index": 12,
+      "sigma": [
+        0.70703125
+      ],
+      "progress": 0.41379310344827586,
+      "face_schedule_multiplier": 0.0234375,
+      "residual_rms": [
+        0.08784698694944382,
+        0.1532900184392929,
+        0.1629570573568344,
+        0.10205899178981781,
+        0.05750386416912079,
+        0.060928359627723694
+      ]
+    },
+    {
+      "index": 13,
+      "sigma": [
+        0.6796875
+      ],
+      "progress": 0.4482758620689655,
+      "face_schedule_multiplier": 0.056640625,
+      "residual_rms": [
+        0.08771578967571259,
+        0.1530497521162033,
+        0.16272425651550293,
+        0.10196049511432648,
+        0.05786857753992081,
+        0.062157828360795975
+      ]
+    }
+  ],
+  "interpretation": "Observed schedule coverage mismatch. This is a candidate for diagnosis, not proof of the cause of face artifacts. No settings changed."
+}

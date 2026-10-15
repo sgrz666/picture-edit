@@ -1,0 +1,59 @@
+{
+  "scope": "CPU reevaluation of existing 768 PNGs; no generation or training",
+  "normalization": "DWPose detections scaled by actual width and height to the legacy comparator 512 coordinate system; target coordinates from matching v6_conditions.pt",
+  "summary": {
+    "bfs_head_768": {
+      "pck_mean": 0.9705882352941176,
+      "n": 6
+    },
+    "nolora_768": {
+      "pck_mean": 0.9901960784313726,
+      "n": 6
+    }
+  },
+  "per_pair": [
+    {
+      "stem": "000_001_2_source_motion_f001258_target_f000173",
+      "bfs_head_768_pck_002": 1.0,
+      "nolora_768_pck_002": 1.0,
+      "pose_detected_both": true,
+      "pose_matched_joints_both": 17
+    },
+    {
+      "stem": "001_001_2_source_standard_f000681_target_f001344",
+      "bfs_head_768_pck_002": 1.0,
+      "nolora_768_pck_002": 0.9411764705882353,
+      "pose_detected_both": true,
+      "pose_matched_joints_both": 17
+    },
+    {
+      "stem": "002_001_2_source_standard_f000889_target_f000155",
+      "bfs_head_768_pck_002": 1.0,
+      "nolora_768_pck_002": 1.0,
+      "pose_detected_both": true,
+      "pose_matched_joints_both": 17
+    },
+    {
+      "stem": "003_001_2_source_motion_f001325_target_f001479",
+      "bfs_head_768_pck_002": 0.9411764705882353,
+      "nolora_768_pck_002": 1.0,
+      "pose_detected_both": true,
+      "pose_matched_joints_both": 17
+    },
+    {
+      "stem": "004_001_2_source_motion_f001325_target_f000081",
+      "bfs_head_768_pck_002": 0.8823529411764706,
+      "nolora_768_pck_002": 1.0,
+      "pose_detected_both": true,
+      "pose_matched_joints_both": 17
+    },
+    {
+      "stem": "005_001_5_source_motion_f000815_target_f000135",
+      "bfs_head_768_pck_002": 1.0,
+      "nolora_768_pck_002": 1.0,
+      "pose_detected_both": true,
+      "pose_matched_joints_both": 17
+    }
+  ],
+  "note": "Captured from the successful CPU scoring tool output; original probe768_nolora.json retained unchanged."
+}

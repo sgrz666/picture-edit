@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>远端 sg 项目架构审查报告（可视化版）· 2026-09-21</title>
+<style>
+  :root{
+    --bg:#ffffff; --panel:#f7f8fa; --line:#e3e5e9; --line2:#c9ccd3;
+    --tx:#1a1c20; --tx2:#5a5f6a; --tx3:#8b909b;
+    --blue:#185FA5; --blue-l:#E6F1FB; --teal:#0F6E56; --teal-l:#E1F5EE;
+    --amber:#854F0B; --amber-l:#FAEEDA; --red:#A32D2D; --red-l:#FCEBEB;
+    --purple:#534AB7; --purple-l:#EEEDFE; --green:#3B6D11; --green-l:#EAF3DE;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; padding:0 0 72px; background:var(--bg); color:var(--tx);
+    font-family:-apple-system,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+    font-size:14px; line-height:1.7;
+  }
+  .wrap{max-width:920px;margin:0 auto;padding:0 28px}
+  header{border-bottom:1px solid var(--line);padding:36px 0 22px;margin-bottom:30px}
+  h1{font-size:24px;font-weight:600;margin:0 0 10px;letter-spacing:-.2px}
+  .meta{font-size:12.5px;color:var(--tx3);line-height:1.9}
+  .meta code{background:var(--panel);padding:1px 5px;border-radius:4px;font-size:12px}
+  h2{font-size:18px;font-weight:600;margin:44px 0 14px;padding-top:18px;border-top:1px solid var(--line)}
+  h2 .n{color:var(--tx3);font-weight:500;margin-right:8px}
+  h3{font-size:14.5px;font-weight:600;margin:26px 0 10px;color:var(--tx)}
+  p{margin:10px 0}
+  ul,ol{margin:10px 0;padding-left:22px}
+  li{margin:5px 0}
+  code{font-family:ui-monospace,"Cascadia Mono",Consolas,monospace;font-size:12.5px;
+       background:var(--panel);padding:1px 5px;border-radius:4px;color:#2b2f36}
+  table{border-collapse:collapse;width:100%;margin:14px 0;font-size:13px}
+  th,td{border:1px solid var(--line);padding:8px 11px;text-align:left;vertical-align:top}
+  th{background:var(--panel);font-weight:600;font-size:12.5px;color:var(--tx2)}
+  td.num{text-align:right;font-variant-numeric:tabular-nums}
+  .kpi{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:18px 0}
+  .kpi div{background:var(--panel);border-radius:10px;padding:12px 14px}
+  .kpi .l{font-size:12px;color:var(--tx2);display:block;margin-bottom:4px}
+  .kpi .v{font-size:20px;font-weight:600;letter-spacing:-.3px}
+  .card{background:var(--panel);border-radius:10px;padding:16px 18px;margin:16px 0;border:1px solid var(--line)}
+  .card h4{margin:0 0 8px;font-size:13.5px;font-weight:600}
+  .tag{display:inline-block;font-size:11.5px;padding:1px 8px;border-radius:20px;font-weight:500;line-height:1.7}
+  .pass{background:var(--green-l);color:var(--green)}
+  .fail{background:var(--red-l);color:var(--red)}
+  .warn{background:var(--amber-l);color:var(--amber)}
+  .info{background:var(--blue-l);color:var(--blue)}
+  .mermaid{background:#fff;border:1px solid var(--line);border-radius:10px;padding:18px 10px;margin:16px 0;text-align:center;overflow-x:auto}
+  .cap{font-size:12px;color:var(--tx3);text-align:center;margin:-6px 0 22px}
+  .callout{border-left:3px solid var(--blue);background:var(--blue-l);padding:12px 16px;border-radius:0 8px 8px 0;margin:16px 0;font-size:13.5px}
+  .callout.w{border-left-color:var(--amber);background:var(--amber-l)}
+  .callout.d{border-left-color:var(--red);background:var(--red-l)}
+  details{margin:12px 0;font-size:12.5px}
+  summary{cursor:pointer;color:var(--tx2);font-size:12.5px;padding:4px 0}
+  details pre{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:12px;overflow-x:auto;font-size:12px;line-height:1.55}
+  footer{margin-top:52px;padding-top:18px;border-top:1px solid var(--line);font-size:12px;color:var(--tx3)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <h1>远端 sg 项目架构审查报告（可视化版）</h1>
+  <div class="meta">
+    审查日期：2026-09-21 &nbsp;·&nbsp; 方式：SSH 只读巡检（未做任何写操作）<br>
+    远程节点：<code>node01</code>（RTX 6000D 85.6 GB，conda <code>deepgen</code>，Python 3.12）<br>
+    远程路径：<code>/home/shangguanrz/project/pic-edit</code> &nbsp;·&nbsp; 本地镜像：<code>D:\codeplus\pictureedit</code><br>
+    Git HEAD：<code>35a8a19</code>（<em>fix(v6): make checkpoint loads fully transactional</em>，2026-09-20 15:29）
+  </div>
+</header>
+
+<h2><span class="n">01</span>审查结论速览</h2>
+
+<div class="kpi">
+  <div><span class="l">适配器总参数</span><span class="v">227.98 M</span></div>
+  <div><span class="l">可训练参数</span><span class="v">169.89 M</span></div>
+  <div><span class="l">主干 DiT 存储参数</span><span class="v">≈2.47 B</span></div>
+  <div><span class="l">训练峰值显存</span><span class="v">16.50 GiB</span></div>
+</div>
+
+<table>
+  <tr><th style="width:23%">维度</th><th>实测现状</th><th style="width:15%">判定</th></tr>
+  <tr><td>项目阶段</td><td>V6.3 单人姿态控制已完成 <strong>20,000 步全量训练</strong>；V6.4 手/脸细节分支已落地并完成首轮过拟合验证</td><td><span class="tag pass">单人有条件可用</span></td></tr>
+  <tr><td>最强证据</td><td>dev_val 50 对：Adapter <strong>ON vs OFF = PSNR 24.00 / 16.93 dB（+7.07 dB）、MAE 6.15 / 14.36（−57%）</strong></td><td><span class="tag pass">控制分支确实生效</span></td></tr>
+  <tr><td>最大不确定性</td><td>流匹配验证损失 ON/OFF 仅差 7.2%（计划门槛 ≥30%），<strong>该判据区分度不足</strong></td><td><span class="tag warn">需更换判据</span></td></tr>
+  <tr><td>最新未过关项</td><td>V6.4 细节分支 10 项验收 <strong>6 通过 / 4 未通过</strong>；手部 PCK@0.1 仅 0.143（门槛 0.70）</td><td><span class="tag fail">手部几何未达标</span></td></tr>
+  <tr><td>双人交互</td><td>Hi4D 双人数据已构建至 v4.2（2,740 对，QC 缺失 0），但<strong>仅 1 步冒烟，未真正训练</strong></td><td><span class="tag warn">未启动</span></td></tr>
+  <tr><td>运行环境</td><td>GPU 空闲（2.3 / 85.6 GB，利用率 0%）；根分区已用 <strong>96%，剩 81 GB</strong>（较 9-20 的 46 GB 回升）</td><td><span class="tag info">可启动</span></td></tr>
+  <tr><td>共租户</td><td>同机用户 <code>lileiteng</code> 排队条件为「GPU0 空闲 ≥50 GB」，<strong>当前条件已满足，可能随时占用约 50 GB</strong></td><td><span class="tag warn">需避让</span></td></tr>
+</table>
+
+<h2><span class="n">02</span>任务书要点（硬性约束）</h2>
+
+<p>项目任务书《人物图像姿态编辑任务书_v3》定义的研究领域是<strong>基于三维人体表示的人物图像姿态编辑算法</strong>，须在保持身份、服饰、场景一致性的前提下实现<strong>身高体型解耦</strong>与参考姿态编辑。三个研究目标逐层递进：</p>
+
+<table>
+  <tr><th style="width:14%">目标</th><th>内容</th></tr>
+  <tr><td>目标一</td><td>确定参考姿态图像编辑的<strong>控制信号表示方案</strong>——研究参数化模型、法向图、接触图等多种信号的有效性</td></tr>
+  <tr><td>目标二</td><td>完成单人与双人交互<strong>姿态重定向</strong>，实现身高体型解耦，支持拥抱、搂肩等接触动作，并能<strong>精确到手指结构</strong></td></tr>
+  <tr><td>目标三</td><td>完成单/双人交互<strong>姿态图像编辑</strong>，探索显式与隐式控制信号注入生成模型的方案</td></tr>
+</table>
+
+<h3>验收标准（第二阶段的量化硬指标）</h3>
+<table>
+  <tr><th>指标项</th><th style="width:16%">门槛</th><th>本项目当前状态</th></tr>
+  <tr><td>身高体型相对估计准确率</td><td>≥ 80%</td><td>未单独量化；身高体型解耦机制已在适配器中实现（26 维 SMPL-X Global + 103 维 detail）</td></tr>
+  <tr><td>双人交互姿态生成主观合理比例</td><td>≥ 90%</td><td><strong>双人分支尚未训练</strong>，无数据</td></tr>
+  <tr><td>图像编辑主观质量优胜率 vs Qwen-Edit 基线</td><td>+5% 以上</td><td><strong>仅有一张定性对比图，无任何定量对比</strong></td></tr>
+  <tr><td>手部局部细节主观优胜率 vs Qwen-Edit</td><td>+5% 以上</td><td>手部 PCK@0.1 = 0.143，是当前最明确的技术缺口</td></tr>
+  <tr><td>生成主干参数量</td><td>≤ 6B</td><td><span class="tag pass">达标</span> DeepGen DiT ≈2.47B</td></tr>
+</table>
+
+<div class="callout">
+  <strong>选型逻辑：</strong>主干选用 <strong>DeepGen-1.0-diffusers</strong> 的 SD3 MMDiT（≈2.47B 存储参数），满足 &lt;6B 约束；<strong>Qwen-Image-Edit-2511（20B）</strong>已完成显存可行性分析，定位为<strong>质量上界与教师模型</strong>，而非直接交付主干。
+</div>
+
+<h2><span class="n">03</span>端到端系统架构</h2>
+
+<p>整个系统是一条「<strong>3D 几何解析 → 多模态控制图 → 冻结主干 + 外挂适配器</strong>」的流水线。关键设计哲学是：<strong>主干完全冻结，只训练一个轻量适配器，用零初始化残差保证「不砸基线」</strong>。</p>
+
+<div class="mermaid">
+flowchart TD
+    A["源图 A<br/>身份 · 服饰 · 场景"] --> CB
+    B["目标动作 B<br/>图像 / 视频"] --> S1
+    subgraph GEO["阶段 ①② 三维几何解析（离线预处理）"]
+      direction LR
+      S1["SMPL-X 参数解析<br/>pose 72维 + shape 10维 + 相机 scale,tx,ty"] --> S2["几何控制图渲染 512×512<br/>骨架 25ch · 部件 14ch · 法线 3ch · 深度"]
+    end
+    S2 --> CB["阶段 ③ ConditionBundle<br/>适配器的统一输入契约"]
+    A --> CB
+    CB --> STATIC["适配器静态层（每图仅一次并缓存）<br/>Injector → Reasoner → Bridge → 身份 tokens"]
+    STATIC --> DYN["动态控制核（每个去噪步执行）<br/>6 stage · rank 64 · 零初始化残差头"]
+    DYN --> INJ["零初始化残差 × 6 组"]
+    TXT["文本提示"] --> VLM["Qwen2.5-VL 14B + Connector<br/>全冻结"]
+    INJ --> DIT["DeepGen MMDiT 24 层 ≈2.47B<br/>全冻结 · BF16 前向"]
+    VLM --> DIT
+    DIT --> VAE["SD-VAE 解码（8× 上采样）"]
+    VAE --> OUT["输出图<br/>目标姿态 + 源身份 / 服饰 / 场景"]
+</div>
+<div class="cap">图 1 · 端到端流水线：三维几何条件如何一路注入到冻结主干并生成编辑图</div>
+
+<h3>关键设计决策（通俗解释）</h3>
+<table>
+  <tr><th style="width:26%">设计</th><th>大白话解释</th></tr>
+  <tr><td><strong>零初始化残差 = 安全阀</strong></td><td>适配器的 12 个残差头全部从零卷积起步。训练前把适配器打开或关闭，输出差异在 <code>1e-6</code> 以内——即「先严格保证不破坏原生 DeepGen 的能力，再逐步学加分项」。</td></tr>
+  <tr><td><strong>静态 / 动态分离 = 省算力</strong></td><td>SMPL-X 条件推理（图 + 参数 → 控制特征）每张图只做一次并缓存；50 步去噪循环里只跑轻量的动态控制核，主干的 14B 视觉语言模型不必反复调用。</td></tr>
+  <tr><td><strong>几何 / 交互双分支隔离</strong></td><td>iPER 只有单人数据，没有双人接触监督。方案 A 把交互分支<strong>完全冻结</strong>、只在双人样本行上路由，避免无监督信号把已有的交互先验带偏。</td></tr>
+  <tr><td><strong>推理不改主干代码</strong></td><td><code>ControlledDeepGenPipeline</code> 以「包装器 + 临时前向钩子」方式注入控制，DeepGen 上游官方仓库保持原样，杜绝不可逆的侵入式改动。</td></tr>
+</table>
+
+<h2><span class="n">04</span>适配器 V6.3 的四层结构（+V6.4 一旁路）</h2>
+
+<p>适配器核心代码约 <strong>5,002 行</strong>，共分四层加一条细节旁路。分层的目的很清晰：<strong>把「每图一次」的重活与「每步一次」的轻活切开</strong>。</p>
+
+<div class="mermaid">
+flowchart LR
+    IN["SMPL-X 图 / 参数"] --> L1
+    subgraph L1["① 静态条件层 · 305 行"]
+      A1["spatial / global / task encoder"] --> A2["ContactRasterEncoder"]
+    end
+    L1 --> L2
+    subgraph L2["② 推理层 · 737 行 · hidden 512 / 8 头"]
+      B1["单人几何"] --> B2["跨人注意力 ×2"] --> B3["接触注意力 ×1"] --> B4["DualFeatureFusion"]
+    end
+    L2 --> L3
+    subgraph L3["③ 桥接与身份绑定 · ~960 行"]
+      C1["Geometry 桥 16+128 ch"]
+      C2["Interaction 桥 零前缀"]
+      C3["PersonTokenBinder<br/>geo4 + app8 + rel2 + contact8 + task1"]
+    end
+    L3 --> L4
+    subgraph L4["④ 动态控制核 · 502 行 · 每去噪步"]
+      D1["geometry 分支 · 全行执行"]
+      D2["interaction 分支 · 仅双人 gather-scatter"]
+      D3["detail 分支 · V6.4 新增"]
+      D4["共享 shared_block<br/>由 DeepGen block 0 初始化"]
+    end
+    L4 --> L5["⑤ 注入接口<br/>6 组零初始化残差"]
+</div>
+<div class="cap">图 2 · 适配器分层：静态层每图一次，动态层每去噪步一次，共享一个从主干初始化的全宽 Transformer 块</div>
+
+<table>
+  <tr><th style="width:30%">模块</th><th style="width:10%">行数</th><th>职责</th></tr>
+  <tr><td>condition_injector</td><td class="num">305</td><td>SMPL-X 图/参数 → <code>ConditionBundle</code>（止步于跨人推理之前）</td></tr>
+  <tr><td>conditions / geometry_encoder / token_encoders</td><td class="num">763</td><td>条件容器、几何编码、身份 token 编码（geo 4/人 + app 8/人 + rel 2 + contact 8 + task 1）</td></tr>
+  <tr><td>reasoning/（7 文件）</td><td class="num">737</td><td>单人几何、跨人注意力 ×2、接触注意力 ×1、融合、状态管理（hidden 512，8 头）</td></tr>
+  <tr><td>condition_bridge</td><td class="num">~56</td><td>几何/交互双通道下采样桥（geometry 拼源场景 latent；interaction 零前缀防重复计费）</td></tr>
+  <tr><td>control_core</td><td class="num">502</td><td>动态双分支控制核（stages 6 / rank 64 / 零初始化头 12 / 共享全宽 block 1）</td></tr>
+  <tr><td>interface/（4 文件）</td><td class="num">328+187+126</td><td>动态 DeepGen 接口、强度控制、输出契约</td></tr>
+  <tr><td>controlled_pipeline</td><td class="num">202</td><td>推理包装器（线程安全、诊断记录）</td></tr>
+  <tr><td>deepgen_adapter / experts</td><td class="num">475+28</td><td>统一适配器入口、1–2 人专家路由</td></tr>
+  <tr><td><strong>detail/（V6.4）</strong></td><td class="num"><strong>915</strong></td><td>手/脸细节：preparer、区域编码、binder（region/side embedding）、DWPose 评测、指标</td></tr>
+</table>
+
+<h3>参数拓扑与分层学习率</h3>
+
+<p><code>UnifiedSMPLXAdapterV6</code> 总参数 <strong>227.98 M</strong>，方案 A 下划分为 <strong>169.89 M 可训练 / 58.09 M 严格冻结</strong>，并按四组给予差异化学习率：</p>
+
+<div class="mermaid">
+flowchart TD
+    G1["Group 1 · Zero Heads 与门控<br/>14.165 M · lr 1e-4 · wd 0"] --> OPT["AdamW 分层优化器"]
+    G2["Group 2 · 条件编码与推理<br/>31.84 M · lr 5e-5 · wd 1e-2"] --> OPT
+    G3["Group 3 · 桥接与身份绑定<br/>5.63 M · lr 5e-5 · wd 1e-2"] --> OPT
+    G4["Group 4 · 共享控制核心<br/>118.26 M · lr 1e-5 · wd 1e-2"] --> OPT
+    OPT --> LOSS["掩码加权 Flow-Matching 损失<br/>w_human = 3.0"]
+</div>
+<div class="cap">图 3 · 分层学习率体系：输出端（零头）学得快，核心块学得慢，防止破坏从主干继承的先验</div>
+
+<div class="callout">
+  <strong>冻结清单（梯度严格为 None）：</strong>相对几何编码器、接触栅格/关系编码器、跨人推理器、接触推理器、双人融合层、桥接的交互投影与下采样、<code>control_core.interaction_branch</code> 全模块、交互分支的 log 门控。
+</div>
+
+<h2><span class="n">05</span>残差注入机制与 token 布局</h2>
+
+<p>这是本项目<strong>最容易踩坑、也是工程上最关键</strong>的一环。DeepGen 的 latent 序列在接入参考图后会变长，残差的形状必须严格对齐。</p>
+
+<div class="mermaid">
+flowchart LR
+    TL["目标图 latent<br/>32×32 = 1024 tokens"] --> R1["残差 R<br/>仅目标段非零"]
+    SL["参考图 A latent<br/>1024 tokens"] --> Z1["残差恒为 0"]
+    PD["padding tokens"] --> Z2["残差恒为 0"]
+    R1 --> CAT["拼接为<br/>target | source | padding"]
+    Z1 --> CAT
+    Z2 --> CAT
+    CAT --> BLK["MMDiT block 0–22 按 6 组注入<br/>0-3 · 4-7 · 8-11 · 12-15 · 16-19 · 20-22"]
+    BLK --> B23["block 23 为 context_pre_only<br/>不接收残差"]
+</div>
+<div class="cap">图 4 · token 布局与注入映射：参考图与 padding 段残差恒为零，只控制目标 token</div>
+
+<table>
+  <tr><th style="width:22%">机制</th><th>说明</th></tr>
+  <tr><td>分组映射</td><td>DeepGen 共 24 层、6 个原生残差组。间隔逻辑自动映射为 <code>0-3 / 4-7 / 8-11 / 12-15 / 16-19 / 20-22</code>；第 24 层（index 23）是 <code>context_pre_only</code>，不接残差。</td></tr>
+  <tr><td>强度公式</td><td><code>delta_l = geo_strength · exp(g_geo_l) · w_geo(t) · R_geo_l + inter_strength · exp(g_int_l) · w_int(t) · R_int_l</code>；默认 Geometry 1.0 / Interaction 0.8，6 个正组门控初始化为 1。</td></tr>
+  <tr><td>token 数自适应</td><td>token 的高宽由当前 latent 与主干 patch size 推导，<strong>不硬编码 32×32</strong>，因此 512 / 768 / 1024 分辨率通用。</td></tr>
+  <tr><td>单双人混合批</td><td>按 token-mask 模式压缩批内样本，无效 padding token 永不进入联合注意力；交互分支只对双人行做 gather-scatter，单人行的输出<strong>精确为零</strong>。</td></tr>
+</table>
+
+<h2><span class="n">06</span>V6.4 细节分支：正面强攻 VAE 亚像素瓶颈</h2>
+
+<div class="callout w">
+  <strong>瓶颈本质：</strong>SD-VAE 的 8× 下采样意味着 512×512 图像在 latent 空间只有 64×64。手指在整幅图中本就只占几十像素，下采样后<strong>在 latent 里不足一个像素</strong>——主干在结构上「看不清」手指。这是细节质量的硬约束，靠调权重无法根治。
+</div>
+
+<p>V6.4 的解法是<strong>绕开 VAE，从像素域直接喂特征</strong>：用 DWPose 关键点（68 点人脸 + 2×21 手部）加上每人每部位 1–3 张 224×224 局部外观参考图，构成一条独立的 detail 旁路。</p>
+
+<div class="mermaid">
+flowchart TD
+    IMG["高分辨率输入图"] --> DW["DWPose 关键点<br/>68 点人脸 + 2×21 手部"]
+    REF["局部外观参考图<br/>每人每部位 1–3 张 224×224"] --> PREP
+    DW --> PREP["FaceHandDetailPreparer"]
+    PREP --> ENC["DetailRegion 区域编码<br/>FACE / LEFT_HAND / RIGHT_HAND<br/>左手镜像 canonicalize"]
+    ENC --> BIND["binder 绑定<br/>人源 + 区域 + 左右手"]
+    BIND --> DCORE["detail 分支<br/>并入共享控制核输出"]
+    DCORE --> INJ["detail 残差（可独立开关）"]
+    INJ --> OUT["绕过 VAE 8× 亚像素瓶颈"]
+</div>
+<div class="cap">图 5 · V6.4 细节旁路：从像素域关键点直接供特征，与主干三个分支共用同一个 shared_block</div>
+
+<p>V6.4 的结构性验证非常干净：<strong>非细节参数的 SHA-256 训练前后一致</strong>（<code>1571e4ec…</code>），且关闭细节分支后 step1500 与 step0 的输出 PSNR 达 <strong>51.64 dB</strong>——即细节分支对 V6.3 已有行为<strong>零污染</strong>。</p>
+
+<h2><span class="n">07</span>训练体系与实测指标</h2>
+
+<h3>损失设计：掩码加权 Flow-Matching</h3>
+
+<p>DeepGen 采用整流流（Rectified Flow）建模。由于姿态编辑中背景只需保持静止，过高的背景梯度会稀释人体结构的学习，因此在 latent 空间引入人体掩码自适应权重：</p>
+
+<table>
+  <tr><th style="width:30%">公式</th><th>含义</th></tr>
+  <tr><td><code>z_t = (1−σ)·z_0 + σ·ε, σ = t/1000</code></td><td>加噪过程；<code>z_0 = VAE(x_target) ∈ R^(B×16×64×64)</code></td></tr>
+  <tr><td><code>v_target = ε − z_0</code></td><td>目标速度向量</td></tr>
+  <tr><td><code>W = 1.0 + (w_human − 1.0) · M_lat</code></td><td>人体区域加权矩阵，<code>w_human = 3.0</code>；人体区梯度权重 3×，背景 1×</td></tr>
+  <tr><td><code>L = Σ(W ⊙ (v_pred − v_target)²) / Σ W</code></td><td>归一化加权损失，保证数值尺度稳定</td></tr>
+</table>
+
+<h3>V6.3 全量训练与评测（iper_v6_native_20k_v1）</h3>
+
+<table>
+  <tr><th style="width:30%">项</th><th>实测值</th></tr>
+  <tr><td>训练规模</td><td>20,000 optimizer steps · 耗时 <strong>19.29 h</strong> · micro-batch = 1 · 梯度累积 4</td></tr>
+  <tr><td>峰值显存</td><td><strong>16.50 GiB 已分配 / 16.91 GiB 已预留</strong>（85.6 GB 卡的约 20%）</td></tr>
+  <tr><td>条件缓存 + 梯度检查点</td><td>把 1024 分辨率训练峰值从 37.34 GiB 压到 18.01 GiB</td></tr>
+  <tr><td>保留检查点</td><td><code>adapter_step_12000.pt</code> / <code>checkpoint_best.pt</code> / <code>checkpoint_last.pt</code>（各约 1.59 GB）</td></tr>
+</table>
+
+<h3>图像域定量对比（强证据）</h3>
+<table>
+  <tr><th>对比</th><th>样本</th><th>检查点</th><th>Adapter ON</th><th>Adapter OFF</th><th>差值</th></tr>
+  <tr><td>官方 test 子集 baseline_50</td><td>50 对 / 19 身份</td><td>step_12000</td><td>PSNR 24.28 / SSIM 0.9759 / MAE 6.91</td><td>17.35 / 0.8733 / 16.06</td><td><strong>+6.94 dB，MAE −57%</strong></td></tr>
+  <tr><td>dev_val</td><td>50 对</td><td>step_20000</td><td>PSNR 24.00 / SSIM 0.9811 / MAE 6.15</td><td>16.93 / 0.9005 / 14.36</td><td><strong>+7.07 dB</strong></td></tr>
+  <tr><td>3k pilot 对照</td><td>同 baseline_50</td><td>step_3000</td><td>PSNR 22.30 / SSIM 0.9583 / MAE 8.10</td><td>—</td><td>20k 相比 3k <strong>+1.98 dB</strong></td></tr>
+</table>
+
+<div class="callout d">
+  <strong>判据警告：</strong>流匹配验证损失在<strong>未配对的随机噪声/时间步</strong>上计算——高噪声步所有预测趋同，因而系统性低估控制效果。末次验证 ON 0.2276 / OFF 0.2454 仅差 7.2%，远低于计划书 ≥30% 门槛，但图像域却是 +7.07 dB 的巨大差异。<strong>不能把流匹配验证损失当作姿态敏感度判据。</strong>
+</div>
+
+<h3>V6.4 细节分支过拟合验证（024_6 单样本，1,500 步）</h3>
+
+<p>配置：单样本 <code>024_6</code> · 1,500 步 · <strong>24.65 min</strong> · 647.5 ms/step · 峰值显存 15.94 GiB。结论 <strong>6 PASS / 4 FAIL</strong>：</p>
+
+<table>
+  <tr><th style="width:38%">验收项</th><th>实测</th><th style="width:12%">判定</th></tr>
+  <tr><td>主干完整性（非 detail 权重 SHA-256）</td><td>训练前后一致</td><td><span class="tag pass">PASS</span></td></tr>
+  <tr><td>Detail OFF 基线对齐（vs Step 0）</td><td>PSNR 51.64 dB</td><td><span class="tag pass">PASS</span></td></tr>
+  <tr><td>detail 残差 RMS 有限非零</td><td>0.4979</td><td><span class="tag pass">PASS</span></td></tr>
+  <tr><td>Face SSIM / PSNR 提升</td><td>ΔSSIM +0.2830 · ΔPSNR <strong>+2.97 dB</strong></td><td><span class="tag pass">PASS</span></td></tr>
+  <tr><td>Hands SSIM 提升</td><td>Δ +0.0721（阈值 +0.03）</td><td><span class="tag pass">PASS</span></td></tr>
+  <tr><td>区域外 PSNR 下降</td><td>−0.54 dB（阈值 ≤0.2）</td><td><span class="tag pass">PASS</span></td></tr>
+  <tr><td>峰值 VRAM</td><td>15.94 GiB（阈值 &lt;24）</td><td><span class="tag pass">PASS</span></td></tr>
+  <tr><td>总 loss 收敛比</td><td>57.94%（目标 ≤30%）</td><td><span class="tag fail">FAIL</span></td></tr>
+  <tr><td>Face flow MSE 降幅</td><td>55.92%（目标 ≥60%）</td><td><span class="tag fail">FAIL</span></td></tr>
+  <tr><td>左 / 右手 flow MSE 降幅</td><td>50.7% / 51.6%（目标 ≥60%）</td><td><span class="tag fail">FAIL</span></td></tr>
+  <tr><td>Hands PCK@0.1</td><td><strong>0.143</strong>，Δ+0.083（目标 ≥0.70 且 Δ≥0.10）</td><td><span class="tag fail">FAIL</span></td></tr>
+</table>
+
+<p><strong>解读：</strong>质量类指标（SSIM / PSNR / 区域外保护 / 显存）全部达标，说明方向有效；未达标项集中在<strong>「收敛深度」</strong>——loss 与 flow MSE 降幅不足、PCK 绝对值低。这指向 1500 步欠训练或单样本容量不足，属<strong>可继续推进的问题，而非架构否决</strong>。人脸的像素级提升（+2.97 dB）幅度很大，但手部「看起来更像」而「关节点没对上」。</p>
+
+<h2><span class="n">08</span>数据资产与防泄漏机制</h2>
+
+<div class="mermaid">
+flowchart TD
+    IPER["iPER 数据集<br/>99 身份 / 6,930 帧 @512"] --> SPLIT{"按身份严格三分"}
+    SPLIT --> TR["dev_train<br/>69 身份 · 26,496 pairs"]
+    SPLIT --> VA["dev_val<br/>10 身份 · 3,840 pairs"]
+    SPLIT --> TE["test<br/>20 身份 · 7,680 pairs<br/>调参期间完全隔离"]
+    TR --> TRAIN["V6.3 训练入口"]
+    VA --> EARLY["验证 / 早停 / 选 best"]
+    TE --> FINAL["最终评测"]
+    H4["Hi4D 双人<br/>2,740 对 · train 1312 / val 822 / test 606"] --> DUAL["双人交互分支<br/>待解冻"]
+</div>
+<div class="cap">图 6 · 数据划分与防泄漏：三份身份两两交集为空，由自动化测试机器校验</div>
+
+<table>
+  <tr><th style="width:22%">数据集</th><th style="width:12%">体量</th><th>用途与状态</th></tr>
+  <tr><td>Hi4D-origin</td><td class="num">359 G</td><td>双人交互原始数据（握手 / 搭肩 / 拥抱攻坚原料）</td></tr>
+  <tr><td>TikTokDataset</td><td class="num">89 G</td><td>单人姿态序列（92,961 帧 @604）</td></tr>
+  <tr><td>iPER</td><td class="num">18 G</td><td>单人主训练集：99 身份、6,930 帧法线/深度/部件图 + <code>v6_conditions.pt</code></td></tr>
+  <tr><td>Hi4D_pilot_v1</td><td class="num">18 G</td><td>自建双人配对 pilot，已迭代到 <code>final_assets_v4_2</code>，QC 抽检 150 对、<strong>缺资产 0</strong></td></tr>
+  <tr><td>champ_motions_example</td><td class="num">5.1 G</td><td>CHAMP 动作样例（早期对照）</td></tr>
+</table>
+
+<div class="callout w">
+  <strong>已知数据缺口：</strong>iPER 现有条件缓存 <code>v6_conditions.pt</code> 仅含 <code>smplx_global[70,26]</code> 与 <code>kps_25_coords[70,25,3]</code>，<strong>缺 68 点人脸 / 2×21 手部 / 103 维 smplx_detail</strong>；<code>iper_assets</code> 下 DWPose 只有 512 PNG 骨架、无关键点 JSON。即 V6.4 细节分支目前<strong>仍无 iPER 数据源</strong>，需重跑高分辨率 DWPose。
+</div>
+
+<h2><span class="n">09</span>实验矩阵总览</h2>
+
+<table>
+  <tr><th style="width:30%">实验</th><th style="width:14%">状态</th><th>关键结果</th></tr>
+  <tr><td>iper_v6_native_20k_v1</td><td><span class="tag pass">完成</span></td><td>保留 best / last / step_12000；50 样本评测 PSNR 24.00 / SSIM 0.981(tf) / 0.913(skimage) / MAE 6.15</td></tr>
+  <tr><td>iper_v6_comparative_3000</td><td><span class="tag pass">完成</span></td><td>多阶段对比（含 stage_evolution、multi_stage_eval）</td></tr>
+  <tr><td>iper_v64_detail_overfit_024_6</td><td><span class="tag warn">6P/4F</span></td><td>见第 07 节</td></tr>
+  <tr><td>hi4d_dual_overfit_smoke_v2</td><td><span class="tag fail">冒烟</span></td><td>仅 1 步 + 对比网格，<strong>无任何训练结论</strong></td></tr>
+  <tr><td>qwen_edit_results</td><td><span class="tag fail">缺口</span></td><td>仅一张定性图 <code>qwen_edit_single_result.png</code>，<strong>无定量对比</strong></td></tr>
+  <tr><td>review_20260908_v2</td><td><span class="tag info">历史</span></td><td>120 运行记录、111/111 验收通过；结论：原生编辑双人交互普遍失败 → 引出 V6 适配器路线</td></tr>
+</table>
+
+<h2><span class="n">10</span>工程质量观察</h2>
+
+<ul>
+  <li><strong>git 纪律良好</strong>：近 10 个提交都是 V6.4 detail 分支的小步工程化推进（contracts → prepare → runtime harden → 事务化 checkpoint 加载），无大杂烩提交。</li>
+  <li><strong>测试与文档齐全</strong>：pytest + 17 项自动化测试；<code>docs/superpowers/</code> 下有 plan / spec 驱动记录；<code>docs/iper_v6_training_plan.md</code> 含防泄漏数学约束与分层学习率依据。</li>
+  <li><strong>仓库卫生注意点</strong>：工作区有 <strong>4 个已修改未提交文件</strong>（<code>eval_iper_v6.py</code>、<code>detail/preparer.py</code>、<code>tests/test_condition_injector_v1.py</code>、<code>outputs/deepgen_control_interface_smoke_dual.json</code>）+ 大量未跟踪的 Hi4D 构建脚本及 <code>.bak</code> 备份——<strong>尚未形成一次收口提交</strong>。</li>
+  <li><strong>清理记录规范</strong>：checkpoint 清理有 manifest 存档（9-21 00:41，24 文件 30.7 GiB）。</li>
+  <li><strong>文档漂移</strong>：本地 <code>STAGE_SUMMARY_FOR_AGENT.md</code>（2026-09-12）仍描述旧版 8 通道 <code>PoseConditionAdapter</code>（172.77 M），已与 V6.3/V6.4 现状脱节。</li>
+</ul>
+
+<h2><span class="n">11</span>风险、缺口与建议</h2>
+
+<table>
+  <tr><th style="width:20%">风险 / 机会</th><th style="width:10%">级别</th><th>说明与建议</th></tr>
+  <tr><td>验证判据失效</td><td><span class="tag fail">高</span></td><td>现行流匹配验证损失对控制效果区分度不足（ON/OFF 仅 7%），却曾作为训练 gate。应改为<strong>固定噪声 / 时间步的配对评估</strong>，并以人体区域 PSNR/SSIM + pose PCK 作为主判据。</td></tr>
+  <tr><td>手部几何缺口</td><td><span class="tag fail">高</span></td><td>PCK@0.1 = 0.143，距任务书「精确到手指结构」差距很大。建议提高局部参考图分辨率、加大手部损失权重、或引入独立手部 adapter。</td></tr>
+  <tr><td>Qwen-Edit 对比缺失</td><td><span class="tag fail">高</span></td><td>任务书硬性验收项「主观质量优于 Qwen-Edit 基线 5%」目前<strong>完全无定量数据</strong>。</td></tr>
+  <tr><td>V6.4 欠训练</td><td><span class="tag warn">中</span></td><td>4 项 FAIL 均为收敛类指标。建议提步数至 3,000–5,000 重跑单样本过拟合，观察 PCK 斜率是否仍未饱和。</td></tr>
+  <tr><td>磁盘压力</td><td><span class="tag warn">中</span></td><td>根分区 96%、剩 81 GB。V6.4 / Hi4D 双人训练再开将迅速吃满，<code>CheckpointManager</code> 滚动保留策略必须严格执行（上限 2 份 step 检查点）。</td></tr>
+  <tr><td>共租户争用</td><td><span class="tag warn">中</span></td><td><code>lileiteng</code> 排队条件（GPU0 空闲 ≥50 GB）当前已满足。我方 16.5 GiB 训练可并存，但需注意调度抢占。</td></tr>
+  <tr><td>双人交互未启动</td><td><span class="tag warn">中</span></td><td>Hi4D pilot v4.2 数据已就绪（2,740 对、QC 0 缺失）。需先确认交互分支的自监督信号与人物对应关系建模方案，再做双人 overfit 验证。</td></tr>
+  <tr><td>几何指标盲区</td><td><span class="tag warn">中</span></td><td>全图 PSNR/SSIM 受白背景主导，对手 / 脸小区域近似「失明」。应沿用 V6.4 已建立的区域化指标（Face/Hands SSIM、PCK、区域外保护）作为主口径。</td></tr>
+  <tr><td>HI4D 管线版本散乱</td><td><span class="tag info">低</span></td><td>5 代 <code>build_hi4d_interaction_*</code> 脚本 + 3 份 <code>.bak</code> 并存且 git 未跟踪。定稿 v4_2 后应审计收口。</td></tr>
+  <tr><td>评测口径偏差</td><td><span class="tag info">低</span></td><td>OFF 基线因目标姿态通道清零而「结构性必败」，对比值被放大。报告结论时须注明该系统性偏差。</td></tr>
+</table>
+
+<h3>建议的下一步优先级</h3>
+<ol>
+  <li><strong>先修判据</strong>：把验证改为配对评估（固定噪声 + 固定时间步），在人体区域上算 PSNR/SSIM 与 pose PCK，重新判定 V6.3 是否达标。</li>
+  <li><strong>补 iPER 细节数据源</strong>：重跑高分辨率 DWPose 获得 68 点人脸 / 2×21 手部 / 103 维 smplx_detail，否则 V6.4 只能在 Hi4D 上训练。</li>
+  <li><strong>攻手部几何</strong>：PCK 0.143 是最大技术缺口，与「face / LH / RH 三条独立流 + 真 Face-ID 网络」的设计方向一致。</li>
+  <li><strong>启动 Hi4D 双人过拟合验证</strong>：数据已就绪，先锁定人物对应关系建模方案。</li>
+  <li><strong>补 Qwen-Edit-20B 定量对比</strong>：任务书硬性验收项，目前完全空缺。</li>
+  <li><strong>工程卫生</strong>：清理系统盘（合并 / 迁移到 22 TB 数据盘）、V6.4 与 Hi4D 链路提交入库、更新过时的本地交接文档。</li>
+</ol>
+
+<footer>
+  本报告全部命令均为只读（<code>ls</code> / <code>find</code> / <code>cat</code> / <code>tail</code> / <code>df</code> / <code>nvidia-smi</code> / <code>git log</code> / <code>python -c</code> 读取 JSON）。远端未启停任何进程、未修改文件、未删除任何内容。<br>
+  生成时间：2026-09-21 · 数据来源：远端 <code>/home/shangguanrz/project/pic-edit</code> 实测 + 任务书原文。
+</footer>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>
+  if (window.mermaid) {
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: 'base',
+      themeVariables: {
+        fontFamily: '-apple-system,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif',
+        fontSize: '13px',
+        primaryColor: '#EEEDFE',
+        primaryTextColor: '#26215C',
+        primaryBorderColor: '#7F77DD',
+        lineColor: '#8b909b',
+        secondaryColor: '#E6F1FB',
+        tertiaryColor: '#f7f8fa',
+        clusterBkg: '#f7f8fa',
+        clusterBorder: '#c9ccd3',
+        edgeLabelBackground: '#ffffff'
+      },
+      flowchart: { curve: 'basis', nodeSpacing: 42, rankSpacing: 46, useMaxWidth: true }
+    });
+  }
+</script>
+</body>
+</html>

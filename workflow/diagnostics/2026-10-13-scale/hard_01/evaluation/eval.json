@@ -1,0 +1,90 @@
+{
+  "schema": "single_person_pose_evaluation_v1",
+  "run": "hard_01",
+  "final_image": "/home/shangguanrz/project/pic-edit/workflow/runs/hard_01/generation/final_image.png",
+  "final_size": [
+    662,
+    864
+  ],
+  "guide_offset_from_canvas": [
+    5.0,
+    0.0
+  ],
+  "torso_normalisation_px": 270.08884824452,
+  "persons_detected": 3,
+  "joints_compared": 134,
+  "joints_requested": 134,
+  "joints_estimated": 134,
+  "summary": {
+    "body_pck@0.2": 1.0,
+    "body_mpjpe_norm": 0.03362474179885329,
+    "hand_mpjpe_norm": 0.054588249589108434,
+    "face_mpjpe_norm": 0.028712556826947847,
+    "persons_detected": 3.0
+  },
+  "groups": {
+    "body": {
+      "joints": 18,
+      "mpjpe_px": 9.081667784971652,
+      "mpjpe_norm": 0.03362474179885329,
+      "p95_norm": 0.06313846653612845,
+      "pck@0.2": 1.0,
+      "pck@0.5": 1.0,
+      "worst_joint_offset_px": 17.383383891886883
+    },
+    "feet": {
+      "joints": 6,
+      "mpjpe_px": 12.850303551303702,
+      "mpjpe_norm": 0.04757806045983028,
+      "p95_norm": 0.07692654314831969,
+      "pck@0.2": 1.0,
+      "pck@0.5": 1.0,
+      "worst_joint_offset_px": 21.933033216727967
+    },
+    "face": {
+      "joints": 68,
+      "mpjpe_px": 7.754941403545676,
+      "mpjpe_norm": 0.028712556826947847,
+      "p95_norm": 0.03896850315683326,
+      "pck@0.2": 1.0,
+      "pck@0.5": 1.0,
+      "worst_joint_offset_px": 12.0160986903702
+    },
+    "left_hand": {
+      "joints": 21,
+      "mpjpe_px": 13.170522382190018,
+      "mpjpe_norm": 0.0487636659854476,
+      "p95_norm": 0.09027136843187665,
+      "pck@0.2": 1.0,
+      "pck@0.5": 1.0,
+      "worst_joint_offset_px": 24.777955204176468
+    },
+    "right_hand": {
+      "joints": 21,
+      "mpjpe_px": 16.316832536223362,
+      "mpjpe_norm": 0.06041283319276926,
+      "p95_norm": 0.08443977767522544,
+      "pck@0.2": 1.0,
+      "pck@0.5": 1.0,
+      "worst_joint_offset_px": 24.379179341005486
+    }
+  },
+  "camera_checks": {
+    "focal_xy": [
+      18764.548828125,
+      18764.548828125
+    ],
+    "principal_xy": [
+      339.0643310546875,
+      430.74810791015625
+    ],
+    "projection_max_error_px": 0.00013603587558463914
+  },
+  "mesh_max_error_m": 3.814697265625e-06,
+  "estimator_staging": {
+    "estimator_root": "/home/shangguanrz/project/pic-edit/workflow/runs/hard_01/evaluation/estimator/workflow_b94f138bfd5d47af",
+    "staged_input": "/home/shangguanrz/project/pic-edit/workflow/runs/hard_01/evaluation/estimator/workflow_b94f138bfd5d47af/demo/input_frames/workflow_b94f138bfd5d47af/000001.jpg",
+    "estimator_params": "/home/shangguanrz/project/pic-edit/workflow/runs/hard_01/evaluation/estimator/workflow_b94f138bfd5d47af/demo/output_frames/workflow_b94f138bfd5d47af/workflow_b94f138bfd5d47af_params.pt"
+  },
+  "limits": "Pose fidelity only: it measures where the generated body landed relative to the requested skeleton, using the same estimator for both sides. It says nothing about identity, clothing or scene preservation, and a guide joint that the estimator placed outside the frame is excluded rather than scored as an error."
+}

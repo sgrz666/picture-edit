@@ -1,0 +1,59 @@
+{
+  "reference_images": [
+    {
+      "index": 1,
+      "role": "A_reference",
+      "path": "/home/shangguanrz/project/pic-edit/workflow/runs/medium_02/inputs/A_reference.png",
+      "size": [
+        640,
+        928
+      ],
+      "sha256": "c2be2d59d2d6521ceabb075ef983c6b35d8ed5b68eaab2a68100c962aeec196e"
+    },
+    {
+      "index": 2,
+      "role": "B_3d_dwpose",
+      "path": "/home/shangguanrz/project/pic-edit/workflow/runs/medium_02/geometry/B_3d_dwpose.png",
+      "size": [
+        640,
+        928
+      ],
+      "sha256": "7ed9c3bc9ad4cb9bda8e5cc9fcf6385a6c5105dd49851c4910a8307d2a911ede"
+    }
+  ],
+  "generation_mode": "Qwen backbone only",
+  "adapter_loaded": false,
+  "lora_loaded": false,
+  "B_rgb_given_to_generator": false,
+  "resolution": 768,
+  "canvas_size": [
+    640,
+    928
+  ],
+  "final_size": [
+    618,
+    928
+  ],
+  "source_padding_crop": [
+    11,
+    0,
+    629,
+    928
+  ],
+  "steps": 30,
+  "seed": 42,
+  "true_cfg_scale": 1.0,
+  "use_kv_cache": false,
+  "generation_prompt": "/home/shangguanrz/project/pic-edit/workflow/runs/medium_02/prompt/generation_prompt.txt",
+  "prompt_source": {
+    "source": "pe_compiled",
+    "source_path": "/home/shangguanrz/project/pic-edit/workflow/runs/medium_02/prompt/pe_compiled_prompt.txt",
+    "source_sha256": "9e942c88f09858271c04b926140dae4fbbcf8b95da36a983576a966872128427",
+    "generation_prompt": "/home/shangguanrz/project/pic-edit/workflow/runs/medium_02/prompt/generation_prompt.txt",
+    "sha256": "9e942c88f09858271c04b926140dae4fbbcf8b95da36a983576a966872128427"
+  },
+  "prompt_sha256": "9e942c88f09858271c04b926140dae4fbbcf8b95da36a983576a966872128427",
+  "seconds": 50.340216188982595,
+  "peak_gpu_memory_gib": 33.974565505981445,
+  "torch_version": "2.8.0+cu128"
+}

@@ -1,0 +1,105 @@
+{
+  "schema": "single_person_pose_request_v2",
+  "stage": "geometry",
+  "identity": {
+    "settings": {
+      "smplest_root": "/home/shangguanrz/project/pic-edit/add/tools/SMPLest-X",
+      "smplest_checkpoint": "smplest_x_h",
+      "person_detection_confidence": 0.5,
+      "pose_framing": "source_torso",
+      "subject": "auto"
+    },
+    "inputs_sha256": {
+      "A_rgb": "8e2176069b87404acc6b877b4e35d5971c0ab136a897a857f1b49dd6229c4488",
+      "B_rgb": "2db6befd3bb63013cd233bb3820f93b0cfbae32b8c09b58c26941f66b5c321c6",
+      "A_reference": "deeef9d0447f718f7402a7d1af48228bde55a15eb90919a8cab1d9805e6d9440",
+      "source_preprocess": "cfb7c1df10d2f59bfcc14d5a69916c2a29f21de9ee814f5e1b4b42d28cd2893c"
+    },
+    "model_identity": {
+      "checkpoint": {
+        "path": "/home/shangguanrz/project/pic-edit/add/tools/SMPLest-X/pretrained_models/smplest_x_h",
+        "files": [
+          {
+            "name": "config_base.py",
+            "size": 2657,
+            "mtime_ns": 1789265415891607509,
+            "sha256": "39383dde0e806b9537377f6f8e18e54cce96e09da524cb987d7adade95e976bf"
+          },
+          {
+            "name": "smplest_x_h.pth.tar",
+            "size": 8246417153,
+            "mtime_ns": 1789266297754852700
+          }
+        ]
+      },
+      "detector": {
+        "path": "/home/shangguanrz/project/pic-edit/add/tools/SMPLest-X/pretrained_models/yolov8x.pt",
+        "files": [
+          {
+            "name": "yolov8x.pt",
+            "size": 136890692,
+            "mtime_ns": 1789265432147382041
+          }
+        ]
+      },
+      "human_models": {
+        "path": "/home/shangguanrz/project/pic-edit/add/tools/SMPLest-X/human_models/human_model_files/smplx",
+        "files": [
+          {
+            "name": "MANO_SMPLX_vertex_ids.pkl",
+            "size": 13535,
+            "mtime_ns": 1789266204959685585
+          },
+          {
+            "name": "SMPLX_FEMALE.npz",
+            "size": 108794146,
+            "mtime_ns": 1789265916888205332
+          },
+          {
+            "name": "SMPLX_MALE.npz",
+            "size": 108753445,
+            "mtime_ns": 1789265933639946101
+          },
+          {
+            "name": "SMPLX_NEUTRAL.npz",
+            "size": 108752058,
+            "mtime_ns": 1789265950443685544
+          },
+          {
+            "name": "SMPLX_NEUTRAL.pkl",
+            "size": 544173380,
+            "mtime_ns": 1789266033582389254
+          },
+          {
+            "name": "SMPLX_to_J14.pkl",
+            "size": 4692193,
+            "mtime_ns": 1789266206043668370
+          }
+        ]
+      },
+      "estimator_source": {
+        "main/inference.py": "f4ad2b834b6555514a8cdf358d6eabcf1350db535c39b4f7a989110fb954f7fc",
+        "main/base.py": "1f258522001f25c9a9c0cf766dc5727e8d26953789dabc9b783efb2f1643e3bc",
+        "models/SMPLest_X.py": "b00a67b779ab0436320539dff464770651bd152817567318cd6979849b4c7c5b",
+        "human_models/human_models.py": "309d369f44825e9e9304ac8f3b4e2a17d3b870cb8c5155c2c666363c6b5ac415",
+        "scripts/run_smplestx_params_only.py": "cbce3276ee6446ac7f1a91ec66927673ec9db5ea2785c5526ce1e66725937a93"
+      }
+    },
+    "code": {
+      "pose_transfer/common.py": "ca76a12450a6cceedacef63e13fd66c7bdb19169d0bf7182d0de0d755cf932a4",
+      "smplx_worker.py": "5e57a7f2dc168ef8d12ec6215cf1adf55660cfdb456926fcf5623ffea54e3e5e",
+      "pose_transfer/estimator.py": "369e83ba89e2678d7180d048be8b2717f9312d0578eb1ea5e3f429cb81193890",
+      "pose_transfer/geometry.py": "5ac98986c3f379f470c27fcca34d6af8338fbf66a101d238c5684c52ee386257"
+    }
+  },
+  "runtime": {
+    "run_dir": "/home/shangguanrz/project/pic-edit/workflow/runs/hard_05_manual",
+    "paths": {
+      "run_dir": "/home/shangguanrz/project/pic-edit/workflow/runs/hard_05_manual",
+      "A_rgb": "/home/shangguanrz/project/pic-edit/workflow/runs/hard_05_manual/inputs/A_rgb.png",
+      "B_rgb": "/home/shangguanrz/project/pic-edit/workflow/runs/hard_05_manual/inputs/B_rgb.png",
+      "A_reference": "/home/shangguanrz/project/pic-edit/workflow/runs/hard_05_manual/inputs/A_reference.png",
+      "source_preprocess": "/home/shangguanrz/project/pic-edit/workflow/runs/hard_05_manual/inputs/source_preprocess.json"
+    }
+  }
+}

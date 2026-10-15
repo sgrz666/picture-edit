@@ -1,0 +1,16 @@
+{
+  "existing_probe_pairs": 6,
+  "body_512_id_A_mean": 0.4169299726684888,
+  "bfs_512_id_A_mean": 0.32810724526643753,
+  "bfs_768_id_A_mean": 0.49195165435473126,
+  "nolora_768_id_A_mean": 0.4475809410214424,
+  "bfs_768_better_than_body_512": 5,
+  "source_target_reference_mean": 0.6271826202670733,
+  "limitations": [
+    "six pairs, mostly two identities",
+    "768 probes do not record complete sampler/prompt settings",
+    "512 no-LoRA and BFS prompts differ",
+    "baseline is simplified Body adapter, not current Full Face",
+    "source_target_ceiling is an empirical reference, not a theoretical identity upper bound"
+  ]
+}

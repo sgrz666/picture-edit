@@ -1,0 +1,41 @@
+{
+  "schema": "pe_llama_gate1_v1",
+  "case": "q8s_hard_02",
+  "mtp": true,
+  "model": "qwen3.5_9b_qwen_image_2.1_pe_i2i.mtp.Q8_0.gguf",
+  "status": "complete",
+  "seconds_total": 571.7,
+  "attempts": [
+    {
+      "attempt": 1,
+      "seed": 42,
+      "seconds": 246.3,
+      "completion_tokens": 4821,
+      "prompt_tokens": 7358,
+      "raw_path": "/data/shangguanrz/pic-edit-experiments/pe_i2i_gguf_selection_20261014/output/gate1/raw/q8s_hard_02_attempt1.txt",
+      "raw_sha256": null,
+      "status": "rejected",
+      "error": "PE prompt refers to B RGB, which the generator cannot see; describe the target body/head/hand action explicitly instead"
+    },
+    {
+      "attempt": 2,
+      "seed": 43,
+      "seconds": 325.4,
+      "completion_tokens": 6443,
+      "prompt_tokens": 7412,
+      "raw_path": "/data/shangguanrz/pic-edit-experiments/pe_i2i_gguf_selection_20261014/output/gate1/raw/q8s_hard_02_attempt2.txt",
+      "raw_sha256": null,
+      "status": "accepted",
+      "compiled_path": "/data/shangguanrz/pic-edit-experiments/pe_i2i_gguf_selection_20261014/output/gate1/prompts/q8s_hard_02.txt",
+      "compiled_words": 335,
+      "ratio_follow": "<image1>"
+    }
+  ],
+  "tokens": 6443,
+  "prompt_tokens": 7412,
+  "hf_tokens": 4479,
+  "hf_seconds": 316.8,
+  "compiled_words": 335,
+  "hf_prompt_sha": "8708b8159be270edf4b2155ebd8b222f9363c855441d2157e11ee53845d848c8",
+  "tok_per_s": 19.8
+}

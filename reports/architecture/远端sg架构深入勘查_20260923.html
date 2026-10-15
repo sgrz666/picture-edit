@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>远端 sg 架构深入勘查 · 2026-09-23</title>
+<style>
+  :root{
+    --bg:#f6f7f9; --card:#ffffff; --ink:#16222e; --ink2:#4a5a6a; --ink3:#7b8b9c;
+    --line:#e2e7ec; --brand:#1f3a5f; --accent:#2f6fb0; --ok:#1f7a4d; --warn:#b45309; --bad:#b3261e;
+    --geo:#2f6fb0; --int:#6b5bd2; --det:#c2410c; --face:#0d9488; --hand:#be185d;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font-family:"Segoe UI","PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+    font-size:15px;line-height:1.65;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1180px;margin:0 auto;padding:36px 26px 70px}
+  header{border-bottom:2px solid var(--brand);padding-bottom:20px;margin-bottom:30px}
+  h1{margin:0 0 8px;font-size:27px;letter-spacing:.2px;color:var(--brand)}
+  .sub{color:var(--ink2);font-size:13.5px}
+  .meta{margin-top:12px;display:flex;flex-wrap:wrap;gap:8px}
+  .chip{background:#eef3f8;color:var(--brand);border:1px solid #d6e2ee;border-radius:20px;
+    padding:3px 12px;font-size:12.5px}
+  h2{font-size:19px;margin:42px 0 14px;padding-left:11px;border-left:4px solid var(--accent);color:var(--brand)}
+  h3{font-size:15.5px;margin:24px 0 10px;color:var(--brand)}
+  p{margin:9px 0}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:18px 20px;
+    box-shadow:0 1px 2px rgba(22,34,46,.04)}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  .grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+  @media(max-width:900px){.grid2,.grid3,.grid4{grid-template-columns:1fr}}
+  table{width:100%;border-collapse:collapse;font-size:13.5px;margin:12px 0}
+  th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+  th{background:#eef3f8;color:var(--brand);font-weight:600;white-space:nowrap}
+  tbody tr:nth-child(even){background:#fafbfc}
+  td.num{text-align:right;font-variant-numeric:tabular-nums}
+  code{background:#eef1f5;padding:1.5px 5px;border-radius:4px;font-size:12.5px;
+    font-family:"Cascadia Mono",Consolas,monospace;color:#26405c}
+  .kpi{background:var(--card);border:1px solid var(--line);border-radius:9px;padding:13px 15px}
+  .kpi .v{font-size:22px;font-weight:700;color:var(--brand);font-variant-numeric:tabular-nums;line-height:1.25}
+  .kpi .k{font-size:12px;color:var(--ink3);margin-top:3px}
+  .tag{display:inline-block;border-radius:5px;padding:1px 8px;font-size:12px;font-weight:600;white-space:nowrap}
+  .t-ok{background:#e3f4eb;color:var(--ok);border:1px solid #bfe4d1}
+  .t-warn{background:#fdf1e0;color:var(--warn);border:1px solid #f3dcb8}
+  .t-bad{background:#fdeceb;color:var(--bad);border:1px solid #f5cbc7}
+  .t-idle{background:#eef1f5;color:var(--ink3);border:1px solid #dde3ea}
+  .br{border-left:4px solid var(--accent);background:#f7fafd;padding:11px 14px;border-radius:0 8px 8px 0;margin:12px 0}
+  .br.warn{border-color:var(--warn);background:#fffaf3}
+  .br.bad{border-color:var(--bad);background:#fff7f6}
+  .br.ok{border-color:var(--ok);background:#f5fbf8}
+  .br b{color:var(--brand)}
+  .flow{overflow-x:auto;padding:6px 0 12px}
+  ul{margin:8px 0 8px 20px;padding:0}
+  li{margin:5px 0}
+  .dim{color:var(--ink2);font-size:13px}
+  footer{margin-top:52px;padding-top:16px;border-top:1px solid var(--line);color:var(--ink3);font-size:12.5px}
+  .legend{display:flex;flex-wrap:wrap;gap:14px;margin:8px 0 14px;font-size:12.5px;color:var(--ink2)}
+  .legend i{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <h1>远端 sg 架构深入勘查</h1>
+  <div class="sub">项目：人物图像姿态编辑（DeepGen-1.0 + SMPL-X Unified Adapter V6.x）　·　远端 <code>node01:/home/shangguanrz/project/pic-edit</code></div>
+  <div class="meta">
+    <span class="chip">勘查时间 2026-09-23 20:42–21:05</span>
+    <span class="chip">全程只读</span>
+    <span class="chip">远端 HEAD b1a00c2（V6.6）</span>
+    <span class="chip">本地 HEAD 8e01dbc（落后 3 提交）</span>
+    <span class="chip">RTX 6000D 85 GB · 空闲</span>
+  </div>
+</header>
+
+<div class="br warn">
+  <b>一句话结论：</b>架构已从「单支姿态控制」迭代到 <b>五分支（geometry / interaction / detail / face / hand）</b>，
+  V6.6 手部分支代码已入库但<b>尚未预计算、尚未训练</b>；V6.5 脸部分支已在<b>真实多步生成链路</b>中跑通。
+  当前最值得处理的两件事是：<b>文档与配置仍停留在 V6.3</b>，以及<b>细节分支对 ROI 外区域存在可测量的扰动泄漏</b>。
+</div>
+
+<h2>一、任务口径与验收硬指标</h2>
+<div class="card">
+  <p>权威任务书为 <code>reportdoc/人物图像姿态编辑任务书_v3.docx</code>（两阶段：T+6 / T+12）。验收口径如下：</p>
+  <table>
+    <thead><tr><th>验收项</th><th>一阶段</th><th>二阶段</th><th>本项目当前口径</th></tr></thead>
+    <tbody>
+      <tr><td>身高体型相对估计准确率</td><td>≥ 60%</td><td>≥ 80%</td><td>由 SMPL-X <code>betas</code>/骨架解耦承载</td></tr>
+      <tr><td>典型双人交互主观合理率<br><span class="dim">握手 / 拥抱 / 搭肩 / 牵手 / 并排搂肩</span></td><td>≥ 70%</td><td>≥ 90%</td><td>由 <code>interaction</code> 分支 + Hi4D 双人数据承载</td></tr>
+      <tr><td>图像编辑主观优胜率 vs Qwen-Edit 基线</td><td colspan="2">&gt; 5%</td><td class="dim">目前仅有定性对比图</td></tr>
+      <tr><td>手部细节合理主观优胜率</td><td colspan="2">&gt; 5%</td><td class="dim">对应 V6.4 legacy hand / V6.6 独立 hand</td></tr>
+      <tr><td>生成主干参数量</td><td colspan="2">≤ 6B</td><td>MMDiT 口径 ≈ 2.47 B <span class="tag t-ok">满足</span></td></tr>
+    </tbody>
+  </table>
+  <p class="dim">方法论提示（沿用既往结论）：全图 PSNR/SSIM 受大面积背景主导，对手/脸这类小区域近似“盲判”，
+  因此细节质量必须以 <b>ROI 指标 + 关键点几何指标（如 PCK）</b> 为准，不能只看全图数字。</p>
+</div>
+
+<h2>二、主干与参数预算</h2>
+<div class="grid4">
+  <div class="kpi"><div class="v">≈2.47 B</div><div class="k">MMDiT（SD3Transformer2DModel，24 层）</div></div>
+  <div class="kpi"><div class="v">≈3.75 B</div><div class="k">VLM（Qwen2.5-VL-3B 规格，BF16 7.51 GB）</div></div>
+  <div class="kpi"><div class="v">≈0.86 B</div><div class="k">Connector（1.73 GB）</div></div>
+  <div class="kpi"><div class="v">≈7.2 B</div><div class="k">全流程合计；<b>DiT 口径 2.47 B 满足 ≤6B</b></div></div>
+</div>
+<div class="br">
+  <b>唯一可训练部分</b>是 <code>UnifiedSMPLXAdapterV6</code>；VLM / Connector / DiT / VAE 全部冻结。
+  Qwen-Image-Edit-20B 不参与主线训练，定位为<b>质量上界与教师模型</b>。
+  <br><span class="dim">口径警告：项目文档中出现过“Qwen2.5-VL 14B”的错误描述，已由权重与 config 实测证伪 —— 一切规模数字以权重为准。</span>
+</div>
+
+<h2>三、七段主链路</h2>
+<p>适配器的职责可以用一句话概括：<b>把“人体几何”翻译成 DiT 能听懂的“增量”，并只在中途注入、不改主干一行代码。</b></p>
+
+<div class="flow">
+<svg viewBox="0 0 1140 430" width="1140" height="430" role="img" aria-label="V6 七段主链路架构图">
+  <defs>
+    <marker id="ar" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto">
+      <path d="M0,0 L9,4.5 L0,9 z" fill="#8494a4"/>
+    </marker>
+    <marker id="ar2" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto">
+      <path d="M0,0 L9,4.5 L0,9 z" fill="#2f6fb0"/>
+    </marker>
+  </defs>
+
+  <!-- stage 1 -->
+  <rect x="14" y="26" width="150" height="66" rx="8" fill="#eef3f8" stroke="#c9d8e6"/>
+  <text x="89" y="53" text-anchor="middle" font-size="13" font-weight="600" fill="#1f3a5f">SMPL-X 条件</text>
+  <text x="89" y="71" text-anchor="middle" font-size="11" fill="#4a5a6a">法线/姿态/部位</text>
+  <text x="89" y="85" text-anchor="middle" font-size="11" fill="#4a5a6a">全局参数/接触</text>
+
+  <line x1="166" y1="59" x2="204" y2="59" stroke="#8494a4" stroke-width="1.6" marker-end="url(#ar)"/>
+
+  <!-- stage 2 -->
+  <rect x="206" y="26" width="150" height="66" rx="8" fill="#eef3f8" stroke="#c9d8e6"/>
+  <text x="281" y="50" text-anchor="middle" font-size="13" font-weight="600" fill="#1f3a5f">条件注入器</text>
+  <text x="281" y="68" text-anchor="middle" font-size="11" fill="#4a5a6a">ConditionInjector</text>
+  <text x="281" y="82" text-anchor="middle" font-size="11" fill="#4a5a6a">→ ConditionBundle</text>
+
+  <line x1="358" y1="59" x2="396" y2="59" stroke="#8494a4" stroke-width="1.6" marker-end="url(#ar)"/>
+
+  <!-- stage 3 -->
+  <rect x="398" y="14" width="176" height="90" rx="8" fill="#eaf0fa" stroke="#b9cdea"/>
+  <text x="486" y="38" text-anchor="middle" font-size="13" font-weight="600" fill="#1f3a5f">SMPL-X Reasoner</text>
+  <text x="486" y="56" text-anchor="middle" font-size="11" fill="#4a5a6a">跨人注意力 ×2 层</text>
+  <text x="486" y="71" text-anchor="middle" font-size="11" fill="#4a5a6a">接触注意力 ×1 层</text>
+  <text x="486" y="86" text-anchor="middle" font-size="11" fill="#4a5a6a">→ InternalControlState</text>
+
+  <line x1="576" y1="59" x2="614" y2="59" stroke="#8494a4" stroke-width="1.6" marker-end="url(#ar)"/>
+
+  <!-- stage 4 static -->
+  <rect x="616" y="26" width="164" height="66" rx="8" fill="#eef3f8" stroke="#c9d8e6"/>
+  <text x="698" y="50" text-anchor="middle" font-size="13" font-weight="600" fill="#1f3a5f">静态条件桥</text>
+  <text x="698" y="68" text-anchor="middle" font-size="11" fill="#4a5a6a">每图一次，可缓存</text>
+  <text x="698" y="82" text-anchor="middle" font-size="11" fill="#4a5a6a">geometry / interaction</text>
+
+  <line x1="782" y1="59" x2="820" y2="59" stroke="#8494a4" stroke-width="1.6" marker-end="url(#ar)"/>
+
+  <!-- stage 5 dynamic -->
+  <rect x="822" y="6" width="196" height="106" rx="8" fill="#e8f4ee" stroke="#b6ddc8"/>
+  <text x="920" y="30" text-anchor="middle" font-size="13" font-weight="600" fill="#14532d">动态控制核</text>
+  <text x="920" y="48" text-anchor="middle" font-size="11" fill="#2f5a45">每去噪步执行</text>
+  <text x="920" y="64" text-anchor="middle" font-size="11" fill="#2f5a45">1 个全宽联合块</text>
+  <text x="920" y="79" text-anchor="middle" font-size="11" fill="#2f5a45">+ rank64 阶段适配器</text>
+  <text x="920" y="94" text-anchor="middle" font-size="11" fill="#2f5a45">+ CrossNorm + 6 组零头</text>
+
+  <line x1="1020" y1="59" x2="1056" y2="59" stroke="#8494a4" stroke-width="1.6" marker-end="url(#ar)"/>
+
+  <!-- stage 6 -->
+  <rect x="1058" y="26" width="72" height="66" rx="8" fill="#eef3f8" stroke="#c9d8e6"/>
+  <text x="1094" y="50" text-anchor="middle" font-size="12" font-weight="600" fill="#1f3a5f">强度</text>
+  <text x="1094" y="66" text-anchor="middle" font-size="12" font-weight="600" fill="#1f3a5f">调度</text>
+  <text x="1094" y="81" text-anchor="middle" font-size="10.5" fill="#4a5a6a">门控+窗</text>
+
+  <!-- branch rows -->
+  <line x1="660" y1="92" x2="660" y2="140" stroke="#2f6fb0" stroke-width="1.6" stroke-dasharray="4 3"/>
+  <line x1="660" y1="140" x2="1000" y2="140" stroke="#2f6fb0" stroke-width="1.6" stroke-dasharray="4 3"/>
+  <line x1="1000" y1="140" x2="1000" y2="112" stroke="#2f6fb0" stroke-width="1.6" marker-end="url(#ar2)"/>
+  <text x="672" y="134" font-size="11" fill="#2f6fb0">分支残差一并送入控制核（5 条支路）</text>
+
+  <!-- branch chips -->
+  <rect x="60" y="170" width="192" height="46" rx="8" fill="#e7f0fa" stroke="#2f6fb0"/>
+  <text x="156" y="190" text-anchor="middle" font-size="12.5" font-weight="700" fill="#1f4e7a">geometry · V6.3</text>
+  <text x="156" y="206" text-anchor="middle" font-size="10.5" fill="#3f5f7f">全员生效，源场景 latent 拼接</text>
+
+  <rect x="264" y="170" width="192" height="46" rx="8" fill="#eeebfb" stroke="#6b5bd2"/>
+  <text x="360" y="190" text-anchor="middle" font-size="12.5" font-weight="700" fill="#463696">interaction · V6.3</text>
+  <text x="360" y="206" text-anchor="middle" font-size="10.5" fill="#5d4fae">仅双人行，gather-dual / scatter</text>
+
+  <rect x="468" y="170" width="192" height="46" rx="8" fill="#fdeee6" stroke="#c2410c"/>
+  <text x="564" y="190" text-anchor="middle" font-size="12.5" font-weight="700" fill="#9a3412">detail · V6.4</text>
+  <text x="564" y="206" text-anchor="middle" font-size="10.5" fill="#b45309">脸+手合支，区域门控，通道 144</text>
+
+  <rect x="672" y="170" width="192" height="46" rx="8" fill="#e4f5f3" stroke="#0d9488"/>
+  <text x="768" y="190" text-anchor="middle" font-size="12.5" font-weight="700" fill="#0f5f58">face · V6.5</text>
+  <text x="768" y="206" text-anchor="middle" font-size="10.5" fill="#117a72">独立支：ArcFace 身份 + DINOv2 纹理</text>
+
+  <rect x="876" y="170" width="192" height="46" rx="8" fill="#fdeaf2" stroke="#be185d"/>
+  <text x="972" y="190" text-anchor="middle" font-size="12.5" font-weight="700" fill="#9d174d">hand · V6.6</text>
+  <text x="972" y="206" text-anchor="middle" font-size="10.5" fill="#a81e57">独立支：ROI 局部，逆映射回全局</text>
+
+  <!-- injection into DiT -->
+  <rect x="60" y="250" width="1008" height="72" rx="9" fill="#f2f5f8" stroke="#c9d8e6"/>
+  <text x="564" y="274" text-anchor="middle" font-size="13" font-weight="600" fill="#1f3a5f">DeepGen MMDiT —— 24 层，冻结，不改一行源码</text>
+  <text x="564" y="294" text-anchor="middle" font-size="11.5" fill="#4a5a6a">6 组原生残差注入：block 0–3 / 4–7 / 8–11 / 12–15 / 16–19 / 20–22</text>
+  <text x="564" y="311" text-anchor="middle" font-size="11.5" fill="#b45309">block 23（context_pre_only）不注入</text>
+
+  <line x1="564" y1="218" x2="564" y2="248" stroke="#2f6fb0" stroke-width="1.6" marker-end="url(#ar2)"/>
+
+  <rect x="60" y="344" width="1008" height="58" rx="9" fill="#fffdf6" stroke="#e6d9ae"/>
+  <text x="564" y="366" text-anchor="middle" font-size="12.5" font-weight="600" fill="#7a5c12">token 布局：[ 目标 token ← 注入残差 | 源参考 token ← 恒零 | padding ← 恒零 ]</text>
+  <text x="564" y="386" text-anchor="middle" font-size="11" fill="#7a6a3a">源参考与 padding 的残差永远为零 —— 这是“不污染输入条件”的契约保证</text>
+  <line x1="564" y1="324" x2="564" y2="342" stroke="#2f6fb0" stroke-width="1.6" marker-end="url(#ar2)"/>
+</svg>
+</div>
+
+<div class="grid3">
+  <div class="card"><h3>① 静态 vs 动态分离</h3>
+    <p class="dim">条件推理与桥接<b>每张图只算一次</b>并缓存；控制残差<b>每个去噪步重算</b>。
+    这样既省算力，又让控制能“看着当前噪声状态”调整——这就是它比一次性注入更强的根本原因。</p></div>
+  <div class="card"><h3>② 零初始化 = 可证明的起点</h3>
+    <p class="dim">所有残差头（V6.3 的 12 个，加 detail / face / hand 各 6 个）初值为全零。
+    因此「装适配器」与「不装适配器」的输出在初始化时差异 <code>≤1e-6</code>——这保证基线行为不变，是接口不变量，而非控制效果。</p></div>
+  <div class="card"><h3>③ 强度调度按分支独立</h3>
+    <p class="dim">每条支路有独立的去噪进度窗：face 在 <code>0.35–1.0</code> 才介入（先定结构、后补细节）；
+    hand 从 <code>0.15</code> 起步，纹理到 <code>0.65</code> 才放行。像画画：先起形，后上细节。</p></div>
+</div>
+
+<h2>四、五分支演进</h2>
+<div class="legend">
+  <span><i style="background:#2f6fb0"></i>主控制</span>
+  <span><i style="background:#6b5bd2"></i>交互</span>
+  <span><i style="background:#c2410c"></i>细节（合并支）</span>
+  <span><i style="background:#0d9488"></i>面部</span>
+  <span><i style="background:#be185d"></i>手部</span>
+</div>
+
+<div class="flow">
+<svg viewBox="0 0 1140 200" width="1140" height="200" role="img" aria-label="V6.3 到 V6.6 分支演进时间线">
+  <line x1="40" y1="112" x2="1100" y2="112" stroke="#c9d8e6" stroke-width="2"/>
+  <g font-size="12">
+    <circle cx="140" cy="112" r="9" fill="#2f6fb0"/>
+    <text x="140" y="80" text-anchor="middle" font-weight="700" fill="#1f3a5f">V6.3</text>
+    <text x="140" y="140" text-anchor="middle" fill="#4a5a6a">geometry</text>
+    <text x="140" y="156" text-anchor="middle" fill="#4a5a6a">+ interaction</text>
+    <text x="140" y="172" text-anchor="middle" font-size="10.5" fill="#7b8b9c">20k 全量已训</text>
+
+    <circle cx="400" cy="112" r="9" fill="#c2410c"/>
+    <text x="400" y="80" text-anchor="middle" font-weight="700" fill="#1f3a5f">V6.4</text>
+    <text x="400" y="140" text-anchor="middle" fill="#4a5a6a">detail 支</text>
+    <text x="400" y="156" text-anchor="middle" fill="#4a5a6a">脸+手共享</text>
+    <text x="400" y="172" text-anchor="middle" font-size="10.5" fill="#7b8b9c">6 过 / 4 未过</text>
+
+    <circle cx="660" cy="112" r="9" fill="#0d9488"/>
+    <text x="660" y="80" text-anchor="middle" font-weight="700" fill="#1f3a5f">V6.5</text>
+    <text x="660" y="140" text-anchor="middle" fill="#4a5a6a">face 独立支</text>
+    <text x="660" y="156" text-anchor="middle" fill="#4a5a6a">身份+纹理 KV</text>
+    <text x="660" y="172" text-anchor="middle" font-size="10.5" fill="#1f7a4d">过拟合通过·纯生成跑通</text>
+
+    <circle cx="920" cy="112" r="9" fill="#be185d"/>
+    <text x="920" y="80" text-anchor="middle" font-weight="700" fill="#1f3a5f">V6.6</text>
+    <text x="920" y="140" text-anchor="middle" fill="#4a5a6a">hand 独立支</text>
+    <text x="920" y="156" text-anchor="middle" fill="#4a5a6a">ROI 局部 + 逆映射</text>
+    <text x="920" y="172" text-anchor="middle" font-size="10.5" fill="#b45309">代码已入库·待训</text>
+  </g>
+</svg>
+</div>
+
+<table>
+  <thead><tr><th>支路</th><th>引入</th><th>作用范围</th><th>条件输入</th><th>残差头</th><th>状态</th></tr></thead>
+  <tbody>
+    <tr><td><b>geometry</b></td><td>V6.3</td><td>所有样本行</td><td>源场景 latent + 融合几何特征（16+128 通道）</td><td>6</td><td><span class="tag t-ok">已训 20k</span></td></tr>
+    <tr><td><b>interaction</b></td><td>V6.3</td><td>仅双人行</td><td>零前缀 16 通道 + 交互特征（避免源场景信息重复计数）</td><td>6</td><td><span class="tag t-warn">单步冒烟</span></td></tr>
+    <tr><td><b>detail</b></td><td>V6.4</td><td>脸 / 手 ROI 门控</td><td>区域掩码 + 144 通道条件，face 与 hand 合支</td><td>6</td><td><span class="tag t-warn">欠训练</span></td></tr>
+    <tr><td><b>face</b></td><td>V6.5</td><td>人脸 ROI</td><td>ArcFace 512D 身份 + DINOv2-Giant 256×1536 纹理 + 72 点关键点 + ROI 框</td><td>6</td><td><span class="tag t-ok">过拟合通过</span></td></tr>
+    <tr><td><b>hand</b></td><td>V6.6</td><td>双手 ROI（2 人 × 2 手）</td><td>96 维旋转（6D）+ 骨骼点集 + 16×16 高斯热图 + 深度 + DINOv2 patch 外观</td><td>6</td><td><span class="tag t-bad">未训练</span></td></tr>
+  </tbody>
+</table>
+
+<h2>五、V6.6 手部分支为什么会是新东西</h2>
+<div class="br">
+  <b>核心矛盾：</b>VAE 是 8× 下采样。一张 512×512 的图进到潜空间只剩 64×64，
+  手上那点像素被压到<b>亚像素级</b>——这是手部细节的硬约束，也是全项目反复卡住的根因。
+  拿它类比：像是在 8 倍缩小的缩略图上改指纹，主干本身根本“看不到”手指。
+</div>
+
+<p>V6.4 的做法是给「脸+手」开一条共享支路并按区域门控，方向对但两支互相牵制。V6.6 把<b>手单独拆出来</b>，
+并采用一条与脸完全不同的技术路线：<b>在外面的 ROI 上把手画好，再贴回全局 token</b>。</p>
+
+<div class="flow">
+<svg viewBox="0 0 1140 300" width="1140" height="300" role="img" aria-label="V6.6 手部 ROI 局部精修与逆映射">
+  <rect x="14" y="20" width="176" height="80" rx="8" fill="#e7f0fa" stroke="#2f6fb0"/>
+  <text x="102" y="44" text-anchor="middle" font-size="12.5" font-weight="700" fill="#1f4e7a">目标手几何</text>
+  <text x="102" y="62" text-anchor="middle" font-size="10.5" fill="#3f5f7f">21 点 ×2 手 ×2 人</text>
+  <text x="102" y="76" text-anchor="middle" font-size="10.5" fill="#3f5f7f">45 维旋转 → 96 维 6D</text>
+  <text x="102" y="90" text-anchor="middle" font-size="10.5" fill="#3f5f7f">+ 深度 + 可见度</text>
+
+  <line x1="192" y1="60" x2="228" y2="60" stroke="#8494a4" stroke-width="1.6" marker-end="url(#ar)"/>
+
+  <rect x="230" y="20" width="150" height="80" rx="8" fill="#eef3f8" stroke="#c9d8e6"/>
+  <text x="305" y="44" text-anchor="middle" font-size="12.5" font-weight="600" fill="#1f3a5f">ROI 采样</text>
+  <text x="305" y="62" text-anchor="middle" font-size="10.5" fill="#4a5a6a">裁到 16×16 局部格</text>
+  <text x="305" y="78" text-anchor="middle" font-size="10.5" fill="#4a5a6a">热图 + 掩码 + 深度</text>
+  <text x="305" y="92" text-anchor="middle" font-size="10.5" fill="#4a5a6a">→ 23 通道输入</text>
+
+  <line x1="382" y1="60" x2="418" y2="60" stroke="#8494a4" stroke-width="1.6" marker-end="url(#ar)"/>
+
+  <rect x="420" y="6" width="196" height="108" rx="8" fill="#fdeaf2" stroke="#be185d"/>
+  <text x="518" y="30" text-anchor="middle" font-size="12.5" font-weight="700" fill="#9d174d">HandControlAdapter</text>
+  <text x="518" y="48" text-anchor="middle" font-size="10.5" fill="#a81e57">几何作 Query，外观作 Key/Value</text>
+  <text x="518" y="64" text-anchor="middle" font-size="10.5" fill="#a81e57">2 个融合块 + 6 个阶段</text>
+  <text x="518" y="80" text-anchor="middle" font-size="10.5" fill="#a81e57">时步 FiLM + 自注意力</text>
+  <text x="518" y="96" text-anchor="middle" font-size="10.5" fill="#a81e57">→ 6 组零初始化残差头</text>
+
+  <line x1="618" y1="60" x2="654" y2="60" stroke="#8494a4" stroke-width="1.6" marker-end="url(#ar)"/>
+
+  <rect x="656" y="20" width="176" height="80" rx="8" fill="#fff7fb" stroke="#e8b9d0"/>
+  <text x="744" y="44" text-anchor="middle" font-size="12.5" font-weight="600" fill="#9d174d">局部残差图</text>
+  <text x="744" y="62" text-anchor="middle" font-size="10.5" fill="#a81e57">每只手 16×16 网格</text>
+  <text x="744" y="78" text-anchor="middle" font-size="10.5" fill="#a81e57">各自独立生成</text>
+  <text x="744" y="92" text-anchor="middle" font-size="10.5" fill="#a81e57">（4 个 ROI 并行）</text>
+
+  <line x1="834" y1="60" x2="870" y2="60" stroke="#8494a4" stroke-width="1.6" marker-end="url(#ar)"/>
+
+  <rect x="872" y="6" width="254" height="108" rx="8" fill="#f2f7f4" stroke="#b6ddc8"/>
+  <text x="999" y="30" text-anchor="middle" font-size="12.5" font-weight="700" fill="#14532d">逆映射贴回全局 token</text>
+  <text x="999" y="48" text-anchor="middle" font-size="10.5" fill="#2f5a45">按 ROI 框做 grid_sample 反变换</text>
+  <text x="999" y="64" text-anchor="middle" font-size="10.5" fill="#2f5a45">深度加权：近的手“盖住”远的手</text>
+  <text x="999" y="80" text-anchor="middle" font-size="10.5" fill="#2f5a45">重叠处不做重复叠加</text>
+  <text x="999" y="96" text-anchor="middle" font-size="10.5" fill="#2f5a45">→ 64×64 全局残差</text>
+
+  <!-- bottom notes -->
+  <rect x="14" y="150" width="548" height="126" rx="9" fill="#f7fafd" stroke="#c9d8e6"/>
+  <text x="32" y="174" font-size="12.5" font-weight="700" fill="#1f3a5f">为什么必须做深度加权重叠</text>
+  <text x="32" y="196" font-size="11.5" fill="#4a5a6a">握手 / 拥抱时两只手在画面上是重叠的。如果没有深度排序，</text>
+  <text x="32" y="214" font-size="11.5" fill="#4a5a6a">同一点的残差会被两只手各加一次，等于“双重曝光”，手会糊。</text>
+  <text x="32" y="236" font-size="11.5" fill="#4a5a6a">V6.6 的做法：深度只改变重叠处的<b>归属权重</b>，单只手的</text>
+  <text x="32" y="254" font-size="11.5" fill="#4a5a6a">掩码强度保持原样 —— 既不重复，也不削弱。</text>
+
+  <rect x="578" y="150" width="548" height="126" rx="9" fill="#f7fafd" stroke="#c9d8e6"/>
+  <text x="596" y="174" font-size="12.5" font-weight="700" fill="#1f3a5f">对外观泄漏的防线</text>
+  <text x="596" y="196" font-size="11.5" fill="#4a5a6a">手的外观只从<b>源帧</b>取 DINOv2 patch，目标帧 RGB 完全不参与。</text>
+  <text x="596" y="214" font-size="11.5" fill="#4a5a6a">推理时不需要目标帧 RGB —— 这是“真编辑”而非“换皮”的前提。</text>
+  <text x="596" y="236" font-size="11.5" fill="#4a5a6a">另有 <code>hand_quality_gate</code>：对手小 / 置信度低 / 出界的样本</text>
+  <text x="596" y="254" font-size="11.5" fill="#4a5a6a">标记为待精修，可由 ViTPose 结果替换（离线，不默认开启）。</text>
+</svg>
+</div>
+
+<div class="grid3">
+  <div class="card"><h3>几何编码</h3><p class="dim">
+  45 维轴角手部姿态转为 96 维 6D 旋转表示（VTON 风格），加上 21 点骨骼、
+  16×16 高斯热图与深度切片，构成 23 通道局部输入。</p></div>
+  <div class="card"><h3>外观编码</h3><p class="dim">
+  源手区域取 DINOv2-Giant patch 特征，经重采样器压成 8 个外观 token，
+  以 Key/Value 形式供几何 Query 检索——<b>只借纹理，不借身份</b>。</p></div>
+  <div class="card"><h3>离线增强钩子</h3><p class="dim">
+  预留 HandRefiner 导出接口与质量门控，属于「可选后处理」，
+  默认生成链路绝不触发，避免引入不可复现的外部依赖。</p></div>
+</div>
+
+<h2>六、数据资产</h2>
+<table>
+  <thead><tr><th>数据集</th><th>规模</th><th>划分</th><th>模态覆盖</th><th>用途与限制</th></tr></thead>
+  <tbody>
+    <tr><td><b>iPER</b></td><td>≈18 GB<br>99 身份 / 6,930 帧</td><td>按身份三分防泄漏<br>69 / 10 / 20</td>
+      <td>RGB、Normal、Part(14 类)、DWPose、Depth、Mask（512 分辨率渲染资产）</td>
+      <td>主力预训练数据；<span class="tag t-warn">缺 face68 / hand42 语义关键点</span>，手部依赖 134 点全身布局切分</td></tr>
+    <tr><td><b>TikTok</b></td><td>≈89 GB<br>340 序列 / 92,961 帧</td><td>train 179 / val 20 / test 20<br>标准评估 219 序列 100% 有 3D 资产</td>
+      <td>604×1080 竖屏 RGB、Mask、DensePose、SMPL-X 参数（含左右手 45 维）、Normal / Depth / SMPL-X Mask</td>
+      <td>面部与手部像素占比远高于 iPER，表情丰富 → <b>V6.5/V6.6 的理想验证场</b>；<span class="tag t-warn">缺 Part 与 2D 关键点</span></td></tr>
+    <tr><td><b>Hi4D_pilot_v1</b> (v4.2)</td><td>≈18 GB<br>2,740 配对</td><td>train 1,312 / val 822 / test 606<br>分层 SAME / CROSS_ACTION</td>
+      <td>DWPose A/B、Depth scene、Normal scene、Semantic A/B</td>
+      <td>唯一双人交互数据源；<span class="tag t-bad">仅 1 步冒烟，无训练结论</span>；目标真人 mask 明确不作为控制</td></tr>
+  </tbody>
+</table>
+<p class="dim">关键工程约束：iPER 走 512×512 方形，TikTok 原生 604×1080 竖屏。
+若接入 TikTok 训练，推荐<b>等比居中裁剪到 512×512</b>，这样可 100% 复用现有全部 V6.x 权重，无需改动 DiT 分辨率。</p>
+
+<h2>七、实验状态与实测指标</h2>
+
+<h3>V6.3 主干 · 20k 全量训练（基线）</h3>
+<div class="grid4">
+  <div class="kpi"><div class="v">19.29 h</div><div class="k">20,000 步总耗时</div></div>
+  <div class="kpi"><div class="v">16.50 GiB</div><div class="k">训练峰值显存</div></div>
+  <div class="kpi"><div class="v">24.00 / 0.981</div><div class="k">ON：PSNR / SSIM</div></div>
+  <div class="kpi"><div class="v">16.93 / 0.901</div><div class="k">OFF：PSNR / SSIM（差 +7.07 dB）</div></div>
+</div>
+<div class="br bad">
+  <b>但判据本身已经失效：</b>末次验证损失 ON <code>0.2276</code> vs OFF <code>0.2454</code>，仅差 7.2%。
+  也就是说<b>损失指标已区分不出“装没装适配器”</b>，后续必须以人体区域指标 + 姿态 PCK 重判，不能沿用全图损失。
+</div>
+
+<h3>V6.5 face 分支 · 单样本过拟合</h3>
+<table>
+  <thead><tr><th>实验</th><th>配置</th><th>face_on 相似度</th><th>LPIPS</th><th>flow MSE</th><th>ROI 外扰动</th><th>判读</th></tr></thead>
+  <tbody>
+    <tr>
+      <td>iPER 024_6</td><td>1500 步 / 438 s</td>
+      <td class="num">0.8807 → <b>0.9864</b></td>
+      <td class="num">0.0951 → <b>0.0456</b><br><span class="dim">−52%</span></td>
+      <td class="num">0.4428 → 0.3490<br><span class="dim">−21%</span></td>
+      <td class="num" style="color:#b45309">0 → <b>0.0695</b></td>
+      <td><span class="tag t-warn">有效但泄漏偏大</span></td>
+    </tr>
+    <tr>
+      <td>TikTok 00001<br><span class="dim">src 0014 → tgt 0074</span></td><td>200 步 / 64 s</td>
+      <td class="num">0.9786 → <b>0.9859</b></td>
+      <td class="num">0.0287 → <b>0.0151</b><br><span class="dim">−47%</span></td>
+      <td class="num">0.5299 → 0.4588<br><span class="dim">−13%</span></td>
+      <td class="num" style="color:#b45309">0 → 0.0274</td>
+      <td><span class="tag t-ok">收敛趋势健康</span></td>
+    </tr>
+  </tbody>
+</table>
+<p class="dim">OFF 基线的相似度与 LPIPS 在所有快照中<b>严格恒定</b>（0.8807 / 0.9786），
+说明开关关闭时行为完全可复现；同时 <code>non_face_sha256</code> 训练前后一致 —— 面部支路对上游零污染，这一点已闭环验证。</p>
+
+<div class="br ok">
+  <b>本轮最重要的新增证据：</b>20:42 完成的 <code>tiktok_v65_pure_inference</code> 是
+  <b>28 步、CFG 4.0、从 100% 随机噪声起步的完整生成</b>（face OFF 4.96 s / face ON 4.72 s），
+  产出全身与面部 ROI 两档对比图。
+  这从证据等级上跨了一大步：此前所有 face 结论都只是<b>固定时间步 t=150 的单步前向</b>，
+  现在证明面部支路在<b>多步真实采样</b>中同样生效且不拖慢速度。
+</div>
+
+<h3>V6.6 hand 分支 · 就绪度</h3>
+<div class="grid3">
+  <div class="kpi"><div class="v">3</div><div class="k">已入库提交（架构 + 134 点切分 + 绑定校验）</div></div>
+  <div class="kpi"><div class="v" style="color:#b45309">0</div><div class="k">已生成的 <code>v66_hand_features.pt</code> 缓存数</div></div>
+  <div class="kpi"><div class="v" style="color:#b45309">未训练</div><div class="k">无任何 V6.6 实验目录</div></div>
+</div>
+<p class="dim">若要在 iPER 上启动 V6.6 单样本过拟合，前置步骤是先跑
+<code>scripts/precompute_iper_hand_features_v66.py</code> 生成手部特征缓存，
+再由 <code>train_iper_v66_hand.py</code> 消费（该脚本已内置 warmup/full 双阶段与
+「off / legacy / v66 三模式共享随机状态」的公平对比设计）。</p>
+
+<h2>八、风险与待办</h2>
+<div class="br bad">
+  <b>R1 · 文档与配置滞后两个版本（高优先级）</b><br>
+  <code>configs/adapter_v6_architecture.json</code> 版本号仍是 <code>6.3-dynamic-deepgen-interface-v1</code>，
+  <code>docs/adapter_v6_architecture.md</code> 标题也仍是 V6.3。
+  两者<b>完全没有覆盖 detail / face / hand 三支</b>。当前架构真实版本是 <b>v6.6</b>（见 <code>checkpoint.ARCHITECTURE_VERSION</code>）。
+  这意味着任何依赖配置文件的复现流程都会得到错误的架构描述。
+</div>
+<div class="br bad">
+  <b>R2 · 远端仓库存在大额未提交改动</b><br>
+  <code>git status</code> 显示 <b>51 个文件变更 / 净 −3,798 行</b>，其中包括
+  任务书等 3 个 <code>.docx</code> 显示为删除、<code>train_adapter.py</code> 与 <code>test_control_signals.py</code> 被删、
+  <code>eval_iper_v6.py</code> 等处于修改态。这些删除是否有意，需要裁决；否则一次误操作即可造成不可回溯的丢失。
+</div>
+<div class="br warn">
+  <b>R3 · 细节分支的 ROI 外泄漏未被约束</b><br>
+  face 支路在人脸 ROI <b>之外</b>的扰动 MSE 随训练步数<b>单调上升</b>（iPER 达 0.0695，是 TikTok 的 2.5 倍）。
+  当前强度调度只控制「何时介入」，<b>没有约束「在哪儿介入」的软边界</b>。
+  建议在损失里显式加入 ROI 外一致性项，或收紧 <code>region mask</code> 的衰减带宽。
+</div>
+<div class="br warn">
+  <b>R4 · 双人交互这一硬指标缺少证据链</b><br>
+  任务书要求二阶段双人交互主观合理率 ≥90%，而 Hi4D 目前只有 1 步冒烟。
+  这是验收链上<b>最大的一块空白</b>，优先级应高于继续打磨单支细节。
+</div>
+<div class="br warn">
+  <b>R5 · 系统盘空间紧张</b><br>
+  <code>/dev/sda2</code> 仅剩 <b>66 GB（97% 已用）</b>，而 <code>/data</code> 有 22 TB 仅用 2%。
+  继续训练前应把大文件（数据集、检查点）迁往 <code>/data</code>，否则一次缓存写入就可能触发中断。
+</div>
+<div class="br">
+  <b>R6 · 本地与远端双向漂移</b>：远端领先本地 3 个提交（V6.6 全部代码）；
+  同时远端存在大量本地没有的未提交改动。两侧已不具备「互为单位置副本」的性质，
+  建议尽快确定单向同步策略。
+</div>
+
+<h2>九、环境与卫生备注</h2>
+<div class="grid2">
+  <div class="card"><h3>运行环境</h3><ul class="dim">
+    <li>conda 环境 <code>deepgen</code>：torch 2.8.0+cu128 / diffusers 0.35.2 / transformers 4.56.1 / Python 3.12</li>
+    <li>解释器绝对路径 <code>/home/shangguanrz/miniconda3/envs/deepgen/bin/python</code>（非交互 shell 中 <code>python</code> 不在 PATH）</li>
+    <li>GPU：RTX 6000D 85,651 MiB，勘查时占用 2,274 MiB / 利用率 0%，<b>我方无训练进程</b></li>
+  </ul></div>
+  <div class="card"><h3>代码规模（实测 <code>src/pose_control/v6/</code>）</h3><ul class="dim">
+    <li>合计 <b>7,879 行</b>：核心 2,987 · face 1,474 · detail 1,143 · interface 863 · reasoning 845 · hand 567</li>
+    <li>测试覆盖 28 个用例文件，V6.6 已配 <code>test_v66_hand_core.py</code></li>
+    <li>第三方迁移集中在 <code>third_party/v65_face/</code>（StableAnimator / VisualPersona / MCLD / xdyna，Apache-2.0）</li>
+  </ul></div>
+</div>
+
+<footer>
+  数据来源：本地工作区只读勘察 + <code>ssh sg</code> 只读巡检（HEAD <code>b1a00c2</code>）。
+  所有数字均为本次实测，未沿用历史报告结论。勘查过程中未执行任何写操作、未启动任何训练进程。
+</footer>
+
+</div>
+</body>
+</html>

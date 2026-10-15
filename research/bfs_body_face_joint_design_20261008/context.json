@@ -1,0 +1,56 @@
+{
+  "audit_date": "2026-10-08",
+  "repo": "/home/shangguanrz/project/pic-edit",
+  "face_run_manifest": "/home/shangguanrz/nihaochen/qwen21_full/tiktok_face_v1_20261004/training/run_manifest.json",
+  "baseline_args": {
+    "init_checkpoint": "/home/shangguanrz/nihaochen/qwen21_full/tiktok_body_fullpass_20261004/training/checkpoint_step_006000.pt",
+    "resolution": 512,
+    "face_flow_loss": "roi",
+    "face_aux_every": 4,
+    "face_aux_alignment": "box"
+  },
+  "manifest_counts": {
+    "train_pairs": 1000,
+    "train_sequences": 203,
+    "train_video_groups": 20,
+    "val_pairs": 24,
+    "val_sequences": 22
+  },
+  "manifest_sha256": {
+    "/home/shangguanrz/nihaochen/qwen21_full/tiktok_face_v1_20261004/data/train_pairs.jsonl": "ac37084c3e5f7ed81e30c00c0df99e913248b94adf790413c8bafeed57501de2",
+    "/home/shangguanrz/nihaochen/qwen21_full/tiktok_face_v1_20261004/data/val24_pairs.jsonl": "cece883b96dbbc9270fd77d4bb1e973470f52f941af85c2a0746947f5d91e10a"
+  },
+  "existing_face_checkpoint_candidates": [
+    "/home/shangguanrz/nihaochen/qwen21_full/tiktok_face_v1_20261004/training/checkpoint_step_000000.pt",
+    "/home/shangguanrz/nihaochen/qwen21_full/tiktok_face_v1_20261004/training/checkpoint_step_001000.pt",
+    "/home/shangguanrz/nihaochen/qwen21_full/tiktok_face_v1_20261004/training/checkpoint_step_002000.pt",
+    "/home/shangguanrz/nihaochen/qwen21_full/tiktok_face_v1_20261004/training/checkpoint_step_003000.pt"
+  ],
+  "matching_bfs_files": [
+    "bfs_head_v1.1_alternative_qwen_2.1.safetensors",
+    "bfs_head_v1.1_qwen_2.1.safetensors",
+    "bfs_head_v1_qwen_2.1.safetensors",
+    "bfs_body_swap_v1.0_qwen_2.1.safetensors"
+  ],
+  "current_cli_branches": [
+    "body",
+    "face"
+  ],
+  "joint_loss_related_code": [
+    "112:         'face_flow_loss': 'global', 'face_aux_every': 4, 'face_aux_alignment': 'box',",
+    "545:              normalized_face_evaluators=False, face_flow_loss='global', face_aux_alignment='box'):",
+    "548:     if branch == 'face' and getattr(dataset, 'align_mode', 'resize') == 'letterbox' and face_flow_loss != 'roi':",
+    "563:         sigma = sigma * (.35 if auxiliary else .65)",
+    "583:     outside_reference = None",
+    "590:                 outside_reference = pipe.transformer(**inputs)[0][:, -tokens:]",
+    "611:             flow, global_flow, face_flow, nonface_flow = face_velocity_loss(squared, mask, face_flow_loss)",
+    "613:             outside = ((prediction.float() - outside_reference.float()).square() * outside_weight).sum() / (",
+    "673:         total = flow + .10 * identity + .05 * perceptual + .02 * outside",
+    "692:         report['face_flow_loss_mode'] = face_flow_loss"
+  ],
+  "code_sha256": {
+    "train_iper_qwen21_full.py": "3cd6097590c6ac4e1fc2846e615c3cb752df714fc6d47be2a8ca8bbb63602f36",
+    "src/pose_control/qwen21_full/execution.py": "823fe9084362c189dfecb3a5cceb5025b6f10c769b0f5a405e087a5c2e3cb842",
+    "src/pose_control/qwen21_full/interface/strength.py": "74f3c3fca143b685666814e04e4598106294d71d9dbfa4a4d93679a53ba84d97"
+  }
+}

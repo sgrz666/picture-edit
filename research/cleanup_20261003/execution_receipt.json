@@ -1,0 +1,79 @@
+{
+  "passed": true,
+  "local_verification": {
+    "passed": true,
+    "checked_unique_paths": 151,
+    "moved_file_count": 144,
+    "index_unchanged": true,
+    "head": "8e01dbc9f793590ef46754e7abcbb2592a8a856a",
+    "problems": [],
+    "finished_at": 1791039692.1635153
+  },
+  "remote_verification": {
+    "passed": true,
+    "structure_verification": {
+      "passed": true,
+      "moved_entries": 62,
+      "classified_aliases": 31,
+      "home_tools_archived": 62,
+      "home_runner_aliases": 4,
+      "navigation_links": 4,
+      "asset_files_hashed": 0,
+      "retired_holds_confirmed": 76,
+      "source_changes_since_cleanup": [
+        "/home/shangguanrz/project/pic-edit/scripts/data/prepare_qwen21_full_data.py",
+        "src/pose_control/qwen21_full/execution.py",
+        "src/pose_control/qwen21_full/qwen_adapter.py",
+        "train_iper_qwen21_full.py",
+        "eval_iper_qwen21_full.py"
+      ],
+      "historical_head_unchanged": true,
+      "historical_index_unchanged": true,
+      "pending_assets": [],
+      "problems": []
+    },
+    "full_asset_files_hashed": 4764,
+    "full_verification_finished_at": 1791040270.2036612,
+    "source_bindings_verified": 252,
+    "source_changes_since_actual_tests": [],
+    "current_ast_count": 133,
+    "pytest_passed": 246,
+    "cli_checked": 11,
+    "verifier_sha256": "997d2410a43ca3032a2599a9921871273c2cfd85b6955c6557840859f725e661",
+    "final_disk_usage": {
+      "total": 1886923673600,
+      "used": 1419093848064,
+      "free": 371903840256
+    },
+    "head": "b1a00c2a3b2955779af40ab19b5bab71ac19539a",
+    "index_sha256": "e958d38e13eb60b08946e19b39cf7a184987e07f8cf470deded2380abba2dbc6",
+    "finished_at": 1791040742.0827582
+  },
+  "relocation_mapping_rows": 175,
+  "plan_completed_items": 24,
+  "document_sha256": {
+    "docs/PROJECT_STRUCTURE_20261003.md": "367fdc73c8e085218cbf5d54c405b23975d7a98d80fe893e5da983b7a6f89869",
+    "docs/目录清理执行记录_20261003.md": "d7059b1635c9d9f2b23f9c5997b5e1b9f84f4170d9a2554c123b1e7f69f63ca7",
+    "docs/superpowers/plans/2026-10-03-project-organization.md": "33fbf5591ce047ad380eb1911887f243a830de3e158798ff59f9d0f9072800e3",
+    "scripts/README.md": "d29bbb8716e7fe6f89ff39efef1d772dbda3ebfa59278a7c226e77f22cfa07f2",
+    "scripts/audit/verify_project_organization.py": "997d2410a43ca3032a2599a9921871273c2cfd85b6955c6557840859f725e661",
+    "reports/README.md": "605db3d9212a6d44c3499a40463317a3a72b767b5e362e0de8b2ab712d815bfa",
+    "add/README.md": "d0125b2133601ad060a1b3a8e92c826d8d15b5ad184e291dbf9747d14f9c55fa",
+    "configs/asset_registry.json": "9d8bdb2047309e17b0250ab92a8c1779d2ec30569dbcbd4faf102770c9b5b504"
+  },
+  "deployed_document_verification": {
+    "passed": true,
+    "files": 8,
+    "problems": [],
+    "sha256": {
+      "docs/PROJECT_STRUCTURE_20261003.md": "367fdc73c8e085218cbf5d54c405b23975d7a98d80fe893e5da983b7a6f89869",
+      "docs/目录清理执行记录_20261003.md": "d7059b1635c9d9f2b23f9c5997b5e1b9f84f4170d9a2554c123b1e7f69f63ca7",
+      "docs/superpowers/plans/2026-10-03-project-organization.md": "33fbf5591ce047ad380eb1911887f243a830de3e158798ff59f9d0f9072800e3",
+      "scripts/README.md": "d29bbb8716e7fe6f89ff39efef1d772dbda3ebfa59278a7c226e77f22cfa07f2",
+      "scripts/audit/verify_project_organization.py": "997d2410a43ca3032a2599a9921871273c2cfd85b6955c6557840859f725e661",
+      "reports/README.md": "605db3d9212a6d44c3499a40463317a3a72b767b5e362e0de8b2ab712d815bfa",
+      "add/README.md": "d0125b2133601ad060a1b3a8e92c826d8d15b5ad184e291dbf9747d14f9c55fa",
+      "configs/asset_registry.json": "9d8bdb2047309e17b0250ab92a8c1779d2ec30569dbcbd4faf102770c9b5b504"
+    }
+  }
+}
