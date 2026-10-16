@@ -1,0 +1,518 @@
+{
+  "schema_version": 1,
+  "role": "protocol_snapshot",
+  "protocol_id": "pilot_b_v1",
+  "documented_on": "2026-10-16",
+  "source_plan": "docs/superpowers/plans/2026-10-15-qwen21-union-dataset-adaptation-plan-b.md",
+  "runtime_note": "协议记录。当前 CLI 不读取此 JSON；运行约束由代码、数据 lock、缓存指纹及门禁签名校验。",
+  "paths": {
+    "workspace": "/data/shangguanrz/pic-edit-experiments/qwen21_union_dataset_adaptation_v1",
+    "python": "/data/shangguanrz/pic-edit-experiments/qwen21_union_dataset_adaptation_v1/env/bin/python",
+    "code_snapshot": "/data/shangguanrz/pic-edit-experiments/qwen21_union_dataset_adaptation_v1/code",
+    "cli": "/data/shangguanrz/pic-edit-experiments/qwen21_union_dataset_adaptation_v1/code/experiments/qwen21_union_dataset_adaptation_v1/scripts/run.py",
+    "project_root": "/home/shangguanrz/project/pic-edit",
+    "project_experiment_family_location": "/home/shangguanrz/project/pic-edit/experiments/2.qwen-test/qwen21_union_dataset_adaptation_v1",
+    "base_model": "/data/shangguanrz/pic-edit-models/Qwen-Image-2.1",
+    "official_source": "/data/shangguanrz/pic-edit-experiments/qwen21_union_migration_v1/source/VideoX-Fun",
+    "official_union": "/data/shangguanrz/pic-edit-experiments/qwen21_union_migration_v1/models/Qwen-Image-2.1-Fun-Controlnet-Union",
+    "serial_executor": "/data/shangguanrz/pic-edit-experiments/qwen21_union_dataset_adaptation_v1/code/experiments/qwen21_union_dataset_adaptation_v1/scripts/execute.py"
+  },
+  "environment_observed": {
+    "manifest": "environment_20261016T172034.json",
+    "torch": "2.8.0+cu128",
+    "diffusers": "0.41.0.dev0",
+    "transformers": "5.17.0"
+  },
+  "models": {
+    "videox_fun_commit": "13bb3c625e8b1e457d7124d92207b49e00e4a6fe",
+    "union_revision": "8a4702014d4dabb5f896fcba917e2ee0a961465f",
+    "union_checkpoint_sha256": "65d6b66d734da9e7ff5ef04e7db3a133553a52a3f29a7fcb3e9cce8fa21dcfcd",
+    "control_in_channels": 129,
+    "control_layers": [
+      0,
+      2,
+      4,
+      6,
+      8,
+      10,
+      12,
+      14,
+      16,
+      18,
+      20,
+      22,
+      24,
+      26,
+      28,
+      30
+    ],
+    "official_control_tensor_count": 180,
+    "frozen_components": [
+      "base_transformer",
+      "original_union",
+      "vae",
+      "qwen3_vl"
+    ],
+    "causal_condition": true,
+    "use_kv_cache": false
+  },
+  "data": {
+    "selection_seed": 20261015,
+    "sort_key": "SHA256('union_b_v1:' + sample_id)",
+    "sample_id_fields": [
+      "dataset",
+      "split",
+      "source_relative_path",
+      "target_relative_path",
+      "camera_id",
+      "original_person_correspondence"
+    ],
+    "quotas": {
+      "iper": {
+        "train": 512,
+        "val": 24,
+        "test": 32
+      },
+      "tiktok": {
+        "train": 512,
+        "val": 24,
+        "test": 32
+      },
+      "hi4d": {
+        "train": 512,
+        "val": 24,
+        "test": 32
+      },
+      "3dpw": {
+        "train": 0,
+        "val": 0,
+        "test": 32
+      }
+    },
+    "total_quotas": {
+      "train": 1536,
+      "val": 72,
+      "test": 128
+    },
+    "overfit6": {
+      "split": "train",
+      "per_dataset": 2,
+      "datasets": [
+        "iper",
+        "tiktok",
+        "hi4d"
+      ],
+      "total": 6,
+      "subset_of_formal_train": true
+    },
+    "manifests": {
+      "iper": "datasets/iPER/iper_sampled_6src64tgt/splits/{dev_train,dev_val,test}_pairs.jsonl",
+      "tiktok": "datasets/TikTokDataset/TikTok_v3/manifests/pairs_strict_v1/{train,val,test}_pairs.jsonl",
+      "hi4d": "datasets/Hi4D_pilot_v1/final_assets_v4_2/manifests/main_pairs_{train,val,test}.jsonl",
+      "3dpw": "datasets/3dpw_single_final_v2/{train,validation,test}_pairs.csv"
+    },
+    "split_group_fields": {
+      "iper": "appearance",
+      "tiktok": "source_video_group",
+      "hi4d": "pair",
+      "3dpw": "sequence"
+    },
+    "stratification": {
+      "iper": [
+        "appearance",
+        "standard_or_motion_source"
+      ],
+      "tiktok": [
+        "source_video_group",
+        "sequence"
+      ],
+      "hi4d": [
+        "pair",
+        "action_family",
+        "same_or_cross_action",
+        "actual_contact_vertex_count"
+      ],
+      "3dpw": [
+        "sequence",
+        "pose_bin"
+      ]
+    },
+    "deduplication": [
+      "canonical_target_path",
+      "decoded_RGB_pixel_SHA256"
+    ],
+    "hi4d_target_key": [
+      "pair",
+      "target_action",
+      "camera_id",
+      "target_frame_id"
+    ],
+    "spacing": {
+      "iper_target_min_frames_in_sequence": 8,
+      "tiktok_target_min_frames_in_sequence": 8,
+      "hi4d_target_min_frames_in_action_camera": 2,
+      "3dpw_source_target_min_frames": 8
+    },
+    "insufficient_quota_policy": "raise_with_stratum_counts; no_threshold_relaxation_or_cross_split_borrowing",
+    "conditions_and_supervision_physically_separate": true,
+    "supervision_cache_allowed_splits": [
+      "train"
+    ],
+    "target_rgb_policy": "Original target path and exact target_transform stay in supervision; no target RGB/latent in inference conditions.",
+    "iper_identity_interpretation": {
+      "label": "appearance 留出",
+      "historical_prefix_overlap_audit_date": "2026-10-15",
+      "historical_subject_prefix_intersections": {
+        "train_val": 7,
+        "train_test": 9,
+        "val_test": 5
+      },
+      "current_group_intersection_evidence": "data/lock.json:audit.group_intersections",
+      "current_subject_prefix_audit": "CLI audit recomputes and writes a timestamped audit JSON; historical counts are not a fresh audit."
+    }
+  },
+  "conditions": {
+    "canvas_wh": [
+      512,
+      512
+    ],
+    "resize": "aspect_preserving; round actual resized width/height; centered letterbox",
+    "rgb_interpolation": "LANCZOS",
+    "rgb_fill": [
+      255,
+      255,
+      255
+    ],
+    "pose_fill": [
+      0,
+      0,
+      0
+    ],
+    "mask_interpolation": "nearest",
+    "source_and_target_transforms_independent": true,
+    "keypoint_layout": "DWPose-134; no second neck insertion",
+    "keypoint_score_threshold": 0.25,
+    "keypoint_mapping": "xy_canvas = xy_native * actual_resized_wh / original_wh + offset_xy",
+    "out_of_frame_requests": "retain finite coordinates and confidence for strict evaluation; no clamping",
+    "hi4d_render_validity": "score>=0.25 and finite and in native frame; excluded points become NaN before render_poseguide",
+    "hi4d_person_order": "source mask centre x, then y, then original person index; mark ambiguous ties",
+    "single_reference_images": [
+      "source_rgb",
+      "target_pose"
+    ],
+    "dual_reference_images": [
+      "source_rgb",
+      "pose_for_source_left_person",
+      "pose_for_source_right_person"
+    ],
+    "single_prompt": "Change the person in image 1 to the pose shown in image 2. Preserve the person's identity, clothing, and background.",
+    "dual_prompt": "Move the person on the left in image 1 to the pose in image 2, and the person on the right in image 1 to the pose in image 3. Preserve each person's identity and clothing and preserve the background. Keep the two people distinct.",
+    "prompt_generator": "fixed_template; no PE; no target RGB access"
+  },
+  "cache": {
+    "preprocessing_version": "qwen21-union-prepared512-target-lanczos-white-v2",
+    "vae_posterior": "mode",
+    "vae_normalization": "(latent-latents_mean)/latents_std",
+    "reference_control_target_encoding_identical": true,
+    "target_tokens": 1024,
+    "latent_channels": 64,
+    "fingerprint_inputs": [
+      "actual_model_weights_and_configs",
+      "upstream_and_preprocessing_code",
+      "image_bytes",
+      "ordered_references",
+      "prompt",
+      "transforms",
+      "person_order",
+      "dtype",
+      "encoding_policy"
+    ],
+    "cache_hits_consume_denoising_rng": false
+  },
+  "arms": {
+    "native": {
+      "control": "none",
+      "training_updates": 0
+    },
+    "union_frozen": {
+      "control": "official_pretrained_union",
+      "injection_scope": "joint",
+      "training_updates": 0
+    },
+    "union_lora_joint": {
+      "control": "official_union_plus_control_lora",
+      "injection_scope": "joint",
+      "training_updates": 512
+    },
+    "union_lora_target": {
+      "control": "official_union_plus_control_lora",
+      "injection_scope": "target",
+      "training_updates": 512
+    }
+  },
+  "lora": {
+    "rank": 16,
+    "alpha": 16,
+    "dropout": 0.0,
+    "initialization_A": "Kaiming_uniform",
+    "initialization_B": "zero",
+    "linear_module_count": 130,
+    "trainable_parameter_count": 23267344,
+    "storage_dtype": "float32",
+    "bias_and_norm_trainable": false,
+    "extra_targets": [
+      "control_img_in",
+      "control_blocks.0.before_proj"
+    ],
+    "per_control_block_suffixes": [
+      "attn.to_q",
+      "attn.to_k",
+      "attn.to_v",
+      "attn.to_out.0",
+      "img_mlp.proj",
+      "img_mlp.gate_layer",
+      "img_mlp.out",
+      "after_proj"
+    ],
+    "common_initialization": "initialization/lora_rank16_seed3407.pt",
+    "overfit_weights_used_as_formal_initialization": false
+  },
+  "training": {
+    "train_seed": 3407,
+    "sampler_seed": 20261015,
+    "updates_per_arm": 512,
+    "micro_batch": 1,
+    "gradient_accumulation": 3,
+    "dataset_order_per_update": [
+      "iper",
+      "tiktok",
+      "hi4d"
+    ],
+    "optimizer": {
+      "name": "AdamW",
+      "lr": 0.0001,
+      "betas": [
+        0.9,
+        0.999
+      ],
+      "eps": 1e-08,
+      "weight_decay": 0.01,
+      "state_dtype": "float32"
+    },
+    "lr_schedule": {
+      "warmup_updates": 32,
+      "after_warmup": "constant"
+    },
+    "gradient_clip_global_norm": 1.0,
+    "frozen_dtype": "bfloat16",
+    "compute_dtype": "bfloat16_autocast",
+    "device": "single_CUDA_GPU",
+    "gradient_checkpointing": {
+      "backbone": true,
+      "control": true,
+      "use_reentrant": false
+    },
+    "condition_dropout": 0.0,
+    "augmentation": false,
+    "training_schedule": {
+      "positions": 1000,
+      "sample": "uniform_index",
+      "dynamic_shift_tokens": "target_only_1024",
+      "transformer_timestep": "paired_timestep/1000",
+      "sigma": "same_schedule_index"
+    },
+    "noising": "only_target; (1-sigma)*target + sigma*noise; clean references",
+    "loss": "content_coverage_weighted_mean_flow_MSE(prediction,noise-target); no diff>50 clipping or auxiliary losses",
+    "noise_and_timestep_streams": "separate Generators; SHA256(train_seed,update,microstep,sample_id,stream) -> 63bit seed",
+    "checkpoint_updates": [
+      0,
+      128,
+      256,
+      512
+    ],
+    "checkpoint_state": [
+      "LoRA",
+      "optimizer",
+      "LR",
+      "Python_NumPy_torch_CPU_CUDA_RNG",
+      "optimizer_step",
+      "microstep",
+      "next_sample_position",
+      "loss_gradient_log_cursors",
+      "model_data_scope_code_signatures"
+    ],
+    "final_checkpoint_update": 512,
+    "validation": {
+      "updates": [
+        0,
+        256,
+        512
+      ],
+      "samples": 72,
+      "seed": 42,
+      "steps": 40
+    },
+    "max_memory_reserved_fraction": 0.9,
+    "resource_failure_policy": "stop_and_record; no automatic resolution_quantization_or_budget_changes",
+    "determinism": {
+      "CUBLAS_WORKSPACE_CONFIG": ":4096:8",
+      "torch_use_deterministic_algorithms": true,
+      "warn_only": false,
+      "cudnn_benchmark": false,
+      "cudnn_deterministic": true,
+      "set_before_first_CUDA_initialization": true
+    }
+  },
+  "gates": {
+    "formal_training_requires": [
+      "matching_smoke_gate",
+      "matching_overfit_gate"
+    ],
+    "smoke": {
+      "real_CUDA_BF16": true,
+      "probe_microsteps": 10,
+      "frozen_checksums_unchanged": true,
+      "resume_continuous_updates": 4,
+      "resume_split_updates": [
+        2,
+        2
+      ],
+      "two_step_image_datasets": [
+        "iper",
+        "hi4d"
+      ]
+    },
+    "overfit": {
+      "samples": 6,
+      "updates": 200,
+      "gradient_accumulation": 1,
+      "fixed_schedule_indices": [
+        250,
+        500,
+        750
+      ],
+      "fixed_noise_seed": 43,
+      "evaluated_positions": 18,
+      "minimum_relative_mean_loss_drop": 0.2
+    }
+  },
+  "inference": {
+    "split": "test",
+    "samples": 128,
+    "arms": [
+      "native",
+      "union_frozen",
+      "union_lora_joint",
+      "union_lora_target"
+    ],
+    "seeds": [
+      42,
+      43
+    ],
+    "expected_images": 1024,
+    "canvas_wh": [
+      512,
+      512
+    ],
+    "steps": 40,
+    "guidance_scale": 1.0,
+    "union_control_scale": 1.0,
+    "dtype": "bfloat16",
+    "use_kv_cache": false,
+    "formal_test_limit_allowed": false,
+    "diagnostics_only": {
+      "split": "val",
+      "arms": [
+        "union_zero",
+        "union_target_frozen",
+        "wrong_pose"
+      ],
+      "per_dataset_samples_in_plan": 4,
+      "total_samples_in_plan": 12
+    }
+  },
+  "evaluation": {
+    "strict_pck_thresholds": [
+      0.1,
+      0.2
+    ],
+    "requested_confidence_threshold": 0.25,
+    "strict_denominator": "includes confident out-of-frame requests and generated detection failures",
+    "report_also": [
+      "in_frame_PCK",
+      "detector_coverage",
+      "body_hand_face_breakdown",
+      "appearance_and_identity_detection_coverage",
+      "per_group_results",
+      "failure_cases"
+    ],
+    "aggregation_order": [
+      "average_seeds_per_sample",
+      "unique_target",
+      "appearance_video_group_pair_sequence",
+      "dataset_group_macro"
+    ],
+    "hi4d_assignment": "target_geometry_based; no appearance selection to maximize pose score",
+    "hi4d_contact": "actual vertex count stratification; 2D contact metrics are proxies",
+    "hi4d_test_pair_count": 2,
+    "hi4d_population_significance_claim": false,
+    "hi4d_upstream_target_mask_assisted": true,
+    "3dpw_keypoint_provenance": "GT RGB 冻结 DWPose 估计姿态; not exact numeric control joints",
+    "3dpw_training_or_tuning": false,
+    "dino_interpretation": "appearance_proxy",
+    "missing_face_similarity": null
+  },
+  "observed_build": {
+    "data_lock_sha256": "e61eef1e5bc4b2fb24593c28639e425280aeb85263329699e6d2d829d41fe503",
+    "prepared_registry_sha256": "328bbb029a62946f97aa6a2386e379ef5610e6b4075bb27002a68603cff7d7b8",
+    "conditions": 1736,
+    "prepared_assets": 6880,
+    "prepared_RGB_images": 4608,
+    "requested_keypoint_JSONs": 2272,
+    "retained_confident_out_of_frame_requests": 1034,
+    "QA_panels": 8,
+    "validation_evidence": "report/data_qa/validation.json",
+    "data_CPU_contract_tests_passed": 19,
+    "GPU_status_at_documentation": "smoke_deterministic_20261016_v2 passed; final queue reruns smoke because safety-check source signature subsequently changed",
+    "formal_training_complete": false,
+    "formal_test_complete": false,
+    "quality_conclusion": "not_yet_available",
+    "CPU_contract_tests_passed": 116,
+    "CPU_contract_tests_skipped": 1,
+    "GPU_resume_max_lora_abs_error": 0.0,
+    "GPU_resume_max_optimizer_abs_error": 0.0,
+    "GPU_peak_allocated_bytes": 29933239296,
+    "GPU_peak_reserved_bytes": 31272730624,
+    "CPU_local_passed": 116,
+    "CPU_local_skipped": 1,
+    "CPU_server_passed": 117,
+    "CPU_server_skipped": 0,
+    "serial_queue": "pilot_b_20261016T1841",
+    "serial_queue_start_pid": 857392,
+    "serial_queue_state_at_documentation": "started; consult queues/pilot_b_20261016T1841/events.jsonl"
+  },
+  "execution": {
+    "entry": "scripts/execute.py",
+    "name_must_be_unique": true,
+    "stages": [
+      "audit",
+      "cache_overfit6",
+      "smoke",
+      "overfit200",
+      "cache_full",
+      "val12_diagnostics_5arms",
+      "evaluate_diagnostics",
+      "report_diagnostics",
+      "joint512",
+      "target512",
+      "test128_4arms_2seeds",
+      "evaluate_test",
+      "report_test",
+      "final_status"
+    ],
+    "failure_policy": "stop_on_phase_failure_or_invalid_gate_or_partial_training; no automatic threshold/budget changes",
+    "reuse_smoke": "--reuse-smoke RUN_NAME; requires current full binding and evidence",
+    "logs": "queues/NAME/events.jsonl and per-phase logs",
+    "stop": "create queues/NAME/STOP; prevents next phase, does not interrupt current phase"
+  }
+}
