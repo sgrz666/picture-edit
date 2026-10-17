@@ -49,8 +49,8 @@ Run: `python -m pytest tests/test_qwen21_pro_contracts.py tests/test_qwen21_pro_
 - Create: `src/pose_control/qwen21_pro/{integration,pipeline}.py`
 - Test: `tests/test_qwen21_pro_integration.py`
 
-- [ ] 复用旧`build_transformer`核对/加载180官方tensor，然后安装控制LoRA（可关闭），最后安装新任务模块；在offload扫描前完成注册。原180参数名保持，不用`wrapper.base.*`改变权重键，不改官方checkout。
-- [ ] per-instance派生control block，保留官方before合流与历史skip；明确执行以下顺序：
+- [x] 复用旧`build_transformer`核对/加载180官方tensor，然后安装控制LoRA（可关闭），最后安装新任务模块；在offload扫描前完成注册。原180参数名保持，不用`wrapper.base.*`改变权重键，不改官方checkout。
+- [x] per-instance派生control block，保留官方before合流与历史skip；明确执行以下顺序：
 
 ```python
 c = native_block_forward(c, **native_kwargs)
@@ -59,11 +59,15 @@ c_skip = block.after_proj(c)
 result = torch.stack([*old_skips, c_skip, c])
 ```
 
-- [ ] 新transformer的forward接收`task_conditions`；显式per-call上下文或ContextVar必须绑定具体model并finally恢复。`forward_control`捕获immutable条件到checkpoint闭包，重算不读取已清空的可变当前状态。不缓存trainable编码结果跨optimizer step。
-- [ ] 校验目标grid、batch/CFG、causal_condition、单卡、关闭KV cache；官方joint hints默认保持，target-only为另开关。fixed权重下task差分不得改prefix；所有新增影响包括LoRA关闭才要求恢复原官方数值。
-- [ ] CPU小型native blocks证明本层hint已受影响、历史skip不污染、重算后参数梯度、交错调用/异常清理、禁用全增量恢复相同reference Union；服务器用真实固定Qwen block再验证一次。
+- [x] 新transformer的forward接收`task_condition`；显式per-call上下文或ContextVar必须绑定具体model并finally恢复。`forward_control`捕获immutable条件到checkpoint闭包，重算不读取已清空的可变当前状态。不缓存trainable编码结果跨optimizer step。
+- [x] 校验目标grid、batch/CFG、causal_condition、单卡、关闭KV cache；官方joint hints默认保持，target-only为另开关。fixed权重下task差分不得改prefix；所有新增影响包括LoRA关闭才要求恢复原官方数值。
+- [x] CPU小型native blocks证明本层hint已受影响、历史skip不污染、重算后参数梯度、交错调用/异常清理、禁用全增量恢复相同reference Union；服务器用真实固定Qwen block再验证一次。
 
 Run: `python -m pytest tests/test_qwen21_pro_integration.py -q`，并回归旧Union suite。
+
+当前实施记录（spec与quality均通过）：本地Task2为40passed/1skip，全部Pro为112passed/1skip，旧Union为116passed/1skip。2026-10-18服务器固定VideoX-Fun源码的小型32层Qwen实测1passed/38deselected（8.61s，exit0），覆盖zero等价及checkpoint两步梯度。代码快照`/data/shangguanrz/pic-edit-experiments/qwen21_pro_adapter_v1/code_task2_20261018T002126/`，25个Python文件经compileall，逐文件SHA见`snapshot_manifest.json`；本阶段尚未加载全尺寸模型或训练。
+
+审查修复：补齐链式`ProPipeline.to()`委派，避免`.to()`返回底层pipeline导致丢失task绑定；先red后green验证参数和异常原样传播。修复后父线程复跑全部Pro：112passed/1skip（9.53s），compileall与diff检查通过。
 
 ## Task 3: 真实资产准备与source-only缓存
 
@@ -97,7 +101,7 @@ Run: `python -m pytest tests/test_qwen21_pro_geometry.py -q`。
 - Create: `src/pose_control/qwen21_pro/{training,checkpoint,losses}.py`
 - Test: `tests/test_qwen21_pro_{training,checkpoint,losses}.py`
 
-- [ ] 复用旧schedule/noise stream/transformer_inputs，新增`task_conditions`，但optimizer/trainable whitelist/frozen digest/checkpoint独立实现，不套旧“130 LoRA only”审计。
+- [ ] 复用旧schedule/noise stream/transformer_inputs，新增`task_condition`，但optimizer/trainable whitelist/frozen digest/checkpoint独立实现，不套旧“130 LoRA only”审计。
 - [ ] 区域mask按face→contact→remaining hand→body分区；`L=lambda_global*Lcontent+sum(lambda_r*sum(mask*error)/(C*sum(mask)))`，invalid面积跳过且记录覆盖。DWPose/ONNX不作可微loss。可微feature loss只接收固定geometry crop与保留输入梯度的Torch encoder。
 - [ ] 只优化`pro_adapter`与明确启用的control LoRA；原始Union/base冻结且checkpoint边界保存frozen hash。新格式完整保存config、task/source/cache/code签名、所有新增参数、optimizer/LR、RNG、sample/noise/timestep与日志游标，保存时独占新目录。
 - [ ] CPU先做4continuous vs2+2 exact state、跨scope/config/data拒绝、文件损坏拒绝、旧B checkpoint拒绝；再服务器真实CUDA复核。geometry/ID/contact有效分支分别检查head和上游梯度，不用降低resume误差门槛掩盖问题。
