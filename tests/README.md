@@ -1,6 +1,6 @@
 # tests/ —— 自动化测试套件
 
-本目录是人物图像姿态编辑系统的回归与契约测试层，由仓库根的 `pytest.ini` 驱动（`testpaths = tests`，并排除 `add/datasets/models/experiments/results/data/vram_lab/.git` 等非源码树）。测试守护三条技术线的**架构契约、零初始化行为、条件注入契约、数据完整性与训练/评测可复现性**——多数测试是 CPU-only 的合同断言（不跑完整推理、不训练），少数会做有界 GPU 冒烟。实际测试文件共 **60 个** `test_*.py`，按主题分为八组。
+本目录是人物图像姿态编辑系统的回归与契约测试层，由仓库根的 `pytest.ini` 驱动（`testpaths = tests`，并排除 `add/datasets/models/experiments/results/data/vram_lab/.git` 等非源码树）。测试守护三条技术线的**架构契约、零初始化行为、条件注入契约、数据完整性与训练/评测可复现性**——多数测试是 CPU-only 的合同断言（不跑完整推理、不训练），少数会做有界 GPU 冒烟。实际测试文件共 **64 个** `test_*.py`，按主题分为九组。
 
 ## 分组一览
 
@@ -82,11 +82,19 @@
 ### 8. 集成 / 杂项
 - `test_champ_deepgen_integration.py` —— CHAMP 样本 DeepGen 集成
 - `test_analysis.py` / `test_lab.py` / `test_report.py` —— 分析/实验/报告契约的一般性验收
+- `test_cli.py` —— CLI 入口契约
+
+### 9. 无 GT 评测 / 手部合理性 / 提示词银行契约（workflow 侧）
+守护 workflow 评测流水线的无参考指标、合同级手部结构判定与 TikTok 提示词改写的输出契约。
+
+- `test_no_gt_metrics.py` —— `no_gt_metrics` 合同：守住三类静默失真——关键点布局重映射与渲染器脱节、出框记账静默丢弃 miss、保护区域误把人体纳入；全程 CPU、不加载 ONNX/InsightFace/torch。
+- `test_hand_plausibility.py` —— `hand_plausibility` 单元夹具：合成 96px 手掌理想手，逐一验证手指长度比/指尖融合等失败模式（每个 mutation 对应姿态条件扩散的一种真实缺陷）；运行依赖 `nihaochen/envs/qwen21/bin/python`。
+- `test_tiktok_prompt_bank_contract.py` —— TikTok 每对 PE 提示词改写的契约（改写脚本在 `experiments/`，被 `pytest.ini` 排除收集，故规则在此 pin 住）：两种编译形式、短语清理、`compile_words` 不得保留图像编号、不得引用 target 照片；缺 `transformers`（PE 栈）时整体 skip。
 
 ## 与上下层的关系
 
-- **被测对象**：`src/adapter/`、`src/pose_control/`（v6 / qwen21 / qwen21_full）、`src/controls/`，以及 `scripts/train/`、`scripts/eval/`、`scripts/data/` 的契约。
-- **运行入口**：仓库根 `pytest.ini`；CI/本地执行 `pytest`（受 `norecursedirs` 约束，不会误跑大数据/模型目录）。
+- **被测对象**：`src/adapter/`、`src/pose_control/`（v6 / qwen21 / qwen21_full）、`src/controls/`、`src/evaluation/`、`src/pose_edit/`，以及 `scripts/train/`、`scripts/eval/`、`scripts/data/` 的契约。
+- **运行入口**：仓库根 `pytest.ini`；CI/本地执行 `pytest`（受 `norecursedirs` 约束，不会误跑大数据/模型目录）；`test_hand_plausibility.py` 需用 `nihaochen/envs/qwen21/bin/python -m pytest tests/test_hand_plausibility.py -q`。
 - **关联文档**：`scripts/audit/verify_project_organization.py` 做目录组织验收；评测口径见 [`scripts/eval/README.md`](../scripts/eval/README.md)；数据契约上游见 [`scripts/data/README.md`](../scripts/data/README.md)。
 
 ## 注意与坑
@@ -94,3 +102,4 @@
 - 多数是 CPU-only 合同测试，但 `test_train_tiktok_v65_face_smoke.py`、`test_champ_deepgen_integration.py` 等会做有界 GPU 冒烟，跑全套前确认 GPU 空闲。
 - 测试刻意「fail-closed」：身份缺失、appearance 泄漏、参考路由错乱等都会被拒绝而非静默通过——改数据/训练逻辑时要同步更新这些断言，否则会红。
 - `pytest.ini` 已排除 `experiments/`、`datasets/` 等重目录；新增测试若需临时读大资产，应避免被误递归。
+- `test_tiktok_prompt_bank_contract.py` 通过 glob 在 `experiments/` 下定位改写脚本，仓库布局变动（脚本路径改名）会使其整体 skip 而非失败，重命名脚本时同步更新本测试的 `PATTERNS`。

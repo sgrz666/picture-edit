@@ -19,13 +19,10 @@
 | `PROJECT_STRUCTURE_20261003.md` | 2026-10-03 的**工作线与目录快照**（DeepGen V6/V6.5/V6.6、Qwen 2.1 简化/完整、数据工程），历史结构快照 | 2026-10-03 |
 | `qwen21_hi4d_dual.md` | Qwen-Image-2.1 **双人主体控制**说明：Hi4D 渲染几何作目标，A/B 源掩码绑外观，512 等比画布，`main_pairs` 的 train/val/test 分流 | 9-29 |
 | `tiktok_qwen21_full_training.md` | TikTok → Qwen 2.1 完整版**训练使用说明**：512 小规模 Body 试训、受控 Face 验证，测试集只查分组交叉不进训练 | 10-03 |
-| `workflow审查与整改_20261012.md` | 单人/双人 workflow 的审查发现与整改对应关系（stage 指纹拆成 identity/runtime、PE 产物只读、主体选择显式化） | 2026-10-12 |
-| `workflow_无GT定量评测调研_20261013.md` | 无 GT 条件下的指标选择推导（第二读者 PCK、strict PCK、骨长比漂移、SMPL-X β、背景/人体保真、非主体位移） | 2026-10-13 |
-| `workflow_multiple_设计_20261013.md` | 双人线设计决策与 85 格矩阵口径、swap/import 结论的来龙去脉 | 2026-10-13 |
-| `workflow_大方向优化调研_20261014.md` | workflow 方向层缺口 P0–P6 与合同验收条目的对照 | 2026-10-14 |
-| `workflow_PE重写成本_量化与蒸馏调研_20261014.md` | **PE-I2I 重写成本解剖**（占单人一次 run 前三段 GPU 时间 75.4%；4479 token 只换 310 词提示词）、量化与蒸馏两条路的难度评级、社区现成产物能否直接用、Qwen Research License 提示 | 2026-10-14 |
-| `workflow_PE_I2I量化选型_GGUF社区权重评估_20261014.md` | **社区 GGUF 量化权重选型**：读文件头证明 plain Q4_K_M 把线性注意力敏感层压到 4-bit（作者消融里 KLD 0.146 那一档），真正收益来自换 llama.cpp + MTP（i2i 3.49–4.39×），附四级验收闸门与 sm_120/无 nvcc 的前置条件 | 2026-10-14 |
-| `workflow_PE蒸馏到Qwen3VL任务分支_20261015.md` | **共享 Qwen3-VL 的 Prompt LoRA 可行性**：SSH 核验单人三图到两图契约、已有 lm_head、4479→320 token 答案比例、43.65M 参数分支预算，以及社区 T2I 蒸馏先例与分阶段验收 | 2026-10-15 |
+| `README_部署清单_20261012.md` | 人工撰写 README 的部署记录：120 份逐目录人工 README（含 2 份 `README.pic-edit.md`）投递、md5 逐字节校验、软链目录单独 scp、`/data` 备份 | 2026-10-12 |
+| `workflow_multiple_设计_20261013.md` | `workflow-multiple/`（双人姿态编辑与交互迁移基线）的**设计记录与阶段状态**：为何这样设计、已定决策、还剩什么；命令与实测数字集中在 `workflow-multiple/README.md` | 2026-10-13 |
+| `workflow_无GT定量评测调研_20261013.md` | 单人 workflow **无 GT 定量评测调研**：现状只测了"一种参照轴"，给出可落地的多轴补测方案与文献，文中"本机可用性"均为 `ssh sg` 实测 | 2026-10-13 |
+| `workflow_大方向优化调研_20261014.md` | workflow 单人/双人**方向层缺口与优化方案**调研，对照任务书 `task/人物图像姿态编辑任务书_v3.docx`，数字指向各诊断/评测专文不重抄 | 2026-10-14 |
 
 子目录：
 

@@ -10,17 +10,18 @@
 
 ## 里面有什么
 
-- `pose_control/` —— 上述前两线的控制适配器核心，详见 [pose_control/README.md](pose_control/README.md)。
+- `pose_control/` —— 上述前两线的控制适配器核心（**训练侧**），详见 [pose_control/README.md](pose_control/README.md)。
+- `pose_edit/` —— 两条 workflow 线（单人 `workflow/`、双人 `workflow-multiple/`）共用的**推理侧共享层**：缓存指纹与阶段溯源、SMPLest-X 估计器封装、DWPose-134 关节表、geometry 定标、外观相似度、提示词契约。与 `pose_control/` 的区别是「推理侧流水线共享层 vs 训练侧适配器」，二者互不依赖。详见 [pose_edit/README.md](pose_edit/README.md)。
 - `adapter/` —— 早期/独立的姿态条件适配器（`pose_adapter.py`），ControlNet 式条件编码雏形。
 - `controls/` —— 骨架可视化与生成辅助（`generator.py`）。
 - `data/` —— iPER / TikTok / Hi4D 数据集读取与几何/letterbox 预处理。
-- `evaluation/` —— 四臂评测（身份/姿态指标）与 DWPose-134 ONNX 推理封装。
+- `evaluation/` —— 四臂评测（身份/姿态指标）、无 GT 评测指标集与手部合理性判断、DWPose-134 ONNX 推理封装。
 - `integration/` —— CHAMP / DeepGen 样本校验与残差对齐。
 
 ## 与上下层的关系
 
 - 上游：仓库根的模型权重（DeepGen、Qwen-Image-2.1）、`third_party/`（v65_face.xdyna、visual_persona 等锁定依赖）、`datasets/`。
-- 下游：训练脚本（`pose_control/qwen21_full/execution.py`、`joint_training.py` 等）与推理入口调用 `pose_control/` 下导出的适配器与 pipeline；评测脚本调用 `evaluation/`。
+- 下游：训练脚本（`pose_control/qwen21_full/execution.py`、`joint_training.py` 等）与推理入口调用 `pose_control/` 下导出的适配器与 pipeline；评测脚本调用 `evaluation/`；两条 workflow 流水线（单人 `workflow/`、双人 `workflow-multiple/`）`import src.pose_edit.*` 复用推理侧共享层。
 - 仓库根 README（人工正稿）不在本目录覆盖范围内，整体导航见 [../README.md](../README.md)。
 
 ## 注意与坑

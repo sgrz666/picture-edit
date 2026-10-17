@@ -12,6 +12,8 @@
 - `outputs/`：数据工程批量产出（3DPW 资产/审计/配对/质检各版本）。
 - `logs/`：数据接入作业的远端运行日志（`.log`/`.out.gz`）。
 - `migration/`：目录迁移/整理期的映射与搬迁清单。
+- `hi4d_contact_semantics_v1/`：Hi4D **接触语义 GT 生成**——把 Hi4D 官方 `smpl/*.npz` 的 `contact>0` 转成可靠的粗粒度身体部位配对 GT（`hi4d_semantic_gt_v1/v2/v3.py` 三版脚本，逐步强化对 0/1-based 索引歧义与分割覆盖的校验），复用 `assets/smpl_vert_segmentation.json`（6890 顶点分割）。产物对接 `outputs/hi4d_contact_semantics_v3_*`、`hi4d_contact_gt_preview*` 等预览批次，服务于 `workflow-multiple/` 的双人接触调研。
+- `hi4d_rgb_multihmr_pilot/`：multi-HMR **RGB pilot**——用 `add/tools/multi-hmr` 从 RGB 推断 SMPL-X 并探测接触；含 `pred_contact_probe_v1.py`（基于 SMPL-X 顶点距离阈值绘制接触探针）与 `run_20261014_093532/`（demo_pilot.py / demo_smplx_only.py 及 input/models 子目录）。产物对接 `outputs/hi4d_rgb_multihmr_*`、`hi4d_pred_contact_probe_v1` 预览批次。
 - 顶层另见 3DPW 三份原始 ZIP 的符号链接（`camera_tram`/`imageFiles`/`sequenceFiles` → `/data/.../archive/raw/3dpw/`）与若干 YOLO 权重（`yolo11n.pt`、`yolo11x-seg.pt` 等）、pexels URL 清单。
 
 ## 与本项目源码的关系

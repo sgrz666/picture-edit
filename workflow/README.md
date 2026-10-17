@@ -8,6 +8,8 @@
 
 审查记录与整改对应关系见 [`docs/workflow审查与整改_20261012.md`](../docs/workflow审查与整改_20261012.md)。
 
+协作智能体在本目录的协作纪律（「标准六图面板」硬性收尾、跑批与共享 GPU、产物/缓存/评测约定）见 [`AGENTS.md`](AGENTS.md)。
+
 ## 运行
 
 ```bash
@@ -101,6 +103,8 @@ PE 的产物 `prompt/pe_compiled_prompt.txt` 只读。生成阶段实际读的�
 
 每个阶段的 `run.log` 保留推理日志；`stage.json` 记录请求指纹与产物哈希。`latest_run.json` 指向最近一次执行，多个 run 并存时它只反映最后一个，横向比较请用 `report.py`。仅完成几何或 PE 时状态为 `partial`，全部生成完成后为 `complete`，失败时为 `failed` 并保留错误；进程被杀而没写失败状态的，`report.py` 会标成 `abandoned`。
 
+离线实验脚本 `lowlatency_probe.py` / `check_case.py`（llama.cpp 低延迟探测，见「低延迟探测（llama.cpp / GGUF）」一节）只往调用方给的 `--out` 实验目录写产物，不会在 `runs/` 下留 run、也不碰历史产物。
+
 ## 评测
 
 ```bash
@@ -124,6 +128,19 @@ $QWENPY report.py                         # 全部 run 的索引、状态、逐�
 逐轴不合格率、Fleiss κ。用法与坑见 [`human_eval/README.md`](human_eval/README.md)。
 合同的参照臂（不给任何姿态条件的纯 Qwen-Edit）尚未实现——它要改 `run.py`（在缓存指纹 `INPUTS_CODE` 里），
 排在批量收尾的同一个窗口。
+
+## 低延迟探测（llama.cpp / GGUF）
+
+2026-10-16 新增的离线实验线，用 llama.cpp 在 tiktok runs 上跑 PE 式提示词重写，和 HF 全精度 PE 基线做**同输入三方对比**：HF PE / GGUF PE / GGUF 4B。两个脚本都不碰生产代码与历史 run，只往调用方给的 `--out` 实验目录写产物。
+
+- `lowlatency_probe.py`：起一个 llama.cpp server（`--server` 二进制 + `--model` GGUF 权重 + `--mmproj` 投影权重，`-ngl 99 -c 32768 -fa on`，默认 `--port 18777`，可选 `--mtp` 开 draft-mtp 投机解码：`--spec-type draft-mtp --spec-draft-n-max 2`），对 `workflow/runs/tiktok` 下所有 `tt_*` run 发请求（可用 `--runs` 限定、用 `--tag` 打标签）。两个 arm：
+  - `--mode pe`：**质量臂**。直接喂官方 PE-I2I 契约——各 run `prompt/effective_system_prompt.txt` 的 system + `pe_result.json` 的 instruction，回答按官方三段式 JSON 解析校验，再用 `pose_transfer.prompts.compile_prompt(rewritten_prompt, 'source_only')` 编译；解析/角色校验不过则按 pe_worker 的方式重试（默认 `--attempts 1`）。
+  - `--mode describe`：**4B arm**。模型未经 PE 训练，不要求它出 PE 契约，只给一段短 system（`DESCRIBE_SYSTEM`）和短 ask（`DESCRIBE_ASK`，要求 90 词内描述目标身体的腿/双臂(viewer-left/right)/头/表情/手持），返回简短动作描述；身份/服装/背景保留条款由脚本用 `PREAMBLE`/`SUFFIX`（镜像 `compile_prompt` 的前缀与后缀契约）补上，拼成 `PREAMBLE + "Apply this pose: " + desc + SUFFIX` 再落盘。
+  - 两臂都从各 run 的 `prompt/pe_result.json` 读出 HF 基线 `output_tokens` / `seconds` / `seed`，记进每条 record，保证三方在**完全相同输入**上比。
+  - 输出（`--out` 根下）：`records/<run>.json`（逐 case 的 tokens/seconds/tok_per_s、状态、HF 基线）、`raw/<run>_attemptN.txt`（原始回答）、`prompts/<run>.txt`（编译后提示词）、`summary.json`（schema `lowlatency_pe_probe_v1`：均值、相对 HF 的 `speedup_vs_hf`；`describe` 模式还带 `content_check_pass` 的 arm/head/legs/left_right 命中统计）。
+- `check_case.py`：冒烟入口。对 tiktok 各 run 调 `lowlatency_probe.load_case()` 校验输入能否正常读出，打印前 3 个 run 的图像数、HF 基线 tokens/seconds/seed、instruction 与 system 字数等诊断；其文件 docstring 还写到「再跑单 case 的 4B arm」，但当前代码体只做了 load_case 冒烟部分（待补充）。
+
+注意：这条线和「评测」「实况」里的全精度 HF PE 基线不是一回事——它是把 PE 式重写搬到 GGUF 上的延迟/质量探针，产物落在调用方指定的实验目录，不会进 `runs/`、也不会改写任何历史 run。
 
 ## 测试
 
@@ -162,3 +179,59 @@ PE 提示词中的源图 `<image1>` 保持为生成图 1，骨架 `<image3>` 转
 `hard_05` 的三行是同一对图的两个变量对照。定标：A 框长宽比 0.39、B 框 0.88，`source_person` 的内切缩放被宽度主导（尺度 0.410），请求骨架躯干只有 95.9px，而生成人物躯干 225.6px，错配 2.35 倍；`source_torso` 把尺度提到 0.977，躯干比回到 1.02，指标随之改善 4~7 倍。其余四对 B 框都比 A 框窄，两种定标差不多，所以默认值没有改。提示词：`hard_05_manual` 用的是 `--prompt-file` 引入的一段手写提示词（与 legacy run `testset_hard05_promptv2` 里那份逐字节相同，来源哈希 `17b9c608…`），几何与 PE 阶段照常跑，PE 自己的产物同时保留在 `prompt/pe_compiled_prompt.txt`；在同一份躯干定标下，手写提示词的 body PCK 0.667 高于 PE 编译版的 0.389。即便修好尺度与提示词，`hard_05` 的 body PCK 仍明显低于其余各对，它依然是这套基线最难的一对。
 
 schema v1 的旧 run（`demo`、`testset_hard05*`、`testset_medium02_768`）是整改前的冻结证据：记录格式已变，不再可 `--verify`，`report.py` 会标为 `legacy`；其中 `testset_hard05_promptv2` 与 `testset_hard05_fitgeo` 的提示词是手工写入的，几何与 PE 阶段记录逐字节相同，两者只差提示词文本。整改前的整树备份在 `/data/shangguanrz/pic-edit-archive/workflow_runs_backup_20261012/`（含 `SHA256SUMS`）。
+
+## source_torso 改用实测 A 躯干（2026-10-14）
+
+**改了什么**：`src/pose_edit/geometry.py` 的 `align_to_source_bbox(points, bbox_B, bbox_A, framing,
+a_torso_px=None)`。`source_torso` 现在把 B 的实测躯干缩放到 **A 的实测躯干**（neck→髖心），只有拿不到 A 的
+关键点时才退回 `TORSO_TO_PERSON_BOX_HEIGHT × A框高`，且**在产物里写明走了哪条路**：`B_to_generation.torso_reference`
+取 `measured_A` / `constant_fallback`，`source_person` 取 `not_applicable`。
+
+**为什么必须改**：常数原来的注释写着"在 5 对上把尺度还原到约 4% 以内"，这句不成立。`workflow-multiple/torso_ratio.py`
+按 图片哈希+框 去重量过：单人线 8 张源帧的 躯干/框高 从 **0.259 跨到 0.524**，换算成本流水线自己的单位（迁移后躯干
+= 0.31 × A框高 ⇒ 人被画成 `0.31 / 比值` 倍）是 **0.59×–1.20×，只有 2/8 落在 ±10% 内**。框高不含躯干信息，所以修法是
+换代理量，不是再调一个常数。
+
+**一格真实重跑**（三个数必须在同一张画布上比）：`runs/torso_measured_hard02_20261014`
+（`run.py --until geometry --framing source_torso`，输入沿用已验收 hard02 的 A_rgb/B_rgb，不改旧 run，
+默认 `--resolution 1024` ⇒ 画布 832×1248）：A 实测躯干 **585.7px**、A 框高 1118.2px ⇒ 比值 **0.524，
+正好是上面区间的上界**（这条线自己的两个代理量给出几乎同一个数，见下）：
+
+| 同一格的口径 | scale | 相对实测 |
+|---|---|---|
+| `source_torso` + 实测 A 躯干（本次改动） | **1.526** | 1.00 |
+| `source_torso` + 0.31 常数（旧行为） | 0.903 | 只有应有尺寸的 **59%**，即把人**做小 41%** |
+| `source_person`（框内接，本线默认） | 0.928 | 61%，做小 39% |
+
+也就是说在这一帧上 0.31 与框内接给出的数几乎相同（差 2.7%），而 A 的真实躯干要求的是 1.65×——
+两个代理量都在猜，常数并不比框内接更"接近真相"，它只是错得差不多。
+`VERIFICATION validated`。
+
+**回归说明（不要误读成我改了默认路径）**：`runs/torso_check_person_20261014` 是同输入的默认 framing 重跑，
+A/B 检出框与已验收 run 数值一致（记到 0.1px：A `[8.6, 131.7, 664.7, 1278.6]`、B `[260.0, 31.9, 639.3, 1237.0]`，
+score 0.931/0.954，persons 1），`scale` 从旧 run 的 0.690 变成 0.928 是**画布不同**造成的：旧 run 是 768 分辨率
+（画布 640×928、A 框高 831.5px），新 run 是 1024（A 框高 1118.2px），0.928/0.690 = 1118.2/831.5 = 1.345 正好等于
+框高之比；`source_person` 的公式一行没动。要与已验收数字对齐必须同样传 `--resolution 768`。
+
+**A 的关键点从哪来**：新增 `src/pose_edit/dwpose.py`，一条约定只放一处——ONNX 会话走 CPU、
+`inference_detector` 这一版只返回 xyxy 且自带 0.3 阈、模型输出 **133** 点转成本仓库渲染/打分用的 **134** 点、
+1 号 neck 是派生点所以分数取两肩较弱者、按 IoU 选主体而不是按检测顺序（检测顺序不稳定）。
+**双人线也改从这走**：`workflow-multiple/evaluate_dual.py` 的 `detect_people` 变成转调它，删掉本地那份重复实现；
+重跑 `hug_pair00_084…skeleton_only.b_canvas` 与 `dance_pair02_120…skeleton_only.b_canvas` 的评测，
+新写的 `eval_dual.json` 与原存文件**逐字段相同**（含 per-person 细节，只差 `seconds`），所以这次委托不改数，
+只是把两份 133/134 约定合成一份。
+
+**失败要响**：`source_torso` 下若 DWPose 在 A 里找不到与主体框有重叠的人，`smplx_worker.py` 直接抛
+RuntimeError，**不**悄悄退回常数——那会在不留记录的情况下改变这条 run 的迁移尺度。
+
+**指纹影响（重要，别误判成缓存坏了）**：`src/pose_edit/geometry.py` 属 SHARED_CODE，出现在两条线所有阶段的
+代码清单里，所以**本次改动起，两边已有的阶段缓存都不再等于当前代码**；已有 run 的产物与 `stage.json` 保持原样
+（它们诚实记录了当时是谁算的），不 `--force` 就不会重算。`dwpose.py` 已加入单人线 geometry 阶段与双人线评测的
+代码清单；当 `pose_framing == source_torso` 时，几何指纹还额外包含两个 DWPose 权重的 `model_signature`（权重内容
+变了指纹就变），其余 framing 不为此付哈希成本。
+
+**测试**：`workflow/tests/test_workflow_geometry.py` 从 30 条涨到 33 条（新增实测路径、
+`nan/0/负值` 一律视为不可测量而落回兜底、另一 framing 不声称躯干来源；原来那条"由 A 框高与 B 躯干导出"
+改名为 `..._falls_back_to_the_box_height_only_without_a_measurement` 并加了来源断言），新增
+`workflow/tests/test_dwpose_helper.py` 8 条（IoU、按重叠而非检测顺序选人、133→134、neck 分数规则、
+量不到人返回 None）。单人线 33 条与双人线 11 个模块全绿。

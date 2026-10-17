@@ -1,24 +1,26 @@
-# pose_transfer/ —— 单人姿态迁移的核心 Python 实现
+# pose_transfer/ —— 单人动作迁移流水线在本仓库的提示词契约
 
-本目录是 `workflow/` 两阶段基座流水线的"引擎"：把目标人物 B 的姿态估计、与源人物 A 的对齐、骨架渲染、提示词编译等纯 Python 逻辑集中在此。`run.py` 与各 stage worker 通过 `import` 调用本目录，不依赖任何训练代码或 adapter/LoRA。
+> 2026-10-13 重构：原来散在本目录的底层（缓存指纹、估计器封装、几何/投影、DWPose 关节表、外观相似度）已迁到仓库级 `src/pose_edit/`，由单人与双人两条 workflow 线共用。本目录**现在只剩两个文件**：`__init__.py` 与 `prompts.py`。权威行为描述见 `../README.md` 的「缓存怎么判定」「source_torso 改用实测 A 躯干」两节，以及 `../src/pose_edit/README.md`。
 
 ## 里面有什么
 
-- `__init__.py`：模块 docstring，定义"用原生 Qwen + SMPL-X 姿态引导做单人姿态迁移"。
-- `common.py`：阶段血缘（stage provenance）、缓存指纹（sha256）、画布预处理（letterbox / canvas_size）与 estimator 沙箱封装。核心概念是把一次请求拆成 `identity`（设置、代码哈希、模型身份、输入内容哈希——可跨运行复用）与 `runtime`（本 run 绝对路径——移动 checkout 不应使其失效）两部分；stage 产物相对 run 目录记录。顶层函数有 `sha256_file`、`fingerprint`、`atomic_json`、`make_request` 等。
-- `estimator.py`：唯一调用 vendored SMPLest-X 估算器的入口。`REQUIRED_PARAMETER_KEYS` 校验 12 个 SMPL-X 参数（global_orient / body_pose / betas / transl / focal_length_xy 等）；`estimate_single` 在 run 本地沙箱里跑单图估计并返回已校验参数；`project_camera`、`reconstruct` 负责相机重建。共享估算器根只读，权重以 symlink 复用。
-- `geometry.py`：纯 CPU 的 SMPL-X 姿态引导几何辅助。`_BODY18_FROM_SMPLX137` 把 SMPL-X 137 点降到 body-18，`_FACE68_FROM_SMPLX137` 取面部 68 点；`project_camera` 用针孔内参投影（深度分母采用与 SMPLest-X 一致的 `Z+1e-4` 约定，非有限/非正深度返回 NaN）。另有 `align_to_source_bbox`、`render_poseguide`、`smplx137_to_dwpose134`、`valid_points`。`align_to_source_bbox` 的 `framing` 参数有两种定标：`source_person`（默认，按 A 的人体检测框内切缩放——B 服装轮廓撑大检测框时会被宽度主导把骨架缩小，hard_05 实测尺度 0.410）与 `source_torso`（按 B 的实测躯干映射到 A 的期望躯干，hard_05 尺度 0.977，躯干错配从 2.35× 回到 1.02×）；当前默认值未改，因为其余测试对两种定标差别不大，选哪种由调用方按 `--framing` 决定。
-- `prompts.py`：PE-I2I 提示词编译。`PE_ROLE_SYSTEM_SUFFIX` 规定最终 `rewritten_prompt` 不得出现 `<image2>` 或对 target 的引用，只能引用 `<image1>`（source）与 `<image3>`（骨架），下游把 `<image3>` 映射成 `<image2>`；`prop_policy` 仅支持 `source_only`（测试 B 的篮球等道具不进生成图）。顶层 `pe_instruction`、`parse_pe_answer`、`compile_prompt`。
+- `__init__.py`：模块 docstring，定义"用原生 Qwen + SMPL-X 姿态引导做单人姿态迁移"。仅有说明，无代码。
+- `prompts.py`：单人线**专属**的 PE-I2I 提示词编译。文件头写明：与人数无关的一半（采样参数、官方答案解析、生成端引用守卫）住在 `src/pose_edit/prompt_contract`，在本文件 re-export，**保证单人线只有一个 import 站点**。本文件自己只放单人专属内容：
+  - `PE_ROLE_SYSTEM_SUFFIX`：本流程特有的「最终输出图像引用契约」，覆盖官方多图引用规则——最终 `rewritten_prompt` 不得出现 `<image2>` 或任何对目标照片的引用，只能引用 `<image1>`（源）与 `<image3>`（骨架），下游把 `<image3>` 映射成生成图 2（`compile_prompt` 内部 `<image3>`→`<image2>`）。
+  - `pe_instruction(prop_policy='source_only')`：给 PE 的重写指令全文。`prop_policy` 只接受 `source_only`，否则抛 `ValueError`（道具策略固定：保留 A 已有物品、排除 B 独有物品，如测试 B 的篮球不进生成图）。
+  - `compile_prompt(text, prop_policy='source_only')`：把 PE 的三段式 JSON 答案编译成生成器能吃的提示词。先用 `IMAGE_REFERENCE` 正则改写图像引用——`<image1>`→`<image1>`、`<image2>`→直接抛 `ValueError`（生成器看不到 B）、`<image3>`→`<image2>`；再在前面拼上契约前缀、后面拼上后缀（`…Preserve the source person and their original clothing and setting. Render a natural photograph without skeleton lines…`），最后过 `validate_generator_prompt` 守卫。
+  - re-export 的共享件（来自 `src/pose_edit.prompt_contract`）：`PE_SAMPLING`、`IMAGE_REFERENCE`、`parse_pe_answer`、`referenced_images`、`validate_generator_prompt`。
 
 ## 与上下层的关系
 
-- 上游：`../run.py` 用 `common.make_request` 生成请求，`config.json` 提供默认设置。
-- 下游：`../smplx_worker.py`、`../pe_worker.py`、`../generate_worker.py` 分别 import `estimator`/`geometry`、`prompts`、`common`。
-- 产物消费：每次运行的 `runs/<run>/geometry|prompt|generation/stage.json` 由本目录指纹逻辑写入与校验。
-- 相关：`../README.md`（基座流水线正稿，2026-10-12 审查整改后的实况与逐对指标以其为准）、`../runs/README.md`。
+- **`src/pose_edit/prompt_contract.py`（共享层）**：`prompts.py` 里与人数无关的部分都来自这里。`prompt_contract.py` 负责：采样参数 `PE_SAMPLING`（`max_new_tokens=24000, temperature=1.0, top_p=0.95, top_k=20`）、`IMAGE_REFERENCE` 图像引用正则、`parse_pe_answer`（解析官方三段式 JSON、强制 `ratio_follow="<image1>"` 即源画布）、`referenced_images`、`validate_generator_prompt`（生成器只允许指向它实际收到的图像，引用越界即契约破坏）。分工边界：**`prompt_contract.py` 不关心一张图里有几个人；`prompts.py` 在它之上加单人专属的 system 后缀、重写指令与编译拼装**。两者必须同步演进，但职责边界清晰（以代码为准）。注：旧版 `prompts.py` 里 `parse_pe_answer` 等原属本目录，现已挪到共享层；本文件只 re-export，不重复实现。
+- **`../run.py`**：`from pose_transfer.prompts import PE_SAMPLING, validate_generator_prompt`；并在指纹代码清单里显式登记 `'pe_worker.py', 'pose_transfer/prompts.py'`。
+- **`../pe_worker.py`**：`from pose_transfer.prompts import (PE_ROLE_SYSTEM_SUFFIX, PE_SAMPLING, compile_prompt, …)`——PE 阶段实际在这里取 system 后缀、采样参数与编译结果。
+- **`../lowlatency_probe.py`**：`from pose_transfer.prompts import compile_prompt`——低延迟探测的 `--mode pe` arm 用它校验/编译 PE 回答（见 `../README.md`「低延迟探测（llama.cpp / GGUF）」一节）。
+- 迁走的三件套（`common.py`/`estimator.py`/`geometry.py`）现在是 `src/pose_edit/` 的 `common.py`/`estimator.py`/`geometry.py`，被所有阶段 `import`；本目录不再持有它们，相关描述见 `../src/pose_edit/README.md`。
 
 ## 注意与坑
 
-- `identity` 侧不含绝对路径，`runtime` 侧含绝对路径；改路径不应让缓存失效。
-- 提示词契约强制"不引用 target"，若 PE 输出违反会被 `validate_generator_prompt` 拦截。
-- estimator 沙箱保证共享 SMPLest-X 根不被写入，重跑安全。
+- **改这里会进阶段指纹**：`pose_transfer/prompts.py` 在 `run.py` 的代码清单里，所以改它（哪怕一个字符）会让全部既有 run 的阶段缓存失效、复验报 `workflow code changed`；产物与 `stage.json` 原样保留，不 `--force` 不重算。这是设计取舍（见 `../README.md`「缓存怎么判定」）。
+- `prop_policy` 写死 `source_only`，换其他策略直接 `ValueError`；`compile_prompt` 一旦在答案里见到 `<image2>` 即拒绝，要求把目标动作显式写成文字，因为生成器只收到 A 与骨架。
+- 角色与 JSON 校验不保证 PE 的动作理解完全正确，最终动作仍以 `runs/<run>/prompt/generation_prompt.txt` 为准。

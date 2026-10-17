@@ -72,3 +72,24 @@
 - 没下 Q4_K_M（位宽那一档没对照）；没跑 `llama-perplexity --kl-divergence` 自证 KLD。
 - 样本量只有 2 对 × 1 seed，**不足以支撑任何"效果变好/变坏"的结论**；下一步是 ≥8 对 × 2 seed 的五元组（PCK + 两个 torso_ratio + idcos + bg MAE）加端到端秒数。
 - 没有改 `workflow/pe_worker.py`、`config.json`、`configs/asset_registry.json`（前两者在 prompt 阶段的缓存指纹里，最后一个别的会话正在动）。
+
+## 2026-10-16：thinking 开关对照
+
+新增 `scripts/thinking_switch_benchmark_v2.py`，在同一 Q8_0＋MTP 模型、三图、system/instruction、seed42、采样和 CPU 视觉路径下，分别测默认 thinking、模板 `--reasoning off`、运行时 `--reasoning on --reasoning-budget 0`，以及 128-token 短思考。每组使用独立服务，加载时间与请求时间分开；保存完整 API response（包括 reasoning）、原始文本和角色契约判定。每组只请求一次，不把格式失败伪装成可用延迟。
+
+原版 `thinking_switch_benchmark.py` 保留：零预算组已完成，但切换下一组时遇到 TCP TIME_WAIT；v2 每组用独立端口，支持 `--arms` 选择未跑的组，不覆盖已经完成的零预算产物。新增 128-budget 是因为零预算文本违反源物品保持，需要检查折中方案。
+
+`--dry-run` 只核对真实输入 SHA 与条件，不启动服务或创建 output。正式执行需要新 `--out`，已有目录会拒绝覆盖。输入从 workflow run 的 `prompt/pe_result.json` 读取；旧绝对路径因整理失效时，只接受新 run 的 inputs/geometry 中 SHA 完全相同的图片，并记录映射。
+
+```bash
+/home/shangguanrz/nihaochen/envs/qwen21/bin/python scripts/thinking_switch_benchmark_v2.py \
+  --run /home/shangguanrz/project/pic-edit/workflow/runs/test/q8s_hard_02 \
+  --out /data/shangguanrz/pic-edit-experiments/pe_i2i_gguf_selection_20261014/output/thinking_switch_20261016_<时间戳> \
+  --dry-run
+```
+
+去掉 `--dry-run` 后实测；先检查 GPU 余量，低于 24 GiB 会停止，不关闭其他会话进程。默认总输出上限 8192 在三组完全相同；如果触发 length 截断，则记为失败。这个探针不出图、不训练、不改生产 worker/提示词银行。共享 GPU、单个 case/seed 只能回答此配置下的行为，不构成稳定 20 秒或无质量损失的结论。
+
+旧速度统计的口径修正与只读证据在 `research/pe_i2i_gguf_latency_audit_20261016/report.md`；原始实验记录保留。
+
+实测已完成：[thinking 开关报告](report/thinking_switch_20261016_122659.md)。同一困难样本/seed，默认 168.86 秒/3319 token，模板关闭 31.35 秒/407 token，零预算 30.26 秒/367 token，128 预算 43.07 秒/622 token。均为排除加载、无重试的单次请求。普通关闭在 GGUF 上生效，但本例关思考的三个候选都要求删除源麦克风，默认组也有图号错误，尚无可直接替换生产且达到 20 秒的配置。初次与后续两份产物目录及原始回复均保留。

@@ -28,6 +28,9 @@
    - [3.15 third_party/ —— 第三方开源依赖与组件](#315-third_party--第三方开源依赖与组件)
    - [3.16 vram_lab/ —— 显存实验与测绘工具包](#316-vram_lab--显存实验与测绘工具包)
    - [3.17 辅助与运行缓存目录 (inputs, outputs, logs, caches, patches, deepgen)](#317-辅助与运行缓存目录)
+   - [3.18 workflow/ —— 单人动作迁移基座流水线](#318-workflow--单人动作迁移基座流水线)
+   - [3.19 workflow-multiple/ —— 双人姿态编辑流水线](#319-workflow-multiple--双人姿态编辑流水线)
+   - [3.20 task/ —— 合同任务书](#320-task--合同任务书)
 4. [核心工作流运行命令矩阵 (Workflows)](#4-核心工作流运行命令矩阵)
 5. [环境配置与资产路径规范](#5-环境配置与资产路径规范)
 6. [文档体系：人工 README](#6-文档体系人工-readme)
@@ -70,6 +73,7 @@ pic-edit/
 │   ├── data/               #   数据集加载器 (TikTok, iPER, Hi4D, 数据增强)
 │   ├── evaluation/         #   评测工具包 (DWPose ONNX, ArcFace, PSNR/SSIM)
 │   ├── integration/        #   生成管线挂接与推理 Pipeline Bridge
+│   ├── pose_edit/          #   推理侧共享层：单/双人 workflow 共用的建筑块（缓存指纹、SMPLest-X 封装、DWPose-134、geometry 定标）
 │   └── pose_control/       #   姿态控制核心演进架构
 │       ├── v6/             #     DeepGen V6 架构 (detail, face, hand, interface, reasoning)
 │       ├── qwen21/         #     Qwen 2.1 简化版控制适配器 (body, face, dual, runtime)
@@ -82,12 +86,21 @@ pic-edit/
 │   ├── audit/              #   权重审计、架构一致性与运行时契约检查
 │   ├── reports/            #   Word 文档、指标图表与对比 Panel 生成
 │   └── weights/            #   权重继承、格式转换与兼容性映射
-├── experiments/            # [实验工作区] 保存所有正式训练 runs、检查点、日志与评测生成图
-│   ├── qwen21_iper_body/   #   Qwen21 iPER 身体姿态控制训练运行
-│   ├── qwen21_hi4d_dual/   #   Qwen21 Hi4D 双人交互训练与动作 Prompt 实验
-│   ├── iper_v6_native_20k/ #   DeepGen V6 20k 步正式基准 run
-│   ├── iper_v65_face_*/    #   V6.5 面部适配器过拟合与泛化 run
-│   └── tiktok_overfit_*/   #   TikTok 动作数据集适配性实验
+├── experiments/            # [实验工作区] 全部训练/评测/消融 run，2026-10-13 起按技术线分 5 组
+│   ├── 1.deepgen experiment/  # DeepGen 基座全部实验（champ/ + iper/ 子分组 + 散放 run）
+│   ├── 2.qwen-test/        #   Qwen 基座综合测试（16-test、qwen-2.1-test 等）
+│   ├── 3.singel man/       #   Qwen 迁移线单人姿态控制（里程碑 qwen21_iper_body）
+│   ├── 4.two man /         #   Qwen 迁移线双人交互（qwen21_hi4d_dual 等）
+│   └── 5.workflow/         #   workflow 相关实验预留区（当前为空）
+├── workflow/               # [单人动作迁移流水线] 无 adapter/LoRA：A 保外观、B 供动作，四阶段出图
+│   ├── runs/               #   每次运行的四阶段产物与证据链（run.json + stage.json 指纹）
+│   ├── diagnostics/        #   诊断性调查归档（按日期分 campaign：scale 诊断等）
+│   ├── human_eval/         #   主观成对盲评（出题/盲打/tally 统计）
+│   ├── scripts/            #   流水线私有工具（six-picture-create 为样板）
+│   ├── logs/ patches/      #   批处理与单跑日志 / SMPLest-X 本地补丁
+│   └── pose_transfer/ tests/  #  几何与提示词核心逻辑 / 单元测试
+├── workflow-multiple/      # [双人姿态编辑流水线] Hi4D 双人交互迁移，与 workflow/ 共用 src/pose_edit/
+├── task/                   # [合同任务书] 人物图像姿态编辑任务书_v3.docx（验收条款权威来源）
 ├── datasets/               # [数据集本体] 图像、视频帧与 3D 几何标注资产
 │   ├── iPER/               #   iPER 视频基准 (raw_1024, sampled_6src64tgt, assets_512)
 │   ├── TikTokDataset/      #   TikTok 舞蹈姿态数据与 native 3D assets
@@ -142,6 +155,8 @@ src/
 │   └── dwpose_onnx/        #   自包含的 DWPose ONNX 推理器与关键点坐标归一化
 ├── integration/            # 扩散模型集成桥接
 │   └── deepgen_pipeline.py #   将 Adapter 残差无缝插入 Diffusers Pipeline 采样循环
+├── pose_edit/              # 推理侧共享层（单/双人 workflow 共用）
+│   └── 7 个模块            #   缓存指纹、SMPLest-X 封装、geometry 定标、DWPose-134、外观、提示词契约
 └── pose_control/           # 姿态控制演进核心
     ├── v6/                 #   【DeepGen-1.0 V6 架构】
     │   ├── interface/      #     MMDiT 控制接口与残差注入协议
@@ -211,7 +226,7 @@ scripts/
 ---
 
 ### 3.3 `experiments/` —— 实验运行工作区与全量权重库
-全仓共记录 **34 个独立实验运行（Run）**，每个实验遵循严格的**自包含与不可篡改原则**：保留配置文件（`config.json`）、检查点（`.pt`/`.safetensors`）、离线条件特征缓存、逐步训练日志与评估指标汇总（`summary.json`）。大张量文件在服务器与冷归档盘完好保留，详见 [`experiments/README.md`](experiments/README.md)。
+全部训练、评测、消融实验的落点，每个实验遵循严格的**自包含与不可篡改原则**：保留配置、检查点（`.pt`/`.safetensors`）、条件缓存、训练日志与指标汇总（`summary.json`）。**2026-10-13 起按技术线重组为 5 个分组**（下表为重组前名称的科学结论汇总，现行目录结构、中文名对照与关键资产路径以 [`experiments/README.md`](experiments/README.md) 为准；表中个别早期 run 已不在盘上，该文件的「重组说明」有清单）。
 
 | 核心实验族 (7大方向) | 涵盖目录 (共34个) | 实验条件与基座 | 核心结果、定量指标与科学结论 |
 | :--- | :--- | :--- | :--- |
@@ -224,21 +239,15 @@ scripts/
 | **7. 综合评测与开源基准对比族** | `16-test` | DeepGen vs Qwen vs BFS LoRA<br>16 组全场景挑战 | 涵盖长 Prompt、持物（托篮球）、防泄漏对比；确立“Stage 1 Adapter 控姿 + Stage 2 BFS/Face Adapter 精修面部”两阶段工业落地架构。 |
 
 ```
-experiments/
-├── 16-test/                         # 16 类高难度复杂多条件综合评测流水线 (Stage 1~6 对照)
-├── champ_deepgen_formal_v1/         # Champ 独立样本双手比心姿态正式运行 (120 steps)
-├── deepgen_no_control_ablation_v1/  # DeepGen 无控制消融基准 (PSNR 14.99dB)
-├── hi4d_overfit_archive/            # Hi4D 双人拥抱 120/1000 步早期归档
-├── iper_adapter_finetune_v1/        # V6 共享特征库 (584个缓存张量) 与 3000 步微调
-├── iper_v6_native_20k_v1/           # DeepGen V6 原生 20,000 步全量训练 (峰值 PSNR 28.20dB)
-├── iper_v6_20k_eval_final/          # V6.3 50 样本权威打分库 (Adapter ON: 24.00dB vs OFF: 16.93dB)
-├── iper_v65_face_overfit_024_6/     # V6.5 Face Adapter 单例 1500 步过拟合训练
-├── qwen21_iper_body/                # Qwen-Image-2.1 单流 7B 身体控制主线 (四大实验臂对比, PCK 98%)
-├── qwen21_hi4d_dual/                # Qwen-Image-2.1 双人交互与物理接触控制主线 (无身份互换)
-├── qwen-2.1-test/                   # Qwen 2.1 双人太极/拥抱推理测试 (overfit PSNR 29.85dB)
-├── review_20260908_v2/              # 111 个运行矩阵的显存与架构压测权威复核库
-├── tiktok_overfit_sanity_full/      # V6.5 两阶段门禁严苛审计 (确立单层注入局限性)
-└── tiktok_00001_condition_repair/   # TikTok 序列 00001 条件修复对比试验
+experiments/（2026-10-13 重组后的 5 分组；组名带空格，shell 需引号）
+├── 1.deepgen experiment/      # DeepGen 基座全部实验
+│   ├── champ/                 #   CHAMP 手势重定向 + 无控制消融
+│   ├── iper/                  #   iPER 线 11 个 run +  comparative_3000 软链（错嵌的 iper_v65_face_overfit_024_6 待归位）
+│   └── tiktok_* / v6_*        #   条件修复、客观评测、面部门禁、条件投影等散放 run
+├── 2.qwen-test/               # Qwen 基座综合测试：16-test、qwen-2.1-test（测试集来源）、qwen21_union_migration_v1
+├── 3.singel man/              # Qwen 迁移线单人：qwen21_iper_body（里程碑）等 6 个 run
+├── 4.two man /                # Qwen 迁移线双人：qwen21_hi4d_dual、qwen21_dual_v8、qwen21_dual_prompt_pilot 等
+└── 5.workflow/                # workflow 相关实验预留区（空）
 ```
 
 
@@ -356,6 +365,30 @@ experiments/
 - `patches/`：`deepgen_pose_control.patch` 记录对上游 Diffusers 的零侵入补丁。
 - `deepgen/`：官方原版代码镜像库。
 
+### 3.18 `workflow/` —— 单人动作迁移基座流水线
+技术线 ③：**不用任何 adapter/LoRA** 的单人动作迁移。A 提供外观与原场景，B 只提供动作；B 经 SMPLest-X 估计得 SMPL-X，相机空间关键点投影成 DWPose-134 骨架；PE-I2I 同时读 A、B、骨架编译提示词；Qwen-2.1 基座最终只读 A + 骨架两张参考图出图。入口 `bash workflow/run.sh`（`--check/--until/--force/--verify`），批处理 `bash batch.sh`。
+
+```
+workflow/
+├── run.sh / run.py / batch.sh / report.py   # 入口、编排、批处理、汇总索引
+├── smplx_worker.py / pe_worker.py / generate_worker.py  # 四阶段中的三个阶段（prepare 在 run.py）
+├── evaluate.py / evaluate2.py / scorecard.py # 有 GT 回估评分 / 无 GT 六轴补测 / 横表汇总
+├── pose_transfer/         # 几何与提示词核心逻辑（estimator/geometry/prompts/common）
+├── runs/                  # 每次运行的四阶段产物与证据链（含 runs/test/ 批处理目录）
+├── diagnostics/           # 诊断调查归档（2026-10-13-scale 等 campaign）
+├── human_eval/            # 主观成对盲评（protocol/prepare/tally）
+├── scripts/               # 私有工具（six-picture-create 样板）
+├── logs/ patches/         # 运行日志 / SMPLest-X 本地补丁
+└── tests/                 # 单元测试（缓存指纹、投影、主体选择等）
+```
+总说明与实况指标以 [`workflow/README.md`](workflow/README.md) 为权威；各子目录另有 README。
+
+### 3.19 `workflow-multiple/` —— 双人姿态编辑流水线
+与 `workflow/` 平行的**双人线**：Hi4D 双人数据上的姿态编辑与交互迁移（拥抱、搂肩、太极等），入口 `bash workflow-multiple/batch_dual.sh`。两条线共用仓库级共享层 [`src/pose_edit/`](src/pose_edit/README.md)（缓存指纹、SMPLest-X 封装、DWPose-134、geometry 定标），避免单/双人两份实现漂移。测试集构建、拟合臂（WP7 multi-HMR）与定标常数测量见 [`workflow-multiple/README.md`](workflow-multiple/README.md)。
+
+### 3.20 `task/` —— 合同任务书
+存放与合同方签订的人物图像姿态编辑任务书 v3（`人物图像姿态编辑任务书_v3.docx`），是**验收条款的权威来源**：阶段一/二的身高体型相对估计准确率（≥60%/≥80%）、双人交互主观合理比例（≥70%/≥90%）、主观质量优胜率（超 Qwen-Edit 基线 5%）等口径均出自此处。`workflow/human_eval/` 的主观验收与 `evaluate2.py` 的六轴补测都对照它，详见 [`task/README.md`](task/README.md)。
+
 ---
 
 ## 4. 核心工作流运行命令矩阵
@@ -376,6 +409,8 @@ cd /home/shangguanrz/project/pic-edit
 | **Qwen21 Full 30步量化评测** | `python3 scripts/eval/eval_iper_qwen21_full.py --modes body body_face --resolution 512` | 输出 PCK, NME, ArcFace 余弦与对比图 |
 | **Qwen21 Hi4D 双人动作训练** | `python3 scripts/train/train_hi4d_qwen21_dual.py --steps 500` | 输入 Hi4D 交互对，训练双人解耦 Token |
 | **两阶段 BFS 高清换脸精修** | `python3 bfs_explore.py --pairs <pairs.jsonl> --resolution 768 --steps 30` | Stage 1 锁姿态 + Stage 2 BFS 局部修脸 |
+| **单人动作迁移（workflow，无 adapter）** | `cd workflow && bash run.sh --check`；测试集单对：`PAIRS=../experiments/2.qwen-test/qwen-2.1-test/data/testset/pairs bash run.sh --pair $PAIRS/hard_05 --resolution 768` | 输出 `workflow/runs/<name>/` 四阶段产物（几何/提示词/生成/回估） |
+| **双人姿态编辑（workflow-multiple）** | `cd workflow-multiple && bash batch_dual.sh`（用法见其 README） | 输出 `workflow-multiple/runs/<name>/` |
 | **自动化单元测试全量执行** | `pytest tests/test_qwen21_*.py -v` | 验证控制契约与数学正确性 |
 
 ---

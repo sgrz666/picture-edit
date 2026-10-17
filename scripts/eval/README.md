@@ -55,6 +55,12 @@
 | `eval_hi4d_native_binding.py` | locked、inference-only 的 Hi4D 人对姿态对应实验 |
 | `eval_hi4d_qwen21_dual.py` | 生成并给 native/geometry/full Qwen21 Hi4D 控制打分 |
 | `score_hi4d_native_binding.py` | 显式复核 A identity 后评测锁定 Hi4D 实验；检测不按 target 位置分配身份 |
+| `eval_hi4d_separate_depth.py` | 锁定、inference-only 的 Hi4D 直连对应实验：分开姿态 ± 联合深度；`--prepare` 锁定输入与提示词，`--validate-only` 跑坐标 / 深度测试；旧实验与权重只读 |
+| `eval_hi4d_separate_depth_bilingual.py` | 锁定、inference-only 的 Hi4D 细骨架 / 深度**中英文双语**实验，复用 `eval_hi4d_separate_depth` 与 `eval_hi4d_native_binding` 的模型与 REVISION |
+| `score_hi4d_separate_depth.py` | 对六个直连 Hi4D case 做 CPU 检测 + 人工身份分配打分 |
+| `score_hi4d_separate_depth_bilingual.py` | 对四个锁定 Hi4D 双语臂做身份复核评测 |
+| `eval_hi4d_depth_combinations.py` | 5 种锁定 native 输入组合的英文 inference-only 评测：skeleton / skeleton_joint_depth / joint_depth / separate_depth / joint_separate_depth（默认根 `qwen21_full/hi4d_depth_combinations_20261013`） |
+| `score_hi4d_depth_combinations.py` | 对 5 种锁定英文 Hi4D 输入组合做身份复核评测，定义深度 vs 骨架等对照（`CONTRASTS`：individual_depth_vs_skeleton、joint_depth_added_to_individual 等） |
 
 ### Qwen21 joint pilot 评测
 

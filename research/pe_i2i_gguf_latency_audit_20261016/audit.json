@@ -1,0 +1,586 @@
+{
+  "schema": "pe_i2i_gguf_latency_readonly_audit_v1",
+  "observed_at": "2026-10-16T12:12:09.012761+08:00",
+  "project": "/home/shangguanrz/project/pic-edit",
+  "experiment": "/data/shangguanrz/pic-edit-experiments/pe_i2i_gguf_selection_20261014",
+  "git_log": {
+    "returncode": 0,
+    "stdout": "17991d3 fix(dual-appearance): make the square crop exactly square; correct the probe figure in the README\neeebd53 test+docs(dual): the crop-geometry explanation for the import bias is refuted by measurement\nb787330 docs(workflow): put every scale number on one canvas and correct the sizing percentage\nbb7d2a9 feat(single-person): source_torso scales onto As measured torso; 0.31 becomes a logged fallback\n23dd7ac docs(workflow-multiple): close out the 85-cell grid and the n=17 guide comparison\n",
+    "stderr": ""
+  },
+  "configuration": {
+    "project_root": "/home/shangguanrz/project/pic-edit",
+    "geometry_python": "/home/shangguanrz/project/pic-edit/add/envs/smplestx_bw/bin/python",
+    "qwen_python": "/home/shangguanrz/nihaochen/envs/qwen21/bin/python",
+    "smplest_root": "/home/shangguanrz/project/pic-edit/add/tools/SMPLest-X",
+    "smplest_checkpoint": "smplest_x_h",
+    "pe_model": "/data/shangguanrz/pic-edit-models/Qwen-Image-2.1-PE-I2I",
+    "qwen_model": "/data/shangguanrz/pic-edit-models/Qwen-Image-2.1",
+    "person_detection_confidence": 0.5,
+    "subject": "auto",
+    "resolution": 1024,
+    "steps": 30,
+    "seed": 42,
+    "pe_seed": 42,
+    "true_cfg_scale": 1.0,
+    "use_kv_cache": false,
+    "pose_framing": "source_person",
+    "prop_policy": "source_only",
+    "adapter": false,
+    "lora": false,
+    "dwpose_det_model": "/home/shangguanrz/project/pic-edit/add/tools/dwpose_mimicmotion_official/models/yolox_l.onnx",
+    "dwpose_pose_model": "/home/shangguanrz/project/pic-edit/add/tools/dwpose_mimicmotion_official/models/dw-ll_ucoco_384.onnx"
+  },
+  "production_code": {
+    "workflow/pe_worker.py": {
+      "sha256": "40e0e85882622cd2361dd94d819df9a64fcd6491e94bbc813eb99ae51b1c2340",
+      "bytes": 6050,
+      "relevant_lines": [
+        {
+          "line": 24,
+          "text": "from pose_transfer.prompts import (PE_ROLE_SYSTEM_SUFFIX, PE_SAMPLING, compile_prompt,"
+        },
+        {
+          "line": 36,
+          "text": "    model_dir = Path(settings['pe_model'])"
+        },
+        {
+          "line": 42,
+          "text": "    processor = AutoProcessor.from_pretrained(str(model_dir))"
+        },
+        {
+          "line": 43,
+          "text": "    model = AutoModelForImageTextToText.from_pretrained(str(model_dir), dtype=torch.bfloat16).to('cuda').eval()"
+        },
+        {
+          "line": 69,
+          "text": "            generated = model.generate(**inputs, **PE_SAMPLING)"
+        },
+        {
+          "line": 100,
+          "text": "        'enable_thinking': True, 'sampling': PE_SAMPLING, 'seed': seed, 'attempts': attempts,"
+        }
+      ]
+    },
+    "workflow/run.py": {
+      "sha256": "6f9c2f73617abe03d3c5c091f0267cbb57d69895d76477097ac40c3efdb739bc",
+      "bytes": 21135,
+      "relevant_lines": [
+        {
+          "line": 21,
+          "text": "from pose_transfer.prompts import PE_SAMPLING, validate_generator_prompt"
+        },
+        {
+          "line": 67,
+          "text": "def run_worker(python, script, request, request_path, log_path):"
+        },
+        {
+          "line": 83,
+          "text": "        str(Path(config['pe_model']) / 'system_prompt.txt'), config['qwen_model']]"
+        },
+        {
+          "line": 126,
+          "text": "        fields = ['pe_model', 'pe_seed', 'prop_policy']"
+        },
+        {
+          "line": 128,
+          "text": "        identities = model_signature(config['pe_model'])"
+        },
+        {
+          "line": 140,
+          "text": "        identity['sampling'], identity['enable_thinking'] = PE_SAMPLING, True"
+        },
+        {
+          "line": 182,
+          "text": "def select_generation_prompt(run_dir, paths, manual_prompt, verify=False):"
+        },
+        {
+          "line": 241,
+          "text": "    parser.add_argument('--prompt-file', type=Path, help='Generate with this prompt text instead '"
+        },
+        {
+          "line": 315,
+          "text": "                    run_worker(python, STAGE_SCRIPT[stage], request, directory / 'request.json',"
+        },
+        {
+          "line": 326,
+          "text": "                    paths.update(select_generation_prompt(run_dir, paths, args.prompt_file,"
+        }
+      ]
+    },
+    "workflow/config.json": {
+      "sha256": "d13c08ce23716bac0c86992abe1f7153d6e53043a2894e20bad6e573fccd2c99",
+      "bytes": 1003,
+      "relevant_lines": [
+        {
+          "line": 7,
+          "text": "  \"pe_model\": \"/data/shangguanrz/pic-edit-models/Qwen-Image-2.1-PE-I2I\","
+        }
+      ]
+    },
+    "workflow/pose_transfer/prompts.py": {
+      "sha256": "4c310e945c9ea0fbf11fcff4d96e35be3346a86e3d347bd84cffed9d5d9726dc",
+      "bytes": 5590,
+      "relevant_lines": [
+        {
+          "line": 11,
+          "text": "from src.pose_edit.prompt_contract import (IMAGE_REFERENCE, PE_SAMPLING,"
+        }
+      ]
+    },
+    "src/pose_edit/prompt_contract.py": {
+      "sha256": "7697f107d2afda3a0691a7cc3d182ea91a7d80dc22787d5ad3eed7dce54eae70",
+      "bytes": 2497,
+      "relevant_lines": [
+        {
+          "line": 13,
+          "text": "PE_SAMPLING = {\"max_new_tokens\": 24000, \"do_sample\": True, \"temperature\": 1.0,"
+        },
+        {
+          "line": 48,
+          "text": "    compiled PE output and a hand-supplied --prompt-file."
+        }
+      ]
+    }
+  },
+  "experiment_code": {
+    "pe_llama_batch.py": {
+      "sha256": "7f312f80165df011ad7b63efd446b3e90cfe7dae928eac3d1cc63a15460f8e63",
+      "bytes": 9945
+    },
+    "gate0_llama_smoke.py": {
+      "sha256": "63854092da448712723c80908dab6ef13a91949549a483e088e5f276841f74f2",
+      "bytes": 7849
+    },
+    "gguf_probe.py": {
+      "sha256": "232cd10989590acb0e22654f1a5cac1f1e3c96872158c006e727b3f93607b4f7",
+      "bytes": 7710
+    },
+    "fetch_llama_runtime.sh": {
+      "sha256": "a34c665282e36ee4e4cac649e04a3cb3944474d93ce76ace8b755897b7480da6",
+      "bytes": 3572
+    },
+    "prompt_token_delta.py": {
+      "sha256": "7882a02be259586d9932b9f961a2e86921d2daa0ab5b1cb8cc7fa611f5ed27c6",
+      "bytes": 2009
+    }
+  },
+  "gguf_files": [
+    {
+      "path": "/data/shangguanrz/pic-edit-models/Qwen-Image-2.1-PE-I2I-GGUF/qwen3.5_9b_qwen_image_2.1_pe_i2i.mmproj.bf16.gguf",
+      "bytes": 921704640
+    },
+    {
+      "path": "/data/shangguanrz/pic-edit-models/Qwen-Image-2.1-PE-I2I-GGUF/qwen3.5_9b_qwen_image_2.1_pe_i2i.mtp.Q8_0.gguf",
+      "bytes": 9786060352
+    }
+  ],
+  "declared_weight_checksums": "cba54cd0fad10315efe92ec98168a9940d7f97aa43d67b0f660b420cd35bccae  /data/shangguanrz/pic-edit-models/Qwen-Image-2.1-PE-I2I-GGUF/qwen3.5_9b_qwen_image_2.1_pe_i2i.mtp.Q8_0.gguf\n2589e2582925db166f57ae18c9d3fe5fec617ddde72d0f095c8dbc87a71f6579  /data/shangguanrz/pic-edit-models/Qwen-Image-2.1-PE-I2I-GGUF/qwen3.5_9b_qwen_image_2.1_pe_i2i.mmproj.bf16.gguf\n",
+  "gpu_model_inference_run_by_this_audit": false,
+  "tokenizer": {
+    "device": "CPU",
+    "loaded": true,
+    "path": "/data/shangguanrz/pic-edit-models/Qwen-Image-2.1-PE-I2I",
+    "class_name": "TokenizersBackend"
+  },
+  "cases": [
+    {
+      "case": "q8s_hard_02",
+      "gguf_record": {
+        "schema": "pe_llama_gate1_v1",
+        "case": "q8s_hard_02",
+        "mtp": true,
+        "model": "qwen3.5_9b_qwen_image_2.1_pe_i2i.mtp.Q8_0.gguf",
+        "status": "complete",
+        "seconds_total": 571.7,
+        "attempts": [
+          {
+            "attempt": 1,
+            "seed": 42,
+            "seconds": 246.3,
+            "completion_tokens": 4821,
+            "prompt_tokens": 7358,
+            "raw_path": "/data/shangguanrz/pic-edit-experiments/pe_i2i_gguf_selection_20261014/output/gate1/raw/q8s_hard_02_attempt1.txt",
+            "raw_sha256": null,
+            "status": "rejected",
+            "error": "PE prompt refers to B RGB, which the generator cannot see; describe the target body/head/hand action explicitly instead"
+          },
+          {
+            "attempt": 2,
+            "seed": 43,
+            "seconds": 325.4,
+            "completion_tokens": 6443,
+            "prompt_tokens": 7412,
+            "raw_path": "/data/shangguanrz/pic-edit-experiments/pe_i2i_gguf_selection_20261014/output/gate1/raw/q8s_hard_02_attempt2.txt",
+            "raw_sha256": null,
+            "status": "accepted",
+            "compiled_path": "/data/shangguanrz/pic-edit-experiments/pe_i2i_gguf_selection_20261014/output/gate1/prompts/q8s_hard_02.txt",
+            "compiled_words": 335,
+            "ratio_follow": "<image1>"
+          }
+        ],
+        "tokens": 6443,
+        "prompt_tokens": 7412,
+        "hf_tokens": 4479,
+        "hf_seconds": 316.8,
+        "compiled_words": 335,
+        "hf_prompt_sha": "8708b8159be270edf4b2155ebd8b222f9363c855441d2157e11ee53845d848c8",
+        "tok_per_s": 19.8
+      },
+      "gguf_record_sha256": "9b42275c1f818ac7a194f2f737ec1c4f78a6d7ab34a934fbabc507ff9956ea5d",
+      "hf_result_path": "/home/shangguanrz/project/pic-edit/workflow/runs/test/q8s_hard_02/prompt/pe_result.json",
+      "hf_result_sha256": "b9e7caa9bbaa32bf92dcd86fd41b7b1a9d0211a90f3ffba5a8a2ece9f6669595",
+      "hf_seconds": 316.81918020598823,
+      "hf_success_tokens": 4479,
+      "hf_attempts": [
+        {
+          "attempt": 1,
+          "seed": 42,
+          "raw_path": "/home/shangguanrz/project/pic-edit/workflow/runs/q8s_hard_02/prompt/pe_attempt_1.txt",
+          "raw_sha256": "368c04cfa11a8b258f3448251ebb8779b910fcd70c81e7203b68cb5bf5e22e27",
+          "output_tokens": 4479,
+          "status": "accepted"
+        }
+      ],
+      "hf_all_attempt_tokens": 4479,
+      "gguf_all_attempt_tokens": 11264,
+      "gguf_answer_only_records": [
+        {
+          "attempt": 1,
+          "path": "/data/shangguanrz/pic-edit-experiments/pe_i2i_gguf_selection_20261014/output/gate1/raw/q8s_hard_02_attempt1.txt",
+          "sha256": "e287ea856ad52e7fc7e134eb2031e68908012ef68e82766709c78ca13beba182",
+          "characters": 2076,
+          "recorded_completion_tokens": 4821,
+          "contains_think_end_tag": false,
+          "saved_only_message_content": true,
+          "saved_content_tokens_teacher_tokenizer": 440,
+          "unrepresented_completion_tokens_estimate": 4381,
+          "estimate_caveat": "Retokenized content is not an API reasoning-token counter; template/special-token accounting may differ."
+        },
+        {
+          "attempt": 2,
+          "path": "/data/shangguanrz/pic-edit-experiments/pe_i2i_gguf_selection_20261014/output/gate1/raw/q8s_hard_02_attempt2.txt",
+          "sha256": "501229d5f737e0dc7fef3f6711e11b3d017580a7496777bf50571d4d082ca881",
+          "characters": 1764,
+          "recorded_completion_tokens": 6443,
+          "contains_think_end_tag": false,
+          "saved_only_message_content": true,
+          "saved_content_tokens_teacher_tokenizer": 365,
+          "unrepresented_completion_tokens_estimate": 6078,
+          "estimate_caveat": "Retokenized content is not an API reasoning-token counter; template/special-token accounting may differ."
+        }
+      ],
+      "hf_final_json_tokens": 320
+    },
+    {
+      "case": "q8s_hard_05",
+      "gguf_record": {
+        "schema": "pe_llama_gate1_v1",
+        "case": "q8s_hard_05",
+        "mtp": true,
+        "model": "qwen3.5_9b_qwen_image_2.1_pe_i2i.mtp.Q8_0.gguf",
+        "status": "complete",
+        "seconds_total": 415.5,
+        "attempts": [
+          {
+            "attempt": 1,
+            "seed": 42,
+            "seconds": 226.9,
+            "completion_tokens": 4421,
+            "prompt_tokens": 7478,
+            "raw_path": "/data/shangguanrz/pic-edit-experiments/pe_i2i_gguf_selection_20261014/output/gate1/raw/q8s_hard_05_attempt1.txt",
+            "raw_sha256": null,
+            "status": "rejected",
+            "error": "PE prompt refers to B RGB, which the generator cannot see; describe the target body/head/hand action explicitly instead"
+          },
+          {
+            "attempt": 2,
+            "seed": 43,
+            "seconds": 188.6,
+            "completion_tokens": 3695,
+            "prompt_tokens": 7532,
+            "raw_path": "/data/shangguanrz/pic-edit-experiments/pe_i2i_gguf_selection_20261014/output/gate1/raw/q8s_hard_05_attempt2.txt",
+            "raw_sha256": null,
+            "status": "accepted",
+            "compiled_path": "/data/shangguanrz/pic-edit-experiments/pe_i2i_gguf_selection_20261014/output/gate1/prompts/q8s_hard_05.txt",
+            "compiled_words": 341,
+            "ratio_follow": "<image1>"
+          }
+        ],
+        "tokens": 3695,
+        "prompt_tokens": 7532,
+        "hf_tokens": 5231,
+        "hf_seconds": 637.2,
+        "compiled_words": 341,
+        "hf_prompt_sha": "deeef9d0447f718f7402a7d1af48228bde55a15eb90919a8cab1d9805e6d9440",
+        "tok_per_s": 19.59
+      },
+      "gguf_record_sha256": "ece52a64f9cbecece10b1a4f77f528a797b63a0a1c0a552fce22e0cbeda4211a",
+      "hf_result_path": "/home/shangguanrz/project/pic-edit/workflow/runs/test/q8s_hard_05/prompt/pe_result.json",
+      "hf_result_sha256": "00b37403b15666436271ae3c0a112e41766b9a4a40bcb6489106d73407e1e995",
+      "hf_seconds": 637.1743810909684,
+      "hf_success_tokens": 5231,
+      "hf_attempts": [
+        {
+          "attempt": 1,
+          "seed": 42,
+          "raw_path": "/home/shangguanrz/project/pic-edit/workflow/runs/q8s_hard_05/prompt/pe_attempt_1.txt",
+          "raw_sha256": "3ce3f329deda4d46f5b0cecaf31f921cf981da2931765ba342a606b7b69d582a",
+          "output_tokens": 3927,
+          "status": "rejected",
+          "error": "PE prompt refers to B RGB, which the generator cannot see; describe the target body/head/hand action explicitly instead"
+        },
+        {
+          "attempt": 2,
+          "seed": 43,
+          "raw_path": "/home/shangguanrz/project/pic-edit/workflow/runs/q8s_hard_05/prompt/pe_attempt_2.txt",
+          "raw_sha256": "cdcc61c35bbe0ee1b6e5bdad548a7791eac58cb12103b8b49d7f73fe41694ae9",
+          "output_tokens": 5231,
+          "status": "accepted"
+        }
+      ],
+      "hf_all_attempt_tokens": 9158,
+      "gguf_all_attempt_tokens": 8116,
+      "gguf_answer_only_records": [
+        {
+          "attempt": 1,
+          "path": "/data/shangguanrz/pic-edit-experiments/pe_i2i_gguf_selection_20261014/output/gate1/raw/q8s_hard_05_attempt1.txt",
+          "sha256": "386ed53d1e87418f043e2a1bb4f3b0523124a8101fa1fb7dfd1f81feac9172f3",
+          "characters": 2217,
+          "recorded_completion_tokens": 4421,
+          "contains_think_end_tag": false,
+          "saved_only_message_content": true,
+          "saved_content_tokens_teacher_tokenizer": 460,
+          "unrepresented_completion_tokens_estimate": 3961,
+          "estimate_caveat": "Retokenized content is not an API reasoning-token counter; template/special-token accounting may differ."
+        },
+        {
+          "attempt": 2,
+          "path": "/data/shangguanrz/pic-edit-experiments/pe_i2i_gguf_selection_20261014/output/gate1/raw/q8s_hard_05_attempt2.txt",
+          "sha256": "19a63438b7f77897282d86798ed48cc2623cc597de8bb02d6a998157b2921750",
+          "characters": 1708,
+          "recorded_completion_tokens": 3695,
+          "contains_think_end_tag": false,
+          "saved_only_message_content": true,
+          "saved_content_tokens_teacher_tokenizer": 358,
+          "unrepresented_completion_tokens_estimate": 3337,
+          "estimate_caveat": "Retokenized content is not an API reasoning-token counter; template/special-token accounting may differ."
+        }
+      ],
+      "hf_final_json_tokens": 386
+    }
+  ],
+  "same_denominator_totals": {
+    "gguf_request_seconds_excludes_server_loading": 987.2,
+    "hf_stage_seconds_includes_loading_and_retries": 953.9935612969566,
+    "gguf_all_attempt_output_tokens": 19380,
+    "hf_all_attempt_output_tokens": 13637,
+    "gguf_tokens_per_request_second": 19.63128038897893,
+    "hf_tokens_per_stage_second": 14.294645743164624,
+    "gguf_relative_output_work": 1.4211336804282466,
+    "gguf_relative_latency": 1.0348078226627644,
+    "caveat": "Observed different outputs under different backends/sampling/shared load; not a controlled quantization speedup measurement."
+  },
+  "server_timings": [
+    {
+      "task_id": 0,
+      "prompt_processing_ms": 8999.75,
+      "decode_ms": 237128.11,
+      "decode_tokens": 4821,
+      "server_total_ms": 246127.87,
+      "mtp_acceptance": 0.64404,
+      "mtp_mean_len": 2.29
+    },
+    {
+      "task_id": 2116,
+      "prompt_processing_ms": 6846.24,
+      "decode_ms": 318005.71,
+      "decode_tokens": 6443,
+      "server_total_ms": 324851.94,
+      "mtp_acceptance": 0.62308,
+      "mtp_mean_len": 2.25
+    },
+    {
+      "task_id": 4990,
+      "prompt_processing_ms": 7567.44,
+      "decode_ms": 218485.52,
+      "decode_tokens": 4421,
+      "server_total_ms": 226052.95,
+      "mtp_acceptance": 0.64865,
+      "mtp_mean_len": 2.3
+    },
+    {
+      "task_id": 6920,
+      "prompt_processing_ms": 6925.62,
+      "decode_ms": 181087.71,
+      "decode_tokens": 3695,
+      "server_total_ms": 188013.33,
+      "mtp_acceptance": 0.6472,
+      "mtp_mean_len": 2.29
+    }
+  ],
+  "decode_fraction_of_server_total": 0.9692003853342538,
+  "server_log_header": [
+    "0.00.090.597 I srv  llama_server: initializing ...",
+    "0.00.090.612 I cmn  common_param: common_params_print_info: verbosity = 3 (adjust with the `-lv N` CLI arg)",
+    "0.00.091.012 W srv  llama_server: security: no API key is set and CORS allows all origins (see https://github.com/ggml-org/llama.cpp/pull/25655)",
+    "0.00.104.082 I srv    load_model: loading model '/data/shangguanrz/pic-edit-models/Qwen-Image-2.1-PE-I2I-GGUF/qwen3.5_9b_qwen_image_2.1_pe_i2i.mtp.Q8_0.gguf'",
+    "0.20.745.343 I cmn          init: llama threadpool init, n_threads = 112",
+    "0.20.902.644 I common_speculative_init_result: creating MTP draft context against the target model '/data/shangguanrz/pic-edit-models/Qwen-Image-2.1-PE-I2I-GGUF/qwen3.5_9b_qwen_image_2.1_pe_i2i.mtp.Q8_0.gguf'",
+    "0.20.941.993 W load_hparams: Qwen-VL models require at minimum 1024 image tokens to function correctly on grounding tasks",
+    "0.20.941.997 W load_hparams: if you encounter problems with accuracy, try adding --image-min-tokens 1024",
+    "0.20.941.998 W load_hparams: more info: https://github.com/ggml-org/llama.cpp/issues/16842",
+    "",
+    "0.21.474.691 I srv    load_model: loaded multimodal model, '/data/shangguanrz/pic-edit-models/Qwen-Image-2.1-PE-I2I-GGUF/qwen3.5_9b_qwen_image_2.1_pe_i2i.mmproj.bf16.gguf'",
+    "0.21.474.714 I srv    load_model: initializing, n_slots = 4, n_ctx_slot = 32768, kv_unified = 'true'",
+    "0.21.544.188 I srv  llama_server: model loaded",
+    "0.21.544.202 I srv  llama_server: listening on http://127.0.0.1:18777",
+    "0.24.168.338 I slot get_availabl: id  3 | task -1 | selected slot by LRU, t_last = -1",
+    "0.24.168.551 I slot launch_slot_: id  3 | task 0 | processing task, is_child = 0"
+  ],
+  "gguf_script_cpu_vision_flag": true,
+  "installed_runtime_help": {
+    "returncode": 0,
+    "reasoning_budget_available": true,
+    "reasoning_budget_help_lines": [
+      "--reasoning-budget N                    token budget for thinking: -1 for unrestricted, 0 for immediate end,",
+      "--reasoning-budget-message MESSAGE      message injected before the end-of-thinking tag when reasoning budget"
+    ],
+    "projector_offload_help_lines": [
+      "--mmproj-offload, --no-mmproj-offload   whether to enable GPU offloading for multimodal projector (default:"
+    ],
+    "full_help_sha256": "72e61ec559ca8f5f99e704b7bbe0b18d5d819371405308649dd6eba354282e3b"
+  },
+  "current_relevant_processes": [
+    "3835198       31:59  102  1.9 /home/shangguanrz/nihaochen/envs/qwen21/bin/python -B scripts/pe_rewrite_tiktok.py run --split val --shard-index 0 --shard-count 2",
+    "3835200       31:59  102  1.9 /home/shangguanrz/nihaochen/envs/qwen21/bin/python -B scripts/pe_rewrite_tiktok.py run --split val --shard-index 1 --shard-count 2"
+  ],
+  "source_manifests": [
+    {
+      "path": "/data/shangguanrz/pic-edit-experiments/pe_i2i_gguf_selection_20261014/logs/gate0_mtp.log",
+      "relative_to_experiment": "logs/gate0_mtp.log",
+      "bytes": 1490,
+      "sha256": "d17983d6d24e81a219962e1edbe4fe495820c0cbda8619b764de84c1469f7aaf"
+    },
+    {
+      "path": "/data/shangguanrz/pic-edit-experiments/pe_i2i_gguf_selection_20261014/logs/gate1.log",
+      "relative_to_experiment": "logs/gate1.log",
+      "bytes": 1016,
+      "sha256": "34a326035abae5587b25cd28e0c02b766b5435e6c615c1426af864f36999504d"
+    },
+    {
+      "path": "/data/shangguanrz/pic-edit-experiments/pe_i2i_gguf_selection_20261014/output/answer_20261014T231113.txt",
+      "relative_to_experiment": "output/answer_20261014T231113.txt",
+      "bytes": 2076,
+      "sha256": "e287ea856ad52e7fc7e134eb2031e68908012ef68e82766709c78ca13beba182"
+    },
+    {
+      "path": "/data/shangguanrz/pic-edit-experiments/pe_i2i_gguf_selection_20261014/output/gate0_20261014T231113.json",
+      "relative_to_experiment": "output/gate0_20261014T231113.json",
+      "bytes": 544,
+      "sha256": "622d48a3da55601091e707d7a8a5c6aa0166ebc9ceddd497ec713c15df7bfe4b"
+    },
+    {
+      "path": "/data/shangguanrz/pic-edit-experiments/pe_i2i_gguf_selection_20261014/output/gate1/prompts/q8s_hard_02.txt",
+      "relative_to_experiment": "output/gate1/prompts/q8s_hard_02.txt",
+      "bytes": 2204,
+      "sha256": "1faff8cb487597adbb2441b01aadd0187b2eb1ab3e3b2f58bf7199932f7101ea"
+    },
+    {
+      "path": "/data/shangguanrz/pic-edit-experiments/pe_i2i_gguf_selection_20261014/output/gate1/prompts/q8s_hard_05.txt",
+      "relative_to_experiment": "output/gate1/prompts/q8s_hard_05.txt",
+      "bytes": 2150,
+      "sha256": "336f12cbb65c4421300557a73f44dce0e2ed4e3463c5dd4c8ea501865dabcfa4"
+    },
+    {
+      "path": "/data/shangguanrz/pic-edit-experiments/pe_i2i_gguf_selection_20261014/output/gate1/raw/q8s_hard_02_attempt1.txt",
+      "relative_to_experiment": "output/gate1/raw/q8s_hard_02_attempt1.txt",
+      "bytes": 2076,
+      "sha256": "e287ea856ad52e7fc7e134eb2031e68908012ef68e82766709c78ca13beba182"
+    },
+    {
+      "path": "/data/shangguanrz/pic-edit-experiments/pe_i2i_gguf_selection_20261014/output/gate1/raw/q8s_hard_02_attempt2.txt",
+      "relative_to_experiment": "output/gate1/raw/q8s_hard_02_attempt2.txt",
+      "bytes": 1764,
+      "sha256": "501229d5f737e0dc7fef3f6711e11b3d017580a7496777bf50571d4d082ca881"
+    },
+    {
+      "path": "/data/shangguanrz/pic-edit-experiments/pe_i2i_gguf_selection_20261014/output/gate1/raw/q8s_hard_05_attempt1.txt",
+      "relative_to_experiment": "output/gate1/raw/q8s_hard_05_attempt1.txt",
+      "bytes": 2217,
+      "sha256": "386ed53d1e87418f043e2a1bb4f3b0523124a8101fa1fb7dfd1f81feac9172f3"
+    },
+    {
+      "path": "/data/shangguanrz/pic-edit-experiments/pe_i2i_gguf_selection_20261014/output/gate1/raw/q8s_hard_05_attempt2.txt",
+      "relative_to_experiment": "output/gate1/raw/q8s_hard_05_attempt2.txt",
+      "bytes": 1708,
+      "sha256": "19a63438b7f77897282d86798ed48cc2623cc597de8bb02d6a998157b2921750"
+    },
+    {
+      "path": "/data/shangguanrz/pic-edit-experiments/pe_i2i_gguf_selection_20261014/output/gate1/records/q8s_hard_02.json",
+      "relative_to_experiment": "output/gate1/records/q8s_hard_02.json",
+      "bytes": 1406,
+      "sha256": "9b42275c1f818ac7a194f2f737ec1c4f78a6d7ab34a934fbabc507ff9956ea5d"
+    },
+    {
+      "path": "/data/shangguanrz/pic-edit-experiments/pe_i2i_gguf_selection_20261014/output/gate1/records/q8s_hard_05.json",
+      "relative_to_experiment": "output/gate1/records/q8s_hard_05.json",
+      "bytes": 1407,
+      "sha256": "ece52a64f9cbecece10b1a4f77f528a797b63a0a1c0a552fce22e0cbeda4211a"
+    },
+    {
+      "path": "/data/shangguanrz/pic-edit-experiments/pe_i2i_gguf_selection_20261014/output/gate1/server.log",
+      "relative_to_experiment": "output/gate1/server.log",
+      "bytes": 48605,
+      "sha256": "3ec722bdf9d1fdec36f38d96028809bb6dc80981c5eccf33ec3e43ef6847e130"
+    },
+    {
+      "path": "/data/shangguanrz/pic-edit-experiments/pe_i2i_gguf_selection_20261014/output/gate1/stats.json",
+      "relative_to_experiment": "output/gate1/stats.json",
+      "bytes": 404,
+      "sha256": "d48b35f241fa9d859ef18f0bd3ed6a0af16988340e5cb085e20ae0ff523f200d"
+    },
+    {
+      "path": "/data/shangguanrz/pic-edit-experiments/pe_i2i_gguf_selection_20261014/output/server_20261014T231113.log",
+      "relative_to_experiment": "output/server_20261014T231113.log",
+      "bytes": 13046,
+      "sha256": "2ab216a1c357e20339a83e1656d33f8b3b52aeb256109577ac9c985765b7fa21"
+    },
+    {
+      "path": "/data/shangguanrz/pic-edit-experiments/pe_i2i_gguf_selection_20261014/scripts/fetch_llama_runtime.sh",
+      "relative_to_experiment": "scripts/fetch_llama_runtime.sh",
+      "bytes": 3572,
+      "sha256": "a34c665282e36ee4e4cac649e04a3cb3944474d93ce76ace8b755897b7480da6"
+    },
+    {
+      "path": "/data/shangguanrz/pic-edit-experiments/pe_i2i_gguf_selection_20261014/scripts/gate0_llama_smoke.py",
+      "relative_to_experiment": "scripts/gate0_llama_smoke.py",
+      "bytes": 7849,
+      "sha256": "63854092da448712723c80908dab6ef13a91949549a483e088e5f276841f74f2"
+    },
+    {
+      "path": "/data/shangguanrz/pic-edit-experiments/pe_i2i_gguf_selection_20261014/scripts/gguf_probe.py",
+      "relative_to_experiment": "scripts/gguf_probe.py",
+      "bytes": 7710,
+      "sha256": "232cd10989590acb0e22654f1a5cac1f1e3c96872158c006e727b3f93607b4f7"
+    },
+    {
+      "path": "/data/shangguanrz/pic-edit-experiments/pe_i2i_gguf_selection_20261014/scripts/pe_llama_batch.py",
+      "relative_to_experiment": "scripts/pe_llama_batch.py",
+      "bytes": 9945,
+      "sha256": "7f312f80165df011ad7b63efd446b3e90cfe7dae928eac3d1cc63a15460f8e63"
+    },
+    {
+      "path": "/data/shangguanrz/pic-edit-experiments/pe_i2i_gguf_selection_20261014/scripts/prompt_token_delta.py",
+      "relative_to_experiment": "scripts/prompt_token_delta.py",
+      "bytes": 2009,
+      "sha256": "7882a02be259586d9932b9f961a2e86921d2daa0ab5b1cb8cc7fa611f5ed27c6"
+    },
+    {
+      "path": "/data/shangguanrz/pic-edit-experiments/pe_i2i_gguf_selection_20261014/scripts/wait_fetch.sh",
+      "relative_to_experiment": "scripts/wait_fetch.sh",
+      "bytes": 976,
+      "sha256": "ffc1c579e21f6cd4f39b90e8bc0553a017f799a0d2e22ddebf53d28ee3e1dbe7"
+    }
+  ]
+}

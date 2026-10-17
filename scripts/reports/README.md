@@ -32,6 +32,13 @@
 | `write_qwen21_inheritance_report.py` | 内嵌实测表与原像素对照面板的权重继承 Word 报告 |
 | `write_qwen21_weight_audit_report.py` | 追加溯源/语义证据并写独立权重审计 Word 报告 |
 
+### Hi4D 双人深度 / 骨架对比报告（Word，10-12 ~ 10-13 新增）
+
+| 文件 | 一句话职责 |
+|---|---|
+| `build_hi4d_separate_depth_bilingual_report.py` | 内嵌式 Word 报告：Hi4D 双人「骨架与深度」**中英文提示词对比**，含精确像素输出面板与目标骨架叠加；消费 `eval_hi4d_separate_depth_bilingual` 与 `score_hi4d_separate_depth_bilingual` 的结果（输出《Hi4D双人骨架与深度_中英文提示词对比_20261012.docx》） |
+| `build_hi4d_depth_combinations_report.py` | 内嵌式 Word 报告：Hi4D 双人 5 种锁定 native 深度输入组合（skeleton / skeleton_joint_depth / joint_depth / separate_depth / joint_separate_depth）对比，含精确像素面板与骨架叠加；消费 `eval_hi4d_depth_combinations` 与 `score_hi4d_depth_combinations` 的结果（输出《Hi4D双人_深度输入组合对比_20261013.docx》） |
+
 ### 图表 / 数据集可视化
 
 | 文件 | 一句话职责 |
