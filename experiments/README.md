@@ -1,4 +1,4 @@
-> ⚠️ **本地是部分镜像**：本目录在本地是平铺结构（12 个 run，与远端不全一致）；权威结构是 sg 远端 `experiments/` 的 5 分组（2026-10-13 重组），以远端 `experiments/README.md` 为准。
+> ⚠️ **本地是部分镜像**：本目录在本地是平铺结构；权威结构是 sg 远端 `experiments/` 的 6 个分组（2026-10-17 设立 `6.qwen-controlnet union`），以远端 `experiments/README.md` 为准。
 
 # experiments/ —— 项目全量实验运行数据、定量评测与技术演进全景
 
@@ -24,6 +24,7 @@
 | **5. Qwen 2.1 单流 DiT 身体控制族** | `qwen21_iper_body`<br>`qwen21_tiktok_v3_smoke` | Qwen-Image-2.1 (7B Single-Stream DiT) + Qwen21BodyAdapter | 7B 单流架构下长文本/图像 Token 融合机制、50 样本四臂（Four-Arm）全面定量对比 | **全面超越 DeepGen**：PSNR 25.86dB (+1.33dB)，**PCK@0.02 达 98.00%**；同时揭示姿态形变导致面部 ID 下降的核心矛盾 |
 | **6. Qwen 2.1 双人交互与物理接触族** | `qwen21_hi4d_dual`<br>`hi4d_overfit_archive`<br>`qwen-2.1-test`<br>`qwen_edit_results` | Qwen-Image-2.1 + DualAdapter (SMPL 接触特征与 Replay Rehearsal) | 双人复杂肢体纠缠、物理拥抱、防身份互换（Identity Swap）、接触距离误差 | 双人检测率 100%，无身份互换；拥抱过拟合 PSNR 达 29.85dB (+17.5dB)；两阶段提示词下 Body ID 保持率超 86% |
 | **7. 综合评测与开源基准对比族** | `16-test` | DeepGen vs Qwen21 vs BFS LoRA vs PEI2I | 跨架构、跨条件、复杂长提示词（托篮球/雨夜西装）全场景 16 类难度对照 | 确立当前多任务极限：纯提示词无法精确控姿，两阶段解耦（Adapter 控姿 + BFS/Face Adapter 精修面部）是最佳落地路线 |
+| **8. Qwen ControlNet Union 控制族** | `6.qwen-controlnet union`<br>（含 `qwen21_union_migration_v1`<br>`qwen21_union_dataset_adaptation_v1`） | Qwen-Image-2.1 + ControlNet Union 官方权重 (7.1GB) | 多合一控制网络（OpenPose/Depth/Inpaint）直接迁移验证、多数据集 LoRA 适配微调与动作编辑流水线接入 | 官方权重 180 键 100% 审计通过；文生图姿态与深度完全受控；建立纯代码管理与模型软链接机制；全套 117 项契约测试全部 PASS |
 
 ---
 

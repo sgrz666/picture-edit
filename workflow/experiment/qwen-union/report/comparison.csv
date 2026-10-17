@@ -1,0 +1,7 @@
+Arm,Mode,Layout,Body_PCK@0.2,Strict_PCK,Norm_MPJPE,Hand_PCK,ID_Cosine,Face_Detected,BG_PSNR_Own,BG_PSNR_Common,Gen_Time(s)
+T1,control_only,native,0.6667,0.6667,0.1935,0.0238,0.1791,True,7.98,7.91,114.09
+T2a,control_only,source_person,0.8889,0.8889,0.1127,0.5,0.0127,True,8.03,8.02,110.38
+T2b,control_only,source_torso,0.6667,0.6667,0.1847,0.0,0.1863,True,15.28,15.27,110.62
+T3,inpaint_control,native,0.3889,0.3889,0.3058,0.2857,0.2443,True,30.79,31.16,110.9
+T4a,inpaint_control,source_person,0.0556,0.0556,1.2671,0.0,0.2066,True,30.93,31.21,111.22
+T4b,inpaint_control,source_torso,0.6111,0.6111,0.1941,0.0,0.0746,True,30.76,30.76,110.86
