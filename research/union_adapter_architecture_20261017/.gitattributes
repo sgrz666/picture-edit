@@ -1,0 +1,9 @@
+*.md text eol=lf
+*.json text eol=lf
+*.jsonl text eol=lf
+.gitattributes text eol=lf
+SHA256SUMS text eol=lf
+source_snapshot/** -text
+evidence/** -text
+# Preserve the audited upstream file byte-for-byte, including its historical EOF.
+source_snapshot/adapter/qwen21_full/data_runtime.py whitespace=-blank-at-eof

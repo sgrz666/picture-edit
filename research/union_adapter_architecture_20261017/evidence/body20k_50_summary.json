@@ -1,0 +1,825 @@
+{
+  "num_samples": 50,
+  "pairs": "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_sampled_6src64tgt/splits/baseline_50_eval_pairs.jsonl",
+  "train_appearance_count": 69,
+  "test_appearance_count": 19,
+  "appearance_overlap_count": 0,
+  "generation_settings": {
+    "deepgen": {
+      "model": "/home/shangguanrz/project/pic-edit/models/DeepGen-1.0-diffusers",
+      "checkpoint": "experiments/iper_v6_native_20k_v1/checkpoint_last.pt",
+      "checkpoint_step": 20000,
+      "prompt": "Change the person pose to match the target pose. Preserve identity, clothing, and background.",
+      "negative_prompt": "blurry, low quality, low resolution, distorted, deformed, broken content, missing parts, damaged details, artifacts, glitch, noise, extra fingers, missing fingers, mutated hands, bad composition, wrong proportion, unfinished",
+      "inference_steps": 40,
+      "guidance_scale": 4.5,
+      "seed": 42,
+      "resolution": 512,
+      "geometry_strength_on": 1.0,
+      "geometry_strength_off": 0.0,
+      "native_off_direct_pipeline": true,
+      "detail_face_hand_strength": 0.0,
+      "timing_includes_control_geometry": true
+    },
+    "qwen21": {
+      "model": "/home/shangguanrz/project/pic-edit/models/Qwen-Image-2.1",
+      "model_revision": "790c92633540aa0cb11d9abf19eb46d861714758",
+      "checkpoint": "experiments/qwen21_iper_body/full_20k/checkpoint_last.pt",
+      "steps": 40,
+      "seed": 42,
+      "prompt": "Change the person pose to match the target pose. Preserve identity, clothing, and background.",
+      "kv_cache": true
+    }
+  },
+  "metric_definitions": {
+    "bootstrap_ci95": "Percentile interval from 5000 paired-sample bootstrap resamples with seed 20260927; descriptive uncertainty for the fixed 50 pairs.",
+    "pose_nme_diagonal": "Mean Euclidean error across jointly detected COCO17 body keypoints, divided by the 512x512 diagonal; lower is better.",
+    "pose_pck_005": "Fraction of target-visible COCO17 joints detected within 0.05 of image diagonal; missing generated joints count as failures.",
+    "pose_pck_002": "The same pose accuracy measure with a stricter 0.02 image-diagonal threshold.",
+    "identity_cosine": "AntelopeV2 face embedding cosine against source; only pairs with detected source and generated faces are included.",
+    "identity_target_cosine": "AntelopeV2 face embedding cosine against target, which shows the same person at the target pose; only jointly detected faces are included.",
+    "human_mae": "RGB MAE against target inside target person mask (0-255).",
+    "human_ssim": "SSIM in the target person bounding crop after filling outside-mask pixels from target.",
+    "background_mae_source": "RGB MAE against source outside the union of source and target person masks (0-255)."
+  },
+  "arms": {
+    "deepgen_off": {
+      "background_mae_source": {
+        "mean": 9.972437829971314,
+        "count": 50
+      },
+      "background_ssim_source": {
+        "mean": 0.8822733485698699,
+        "count": 50
+      },
+      "human_mae": {
+        "mean": 60.00843147277832,
+        "count": 50
+      },
+      "human_ssim": {
+        "mean": 0.6790616875886917,
+        "count": 50
+      },
+      "identity_cosine": {
+        "mean": 0.2611539267162059,
+        "count": 47
+      },
+      "identity_detected": {
+        "mean": 0.94,
+        "count": 50
+      },
+      "identity_target_cosine": {
+        "mean": 0.23021090505834746,
+        "count": 49
+      },
+      "mae": {
+        "mean": 16.257164611816407,
+        "count": 50
+      },
+      "peak_cuda_gib": {
+        "mean": 14.511028528213501,
+        "count": 50
+      },
+      "pose_detected": {
+        "mean": 1.0,
+        "count": 50
+      },
+      "pose_joint_recall": {
+        "mean": 0.9905882352941177,
+        "count": 50
+      },
+      "pose_matched_joints": {
+        "mean": 16.76,
+        "count": 50
+      },
+      "pose_nme_diagonal": {
+        "mean": 0.07061957963507479,
+        "count": 50
+      },
+      "pose_pck_002": {
+        "mean": 0.17443137254901958,
+        "count": 50
+      },
+      "pose_pck_005": {
+        "mean": 0.4847843137254902,
+        "count": 50
+      },
+      "psnr": {
+        "mean": 17.237663863202577,
+        "count": 50
+      },
+      "seconds": {
+        "mean": 5.077644405462197,
+        "count": 50
+      },
+      "ssim": {
+        "mean": 0.801733351945877,
+        "count": 50
+      }
+    },
+    "deepgen_on": {
+      "background_mae_source": {
+        "mean": 6.485034356117248,
+        "count": 50
+      },
+      "background_ssim_source": {
+        "mean": 0.905519540309906,
+        "count": 50
+      },
+      "human_mae": {
+        "mean": 20.030837097167968,
+        "count": 50
+      },
+      "human_ssim": {
+        "mean": 0.7939848017692566,
+        "count": 50
+      },
+      "identity_cosine": {
+        "mean": 0.29170967606787984,
+        "count": 47
+      },
+      "identity_detected": {
+        "mean": 0.94,
+        "count": 50
+      },
+      "identity_target_cosine": {
+        "mean": 0.2832504546611893,
+        "count": 49
+      },
+      "mae": {
+        "mean": 6.580149717330933,
+        "count": 50
+      },
+      "peak_cuda_gib": {
+        "mean": 14.525467338562011,
+        "count": 50
+      },
+      "pose_detected": {
+        "mean": 1.0,
+        "count": 50
+      },
+      "pose_joint_recall": {
+        "mean": 0.9964705882352942,
+        "count": 50
+      },
+      "pose_matched_joints": {
+        "mean": 16.86,
+        "count": 50
+      },
+      "pose_nme_diagonal": {
+        "mean": 0.006854245467829095,
+        "count": 50
+      },
+      "pose_pck_002": {
+        "mean": 0.9549803921568628,
+        "count": 50
+      },
+      "pose_pck_005": {
+        "mean": 0.9811764705882353,
+        "count": 50
+      },
+      "psnr": {
+        "mean": 24.532058690854665,
+        "count": 50
+      },
+      "seconds": {
+        "mean": 5.942154762062128,
+        "count": 50
+      },
+      "ssim": {
+        "mean": 0.8755978500843048,
+        "count": 50
+      }
+    },
+    "qwen21_off": {
+      "background_mae_source": {
+        "mean": 3.0308665204048157,
+        "count": 50
+      },
+      "background_ssim_source": {
+        "mean": 0.9654663836956024,
+        "count": 50
+      },
+      "human_mae": {
+        "mean": 61.16452640533447,
+        "count": 50
+      },
+      "human_ssim": {
+        "mean": 0.695272718667984,
+        "count": 50
+      },
+      "identity_cosine": {
+        "mean": 0.8186558941577343,
+        "count": 47
+      },
+      "identity_detected": {
+        "mean": 0.94,
+        "count": 50
+      },
+      "identity_target_cosine": {
+        "mean": 0.5173685097057993,
+        "count": 48
+      },
+      "mae": {
+        "mean": 13.613267650604248,
+        "count": 50
+      },
+      "peak_cuda_gib": {
+        "mean": 32.755057153701785,
+        "count": 50
+      },
+      "pose_detected": {
+        "mean": 1.0,
+        "count": 50
+      },
+      "pose_joint_recall": {
+        "mean": 0.9941176470588234,
+        "count": 50
+      },
+      "pose_matched_joints": {
+        "mean": 16.82,
+        "count": 50
+      },
+      "pose_nme_diagonal": {
+        "mean": 0.07820493580791653,
+        "count": 50
+      },
+      "pose_pck_002": {
+        "mean": 0.2031372549019608,
+        "count": 50
+      },
+      "pose_pck_005": {
+        "mean": 0.47050980392156866,
+        "count": 50
+      },
+      "psnr": {
+        "mean": 17.53470428191949,
+        "count": 50
+      },
+      "seconds": {
+        "mean": 5.84180687223794,
+        "count": 50
+      },
+      "ssim": {
+        "mean": 0.8362912714481354,
+        "count": 50
+      }
+    },
+    "qwen21_on": {
+      "background_mae_source": {
+        "mean": 5.306626291275024,
+        "count": 50
+      },
+      "background_ssim_source": {
+        "mean": 0.9160975110530853,
+        "count": 50
+      },
+      "human_mae": {
+        "mean": 17.574601707458495,
+        "count": 50
+      },
+      "human_ssim": {
+        "mean": 0.822025716304779,
+        "count": 50
+      },
+      "identity_cosine": {
+        "mean": 0.35104678040172194,
+        "count": 47
+      },
+      "identity_detected": {
+        "mean": 0.94,
+        "count": 50
+      },
+      "identity_target_cosine": {
+        "mean": 0.3903310180318599,
+        "count": 49
+      },
+      "mae": {
+        "mean": 4.9257701921463015,
+        "count": 50
+      },
+      "peak_cuda_gib": {
+        "mean": 32.755125522613525,
+        "count": 50
+      },
+      "pose_detected": {
+        "mean": 1.0,
+        "count": 50
+      },
+      "pose_joint_recall": {
+        "mean": 0.9941176470588234,
+        "count": 50
+      },
+      "pose_matched_joints": {
+        "mean": 16.82,
+        "count": 50
+      },
+      "pose_nme_diagonal": {
+        "mean": 0.004719412379045905,
+        "count": 50
+      },
+      "pose_pck_002": {
+        "mean": 0.9800000000000001,
+        "count": 50
+      },
+      "pose_pck_005": {
+        "mean": 0.9917647058823529,
+        "count": 50
+      },
+      "psnr": {
+        "mean": 25.863256641638074,
+        "count": 50
+      },
+      "seconds": {
+        "mean": 5.87351588318299,
+        "count": 50
+      },
+      "ssim": {
+        "mean": 0.8968602991104127,
+        "count": 50
+      }
+    }
+  },
+  "source_target_identity_cosine": {
+    "mean": 0.6131631762761137,
+    "count": 46
+  },
+  "paired_deltas_second_minus_first": {
+    "backbone_native_change": {
+      "pose_pck_002": {
+        "mean": 0.02870588235294117,
+        "median": 0.0,
+        "bootstrap_ci95": [
+          -0.0211764705882353,
+          0.07858823529411764
+        ],
+        "count": 50
+      },
+      "pose_pck_005": {
+        "mean": -0.014274509803921557,
+        "median": 0.0,
+        "bootstrap_ci95": [
+          -0.08956862745098038,
+          0.06117647058823529
+        ],
+        "count": 50
+      },
+      "pose_nme_diagonal": {
+        "mean": 0.007585356172841741,
+        "median": 0.0025189674341050683,
+        "bootstrap_ci95": [
+          -9.452677286842965e-05,
+          0.016108408953043694
+        ],
+        "count": 50
+      },
+      "identity_cosine": {
+        "mean": 0.5575019674415284,
+        "median": 0.5616210103034973,
+        "bootstrap_ci95": [
+          0.5081614353198638,
+          0.6049306163603955
+        ],
+        "count": 47
+      },
+      "identity_target_cosine": {
+        "mean": 0.28629669989459217,
+        "median": 0.2790547236800194,
+        "bootstrap_ci95": [
+          0.2279695837399534,
+          0.3409908331542586
+        ],
+        "count": 48
+      },
+      "human_mae": {
+        "mean": 1.1560949325561523,
+        "median": -2.0122337341308594,
+        "bootstrap_ci95": [
+          -3.7160120582580562,
+          6.609312143325803
+        ],
+        "count": 50
+      },
+      "human_ssim": {
+        "mean": 0.016211031079292296,
+        "median": 0.008448123931884766,
+        "bootstrap_ci95": [
+          0.007404268622398377,
+          0.02693329586088657
+        ],
+        "count": 50
+      },
+      "background_mae_source": {
+        "mean": -6.9415713095664975,
+        "median": -6.366856575012207,
+        "bootstrap_ci95": [
+          -7.776432802319526,
+          -6.126895895540715
+        ],
+        "count": 50
+      },
+      "background_ssim_source": {
+        "mean": 0.08319303512573242,
+        "median": 0.06246000528335571,
+        "bootstrap_ci95": [
+          0.06295528915524483,
+          0.1064456354677677
+        ],
+        "count": 50
+      },
+      "psnr": {
+        "mean": 0.297040418716907,
+        "median": 0.14216086144457307,
+        "bootstrap_ci95": [
+          -0.24220663810324766,
+          0.8396978223482945
+        ],
+        "count": 50
+      },
+      "ssim": {
+        "mean": 0.034557919502258304,
+        "median": 0.016284823417663574,
+        "bootstrap_ci95": [
+          0.013418046653270722,
+          0.059444943577051164
+        ],
+        "count": 50
+      },
+      "seconds": {
+        "mean": 0.7641624667757424,
+        "median": 0.7557445239945082,
+        "bootstrap_ci95": [
+          0.7513690945460403,
+          0.7862518590122054
+        ],
+        "count": 50
+      },
+      "peak_cuda_gib": {
+        "mean": 18.24402862548828,
+        "median": 18.24405527114868,
+        "bootstrap_ci95": [
+          18.24396800994873,
+          18.24406259536743
+        ],
+        "count": 50
+      }
+    },
+    "deepgen_control_gain": {
+      "pose_pck_002": {
+        "mean": 0.7805490196078431,
+        "median": 0.8235294117647058,
+        "bootstrap_ci95": [
+          0.7190588235294118,
+          0.8361568627450979
+        ],
+        "count": 50
+      },
+      "pose_pck_005": {
+        "mean": 0.4963921568627451,
+        "median": 0.46862745098039216,
+        "bootstrap_ci95": [
+          0.41874509803921567,
+          0.5753176470588233
+        ],
+        "count": 50
+      },
+      "pose_nme_diagonal": {
+        "mean": -0.06376533416724568,
+        "median": -0.054187686967787245,
+        "bootstrap_ci95": [
+          -0.07570491951284082,
+          -0.053662991276650134
+        ],
+        "count": 50
+      },
+      "identity_cosine": {
+        "mean": 0.030555749351673937,
+        "median": 0.013166964054107666,
+        "bootstrap_ci95": [
+          -0.022464505408672578,
+          0.08417382070675809
+        ],
+        "count": 47
+      },
+      "identity_target_cosine": {
+        "mean": 0.053039549602841844,
+        "median": 0.03670161962509155,
+        "bootstrap_ci95": [
+          0.006549043458297241,
+          0.09940726073382763
+        ],
+        "count": 49
+      },
+      "human_mae": {
+        "mean": -39.97759437561035,
+        "median": -35.50697946548462,
+        "bootstrap_ci95": [
+          -45.60469696807861,
+          -34.64159804201127
+        ],
+        "count": 50
+      },
+      "human_ssim": {
+        "mean": 0.11492311418056488,
+        "median": 0.1149924099445343,
+        "bootstrap_ci95": [
+          0.10142311991751195,
+          0.12919388851523397
+        ],
+        "count": 50
+      },
+      "background_mae_source": {
+        "mean": -3.487403473854065,
+        "median": -3.189643383026123,
+        "bootstrap_ci95": [
+          -4.229527931928635,
+          -2.792372836709023
+        ],
+        "count": 50
+      },
+      "background_ssim_source": {
+        "mean": 0.02324619174003601,
+        "median": 0.013312190771102905,
+        "bootstrap_ci95": [
+          0.016173491626977923,
+          0.03095565849542618
+        ],
+        "count": 50
+      },
+      "psnr": {
+        "mean": 7.294394827652085,
+        "median": 7.300265451220167,
+        "bootstrap_ci95": [
+          6.734787788532812,
+          7.856292578946148
+        ],
+        "count": 50
+      },
+      "ssim": {
+        "mean": 0.07386449813842773,
+        "median": 0.071828693151474,
+        "bootstrap_ci95": [
+          0.06610154789686203,
+          0.081759849101305
+        ],
+        "count": 50
+      },
+      "seconds": {
+        "mean": 0.8645103565999307,
+        "median": 0.8761323999933666,
+        "bootstrap_ci95": [
+          0.8380581584655448,
+          0.8791205255236564
+        ],
+        "count": 50
+      },
+      "peak_cuda_gib": {
+        "mean": 0.014438810348510743,
+        "median": 0.014399528503417969,
+        "bootstrap_ci95": [
+          0.014399528503417969,
+          0.014517374038696289
+        ],
+        "count": 50
+      }
+    },
+    "qwen21_control_gain": {
+      "pose_pck_002": {
+        "mean": 0.7768627450980392,
+        "median": 0.8235294117647058,
+        "bootstrap_ci95": [
+          0.7184215686274509,
+          0.830205882352941
+        ],
+        "count": 50
+      },
+      "pose_pck_005": {
+        "mean": 0.5212549019607843,
+        "median": 0.5,
+        "bootstrap_ci95": [
+          0.4435294117647058,
+          0.6024313725490196
+        ],
+        "count": 50
+      },
+      "pose_nme_diagonal": {
+        "mean": -0.07348552342887063,
+        "median": -0.0562855324675722,
+        "bootstrap_ci95": [
+          -0.0876549180327241,
+          -0.06150257466933674
+        ],
+        "count": 50
+      },
+      "identity_cosine": {
+        "mean": -0.4676091137560124,
+        "median": -0.4779854416847229,
+        "bootstrap_ci95": [
+          -0.5146352978185453,
+          -0.41775114369638106
+        ],
+        "count": 47
+      },
+      "identity_target_cosine": {
+        "mean": -0.12776734210395566,
+        "median": -0.12436917424201965,
+        "bootstrap_ci95": [
+          -0.17965126275084914,
+          -0.07175343561975756
+        ],
+        "count": 48
+      },
+      "human_mae": {
+        "mean": -43.58992469787598,
+        "median": -41.08208465576172,
+        "bootstrap_ci95": [
+          -50.20455714559555,
+          -37.23304338741304
+        ],
+        "count": 50
+      },
+      "human_ssim": {
+        "mean": 0.12675299763679504,
+        "median": 0.12189584970474243,
+        "bootstrap_ci95": [
+          0.11373866426944733,
+          0.13985129159688947
+        ],
+        "count": 50
+      },
+      "background_mae_source": {
+        "mean": 2.275759770870209,
+        "median": 1.9848439693450928,
+        "bootstrap_ci95": [
+          1.7390590304136277,
+          2.8389065082073204
+        ],
+        "count": 50
+      },
+      "background_ssim_source": {
+        "mean": -0.04936887264251709,
+        "median": -0.04906556010246277,
+        "bootstrap_ci95": [
+          -0.056946154057979585,
+          -0.04193845129013062
+        ],
+        "count": 50
+      },
+      "psnr": {
+        "mean": 8.32855235971858,
+        "median": 8.775586906865946,
+        "bootstrap_ci95": [
+          7.7560288727140625,
+          8.877627395251054
+        ],
+        "count": 50
+      },
+      "ssim": {
+        "mean": 0.060569027662277224,
+        "median": 0.06528851389884949,
+        "bootstrap_ci95": [
+          0.05111668860912323,
+          0.06920360845327377
+        ],
+        "count": 50
+      },
+      "seconds": {
+        "mean": 0.03170901094505098,
+        "median": 0.05250432497996371,
+        "bootstrap_ci95": [
+          -0.010739836176362587,
+          0.05394883043935988
+        ],
+        "count": 50
+      },
+      "peak_cuda_gib": {
+        "mean": 6.836891174316406e-05,
+        "median": 0.0,
+        "bootstrap_ci95": [
+          0.0,
+          0.00020510673522949218
+        ],
+        "count": 50
+      }
+    },
+    "controlled_model_change": {
+      "pose_pck_002": {
+        "mean": 0.02501960784313726,
+        "median": 0.0,
+        "bootstrap_ci95": [
+          0.010901960784313727,
+          0.040627450980392166
+        ],
+        "count": 50
+      },
+      "pose_pck_005": {
+        "mean": 0.01058823529411765,
+        "median": 0.0,
+        "bootstrap_ci95": [
+          0.0011764705882352944,
+          0.020000000000000004
+        ],
+        "count": 50
+      },
+      "pose_nme_diagonal": {
+        "mean": -0.0021348330887831913,
+        "median": -0.0011147740209960454,
+        "bootstrap_ci95": [
+          -0.003176604829492948,
+          -0.0012599761832477038
+        ],
+        "count": 50
+      },
+      "identity_cosine": {
+        "mean": 0.05933710433384205,
+        "median": 0.05523748695850372,
+        "bootstrap_ci95": [
+          0.02288277145633672,
+          0.09904412985680265
+        ],
+        "count": 47
+      },
+      "identity_target_cosine": {
+        "mean": 0.1070805633706706,
+        "median": 0.1132100522518158,
+        "bootstrap_ci95": [
+          0.07081762159395279,
+          0.143331954651037
+        ],
+        "count": 49
+      },
+      "human_mae": {
+        "mean": -2.4562353897094726,
+        "median": -2.5428762435913086,
+        "bootstrap_ci95": [
+          -3.5888962974548337,
+          -1.2793150162696858
+        ],
+        "count": 50
+      },
+      "human_ssim": {
+        "mean": 0.02804091453552246,
+        "median": 0.0247613787651062,
+        "bootstrap_ci95": [
+          0.020716699302196502,
+          0.035396780610084534
+        ],
+        "count": 50
+      },
+      "background_mae_source": {
+        "mean": -1.1784080648422242,
+        "median": -1.0102431774139404,
+        "bootstrap_ci95": [
+          -1.536381364583969,
+          -0.8153873159885406
+        ],
+        "count": 50
+      },
+      "background_ssim_source": {
+        "mean": 0.010577970743179321,
+        "median": -0.002464592456817627,
+        "bootstrap_ci95": [
+          -0.0026333896219730376,
+          0.02729669231176376
+        ],
+        "count": 50
+      },
+      "psnr": {
+        "mean": 1.3311979507834026,
+        "median": 1.1257334043562857,
+        "bootstrap_ci95": [
+          0.9808052516199819,
+          1.6680810978911702
+        ],
+        "count": 50
+      },
+      "ssim": {
+        "mean": 0.02126244902610779,
+        "median": 0.00815168023109436,
+        "bootstrap_ci95": [
+          0.00908592289686203,
+          0.03656734398007387
+        ],
+        "count": 50
+      },
+      "seconds": {
+        "mean": -0.06863887887913733,
+        "median": -0.07026288901397493,
+        "bootstrap_ci95": [
+          -0.07360050304228208,
+          -0.06274463373473556
+        ],
+        "count": 50
+      },
+      "peak_cuda_gib": {
+        "mean": 18.229658184051512,
+        "median": 18.229655742645264,
+        "bootstrap_ci95": [
+          18.229655742645264,
+          18.229663066864013
+        ],
+        "count": 50
+      }
+    }
+  }
+}

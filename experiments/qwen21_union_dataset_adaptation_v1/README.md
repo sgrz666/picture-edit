@@ -1,5 +1,7 @@
 # Qwen 2.1 Union 数据集适配：方案 B
 
+2026-10-17 状态复核：`pilot_b_20261016T1841` 已于10月16日19:25停止。当前签名 smoke 通过，overfit200 正常完成，但固定平均loss仅从0.1598302降到0.1314015（17.7868%），低于20%门槛；`gate_pass=false`，后续完整缓存、两组512训练、诊断及正式test没有启动。旧门槛保留失败，不能把进程returncode=0当门禁通过。新的架构研究见 `research/union_adapter_architecture_20261017/ARCHITECTURE.zh-CN.md`；下文部署和启动描述保留为10月16日记录，不能据此认定队列仍在运行。
+
 ## 实验目的与当前状态
 
 检验官方预训练 Union 接入人物参考图后，控制分支 LoRA 能否改善单人、双人姿态控制；在相同数据、公共初始化、采样和更新预算下比较 joint 与 target-only 残差注入。正式组为 `native`、`union_frozen`、`union_lora_joint`、`union_lora_target`。
