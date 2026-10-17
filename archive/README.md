@@ -8,6 +8,7 @@
 - **`cleanup_20261008/`** —— 第二轮清理产出与冒烟结果暂存；其 `removed_links.json` 记录了撤除的旧位置兼容层软链清单（source→target 映射），可用于按需重建。顶层说明是人工正稿。
 - **`cleanup_20261011/`** —— 仅一个文件的安全快照：目录文档生成器 `gen_folder_docs.py` 在 2026-10-11 重新生成前的版本。见 [cleanup_20261011/README.md](cleanup_20261011/README.md)。
 - **`add_picture_edit_rescue_20260921/`** —— 2026-09-21 `add_picture_edit` 工作区救援快照与冒烟日志。见 [add_picture_edit_rescue_20260921/README.md](add_picture_edit_rescue_20260921/README.md)。
+- **`legacy_docs_202610/`** —— 2026-10-17 归档的 14 份历史阶段性目录整理方案、执行记录与过渡性部署清单（见 [legacy_docs_202610/README.md](legacy_docs_202610/README.md)）。
 - **`home_tools_202609/`** —— 2026 年 9 月家目录散落脚本归档（历史 Shell 与一次性诊断 Python），家目录以符号链接回指。其顶层说明是人工正稿，请勿改动。
 
 ## 与上下层的关系
