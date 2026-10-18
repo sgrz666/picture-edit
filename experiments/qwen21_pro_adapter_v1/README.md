@@ -53,6 +53,18 @@ renderer现按完整逆仿射裁掉原相机FoV外的像素，避免mesh漏进le
 
 `conditions_bound1600_20261018T115624` 六例以male标签重新提取并通过缓存读回（84.02s）。typed pack现在绑定对应原生条件的sample、完整payload、prepared source与source VAE SHA，不能把另一条同尺寸pack混进训练；本轮使用新目录，原有缓存保留。
 
+`scripts/audit_training.py` 是完整发布权重的工程门禁。`runs/fullgate_20261018T121250` 已通过六例、两次平衡更新（346.44s）：180个官方tensor恢复、零分支逐值等价、训练后参考prefix与冻结参数SHA保持一致；head/geometry/contact/appearance/identity梯度均非零。362个冻结Linear的21,781,176,320bytes权重保持CPU BF16，任务/AdamW GPU FP32；峰值分配8,111,991,296bytes，含缓存9,202,302,976bytes。此时卡上可用42,869,784,576bytes，不能把它描述为独占85GB压测。checkpoint仅为工程探针，不是效果模型。
+
+以下命令使用登记的冻结代码与条件缓存；运行目录须换新名称：
+
+```bash
+cd "$P/code_fullgate_20261018T121250"
+"$B/env/bin/python" experiments/qwen21_pro_adapter_v1/scripts/audit_training.py \
+  --legacy-workspace "$B" --project-root /home/shangguanrz/project/pic-edit \
+  --feature-run "$P/runs/conditions_bound1600_20261018T115624" \
+  --run-dir "$P/runs/fullgate_manual_v1"
+```
+
 ## 与其他实验的关系
 
 上游为 `qwen21_union_dataset_adaptation_v1` 的数据锁与冻结缓存，设计见 `research/union_adapter_architecture_20261017/ARCHITECTURE.zh-CN.md`。新方案有独立代码、条件缓存、检查点和门禁；旧方案200步固定loss仅下降17.7868%，仍是失败，不作为新方案的训练结果。官方48张基线已补评，产物在 `qwen21_union_migration_v1/runs/baseline_reaudit_20261017_v2/`。

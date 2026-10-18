@@ -163,6 +163,8 @@ Run local: `$paths=(Get-ChildItem tests -File -Filter 'test_qwen21_pro_*.py').Fu
 
 ## Task 8: 审查、部署与交付
 
+Task7提前工程证据：`code_fullgate_20261018T121250`由冻结Task5/FoV代码快照派生并加入独立`audit_training.py`（53文件，归档SHA=`5274e710aa889b0a59aa4b86bcf56b717874ec226b7d5803266910f5fffa7710`），SCP/compileall通过。`runs/fullgate_20261018T121250/gate.json`通过完整发布模型真实六例两次平衡更新（346.44s）；180tensor恢复、zero逐值等价、训练后prefix及frozen SHA不变，head/geometry/contact/appearance/identity上游梯度均非零。peak allocated/reserved=8,111,991,296/9,202,302,976bytes，初始free=42,869,784,576bytes；362个frozen Linear共21,781,176,320bytes CPU BF16，task与optimizer GPU FP32。更强的完整模型4=2+2精确续跑在新`full_resume_20261018T122119`单独执行，尚待结果；coarse/ROI图和200步/消融仍未完成。
+
 - [ ] 每任务先spec再quality review，修复所有会造成错配、梯度截断、缓存污染、旧权重覆盖的问题；最终整体再审查一次。
 - [ ] 旧Union回归、全Pro测试、服务器语法与真实GPU证据通过；检查未删移媒体、未改环境、未覆盖旧run、无大文件入Git。
 - [ ] 更新README明确训练阶段、实际测试、使用命令与局限；保留源架构报告为设计历史，另记录实施偏差/证据。
