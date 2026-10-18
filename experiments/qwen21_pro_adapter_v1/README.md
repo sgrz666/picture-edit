@@ -2,6 +2,8 @@
 
 验证完整16个官方 Union 控制块与新人物任务分支能否共同改善姿态、人物身份和双人接触。首轮数据沿用锁定的 overfit6：iPER、TikTok、Hi4D 各2例；正式训练集1536例、验证集72例、测试集128例沿用原划分。
 
+最新交付见 [改造与训练结果报告](report/RESULTS_20261018.zh-CN.md)：完整官方Union已接入，六对样本200步完成，工程门禁通过，全局MSE下降5.67%、未过20%效果门槛。按用户2026-10-18最新要求，消融与后续排队任务已停止；no_dense为0次更新，其余arm未启动，本轮不再追加实验。报告保存样本次数、局部/分数据集loss、原始fixed18和检查点字节复核。
+
 ## 里面有什么
 
 共享实现位于 `src/pose_control/qwen21_pro/`。本实验的 `scripts/export_smpl_parts.py` 在现有 SMPL 环境中，从真实6890×24的 LBS 权重导出14类顶点部位，用于 Hi4D 接触端点；它不安装包、不重建或改写原始几何。大产物写入 `/data/shangguanrz/pic-edit-experiments/qwen21_pro_adapter_v1/`，每轮使用新名称。
@@ -39,7 +41,9 @@ B=/data/shangguanrz/pic-edit-experiments/qwen21_union_dataset_adaptation_v1
 
 ## 当前证据
 
-截至2026-10-18，V4完整Pro与旧Union回归共516项通过、9项外部条件跳过（75.29s）；各任务spec/quality及最终整体审查均批准。完整发布模型训练的zero/prefix/梯度/精确续跑门禁、真实单人/双人CFG4 coarse与768精修及其训练缓存均已通过。200步与消融尚未完成，没有效果提升结论。
+截至2026-10-18，V4完整Pro、旧Union及私有pilot工具回归共550项通过、9项外部条件跳过（82.43s）；各任务spec/quality及最终整体审查均批准。完整发布模型训练的zero/prefix/梯度/精确续跑门禁、真实单人/双人CFG4 coarse与768精修及其训练缓存均已通过。
+
+`pilot_main200_v4_20261018T161055` 已完成200次更新，工程门禁通过，效果门禁失败：fixed18全局MSE为0.15983020→0.15076623，下降5.6710%，低于20%。global＋区域训练总loss为0.94809722→0.71681113；face/contact/hand/body各分项也下降，但这是同六条训练样本的固定噪声诊断，不能代表身份、姿态或接触的验证集质量。峰值allocated/reserved为29,744,026,112/30,463,229,952bytes；14,646,784个任务参数参与训练，原生Union与基座保持冻结。消融与40步图像对比按最新要求停止，当前不建议扩大训练。
 
 Task6的`conditions_task6_20261018T130005`六例提取与缓存读回6/6通过（64.28s）。4条单人bank为 `[1,1,1024,1600]`，两条双人bank已由早期body-only的256tokens扩为 `[1,2,1024,1600]`，加入source动作自身SMPL/camera投影的head/左右手bounds。Hi4D四个人物有效token分别569/387/473/595。FaceID仍仅两条TikTok有效（2/8）；bounds不等于脸部或手指关键点，也不证明遮挡部位可见。旧Hi4D normal/像素part仍invalid；新的current-geometry路径才使用有明确CV basis和部位codec的重渲染。DINO在Torch CUDA运行，ONNX FaceID回退CPU，环境未修改。
 
@@ -158,7 +162,7 @@ CKPT="$P/runs/pilot_main_20261018_v1/checkpoint_000025"
 
 `refine`要求单个`--sample-id`、对应`--coarse <coarse.json>`、`--current-geometry-index`和source index，实际构建768 source crop、ROI VAE/DINO bank、local task、immutable request并运行精修。face显式给`--roi-kind face --roi-person <稳定ID>`；paired-hands给`--roi-kind paired_hands`与两次`--hand-endpoint <稳定ID>:<4或7>`，端点必须来自当前几何真实hand–hand relation。旧低分辨率source mask按完整FoV nearest另存native mask，绑定原mask字节，不改datasets。ROI不可用时报告fallback原因并返回原coarse路径，不算精修完成；有效ROI运行后报告mask外逐位一致。原始reference精修用`cached=False`与KVoff。未通过主200门禁的checkpoint必须显式标记`--engineering-probe`；该标签不构成质量通过。
 
-本入口当前只执行受控六例训练；`smoke --kind current --cache-run ...`可验证另行编码的六例driver_exact训练缓存。正式1536例训练入口、完整val96的汇总评测、正式128×4×2=1024测试门禁仍待后续实现；`test`记录会被拒绝。本轮本地验证仅CPU，真实smoke、200步、各25步、val单/双人及其结果由后续独立运行登记。
+本入口当前只执行受控六例训练；`smoke --kind current --cache-run ...`可验证另行编码的六例driver_exact训练缓存。正式1536例训练入口、完整val96的汇总评测、正式128×4×2=1024测试门禁仍待后续实现；`test`记录会被拒绝。本地测试仅CPU；完整发布模型的真实GPU smoke与主200步证据见上文，各25步与val单/双人图按实际运行继续登记。
 
 本地回归可运行 `python -m pytest -q tests/test_qwen21_pro_runner.py tests/test_qwen21_pro_gates.py tests/test_qwen21_pro_ablations.py`。它覆盖路径独占/status只读、初始化/arm绑定、sealed条件不变、固定18指标、STOP、真实小Torch的4=2+2恢复、变尺寸coarse与768精修API路由、显存预算和native缓存适配；CPU测试不冒充完整模型GPU验收。
 
@@ -166,6 +170,6 @@ CKPT="$P/runs/pilot_main_20261018_v1/checkpoint_000025"
 
 私有诊断采样与消融汇总见 [`scripts/README.md`](scripts/README.md)。`render_pilot.py` 保持原B六例条件，生成step0/200各6张40步图；`summarize_pilot.py` 核对独立重训的25步消融、原始fixed18、检查点与门禁，并明确区分CUDA确定性重放与训练时捕获的noise SHA。34项私有工具测试通过，模型代码签名仍为 `1be3083d0447b44b55e393586404190a98ccbac9fcca52daa4989fcf2bb2f05e`。
 
-本次串行运行清单为服务器 `scripts/pilot_sequence_20261018T165900.py`，dry-run清单保存于 `logs/pilot_sequence_20261018T165900.plan.json`；进度见 `runs/pilot_sequence_20261018T165900/events.jsonl`。它等待主200步工程门禁完成，再依次执行四个25步arm、训练六例的step0/200共12图、预登记val单/双人两seed共4图和CUDA重放汇总；任一步工程失败即停，质量阈值失败会如实保留。登记清单不代表任务已执行完。
+本次串行运行清单为服务器 `scripts/pilot_sequence_20261018T170200.py`，dry-run清单保存于 `logs/pilot_sequence_20261018T170200.plan.json`；历史进度见 `runs/pilot_sequence_20261018T170200/events.jsonl`。原登记四个25步arm、12张训练图、4张val图及CUDA重放汇总；用户要求停止后，调度器与no_dense进程均已终止，0个完整消融、0张本轮40步图，后续不会自动启动。停止状态见相应run的 `user_stop.json` 及 `runs/status_report_20261018T170600/verification.json`。首个165900清单的日志参数冲突失败也保留，不将清单或模拟执行当作真实实验。
 
 上游为 `qwen21_union_dataset_adaptation_v1` 的数据锁与冻结缓存，设计见 `research/union_adapter_architecture_20261017/ARCHITECTURE.zh-CN.md`。新方案有独立代码、条件缓存、检查点和门禁；旧方案200步固定loss仅下降17.7868%，仍是失败，不作为新方案的训练结果。官方48张基线已补评，产物在 `qwen21_union_migration_v1/runs/baseline_reaudit_20261017_v2/`。

@@ -1,0 +1,53 @@
+{
+  "passed": true,
+  "phase": "inference",
+  "samples": [
+    {
+      "sample_id": "tiktok_train_5e1d527f30e0032ace92e51d",
+      "dataset": "tiktok",
+      "coarse": "/data/shangguanrz/pic-edit-experiments/qwen21_pro_adapter_v1/runs/inference_cfg4_task6_20261018T132022/tiktok_train_5e1d527f30e0032ace92e51d/coarse/coarse.json",
+      "refined": "/data/shangguanrz/pic-edit-experiments/qwen21_pro_adapter_v1/runs/inference_cfg4_task6_20261018T132022/tiktok_train_5e1d527f30e0032ace92e51d/refined/refined.png",
+      "kind": "face",
+      "source_crops": 1,
+      "local_grid": [
+        48,
+        48
+      ],
+      "person_ids": [
+        0
+      ],
+      "edited_pixels": 13056,
+      "outside_edit_mask_bitwise_equal": true,
+      "refiner_training_cache_verified": true,
+      "supervision_valid_area": 2304.0
+    },
+    {
+      "sample_id": "hi4d_train_aeb388ac9f51195bf39345f3",
+      "dataset": "hi4d",
+      "coarse": "/data/shangguanrz/pic-edit-experiments/qwen21_pro_adapter_v1/runs/inference_cfg4_task6_20261018T132022/hi4d_train_aeb388ac9f51195bf39345f3/coarse/coarse.json",
+      "refined": "/data/shangguanrz/pic-edit-experiments/qwen21_pro_adapter_v1/runs/inference_cfg4_task6_20261018T132022/hi4d_train_aeb388ac9f51195bf39345f3/refined/refined.png",
+      "kind": "paired_hands",
+      "source_crops": 2,
+      "local_grid": [
+        48,
+        48
+      ],
+      "person_ids": [
+        0,
+        1
+      ],
+      "edited_pixels": 2301,
+      "outside_edit_mask_bitwise_equal": true,
+      "refiner_training_cache_verified": true,
+      "supervision_valid_area": 2304.0
+    }
+  ],
+  "coarse_images": 2,
+  "refined_images": 2,
+  "steps": 2,
+  "true_cfg_scale": 4.0,
+  "max_memory_allocated": 8644746752,
+  "max_memory_reserved": 12859736064,
+  "initial_free_memory_bytes": 83863470080,
+  "seconds": 443.74079857801553
+}

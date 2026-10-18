@@ -181,11 +181,13 @@ Task7b实施记录：初版真实CLI audit6/val12通过（68.39s/90.00s）。spe
 
 ## Task 8: 审查、部署与交付
 
+2026-10-18用户调整范围：“不要再做消融实验了，快点把结果整理一下”。主V4已完成200updates与fixed18：global 0.1598301998→0.1507662332（5.6710%），工程true、20%效果门禁false；global＋区域总loss 0.9480972158→0.7168111255。no_dense与调度器已终止，实际0updates，其余arm未启动；原登记12＋4张40步图与重放汇总不再执行本轮，不能勾为已完成实验。最新交付为 `experiments/qwen21_pro_adapter_v1/report/RESULTS_20261018.zh-CN.md`、样本次数/分数据集JSON及原始评测证据。服务器 `status_report_20261018T170600/verification.json` 已重新核验最终checkpoint字节、46文件签名与停止状态。
+
 Task7提前工程证据：`code_fullgate_20261018T121250`由冻结Task5/FoV代码快照派生并加入独立`audit_training.py`（53文件，归档SHA=`5274e710aa889b0a59aa4b86bcf56b717874ec226b7d5803266910f5fffa7710`），SCP/compileall通过。`runs/fullgate_20261018T121250/gate.json`通过完整发布模型真实六例两次平衡更新（346.44s）；180tensor恢复、zero逐值等价、训练后prefix及frozen SHA不变，head/geometry/contact/appearance/identity上游梯度均非零。peak allocated/reserved=8,111,991,296/9,202,302,976bytes，初始free=42,869,784,576bytes；362个frozen Linear共21,781,176,320bytes CPU BF16，task与optimizer GPU FP32。更强的`full_resume_20261018T122119`在独立53文件快照（归档SHA=`ded69a06223a112f9e7b9bb4da3d6f10e71f7b9c0a6b17b348c6bea6428114e0`）中通过完整发布模型4continuous=2+2精确续跑（651.04s），task/AdamW/LR/RNG与noise/timestep/loss轨迹均零容差，参数对象不变，frozen/prefix再次通过；peak allocated/reserved=8,118,249,984/9,307,160,576bytes。coarse/ROI图和200步/消融仍未完成。
 
 - [x] 每任务先spec再quality review，修复所有会造成错配、梯度截断、缓存污染、旧权重覆盖的问题；最终整体再审查一次。
-- [ ] 旧Union回归、全Pro测试、服务器语法与真实GPU证据通过；检查未删移媒体、未改环境、未覆盖旧run、无大文件入Git。
-- [ ] 更新README明确训练阶段、实际测试、使用命令与局限；保留源架构报告为设计历史，另记录实施偏差/证据。
+- [x] 旧Union回归、全Pro与pilot工具共550passed/9skip（82.43s）；服务器语法与GPU工程证据通过，主200质量失败如实保留；未删移媒体、未改环境、未覆盖旧run、无权重入Git。
+- [x] 更新README与独立结果报告，明确改造程度、六对样本的200次更新、实际测试、使用命令与局限；原架构报告保留为设计历史。按最新用户要求停止消融，不将未跑图像计入结果。
 - [x] 提交隔离分支；把实际共享代码与pro-adapter使用入口部署到远端，明确运行import来源。交付时说明完成了哪些能力、怎样测试/使用、哪些训练/质量结论尚未获得，不为普通可逆步骤重复确认。
 
 部署记录：核心实现提交`4f9007ba`；远端HEAD核对仍为`17991d33bfb4651e510a57f372829aafa2468cb0`。只新增40个Python文件，已有4依赖保留SHA（服务器`pose_edit/geometry.py`比冻结代码多实测torso修正，禁止回退）；同字节95文件完整代码另放现有`6.qwen-controlnet union`族的Pro/code_task7b目录，运行依赖签名仍1be308...。`P/deployments/shared_union_pro_20261018T161055/verification.json`全部通过；ROOT新增代码与完整副本compileall通过，后者真实CLI六例audit通过109.69s。pilot权重运行继续用完整冻结根而非混用ROOT更新的依赖，模型/图像未拷贝。实验数据/结果交付仍取决于后续实际200/25步与图像，不将本部署checkbox当作目标已完成。

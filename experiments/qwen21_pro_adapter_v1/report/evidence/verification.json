@@ -1,0 +1,85 @@
+{
+  "schema": "pro_status_readonly_verification_v1",
+  "verified_utc": "2026-10-18T09:07:48.625122+00:00",
+  "passed": true,
+  "main_complete200": true,
+  "engineering_passed": true,
+  "quality_passed": false,
+  "initial_global": 0.15983019976152313,
+  "final_global": 0.15076623318923843,
+  "relative_global_drop": 0.056709974621871884,
+  "code_signature": "1be3083d0447b44b55e393586404190a98ccbac9fcca52daa4989fcf2bb2f05e",
+  "code_files": 46,
+  "final_checkpoint_verified": {
+    "path": "/data/shangguanrz/pic-edit-experiments/qwen21_pro_adapter_v1/runs/pilot_main200_v4_20261018T161055/checkpoint_000200",
+    "cursor": {
+      "accumulation_steps": 1,
+      "gradient_log_cursor": 200,
+      "loss_log_cursor": 200,
+      "microstep": 200,
+      "next_sample_position": 200,
+      "noise_draw_cursor": 200,
+      "optimizer_step": 200,
+      "timestep_draw_cursor": 200
+    },
+    "metadata": {
+      "arm": "full4",
+      "cache_signature": "6e85b18cf4132f63643e19df47453336651990324fe438be77d53a5d8e6627ad",
+      "code_signature": "1be3083d0447b44b55e393586404190a98ccbac9fcca52daa4989fcf2bb2f05e",
+      "condition_kind": "legacy",
+      "config": {
+        "heads": 8,
+        "hidden_dim": 4096,
+        "identity_dim": 512,
+        "max_parts": 128,
+        "source_dim": 1600,
+        "stage_indices": [
+          0,
+          4,
+          8,
+          12
+        ],
+        "width": 512
+      },
+      "control_lora_targets": [],
+      "data_signature": "0bc86936da4507da83029e0a2f948e055e1d6d50e565b4878a94ce4e1f702da4",
+      "frozen_dtype": "torch.bfloat16",
+      "initialization_seed": 3407,
+      "memory_mode": "resident",
+      "noise_backend": "torch.randn_cuda_torch.bfloat16_generator",
+      "noise_dtype": "torch.bfloat16",
+      "precision": "cuda_torch.bfloat16_frozen_bfloat16_autocast_fp32_trainables",
+      "profile": "overfit",
+      "sampler_seed": 20261015,
+      "scope": "joint",
+      "selection_role": "controlled_pilot",
+      "source_signature": "98b5cb3bbe64ba0f7b40ee718763d3fb1c9924b9566fa43b834c774f69ca12df",
+      "task_signature": "e3c464fe4af124eb14b67cc50dffcb12d2dd6c9e1c8b9d54b3f8b2894210d43e",
+      "train_seed": 3407,
+      "training_device": "cuda",
+      "trajectory_signature": "cab5347386bfb4c76a015c906363cff34d86df24780e56ad52f88d942466f93a",
+      "warmup_updates": 32
+    },
+    "state_sha256": "dbe9fcaea169c6362ea02f1fdbffdb554cc4aae2f0bdf447cc1d6aabd4402410",
+    "manifest_sha256": "0f5ad9507ae8fcdd780d15b9c966fe18ade8798abfdb04eb03c0c7c96db1e4c7",
+    "selection_role": "engineering_probe"
+  },
+  "official_control_tensors": 180,
+  "official_control_blocks": 16,
+  "main_gate_sha256": "637d9a400cc96b4a8461e8551e578741d3d5a4ab089fad8239afc02f8841133d",
+  "fixed_eval_sha256": {
+    "0": "03ba5af6ac43b31db6fa54093d86f05c8cc17adec403a943704f10e56150097c",
+    "25": "36c15dcd77588b76709916accf0cdc93cfbe12e925b8c87fa2a643c62896c24c",
+    "200": "8a76782389b0a9046f433ffe64cc77bba31f59cdf9de312e2df6fa9f1a0b4769"
+  },
+  "user_stop": {
+    "reason": "用户要求停止消融并先整理现有结果",
+    "queue_pid_gone": true,
+    "ablation_pid_gone": true,
+    "no_dense_completed_updates": 0,
+    "completed_ablation_arms": 0,
+    "remaining_arms_launched": false,
+    "queued_train40step_images": 0,
+    "queued_val40step_images": 0
+  }
+}

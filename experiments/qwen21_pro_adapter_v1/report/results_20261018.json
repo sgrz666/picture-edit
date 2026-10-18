@@ -1,0 +1,428 @@
+{
+  "schema": "qwen21_pro_implementation_status_20261018",
+  "main_run": "pilot_main200_v4_20261018T161055",
+  "scope": "用户要求停止消融并先整理已完成结果",
+  "engineering_passed": true,
+  "quality_passed": false,
+  "train_pairs": 6,
+  "updates": 200,
+  "accumulation_steps": 1,
+  "fixed_eval_seed": 43,
+  "train_seed": 3407,
+  "sampler_seed": 20261015,
+  "metrics": [
+    {
+      "name": "全局内容区",
+      "loss": "global",
+      "initial": 0.15983019976152313,
+      "final": 0.15076623318923843,
+      "relative_drop": 0.056709974621871884
+    },
+    {
+      "name": "face区域",
+      "loss": "face",
+      "initial": 0.24680854711267683,
+      "final": 0.16817687162094647,
+      "relative_drop": 0.31859381051269764
+    },
+    {
+      "name": "contact区域",
+      "loss": "contact",
+      "initial": 0.04645849350425932,
+      "final": 0.016554104371203318,
+      "relative_drop": 0.643679699392628
+    },
+    {
+      "name": "hand区域",
+      "loss": "hand",
+      "initial": 0.26094166686137515,
+      "final": 0.18413034743732876,
+      "relative_drop": 0.2943620325107078
+    },
+    {
+      "name": "body区域",
+      "loss": "body",
+      "initial": 0.2340583180387815,
+      "final": 0.19718356968628037,
+      "relative_drop": 0.15754513089507582
+    },
+    {
+      "name": "global＋区域训练总loss",
+      "loss": "regional_total",
+      "initial": 0.9480972157584296,
+      "final": 0.7168111254771551,
+      "relative_drop": 0.24394765266371699
+    }
+  ],
+  "datasets": [
+    {
+      "dataset": "iper",
+      "train_pairs": 2,
+      "fixed_evaluations": 6,
+      "initial_global": 0.16090171535809836,
+      "final_global": 0.15770128617684046,
+      "relative_drop": 0.01989058459777837
+    },
+    {
+      "dataset": "tiktok",
+      "train_pairs": 2,
+      "fixed_evaluations": 6,
+      "initial_global": 0.20921886215607324,
+      "final_global": 0.1953128750125567,
+      "relative_drop": 0.0664662210673096
+    },
+    {
+      "dataset": "hi4d",
+      "train_pairs": 2,
+      "fixed_evaluations": 6,
+      "initial_global": 0.10937002177039783,
+      "final_global": 0.09928453837831815,
+      "relative_drop": 0.09221433102804255
+    }
+  ],
+  "samples": [
+    {
+      "sample_id": "iper_train_523425c13f83a7b3bb419121",
+      "dataset": "iper",
+      "sequence": "001_3",
+      "target_frame": 219,
+      "training_draws": 34,
+      "persons": 1,
+      "face_identity_valid": [
+        [
+          false
+        ]
+      ],
+      "contact_edges": 0,
+      "source_tokens": [
+        1,
+        1,
+        1024,
+        1600
+      ],
+      "spatial_valid": {
+        "normal": [
+          [
+            true
+          ]
+        ],
+        "depth": [
+          [
+            true
+          ]
+        ],
+        "mask": [
+          [
+            true
+          ]
+        ],
+        "visibility": [
+          [
+            true
+          ]
+        ],
+        "contact": [
+          [
+            false
+          ]
+        ],
+        "part": [
+          [
+            true
+          ]
+        ]
+      }
+    },
+    {
+      "sample_id": "iper_train_48335c55ad3d248447cf5174",
+      "dataset": "iper",
+      "sequence": "007_3",
+      "target_frame": 491,
+      "training_draws": 33,
+      "persons": 1,
+      "face_identity_valid": [
+        [
+          false
+        ]
+      ],
+      "contact_edges": 0,
+      "source_tokens": [
+        1,
+        1,
+        1024,
+        1600
+      ],
+      "spatial_valid": {
+        "normal": [
+          [
+            true
+          ]
+        ],
+        "depth": [
+          [
+            true
+          ]
+        ],
+        "mask": [
+          [
+            true
+          ]
+        ],
+        "visibility": [
+          [
+            true
+          ]
+        ],
+        "contact": [
+          [
+            false
+          ]
+        ],
+        "part": [
+          [
+            true
+          ]
+        ]
+      }
+    },
+    {
+      "sample_id": "tiktok_train_5e1d527f30e0032ace92e51d",
+      "dataset": "tiktok",
+      "sequence": "00172",
+      "target_frame": 204,
+      "training_draws": 33,
+      "persons": 1,
+      "face_identity_valid": [
+        [
+          true
+        ]
+      ],
+      "contact_edges": 0,
+      "source_tokens": [
+        1,
+        1,
+        1024,
+        1600
+      ],
+      "spatial_valid": {
+        "normal": [
+          [
+            true
+          ]
+        ],
+        "depth": [
+          [
+            true
+          ]
+        ],
+        "mask": [
+          [
+            true
+          ]
+        ],
+        "visibility": [
+          [
+            true
+          ]
+        ],
+        "contact": [
+          [
+            false
+          ]
+        ],
+        "part": [
+          [
+            true
+          ]
+        ]
+      }
+    },
+    {
+      "sample_id": "tiktok_train_3fc780c95ed407ecda6684e6",
+      "dataset": "tiktok",
+      "sequence": "00149",
+      "target_frame": 233,
+      "training_draws": 34,
+      "persons": 1,
+      "face_identity_valid": [
+        [
+          true
+        ]
+      ],
+      "contact_edges": 0,
+      "source_tokens": [
+        1,
+        1,
+        1024,
+        1600
+      ],
+      "spatial_valid": {
+        "normal": [
+          [
+            true
+          ]
+        ],
+        "depth": [
+          [
+            true
+          ]
+        ],
+        "mask": [
+          [
+            true
+          ]
+        ],
+        "visibility": [
+          [
+            true
+          ]
+        ],
+        "contact": [
+          [
+            false
+          ]
+        ],
+        "part": [
+          [
+            true
+          ]
+        ]
+      }
+    },
+    {
+      "sample_id": "hi4d_train_78cee2e649fdf2beea5ffc7d",
+      "dataset": "hi4d",
+      "sequence": "pair16/hug16/cam4",
+      "target_frame": 44,
+      "training_draws": 33,
+      "persons": 2,
+      "face_identity_valid": [
+        [
+          false,
+          false
+        ]
+      ],
+      "contact_edges": 0,
+      "source_tokens": [
+        1,
+        2,
+        1024,
+        1600
+      ],
+      "spatial_valid": {
+        "normal": [
+          [
+            false,
+            false
+          ]
+        ],
+        "depth": [
+          [
+            true,
+            true
+          ]
+        ],
+        "mask": [
+          [
+            true,
+            true
+          ]
+        ],
+        "visibility": [
+          [
+            true,
+            true
+          ]
+        ],
+        "contact": [
+          [
+            true,
+            true
+          ]
+        ],
+        "part": [
+          [
+            false,
+            false
+          ]
+        ]
+      }
+    },
+    {
+      "sample_id": "hi4d_train_2c5239222e57a7c10d811353",
+      "dataset": "hi4d",
+      "sequence": "pair09/talk09/cam76",
+      "target_frame": 45,
+      "training_draws": 33,
+      "persons": 2,
+      "face_identity_valid": [
+        [
+          false,
+          false
+        ]
+      ],
+      "contact_edges": 5,
+      "source_tokens": [
+        1,
+        2,
+        1024,
+        1600
+      ],
+      "spatial_valid": {
+        "normal": [
+          [
+            false,
+            false
+          ]
+        ],
+        "depth": [
+          [
+            true,
+            true
+          ]
+        ],
+        "mask": [
+          [
+            true,
+            true
+          ]
+        ],
+        "visibility": [
+          [
+            true,
+            true
+          ]
+        ],
+        "contact": [
+          [
+            true,
+            true
+          ]
+        ],
+        "part": [
+          [
+            false,
+            false
+          ]
+        ]
+      }
+    }
+  ],
+  "trainable_parameters": 14646784,
+  "max_memory_reserved_bytes": 30463229952,
+  "duration_seconds": 2854.336048966972,
+  "local_tests": {
+    "passed": 550,
+    "skipped": 9,
+    "seconds": 82.43
+  },
+  "cancelled": {
+    "completed_25step_ablation_arms": 0,
+    "no_dense_updates_before_stop": 0,
+    "new_train40step_images": 0,
+    "new_val40step_images": 0
+  },
+  "source_signature": "1be3083d0447b44b55e393586404190a98ccbac9fcca52daa4989fcf2bb2f05e",
+  "main_checkpoint": "/data/shangguanrz/pic-edit-experiments/qwen21_pro_adapter_v1/runs/pilot_main200_v4_20261018T161055/checkpoint_000200",
+  "evidence_directory": "evidence"
+}
