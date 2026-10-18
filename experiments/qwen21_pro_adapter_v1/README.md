@@ -100,6 +100,10 @@ V4运行代码固定为`/data/shangguanrz/pic-edit-experiments/qwen21_pro_adapte
 
 V3的真实CLI `cli_prepare_valpair_20261018T155558`执行5个body worker（38.31s）：一份双人source bundle、两份driver_exact和两份明确unpaired的source_shape。CUDA可见、device_count=1的服务器还通过真实TinyPro CPU checkpoint→CUDA execution metadata拒绝测试（1passed，2.15s）；该测试验证状态修改前拒绝，不声称执行了跨设备训练kernel。
 
+共享代码已提交`4f9007ba`。远端部署新增40个Python源文件（Pro、Union、dataset reader和两个仓级入口），保留主仓4个已有依赖的SHA；其中`src/pose_edit/geometry.py`含服务器较新的实测torso实现，没有用旧冻结版本覆盖。远端实验入口归在`experiments/6.qwen-controlnet union/qwen21_pro_adapter_v1/`，其`code_task7b_20261018T161055/`保存95文件完整副本，代码签名与`/data/.../code_task7b_20261018T161055/`一致。pilot训练/采样须使用完整冻结根，避免不同版本依赖混用；主仓共享模块供后续新run集成。
+
+`deployments/shared_union_pro_20261018T161055/verification.json`逐项核验40个新增文件、4个保留文件、95个副本文件及同一46文件代码签名。两侧新代码经compileall；从带空格的远端实验族完整副本执行`cli_audit_mirror6_20261018T161055`，六例实际通过（109.69s）。原`pro-adapter/README.md`部署前副本也保存在该部署目录；没有复制或删移媒体/大权重，未改环境。
+
 ## Task7共享CLI与复跑方法
 
 共享逻辑为 `src/pose_control/qwen21_pro/{runner,dataflow,gates,ablations}.py`；仓级 `scripts/train/qwen21_pro.py`、`scripts/run/qwen21_pro.py` 和本实验 `scripts/run.py` 使用同一套参数。所有写命令必须给新 `--name`，产物位于 `--output-root/runs/<name>`；已有目录报错。`run.json` 保存绝对输入路径、实际import代码根目录、参数、种子及源码SHA，小型源码副本写入 `code_snapshot/`。签名覆盖Pro/Union包、数据与几何直接依赖和三个入口；记录代码根路径但不将路径混进源码签名，允许相同字节从冻结快照部署到ROOT。下面命令在冻结代码根目录执行，Python使用旧B的现有环境。
