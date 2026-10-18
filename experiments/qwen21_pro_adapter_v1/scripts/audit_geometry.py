@@ -39,6 +39,14 @@ def audit_known_triangles(api, renderer, torch):
               "nearest_owner": bool((result.visible_owner[mask] == 2).all()),
               "cv_normal": bool((result.normal_cv[1][mask][:, 2] > .999).all()),
               "top_down_rows": float(mask.nonzero()[:, 0].float().mean()) < 30}
+    narrow = api.Camera(torch.tensor([[100., 0, 10], [0, 100, 30], [0, 0, 1.]]), (60, 20))
+    canvas = api.PixelCanvasTransform.letterbox((60, 20), (60, 80))
+    clipped = renderer.render(state, narrow, PlaneBody(), canvas=canvas)
+    outside = torch.ones((60, 80), dtype=torch.bool, device=clipped.mask.device)
+    outside[:, 30:50] = False
+    checks["physical_fov_no_padding"] = bool(clipped.mask.any()) and not bool(clipped.mask[:, outside].any())
+    checks["zero_modalities_in_padding"] = not any(bool(value[:, outside].count_nonzero()) for value in
+        (clipped.normal_cv, clipped.depth_m, clipped.part, clipped.contact))
     if not all(checks.values()):
         raise ValueError(f"known triangle renderer failed: {checks}")
     return {"passed": True, "checks": checks, "foreground_pixels": int(mask.sum())}

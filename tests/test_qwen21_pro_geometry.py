@@ -213,6 +213,54 @@ def test_world_camera_projection_canvas_and_clip_share_physical_camera():
         camera().to_camera(xyz, frame="world")
 
 
+def test_pixel_canvas_valid_fov_preserves_native_tiktok_image_boundary():
+    m = api()
+    canvas = m.PixelCanvasTransform.letterbox((1080, 604), (512, 512))
+    before = canvas.matrix.clone()
+    assert hasattr(canvas, "valid_fov_mask"), "canvas is missing original physical FoV support"
+    valid = canvas.valid_fov_mask()
+    assert valid.dtype == torch.bool and valid.shape == (512, 512)
+    assert valid.sum().item() == 512 * 286
+    assert valid[:, 113:399].all()
+    assert not valid[:, :113].any() and not valid[:, 399:].any()
+    assert torch.equal(canvas.matrix, before)
+
+
+@pytest.mark.parametrize("matrix,input_hw,output_hw,expected", [
+    ([[1., 1., 0.], [0., 1., 0.], [0., 0., 1.]], (2, 2), (2, 4),
+     [[True, True, False, False], [False, True, True, False]]),
+    ([[-1., 0., 2.5], [0., 1., 0.], [0., 0., 1.]], (1, 2), (1, 4),
+     [[False, True, True, False]]),
+    ([[1., 0., .5], [0., 1., 0.], [0., 0., 1.]], (1, 2), (1, 4),
+     [[True, True, False, False]]),
+])
+def test_pixel_canvas_valid_fov_uses_inverse_affine_pixel_centres(matrix, input_hw, output_hw, expected):
+    m = api()
+    canvas = m.PixelCanvasTransform(torch.tensor(matrix), input_hw, output_hw)
+    assert hasattr(canvas, "valid_fov_mask"), "canvas is missing inverse-affine physical FoV support"
+    assert canvas.valid_fov_mask().tolist() == expected
+
+
+def test_compose_rejects_geometry_outside_original_physical_camera_fov():
+    m = api()
+    cam = m.Camera(torch.tensor([[1., 0, 1], [0, 1, 2], [0, 0, 1.]]), (4, 2))
+    canvas = m.PixelCanvasTransform.letterbox(cam.image_hw, (4, 4))
+    depth = torch.ones(1, 4, 4)
+    mask = torch.ones_like(depth, dtype=torch.bool)
+    normal = torch.zeros(1, 4, 4, 3)
+    normal[..., 2] = 1
+    with pytest.raises(ValueError, match="FoV|field.of.view|physical"):
+        m.compose_dense_geometry(normal, depth, mask, mask.long(), torch.ones_like(depth),
+                                 person_ids=(41,), camera=cam, canvas=canvas)
+    valid = torch.zeros_like(mask)
+    valid[:, :, 1:3] = True
+    result = m.compose_dense_geometry(normal * valid[..., None], depth * valid, valid, valid.long(), valid.float(),
+                                      person_ids=(41,), camera=cam, canvas=canvas)
+    assert torch.equal(result.mask, valid)
+    assert not result.visible_owner[:, (0, 3)].any()
+    assert torch.equal(result.visible_owner[:, 1:3], torch.ones(4, 2, dtype=torch.long))
+
+
 def test_smplestx_frame_map_uses_tensor_index_and_raw_camera(tmp_path):
     m = api()
     count = 3
@@ -419,6 +467,34 @@ def test_real_dense_triangles_metric_normals_row_order_and_visible_owner():
     assert torch.all(rendered.visible_owner[mask] == 2)
     assert torch.all(rendered.normal_cv[1][mask][:, 2] > .999)
     assert mask.nonzero()[:, 0].float().mean() < cam.image_hw[0] / 2
+
+
+@pytest.mark.skipif(not torch.cuda.is_available() or importlib.util.find_spec("nvdiffrast") is None, reason="real dense nvdiffrast requires external CUDA runtime")
+def test_real_dense_triangle_crossing_native_fov_never_renders_into_letterbox_padding():
+    m = api()
+    class PlaneBody:
+        family = "smpl"
+        vertex_count = 3
+        faces = torch.tensor([[0, 1, 2]])
+        vertex_parts = torch.tensor([1, 1, 1])
+        provenance = {"backend": "known_CV_triangle_crossing_physical_fov"}
+    # Physical image XY: (-2,1), (3,1), (1,7). Its left tip lies outside the
+    # original 4x8 image but inside the wider 16x16 letterboxed output canvas.
+    vertices = torch.tensor([[[-4., -3., 2.], [1., -3., 2.], [-1., 3., 2.]]])
+    state = m.GeometryState(parameters(1), m.BodyOutput(vertices, vertices))
+    cam = m.Camera(torch.tensor([[2., 0., 2.], [0., 2., 4.], [0., 0., 1.]]), (8, 4))
+    canvas = m.PixelCanvasTransform.letterbox(cam.image_hw, (16, 16))
+    contacts = [m.VertexContact(m.VertexEndpoint(41, 0), m.VertexEndpoint(41, 1))]
+    result = m.NVDiffDenseRenderer().render(state, cam, PlaneBody(), canvas=canvas, contacts=contacts)
+    # The physical FoV is x=[4,12). Triangle interiors remain visible at x=4.
+    valid = torch.zeros(16, 16, device=result.mask.device, dtype=torch.bool)
+    valid[:, 4:12] = True
+    assert result.mask.sum() > 20 and result.mask[0, :, 4].any()
+    assert result.contact.sum() > 0
+    for value in (result.mask, result.depth_m, result.part, result.contact, result.visibility):
+        assert not value[:, ~valid].any()
+    assert not result.normal_cv[:, ~valid].any()
+    assert not result.visible_owner[~valid].any()
 
 
 def test_dense_geometry_composite_owner_is_slot_plus_one_and_metric_nearest_depth():

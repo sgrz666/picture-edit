@@ -97,7 +97,7 @@ Run: `python -m pytest tests/test_qwen21_pro_preparation.py tests/test_qwen21_pr
 - [x] `retarget_request(source_shape,driver_pose,camera,body_model)`分离source beta与target pose；单人显式SMPL-X、Hi4D显式SMPL，不混63/69维body pose或10475/6890顶点。禁止调用要求mesh_cam一致的旧reconstruct后私改beta。匹配male SMPL原pkl仅含literal `chumpy.ch.Ch.state.x`，可新增受限兼容读取再交现有SMPL constructor，不装包；模型与loader SHA均登记。
 - [x] `solve_contacts(request,relations,body_model,...)`保留driver/requested/solved三层，固定camera和地面锚点；root偏移≤源身高5%、关节偏移≤5°。不收敛/超限返回requested与失败理由；无contact不动姿态。保存求解前后偏差，不声称RGB受3D碰撞监督。
 - [x] 真实body backend在已有SMPL环境惰性加载，记录model与params指纹。缺失参数拒绝自动伪造；SMPL-X的144 joints须按真实joint_idx选137后转134，SMPL不伪造缺失的手指/脸点。既有GT精确配对要求driver/requested/solved几何均一致，改变beta或非零求解不得继续配旧GT；相机、法线、深度与poseguide必须从当前请求几何重生成。
-- [ ] 提供真实三角面renderer的接入（惰性nvdiffrast或已验证NvDiffRasterRenderer），输出有basis、units、pixel变换和slot约定的normal/depth/mask/owner/part/contact；由实际mesh部位可投影source hand/face ROI，不依赖不存在的Hi4D source DWPose，不把SMPL body点冒充134个完整关键点。点云splat不充当dense renderer。
+- [x] 提供真实三角面renderer的接入（惰性nvdiffrast或已验证NvDiffRasterRenderer），输出有basis、units、pixel变换和slot约定的normal/depth/mask/owner/part/contact；由实际mesh部位可投影source hand/face ROI，不依赖不存在的Hi4D source DWPose，不把SMPL body点冒充134个完整关键点。点云splat不充当dense renderer。
 - [x] 测试不同source shape/相同driver pose、两个端点/地面约束、超限回退、camera不改、原数组不被修改；服务器用实际SMPL-X资产作一次前向审计。
 
 Run: `python -m pytest tests/test_qwen21_pro_geometry.py -q`。
@@ -108,7 +108,7 @@ Run: `python -m pytest tests/test_qwen21_pro_geometry.py -q`。
 
 补充真实求解与renderer闭环：`code_task4_20261018T114018`（归档SHA=`a9a293222c79768eec4f2a0ba609f8c7fe7f615f1432d5cd460710a69381771d`）的 `runs/geometry_probes_20261018T114018` 六例通过；已知三角形289像素，metric Z、top-down、CV normal、nearest owner、填充面5项断言通过。真实SMPL的2cm root扰动探针36次迭代收敛，8条残差4.27–6.83mm，root各5.61mm，最大关节4.988°，未改相机。现有SMPL环境无pytest，未装包；改用独立脚本执行同样的GPU几何断言，缺包日志另存并保持失败。
 
-Task4补充复核进行中：8帧旧normal/mask支持完全一致，CPU投影IoU显示source fallback正确；新renderer直接映射letterbox会把超出物理FoV的mesh投到padding，已追加有效视野逆变换裁切与回归要求。旧GPU通过记录仅覆盖原先5项断言，保留产物，不把它等同于新FoV门禁。
+Task4补充复核已完成：8帧旧normal/mask支持完全一致，iPER/TikTok CPU投影IoU分别0.9498–0.9666/0.9861–0.9873，source fallback正确。新renderer的越FoV像素漏进padding问题通过完整inverse affine像素中心裁切修复（5项实际red→green）；spec与quality再次批准。`code_task4_20261018T120424`归档SHA=`7775bf85939d6c67e634f5d1eddb8a1ff8cd9998e4d78d640afcea1cba811ece`经SCP/compileall，`runs/geometry_fov_20261018T120424`六例及已知三角形7项断言通过（9.51s），明确验证padding各模态归零。最终父线程全Pro为255passed/8skip（23.11s）。旧GPU产物保留，其覆盖范围不追溯扩大。
 
 ## Task 5: 独立训练状态、区域flow与checkpoint
 

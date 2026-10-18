@@ -146,6 +146,24 @@ class PixelCanvasTransform:
         matrix = self.matrix.to(xy)
         return xy @ matrix[:2, :2].T + matrix[:2, 2]
 
+    def valid_fov_mask(self, *, device=None):
+        """Output pixel centres inside the original physical image FoV.
+
+        Rasterizing a complete mesh into a letterboxed canvas would otherwise
+        expose off-image geometry in the padding. Apply the full inverse affine
+        map, including rotation/shear/reflection, to top-down centres (x+.5,y+.5).
+        The original image occupies the half-open area [0,W) x [0,H).
+        """
+        matrix = self.matrix.detach().to(device=device, dtype=torch.float64)
+        h, w = self.output_hw
+        yy, xx = torch.meshgrid(torch.arange(h, device=matrix.device, dtype=matrix.dtype) + .5,
+                                torch.arange(w, device=matrix.device, dtype=matrix.dtype) + .5, indexing="ij")
+        centres = torch.stack([xx, yy, torch.ones_like(xx)], -1)
+        native = centres @ torch.linalg.inv(matrix).T
+        input_h, input_w = self.input_hw
+        return ((native[..., 0] >= 0) & (native[..., 0] < input_w)
+                & (native[..., 1] >= 0) & (native[..., 1] < input_h))
+
     def to_dict(self):
         return {"matrix": self.matrix.detach().cpu().tolist(), "input_hw": list(self.input_hw),
                 "output_hw": list(self.output_hw), "coordinates": "top_down_pixel_xy"}
@@ -825,6 +843,8 @@ class DenseGeometry:
 
 def compose_dense_geometry(normal_cv, depth_m, mask, part, contact, *, person_ids, camera, canvas):
     _ids(person_ids)
+    if camera.image_hw != canvas.input_hw:
+        raise ValueError("dense canvas input dimensions must match the physical camera")
     h, w = canvas.output_hw
     shape = (len(person_ids), h, w)
     _float_tensor("dense CV normals", normal_cv, (*shape, 3))
@@ -832,6 +852,8 @@ def compose_dense_geometry(normal_cv, depth_m, mask, part, contact, *, person_id
     _float_tensor("dense contact", contact, shape)
     if tuple(mask.shape) != shape or mask.dtype != torch.bool or tuple(part.shape) != shape or part.dtype != torch.long:
         raise ValueError("dense mask/part must be bool/long [P,H,W]")
+    if (mask & ~canvas.valid_fov_mask(device=mask.device)[None]).any():
+        raise ValueError("dense foreground extends outside the original physical camera FoV")
     if (depth_m[mask] <= 0).any() or (depth_m[~mask] != 0).any() or (part[~mask] != 0).any() or (part[mask] < 1).any() or (part > 14).any():
         raise ValueError("dense depth/part values are inconsistent with triangle coverage")
     if (contact < 0).any() or (contact > 1).any() or (contact[~mask] != 0).any():
@@ -847,7 +869,8 @@ def compose_dense_geometry(normal_cv, depth_m, mask, part, contact, *, person_id
                           "person_ids": list(person_ids), "pixel_canvas_transform": canvas.to_dict(),
                           "physical_camera_K": camera.K.cpu().tolist(),
                           "physical_world_to_camera": None if camera.world_to_camera is None else camera.world_to_camera.cpu().tolist(),
-                          "row_order": "top_down", "contact_encoding": "interpolated_explicit_vertex_endpoint_support",
+                          "row_order": "top_down", "physical_fov_clipping": "inverse_canvas_pixel_centres_inside_[0,W)x[0,H)",
+                          "contact_encoding": "interpolated_explicit_vertex_endpoint_support",
                           "typed_codec": {"depth": "shared_scene_minmax_near0_far1;masked_background0", "part": "-1=background;0..13=V6_body_parts"},
                           "typed_depth_range_m": None if not mask.any() else [float(depth_m[mask].min()), float(depth_m[mask].max())]})
 
@@ -871,6 +894,7 @@ class NVDiffDenseRenderer:
         if body_model.family != state.parameters.family:
             raise ValueError("renderer body family mismatch")
         canvas = canvas or PixelCanvasTransform.letterbox(camera.image_hw, camera.image_hw)
+        valid_fov = canvas.valid_fov_mask(device=self.device)
         vertices = camera.to_camera(state.body.vertices, frame=state.parameters.frame).to(self.device, torch.float32)
         if (vertices[..., 2] <= 0).any():
             raise ValueError("renderer requires meshes in front of the physical camera")
@@ -901,7 +925,7 @@ class NVDiffDenseRenderer:
             # nvdiffrast rows start at the bottom. Flip raster and attributes once.
             raster = raster[0].flip(0)
             interpolated = interpolated[0].flip(0)
-            mask = raster[..., 3] > 0
+            mask = (raster[..., 3] > 0) & valid_fov
             face_index = (raster[..., 3].long() - 1).clamp_min(0)
             normals.append(F.normalize(interpolated[..., :3], dim=-1) * mask[..., None])
             depths.append(interpolated[..., 3] * mask)
