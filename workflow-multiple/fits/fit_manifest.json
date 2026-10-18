@@ -1,0 +1,341 @@
+{
+  "provenance": {
+    "schema": "dual_fit_worker_v1",
+    "model": "multiHMR_896_L",
+    "img_size": 896,
+    "det_thresh": 0.2,
+    "checkpoint": "/home/shangguanrz/models/multiHMR/multiHMR_896_L.pt",
+    "checkpoint_sha256": "c1b55933eb35df9b27966e1d8d3a69c4bc5e28eee0f0dd7f0cdc41c3f27202ca",
+    "torch": "2.8.0+cu128",
+    "joint_order": "smplx.joint_names.JOINT_NAMES",
+    "joint_count": 144,
+    "load_seconds": 8.190695478988346,
+    "python": "3.9.23",
+    "request_sha256": "03c26e1130a6fcad0832a2e9a21695bbac51fb024a9d1fdccbe043c195ebd993"
+  },
+  "records": [
+    {
+      "name": "backhug_pair02_037_c64_r545",
+      "image": "/home/shangguanrz/project/pic-edit/workflow-multiple/pairs/backhug_pair02_037_c64_r545/B_target.png",
+      "failure": null,
+      "image_sha256": "736e17c7d91dea32e7069a173935f707e23638ae44a49387985ecf206fbab63d",
+      "person_count": 2,
+      "native_size": [
+        940,
+        1280
+      ],
+      "scale": 0.7,
+      "pad_xy": [
+        119.0,
+        0.0
+      ],
+      "reproject_median_px": 0.1725555453469959,
+      "npz": "backhug_pair02_037_c64_r545.npz",
+      "npz_sha256": "80e2787b956a2bb7c0ead36099a04c4e7ccd45e904f49be0d505fc0db062bd8e"
+    },
+    {
+      "name": "backhug_pair02_039_c64_r546",
+      "image": "/home/shangguanrz/project/pic-edit/workflow-multiple/pairs/backhug_pair02_039_c64_r546/B_target.png",
+      "failure": null,
+      "image_sha256": "292d5229c97c192a9c38dddd2f84e80b510234b268ed00b8f84a3c58a21a7cf0",
+      "person_count": 2,
+      "native_size": [
+        940,
+        1280
+      ],
+      "scale": 0.7,
+      "pad_xy": [
+        119.0,
+        0.0
+      ],
+      "reproject_median_px": 0.17618575257567054,
+      "npz": "backhug_pair02_039_c64_r546.npz",
+      "npz_sha256": "4330811466585057bd0156f691a9de80027dc37c14b7d6b21c3bd2803a791eee"
+    },
+    {
+      "name": "dance_pair02_059_c4_r424",
+      "image": "/home/shangguanrz/project/pic-edit/workflow-multiple/pairs/dance_pair02_059_c4_r424/B_target.png",
+      "failure": null,
+      "image_sha256": "affc46633b7b9dfa18720abc40cf36927e12504d9d3448ecc245afd8e1e1f60a",
+      "person_count": 2,
+      "native_size": [
+        940,
+        1280
+      ],
+      "scale": 0.7,
+      "pad_xy": [
+        119.0,
+        0.0
+      ],
+      "reproject_median_px": 0.1305525495054115,
+      "npz": "dance_pair02_059_c4_r424.npz",
+      "npz_sha256": "a0dbf809c815ef16bc2b9d5d2c60edb3f7255de7564fe97fb2f5ca5771697eaa"
+    },
+    {
+      "name": "dance_pair02_120_c4_r459",
+      "image": "/home/shangguanrz/project/pic-edit/workflow-multiple/pairs/dance_pair02_120_c4_r459/B_target.png",
+      "failure": null,
+      "image_sha256": "8d77e7a9291ec45bdea35b26fc5423b9b5aef806cf0ecbec3a9a7bc1429f40db",
+      "person_count": 2,
+      "native_size": [
+        940,
+        1280
+      ],
+      "scale": 0.7,
+      "pad_xy": [
+        119.0,
+        0.0
+      ],
+      "reproject_median_px": 0.1397277354180584,
+      "npz": "dance_pair02_120_c4_r459.npz",
+      "npz_sha256": "f9cd4849bf79e66ebd51e13ca741040dc32d6ce6775892db261dabbf9c637893"
+    },
+    {
+      "name": "hug_pair00_084_c4_r000",
+      "image": "/home/shangguanrz/project/pic-edit/workflow-multiple/pairs/hug_pair00_084_c4_r000/B_target.png",
+      "failure": null,
+      "image_sha256": "592aea679af6d0c2ee9702eac61924e31fb62bab6eead9bb1975f3a365e57507",
+      "person_count": 2,
+      "native_size": [
+        940,
+        1280
+      ],
+      "scale": 0.7,
+      "pad_xy": [
+        119.0,
+        0.0
+      ],
+      "reproject_median_px": 0.17430950159150255,
+      "npz": "hug_pair00_084_c4_r000.npz",
+      "npz_sha256": "89b58dc2fc1fc32c0c92e66dbc5b5d89c41b44be5b5ba63a757abe6783bc8239"
+    },
+    {
+      "name": "hug_pair00_086_c4_r003",
+      "image": "/home/shangguanrz/project/pic-edit/workflow-multiple/pairs/hug_pair00_086_c4_r003/B_target.png",
+      "failure": null,
+      "image_sha256": "8670aa537b8f48dc8cea8fb27117123f1768eb678907743f5bdfda8170363127",
+      "person_count": 2,
+      "native_size": [
+        940,
+        1280
+      ],
+      "scale": 0.7,
+      "pad_xy": [
+        119.0,
+        0.0
+      ],
+      "reproject_median_px": 0.18096688967168784,
+      "npz": "hug_pair00_086_c4_r003.npz",
+      "npz_sha256": "ae7f44bb6df96e8524c83bff3cda7e064bb2b8847f09c666b51aa1981b9f9d36"
+    },
+    {
+      "name": "pose_pair02_032_c52_r477",
+      "image": "/home/shangguanrz/project/pic-edit/workflow-multiple/pairs/pose_pair02_032_c52_r477/B_target.png",
+      "failure": null,
+      "image_sha256": "8a7cca7a19355ffdeb01e059ccbedfb72ca9a776609a7572fb677ca0c49ca637",
+      "person_count": 2,
+      "native_size": [
+        940,
+        1280
+      ],
+      "scale": 0.7,
+      "pad_xy": [
+        119.0,
+        0.0
+      ],
+      "reproject_median_px": 0.15689264168576228,
+      "npz": "pose_pair02_032_c52_r477.npz",
+      "npz_sha256": "adc2144176ea57ec27bd50400c17986b61604402070d8e18791aee6096566126"
+    },
+    {
+      "name": "pose_pair02_034_c52_r478",
+      "image": "/home/shangguanrz/project/pic-edit/workflow-multiple/pairs/pose_pair02_034_c52_r478/B_target.png",
+      "failure": null,
+      "image_sha256": "d949f3c3df37a3a7b252b1d58a6b8abb57fa6c6d059abfad3ff87abe40c01482",
+      "person_count": 2,
+      "native_size": [
+        940,
+        1280
+      ],
+      "scale": 0.7,
+      "pad_xy": [
+        119.0,
+        0.0
+      ],
+      "reproject_median_px": 0.16804497895777842,
+      "npz": "pose_pair02_034_c52_r478.npz",
+      "npz_sha256": "8f7b754068baab3b9916c58f00a65233ed87576cc660ae317b1a6824d42db34a"
+    },
+    {
+      "name": "taichi_pair00_048_c4_r129",
+      "image": "/home/shangguanrz/project/pic-edit/workflow-multiple/pairs/taichi_pair00_048_c4_r129/B_target.png",
+      "failure": null,
+      "image_sha256": "0b809d2f6eb453fcae8e1c6d51dedf0105e180983d9c57c0979c4ffb807670a8",
+      "person_count": 2,
+      "native_size": [
+        940,
+        1280
+      ],
+      "scale": 0.7,
+      "pad_xy": [
+        119.0,
+        0.0
+      ],
+      "reproject_median_px": 0.17234351071366297,
+      "npz": "taichi_pair00_048_c4_r129.npz",
+      "npz_sha256": "9a467f2c75af34600f6405266e5adb05f5fee7087fcfabc4582138d7f1e8cdd2"
+    },
+    {
+      "name": "taichi_pair00_049_c4_r132",
+      "image": "/home/shangguanrz/project/pic-edit/workflow-multiple/pairs/taichi_pair00_049_c4_r132/B_target.png",
+      "failure": null,
+      "image_sha256": "4d0712e69114e3fc4f4910653600bbb9e1049d0e023a4604b3d7dc98f041ebc1",
+      "person_count": 2,
+      "native_size": [
+        940,
+        1280
+      ],
+      "scale": 0.7,
+      "pad_xy": [
+        119.0,
+        0.0
+      ],
+      "reproject_median_px": 0.16387483040076123,
+      "npz": "taichi_pair00_049_c4_r132.npz",
+      "npz_sha256": "b6bc66c1a86834e4153eff1fe8822c42c71e6c2fbcc54bdae8af458cd690977f"
+    },
+    {
+      "name": "yoga_pair00_052_c4_r261",
+      "image": "/home/shangguanrz/project/pic-edit/workflow-multiple/pairs/yoga_pair00_052_c4_r261/B_target.png",
+      "failure": null,
+      "image_sha256": "42239536af673f2a90ca2f4e81951dfc74295549c27557e24bb0f0db916d9678",
+      "person_count": 2,
+      "native_size": [
+        940,
+        1280
+      ],
+      "scale": 0.7,
+      "pad_xy": [
+        119.0,
+        0.0
+      ],
+      "reproject_median_px": 0.1843196440334794,
+      "npz": "yoga_pair00_052_c4_r261.npz",
+      "npz_sha256": "9ceba16c024f9ed82b4f90b6a87d1a1234817a68079a4f3589bc414d948c1907"
+    },
+    {
+      "name": "yoga_pair00_052_c4_r263",
+      "image": "/home/shangguanrz/project/pic-edit/workflow-multiple/pairs/yoga_pair00_052_c4_r263/B_target.png",
+      "failure": null,
+      "image_sha256": "42239536af673f2a90ca2f4e81951dfc74295549c27557e24bb0f0db916d9678",
+      "person_count": 2,
+      "native_size": [
+        940,
+        1280
+      ],
+      "scale": 0.7,
+      "pad_xy": [
+        119.0,
+        0.0
+      ],
+      "reproject_median_px": 0.1843196440334794,
+      "npz": "yoga_pair00_052_c4_r263.npz",
+      "npz_sha256": "9ceba16c024f9ed82b4f90b6a87d1a1234817a68079a4f3589bc414d948c1907"
+    },
+    {
+      "name": "cross_backhug_pair02_037_r545_from_pair00",
+      "image": "/home/shangguanrz/project/pic-edit/workflow-multiple/pairs_cross/cross_backhug_pair02_037_r545_from_pair00/B_target.png",
+      "failure": null,
+      "image_sha256": "736e17c7d91dea32e7069a173935f707e23638ae44a49387985ecf206fbab63d",
+      "person_count": 2,
+      "native_size": [
+        940,
+        1280
+      ],
+      "scale": 0.7,
+      "pad_xy": [
+        119.0,
+        0.0
+      ],
+      "reproject_median_px": 0.1725555453469959,
+      "npz": "cross_backhug_pair02_037_r545_from_pair00.npz",
+      "npz_sha256": "80e2787b956a2bb7c0ead36099a04c4e7ccd45e904f49be0d505fc0db062bd8e"
+    },
+    {
+      "name": "cross_dance_pair02_059_r424_from_pair00",
+      "image": "/home/shangguanrz/project/pic-edit/workflow-multiple/pairs_cross/cross_dance_pair02_059_r424_from_pair00/B_target.png",
+      "failure": null,
+      "image_sha256": "affc46633b7b9dfa18720abc40cf36927e12504d9d3448ecc245afd8e1e1f60a",
+      "person_count": 2,
+      "native_size": [
+        940,
+        1280
+      ],
+      "scale": 0.7,
+      "pad_xy": [
+        119.0,
+        0.0
+      ],
+      "reproject_median_px": 0.1305525495054115,
+      "npz": "cross_dance_pair02_059_r424_from_pair00.npz",
+      "npz_sha256": "a0dbf809c815ef16bc2b9d5d2c60edb3f7255de7564fe97fb2f5ca5771697eaa"
+    },
+    {
+      "name": "cross_hug_pair00_084_r000_from_pair02",
+      "image": "/home/shangguanrz/project/pic-edit/workflow-multiple/pairs_cross/cross_hug_pair00_084_r000_from_pair02/B_target.png",
+      "failure": null,
+      "image_sha256": "592aea679af6d0c2ee9702eac61924e31fb62bab6eead9bb1975f3a365e57507",
+      "person_count": 2,
+      "native_size": [
+        940,
+        1280
+      ],
+      "scale": 0.7,
+      "pad_xy": [
+        119.0,
+        0.0
+      ],
+      "reproject_median_px": 0.17430950159150255,
+      "npz": "cross_hug_pair00_084_r000_from_pair02.npz",
+      "npz_sha256": "89b58dc2fc1fc32c0c92e66dbc5b5d89c41b44be5b5ba63a757abe6783bc8239"
+    },
+    {
+      "name": "cross_hug_pair00_086_r003_from_pair02",
+      "image": "/home/shangguanrz/project/pic-edit/workflow-multiple/pairs_cross/cross_hug_pair00_086_r003_from_pair02/B_target.png",
+      "failure": null,
+      "image_sha256": "8670aa537b8f48dc8cea8fb27117123f1768eb678907743f5bdfda8170363127",
+      "person_count": 2,
+      "native_size": [
+        940,
+        1280
+      ],
+      "scale": 0.7,
+      "pad_xy": [
+        119.0,
+        0.0
+      ],
+      "reproject_median_px": 0.18096688967168784,
+      "npz": "cross_hug_pair00_086_r003_from_pair02.npz",
+      "npz_sha256": "ae7f44bb6df96e8524c83bff3cda7e064bb2b8847f09c666b51aa1981b9f9d36"
+    },
+    {
+      "name": "cross_pose_pair02_034_r478_from_pair00",
+      "image": "/home/shangguanrz/project/pic-edit/workflow-multiple/pairs_cross/cross_pose_pair02_034_r478_from_pair00/B_target.png",
+      "failure": null,
+      "image_sha256": "d949f3c3df37a3a7b252b1d58a6b8abb57fa6c6d059abfad3ff87abe40c01482",
+      "person_count": 2,
+      "native_size": [
+        940,
+        1280
+      ],
+      "scale": 0.7,
+      "pad_xy": [
+        119.0,
+        0.0
+      ],
+      "reproject_median_px": 0.16804497895777842,
+      "npz": "cross_pose_pair02_034_r478_from_pair00.npz",
+      "npz_sha256": "8f7b754068baab3b9916c58f00a65233ed87576cc660ae317b1a6824d42db34a"
+    }
+  ]
+}

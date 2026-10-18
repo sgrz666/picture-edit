@@ -117,7 +117,7 @@ $$\mathcal{L}_{\text{flow}} = \frac{\sum_{b,c,h,w} W_{b,c,h,w} \cdot (v_{\text{p
 - **目标**：验证计算图连通性、梯度回传完整度、12 个 Residual Heads 冻结状态（6 个 Geometry Head 有效梯度，6 个 Interaction Head 冻结为 None）、显存占用及权重保存恢复。
 - **命令**：
   ```bash
-  python train_iper_v6_native.py --smoke_test
+  python scripts/train/train_iper_v6_native.py --smoke_test
   ```
 - **实测指标记录**：
   - 显存占用：16.50 GiB
@@ -130,7 +130,7 @@ $$\mathcal{L}_{\text{flow}} = \frac{\sum_{b,c,h,w} W_{b,c,h,w} \cdot (v_{\text{p
 - **目标**：在 32 个固定 pair 上训练 500–1,000 optimizer steps（每 step 积累 4 个 micro-batches），确证模型具备对单人条件的强拟合能力。
 - **启动命令**：
   ```bash
-  python train_iper_v6_native.py \
+  python scripts/train/train_iper_v6_native.py \
     --overfit_samples 32 \
     --max_train_steps 800 \
     --gradient_accumulation_steps 4 \
@@ -149,7 +149,7 @@ $$\mathcal{L}_{\text{flow}} = \frac{\sum_{b,c,h,w} W_{b,c,h,w} \cdot (v_{\text{p
 - **目标**：在 10 个身份（约 3,800 pairs）上训练 2,000–3,000 optimizer steps，微调学习率并测量验证集泛化收敛曲线。
 - **启动命令**：
   ```bash
-  python train_iper_v6_native.py \
+  python scripts/train/train_iper_v6_native.py \
     --max_train_steps 3000 \
     --gradient_accumulation_steps 4 \
     --val_every 300 \
@@ -161,7 +161,7 @@ $$\mathcal{L}_{\text{flow}} = \frac{\sum_{b,c,h,w} W_{b,c,h,w} \cdot (v_{\text{p
 - **目标**：在 69 个 dev-train 身份（26,496 pairs）上训练约 3 个 epochs（约 20,000–25,000 optimizer steps，等价于 80,000–100,000 micro-batches）。
 - **建议正式配置**：
   ```bash
-  python train_iper_v6_native.py \
+  python scripts/train/train_iper_v6_native.py \
     --train_pairs datasets/iPER/iper_sampled_6src64tgt/splits/dev_train_pairs.jsonl \
     --val_pairs datasets/iPER/iper_sampled_6src64tgt/splits/dev_val_pairs.jsonl \
     --resolution 512 \
@@ -194,7 +194,7 @@ $$\mathcal{L}_{\text{flow}} = \frac{\sum_{b,c,h,w} W_{b,c,h,w} \cdot (v_{\text{p
 ### 7.2 独立评测脚本（eval_iper_v6.py）
 训练完成后，使用专门适配 V6 架构的评测脚本对验证集或测试集进行客观量化评测与拼图生成：
 ```bash
-python eval_iper_v6.py \
+python scripts/eval/eval_iper_v6.py \
   --adapter_checkpoint experiments/iper_v6_native_full_run/checkpoint_best.pt \
   --pairs_jsonl datasets/iPER/iper_sampled_6src64tgt/splits/dev_val_pairs.jsonl \
   --max_samples 50 \

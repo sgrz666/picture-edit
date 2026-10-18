@@ -1,0 +1,2114 @@
+{
+  "configuration": {
+    "dataset_sha256": "b3a71bee31f18d868fcc0ee982b3c7f55e001bd10509cd0312c5e32983f5ce94",
+    "split_manifest": {
+      "path": "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/split.json",
+      "sha256": "b744ec1103e9086135656b7b1e716a17b8c13e755b740b86acf55e18c4c6c238"
+    },
+    "selection_lock": {
+      "path": "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/selection_lock.json",
+      "sha256": "70576c43761876ba7b794fc4e5c2fb5d1a85639b2efd255a8f0ee863fe967910",
+      "selected_rows": 6,
+      "selection_locked_before_training": true,
+      "locked_test": {
+        "pair": "pair00",
+        "source_action": "taichi00",
+        "source_frame": 41,
+        "target_action": "hug00",
+        "target_frame": 108,
+        "camera": 4
+      }
+    },
+    "sample_id": "pair00_taichi00_000041_to_hug00_000108_cam4",
+    "pair_holdout": {
+      "train": [
+        "pair12",
+        "pair14"
+      ],
+      "val": [
+        "pair22"
+      ],
+      "test": [
+        "pair00"
+      ]
+    },
+    "identity_scope": "pair holdout; global cross-pair actor IDs were not proven",
+    "generation_manifest_sha256": {
+      "short": "6e21d788364ab0faf36a81b9c7faaad88acc42e28af63b81dfd25f639042c83e",
+      "structured": "672e57e279a1d4d2c0258a252eff905d83c4922006281e5bf242aa649ff07166"
+    },
+    "source_rgb_sha256": "73fc368bb83e835ae04584b8eef10f5441a36872713a22356b39330e2ebae112",
+    "source_mask_sha256": [
+      "dbf1becff27aef4660a00507b47b650365b0e0244d7bac45535580fce9e9fd4d",
+      "e158f0a272b83e65a553f9aaa3697fd2a643499ff2e1b2bd221b10bc5587b783"
+    ],
+    "source_features_sha256": "63c45ef94d9584beb7e56f90cc374075d8e7886f7fa023febd3f898edfeaed06",
+    "person_uids": [
+      "pair00_actor0",
+      "pair00_actor1"
+    ],
+    "geometry_sha256": "6947ec01962ca2e64567d14fadeb863dcf2b93e105027029b183570f89f83a39",
+    "geometry_sidecar_sha256": "52aa932027f5ddeb14db353f4a6a1bf5c0f0d77fe46658dfd7edd8206e17346b",
+    "checkpoints": {
+      "short": {
+        "path": "/home/shangguanrz/project/pic-edit/experiments/4.two man /qwen21_dual_prompt_pilot/20261013_v1/short/checkpoint_best.pt",
+        "sha256": "7aa609d910a655f5b73622f69a0cd32dfa9d5ca8b7e72225c81c109decd8bab7",
+        "step": 50,
+        "best_validation": 0.11233979339400928,
+        "completion_sha256": "a3b1df9614aa1f479849be73ac897b5e714355d9676782eca2395fde719a65e0",
+        "root_completion_sha256": "d5483f9575c5ed5e751ad8dffebf72dfa2a8099748b0d45b2f2c03404cc6593d"
+      },
+      "structured": {
+        "path": "/home/shangguanrz/project/pic-edit/experiments/4.two man /qwen21_dual_prompt_pilot/20261013_v1/structured/checkpoint_best.pt",
+        "sha256": "3de39e96942c1474e2418fbfafa2b18e3b36498df90a305360ef6e6ff187aa36",
+        "step": 50,
+        "best_validation": 0.11246329670151074,
+        "completion_sha256": "6e78ed8a1518cb3924423ce32930dd6506901b46b9f510cd94464116e7d0a7bd",
+        "root_completion_sha256": "d5483f9575c5ed5e751ad8dffebf72dfa2a8099748b0d45b2f2c03404cc6593d"
+      }
+    },
+    "model_id": "/data/shangguanrz/pic-edit-models/Qwen-Image-2.1",
+    "actual_backbone_sha256": "4b40da9b51ddcb44bc4cae009242f7f29936883bbd9fd05b16da789519848d5e",
+    "precision_policy": {
+      "name": "qwen21_bf16_full_precision_reduction_v1",
+      "allow_bf16_reduced_precision_reduction": false
+    },
+    "runtime_versions": {
+      "torch": "2.8.0",
+      "torchvision": "0.23.0",
+      "diffusers": "0.41.0.dev0",
+      "transformers": "5.17.0",
+      "numpy": "2.1.2",
+      "scipy": "1.16.2",
+      "pillow": "11.3.0"
+    },
+    "native_code_sha256": {
+      "pipeline": "6985b2f1f25e8dd09ef85c867ebcad184b981f10c0b4f80757ca9cc135b8fa5e",
+      "transformer": "0eb0555e21ca93195e1fe9389113cafbf0e8822f6454c3001cebb3d21521ebd7",
+      "vae": "afb341db5e9d081e568ae4703119d1141d124aaf2fa9c061b3d4eb80ce73c15b",
+      "text_encoder": "e96511fa034bd734fa06639611bc6cbdf1da12d02104785a9bc265baa764af8a"
+    },
+    "verified_training_code_sha256": {
+      "scripts/precompute/precompute_hi4d_smplx_controls.py": "d2dbdc94b7c1fcdd3db85ef2b26a555ed4c4c5cc7708d2be07027891eb54a7dc",
+      "scripts/train/train_qwen21_dual_v8_pilot.py": "6af6180fa4c782e3afac501d65f1a8d2f5818496568dccd61f346db79d4cd881",
+      "src/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "src/data/__init__.py": "80dbd8913da57b413381469ebdc558699a920f61d3ac7a6176499cfbf22f4331",
+      "src/data/hi4d_smplx_dataset.py": "f8e7a0d19eafbed69806121848494fb5a3dcfce12b4d7830e679012b14762091",
+      "src/pose_control/__init__.py": "bc83631dbb119e019d1f67a66231da3fc5a095fda3352d6956327fafa42c19fc",
+      "src/pose_control/qwen21_full/__init__.py": "310ac0f0db6f4c871162c17482b0e1f4c293a50f51bc331598617a81361e60fa",
+      "src/pose_control/qwen21_full/checkpoint.py": "42c7517eab3eb64b52b5e2622e2bc1a806b2c946215f4a61a2974432c106a2e3",
+      "src/pose_control/qwen21_full/condition_bridge.py": "81b7eed16f9892f58657571a44bd3d0e38a1bce7821725692cbbee92f9f5c2fd",
+      "src/pose_control/qwen21_full/condition_injector.py": "f491702332c55f57cfbd67819ebd4da30dec057dae0fc7f685db0ac240895b93",
+      "src/pose_control/qwen21_full/conditions.py": "90bf30b06b6d7e3cd3bb3109706ee366f02c5e8d4991051308881bc6f9a9c5d9",
+      "src/pose_control/qwen21_full/control_core.py": "e5e551e9ab8696f1d547b9b6a111a5b690a9942913b51cc0eb48a0ed011420c9",
+      "src/pose_control/qwen21_full/controlled_pipeline.py": "d7c9afcea9c1b443b8c23a679287d8469a324090688d730d397c96e29f6a9cbc",
+      "src/pose_control/qwen21_full/data_runtime.py": "423d41e68029e8163ba8b647750365d8032bd89535a97851202a695b367316de",
+      "src/pose_control/qwen21_full/deepgen_adapter.py": "b63ad72639673ea6949ccb32c5831ca22b614a13952196e3ee6d5c904543544d",
+      "src/pose_control/qwen21_full/detail/__init__.py": "c21e3db511029086297287ef8b0897176878509ec66c1eebd3ba95c96c140c94",
+      "src/pose_control/qwen21_full/detail/binder.py": "da4e8132a02afaa1f3d880a07f661a057cbee149c4f82508dd77a3fa9415b8b2",
+      "src/pose_control/qwen21_full/detail/conditions.py": "55de19e7e2cc5afb8a3c610b7503da7f64d718e137e36324d46096f9f5def15a",
+      "src/pose_control/qwen21_full/detail/encoders.py": "6b68787bb104579ca323f76157d8543f8aef91798c30f6c4bb98e52e350c0629",
+      "src/pose_control/qwen21_full/detail/hand.py": "5783a338542d8e5e7dca55c7ff39e9708309e222335863150c5e8461fac93f27",
+      "src/pose_control/qwen21_full/detail/preparer.py": "d42a29bb4d342f92d9d8f746c57836c20caf4a68ea34d152dbf901447ebe0bd0",
+      "src/pose_control/qwen21_full/dual/__init__.py": "15a2b287737bfd25d18beac71a1da9e199a7bd06a61de5114550b92c4b36a16e",
+      "src/pose_control/qwen21_full/dual/api.py": "66bd4223be08aba9bca2b76b257128d4c540da2228af6716722b41c86729f606",
+      "src/pose_control/qwen21_full/dual/appearance.py": "c32c2557e36b18977a368a85ea14a23d91b36354bf5b03e853a23a3808bf1fa5",
+      "src/pose_control/qwen21_full/dual/checkpoint.py": "eaf33c75b3182ea615df7816654a3bf9c5be3185c56dfa1941750d7dc3c342cb",
+      "src/pose_control/qwen21_full/dual/conditions.py": "9fbb1df7e793265e0e27cc1ad87e82a5ed843734488a95df4d10ee785347c71c",
+      "src/pose_control/qwen21_full/dual/context.py": "7a87397cf404f5d4e0bba6c79ea036a14187e20711e641e0c95b6e404aceb779",
+      "src/pose_control/qwen21_full/dual/controller.py": "d329b0181c4fc03f10652dbd4cf4bec4eb4d52a757893b843e25a8faa65eb1a7",
+      "src/pose_control/qwen21_full/dual/diagnostics.py": "c039239b3d5053bca7cfa8da433e5cbe0643502001be6d7b3ecbfed4a05876e5",
+      "src/pose_control/qwen21_full/dual/experiment.py": "3f2270a563085abb12d1ea7e099e8909c2aab1777f70e4a33a6162d6c6bf82cc",
+      "src/pose_control/qwen21_full/dual/geometry.py": "7440afdd075d673e1ea0e0b530d8d1b8efd360edb10e87cef504692145bdb6d9",
+      "src/pose_control/qwen21_full/dual/precision.py": "14dc1a16686395d4fc0d95d20b321654bd5a797d57a9aecda87b0e9d1469275d",
+      "src/pose_control/qwen21_full/dual/prompt_pilot.py": "22bcf9fa38312c1f8deff04967b2b8c8444d2d740eb05701ff23b4799c852271",
+      "src/pose_control/qwen21_full/dual/reasoner.py": "8110e4f5752bf9d2a60ef5bc2c1fbfee553c9907fb779af11fe9a882b80bbee0",
+      "src/pose_control/qwen21_full/dual/routing.py": "73658d4d748e22c5f8e480fd10c53f159835eb6cc1e0115d990084d22bc296d4",
+      "src/pose_control/qwen21_full/dual/runtime.py": "accd1666644358002a9cd1f8ca7a51f26fba7149f3fff92241b64778b01e3651",
+      "src/pose_control/qwen21_full/dual/schema.py": "d112def3de2e99860d862ec1b66d904c7581be4b6f5cd3015b35f5e61cead6ad",
+      "src/pose_control/qwen21_full/execution.py": "ad9d8b46a467d57865f019b60a08870fb3d2eaa266384661b0bebfb945bd5ecb",
+      "src/pose_control/qwen21_full/experts.py": "50e0444d19441448ce0701df4800b1d67c5ca98c5953dfcf4587611b4e77c3d6",
+      "src/pose_control/qwen21_full/face/__init__.py": "bfc1ef7085a446646d667c5459b10647ebbdcc40c57caca80bf100936381cafe",
+      "src/pose_control/qwen21_full/face/adapter.py": "0b9b66c396de155e2bc0d25ca5d885e2e3aa2296a8e3e547e2c69144ee98dc52",
+      "src/pose_control/qwen21_full/face/conditions.py": "b4b338b7ceec954c37178cdf05f01b0157c51c6a9ece5f8938b93786a7fee4c0",
+      "src/pose_control/qwen21_full/face/content_encoder.py": "2271eecbd7eb88cfce8ad805d61aaf2f950292a32ad135a9e1fa447ca34548b7",
+      "src/pose_control/qwen21_full/face/geometry.py": "787fd100eb74e82e747e45a6a2bb38c04069e170bb893f07adc3cc63e0a791f6",
+      "src/pose_control/qwen21_full/face/iper_dataset.py": "033910faa42352926d0eab1cbad0d09b8c3da5c2dcc41609b5a4edf584efd94a",
+      "src/pose_control/qwen21_full/face/preparer.py": "ae3b218f88a98c5d4efb6e69a8e11f5f8e79efc1f8ae63e3f3118d044b186c93",
+      "src/pose_control/qwen21_full/face/resampler.py": "d149af3f79d1466cefba7e084fbaf88fc6bc08813848de34ff39e4a8267bc576",
+      "src/pose_control/qwen21_full/face/spatial.py": "30c7072c4fe66b234bced81e33af3ed2a52b824511a15d0273ce81c3f4938781",
+      "src/pose_control/qwen21_full/face_coordinates.py": "cb9dc323ee1a45b09534ec78f696eefac9fdf32630c8879f0ca76495f6525b25",
+      "src/pose_control/qwen21_full/face_loss_alignment.py": "178a4f4786c27eb3ea6144a594763393797d274cb1fcc806eebf300f32d2bdbe",
+      "src/pose_control/qwen21_full/face_supervision.py": "7a6e9b559a84cb643064e534f7e627ec0244947393913b522b4ab98603920b32",
+      "src/pose_control/qwen21_full/frozen_bfs_lora.py": "d364338e603bf257883da51dee1d5bcb4cc8baefaad4b029541bb7b446bc0c1a",
+      "src/pose_control/qwen21_full/geometry_encoder.py": "47c073c05d467d7f7c70d5b28e4929c3730e518fa6fe69d20453f29e474ea198",
+      "src/pose_control/qwen21_full/hand/__init__.py": "528230c4db55811bbd08afc45fb4c3bb93174f04321154738f55ef89f30723d7",
+      "src/pose_control/qwen21_full/hand/adapter.py": "e4a3acc84321576739bd7150ad37b98b03034c169f54c33cfb5424df4be1cbbd",
+      "src/pose_control/qwen21_full/hand/conditions.py": "015ab92c7bdfff90f6cd55f27ee0b0cbca53c71b46f799894aee0d777ec5b6bd",
+      "src/pose_control/qwen21_full/hand/geometry.py": "a7f4192bc267cb0772ffe1b07c9feba3e215d4d3cb835f27dbb60bf826c34179",
+      "src/pose_control/qwen21_full/hand/preparer.py": "7c0947a7469c48572e8b08d83eefc6028337d20e7039804dd34f09749b25ce1d",
+      "src/pose_control/qwen21_full/hand/quality.py": "08b460c83740c199c768a4951a973c5505ad72f0d9c18c204f643b2abf2262cf",
+      "src/pose_control/qwen21_full/hand/refiner_export.py": "204a25859dc8e522e756cf5e4dcfe6e13c47f0679a0f967e0756074fbaec127d",
+      "src/pose_control/qwen21_full/hand/vton_layers.py": "316e4fb836b64eba23dcb24d233369dbca94cb72cb640121188ec0ee55a6c3d1",
+      "src/pose_control/qwen21_full/interface/__init__.py": "d67dc02f7f30605bb7b7d4343f90260bf5cf22224003d9d6e8e123b8a72b1a4f",
+      "src/pose_control/qwen21_full/interface/deepgen_interface.py": "1c2c73755b73c8800cf4097ddefc3a520d7ebe0f5d801c8f64d0e64f202e2475",
+      "src/pose_control/qwen21_full/interface/outputs.py": "75b1d9f1b644973c1ee16dafba71c7afc5e324c0ec5e8707cb6478dc059ce0aa",
+      "src/pose_control/qwen21_full/interface/strength.py": "74f3c3fca143b685666814e04e4598106294d71d9dbfa4a4d93679a53ba84d97",
+      "src/pose_control/qwen21_full/joint_training.py": "17f063c77e6e651e2ad6b8396615fb3f4940f8f3c7aa480a6b2a535e8ac36d4b",
+      "src/pose_control/qwen21_full/qwen_adapter.py": "2c616eb4abc0ca75f14dd9fbf343aa1bbf519c536f8bded44dd22f2aeef4e400",
+      "src/pose_control/qwen21_full/qwen_runtime.py": "77a1e3655e9042aabb81cc04bca7484c6f0956663b19f4d447ba5a1c3b419931",
+      "src/pose_control/qwen21_full/reasoning/__init__.py": "df319de41594e018676be54a28ca6990988604afc183f0eb831b44f7db7afb43",
+      "src/pose_control/qwen21_full/reasoning/blocks.py": "84a2c3f9e6f8d8388f3066a4c9a221c1516abba2d7dc521c22a3214b614dbad5",
+      "src/pose_control/qwen21_full/reasoning/config.py": "9b8134b3ee735c0cc9f2331f439de78089decda300bdaa62825c1ffcbfce6169",
+      "src/pose_control/qwen21_full/reasoning/contact.py": "a1d91617cc39ea4cbf3e9ee041aa626bcbc5a73e964027a501520128e5a0113c",
+      "src/pose_control/qwen21_full/reasoning/cross_person.py": "46f390c93fe213a00dbbc633f6b180156e92b94f37b3e9fc9c4ed8cbdc533b96",
+      "src/pose_control/qwen21_full/reasoning/fusion.py": "facc75905b80ff974de9f91a7ba04e72def93155ccb5a56a170db9319182e455",
+      "src/pose_control/qwen21_full/reasoning/person_geometry.py": "175f64b6ba08e03f252e38030dc7b5b4a6aa4b4d0b5af9dad994cd168536f54e",
+      "src/pose_control/qwen21_full/reasoning/reasoner.py": "a9eccf162b5eb0617478db88a9c4c071315dea7b84cbea310f0f5bbf519810df",
+      "src/pose_control/qwen21_full/reasoning/state.py": "cd7e60ea37946d1c6dcf8639cd5f983a0a09a050a3450595ac65a8a71b681e67",
+      "src/pose_control/qwen21_full/token_encoders.py": "fd609c7fe1f55ad1fd54385fd524d9c00ca9c2adc692749152e007c6d4327f7e",
+      "scripts/train/train_qwen21_dual_prompt_pilot.py": "90b3565f1779da99b239ec064e32188a5db8105170e1b606e3d334427a93f95d",
+      "src/data/hi4d_dual_prompt_pilot.py": "541812bb47a4f93efd2ef856a7cea01b87f0b49bc3591e42a5ef94d266e56b6e",
+      "scripts/precompute/prepare_hi4d_dual_prompt_pilot.py": "2e43917b3f6fa4a84ed0127302fe95b686989c97fd142d6901e157c3789690c9"
+    },
+    "evaluation_code_sha256": {
+      "scripts/eval/eval_qwen21_dual_prompt_pilot.py": "078db5942d5261a020e7d6907b52f1b0ff39d39725d1ca8c5cf34fd593f66de3",
+      "scripts/eval/eval_qwen21_dual_v8.py": "afbe3d06db4acd72c4766209880943892caaf5930e27b33f0754073a7a20ee44",
+      "scripts/eval/multihmr_rgb_worker.py": "46efeed11390d17df8e13c6af45f9f149c8b85ee7ea49fd580f348ead3f4c464",
+      "src/evaluation/dwpose_onnx/__init__.py": "f594c6f2ef9aa3b7e0a2d270f85e6bcae399f627fe65e0731478193811ba6d5b",
+      "src/evaluation/dwpose_onnx/onnxdet.py": "4c82a928ced32883b9a6acf89a2ce90ce9a266ab98c9e01231eb0f8d4a52751d",
+      "src/evaluation/dwpose_onnx/onnxpose.py": "16fb69ab54f5e1ce8a5ad186e92f357da0162fc2ca2eeec4ccf1db72949291a2",
+      "src/evaluation/joint_pilot_metrics.py": "e4005d06d61d729900c530b8c473d594c5088fcc1bdf6823355161af2321559c",
+      "src/evaluation/qwen21_dual_prompt_pilot.py": "aad6732858743ba23ee7ebbee33de170e838b44de5c2696f0bde876f2db363b4",
+      "src/evaluation/qwen21_dual_v8_metrics.py": "87df54ae2913a346fc099fa3ad8463a040d9eed119909e6fd44e256bc90cd1a8"
+    },
+    "text_provenance": {
+      "short": "action label only; no target geometry descriptions",
+      "structured": "source actor anchors, action label and reliable external target geometry descriptions; no target RGB"
+    },
+    "key": "native_structured_seed43",
+    "method": "native",
+    "prompt_kind": "structured",
+    "prompt": "A is the person on the right in the source image. B is the person on the left in the source image. Make the two existing people hug. A and B face toward one another. Keep A and B close together. A keeps the left hand at shoulder level and the right hand near waist level. A keeps the left elbow bent. A keeps the right elbow bent. A brings an arm around the other person's upper body. B keeps the left hand at shoulder level and the right hand near waist level. B bends the left elbow tightly. B keeps the right elbow bent. B brings an arm around the other person's upper body. Preserve each person's face, hair, clothing and body identity, the background, and the original camera view.",
+    "seed": 43,
+    "explicit_target_geometry_control": false,
+    "prompt_geometry_descriptions": true,
+    "prompt_geometry_provenance": "reliable_external_target_geometry",
+    "checkpoint": null,
+    "steps": 40,
+    "cfg": 1.0,
+    "use_kv_cache": true
+  },
+  "configuration_sha256": "a4d5a2149d62893ea161ceae44ccb87a50205c4919833487f4ffa43039c4a15e",
+  "output": "/home/shangguanrz/project/pic-edit/experiments/4.two man /qwen21_dual_prompt_pilot/20261013_v1/test_pair00_v1/native_structured_seed43.png",
+  "output_sha256": "09f260707c80f8fe2d2626d5373f93836b73b3b04d431452894743056569c2aa",
+  "explicit_target_geometry_control": false,
+  "prompt_geometry_descriptions": true,
+  "prompt_geometry_provenance": "reliable_external_target_geometry",
+  "elapsed_seconds": 7.675128221511841,
+  "actual_gradient_state": {
+    "key": "native_structured_seed43",
+    "grad_enabled": false,
+    "inference_mode": true
+  },
+  "generation_api_target_rgb_argument": false,
+  "diagnostics": null,
+  "quality": {
+    "detected_people": 2,
+    "third_people": 0,
+    "assignment": {
+      "indices": [
+        0,
+        1
+      ],
+      "costs": [
+        0.2478298130825549,
+        0.16065939955054867
+      ],
+      "unassigned_detection_indices": [],
+      "assignment_basis": "external_target_geometry_bbox_and_pose_without_identity"
+    },
+    "detections": [
+      {
+        "box_at_512": [
+          243.1031951904297,
+          136.38478088378906,
+          307.3427429199219,
+          400.5390625
+        ],
+        "wholebody134_at_512": [
+          [
+            261.8948721637329,
+            155.81800602873165
+          ],
+          [
+            286.1864035949111,
+            184.19395424922308
+          ],
+          [
+            290.70075899362564,
+            183.3340770304203
+          ],
+          [
+            261.0349949449301,
+            220.30879743893945
+          ],
+          [
+            253.7260385851065,
+            189.78315617144108
+          ],
+          [
+            281.67204819619656,
+            185.05383146802586
+          ],
+          [
+            255.44579302271205,
+            223.74830631415045
+          ],
+          [
+            250.2865297098955,
+            196.23223531246185
+          ],
+          [
+            290.27082038422424,
+            258.57333367566264
+          ],
+          [
+            284.25167985260487,
+            315.75516872604686
+          ],
+          [
+            294.5702064782381,
+            366.91786324481177
+          ],
+          [
+            282.9618640244007,
+            259.8631495038668
+          ],
+          [
+            279.52235514918965,
+            320.48449342946213
+          ],
+          [
+            288.12112733721733,
+            382.82559179266286
+          ],
+          [
+            262.75474938253564,
+            151.08868132531643
+          ],
+          [
+            266.1942582577467,
+            151.94855854411918
+          ],
+          [
+            284.25167985260487,
+            160.1173921227455
+          ],
+          [
+            278.2325393209855,
+            159.25751490394276
+          ],
+          [
+            261.4649335543314,
+            388.8447323242824
+          ],
+          [
+            267.05413547654945,
+            391.4243639806907
+          ],
+          [
+            292.42051343123114,
+            387.9848551054795
+          ],
+          [
+            267.91401269535226,
+            378.9561443080504
+          ],
+          [
+            271.3535215705633,
+            375.5166354328394
+          ],
+          [
+            299.2995311816534,
+            372.0771265576284
+          ],
+          [
+            261.0349949449301,
+            152.808435762922
+          ],
+          [
+            260.6050563355287,
+            154.9581288099289
+          ],
+          [
+            260.1751177261273,
+            157.1078218569358
+          ],
+          [
+            259.7451791167259,
+            159.6874535133441
+          ],
+          [
+            259.3152405073245,
+            162.26708516975242
+          ],
+          [
+            259.7451791167259,
+            164.84671682616073
+          ],
+          [
+            261.4649335543314,
+            167.42634848256904
+          ],
+          [
+            261.8948721637329,
+            169.576041529576
+          ],
+          [
+            263.6146266013384,
+            170.00598013897735
+          ],
+          [
+            265.76431964834535,
+            169.576041529576
+          ],
+          [
+            267.91401269535226,
+            168.28622570137185
+          ],
+          [
+            269.6337671329578,
+            166.13653265436488
+          ],
+          [
+            271.3535215705633,
+            163.98683960735798
+          ],
+          [
+            272.64333739876747,
+            161.83714656035107
+          ],
+          [
+            273.5032146175703,
+            159.25751490394276
+          ],
+          [
+            273.9331532269716,
+            157.1078218569358
+          ],
+          [
+            274.36309183637303,
+            154.9581288099289
+          ],
+          [
+            262.32481077313423,
+            150.65874271591503
+          ],
+          [
+            262.75474938253564,
+            150.65874271591503
+          ],
+          [
+            262.75474938253564,
+            150.22880410651368
+          ],
+          [
+            262.75474938253564,
+            150.22880410651368
+          ],
+          [
+            262.75474938253564,
+            150.22880410651368
+          ],
+          [
+            262.75474938253564,
+            149.79886549711227
+          ],
+          [
+            263.6146266013384,
+            149.79886549711227
+          ],
+          [
+            264.47450382014114,
+            149.79886549711227
+          ],
+          [
+            265.76431964834535,
+            150.22880410651368
+          ],
+          [
+            267.05413547654945,
+            151.08868132531643
+          ],
+          [
+            262.32481077313423,
+            152.37849715352058
+          ],
+          [
+            261.8948721637329,
+            153.66831298172474
+          ],
+          [
+            260.6050563355287,
+            154.5281902005275
+          ],
+          [
+            259.7451791167259,
+            155.81800602873165
+          ],
+          [
+            258.45536328852177,
+            157.5377604663372
+          ],
+          [
+            259.7451791167259,
+            157.9676990757386
+          ],
+          [
+            260.6050563355287,
+            157.9676990757386
+          ],
+          [
+            261.0349949449301,
+            157.9676990757386
+          ],
+          [
+            261.8948721637329,
+            157.9676990757386
+          ],
+          [
+            262.32481077313423,
+            152.37849715352058
+          ],
+          [
+            262.32481077313423,
+            152.808435762922
+          ],
+          [
+            262.32481077313423,
+            152.37849715352058
+          ],
+          [
+            262.32481077313423,
+            152.37849715352058
+          ],
+          [
+            262.32481077313423,
+            152.37849715352058
+          ],
+          [
+            262.32481077313423,
+            152.37849715352058
+          ],
+          [
+            263.184687991937,
+            152.37849715352058
+          ],
+          [
+            264.0445652107398,
+            151.94855854411918
+          ],
+          [
+            264.90444242954254,
+            152.37849715352058
+          ],
+          [
+            265.3343810389439,
+            152.808435762922
+          ],
+          [
+            264.47450382014114,
+            152.808435762922
+          ],
+          [
+            263.6146266013384,
+            152.808435762922
+          ],
+          [
+            260.1751177261273,
+            162.69702377915382
+          ],
+          [
+            259.7451791167259,
+            162.26708516975242
+          ],
+          [
+            260.6050563355287,
+            160.97726934154826
+          ],
+          [
+            260.6050563355287,
+            160.97726934154826
+          ],
+          [
+            261.0349949449301,
+            160.97726934154826
+          ],
+          [
+            261.8948721637329,
+            161.40720795094967
+          ],
+          [
+            262.75474938253564,
+            162.26708516975242
+          ],
+          [
+            262.32481077313423,
+            163.55690099795657
+          ],
+          [
+            261.8948721637329,
+            164.41677821675938
+          ],
+          [
+            261.0349949449301,
+            164.84671682616073
+          ],
+          [
+            260.6050563355287,
+            164.41677821675938
+          ],
+          [
+            260.6050563355287,
+            163.55690099795657
+          ],
+          [
+            260.1751177261273,
+            162.69702377915382
+          ],
+          [
+            260.1751177261273,
+            162.26708516975242
+          ],
+          [
+            261.0349949449301,
+            161.83714656035107
+          ],
+          [
+            261.8948721637329,
+            161.83714656035107
+          ],
+          [
+            262.32481077313423,
+            162.26708516975242
+          ],
+          [
+            261.8948721637329,
+            163.12696238855523
+          ],
+          [
+            261.0349949449301,
+            163.55690099795657
+          ],
+          [
+            260.6050563355287,
+            163.12696238855523
+          ],
+          [
+            252.006284147501,
+            191.50291060904658
+          ],
+          [
+            247.70689805348712,
+            189.78315617144108
+          ],
+          [
+            248.13683666288853,
+            186.34364729622996
+          ],
+          [
+            246.84702083468437,
+            184.62389285862446
+          ],
+          [
+            245.98714361588156,
+            183.3340770304203
+          ],
+          [
+            243.4075119594733,
+            182.9041384210189
+          ],
+          [
+            240.827880303065,
+            181.61432259281474
+          ],
+          [
+            239.9680030842622,
+            181.1843839834134
+          ],
+          [
+            239.9680030842622,
+            182.04426120221615
+          ],
+          [
+            241.68775752186775,
+            186.34364729622996
+          ],
+          [
+            239.10812586545944,
+            183.3340770304203
+          ],
+          [
+            239.10812586545944,
+            182.9041384210189
+          ],
+          [
+            238.6781872560581,
+            183.3340770304203
+          ],
+          [
+            240.827880303065,
+            188.92327895263827
+          ],
+          [
+            239.10812586545944,
+            185.9137086868286
+          ],
+          [
+            238.6781872560581,
+            184.62389285862446
+          ],
+          [
+            237.8183100372553,
+            186.34364729622996
+          ],
+          [
+            241.25781891246635,
+            189.78315617144108
+          ],
+          [
+            239.53806447486085,
+            188.49334034323692
+          ],
+          [
+            239.10812586545944,
+            189.35321756203973
+          ],
+          [
+            239.53806447486085,
+            189.78315617144108
+          ],
+          [
+            248.56677527228993,
+            189.35321756203973
+          ],
+          [
+            246.84702083468437,
+            185.9137086868286
+          ],
+          [
+            244.69732778767747,
+            183.3340770304203
+          ],
+          [
+            242.9775733500719,
+            182.04426120221615
+          ],
+          [
+            241.68775752186775,
+            181.1843839834134
+          ],
+          [
+            240.3979416936636,
+            179.46462954580784
+          ],
+          [
+            239.10812586545944,
+            178.6047523270051
+          ],
+          [
+            238.6781872560581,
+            180.754445374012
+          ],
+          [
+            238.6781872560581,
+            182.47419981161755
+          ],
+          [
+            239.53806447486085,
+            181.1843839834134
+          ],
+          [
+            238.24824864665663,
+            181.1843839834134
+          ],
+          [
+            237.8183100372553,
+            182.04426120221615
+          ],
+          [
+            237.8183100372553,
+            183.3340770304203
+          ],
+          [
+            239.10812586545944,
+            182.04426120221615
+          ],
+          [
+            237.8183100372553,
+            182.47419981161755
+          ],
+          [
+            237.38837142785388,
+            182.9041384210189
+          ],
+          [
+            237.38837142785388,
+            183.3340770304203
+          ],
+          [
+            238.6781872560581,
+            183.7640156398217
+          ],
+          [
+            237.8183100372553,
+            183.7640156398217
+          ],
+          [
+            237.38837142785388,
+            184.19395424922305
+          ],
+          [
+            238.6781872560581,
+            184.19395424922305
+          ]
+        ],
+        "wholebody134_scores": [
+          0.8462259769439697,
+          1.0,
+          0.5878332257270813,
+          0.4655536711215973,
+          0.3589065372943878,
+          0.647789716720581,
+          0.651244580745697,
+          0.43237394094467163,
+          0.6623853445053101,
+          0.8440102934837341,
+          0.7809395790100098,
+          0.9004801511764526,
+          0.9630409479141235,
+          0.9262917637825012,
+          0.7822913527488708,
+          0.8318110704421997,
+          0.5655395984649658,
+          0.799344003200531,
+          0.9471709132194519,
+          1.0130670070648193,
+          1.0630760192871094,
+          0.5972818732261658,
+          0.5933524966239929,
+          0.8307235240936279,
+          0.745942234992981,
+          0.7509982585906982,
+          0.7728142738342285,
+          0.8182336091995239,
+          0.8017932176589966,
+          0.802736222743988,
+          0.7905067205429077,
+          0.781313955783844,
+          0.772667646408081,
+          0.7726941108703613,
+          0.779453456401825,
+          0.7877375483512878,
+          0.7612263560295105,
+          0.7828584909439087,
+          0.7596138119697571,
+          0.7435740828514099,
+          0.6784023642539978,
+          0.7779809236526489,
+          0.7827394604682922,
+          0.7636532783508301,
+          0.778295636177063,
+          0.7898480892181396,
+          0.7911702394485474,
+          0.786700427532196,
+          0.7844854593276978,
+          0.789732038974762,
+          0.7747998237609863,
+          0.8191750645637512,
+          0.8203014731407166,
+          0.8109133243560791,
+          0.8020937442779541,
+          0.7688396573066711,
+          0.8119570016860962,
+          0.8227883577346802,
+          0.8306783437728882,
+          0.8444520235061646,
+          0.7721806168556213,
+          0.7794042229652405,
+          0.7817716002464294,
+          0.8027084469795227,
+          0.8096721768379211,
+          0.7842115759849548,
+          0.8368741869926453,
+          0.8111838698387146,
+          0.8066120147705078,
+          0.7839358448982239,
+          0.8208432793617249,
+          0.8351578116416931,
+          0.8226633071899414,
+          0.81679767370224,
+          0.8187391757965088,
+          0.812622606754303,
+          0.8157142400741577,
+          0.8551682829856873,
+          0.8318506479263306,
+          0.8371094465255737,
+          0.8350638747215271,
+          0.8248500823974609,
+          0.8264926075935364,
+          0.8408198356628418,
+          0.8264232873916626,
+          0.8412529826164246,
+          0.8312064409255981,
+          0.8265888690948486,
+          0.8343957662582397,
+          0.8270580768585205,
+          0.82929527759552,
+          0.8310086131095886,
+          0.370786190032959,
+          0.4095175862312317,
+          0.43163150548934937,
+          0.45410406589508057,
+          0.43202197551727295,
+          0.43899068236351013,
+          0.43184223771095276,
+          0.41036614775657654,
+          0.4096084535121918,
+          0.4225226044654846,
+          0.4262325167655945,
+          0.40275225043296814,
+          0.3890215754508972,
+          0.4199468195438385,
+          0.40097007155418396,
+          0.40352705121040344,
+          0.3963537812232971,
+          0.41562220454216003,
+          0.4141611158847809,
+          0.4084964692592621,
+          0.39868322014808655,
+          0.3768722116947174,
+          0.4239482879638672,
+          0.4568192958831787,
+          0.44061368703842163,
+          0.4495237469673157,
+          0.45104295015335083,
+          0.4661104381084442,
+          0.460001677274704,
+          0.4507957100868225,
+          0.4428248405456543,
+          0.4530177712440491,
+          0.4500890076160431,
+          0.44814935326576233,
+          0.4411791265010834,
+          0.4477421045303345,
+          0.43853533267974854,
+          0.44162383675575256,
+          0.44056767225265503,
+          0.4371491074562073,
+          0.4300976097583771,
+          0.4217073619365692
+        ]
+      },
+      {
+        "box_at_512": [
+          208.9619598388672,
+          126.84391021728516,
+          287.89105224609375,
+          399.3406677246094
+        ],
+        "wholebody134_at_512": [
+          [
+            258.18387691676617,
+            152.21307449042797
+          ],
+          [
+            240.66496102884412,
+            179.04584439471364
+          ],
+          [
+            232.0163822993636,
+            179.71111968159676
+          ],
+          [
+            256.85332634299994,
+            202.77399629354477
+          ],
+          [
+            283.0208209604025,
+            183.25925454497337
+          ],
+          [
+            249.31353975832462,
+            178.38056910783052
+          ],
+          [
+            255.5227757692337,
+            218.74060317873955
+          ],
+          [
+            259.5144274905324,
+            191.68607484549284
+          ],
+          [
+            231.12934858351946,
+            259.54415410757065
+          ],
+          [
+            230.2423148676753,
+            318.975413069129
+          ],
+          [
+            225.80714628845453,
+            375.74557088315487
+          ],
+          [
+            246.65243861079216,
+            258.2136035338044
+          ],
+          [
+            243.10430374741554,
+            314.5402444899082
+          ],
+          [
+            235.56451716274023,
+            358.89193028211594
+          ],
+          [
+            252.41815776377916,
+            147.7779059112072
+          ],
+          [
+            257.296843200922,
+            147.33438905328512
+          ],
+          [
+            236.45155087858438,
+            151.7695576325059
+          ],
+          [
+            243.9913374632597,
+            150.88252391666174
+          ],
+          [
+            259.0709106326103,
+            365.5446831509471
+          ],
+          [
+            256.40980948507786,
+            360.66599771380424
+          ],
+          [
+            233.34693287312984,
+            364.21413257718086
+          ],
+          [
+            247.09595546871424,
+            390.3816271945834
+          ],
+          [
+            239.55616888403893,
+            391.71217776834965
+          ],
+          [
+            221.81549456715584,
+            381.5112900361419
+          ],
+          [
+            239.55616888403893,
+            149.99549020081758
+          ],
+          [
+            239.999685741961,
+            152.65659134835005
+          ],
+          [
+            240.44320259988308,
+            155.7612093538046
+          ],
+          [
+            241.33023631572723,
+            158.86582735925913
+          ],
+          [
+            242.66078688949347,
+            161.5269285067916
+          ],
+          [
+            244.87837117910385,
+            164.18802965432405
+          ],
+          [
+            247.09595546871424,
+            165.96209708601236
+          ],
+          [
+            249.7570566162467,
+            167.73616451770067
+          ],
+          [
+            252.86167462170124,
+            168.62319823354483
+          ],
+          [
+            255.5227757692337,
+            168.17968137562275
+          ],
+          [
+            257.296843200922,
+            166.40561394393444
+          ],
+          [
+            258.18387691676617,
+            163.74451279640198
+          ],
+          [
+            258.62739377468824,
+            160.19637793302536
+          ],
+          [
+            259.0709106326103,
+            157.09175992757082
+          ],
+          [
+            258.62739377468824,
+            153.98714192211628
+          ],
+          [
+            258.18387691676617,
+            150.88252391666174
+          ],
+          [
+            257.7403600588441,
+            147.7779059112072
+          ],
+          [
+            249.7570566162467,
+            146.0038384795189
+          ],
+          [
+            251.08760719001293,
+            145.11680476367474
+          ],
+          [
+            252.41815776377916,
+            144.67328790575266
+          ],
+          [
+            254.19222519546747,
+            144.67328790575266
+          ],
+          [
+            255.07925891131163,
+            145.11680476367474
+          ],
+          [
+            256.85332634299994,
+            145.5603216215968
+          ],
+          [
+            257.296843200922,
+            145.5603216215968
+          ],
+          [
+            257.296843200922,
+            145.5603216215968
+          ],
+          [
+            257.296843200922,
+            145.5603216215968
+          ],
+          [
+            257.7403600588441,
+            145.5603216215968
+          ],
+          [
+            256.40980948507786,
+            148.66493962705135
+          ],
+          [
+            257.7403600588441,
+            149.99549020081758
+          ],
+          [
+            259.0709106326103,
+            151.7695576325059
+          ],
+          [
+            259.9579443484545,
+            153.5436250641942
+          ],
+          [
+            255.96629262715578,
+            155.7612093538046
+          ],
+          [
+            256.85332634299994,
+            156.20472621172667
+          ],
+          [
+            257.7403600588441,
+            156.20472621172667
+          ],
+          [
+            259.0709106326103,
+            155.7612093538046
+          ],
+          [
+            259.9579443484545,
+            155.3176924958825
+          ],
+          [
+            250.64409033209085,
+            149.10845648497343
+          ],
+          [
+            251.9746409058571,
+            148.66493962705135
+          ],
+          [
+            253.30519147962332,
+            148.66493962705135
+          ],
+          [
+            254.19222519546747,
+            149.10845648497343
+          ],
+          [
+            252.86167462170124,
+            149.5519733428955
+          ],
+          [
+            251.9746409058571,
+            149.5519733428955
+          ],
+          [
+            257.296843200922,
+            148.66493962705135
+          ],
+          [
+            257.296843200922,
+            148.66493962705135
+          ],
+          [
+            257.296843200922,
+            148.66493962705135
+          ],
+          [
+            257.7403600588441,
+            148.66493962705135
+          ],
+          [
+            257.296843200922,
+            148.66493962705135
+          ],
+          [
+            257.296843200922,
+            148.66493962705135
+          ],
+          [
+            254.19222519546747,
+            161.08341164886951
+          ],
+          [
+            255.96629262715578,
+            159.75286107510328
+          ],
+          [
+            257.7403600588441,
+            158.86582735925913
+          ],
+          [
+            258.18387691676617,
+            159.3093442171812
+          ],
+          [
+            258.62739377468824,
+            159.3093442171812
+          ],
+          [
+            258.62739377468824,
+            160.19637793302536
+          ],
+          [
+            258.18387691676617,
+            161.08341164886951
+          ],
+          [
+            258.18387691676617,
+            162.41396222263575
+          ],
+          [
+            258.18387691676617,
+            162.85747908055782
+          ],
+          [
+            257.7403600588441,
+            163.74451279640198
+          ],
+          [
+            255.96629262715578,
+            163.3009959384799
+          ],
+          [
+            255.07925891131163,
+            162.41396222263575
+          ],
+          [
+            254.63574205338955,
+            161.08341164886951
+          ],
+          [
+            255.96629262715578,
+            160.63989479094744
+          ],
+          [
+            257.7403600588441,
+            160.19637793302536
+          ],
+          [
+            257.7403600588441,
+            160.63989479094744
+          ],
+          [
+            257.7403600588441,
+            161.08341164886951
+          ],
+          [
+            257.7403600588441,
+            161.97044536471367
+          ],
+          [
+            257.296843200922,
+            161.97044536471367
+          ],
+          [
+            255.5227757692337,
+            161.97044536471367
+          ],
+          [
+            259.9579443484545,
+            182.37222082912922
+          ],
+          [
+            260.40146120637655,
+            181.48518711328506
+          ],
+          [
+            261.2884949222207,
+            181.92870397120714
+          ],
+          [
+            260.84497806429863,
+            181.92870397120714
+          ],
+          [
+            260.40146120637655,
+            180.15463653951883
+          ],
+          [
+            263.94959606975317,
+            181.041670255363
+          ],
+          [
+            262.61904549598694,
+            180.15463653951883
+          ],
+          [
+            261.7320117801428,
+            180.15463653951883
+          ],
+          [
+            260.84497806429863,
+            178.38056910783052
+          ],
+          [
+            261.2884949222207,
+            185.03332197666168
+          ],
+          [
+            260.84497806429863,
+            188.13793998211622
+          ],
+          [
+            260.40146120637655,
+            187.69442312419415
+          ],
+          [
+            291.0041244029999,
+            187.25090626627207
+          ],
+          [
+            260.40146120637655,
+            187.69442312419415
+          ],
+          [
+            260.40146120637655,
+            189.02497369796038
+          ],
+          [
+            259.9579443484545,
+            188.5814568400383
+          ],
+          [
+            291.0041244029999,
+            188.5814568400383
+          ],
+          [
+            259.9579443484545,
+            188.5814568400383
+          ],
+          [
+            259.9579443484545,
+            189.02497369796038
+          ],
+          [
+            259.9579443484545,
+            189.46849055588245
+          ],
+          [
+            259.5144274905324,
+            189.46849055588245
+          ],
+          [
+            283.0208209604025,
+            181.92870397120714
+          ],
+          [
+            284.3513715341687,
+            180.5981533974409
+          ],
+          [
+            285.68192210793495,
+            178.38056910783052
+          ],
+          [
+            287.45598953962326,
+            177.93705224990845
+          ],
+          [
+            288.7865401133895,
+            177.49353539198637
+          ],
+          [
+            288.7865401133895,
+            177.93705224990845
+          ],
+          [
+            290.5606075450778,
+            177.93705224990845
+          ],
+          [
+            291.89115811884403,
+            178.8240859657526
+          ],
+          [
+            292.3346749767661,
+            179.71111968159676
+          ],
+          [
+            290.1170906871557,
+            180.5981533974409
+          ],
+          [
+            293.22170869261026,
+            181.48518711328506
+          ],
+          [
+            293.66522555053234,
+            181.041670255363
+          ],
+          [
+            293.22170869261026,
+            181.92870397120714
+          ],
+          [
+            291.0041244029999,
+            182.37222082912922
+          ],
+          [
+            293.66522555053234,
+            182.8157376870513
+          ],
+          [
+            294.5522592663765,
+            183.25925454497337
+          ],
+          [
+            293.66522555053234,
+            183.70277140289545
+          ],
+          [
+            291.0041244029999,
+            184.14628826081753
+          ],
+          [
+            293.22170869261026,
+            184.5898051187396
+          ],
+          [
+            293.66522555053234,
+            185.03332197666168
+          ],
+          [
+            293.66522555053234,
+            185.03332197666168
+          ]
+        ],
+        "wholebody134_scores": [
+          0.9411583542823792,
+          1.0,
+          0.8911011815071106,
+          0.6741408705711365,
+          0.6575096845626831,
+          0.6651061177253723,
+          0.5001630783081055,
+          0.2463548183441162,
+          0.9603979587554932,
+          1.104406476020813,
+          1.0984036922454834,
+          0.812987208366394,
+          0.9064573645591736,
+          0.866452693939209,
+          0.9286611676216125,
+          0.9631553888320923,
+          0.9152389168739319,
+          0.6525771617889404,
+          0.8397442102432251,
+          0.7955633401870728,
+          0.786919116973877,
+          1.0794620513916016,
+          0.9827607870101929,
+          1.0645207166671753,
+          0.9289941787719727,
+          0.9164139032363892,
+          0.9380816221237183,
+          0.9397059082984924,
+          0.9517502188682556,
+          0.8877792954444885,
+          0.9118063449859619,
+          0.9033469557762146,
+          0.9236251711845398,
+          0.9316724538803101,
+          0.9217430353164673,
+          0.9251670837402344,
+          0.9317575097084045,
+          0.9132211804389954,
+          0.9234533309936523,
+          0.9372218251228333,
+          0.9407646656036377,
+          0.9257323145866394,
+          0.9648154377937317,
+          0.9837787747383118,
+          1.0142571926116943,
+          0.9988402724266052,
+          1.0008832216262817,
+          0.9921170473098755,
+          0.9821895956993103,
+          0.9762290716171265,
+          0.956895112991333,
+          1.0002546310424805,
+          0.9878162741661072,
+          0.9724478125572205,
+          0.9806338548660278,
+          0.9740416407585144,
+          0.9830918312072754,
+          0.9746192693710327,
+          0.9755381345748901,
+          0.970943033695221,
+          0.9731820225715637,
+          0.9715656638145447,
+          0.9805858135223389,
+          0.9892629981040955,
+          0.9665228128433228,
+          0.9684328436851501,
+          0.9816021919250488,
+          0.9763280749320984,
+          0.9754447937011719,
+          0.9515281915664673,
+          0.9703840613365173,
+          0.9741926193237305,
+          0.957327127456665,
+          0.985543966293335,
+          0.9830936193466187,
+          0.9832982420921326,
+          0.9828827381134033,
+          0.9652435183525085,
+          0.9579278826713562,
+          0.9625342488288879,
+          0.9330771565437317,
+          0.9094191789627075,
+          0.9195061922073364,
+          0.9504739046096802,
+          0.9674934148788452,
+          0.9772364497184753,
+          0.9720960855484009,
+          0.9674680829048157,
+          0.9614037871360779,
+          0.9605438709259033,
+          0.9388197064399719,
+          0.9487360119819641,
+          0.25489383935928345,
+          0.27868425846099854,
+          0.2959791421890259,
+          0.2862635552883148,
+          0.28233879804611206,
+          0.3088059425354004,
+          0.2687701880931854,
+          0.2501410245895386,
+          0.2633219361305237,
+          0.28905293345451355,
+          0.2770174741744995,
+          0.2692923843860626,
+          0.27139994502067566,
+          0.2930367588996887,
+          0.27900588512420654,
+          0.29050058126449585,
+          0.2861522138118744,
+          0.3171537220478058,
+          0.30614742636680603,
+          0.3092285990715027,
+          0.3038076162338257,
+          0.5704078078269958,
+          0.5465268492698669,
+          0.5664159655570984,
+          0.5561209917068481,
+          0.5007061958312988,
+          0.5934178233146667,
+          0.5700885057449341,
+          0.542067289352417,
+          0.526235818862915,
+          0.5481184124946594,
+          0.5190204977989197,
+          0.5094384551048279,
+          0.5239513516426086,
+          0.5502234697341919,
+          0.5178954005241394,
+          0.5149239301681519,
+          0.5160303711891174,
+          0.5436883568763733,
+          0.5239444971084595,
+          0.5204983353614807,
+          0.5193536281585693
+        ]
+      }
+    ],
+    "people": [
+      {
+        "person_uid": "pair00_actor0",
+        "actor_slot": "A",
+        "detection_index": 0,
+        "body": {
+          "eligible_joints": 23,
+          "detected_joints": 23,
+          "confidence_threshold": 0.3,
+          "normalization": "512_canvas_diagonal",
+          "failure": null,
+          "nme_diagonal": 0.04159680548793804,
+          "pck_002": 0.391304347826087,
+          "pck_005": 0.6956521739130435,
+          "pck_002_hits": 9,
+          "pck_005_hits": 16,
+          "joint_recall": 1.0
+        },
+        "wholebody": {
+          "eligible_joints": 115,
+          "detected_joints": 115,
+          "confidence_threshold": 0.3,
+          "normalization": "512_canvas_diagonal",
+          "failure": null,
+          "nme_diagonal": 0.04236404794980489,
+          "pck_002": 0.4260869565217391,
+          "pck_005": 0.7304347826086957,
+          "pck_002_hits": 49,
+          "pck_005_hits": 84,
+          "joint_recall": 1.0
+        }
+      },
+      {
+        "person_uid": "pair00_actor1",
+        "actor_slot": "B",
+        "detection_index": 1,
+        "body": {
+          "eligible_joints": 22,
+          "detected_joints": 22,
+          "confidence_threshold": 0.3,
+          "normalization": "512_canvas_diagonal",
+          "failure": null,
+          "nme_diagonal": 0.02973736799660469,
+          "pck_002": 0.18181818181818182,
+          "pck_005": 0.9090909090909091,
+          "pck_002_hits": 4,
+          "pck_005_hits": 20,
+          "joint_recall": 1.0
+        },
+        "wholebody": {
+          "eligible_joints": 132,
+          "detected_joints": 116,
+          "confidence_threshold": 0.3,
+          "normalization": "512_canvas_diagonal",
+          "failure": null,
+          "nme_diagonal": 0.036949665741671966,
+          "pck_002": 0.09848484848484848,
+          "pck_005": 0.6666666666666666,
+          "pck_002_hits": 13,
+          "pck_005_hits": 88,
+          "joint_recall": 0.8787878787878788
+        }
+      }
+    ],
+    "appearance": {
+      "metric_kind": "clothing_proxy_dinov2",
+      "similarity_matrix_source_by_geometry_assigned_actor": [
+        [
+          0.7845630645751953,
+          0.6022502183914185
+        ],
+        [
+          0.6553489565849304,
+          0.7927530407905579
+        ]
+      ],
+      "actor_similarity": [
+        0.7845630645751953,
+        0.7927530407905579
+      ],
+      "original_correspondence_mean": 0.7886580526828766,
+      "swapped_correspondence_mean": 0.6287995874881744,
+      "margin_original_minus_swapped": 0.15985846519470215,
+      "swap_detected": false,
+      "failure": null,
+      "assignment_changed_by_identity": false
+    },
+    "face_identity": {
+      "metric_kind": "arcface_face_identity",
+      "similarity_matrix_source_by_geometry_assigned_actor": [
+        [
+          0.4122554659843445,
+          -0.01884309947490692
+        ],
+        [
+          0.13367752730846405,
+          0.30106428265571594
+        ]
+      ],
+      "actor_similarity": [
+        0.4122554659843445,
+        0.30106428265571594
+      ],
+      "original_correspondence_mean": 0.3566598743200302,
+      "swapped_correspondence_mean": 0.057417213916778564,
+      "margin_original_minus_swapped": 0.29924266040325165,
+      "swap_detected": false,
+      "failure": null,
+      "assignment_changed_by_identity": false
+    },
+    "background": {
+      "mae_rgb_0_1": 0.022146152332425117,
+      "pixel_denominator": 144357,
+      "dilation_rgb_pixels": 8,
+      "target_gt_masks_used_only_by_evaluator": true,
+      "failure": null,
+      "rgb_reference": "evaluator_target_rgb_opened_after_all_generation",
+      "canvas_provenance": "source_native_size_and_recorded_affine; letterbox_padding_excluded"
+    },
+    "source_background_preservation": {
+      "mae_rgb_0_1": 0.019886763766407967,
+      "pixel_denominator": 144357,
+      "dilation_rgb_pixels": 8,
+      "target_gt_masks_used_only_by_evaluator": true,
+      "failure": null
+    },
+    "generated_appearance_mask_provenance": "generated_rgb_dwpose_boxes_partitioned_by_detected_body_joints_proxy",
+    "source_dino_failures": [
+      null,
+      null
+    ],
+    "generated_dino_failures": [
+      null,
+      null
+    ],
+    "source_face_failures": [
+      null,
+      null
+    ],
+    "generated_face_failures": [
+      null,
+      null
+    ],
+    "metric_model_failures": {},
+    "failures": {},
+    "mesh": {
+      "mesh_source": "generated_rgb_multihmr_camera_space",
+      "reconstructed_people": 2,
+      "part_pair_distances": [
+        {
+          "part_pair": [
+            0,
+            14
+          ],
+          "distance_m_proxy": 0.035111566429302084,
+          "distance_over_mean_height": 0.02041694720250161
+        },
+        {
+          "part_pair": [
+            0,
+            15
+          ],
+          "distance_m_proxy": 0.03364671628848397,
+          "distance_over_mean_height": 0.01956515472993049
+        },
+        {
+          "part_pair": [
+            3,
+            15
+          ],
+          "distance_m_proxy": 0.003191998167410511,
+          "distance_over_mean_height": 0.001856107963332404
+        },
+        {
+          "part_pair": [
+            4,
+            15
+          ],
+          "distance_m_proxy": 0.0016035796874241612,
+          "distance_over_mean_height": 0.0009324620101773657
+        },
+        {
+          "part_pair": [
+            1,
+            18
+          ],
+          "distance_m_proxy": 0.1466554858736901,
+          "distance_over_mean_height": 0.08527837452280446
+        },
+        {
+          "part_pair": [
+            7,
+            15
+          ],
+          "distance_m_proxy": 0.06589975247130504,
+          "distance_over_mean_height": 0.03831990149381963
+        },
+        {
+          "part_pair": [
+            1,
+            21
+          ],
+          "distance_m_proxy": 0.0014050462415357095,
+          "distance_over_mean_height": 0.0008170172352825477
+        },
+        {
+          "part_pair": [
+            1,
+            17
+          ],
+          "distance_m_proxy": 0.004137268947362982,
+          "distance_over_mean_height": 0.0024057713810901153
+        }
+      ],
+      "failure": null,
+      "metric_units": "camera_space_metric_scale_proxy",
+      "scale_normalization": "mean_generated_mesh_y_extent",
+      "signed_penetration": null,
+      "surface_proximity_fraction_under_2cm": 0.11446300715990454,
+      "surface_proximity_interpretation": "unsigned_near_surface_proxy_cannot_establish_penetration",
+      "mean_generated_height_m_proxy": 1.7197265625,
+      "mean_camera_z_by_actor": [
+        2.9489333660790344,
+        2.8848793688480496
+      ],
+      "actor_assignment": [
+        1,
+        0
+      ],
+      "anatomy_left_right_limb_ratio_proxy": [
+        [
+          0.9749318361282349,
+          1.0145012140274048,
+          1.049453616142273,
+          0.9903932809829712
+        ],
+        [
+          0.9736526608467102,
+          1.0133799314498901,
+          1.0501632690429688,
+          0.9877952933311462
+        ]
+      ],
+      "reconstruction_path": "/home/shangguanrz/project/pic-edit/experiments/4.two man /qwen21_dual_prompt_pilot/20261013_v1/test_pair00_v1/multihmr_raw/native_structured_seed43.npz",
+      "reconstruction_sha256": "7bb56f0b8d5bbb594e52725332b5e901a2efed3839b4dd5f2791e2b1e6d6c3c0",
+      "raw_worker_record": {
+        "key": "native_structured_seed43",
+        "original_output_sha256": "09f260707c80f8fe2d2626d5373f93836b73b3b04d431452894743056569c2aa",
+        "original_configuration_sha256": "a4d5a2149d62893ea161ceae44ccb87a50205c4919833487f4ffa43039c4a15e",
+        "original_record_sha256": "bf35c6a29f27002c8158b887549ebed1b5f441962ee387dd9469c587f6fc94d7",
+        "request_sha256": "41157f61ea05ca2ca072f7847d8618057536a190af69811781489cfb8b456769",
+        "worker_provenance": {
+          "request_sha256": "41157f61ea05ca2ca072f7847d8618057536a190af69811781489cfb8b456769",
+          "worker_source_sha256": "46efeed11390d17df8e13c6af45f9f149c8b85ee7ea49fd580f348ead3f4c464",
+          "executable": "/home/shangguanrz/project/pic-edit/add/envs/multihmr/bin/python3.9",
+          "model": "multiHMR_896_L",
+          "model_load_count": 1,
+          "image_size": 896,
+          "weight_path": "/home/shangguanrz/models/multiHMR/multiHMR_896_L.pt",
+          "weight_sha256": "c1b55933eb35df9b27966e1d8d3a69c4bc5e28eee0f0dd7f0cdc41c3f27202ca",
+          "runtime_versions": {
+            "python": "3.9.23",
+            "torch": "2.8.0+cu128",
+            "torchvision": "0.23.0+cu128",
+            "numpy": "1.26.4",
+            "pillow": "10.0.1",
+            "scipy": "1.13.1",
+            "roma": "1.6.1",
+            "smplx": "0.1.28",
+            "einops": "0.6.1",
+            "pyrender": "0.1.45"
+          },
+          "multihmr_source_sha256": {
+            "app.py": "00c6108036ce7945411eab68490ab7dd5190f915095931cb4f572af2589f0e2c",
+            "blocks/__init__.py": "0e40b13f0eb344456c7c825934e2afe1046c2a9ec2f283996faf52c62bd443ce",
+            "blocks/camera_embed.py": "756359c5c2186151b8e64c7ff20d4581419015dee1f45e8fc689f7c5ec0a7b7b",
+            "blocks/cross_attn_transformer.py": "22fde2e72e2d4f36cc37ee5a415d958d7f20e9aafc0db4033db90309d6a6d8bc",
+            "blocks/dinov2.py": "9a661fbe1a8a7325ce62939647f44b05b6a0b80908ad63b43b842b7212fb5cbf",
+            "blocks/smpl_layer.py": "394a02768f09da79f5dbcbafe7841469695e6ec0b614f90e98548d2021b9cb39",
+            "datasets/bedlam.py": "ef6acc2282962ed3e85b668f2591c6ed1011e208fabd6445aea096c16cab296b",
+            "datasets/ehf.py": "3518c4f668bc1bbb932830452fd23a789fc503978b5bc0c31bd15a214265fd37",
+            "datasets/threedpw.py": "38ecbd4876eae7faf3270cfc84e4b7ecf1b848ab30128e022634457a3d172714",
+            "demo.py": "ac6168d3db67ec732609e21d372ab4b86ea353c28673ffb86047cbab664effde",
+            "demo_smplx_only.py": "b41b00212e1fb381cded8aa9bfec18c65584f13acc017ddfd431dc323e6500c1",
+            "loss.py": "fffc99d16c4fc760f9b3fe2b4b9fbc65996f566b32362e12799bf39dc0081af7",
+            "model.py": "abe209a451222bf849ab4721948332f6085b33798bd3f46090320ba7721e5884",
+            "multi_hmr_anny/encoder.py": "4d07498dd7903180851e61959ed7a7926f32851b8509ddcf4bae5a1675ab5d4f",
+            "multi_hmr_anny/hph.py": "8a47acbc18bc5712dc6fc856995d8f8b4619ba23db2e0c78c514b2db8eaf06a2",
+            "multi_hmr_anny/multi_hmr.py": "199de2b7f2fec82922c2214444c18d38a100f0f91a199ce211ec128614992e18",
+            "multi_hmr_anny/pos_embed.py": "05991e1ec550a6ffaabe22e43d1d34a8fdb70d8ff317547d0548efe28642cd35",
+            "train.py": "ca06c070742b79d6d4799f33066b4d3a97c172d1e3329f10b15a2022044d0363",
+            "utils/__init__.py": "42f50281e5346194eee670b8d01846e61b3856bc58b378cbf5cd2cfafc68b6c2",
+            "utils/camera.py": "7d6c4de8b21744140c66af2187ac1989cfddddc2354fd86c30abd9d3e1f2bf20",
+            "utils/color.py": "04e4fc229ed026be20ee05aed780cf305abfc3844fe365bae698f5587a7c566f",
+            "utils/constants.py": "bc5ab95e571416ecd0400f5d0db511504300a5e8b892320efc840b464a643dc0",
+            "utils/humans.py": "7ea5517dd929f1f8f745078c6ea0fc21edabc35911acdb7f950c2681874c5b03",
+            "utils/image.py": "5ac9b1f7bd1fe5d9fde69a8f8e2487eddbd068f1252551177465bcaff6a2a183",
+            "utils/render.py": "f752a934deffd788260e23ff8fe6b4196be1df0010fc958a175a000a0b5e8e1d",
+            "utils/tensor_manip.py": "393392d516e77e252bc2d44dc751a316453bdb99c0dcf3b324764989acfb34da",
+            "utils/training.py": "0648fe366e5cc3faebc6fc7167b46753ccf2ea0e7ed8e809f1039390a5fadfd8"
+          },
+          "dinov2_source_sha256": {
+            "dinov2/__init__.py": "0d2b87b7e71c7f7279ccc4b4f8b541d26071425284a0ea01a5a435fac4511cfe",
+            "dinov2/configs/__init__.py": "be6503fea5e43bf81c504247a35f731f12541e567b18607152eff102137f8dc0",
+            "dinov2/data/__init__.py": "e617d853000f6f7d12c178fa50f116301a12d25391adc6663d442fc502b37a80",
+            "dinov2/data/adapters.py": "3a4133891cf4c613b7332c7d7bdd7e7b7c4138032fe6f69cceb148224daf3e5f",
+            "dinov2/data/augmentations.py": "10e949f266c7cffa57ffc8c5cf9dc094a8e701cdc74f1a3fefd2e02f78f8cdf7",
+            "dinov2/data/collate.py": "0d2bb0060094b8c86838ad5af2572a9ff0e66c73660b61be70d60f64b9508570",
+            "dinov2/data/datasets/__init__.py": "8ad20cf17e0cc22434c4fe6188fede01ac8a744d15c2c6202e4b7e10126f5cf0",
+            "dinov2/data/datasets/decoders.py": "3f56d3ac58a4faa25c2c8e46500a0dfab462794786ae4c793f2b4d6bba1055c0",
+            "dinov2/data/datasets/extended.py": "29c4caf124962b78ccfe7fd6cff1c4f1ee6eb054f7213d53f332052f797ea12d",
+            "dinov2/data/datasets/image_net.py": "748a6d9f39b1ca9e94a2bdd61a78c40d1655508fcfae40057057fe8c74bb611b",
+            "dinov2/data/datasets/image_net_22k.py": "e94c0bffc3f1aa78d770c871ecb72fbbf66a5dfcd0703f8319b263708698e351",
+            "dinov2/data/loaders.py": "97ca58d671e719f5ec87abf26f7c04cfbd3c6c76e7970f475bea7c5c0d8a192c",
+            "dinov2/data/masking.py": "4fcbc5aa4cfa069a32200b3eb39f86e09de3ac476afa7a12a2fbdfb160a892c3",
+            "dinov2/data/samplers.py": "5f19029f6da99de6c81ec5e8d313d85739c66020cf8447b5b35e7f80c9071ebb",
+            "dinov2/data/transforms.py": "725823be317c6a549810740c6566a2a448ba1eba85eea87769c10b986dda2e5b",
+            "dinov2/distributed/__init__.py": "b6aaa4151999c88a4ff031e786dc66bb2ecbc8b5421ffe72169c9c305c1414e5",
+            "dinov2/eval/__init__.py": "2932e94a2d67be87b717c49468214c1127be7864aedf37f5891d26be7bc1437f",
+            "dinov2/eval/depth/__init__.py": "2932e94a2d67be87b717c49468214c1127be7864aedf37f5891d26be7bc1437f",
+            "dinov2/eval/depth/models/__init__.py": "6d2d9aa7396eafa2c3d04d5609b39c068b210a5ca8368d2f7cd47f5fc3e7d152",
+            "dinov2/eval/depth/models/backbones/__init__.py": "e6e25365ad291aad30d8bce4c9f9b906580f204c141d62be4bcc3699e563d901",
+            "dinov2/eval/depth/models/backbones/vision_transformer.py": "9aa72220970247ccb8399e5a95d82721679c479e0f0c0096c4ef0bdff4fe6735",
+            "dinov2/eval/depth/models/builder.py": "0b1dcd672ba5a6b5acec2fa70cfea70ee280aba264a3236e7c1139976b2d02dc",
+            "dinov2/eval/depth/models/decode_heads/__init__.py": "38268a3d08272273b7a1cf03b88b1eff6604cbef519637476e9652dcef4f43bc",
+            "dinov2/eval/depth/models/decode_heads/decode_head.py": "4d163967518b4ef251dbd400792a295033983a7c3eb9ce2b362df32f1bc57046",
+            "dinov2/eval/depth/models/decode_heads/dpt_head.py": "4de04fd7fd8681d0bb5977f250be89d76314f97d626f717d1d09eeff14e059f7",
+            "dinov2/eval/depth/models/decode_heads/linear_head.py": "bf6c448f2635a5db0eb0423bf7854899c1e36f0e0897107c14dfb2bf064d0160",
+            "dinov2/eval/depth/models/depther/__init__.py": "a00bcccdea87b79d23b0085ad3db9728169103c236749dfda09184dc0fefa8aa",
+            "dinov2/eval/depth/models/depther/base.py": "59233aeb2bdf0266937213d5d1f12628835bc5a204f11a7b6982838f61adf28f",
+            "dinov2/eval/depth/models/depther/encoder_decoder.py": "96d0d2ff321707888191b52ee9180ef6f38d6b7212f5d604891c764b4b46d248",
+            "dinov2/eval/depth/models/losses/__init__.py": "5dacc4c02607b64ee63906bbda9de9158d59d50fc2d1e4cf360455f6f749bee0",
+            "dinov2/eval/depth/models/losses/gradientloss.py": "61d625dd618ca3fb2443d1e831949f1e79c2bc4081d72355ff932a41c8b47f89",
+            "dinov2/eval/depth/models/losses/sigloss.py": "97ff67edf57ebfd6570be45859545580171cfbca489803429005529ccc0e4135",
+            "dinov2/eval/depth/ops/__init__.py": "1640dd76d0d09a1db46df8a1c767ff04d2a0d6004d9c9b6134d80a0f53f6c4e7",
+            "dinov2/eval/depth/ops/wrappers.py": "85d58e303eff9a0a306d97101c8b35c24196bfe55e8da019df1e4817411a4dc7",
+            "dinov2/eval/knn.py": "5f59977c5d697579d64b1acb19244d819c54a253cdcf1b023b818418bdf841e1",
+            "dinov2/eval/linear.py": "cd6cb057561ab180557711b20d2f5f4916393a848375b0cefae11ff61d339865",
+            "dinov2/eval/log_regression.py": "273648c0937183af4b2f516b8009e7ef4ffda91b599e8512422e2c3b51829615",
+            "dinov2/eval/metrics.py": "50cd935cc50f47cf55227fa57431e3e0034143badf8255b23cc808f05e65a8c5",
+            "dinov2/eval/segmentation/__init__.py": "2932e94a2d67be87b717c49468214c1127be7864aedf37f5891d26be7bc1437f",
+            "dinov2/eval/segmentation/hooks/__init__.py": "590638a03129a24077f4dff2477b3d9326e234f23590d5c5715c37dff26b5638",
+            "dinov2/eval/segmentation/hooks/optimizer.py": "1c116c35dfad8fa9abdfa5738c7e621e75c9277304fd009f48c2592571204ab1",
+            "dinov2/eval/segmentation/models/__init__.py": "8d3601782bc10c5477243d1d6760c94e78a8ef8e7028476c70ee4781a693fd36",
+            "dinov2/eval/segmentation/models/backbones/__init__.py": "e6e25365ad291aad30d8bce4c9f9b906580f204c141d62be4bcc3699e563d901",
+            "dinov2/eval/segmentation/models/backbones/vision_transformer.py": "ed687476a2381bc708c6035b5f77e7b2560baaee36313c55f5e26aa5253adbb7",
+            "dinov2/eval/segmentation/models/decode_heads/__init__.py": "f440e7a342f485db7c5766359f5b747f0ed810172e89521b218e50057a94c5e4",
+            "dinov2/eval/segmentation/models/decode_heads/linear_head.py": "14500d7aa301797f77774348bd6912ee2ee3e68909c9f511a2730ff340349340",
+            "dinov2/eval/segmentation/utils/__init__.py": "2932e94a2d67be87b717c49468214c1127be7864aedf37f5891d26be7bc1437f",
+            "dinov2/eval/segmentation/utils/colormaps.py": "5c421de6f63e74b098fa9bd75f5410d816336bb3bcee0194e483682766aa4036",
+            "dinov2/eval/segmentation_m2f/__init__.py": "7fb45f0041dd007542578ecf31414a883a9e028a591f9570eec0d25afd928e9d",
+            "dinov2/eval/segmentation_m2f/core/__init__.py": "99e3920edbb8635012e51b583c4264556f540f098a80dee90534a454c34b4c68",
+            "dinov2/eval/segmentation_m2f/core/anchor/__init__.py": "cd269c97e28579d99706f3f31241173b22210429249742005b8a00bc8528d366",
+            "dinov2/eval/segmentation_m2f/core/anchor/builder.py": "fa8456a4f2941fb3b6bc88d210c6ce43298d0b081d00af9ac0ea9050edf6d16e",
+            "dinov2/eval/segmentation_m2f/core/anchor/point_generator.py": "23ff9cf80fef4472cf8a361d2df8f211fab4092925d6bb9cce18bb68a60cd6f0",
+            "dinov2/eval/segmentation_m2f/core/box/__init__.py": "7b0b68761110103819b5e8ef0733327021bcca5ac78168e8f27a5a721b1bfa43",
+            "dinov2/eval/segmentation_m2f/core/box/builder.py": "93ad53a18707547dc53c28c52ae616da19e43064d7e4f30240d08ea50dfb955f",
+            "dinov2/eval/segmentation_m2f/core/box/samplers/__init__.py": "b3383233672410d9f13fdfb9dc47ae4543a98c45ee2361a0cc825afc5dd00e32",
+            "dinov2/eval/segmentation_m2f/core/box/samplers/base_sampler.py": "91fd7bc656e0519b6f732a55a0f00457ba339bd98c6d3393d7ba35280442a1ed",
+            "dinov2/eval/segmentation_m2f/core/box/samplers/mask_pseudo_sampler.py": "3ac44707526239d782a1653ad641d447ecb1003eea399e0a718790a92a476305",
+            "dinov2/eval/segmentation_m2f/core/box/samplers/mask_sampling_result.py": "527d952b5001c86ca285a3f7895d804d12dd47b9d3c07535b6494a8b35e21d39",
+            "dinov2/eval/segmentation_m2f/core/box/samplers/sampling_result.py": "c4b34191ab9589a098b0e46116ca9a53eedeae3adda515b8078f635096b1d492",
+            "dinov2/eval/segmentation_m2f/core/utils/__init__.py": "17ecc2ee748e92194c272e63a0db74dae0bb2ef921cecedc9cffe5c23b86dea9",
+            "dinov2/eval/segmentation_m2f/core/utils/dist_utils.py": "a3747a307397dbc10c09838d44fa90438f758977254ed305647ce96bd16bd045",
+            "dinov2/eval/segmentation_m2f/core/utils/misc.py": "97409a32ac290d34da2bb7d28a3f6ecbc975537a3aa76060fd16ab5924de400f",
+            "dinov2/eval/segmentation_m2f/models/__init__.py": "2c8e40b6362d507e4d1ad18700feb53897ec7403e32033065d7927dae6ccf818",
+            "dinov2/eval/segmentation_m2f/models/backbones/__init__.py": "f35535dbddb96f998a9bd1a7734cbc02abb652c18a5c6df7a47e7548ac33440c",
+            "dinov2/eval/segmentation_m2f/models/backbones/adapter_modules.py": "e103c8bdff5c3427a59a0bf84dc70677d5fef5ac9d43445815da16537944ccbe",
+            "dinov2/eval/segmentation_m2f/models/backbones/drop_path.py": "068b166f953c0939f5479ef1735736116d91bc9942990472b60d104d95f9c83a",
+            "dinov2/eval/segmentation_m2f/models/backbones/vit.py": "7ad30e14310c5bee54743459f128b076195554760eefd60e1593fbfde2234021",
+            "dinov2/eval/segmentation_m2f/models/backbones/vit_adapter.py": "cb89b1d4943049c0ee3e3993738fb56806239221dce72345ea054fc7fa8785b0",
+            "dinov2/eval/segmentation_m2f/models/builder.py": "e96e68e45a5139d16e3238c7f5690d72d4e7838c9fe9fc85273215a3b7a0115f",
+            "dinov2/eval/segmentation_m2f/models/decode_heads/__init__.py": "8bea632762d84b954373d0fb2e35a224786eb4692f2bf6acf4b61b0c5fc89c06",
+            "dinov2/eval/segmentation_m2f/models/decode_heads/mask2former_head.py": "c7b5d0d307da7737ac087b368de5d8160053d2e7fb9c705e805e7930ad9446ad",
+            "dinov2/eval/segmentation_m2f/models/losses/__init__.py": "ca75161c95771d281968c329697642f7f84e0deaa6ec780262f4fe2c4a33fd4c",
+            "dinov2/eval/segmentation_m2f/models/losses/cross_entropy_loss.py": "b5cf193e70a20c9a0936222dab0546918940b9dee714cac2c4836197ed6bf940",
+            "dinov2/eval/segmentation_m2f/models/losses/dice_loss.py": "d6dc52a33494d569b98dc165f176c1444060d2f6bd8c8f458aabcea72d2edeee",
+            "dinov2/eval/segmentation_m2f/models/losses/match_costs.py": "4cccb76ea151a0c38581f73d4da727ecb1d95a4b92ac294680adb588e6534046",
+            "dinov2/eval/segmentation_m2f/models/plugins/__init__.py": "80ed4eab0a7f3c8a03c96a328a94cd972fb804cff30ccfc68e87b066ffb08fb5",
+            "dinov2/eval/segmentation_m2f/models/plugins/msdeformattn_pixel_decoder.py": "66fc2f5a58638747576492250ce43e076bb119fe54a5e82569f4e6bd88a5a95b",
+            "dinov2/eval/segmentation_m2f/models/segmentors/__init__.py": "02bc4c748360de2f9b4fe61b112fbd49cfcd943265f0c6f78afc2802b0d11a96",
+            "dinov2/eval/segmentation_m2f/models/segmentors/encoder_decoder_mask2former.py": "06fdad9b0f24a0a3af4e4213bc1beb288fca7ad9010b24b3284103f2b9ea4e04",
+            "dinov2/eval/segmentation_m2f/models/utils/__init__.py": "091931518ac32103e9ef30be7a7b57839c1970bb4a8658f5bce0643735c73bb2",
+            "dinov2/eval/segmentation_m2f/models/utils/assigner.py": "47d015ce3a022c720fa5c8d37260c1bd39b19f77808b51dae25a0a9c7fdd70f3",
+            "dinov2/eval/segmentation_m2f/models/utils/point_sample.py": "e4f2dc0a1a4d5db984a590a85a0fb4ef224cfbfa013c1a212ee9cbcb8b49a9ae",
+            "dinov2/eval/segmentation_m2f/models/utils/positional_encoding.py": "3b07f2b2127f03048dcd10266e3d14818334becb56970a8cfe9ac680ec0b8753",
+            "dinov2/eval/segmentation_m2f/models/utils/transformer.py": "6bc659898dd0d4e75bbb941bb1720f696eb840667cda52fbac46feab1eac20ab",
+            "dinov2/eval/segmentation_m2f/ops/modules/__init__.py": "2b1c15f2a30741376faebf09ac22e3fdf672b768c1717a3b7bbffaa844c0f111",
+            "dinov2/eval/segmentation_m2f/ops/modules/ms_deform_attn.py": "ef8d800b0e3139b6ec2dbe22de3a39da653dcc88129bc246239fc47abf6524ec",
+            "dinov2/eval/setup.py": "629eea62ca20ad2694b4979a91fb85e644cda429049580360a3a86be4bbe477c",
+            "dinov2/eval/utils.py": "3eb42fa16c97b21c8e69c229e71388b2db04923097912e42c29676c82f03ed44",
+            "dinov2/fsdp/__init__.py": "672fc23d385c86530e439c42f8c73abb585a5bb96ce87c6ad5e8fb004e631efa",
+            "dinov2/hub/__init__.py": "2932e94a2d67be87b717c49468214c1127be7864aedf37f5891d26be7bc1437f",
+            "dinov2/hub/backbones.py": "11c3b7e3da2a843ba5953191e8fc2027b37490313dfb315c0d4ad1a0ea31d27d",
+            "dinov2/hub/classifiers.py": "e9a178f9f3be659e4b463885453d2d5f9af0c068ac71fb3890d24796e659fd4b",
+            "dinov2/hub/depth/__init__.py": "de8f3fbecabae6552ebb8f3d7dee27987b1dbc11e94143c95137c438e86a9123",
+            "dinov2/hub/depth/decode_heads.py": "04eb9639a4441409b80651c3d019a6e850c32b7e709236ceb6dbbaeb9fa17713",
+            "dinov2/hub/depth/encoder_decoder.py": "1baf6f59269fb99faf274900f12910a22e038a3bb6d81c6fc712c0c482041a57",
+            "dinov2/hub/depth/ops.py": "85d58e303eff9a0a306d97101c8b35c24196bfe55e8da019df1e4817411a4dc7",
+            "dinov2/hub/depthers.py": "55e47611dccc5d000574f9837accdb0babd02abe4eba998bd3bf01361143f0a6",
+            "dinov2/hub/utils.py": "c0533919016531b320bf9aef7cd7001249bc8ef8957cdb29246c15b67d5abdf8",
+            "dinov2/layers/__init__.py": "5b5f637b2371089e34e0bec9a49518e2250f915aa9e10cae83a32f8e671ad24f",
+            "dinov2/layers/attention.py": "975a249cde9f53d89961228724412600afd027746bd9ea61f5497d0fd25e0733",
+            "dinov2/layers/block.py": "37621cd7cb55c0c6fc95a79a67e5d0a4917e3c195f93e287a1a0c4ad17491c18",
+            "dinov2/layers/dino_head.py": "9fdb1fa61c0609dc0876f711f9d0d828c33bf9fd972aab3d9c968d44e16b98d1",
+            "dinov2/layers/drop_path.py": "b9f8236e86054b9d9a71275efcad2a9ecaa1f86b529d4b8d6109ddb5e806f67a",
+            "dinov2/layers/layer_scale.py": "abb7bbfae152a9de2e6d0961ab5e75c79428e849281bfe50dd07b66b54b485d1",
+            "dinov2/layers/mlp.py": "255825c73b60a916dd00eb1e38aacbcdbf316e40d6a005efb46e245b7edb43aa",
+            "dinov2/layers/patch_embed.py": "40da6add3d811198ea3e17cb99cdd4e5cda59e369efbbe3d18d89308618cf142",
+            "dinov2/layers/swiglu_ffn.py": "816539ba3958644009cb45fc00f033881574843beedaa41028ca191fcedea271",
+            "dinov2/logging/__init__.py": "fff00c7e5d5381b55d8f820ba3a1f8f0902af15dacb3159fe5c6e3b542771c40",
+            "dinov2/logging/helpers.py": "5c2ee4b35f6c160836c7f5e7f3db1246662499ecc6ec8e53d06f14fef71504ae",
+            "dinov2/loss/__init__.py": "e5ae2143dd98108f81d26c276e2048fa339cde5f5fe369e2d6797acea09912bf",
+            "dinov2/loss/dino_clstoken_loss.py": "49f0b2b75c2feba83b3fc9dfb40ef5eb4e3db350ab1e12a63d75d3060a88f7df",
+            "dinov2/loss/ibot_patch_loss.py": "19c0ffc85c8af01657ad2e6cffc2d4d311415b10807f63c2d6341195c7a62ddb",
+            "dinov2/loss/koleo_loss.py": "ddccd75b7985d5e584f0fe6f3fb1ac474b9cbd9a6fd6fb6c6ae471ca479085d1",
+            "dinov2/models/__init__.py": "87b360c71997314f41be1c497cc42326fc32617d3a2840f2f19d3795ca8b85ee",
+            "dinov2/models/vision_transformer.py": "8dc1e2ededd4893a335aa2f524c15554bcdb14d824e310ca3df825e16081a268",
+            "dinov2/run/__init__.py": "2932e94a2d67be87b717c49468214c1127be7864aedf37f5891d26be7bc1437f",
+            "dinov2/run/eval/knn.py": "21d1ed25bc9206b412e2d17bac150549f69929f5d0c924b7400a72d1bd295c31",
+            "dinov2/run/eval/linear.py": "f89eb0a2eccdd2f35e27f7a5ca91ded95e4a5699f57e8e568c58547625f87ac5",
+            "dinov2/run/eval/log_regression.py": "b4c4ddd086408c681b8b5642a26858b6c9e1a798c483a5283a983f2cd2b44c46",
+            "dinov2/run/submit.py": "64597db2041e9c16a7640eeac00a299cb2761329af980f33f26a6dd025ffb541",
+            "dinov2/run/train/train.py": "b469e29aaa460e509d52f19c787aad50963265d242200cad5f9ee3ce85938ba5",
+            "dinov2/train/__init__.py": "64dde70804b782a876524b529b00b9775559314a88d738cf4aee914bd4dbb9c4",
+            "dinov2/train/ssl_meta_arch.py": "a97cdcc721e9312f5e088f78257dbbeb98cb3af40e3e3b975aefbd6bfd1996c4",
+            "dinov2/train/train.py": "1c77814938c932eed97e1ba34e18768bf308cd47390d68a97e5a793e24338b03",
+            "dinov2/utils/__init__.py": "2932e94a2d67be87b717c49468214c1127be7864aedf37f5891d26be7bc1437f",
+            "dinov2/utils/cluster.py": "ea195476b1f5316520c07233eb73ff4b0e5fe3f7a2645aacec5b416e7bed157c",
+            "dinov2/utils/config.py": "588574a78951ccfe7ffaad9ef7cab53d37e837e3ae98cfc1b6a976189073d87c",
+            "dinov2/utils/dtype.py": "610251537bcf55de8961a17dd625560eae5cfa5082e9382bbd9ded86db92e1c6",
+            "dinov2/utils/param_groups.py": "ec1daae9eb7c50492091504f97087e3179d46a080d7b7f131967c07cb15cf6d4",
+            "dinov2/utils/utils.py": "10bfc824fdb00cf0c4afc0a875b5763ad4c5f33ec38c2515b12528307b789305",
+            "hubconf.py": "e82275b3adcc3631865d1edd4b620b89d42459169acdeb652804cd0eb0fe9615",
+            "setup.py": "8ec72d3be027aee099a7b7b1c36c874be6d7ade4dd9eb69baff3975b586820ae"
+          },
+          "smplx_asset_sha256": {
+            "smplx/SMPLX_NEUTRAL.npz": "376021446ddc86e99acacd795182bbef903e61d33b76b9d8b359c2b0865bd992"
+          },
+          "body_partition_path": "/home/shangguanrz/project/pic-edit/experiments/4.two man /qwen21_dual_prompt_pilot/20261013_v1/test_pair00_v1/multihmr_raw/smplx_lbs_weights.npz",
+          "body_partition_sha256": "da18a663977af733dd478da30301f579eaa3a23f44c894993c279a9c2c5bcf20",
+          "geometry_sidecar_sha256": "52aa932027f5ddeb14db353f4a6a1bf5c0f0d77fe46658dfd7edd8206e17346b",
+          "generated_rgb_only": true,
+          "K512": [
+            [
+              447.4039045358503,
+              -2.728484145976366e-13,
+              249.48019270231046
+            ],
+            [
+              0.0,
+              447.45091694710794,
+              252.4910534280989
+            ],
+            [
+              0.0,
+              0.0,
+              0.9999999999999998
+            ]
+          ],
+          "inference": {
+            "det_thresh": 0.2,
+            "nms_kernel_size": 3,
+            "seed": 0,
+            "parameter_dtypes": [
+              "torch.float32"
+            ],
+            "input_tensor_dtype": "torch.float32_from_existing_normalize_rgb",
+            "output_array_dtype": "float32",
+            "forward_autocast": "cuda_float16_via_existing_demo_forward_model"
+          }
+        },
+        "output_npz": "/home/shangguanrz/project/pic-edit/experiments/4.two man /qwen21_dual_prompt_pilot/20261013_v1/test_pair00_v1/multihmr_raw/native_structured_seed43.npz",
+        "output_npz_sha256": "7bb56f0b8d5bbb594e52725332b5e901a2efed3839b4dd5f2791e2b1e6d6c3c0",
+        "reconstructed_people": 2,
+        "failure": null,
+        "actual_input_tensor_dtype": "torch.float32"
+      },
+      "raw_sidecar_path": "/home/shangguanrz/project/pic-edit/experiments/4.two man /qwen21_dual_prompt_pilot/20261013_v1/test_pair00_v1/multihmr_raw/native_structured_seed43.json",
+      "raw_sidecar_sha256": "faa671e01397f4663d555323cebbdaf1031731a8da8c07b17b699a64a39f4d0f",
+      "expected_contact_pairs": 8,
+      "control_mesh_substituted": false
+    },
+    "occlusion": {
+      "coarse_generated_depth_order": -1,
+      "expected_geometry_depth_order": 1,
+      "coarse_depth_order_agreement": false,
+      "failure": null,
+      "interpretation": "mean_camera_depth_proxy_not_pixelwise_visible_owner"
+    }
+  },
+  "evaluation_target_sha256": "eda51b20053fcea4245488d8de89c904785111103f4674be28c7b256105065c6",
+  "scoring_provenance": {
+    "code_sha256": {
+      "scripts/eval/eval_qwen21_dual_v8.py": "afbe3d06db4acd72c4766209880943892caaf5930e27b33f0754073a7a20ee44",
+      "scripts/eval/multihmr_rgb_worker.py": "46efeed11390d17df8e13c6af45f9f149c8b85ee7ea49fd580f348ead3f4c464",
+      "src/evaluation/dwpose_onnx/__init__.py": "f594c6f2ef9aa3b7e0a2d270f85e6bcae399f627fe65e0731478193811ba6d5b",
+      "src/evaluation/dwpose_onnx/onnxdet.py": "4c82a928ced32883b9a6acf89a2ce90ce9a266ab98c9e01231eb0f8d4a52751d",
+      "src/evaluation/dwpose_onnx/onnxpose.py": "16fb69ab54f5e1ce8a5ad186e92f357da0162fc2ca2eeec4ccf1db72949291a2",
+      "src/evaluation/joint_pilot_metrics.py": "e4005d06d61d729900c530b8c473d594c5088fcc1bdf6823355161af2321559c",
+      "src/evaluation/qwen21_dual_prompt_pilot.py": "aad6732858743ba23ee7ebbee33de170e838b44de5c2696f0bde876f2db363b4",
+      "src/evaluation/qwen21_dual_v8_metrics.py": "87df54ae2913a346fc099fa3ad8463a040d9eed119909e6fd44e256bc90cd1a8"
+    },
+    "runtime_versions": {
+      "torch": "2.8.0",
+      "torchvision": "0.23.0",
+      "diffusers": "0.41.0.dev0",
+      "transformers": "5.17.0",
+      "numpy": "2.1.2",
+      "scipy": "1.16.2",
+      "pillow": "11.3.0",
+      "onnxruntime": null,
+      "insightface": "2.0"
+    },
+    "prompt_pilot_evaluator_sha256": "078db5942d5261a020e7d6907b52f1b0ff39d39725d1ca8c5cf34fd593f66de3",
+    "generated_rgb_sha256": "09f260707c80f8fe2d2626d5373f93836b73b3b04d431452894743056569c2aa"
+  }
+}

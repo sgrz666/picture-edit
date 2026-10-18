@@ -62,8 +62,6 @@
 ### 轴 4 画质与解剖合理性（无参考）
 
 - **NR-IQA 全家桶**：`pyiqa` 未安装（实测 `import` 失败），但它是一个纯 Python 包 + 权重文件，可在 Windows 下 `pip download` 后 `scp` 上去（node01 无外网，这是唯一路子）。里面有 MUSIQ / MANIQA / CLIPIQA+ / LIQE / TOPIQ / Q-Align；AIGC 画质专用还出了 ELIQ（label-free，arXiv:2602.03558）。建议先只接 2 个：`musiq`（快、无需参考）与 `topiq_nr`（对畸形/伪影敏感），避免指标堆砌。
-  **2026-10-14 更正**：这句"node01 无外网"**不成立**——实测 `curl` pypi/HF/GitHub 均 200、`git ls-remote --heads origin` rc=0（3.1 s）、`pip install --dry-run torchao` 经 aliyun 镜像真的下到了 wheel。
-  `pyiqa` 可以**在 sg 上另建环境直接装**（红线 7 仍然有效：不要塞进 `qwen21`）。证据见 `workflow_PE重写成本_量化与蒸馏调研_20261014.md` §1.5。
 - **手脸专项**：手 21 点共线性/指长比异常、回估 face 组重投影残差（已有 `face_mpjpe_norm`）、`persons_detected≠1` 直接标红。
 - **分布级 FID/KID**：`pytorch_fid`/`cleanfid` 都没装，且 InceptionV3 权重也需 scp。低成本替代：用已在本地的 DINOv2-giant 特征，对参考集（iPER/TikTok 真帧）算特征均值/协方差的 Fréchet 距离与 MMD，作"分布外程度"参考。注意这是集合级指标，单图无意义，只在批量 run 上报。
 

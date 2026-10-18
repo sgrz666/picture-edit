@@ -1,0 +1,33 @@
+{
+  "command": [
+    "/home/shangguanrz/nihaochen/envs/qwen21/bin/python",
+    "-u",
+    "scripts/eval/eval_qwen21_dual_prompt_pilot.py",
+    "--data-dir",
+    "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/data",
+    "--training-root",
+    "/home/shangguanrz/project/pic-edit/experiments/4.two man /qwen21_dual_prompt_pilot/20261013_v1",
+    "--output",
+    "/home/shangguanrz/project/pic-edit/experiments/4.two man /qwen21_dual_prompt_pilot/20261013_v1/test_pair00_v1",
+    "--steps",
+    "40",
+    "--seeds",
+    "42",
+    "43",
+    "44",
+    "--cfg",
+    "1",
+    "--mesh-python",
+    "/home/shangguanrz/project/pic-edit/add/envs/multihmr/bin/python",
+    "--mesh-device",
+    "cuda"
+  ],
+  "cwd": "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/implementation",
+  "log": "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/evaluation.log",
+  "process_record": "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/evaluation_process.json",
+  "result_record": "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/evaluation_result.json",
+  "environment": {
+    "PYTHONPATH": "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/implementation:/home/shangguanrz/project/pic-edit",
+    "CUDA_VISIBLE_DEVICES": "0"
+  }
+}

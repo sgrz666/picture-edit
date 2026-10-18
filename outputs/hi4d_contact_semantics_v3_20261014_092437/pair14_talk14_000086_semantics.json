@@ -1,0 +1,153 @@
+{
+  "sample": "pair14_talk14_000086",
+  "data_kind": "Hi4D geometry-derived GT (NOT RGB-only prediction)",
+  "gt_file": "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/raw/pair14/talk14/smpl/000086.npz",
+  "segmentation_sha256": "0af78b5c581a225998b4804b4c9dd8351e155b34253947eb2541160852105ab8",
+  "segmentation_stats": {
+    "parts": 24,
+    "mapped": 6890,
+    "unmapped": 0,
+    "ambiguous_vertices": 496,
+    "extra_memberships": 500,
+    "unique_part_vertices": 6394,
+    "coverage": 1.0,
+    "overlap_policy": "exclude ambiguous multi-part vertices from contact evidence"
+  },
+  "note": "Counts are directed GT correspondences stable under both candidate index conventions; not unique physical contact areas",
+  "audit": {
+    "persons": [
+      {
+        "contact_vertices": 716,
+        "distance_candidates": {
+          "raw": {
+            "valid": 716,
+            "median_m": 0.02719,
+            "p90_m": 0.18428,
+            "under_5cm": 0.6941
+          },
+          "minus_one": {
+            "valid": 716,
+            "median_m": 0.01199,
+            "p90_m": 0.01886,
+            "under_5cm": 1.0
+          }
+        },
+        "stable_semantic_correspondences": 442,
+        "disagree_semantic_correspondences": 215
+      },
+      {
+        "contact_vertices": 786,
+        "distance_candidates": {
+          "raw": {
+            "valid": 786,
+            "median_m": 0.0252,
+            "p90_m": 0.1128,
+            "under_5cm": 0.7888
+          },
+          "minus_one": {
+            "valid": 786,
+            "median_m": 0.0123,
+            "p90_m": 0.01936,
+            "under_5cm": 1.0
+          }
+        },
+        "stable_semantic_correspondences": 477,
+        "disagree_semantic_correspondences": 259
+      }
+    ],
+    "index_encoding": "ambiguous: retain region-consensus only",
+    "semantic_region_policy": "both raw_idx and raw_idx-1 must be valid and agree",
+    "total_contact_correspondences": 1502,
+    "stable_semantic_correspondences": 919,
+    "stability_rate": 0.61185,
+    "index_sensitive_correspondences": 474,
+    "unknown_or_out_of_range_correspondences": 247,
+    "label_scope": "PARTIAL GT: only index-stable, uniquely labeled vertex pairs; not all contacts"
+  },
+  "contact_pairs": [
+    {
+      "person0_part": "rightShoulder",
+      "person1_part": "rightHandIndex1",
+      "stable_evidence_count": 269,
+      "p0_to_p1_count": 26,
+      "p1_to_p0_count": 243
+    },
+    {
+      "person0_part": "leftHandIndex1",
+      "person1_part": "spine",
+      "stable_evidence_count": 169,
+      "p0_to_p1_count": 156,
+      "p1_to_p0_count": 13
+    },
+    {
+      "person0_part": "spine2",
+      "person1_part": "rightHand",
+      "stable_evidence_count": 138,
+      "p0_to_p1_count": 25,
+      "p1_to_p0_count": 113
+    },
+    {
+      "person0_part": "leftArm",
+      "person1_part": "rightArm",
+      "stable_evidence_count": 87,
+      "p0_to_p1_count": 42,
+      "p1_to_p0_count": 45
+    },
+    {
+      "person0_part": "leftHand",
+      "person1_part": "spine",
+      "stable_evidence_count": 75,
+      "p0_to_p1_count": 63,
+      "p1_to_p0_count": 12
+    },
+    {
+      "person0_part": "leftHand",
+      "person1_part": "spine1",
+      "stable_evidence_count": 72,
+      "p0_to_p1_count": 61,
+      "p1_to_p0_count": 11
+    },
+    {
+      "person0_part": "leftForeArm",
+      "person1_part": "spine",
+      "stable_evidence_count": 42,
+      "p0_to_p1_count": 24,
+      "p1_to_p0_count": 18
+    },
+    {
+      "person0_part": "leftHandIndex1",
+      "person1_part": "spine1",
+      "stable_evidence_count": 34,
+      "p0_to_p1_count": 28,
+      "p1_to_p0_count": 6
+    },
+    {
+      "person0_part": "leftForeArm",
+      "person1_part": "spine1",
+      "stable_evidence_count": 21,
+      "p0_to_p1_count": 11,
+      "p1_to_p0_count": 10
+    },
+    {
+      "person0_part": "spine2",
+      "person1_part": "rightHandIndex1",
+      "stable_evidence_count": 9,
+      "p0_to_p1_count": 5,
+      "p1_to_p0_count": 4
+    },
+    {
+      "person0_part": "leftHand",
+      "person1_part": "spine2",
+      "stable_evidence_count": 2,
+      "p0_to_p1_count": 0,
+      "p1_to_p0_count": 2
+    },
+    {
+      "person0_part": "spine2",
+      "person1_part": "rightForeArm",
+      "stable_evidence_count": 1,
+      "p0_to_p1_count": 1,
+      "p1_to_p0_count": 0
+    }
+  ]
+}

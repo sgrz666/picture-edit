@@ -7,11 +7,13 @@ import torch
 import torch.nn as nn
 
 
-ARCHITECTURE_VERSION = "v6.5"
+ARCHITECTURE_VERSION = "v6.6"
 DETAIL_SCHEMA_VERSION = "1"
 PREPROCESSING_SCHEMA_VERSION = "1"
 FACE_SCHEMA_VERSION = "1"
 BRANCH_NAMES = ["geometry", "interaction", "hand", "face"]
+V66_BRANCH_NAMES = ["geometry", "interaction", "legacy_hand", "face", "hand"]
+HAND_SCHEMA_VERSION = "1"
 V64_BRANCH_NAMES = ["geometry", "interaction", "detail"]
 
 DETAIL_ONLY_PREFIXES = (
@@ -24,6 +26,12 @@ FACE_ONLY_PREFIXES = (
     "face_preparer.",
     "control_interface.face_adapter.",
     "control_interface.strength_controller.face_",
+)
+HAND_ONLY_PREFIXES = (
+    "hand_preparer.",
+    "control_interface.hand_adapter.",
+    "control_interface.strength_controller.hand_log_group_scale",
+    "control_interface.strength_controller.hand_group_prior",
 )
 
 
@@ -109,6 +117,7 @@ def load_v63_checkpoint(
     if isinstance(metadata, Mapping) and metadata.get("architecture_version") in {
         "v6.4",
         "v6.5",
+        "v6.6",
     }:
         version = metadata.get("architecture_version")
         raise RuntimeError(f"V6.3 loader rejects {version.upper()} metadata")
@@ -125,11 +134,14 @@ def load_v63_checkpoint(
     )
     if face_keys:
         raise RuntimeError(f"V6.3 checkpoint contains face-only keys: {face_keys}")
+    hand_keys = sorted(key for key in state if _has_prefix(key, HAND_ONLY_PREFIXES))
+    if hand_keys:
+        raise RuntimeError(f"V6.3 checkpoint contains hand-only keys: {hand_keys}")
     model_keys = set(model.state_dict())
     expected_keys = {
         key
         for key in model_keys
-        if not _has_prefix(key, DETAIL_ONLY_PREFIXES + FACE_ONLY_PREFIXES)
+        if not _has_prefix(key, DETAIL_ONLY_PREFIXES + FACE_ONLY_PREFIXES + HAND_ONLY_PREFIXES)
     }
     _preflight_state(model, state, expected_keys)
     detail_branch = model.get_submodule("control_interface.control_core.detail_branch")
@@ -141,6 +153,7 @@ def load_v63_checkpoint(
                 if head.bias is not None:
                     nn.init.zeros_(head.bias)
         _rezero_face_heads(model)
+        _rezero_hand_heads(model)
 
     result = _transactional_load(
         model,
@@ -170,7 +183,7 @@ def build_v64_checkpoint(
         "adapter_state_dict": {
             key: value.detach().clone()
             for key, value in model.state_dict().items()
-            if not _has_prefix(key, FACE_ONLY_PREFIXES)
+            if not _has_prefix(key, FACE_ONLY_PREFIXES + HAND_ONLY_PREFIXES)
         },
         "metadata": v64_checkpoint_metadata(),
     }
@@ -190,6 +203,17 @@ def _rezero_face_heads(model: nn.Module) -> None:
                 nn.init.zeros_(head.bias)
 
 
+def _rezero_hand_heads(model: nn.Module) -> None:
+    interface = getattr(model, "control_interface", None)
+    adapter = getattr(interface, "hand_adapter", None)
+    if adapter is not None:
+        with torch.no_grad():
+            for head in adapter.zero_heads:
+                nn.init.zeros_(head.weight)
+                if head.bias is not None:
+                    nn.init.zeros_(head.bias)
+
+
 def load_v64_checkpoint(
     model: nn.Module, checkpoint: Mapping[str, Any]
 ) -> torch.nn.modules.module._IncompatibleKeys:
@@ -206,14 +230,14 @@ def load_v64_checkpoint(
             raise RuntimeError(f"invalid V6.4 checkpoint metadata field {key!r}")
     state = _adapter_state(checkpoint)
     expected_keys = {
-        key for key in model.state_dict() if not _has_prefix(key, FACE_ONLY_PREFIXES)
+        key for key in model.state_dict() if not _has_prefix(key, FACE_ONLY_PREFIXES + HAND_ONLY_PREFIXES)
     }
     _preflight_state(model, state, expected_keys)
     return _transactional_load(
         model,
         state,
         strict=expected_keys == set(model.state_dict()),
-        after_load=lambda: _rezero_face_heads(model),
+        after_load=lambda: (_rezero_face_heads(model), _rezero_hand_heads(model)),
     )
 
 
@@ -221,7 +245,7 @@ def v65_checkpoint_metadata(
     *, feature_cache_fingerprint: str | None = None
 ) -> dict[str, object]:
     return {
-        "architecture_version": ARCHITECTURE_VERSION,
+        "architecture_version": "v6.5",
         "branch_names": list(BRANCH_NAMES),
         "detail_schema_version": DETAIL_SCHEMA_VERSION,
         "face_schema_version": FACE_SCHEMA_VERSION,
@@ -242,6 +266,7 @@ def build_v65_checkpoint(
     checkpoint = {
         "adapter_state_dict": {
             key: value.detach().clone() for key, value in model.state_dict().items()
+            if not _has_prefix(key, HAND_ONLY_PREFIXES)
         },
         "metadata": v65_checkpoint_metadata(
             feature_cache_fingerprint=feature_cache_fingerprint
@@ -262,8 +287,58 @@ def load_v65_checkpoint(model: nn.Module, checkpoint: Mapping[str, Any]) -> None
         if metadata.get(key) != value:
             raise RuntimeError(f"invalid V6.5 checkpoint metadata field {key!r}")
     state = _adapter_state(checkpoint)
+    expected_keys = {key for key in model.state_dict() if not _has_prefix(key, HAND_ONLY_PREFIXES)}
+    _preflight_state(model, state, expected_keys)
+    _transactional_load(model, state, strict=expected_keys == set(model.state_dict()), after_load=lambda: _rezero_hand_heads(model))
+
+
+def v66_checkpoint_metadata(*, feature_cache_fingerprint: str | None = None, hand_cache_fingerprint: str | None = None) -> dict[str, object]:
+    return {
+        "architecture_version": ARCHITECTURE_VERSION,
+        "branch_names": list(V66_BRANCH_NAMES),
+        "detail_schema_version": DETAIL_SCHEMA_VERSION,
+        "face_schema_version": FACE_SCHEMA_VERSION,
+        "hand_schema_version": HAND_SCHEMA_VERSION,
+        "preprocessing_schema_version": PREPROCESSING_SCHEMA_VERSION,
+        "feature_cache_fingerprint": feature_cache_fingerprint,
+        "hand_cache_fingerprint": hand_cache_fingerprint,
+    }
+
+
+def build_v66_checkpoint(model: nn.Module, *, feature_cache_fingerprint: str | None = None, hand_cache_fingerprint: str | None = None, **extra: Any) -> dict[str, Any]:
+    reserved = {"metadata", "adapter_state_dict"} & set(extra)
+    if reserved:
+        raise ValueError(f"checkpoint extra keys are reserved: {sorted(reserved)}")
+    result = {"adapter_state_dict": {key: value.detach().clone() for key, value in model.state_dict().items()},
+              "metadata": v66_checkpoint_metadata(feature_cache_fingerprint=feature_cache_fingerprint, hand_cache_fingerprint=hand_cache_fingerprint)}
+    result.update(extra)
+    return result
+
+
+def load_v66_checkpoint(model: nn.Module, checkpoint: Mapping[str, Any]) -> None:
+    metadata = checkpoint.get("metadata")
+    if not isinstance(metadata, Mapping):
+        raise RuntimeError("V6.6 checkpoint metadata is missing")
+    expected = v66_checkpoint_metadata(feature_cache_fingerprint=metadata.get("feature_cache_fingerprint"), hand_cache_fingerprint=metadata.get("hand_cache_fingerprint"))
+    for key, value in expected.items():
+        if metadata.get(key) != value:
+            raise RuntimeError(f"invalid V6.6 checkpoint metadata field {key!r}")
+    state = _adapter_state(checkpoint)
     _preflight_state(model, state, set(model.state_dict()))
     _transactional_load(model, state, strict=True)
+
+
+def freeze_for_hand_training(model: nn.Module, *, warmup: bool = False) -> tuple[nn.Parameter, ...]:
+    """V6.6-only optimizer selection; warmup trains heads and group gate."""
+    for parameter in model.parameters():
+        parameter.requires_grad_(False)
+    prefixes = ("control_interface.hand_adapter.zero_heads.", "control_interface.strength_controller.hand_log_group_scale") if warmup else HAND_ONLY_PREFIXES
+    selected = []
+    for name, parameter in model.named_parameters():
+        if _has_prefix(name, prefixes):
+            parameter.requires_grad_(True)
+            selected.append(parameter)
+    return tuple(selected)
 
 
 def freeze_for_detail_training(model: nn.Module) -> tuple[nn.Parameter, ...]:
@@ -304,14 +379,21 @@ __all__ = [
     "DETAIL_SCHEMA_VERSION",
     "FACE_ONLY_PREFIXES",
     "FACE_SCHEMA_VERSION",
+    "HAND_SCHEMA_VERSION",
+    "HAND_ONLY_PREFIXES",
+    "V66_BRANCH_NAMES",
     "PREPROCESSING_SCHEMA_VERSION",
     "build_v64_checkpoint",
     "build_v65_checkpoint",
+    "build_v66_checkpoint",
     "freeze_for_detail_training",
     "freeze_for_face_training",
+    "freeze_for_hand_training",
     "load_v63_checkpoint",
     "load_v64_checkpoint",
     "load_v65_checkpoint",
+    "load_v66_checkpoint",
     "v64_checkpoint_metadata",
     "v65_checkpoint_metadata",
+    "v66_checkpoint_metadata",
 ]

@@ -1,0 +1,43 @@
+{
+  "source_rgb": "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/data/assets/sources/pair00/cam4/taichi00/000041/rgb.png",
+  "source_masks": [
+    "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/data/assets/sources/pair00/cam4/taichi00/000041/mask_A.png",
+    "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/data/assets/sources/pair00/cam4/taichi00/000041/mask_B.png"
+  ],
+  "metadata": {
+    "schema_version": "source_v1",
+    "crop_version": "exclusive_square_letterbox512_margin1p2_gray128_v1",
+    "encoder_version": "qwen21_rgba_vae_dinov2_g_whole224_v1",
+    "source_rgb_sha256": "73fc368bb83e835ae04584b8eef10f5441a36872713a22356b39330e2ebae112",
+    "source_mask_sha256": [
+      "dbf1becff27aef4660a00507b47b650365b0e0244d7bac45535580fce9e9fd4d",
+      "e158f0a272b83e65a553f9aaa3697fd2a643499ff2e1b2bd221b10bc5587b783"
+    ],
+    "person_uids": [
+      "pair00_actor0",
+      "pair00_actor1"
+    ],
+    "encoder_provenance": {
+      "vae_path": "/home/shangguanrz/project/pic-edit/models/Qwen-Image-2.1/vae",
+      "dino_path": "/data/shangguanrz/pic-edit-experiments/pei2i_body_face_8arm_20261009/code/models/dinov2-giant",
+      "dino_sha256": "917d3c470db999d32a312f8542149be91c7cbac61ee8fb4b67ae3d82b79ce21f",
+      "vae_config_sha256": "9785d527b278cb8b210e9f48a8028d92a4190968ce7e24c8fc85d9d1b82f6ba2",
+      "vae_weights_sha256": "a07a1b7c4ee2966a1b3bdc37de9b4f983d56937e46619f709a80b6e490675417",
+      "dino_whole_crop_size": 224,
+      "dino_min_patch_coverage": 0.5
+    }
+  },
+  "source_sha256": "73fc368bb83e835ae04584b8eef10f5441a36872713a22356b39330e2ebae112",
+  "source_mask_sha256": [
+    "dbf1becff27aef4660a00507b47b650365b0e0244d7bac45535580fce9e9fd4d",
+    "e158f0a272b83e65a553f9aaa3697fd2a643499ff2e1b2bd221b10bc5587b783"
+  ],
+  "source_features_sha256": "63c45ef94d9584beb7e56f90cc374075d8e7886f7fa023febd3f898edfeaed06",
+  "vae_path": "/home/shangguanrz/project/pic-edit/models/Qwen-Image-2.1/vae",
+  "dino_path": "/data/shangguanrz/pic-edit-experiments/pei2i_body_face_8arm_20261009/code/models/dinov2-giant",
+  "dino_sha256": "917d3c470db999d32a312f8542149be91c7cbac61ee8fb4b67ae3d82b79ce21f",
+  "vae_config_sha256": "9785d527b278cb8b210e9f48a8028d92a4190968ce7e24c8fc85d9d1b82f6ba2",
+  "vae_weights_sha256": "a07a1b7c4ee2966a1b3bdc37de9b4f983d56937e46619f709a80b6e490675417",
+  "dino_whole_crop_size": 224,
+  "dino_min_patch_coverage": 0.5
+}

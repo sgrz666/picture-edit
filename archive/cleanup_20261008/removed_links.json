@@ -1,0 +1,233 @@
+{
+  "generated": "2026-10-09",
+  "reason": "Round-2 cleanup: retire deprecated compatibility links; active workflows use scripts/ entity paths",
+  "root": "/home/shangguanrz/project/pic-edit",
+  "removed": [
+    {
+      "source": "audit_hi4d_qwen21_prompt_leak.py",
+      "target": "scripts/audit/audit_hi4d_qwen21_prompt_leak.py"
+    },
+    {
+      "source": "audit_tiktok_v3_blur_sample.py",
+      "target": "scripts/audit/audit_tiktok_v3_blur_sample.py"
+    },
+    {
+      "source": "audit_tiktok_v3_final_pairs.py",
+      "target": "scripts/audit/audit_tiktok_v3_final_pairs.py"
+    },
+    {
+      "source": "audit_tiktok_v3_pose_redundancy.py",
+      "target": "scripts/audit/audit_tiktok_v3_pose_redundancy.py"
+    },
+    {
+      "source": "audit_tiktok_v3_strict_final.py",
+      "target": "scripts/audit/audit_tiktok_v3_strict_final.py"
+    },
+    {
+      "source": "audit_tiktok_v3_visual_quality_v2.py",
+      "target": "scripts/audit/audit_tiktok_v3_visual_quality_v2.py"
+    },
+    {
+      "source": "audit_tiktok_v3_visual_quality_v3.py",
+      "target": "scripts/audit/audit_tiktok_v3_visual_quality_v3.py"
+    },
+    {
+      "source": "build_20b_memory_docx.py",
+      "target": "scripts/reports/build_20b_memory_docx.py"
+    },
+    {
+      "source": "build_architecture_docx.py",
+      "target": "scripts/reports/build_architecture_docx.py"
+    },
+    {
+      "source": "build_brief_architecture_docx.py",
+      "target": "scripts/reports/build_brief_architecture_docx.py"
+    },
+    {
+      "source": "build_latest_experiment_report_docx.py",
+      "target": "scripts/reports/build_latest_experiment_report_docx.py"
+    },
+    {
+      "source": "build_tiktok_v3_candidate_pool.py",
+      "target": "scripts/data/build_tiktok_v3_candidate_pool.py"
+    },
+    {
+      "source": "build_tiktok_v3_condition_inventory.py",
+      "target": "scripts/data/build_tiktok_v3_condition_inventory.py"
+    },
+    {
+      "source": "build_tiktok_v3_pairs.py",
+      "target": "scripts/data/build_tiktok_v3_pairs.py"
+    },
+    {
+      "source": "build_tiktok_v3_pairs_strict.py",
+      "target": "scripts/data/build_tiktok_v3_pairs_strict.py"
+    },
+    {
+      "source": "build_tiktok_v3_strict_visual_pool.py",
+      "target": "scripts/data/build_tiktok_v3_strict_visual_pool.py"
+    },
+    {
+      "source": "build_tiktok_v3_usable_pool.py",
+      "target": "scripts/data/build_tiktok_v3_usable_pool.py"
+    },
+    {
+      "source": "create_debug_samples.py",
+      "target": "scripts/data/create_debug_samples.py"
+    },
+    {
+      "source": "fill_tiktok_v3_missing_geometry.py",
+      "target": "scripts/data/fill_tiktok_v3_missing_geometry.py"
+    },
+    {
+      "source": "finalize_tiktok_v3_visual_quality_v1.py",
+      "target": "scripts/data/finalize_tiktok_v3_visual_quality_v1.py"
+    },
+    {
+      "source": "multi_stage_eval_v6.py",
+      "target": "scripts/eval/multi_stage_eval_v6.py"
+    },
+    {
+      "source": "plot_vram_requirement_dashboard.py",
+      "target": "scripts/reports/plot_vram_requirement_dashboard.py"
+    },
+    {
+      "source": "run_tiktok_v3_dwpose.py",
+      "target": "scripts/data/run_tiktok_v3_dwpose.py"
+    },
+    {
+      "source": "sample_tiktok_v3_dwpose_qc.py",
+      "target": "scripts/data/sample_tiktok_v3_dwpose_qc.py"
+    },
+    {
+      "source": "sample_tiktok_v3_geometry_rejects.py",
+      "target": "scripts/data/sample_tiktok_v3_geometry_rejects.py"
+    },
+    {
+      "source": "scripts/audit_qwen21_face_alignment.py",
+      "target": "scripts/audit/audit_qwen21_face_alignment.py"
+    },
+    {
+      "source": "scripts/audit_qwen21_weight_compatibility.py",
+      "target": "scripts/audit/audit_qwen21_weight_compatibility.py"
+    },
+    {
+      "source": "scripts/build_iper1024_comparison_panels.py",
+      "target": "scripts/reports/build_iper1024_comparison_panels.py"
+    },
+    {
+      "source": "scripts/build_qwen21_face_panels.py",
+      "target": "scripts/reports/build_qwen21_face_panels.py"
+    },
+    {
+      "source": "scripts/check_qwen21_full_preservation.py",
+      "target": "scripts/audit/check_qwen21_full_preservation.py"
+    },
+    {
+      "source": "scripts/evaluate_qwen21_weight_inheritance.py",
+      "target": "scripts/eval/evaluate_qwen21_weight_inheritance.py"
+    },
+    {
+      "source": "scripts/finalize_qwen21_face_repair.py",
+      "target": "scripts/run/finalize_qwen21_face_repair.py"
+    },
+    {
+      "source": "scripts/inherit_qwen21_full_weights.py",
+      "target": "scripts/weights/inherit_qwen21_full_weights.py"
+    },
+    {
+      "source": "scripts/inventory_qwen21_full_weights.py",
+      "target": "scripts/audit/inventory_qwen21_full_weights.py"
+    },
+    {
+      "source": "scripts/precompute_iper_face_features_v65.py",
+      "target": "scripts/data/precompute_iper_face_features_v65.py"
+    },
+    {
+      "source": "scripts/precompute_iper_hand_features_v66.py",
+      "target": "scripts/data/precompute_iper_hand_features_v66.py"
+    },
+    {
+      "source": "scripts/precompute_qwen21_face_features.py",
+      "target": "scripts/data/precompute_qwen21_face_features.py"
+    },
+    {
+      "source": "scripts/prepare_qwen21_face_split.py",
+      "target": "scripts/data/prepare_qwen21_face_split.py"
+    },
+    {
+      "source": "scripts/prepare_qwen21_full_data.py",
+      "target": "scripts/data/prepare_qwen21_full_data.py"
+    },
+    {
+      "source": "scripts/run_qwen21_weight_inheritance.py",
+      "target": "scripts/run/run_qwen21_weight_inheritance.py"
+    },
+    {
+      "source": "scripts/smoke_adapter_reasoner.py",
+      "target": "scripts/audit/smoke_adapter_reasoner.py"
+    },
+    {
+      "source": "scripts/smoke_adapter_v6.py",
+      "target": "scripts/audit/smoke_adapter_v6.py"
+    },
+    {
+      "source": "scripts/smoke_deepgen_control_interface.py",
+      "target": "scripts/audit/smoke_deepgen_control_interface.py"
+    },
+    {
+      "source": "scripts/split_iper_train_val.py",
+      "target": "scripts/data/split_iper_train_val.py"
+    },
+    {
+      "source": "scripts/summarize_qwen21_face_groups.py",
+      "target": "scripts/reports/summarize_qwen21_face_groups.py"
+    },
+    {
+      "source": "scripts/verify_qwen21_full_runtime.py",
+      "target": "scripts/audit/verify_qwen21_full_runtime.py"
+    },
+    {
+      "source": "scripts/write_iper1024_result.py",
+      "target": "scripts/reports/write_iper1024_result.py"
+    },
+    {
+      "source": "scripts/write_qwen21_face_repair_report.py",
+      "target": "scripts/reports/write_qwen21_face_repair_report.py"
+    },
+    {
+      "source": "scripts/write_qwen21_face_report.py",
+      "target": "scripts/reports/write_qwen21_face_report.py"
+    },
+    {
+      "source": "scripts/write_qwen21_full_report.py",
+      "target": "scripts/reports/write_qwen21_full_report.py"
+    },
+    {
+      "source": "scripts/write_qwen21_inheritance_report.py",
+      "target": "scripts/reports/write_qwen21_inheritance_report.py"
+    },
+    {
+      "source": "scripts/write_qwen21_weight_audit_report.py",
+      "target": "scripts/reports/write_qwen21_weight_audit_report.py"
+    },
+    {
+      "source": "split_tiktok_v3_groupwise.py",
+      "target": "scripts/data/split_tiktok_v3_groupwise.py"
+    },
+    {
+      "source": "visualize_tiktok_v3_final_global_blur.py",
+      "target": "scripts/reports/visualize_tiktok_v3_final_global_blur.py"
+    }
+  ],
+  "kept": [
+    "scripts/eval_qwen21_face_repair.py",
+    "scripts/finalize_qwen21_face_single_sample.py",
+    "scripts/probe_qwen21_face_single_sample.py",
+    "scripts/run_qwen21_face_single_sample.py",
+    "scripts/verify_qwen21_face_repair.py",
+    "scripts/verify_qwen21_face_single_sample.py",
+    "scripts/verify_qwen21_full_resume.py",
+    "scripts/write_qwen21_face_single_sample_report.py"
+  ]
+}

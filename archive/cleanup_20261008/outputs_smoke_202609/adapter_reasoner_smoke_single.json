@@ -1,0 +1,45 @@
+{
+  "status": "PASS",
+  "mode": "single",
+  "image_size": 512,
+  "device": "cuda",
+  "dtype": "torch.bfloat16",
+  "person_count": [
+    1
+  ],
+  "geometry_feature_shape": [
+    1,
+    512,
+    32,
+    32
+  ],
+  "geometry_highres_shape": [
+    1,
+    512,
+    64,
+    64
+  ],
+  "interaction_feature_shape": [
+    1,
+    512,
+    32,
+    32
+  ],
+  "interaction_highres_shape": [
+    1,
+    512,
+    64,
+    64
+  ],
+  "parameters_by_module": {
+    "condition_injector": 7154762,
+    "person_geometry_reasoner": 15219712,
+    "cross_person_reasoner": 6439424,
+    "contact_reasoner": 5709314,
+    "dual_fusion": 26755328,
+    "single_path_and_roles": 9969152,
+    "reasoner_total": 64092930,
+    "condition_and_reasoner_total": 71247692
+  },
+  "training_started": false
+}

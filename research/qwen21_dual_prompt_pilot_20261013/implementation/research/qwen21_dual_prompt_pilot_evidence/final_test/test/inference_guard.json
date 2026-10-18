@@ -1,0 +1,2554 @@
+{
+  "before": {
+    "native_transformer": {
+      "sha256": "4b40da9b51ddcb44bc4cae009242f7f29936883bbd9fd05b16da789519848d5e",
+      "parameter_count": 7115124736,
+      "requires_grad_count": 0,
+      "grad_count": 0,
+      "training": false
+    },
+    "native_text_encoder": {
+      "sha256": "9da580396865ab0d86c0ca0f3f61bf69ef762e9e03b3083a5435db5e1023da7c",
+      "parameter_count": 8767123696,
+      "requires_grad_count": 0,
+      "grad_count": 0,
+      "training": false
+    },
+    "native_vae": {
+      "sha256": "e1511f531edb134fdb6a31251809757f01c79123097296cd67a7036e4aa536b1",
+      "parameter_count": 337740404,
+      "requires_grad_count": 0,
+      "grad_count": 0,
+      "training": false
+    },
+    "adapter_short": {
+      "sha256": "0a23ba2345d6a0a06a52bf78b5c8bcbcf8fc765bc6e8415031580f7ed3655221",
+      "parameter_count": 60805440,
+      "requires_grad_count": 0,
+      "grad_count": 0,
+      "training": false
+    },
+    "adapter_structured": {
+      "sha256": "dd52b7ad2682d3888146c09a1f5892a4f0776ade0b4c6f88b6c0bbc745c75bdb",
+      "parameter_count": 60805440,
+      "requires_grad_count": 0,
+      "grad_count": 0,
+      "training": false
+    }
+  },
+  "after": {
+    "native_transformer": {
+      "sha256": "4b40da9b51ddcb44bc4cae009242f7f29936883bbd9fd05b16da789519848d5e",
+      "parameter_count": 7115124736,
+      "requires_grad_count": 0,
+      "grad_count": 0,
+      "training": false
+    },
+    "native_text_encoder": {
+      "sha256": "9da580396865ab0d86c0ca0f3f61bf69ef762e9e03b3083a5435db5e1023da7c",
+      "parameter_count": 8767123696,
+      "requires_grad_count": 0,
+      "grad_count": 0,
+      "training": false
+    },
+    "native_vae": {
+      "sha256": "e1511f531edb134fdb6a31251809757f01c79123097296cd67a7036e4aa536b1",
+      "parameter_count": 337740404,
+      "requires_grad_count": 0,
+      "grad_count": 0,
+      "training": false
+    },
+    "adapter_short": {
+      "sha256": "0a23ba2345d6a0a06a52bf78b5c8bcbcf8fc765bc6e8415031580f7ed3655221",
+      "parameter_count": 60805440,
+      "requires_grad_count": 0,
+      "grad_count": 0,
+      "training": false
+    },
+    "adapter_structured": {
+      "sha256": "dd52b7ad2682d3888146c09a1f5892a4f0776ade0b4c6f88b6c0bbc745c75bdb",
+      "parameter_count": 60805440,
+      "requires_grad_count": 0,
+      "grad_count": 0,
+      "training": false
+    }
+  },
+  "weights_unchanged": true,
+  "all_parameter_grads_none": true,
+  "all_models_frozen_eval": true,
+  "optimizer_instances_before": 0,
+  "optimizer_instances_after": 0,
+  "blocked_attempts": {
+    "tensor_backward": 0,
+    "autograd_backward": 0,
+    "autograd_grad": 0,
+    "optimizer_step": 0,
+    "optimizer_init": 0
+  },
+  "patched_methods_restored": true,
+  "generation_samples": [
+    {
+      "key": "native_short_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_short_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_short_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_structured_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_structured_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_structured_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_short_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_short_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_short_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_structured_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_structured_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_structured_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    }
+  ],
+  "native_forward_samples": [
+    {
+      "key": "native_short_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_short_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_short_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_short_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_short_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_short_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_short_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_short_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_short_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_short_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_short_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_short_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_short_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_short_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_short_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_short_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_short_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_short_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_short_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_short_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_short_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_short_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_short_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_short_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_short_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_short_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_short_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_short_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_short_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_short_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_short_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_short_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_short_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_short_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_short_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_short_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_short_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_short_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_short_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_short_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_short_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_short_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_short_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_short_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_short_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_short_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_short_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_short_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_short_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_short_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_short_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_short_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_short_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_short_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_short_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_short_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_short_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_short_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_short_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_short_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_short_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_short_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_short_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_short_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_short_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_short_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_short_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_short_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_short_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_short_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_short_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_short_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_short_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_short_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_short_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_short_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_short_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_short_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_short_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_short_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_short_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_short_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_short_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_short_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_short_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_short_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_short_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_short_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_short_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_short_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_short_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_short_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_short_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_short_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_short_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_short_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_short_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_short_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_short_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_short_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_short_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_short_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_short_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_short_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_short_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_short_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_short_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_short_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_short_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_short_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_short_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_short_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_short_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_short_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_short_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_short_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_short_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_short_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_short_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_short_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_structured_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_structured_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_structured_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_structured_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_structured_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_structured_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_structured_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_structured_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_structured_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_structured_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_structured_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_structured_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_structured_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_structured_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_structured_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_structured_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_structured_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_structured_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_structured_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_structured_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_structured_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_structured_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_structured_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_structured_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_structured_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_structured_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_structured_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_structured_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_structured_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_structured_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_structured_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_structured_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_structured_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_structured_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_structured_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_structured_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_structured_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_structured_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_structured_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_structured_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_structured_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_structured_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_structured_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_structured_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_structured_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_structured_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_structured_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_structured_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_structured_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_structured_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_structured_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_structured_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_structured_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_structured_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_structured_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_structured_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_structured_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_structured_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_structured_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_structured_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_structured_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_structured_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_structured_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_structured_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_structured_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_structured_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_structured_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_structured_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_structured_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_structured_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_structured_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_structured_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_structured_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_structured_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_structured_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_structured_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_structured_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_structured_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_structured_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_structured_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_structured_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_structured_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_structured_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_structured_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_structured_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_structured_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_structured_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_structured_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_structured_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_structured_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_structured_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_structured_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_structured_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_structured_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_structured_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_structured_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_structured_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_structured_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_structured_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_structured_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_structured_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_structured_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_structured_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_structured_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_structured_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_structured_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_structured_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_structured_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_structured_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_structured_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_structured_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_structured_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_structured_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_structured_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_structured_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_structured_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_structured_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_structured_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_structured_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "native_structured_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_short_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_short_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_short_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_short_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_short_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_short_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_short_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_short_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_short_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_short_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_short_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_short_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_short_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_short_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_short_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_short_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_short_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_short_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_short_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_short_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_short_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_short_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_short_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_short_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_short_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_short_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_short_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_short_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_short_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_short_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_short_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_short_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_short_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_short_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_short_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_short_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_short_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_short_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_short_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_short_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_short_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_short_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_short_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_short_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_short_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_short_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_short_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_short_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_short_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_short_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_short_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_short_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_short_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_short_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_short_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_short_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_short_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_short_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_short_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_short_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_short_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_short_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_short_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_short_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_short_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_short_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_short_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_short_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_short_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_short_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_short_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_short_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_short_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_short_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_short_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_short_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_short_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_short_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_short_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_short_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_short_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_short_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_short_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_short_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_short_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_short_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_short_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_short_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_short_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_short_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_short_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_short_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_short_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_short_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_short_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_short_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_short_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_short_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_short_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_short_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_short_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_short_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_short_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_short_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_short_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_short_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_short_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_short_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_short_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_short_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_short_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_short_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_short_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_short_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_short_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_short_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_short_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_short_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_short_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_short_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_structured_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_structured_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_structured_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_structured_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_structured_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_structured_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_structured_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_structured_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_structured_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_structured_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_structured_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_structured_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_structured_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_structured_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_structured_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_structured_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_structured_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_structured_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_structured_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_structured_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_structured_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_structured_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_structured_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_structured_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_structured_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_structured_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_structured_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_structured_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_structured_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_structured_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_structured_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_structured_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_structured_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_structured_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_structured_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_structured_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_structured_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_structured_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_structured_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_structured_seed42",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_structured_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_structured_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_structured_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_structured_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_structured_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_structured_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_structured_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_structured_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_structured_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_structured_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_structured_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_structured_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_structured_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_structured_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_structured_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_structured_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_structured_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_structured_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_structured_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_structured_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_structured_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_structured_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_structured_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_structured_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_structured_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_structured_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_structured_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_structured_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_structured_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_structured_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_structured_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_structured_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_structured_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_structured_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_structured_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_structured_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_structured_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_structured_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_structured_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_structured_seed43",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_structured_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_structured_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_structured_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_structured_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_structured_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_structured_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_structured_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_structured_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_structured_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_structured_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_structured_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_structured_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_structured_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_structured_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_structured_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_structured_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_structured_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_structured_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_structured_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_structured_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_structured_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_structured_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_structured_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_structured_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_structured_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_structured_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_structured_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_structured_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_structured_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_structured_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_structured_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_structured_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_structured_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_structured_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_structured_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_structured_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_structured_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_structured_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_structured_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    },
+    {
+      "key": "dual_structured_seed44",
+      "grad_enabled": false,
+      "inference_mode": true
+    }
+  ],
+  "target_supervision_opened_during_generation": false
+}

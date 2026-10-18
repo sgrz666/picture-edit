@@ -1,0 +1,17 @@
+{
+  "command": [
+    "/home/shangguanrz/nihaochen/envs/qwen21/bin/python",
+    "-u",
+    "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/recovery/recover_training.py",
+    "--attempt-dir",
+    "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/recovery/continuation_v1_200_to_300"
+  ],
+  "cwd": "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/implementation",
+  "log": "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/recovery/recovery_training.log",
+  "process_record": "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/recovery/recovery_training_process.json",
+  "result_record": "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/recovery/recovery_training_process_result.json",
+  "environment": {
+    "PYTHONPATH": "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/implementation:/home/shangguanrz/project/pic-edit",
+    "CUDA_VISIBLE_DEVICES": "0"
+  }
+}

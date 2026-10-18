@@ -1,0 +1,112 @@
+{
+  "records": [
+    {
+      "action": "talk14",
+      "frame": 32,
+      "valid_3d_points": [
+        117,
+        117
+      ],
+      "valid_left_hand": [
+        21,
+        21
+      ],
+      "valid_right_hand": [
+        21,
+        21
+      ],
+      "face_contour_3d": "invalid: view dependent",
+      "assignments": [
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          -1
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          -1,
+          1
+        ],
+        [
+          0,
+          1
+        ]
+      ]
+    },
+    {
+      "action": "hug14",
+      "frame": 62,
+      "valid_3d_points": [
+        90,
+        65
+      ],
+      "valid_left_hand": [
+        18,
+        0
+      ],
+      "valid_right_hand": [
+        0,
+        0
+      ],
+      "face_contour_3d": "invalid: view dependent",
+      "assignments": [
+        [
+          -1,
+          1
+        ],
+        [
+          -1,
+          1
+        ],
+        [
+          0,
+          -1
+        ],
+        [
+          0,
+          -1
+        ],
+        [
+          0,
+          -1
+        ],
+        [
+          0,
+          -1
+        ],
+        [
+          0,
+          -1
+        ],
+        [
+          -1,
+          1
+        ]
+      ]
+    }
+  ],
+  "elapsed_seconds": 1.889277458190918,
+  "model": "/home/shangguanrz/project/pic-edit/add/tools/dwpose_mimicmotion_official/models/dw-ll_ucoco_384.onnx",
+  "person_regions": "Hi4D SMPL projections; used only for offline annotation fitting",
+  "provider": [
+    "CPUExecutionProvider"
+  ]
+}

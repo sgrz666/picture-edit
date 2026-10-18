@@ -1,0 +1,22 @@
+{
+  "command": [
+    "/home/shangguanrz/nihaochen/envs/qwen21/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "--tb=short",
+    "-c",
+    "/dev/null",
+    "--rootdir=/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/recovery/remote_regression_v1",
+    "--confcutdir=/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/recovery/remote_regression_v1",
+    "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/recovery/remote_regression_v1/research/qwen21_dual_prompt_pilot_evidence/recovery/test_recover_training.py"
+  ],
+  "cwd": "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/recovery/remote_regression_v1",
+  "log": "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/recovery/regression_final_remote.log",
+  "process_record": "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/recovery/regression_final_remote_process.json",
+  "result_record": "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/recovery/regression_final_remote_result.json",
+  "environment": {
+    "PYTHONPATH": "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/recovery/remote_regression_v1:/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/implementation:/home/shangguanrz/project/pic-edit",
+    "CUDA_VISIBLE_DEVICES": ""
+  }
+}

@@ -1,0 +1,2160 @@
+{
+  "provenance": {
+    "schema": "dual_fit_worker_v1",
+    "model": "multiHMR_896_L",
+    "img_size": 896,
+    "det_thresh": 0.2,
+    "checkpoint": "/home/shangguanrz/models/multiHMR/multiHMR_896_L.pt",
+    "checkpoint_sha256": "c1b55933eb35df9b27966e1d8d3a69c4bc5e28eee0f0dd7f0cdc41c3f27202ca",
+    "torch": "2.8.0+cu128",
+    "joint_order": "smplx.joint_names.JOINT_NAMES",
+    "joint_count": 144,
+    "load_seconds": 8.636553538963199,
+    "python": "3.9.23",
+    "request_sha256": "91a04f1c63fc78349f75e1deeda37967f565944a2ea18ea26853778ad29230bc"
+  },
+  "skipped": [],
+  "summary": {
+    "pairs_total": 17,
+    "pairs_scored": 17,
+    "unavailable": [],
+    "fit_vs_dwpose": {
+      "pck@0.1": 0.5916581784228844,
+      "pck@0.2": 0.9019607843137254,
+      "pck@0.5": 0.972549019607843,
+      "mpjpe_px": 23.007242589531742,
+      "mpjpe_norm": 0.12172102259099657
+    },
+    "fit_vs_smpl_projected": {
+      "pck@0.1": 0.7769607843137255,
+      "pck@0.2": 0.8774509803921569,
+      "pck@0.5": 0.9681372549019607,
+      "mpjpe_px": 22.306814396855863,
+      "mpjpe_norm": 0.10205711355687193
+    },
+    "torso_scale_ratio": 1.095763442128785,
+    "floor_dwpose_vs_smpl": {
+      "pck@0.1": 0.6861195993548934,
+      "pck@0.2": 0.909313725490196,
+      "pck@0.5": 0.9558823529411765,
+      "mpjpe_px": 19.793568586277004,
+      "mpjpe_norm": 0.10527598599888384
+    },
+    "person_count_rate": 1.0,
+    "correspondence_rate": 0.9411764705882353,
+    "hip_gap_error_relative": 2.831097844152991,
+    "hip_gap_error_norm": 0.12013676726280711,
+    "mpjpe3d_absolute_m": 0.1585337408065183,
+    "mpjpe3d_root_aligned_m": 0.07835474739072945,
+    "hip_gap_error_m": 0.012134522728751158,
+    "reproject_median_px": 0.16650133464750747,
+    "conventions": [
+      "world_to_camera"
+    ],
+    "geometry_checks": [
+      {
+        "pelvis_to_hip_mid_m": 0.08821366065505991,
+        "neck_to_collar_mid_m": 0.09123162192252773
+      },
+      {
+        "pelvis_to_hip_mid_m": 0.08691550658840334,
+        "neck_to_collar_mid_m": 0.09002525418798304
+      },
+      {
+        "pelvis_to_hip_mid_m": 0.0869154778906007,
+        "neck_to_collar_mid_m": 0.0900251630362684
+      },
+      {
+        "pelvis_to_hip_mid_m": 0.08821375197367279,
+        "neck_to_collar_mid_m": 0.09123163416175398
+      },
+      {
+        "pelvis_to_hip_mid_m": 0.08821366615406186,
+        "neck_to_collar_mid_m": 0.09123158619861442
+      },
+      {
+        "pelvis_to_hip_mid_m": 0.08691532042943907,
+        "neck_to_collar_mid_m": 0.09002514084435032
+      },
+      {
+        "pelvis_to_hip_mid_m": 0.08821374929725202,
+        "neck_to_collar_mid_m": 0.0912316319025764
+      },
+      {
+        "pelvis_to_hip_mid_m": 0.08691535912107845,
+        "neck_to_collar_mid_m": 0.09002517848121311
+      },
+      {
+        "pelvis_to_hip_mid_m": 0.08536211268807802,
+        "neck_to_collar_mid_m": 0.08835096084657076
+      },
+      {
+        "pelvis_to_hip_mid_m": 0.08311008260569948,
+        "neck_to_collar_mid_m": 0.09134547168901455
+      },
+      {
+        "pelvis_to_hip_mid_m": 0.08536215470864549,
+        "neck_to_collar_mid_m": 0.08835089998299542
+      },
+      {
+        "pelvis_to_hip_mid_m": 0.0831100427931985,
+        "neck_to_collar_mid_m": 0.09134553261442538
+      },
+      {
+        "pelvis_to_hip_mid_m": 0.08821370060206404,
+        "neck_to_collar_mid_m": 0.09123168052586217
+      },
+      {
+        "pelvis_to_hip_mid_m": 0.08691539946840204,
+        "neck_to_collar_mid_m": 0.09002518347373878
+      },
+      {
+        "pelvis_to_hip_mid_m": 0.08821366517357548,
+        "neck_to_collar_mid_m": 0.09123169194703955
+      },
+      {
+        "pelvis_to_hip_mid_m": 0.08691539030764121,
+        "neck_to_collar_mid_m": 0.09002521607296572
+      },
+      {
+        "pelvis_to_hip_mid_m": 0.08536213342305642,
+        "neck_to_collar_mid_m": 0.08835095668594975
+      },
+      {
+        "pelvis_to_hip_mid_m": 0.08311009633744182,
+        "neck_to_collar_mid_m": 0.09134544860093576
+      },
+      {
+        "pelvis_to_hip_mid_m": 0.08536211628367636,
+        "neck_to_collar_mid_m": 0.08835093895187127
+      },
+      {
+        "pelvis_to_hip_mid_m": 0.08311012052142745,
+        "neck_to_collar_mid_m": 0.09134545580508383
+      },
+      {
+        "pelvis_to_hip_mid_m": 0.08536207460137141,
+        "neck_to_collar_mid_m": 0.0883509134703136
+      },
+      {
+        "pelvis_to_hip_mid_m": 0.08311005746157048,
+        "neck_to_collar_mid_m": 0.09134545350381534
+      },
+      {
+        "pelvis_to_hip_mid_m": 0.08536207460137141,
+        "neck_to_collar_mid_m": 0.0883509134703136
+      },
+      {
+        "pelvis_to_hip_mid_m": 0.08311005746157048,
+        "neck_to_collar_mid_m": 0.09134545350381534
+      },
+      {
+        "pelvis_to_hip_mid_m": 0.08821366065505991,
+        "neck_to_collar_mid_m": 0.09123162192252773
+      },
+      {
+        "pelvis_to_hip_mid_m": 0.08691550658840334,
+        "neck_to_collar_mid_m": 0.09002525418798304
+      },
+      {
+        "pelvis_to_hip_mid_m": 0.08821366615406186,
+        "neck_to_collar_mid_m": 0.09123158619861442
+      },
+      {
+        "pelvis_to_hip_mid_m": 0.08691532042943907,
+        "neck_to_collar_mid_m": 0.09002514084435032
+      },
+      {
+        "pelvis_to_hip_mid_m": 0.08536211268807802,
+        "neck_to_collar_mid_m": 0.08835096084657076
+      },
+      {
+        "pelvis_to_hip_mid_m": 0.08311008260569948,
+        "neck_to_collar_mid_m": 0.09134547168901455
+      },
+      {
+        "pelvis_to_hip_mid_m": 0.08536215470864549,
+        "neck_to_collar_mid_m": 0.08835089998299542
+      },
+      {
+        "pelvis_to_hip_mid_m": 0.0831100427931985,
+        "neck_to_collar_mid_m": 0.09134553261442538
+      },
+      {
+        "pelvis_to_hip_mid_m": 0.08821366517357548,
+        "neck_to_collar_mid_m": 0.09123169194703955
+      },
+      {
+        "pelvis_to_hip_mid_m": 0.08691539030764121,
+        "neck_to_collar_mid_m": 0.09002521607296572
+      }
+    ],
+    "gate": {
+      "correspondence_rate": {
+        "measured": 0.9411764705882353,
+        "limit": 0.9,
+        "direction": "min",
+        "pass": true
+      },
+      "person_count_rate": {
+        "measured": 1.0,
+        "limit": 0.9,
+        "direction": "min",
+        "pass": true
+      },
+      "hip_gap_error_norm": {
+        "measured": 0.12013676726280711,
+        "limit": 0.1,
+        "direction": "max",
+        "pass": false
+      },
+      "torso_scale_ratio": {
+        "measured": 1.095763442128785,
+        "limit": [
+          0.85,
+          1.2
+        ],
+        "direction": "range",
+        "pass": true
+      },
+      "fit_vs_dwpose.pck@0.2": {
+        "measured": 0.9019607843137254,
+        "limit": 0.8593137254901959,
+        "direction": "min",
+        "basis": "floor 0.909 - 0.05",
+        "pass": true
+      },
+      "fit_vs_dwpose.mpjpe_norm": {
+        "measured": 0.12172102259099657,
+        "limit": 0.1315949824986048,
+        "direction": "max",
+        "basis": "floor 0.105 x 1.25",
+        "pass": true
+      },
+      "all_pass": false
+    }
+  },
+  "results": [
+    {
+      "name": "backhug_pair02_037_c64_r545",
+      "kind": "same_identity",
+      "available": true,
+      "person_count": 2,
+      "reproject_median_px": 0.1725555453469959,
+      "people": [
+        {
+          "gt_slot": 1,
+          "hi4d_side": "B",
+          "fit_index": 1,
+          "vs_dwpose": {
+            "comparable": true,
+            "joints": 10,
+            "torso_px": 181.3322370833929,
+            "mpjpe_px": 92.2294688712421,
+            "mpjpe_norm": 0.5086214693795824,
+            "pck@0.1": 0.0,
+            "pck@0.2": 0.0,
+            "pck@0.5": 0.7
+          },
+          "torso_scale_ratio": 1.0771015277369094,
+          "vs_smpl_projected": {
+            "comparable": true,
+            "joints": 12,
+            "torso_px": 198.58690963468376,
+            "mpjpe_px": 33.93787308234625,
+            "mpjpe_norm": 0.1708968287223848,
+            "pck@0.1": 0.5833333333333334,
+            "pck@0.2": 0.6666666666666666,
+            "pck@0.5": 1.0
+          }
+        },
+        {
+          "gt_slot": 2,
+          "hi4d_side": "A",
+          "fit_index": 0,
+          "vs_dwpose": {
+            "comparable": true,
+            "joints": 11,
+            "torso_px": 181.5180362144741,
+            "mpjpe_px": 13.924369086164159,
+            "mpjpe_norm": 0.07671066400096853,
+            "pck@0.1": 0.8181818181818182,
+            "pck@0.2": 1.0,
+            "pck@0.5": 1.0
+          },
+          "torso_scale_ratio": 1.1211321533313792,
+          "vs_smpl_projected": {
+            "comparable": true,
+            "joints": 12,
+            "torso_px": 224.9028397775426,
+            "mpjpe_px": 16.588150227417152,
+            "mpjpe_norm": 0.07375696209005154,
+            "pck@0.1": 0.9166666666666666,
+            "pck@0.2": 1.0,
+            "pck@0.5": 1.0
+          }
+        }
+      ],
+      "correspondence": {
+        "hip_assignment": [
+          1,
+          0
+        ],
+        "error_assignment": [
+          1,
+          0
+        ],
+        "correct": true,
+        "cost_hip_px": 106.15383795740627,
+        "cost_best_px": 106.15383795740627,
+        "ambiguous": true
+      },
+      "hip_gap": {
+        "dwpose_px": 4.367382875843362,
+        "fit_px": 72.35316763865251,
+        "error_px": 67.98578476280915,
+        "error_relative": 15.566710475247895,
+        "error_norm": 0.37473189227557235,
+        "projected_gt_px": 73.53630046087024
+      },
+      "error_3d": [
+        {
+          "mpjpe3d_absolute_m": 0.18468279677269603,
+          "mpjpe3d_root_aligned_m": 0.12207823215093186,
+          "hip_gap_m": {
+            "ground_truth": 0.13508765696726327,
+            "fit": 0.12000610673783718,
+            "error_m": 0.015081550229426088
+          }
+        },
+        {
+          "mpjpe3d_absolute_m": 0.06601980238783699,
+          "mpjpe3d_root_aligned_m": 0.033432362085460604,
+          "hip_gap_m": {
+            "ground_truth": 0.12898034566728722,
+            "fit": 0.11521763513828233,
+            "error_m": 0.013762710529004893
+          }
+        }
+      ],
+      "assignment": {
+        "permutation": [
+          1,
+          0
+        ],
+        "cost_px": 85.26617178547596,
+        "cost_margin_to_next": 4.427306522350506,
+        "ambiguous": true,
+        "basis": "summed distance between hip centres, both permutations tried"
+      }
+    },
+    {
+      "name": "backhug_pair02_039_c64_r546",
+      "kind": "same_identity",
+      "available": true,
+      "person_count": 2,
+      "reproject_median_px": 0.17618575257567054,
+      "people": [
+        {
+          "gt_slot": 1,
+          "hi4d_side": "B",
+          "fit_index": 1,
+          "vs_dwpose": {
+            "comparable": true,
+            "joints": 9,
+            "torso_px": 190.42894887927667,
+            "mpjpe_px": 92.6653594022176,
+            "mpjpe_norm": 0.48661382603630954,
+            "pck@0.1": 0.0,
+            "pck@0.2": 0.0,
+            "pck@0.5": 0.6666666666666666
+          },
+          "torso_scale_ratio": 1.0280457633930735,
+          "vs_smpl_projected": {
+            "comparable": true,
+            "joints": 12,
+            "torso_px": 225.51944796244752,
+            "mpjpe_px": 103.35524849732343,
+            "mpjpe_norm": 0.4582986054246359,
+            "pck@0.1": 0.0,
+            "pck@0.2": 0.0,
+            "pck@0.5": 0.75
+          }
+        },
+        {
+          "gt_slot": 2,
+          "hi4d_side": "A",
+          "fit_index": 0,
+          "vs_dwpose": {
+            "comparable": true,
+            "joints": 10,
+            "torso_px": 187.1220415235138,
+            "mpjpe_px": 14.339365434425961,
+            "mpjpe_norm": 0.0766310869509409,
+            "pck@0.1": 0.7,
+            "pck@0.2": 1.0,
+            "pck@0.5": 1.0
+          },
+          "torso_scale_ratio": 1.0843659709309486,
+          "vs_smpl_projected": {
+            "comparable": true,
+            "joints": 12,
+            "torso_px": 197.67080276722234,
+            "mpjpe_px": 110.6145063203723,
+            "mpjpe_norm": 0.5595895032137459,
+            "pck@0.1": 0.0,
+            "pck@0.2": 0.0,
+            "pck@0.5": 0.5
+          }
+        }
+      ],
+      "correspondence": {
+        "hip_assignment": [
+          1,
+          0
+        ],
+        "error_assignment": [
+          0,
+          1
+        ],
+        "correct": false,
+        "cost_hip_px": 107.00472483664356,
+        "cost_best_px": 106.51529870944853,
+        "ambiguous": true
+      },
+      "hip_gap": {
+        "dwpose_px": 4.248327651226795,
+        "fit_px": 72.32495582227399,
+        "error_px": 68.07662817104719,
+        "error_relative": 16.024335635079517,
+        "error_norm": 0.3606221670795757,
+        "projected_gt_px": 72.60674768363997
+      },
+      "error_3d": [
+        {
+          "mpjpe3d_absolute_m": 0.44365439118873246,
+          "mpjpe3d_root_aligned_m": 0.2213653675857849,
+          "hip_gap_m": {
+            "ground_truth": 0.12898034714873205,
+            "fit": 0.11943499360780838,
+            "error_m": 0.009545353540923673
+          }
+        },
+        {
+          "mpjpe3d_absolute_m": 0.35249408483035743,
+          "mpjpe3d_root_aligned_m": 0.2865119792713763,
+          "hip_gap_m": {
+            "ground_truth": 0.13508765159570552,
+            "fit": 0.11478365099221145,
+            "error_m": 0.020304000603494063
+          }
+        }
+      ],
+      "assignment": {
+        "permutation": [
+          1,
+          0
+        ],
+        "cost_px": 75.76269030607692,
+        "cost_margin_to_next": 6.827168153094618,
+        "ambiguous": true,
+        "basis": "summed distance between hip centres, both permutations tried"
+      }
+    },
+    {
+      "name": "dance_pair02_059_c4_r424",
+      "kind": "same_identity",
+      "available": true,
+      "person_count": 2,
+      "reproject_median_px": 0.1305525495054115,
+      "people": [
+        {
+          "gt_slot": 1,
+          "hi4d_side": "A",
+          "fit_index": 0,
+          "vs_dwpose": {
+            "comparable": true,
+            "joints": 7,
+            "torso_px": 192.53379590134892,
+            "mpjpe_px": 15.56348399705272,
+            "mpjpe_norm": 0.08083507585871932,
+            "pck@0.1": 0.7142857142857143,
+            "pck@0.2": 1.0,
+            "pck@0.5": 1.0
+          },
+          "torso_scale_ratio": 1.1009683352070676,
+          "vs_smpl_projected": {
+            "comparable": true,
+            "joints": 12,
+            "torso_px": 229.6249149048024,
+            "mpjpe_px": 31.452509412258763,
+            "mpjpe_norm": 0.13697341782488326,
+            "pck@0.1": 0.6666666666666666,
+            "pck@0.2": 0.8333333333333334,
+            "pck@0.5": 0.9166666666666666
+          }
+        },
+        {
+          "gt_slot": 2,
+          "hi4d_side": "B",
+          "fit_index": 1,
+          "vs_dwpose": {
+            "comparable": true,
+            "joints": 8,
+            "torso_px": 192.7478128091265,
+            "mpjpe_px": 20.161778597942487,
+            "mpjpe_norm": 0.10460185412276615,
+            "pck@0.1": 0.375,
+            "pck@0.2": 1.0,
+            "pck@0.5": 1.0
+          },
+          "torso_scale_ratio": 1.1495895987999858,
+          "vs_smpl_projected": {
+            "comparable": true,
+            "joints": 12,
+            "torso_px": 238.14368032055918,
+            "mpjpe_px": 18.29962640288266,
+            "mpjpe_norm": 0.0768427966606126,
+            "pck@0.1": 0.6666666666666666,
+            "pck@0.2": 1.0,
+            "pck@0.5": 1.0
+          }
+        }
+      ],
+      "correspondence": {
+        "hip_assignment": [
+          0,
+          1
+        ],
+        "error_assignment": [
+          0,
+          1
+        ],
+        "correct": true,
+        "cost_hip_px": 35.72526259499521,
+        "cost_best_px": 35.72526259499521,
+        "ambiguous": false
+      },
+      "hip_gap": {
+        "dwpose_px": 138.16729786309924,
+        "fit_px": 126.0867301519402,
+        "error_px": 12.080567711159034,
+        "error_relative": 0.08743434877860073,
+        "error_norm": 0.06271032635890557,
+        "projected_gt_px": 124.57877351675117
+      },
+      "error_3d": [
+        {
+          "mpjpe3d_absolute_m": 0.17181175530078627,
+          "mpjpe3d_root_aligned_m": 0.10644119350944502,
+          "hip_gap_m": {
+            "ground_truth": 0.13508764583245245,
+            "fit": 0.12001745611744952,
+            "error_m": 0.01507018971500293
+          }
+        },
+        {
+          "mpjpe3d_absolute_m": 0.07158995720670452,
+          "mpjpe3d_root_aligned_m": 0.05728441554165957,
+          "hip_gap_m": {
+            "ground_truth": 0.12898035728754945,
+            "fit": 0.11776578891805249,
+            "error_m": 0.011214568369496955
+          }
+        }
+      ],
+      "assignment": {
+        "permutation": [
+          0,
+          1
+        ],
+        "cost_px": 47.683137816546676,
+        "cost_margin_to_next": 220.37873370725737,
+        "ambiguous": false,
+        "basis": "summed distance between hip centres, both permutations tried"
+      }
+    },
+    {
+      "name": "dance_pair02_120_c4_r459",
+      "kind": "same_identity",
+      "available": true,
+      "person_count": 2,
+      "reproject_median_px": 0.1397277354180584,
+      "people": [
+        {
+          "gt_slot": 1,
+          "hi4d_side": "A",
+          "fit_index": 1,
+          "vs_dwpose": {
+            "comparable": true,
+            "joints": 7,
+            "torso_px": 184.19150742338394,
+            "mpjpe_px": 18.646728690696612,
+            "mpjpe_norm": 0.1012355507131776,
+            "pck@0.1": 0.5714285714285714,
+            "pck@0.2": 1.0,
+            "pck@0.5": 1.0
+          },
+          "torso_scale_ratio": 1.1265515566188387,
+          "vs_smpl_projected": {
+            "comparable": true,
+            "joints": 12,
+            "torso_px": 222.75805622364183,
+            "mpjpe_px": 10.42736187191043,
+            "mpjpe_norm": 0.04681025705055397,
+            "pck@0.1": 0.9166666666666666,
+            "pck@0.2": 1.0,
+            "pck@0.5": 1.0
+          }
+        },
+        {
+          "gt_slot": 2,
+          "hi4d_side": "B",
+          "fit_index": 0,
+          "vs_dwpose": {
+            "comparable": true,
+            "joints": 7,
+            "torso_px": 202.4980258845425,
+            "mpjpe_px": 14.917368589397212,
+            "mpjpe_norm": 0.07366673588167516,
+            "pck@0.1": 0.5714285714285714,
+            "pck@0.2": 1.0,
+            "pck@0.5": 1.0
+          },
+          "torso_scale_ratio": 1.1205890669255905,
+          "vs_smpl_projected": {
+            "comparable": true,
+            "joints": 12,
+            "torso_px": 239.30197139368306,
+            "mpjpe_px": 14.40732109745772,
+            "mpjpe_norm": 0.06020560973045975,
+            "pck@0.1": 0.75,
+            "pck@0.2": 1.0,
+            "pck@0.5": 1.0
+          }
+        }
+      ],
+      "correspondence": {
+        "hip_assignment": [
+          1,
+          0
+        ],
+        "error_assignment": [
+          1,
+          0
+        ],
+        "correct": true,
+        "cost_hip_px": 33.564097280093826,
+        "cost_best_px": 33.564097280093826,
+        "ambiguous": false
+      },
+      "hip_gap": {
+        "dwpose_px": 155.7775541917424,
+        "fit_px": 135.456169015995,
+        "error_px": 20.321385175747423,
+        "error_relative": 0.1304513046259179,
+        "error_norm": 0.10510439732830942,
+        "projected_gt_px": 140.8103537986823
+      },
+      "error_3d": [
+        {
+          "mpjpe3d_absolute_m": 0.15513705813672102,
+          "mpjpe3d_root_aligned_m": 0.06363345650951242,
+          "hip_gap_m": {
+            "ground_truth": 0.13508765440044632,
+            "fit": 0.12142308528425148,
+            "error_m": 0.013664569116194833
+          }
+        },
+        {
+          "mpjpe3d_absolute_m": 0.0944991742933524,
+          "mpjpe3d_root_aligned_m": 0.058494087066457104,
+          "hip_gap_m": {
+            "ground_truth": 0.12898035955698925,
+            "fit": 0.11827914096257156,
+            "error_m": 0.010701218594417694
+          }
+        }
+      ],
+      "assignment": {
+        "permutation": [
+          1,
+          0
+        ],
+        "cost_px": 44.414307564059136,
+        "cost_margin_to_next": 249.25403333484195,
+        "ambiguous": false,
+        "basis": "summed distance between hip centres, both permutations tried"
+      }
+    },
+    {
+      "name": "hug_pair00_084_c4_r000",
+      "kind": "same_identity",
+      "available": true,
+      "person_count": 2,
+      "reproject_median_px": 0.17430950159150255,
+      "people": [
+        {
+          "gt_slot": 1,
+          "hi4d_side": "B",
+          "fit_index": 1,
+          "vs_dwpose": {
+            "comparable": true,
+            "joints": 8,
+            "torso_px": 191.21829515423522,
+            "mpjpe_px": 22.128318105966766,
+            "mpjpe_norm": 0.11572280826015227,
+            "pck@0.1": 0.25,
+            "pck@0.2": 1.0,
+            "pck@0.5": 1.0
+          },
+          "torso_scale_ratio": 1.118189629745795,
+          "vs_smpl_projected": {
+            "comparable": true,
+            "joints": 12,
+            "torso_px": 225.76156958765856,
+            "mpjpe_px": 19.908440758243508,
+            "mpjpe_norm": 0.0881834795647692,
+            "pck@0.1": 0.75,
+            "pck@0.2": 0.9166666666666666,
+            "pck@0.5": 1.0
+          }
+        },
+        {
+          "gt_slot": 2,
+          "hi4d_side": "A",
+          "fit_index": 0,
+          "vs_dwpose": {
+            "comparable": true,
+            "joints": 10,
+            "torso_px": 195.7458028343368,
+            "mpjpe_px": 15.586868548475968,
+            "mpjpe_norm": 0.07962811116653885,
+            "pck@0.1": 0.8,
+            "pck@0.2": 1.0,
+            "pck@0.5": 1.0
+          },
+          "torso_scale_ratio": 1.0657487126180925,
+          "vs_smpl_projected": {
+            "comparable": true,
+            "joints": 12,
+            "torso_px": 219.0141991569799,
+            "mpjpe_px": 15.158561262187332,
+            "mpjpe_norm": 0.06921268721633125,
+            "pck@0.1": 0.9166666666666666,
+            "pck@0.2": 0.9166666666666666,
+            "pck@0.5": 1.0
+          }
+        }
+      ],
+      "correspondence": {
+        "hip_assignment": [
+          1,
+          0
+        ],
+        "error_assignment": [
+          1,
+          0
+        ],
+        "correct": true,
+        "cost_hip_px": 37.71518665444273,
+        "cost_best_px": 37.71518665444273,
+        "ambiguous": false
+      },
+      "hip_gap": {
+        "dwpose_px": 204.2027368725825,
+        "fit_px": 218.61402479423575,
+        "error_px": 14.41128792165324,
+        "error_relative": 0.07057343178826017,
+        "error_norm": 0.07448385003447447,
+        "projected_gt_px": 220.9225280703227
+      },
+      "error_3d": [
+        {
+          "mpjpe3d_absolute_m": 0.20647357231941313,
+          "mpjpe3d_root_aligned_m": 0.08395991098246577,
+          "hip_gap_m": {
+            "ground_truth": 0.12377955459992818,
+            "fit": 0.11457651472033065,
+            "error_m": 0.00920303987959753
+          }
+        },
+        {
+          "mpjpe3d_absolute_m": 0.14180007720882729,
+          "mpjpe3d_root_aligned_m": 0.0575026662659489,
+          "hip_gap_m": {
+            "ground_truth": 0.10133904238140169,
+            "fit": 0.11709881049049027,
+            "error_m": 0.01575976810908858
+          }
+        }
+      ],
+      "assignment": {
+        "permutation": [
+          1,
+          0
+        ],
+        "cost_px": 33.05897532325119,
+        "cost_margin_to_next": 389.81382935702675,
+        "ambiguous": false,
+        "basis": "summed distance between hip centres, both permutations tried"
+      }
+    },
+    {
+      "name": "hug_pair00_086_c4_r003",
+      "kind": "same_identity",
+      "available": true,
+      "person_count": 2,
+      "reproject_median_px": 0.18096688967168784,
+      "people": [
+        {
+          "gt_slot": 1,
+          "hi4d_side": "B",
+          "fit_index": 1,
+          "vs_dwpose": {
+            "comparable": true,
+            "joints": 8,
+            "torso_px": 192.46890058355174,
+            "mpjpe_px": 23.467969410508836,
+            "mpjpe_norm": 0.12193122805479564,
+            "pck@0.1": 0.375,
+            "pck@0.2": 0.875,
+            "pck@0.5": 1.0
+          },
+          "torso_scale_ratio": 1.1052234817470616,
+          "vs_smpl_projected": {
+            "comparable": true,
+            "joints": 12,
+            "torso_px": 224.42530909705613,
+            "mpjpe_px": 33.1682621064976,
+            "mpjpe_norm": 0.1477919858501943,
+            "pck@0.1": 0.5833333333333334,
+            "pck@0.2": 0.75,
+            "pck@0.5": 0.9166666666666666
+          }
+        },
+        {
+          "gt_slot": 2,
+          "hi4d_side": "A",
+          "fit_index": 0,
+          "vs_dwpose": {
+            "comparable": true,
+            "joints": 9,
+            "torso_px": 192.9642449907163,
+            "mpjpe_px": 15.027991061223664,
+            "mpjpe_norm": 0.07787966657733236,
+            "pck@0.1": 0.7777777777777778,
+            "pck@0.2": 1.0,
+            "pck@0.5": 1.0
+          },
+          "torso_scale_ratio": 1.083842364733353,
+          "vs_smpl_projected": {
+            "comparable": true,
+            "joints": 12,
+            "torso_px": 219.0123392564102,
+            "mpjpe_px": 15.486526813783366,
+            "mpjpe_norm": 0.07071075020870128,
+            "pck@0.1": 0.8333333333333334,
+            "pck@0.2": 0.9166666666666666,
+            "pck@0.5": 1.0
+          }
+        }
+      ],
+      "correspondence": {
+        "hip_assignment": [
+          1,
+          0
+        ],
+        "error_assignment": [
+          1,
+          0
+        ],
+        "correct": true,
+        "cost_hip_px": 38.4959604717325,
+        "cost_best_px": 38.4959604717325,
+        "ambiguous": false
+      },
+      "hip_gap": {
+        "dwpose_px": 192.64609624002262,
+        "fit_px": 209.78563524488996,
+        "error_px": 17.139539004867345,
+        "error_relative": 0.08896904395878732,
+        "error_norm": 0.08893650793488789,
+        "projected_gt_px": 211.18525825537822
+      },
+      "error_3d": [
+        {
+          "mpjpe3d_absolute_m": 0.21596725726472335,
+          "mpjpe3d_root_aligned_m": 0.1108615564964298,
+          "hip_gap_m": {
+            "ground_truth": 0.1237795520681377,
+            "fit": 0.11463751424063087,
+            "error_m": 0.009142037827506833
+          }
+        },
+        {
+          "mpjpe3d_absolute_m": 0.1099403020638874,
+          "mpjpe3d_root_aligned_m": 0.05956701836140487,
+          "hip_gap_m": {
+            "ground_truth": 0.10133904820097714,
+            "fit": 0.11593595395766777,
+            "error_m": 0.014596905756690634
+          }
+        }
+      ],
+      "assignment": {
+        "permutation": [
+          1,
+          0
+        ],
+        "cost_px": 29.150906321091025,
+        "cost_margin_to_next": 373.3215179582125,
+        "ambiguous": false,
+        "basis": "summed distance between hip centres, both permutations tried"
+      }
+    },
+    {
+      "name": "pose_pair02_032_c52_r477",
+      "kind": "same_identity",
+      "available": true,
+      "person_count": 2,
+      "reproject_median_px": 0.15689264168576228,
+      "people": [
+        {
+          "gt_slot": 1,
+          "hi4d_side": "B",
+          "fit_index": 1,
+          "vs_dwpose": {
+            "comparable": true,
+            "joints": 12,
+            "torso_px": 179.93746241002614,
+            "mpjpe_px": 20.365011256085545,
+            "mpjpe_norm": 0.11317827306955953,
+            "pck@0.1": 0.5833333333333334,
+            "pck@0.2": 0.9166666666666666,
+            "pck@0.5": 1.0
+          },
+          "torso_scale_ratio": 1.128873912600301,
+          "vs_smpl_projected": {
+            "comparable": true,
+            "joints": 12,
+            "torso_px": 223.9348118092597,
+            "mpjpe_px": 11.306894771892049,
+            "mpjpe_norm": 0.05049190289146687,
+            "pck@0.1": 0.9166666666666666,
+            "pck@0.2": 1.0,
+            "pck@0.5": 1.0
+          }
+        },
+        {
+          "gt_slot": 2,
+          "hi4d_side": "A",
+          "fit_index": 0,
+          "vs_dwpose": {
+            "comparable": true,
+            "joints": 10,
+            "torso_px": 177.639537283508,
+            "mpjpe_px": 15.495485224098639,
+            "mpjpe_norm": 0.08722993462524198,
+            "pck@0.1": 0.6,
+            "pck@0.2": 1.0,
+            "pck@0.5": 1.0
+          },
+          "torso_scale_ratio": 1.1871546305006113,
+          "vs_smpl_projected": {
+            "comparable": true,
+            "joints": 12,
+            "torso_px": 225.88893599963504,
+            "mpjpe_px": 8.685426734443498,
+            "mpjpe_norm": 0.038449987362185516,
+            "pck@0.1": 1.0,
+            "pck@0.2": 1.0,
+            "pck@0.5": 1.0
+          }
+        }
+      ],
+      "correspondence": {
+        "hip_assignment": [
+          1,
+          0
+        ],
+        "error_assignment": [
+          1,
+          0
+        ],
+        "correct": true,
+        "cost_hip_px": 35.86049648018418,
+        "cost_best_px": 35.86049648018418,
+        "ambiguous": false
+      },
+      "hip_gap": {
+        "dwpose_px": 212.9047201385445,
+        "fit_px": 228.30795361457183,
+        "error_px": 15.403233476027339,
+        "error_relative": 0.07234801307366,
+        "error_norm": 0.08615337949157173,
+        "projected_gt_px": 230.4176752983679
+      },
+      "error_3d": [
+        {
+          "mpjpe3d_absolute_m": 0.09107515062094985,
+          "mpjpe3d_root_aligned_m": 0.0506348806593953,
+          "hip_gap_m": {
+            "ground_truth": 0.13508763293975268,
+            "fit": 0.12373570985841169,
+            "error_m": 0.01135192308134099
+          }
+        },
+        {
+          "mpjpe3d_absolute_m": 0.09170672866394194,
+          "mpjpe3d_root_aligned_m": 0.03721953046346143,
+          "hip_gap_m": {
+            "ground_truth": 0.1289803555950983,
+            "fit": 0.11873623841159187,
+            "error_m": 0.01024411718350643
+          }
+        }
+      ],
+      "assignment": {
+        "permutation": [
+          1,
+          0
+        ],
+        "cost_px": 44.85093956103218,
+        "cost_margin_to_next": 398.19504176886545,
+        "ambiguous": false,
+        "basis": "summed distance between hip centres, both permutations tried"
+      }
+    },
+    {
+      "name": "pose_pair02_034_c52_r478",
+      "kind": "same_identity",
+      "available": true,
+      "person_count": 2,
+      "reproject_median_px": 0.16804497895777842,
+      "people": [
+        {
+          "gt_slot": 1,
+          "hi4d_side": "B",
+          "fit_index": 1,
+          "vs_dwpose": {
+            "comparable": true,
+            "joints": 12,
+            "torso_px": 179.8887595646916,
+            "mpjpe_px": 13.280413368975148,
+            "mpjpe_norm": 0.0738256987324394,
+            "pck@0.1": 0.6666666666666666,
+            "pck@0.2": 1.0,
+            "pck@0.5": 1.0
+          },
+          "torso_scale_ratio": 1.14159059885467,
+          "vs_smpl_projected": {
+            "comparable": true,
+            "joints": 12,
+            "torso_px": 223.95179882308034,
+            "mpjpe_px": 11.352645745757934,
+            "mpjpe_norm": 0.05069236239859993,
+            "pck@0.1": 0.9166666666666666,
+            "pck@0.2": 1.0,
+            "pck@0.5": 1.0
+          }
+        },
+        {
+          "gt_slot": 2,
+          "hi4d_side": "A",
+          "fit_index": 0,
+          "vs_dwpose": {
+            "comparable": true,
+            "joints": 10,
+            "torso_px": 180.3899327690684,
+            "mpjpe_px": 14.301733552291637,
+            "mpjpe_norm": 0.07928232652872283,
+            "pck@0.1": 0.6,
+            "pck@0.2": 1.0,
+            "pck@0.5": 1.0
+          },
+          "torso_scale_ratio": 1.1607669232638174,
+          "vs_smpl_projected": {
+            "comparable": true,
+            "joints": 12,
+            "torso_px": 224.65265452558555,
+            "mpjpe_px": 14.817023066683378,
+            "mpjpe_norm": 0.0659552547819811,
+            "pck@0.1": 0.8333333333333334,
+            "pck@0.2": 0.9166666666666666,
+            "pck@0.5": 1.0
+          }
+        }
+      ],
+      "correspondence": {
+        "hip_assignment": [
+          1,
+          0
+        ],
+        "error_assignment": [
+          1,
+          0
+        ],
+        "correct": true,
+        "cost_hip_px": 27.582146921266784,
+        "cost_best_px": 27.582146921266784,
+        "ambiguous": false
+      },
+      "hip_gap": {
+        "dwpose_px": 197.294698931602,
+        "fit_px": 210.17925415594908,
+        "error_px": 12.884555224347082,
+        "error_relative": 0.06530613997294418,
+        "error_norm": 0.07152549122950023,
+        "projected_gt_px": 214.22778892629177
+      },
+      "error_3d": [
+        {
+          "mpjpe3d_absolute_m": 0.09203055913075461,
+          "mpjpe3d_root_aligned_m": 0.05126664750066577,
+          "hip_gap_m": {
+            "ground_truth": 0.13508763366386836,
+            "fit": 0.12610312321838993,
+            "error_m": 0.008984510445478433
+          }
+        },
+        {
+          "mpjpe3d_absolute_m": 0.10534855393854183,
+          "mpjpe3d_root_aligned_m": 0.05163333509704057,
+          "hip_gap_m": {
+            "ground_truth": 0.12898036089474368,
+            "fit": 0.11845452199072383,
+            "error_m": 0.010525838904019855
+          }
+        }
+      ],
+      "assignment": {
+        "permutation": [
+          1,
+          0
+        ],
+        "cost_px": 43.40256597845353,
+        "cost_margin_to_next": 366.0758758669845,
+        "ambiguous": false,
+        "basis": "summed distance between hip centres, both permutations tried"
+      }
+    },
+    {
+      "name": "taichi_pair00_048_c4_r129",
+      "kind": "same_identity",
+      "available": true,
+      "person_count": 2,
+      "reproject_median_px": 0.17234351071366297,
+      "people": [
+        {
+          "gt_slot": 1,
+          "hi4d_side": "B",
+          "fit_index": 1,
+          "vs_dwpose": {
+            "comparable": true,
+            "joints": 10,
+            "torso_px": 200.03027023884687,
+            "mpjpe_px": 15.975105896703388,
+            "mpjpe_norm": 0.07986344205618608,
+            "pck@0.1": 0.6,
+            "pck@0.2": 1.0,
+            "pck@0.5": 1.0
+          },
+          "torso_scale_ratio": 1.0608697070986879,
+          "vs_smpl_projected": {
+            "comparable": true,
+            "joints": 12,
+            "torso_px": 230.35718987446063,
+            "mpjpe_px": 9.768769689075892,
+            "mpjpe_norm": 0.04240705356060146,
+            "pck@0.1": 0.8333333333333334,
+            "pck@0.2": 1.0,
+            "pck@0.5": 1.0
+          }
+        },
+        {
+          "gt_slot": 2,
+          "hi4d_side": "A",
+          "fit_index": 0,
+          "vs_dwpose": {
+            "comparable": true,
+            "joints": 12,
+            "torso_px": 208.41096360767074,
+            "mpjpe_px": 15.742387740886619,
+            "mpjpe_norm": 0.0755353147856527,
+            "pck@0.1": 0.75,
+            "pck@0.2": 1.0,
+            "pck@0.5": 1.0
+          },
+          "torso_scale_ratio": 1.014974352510398,
+          "vs_smpl_projected": {
+            "comparable": true,
+            "joints": 12,
+            "torso_px": 217.6222998823684,
+            "mpjpe_px": 8.919001795768894,
+            "mpjpe_norm": 0.04098385965312328,
+            "pck@0.1": 0.9166666666666666,
+            "pck@0.2": 1.0,
+            "pck@0.5": 1.0
+          }
+        }
+      ],
+      "correspondence": {
+        "hip_assignment": [
+          1,
+          0
+        ],
+        "error_assignment": [
+          1,
+          0
+        ],
+        "correct": true,
+        "cost_hip_px": 31.717493637590007,
+        "cost_best_px": 31.717493637590007,
+        "ambiguous": false
+      },
+      "hip_gap": {
+        "dwpose_px": 296.2502842569358,
+        "fit_px": 288.1300770945835,
+        "error_px": 8.120207162352301,
+        "error_relative": 0.027409955682303082,
+        "error_norm": 0.03976193630540094,
+        "projected_gt_px": 297.1117071432749
+      },
+      "error_3d": [
+        {
+          "mpjpe3d_absolute_m": 0.21349106761504946,
+          "mpjpe3d_root_aligned_m": 0.0641246688629057,
+          "hip_gap_m": {
+            "ground_truth": 0.12377956018183517,
+            "fit": 0.11802036537000897,
+            "error_m": 0.005759194811826199
+          }
+        },
+        {
+          "mpjpe3d_absolute_m": 0.1521584176867849,
+          "mpjpe3d_root_aligned_m": 0.08011375051028402,
+          "hip_gap_m": {
+            "ground_truth": 0.10133903658696003,
+            "fit": 0.11783788524536183,
+            "error_m": 0.016498848658401802
+          }
+        }
+      ],
+      "assignment": {
+        "permutation": [
+          1,
+          0
+        ],
+        "cost_px": 29.652253082031734,
+        "cost_margin_to_next": 555.2416942946696,
+        "ambiguous": false,
+        "basis": "summed distance between hip centres, both permutations tried"
+      }
+    },
+    {
+      "name": "taichi_pair00_049_c4_r132",
+      "kind": "same_identity",
+      "available": true,
+      "person_count": 2,
+      "reproject_median_px": 0.16387483040076123,
+      "people": [
+        {
+          "gt_slot": 1,
+          "hi4d_side": "B",
+          "fit_index": 1,
+          "vs_dwpose": {
+            "comparable": true,
+            "joints": 10,
+            "torso_px": 199.02599543295264,
+            "mpjpe_px": 16.616396434000517,
+            "mpjpe_norm": 0.08348857342908358,
+            "pck@0.1": 0.6,
+            "pck@0.2": 1.0,
+            "pck@0.5": 1.0
+          },
+          "torso_scale_ratio": 1.0624576810390491,
+          "vs_smpl_projected": {
+            "comparable": true,
+            "joints": 12,
+            "torso_px": 230.10738590595196,
+            "mpjpe_px": 9.81799588206943,
+            "mpjpe_norm": 0.04266701759013586,
+            "pck@0.1": 0.8333333333333334,
+            "pck@0.2": 1.0,
+            "pck@0.5": 1.0
+          }
+        },
+        {
+          "gt_slot": 2,
+          "hi4d_side": "A",
+          "fit_index": 0,
+          "vs_dwpose": {
+            "comparable": true,
+            "joints": 12,
+            "torso_px": 206.2514960578327,
+            "mpjpe_px": 16.7110525191065,
+            "mpjpe_norm": 0.08102269723377299,
+            "pck@0.1": 0.75,
+            "pck@0.2": 1.0,
+            "pck@0.5": 1.0
+          },
+          "torso_scale_ratio": 1.0218668741765955,
+          "vs_smpl_projected": {
+            "comparable": true,
+            "joints": 12,
+            "torso_px": 217.34447867806787,
+            "mpjpe_px": 10.648093275567108,
+            "mpjpe_norm": 0.04899178180338842,
+            "pck@0.1": 0.9166666666666666,
+            "pck@0.2": 1.0,
+            "pck@0.5": 1.0
+          }
+        }
+      ],
+      "correspondence": {
+        "hip_assignment": [
+          1,
+          0
+        ],
+        "error_assignment": [
+          1,
+          0
+        ],
+        "correct": true,
+        "cost_hip_px": 33.327448953107016,
+        "cost_best_px": 33.327448953107016,
+        "ambiguous": false
+      },
+      "hip_gap": {
+        "dwpose_px": 295.13835910438996,
+        "fit_px": 287.0629997340767,
+        "error_px": 8.075359370313265,
+        "error_relative": 0.027361266745597863,
+        "error_norm": 0.039851013391385796,
+        "projected_gt_px": 297.05117268372896
+      },
+      "error_3d": [
+        {
+          "mpjpe3d_absolute_m": 0.23068741406053125,
+          "mpjpe3d_root_aligned_m": 0.06364240629541494,
+          "hip_gap_m": {
+            "ground_truth": 0.12377955471881323,
+            "fit": 0.11746028404098474,
+            "error_m": 0.00631927067782849
+          }
+        },
+        {
+          "mpjpe3d_absolute_m": 0.1639529020940168,
+          "mpjpe3d_root_aligned_m": 0.08331750103787862,
+          "hip_gap_m": {
+            "ground_truth": 0.10133904860143784,
+            "fit": 0.11764819231080412,
+            "error_m": 0.016309143709366272
+          }
+        }
+      ],
+      "assignment": {
+        "permutation": [
+          1,
+          0
+        ],
+        "cost_px": 30.497278755868706,
+        "cost_margin_to_next": 552.2436702478957,
+        "ambiguous": false,
+        "basis": "summed distance between hip centres, both permutations tried"
+      }
+    },
+    {
+      "name": "yoga_pair00_052_c4_r261",
+      "kind": "same_identity",
+      "available": true,
+      "person_count": 2,
+      "reproject_median_px": 0.1843196440334794,
+      "people": [
+        {
+          "gt_slot": 1,
+          "hi4d_side": "B",
+          "fit_index": 1,
+          "vs_dwpose": {
+            "comparable": true,
+            "joints": 11,
+            "torso_px": 196.8615045333002,
+            "mpjpe_px": 10.436649028196657,
+            "mpjpe_norm": 0.05301518472562136,
+            "pck@0.1": 0.9090909090909091,
+            "pck@0.2": 1.0,
+            "pck@0.5": 1.0
+          },
+          "torso_scale_ratio": 1.0504184067187126,
+          "vs_smpl_projected": {
+            "comparable": true,
+            "joints": 12,
+            "torso_px": 224.8223748979633,
+            "mpjpe_px": 8.094351515426201,
+            "mpjpe_norm": 0.03600331826002578,
+            "pck@0.1": 1.0,
+            "pck@0.2": 1.0,
+            "pck@0.5": 1.0
+          }
+        },
+        {
+          "gt_slot": 2,
+          "hi4d_side": "A",
+          "fit_index": 0,
+          "vs_dwpose": {
+            "comparable": true,
+            "joints": 11,
+            "torso_px": 210.04602223549182,
+            "mpjpe_px": 14.276949800190188,
+            "mpjpe_norm": 0.06797057924850237,
+            "pck@0.1": 0.9090909090909091,
+            "pck@0.2": 1.0,
+            "pck@0.5": 1.0
+          },
+          "torso_scale_ratio": 1.0355320255354539,
+          "vs_smpl_projected": {
+            "comparable": true,
+            "joints": 12,
+            "torso_px": 223.84721856778742,
+            "mpjpe_px": 11.97656438512515,
+            "mpjpe_norm": 0.05350329774813933,
+            "pck@0.1": 1.0,
+            "pck@0.2": 1.0,
+            "pck@0.5": 1.0
+          }
+        }
+      ],
+      "correspondence": {
+        "hip_assignment": [
+          1,
+          0
+        ],
+        "error_assignment": [
+          1,
+          0
+        ],
+        "correct": true,
+        "cost_hip_px": 24.713598828386843,
+        "cost_best_px": 24.713598828386843,
+        "ambiguous": false
+      },
+      "hip_gap": {
+        "dwpose_px": 151.39461401757737,
+        "fit_px": 158.11428635964683,
+        "error_px": 6.719672342069458,
+        "error_relative": 0.04438514795043689,
+        "error_norm": 0.03302800710239812,
+        "projected_gt_px": 169.82603317927203
+      },
+      "error_3d": [
+        {
+          "mpjpe3d_absolute_m": 0.22246642856822874,
+          "mpjpe3d_root_aligned_m": 0.04833718456237498,
+          "hip_gap_m": {
+            "ground_truth": 0.12377953427719861,
+            "fit": 0.11694280289774397,
+            "error_m": 0.006836731379454633
+          }
+        },
+        {
+          "mpjpe3d_absolute_m": 0.11251433695319246,
+          "mpjpe3d_root_aligned_m": 0.04513736895733778,
+          "hip_gap_m": {
+            "ground_truth": 0.10133902865840104,
+            "fit": 0.11709924391375313,
+            "error_m": 0.015760215255352095
+          }
+        }
+      ],
+      "assignment": {
+        "permutation": [
+          1,
+          0
+        ],
+        "cost_px": 14.483728473802863,
+        "cost_margin_to_next": 295.131427768024,
+        "ambiguous": false,
+        "basis": "summed distance between hip centres, both permutations tried"
+      }
+    },
+    {
+      "name": "yoga_pair00_052_c4_r263",
+      "kind": "same_identity",
+      "available": true,
+      "person_count": 2,
+      "reproject_median_px": 0.1843196440334794,
+      "people": [
+        {
+          "gt_slot": 1,
+          "hi4d_side": "B",
+          "fit_index": 1,
+          "vs_dwpose": {
+            "comparable": true,
+            "joints": 11,
+            "torso_px": 196.8615045333002,
+            "mpjpe_px": 10.436649028196657,
+            "mpjpe_norm": 0.05301518472562136,
+            "pck@0.1": 0.9090909090909091,
+            "pck@0.2": 1.0,
+            "pck@0.5": 1.0
+          },
+          "torso_scale_ratio": 1.0504184067187126,
+          "vs_smpl_projected": {
+            "comparable": true,
+            "joints": 12,
+            "torso_px": 224.8223748979633,
+            "mpjpe_px": 8.094351515426201,
+            "mpjpe_norm": 0.03600331826002578,
+            "pck@0.1": 1.0,
+            "pck@0.2": 1.0,
+            "pck@0.5": 1.0
+          }
+        },
+        {
+          "gt_slot": 2,
+          "hi4d_side": "A",
+          "fit_index": 0,
+          "vs_dwpose": {
+            "comparable": true,
+            "joints": 11,
+            "torso_px": 210.04602223549182,
+            "mpjpe_px": 14.276949800190188,
+            "mpjpe_norm": 0.06797057924850237,
+            "pck@0.1": 0.9090909090909091,
+            "pck@0.2": 1.0,
+            "pck@0.5": 1.0
+          },
+          "torso_scale_ratio": 1.0355320255354539,
+          "vs_smpl_projected": {
+            "comparable": true,
+            "joints": 12,
+            "torso_px": 223.84721856778742,
+            "mpjpe_px": 11.97656438512515,
+            "mpjpe_norm": 0.05350329774813933,
+            "pck@0.1": 1.0,
+            "pck@0.2": 1.0,
+            "pck@0.5": 1.0
+          }
+        }
+      ],
+      "correspondence": {
+        "hip_assignment": [
+          1,
+          0
+        ],
+        "error_assignment": [
+          1,
+          0
+        ],
+        "correct": true,
+        "cost_hip_px": 24.713598828386843,
+        "cost_best_px": 24.713598828386843,
+        "ambiguous": false
+      },
+      "hip_gap": {
+        "dwpose_px": 151.39461401757737,
+        "fit_px": 158.11428635964683,
+        "error_px": 6.719672342069458,
+        "error_relative": 0.04438514795043689,
+        "error_norm": 0.03302800710239812,
+        "projected_gt_px": 169.82603317927203
+      },
+      "error_3d": [
+        {
+          "mpjpe3d_absolute_m": 0.22246642856822874,
+          "mpjpe3d_root_aligned_m": 0.04833718456237498,
+          "hip_gap_m": {
+            "ground_truth": 0.12377953427719861,
+            "fit": 0.11694280289774397,
+            "error_m": 0.006836731379454633
+          }
+        },
+        {
+          "mpjpe3d_absolute_m": 0.11251433695319246,
+          "mpjpe3d_root_aligned_m": 0.04513736895733778,
+          "hip_gap_m": {
+            "ground_truth": 0.10133902865840104,
+            "fit": 0.11709924391375313,
+            "error_m": 0.015760215255352095
+          }
+        }
+      ],
+      "assignment": {
+        "permutation": [
+          1,
+          0
+        ],
+        "cost_px": 14.483728473802863,
+        "cost_margin_to_next": 295.131427768024,
+        "ambiguous": false,
+        "basis": "summed distance between hip centres, both permutations tried"
+      }
+    },
+    {
+      "name": "cross_backhug_pair02_037_r545_from_pair00",
+      "kind": "cross_pair",
+      "available": true,
+      "person_count": 2,
+      "reproject_median_px": 0.1725555453469959,
+      "people": [
+        {
+          "gt_slot": 1,
+          "hi4d_side": "B",
+          "fit_index": 1,
+          "vs_dwpose": {
+            "comparable": true,
+            "joints": 10,
+            "torso_px": 181.3322370833929,
+            "mpjpe_px": 92.2294688712421,
+            "mpjpe_norm": 0.5086214693795824,
+            "pck@0.1": 0.0,
+            "pck@0.2": 0.0,
+            "pck@0.5": 0.7
+          },
+          "torso_scale_ratio": 1.0771015277369094,
+          "vs_smpl_projected": {
+            "comparable": true,
+            "joints": 12,
+            "torso_px": 198.58690963468376,
+            "mpjpe_px": 33.93787308234625,
+            "mpjpe_norm": 0.1708968287223848,
+            "pck@0.1": 0.5833333333333334,
+            "pck@0.2": 0.6666666666666666,
+            "pck@0.5": 1.0
+          }
+        },
+        {
+          "gt_slot": 2,
+          "hi4d_side": "A",
+          "fit_index": 0,
+          "vs_dwpose": {
+            "comparable": true,
+            "joints": 11,
+            "torso_px": 181.5180362144741,
+            "mpjpe_px": 13.924369086164159,
+            "mpjpe_norm": 0.07671066400096853,
+            "pck@0.1": 0.8181818181818182,
+            "pck@0.2": 1.0,
+            "pck@0.5": 1.0
+          },
+          "torso_scale_ratio": 1.1211321533313792,
+          "vs_smpl_projected": {
+            "comparable": true,
+            "joints": 12,
+            "torso_px": 224.9028397775426,
+            "mpjpe_px": 16.588150227417152,
+            "mpjpe_norm": 0.07375696209005154,
+            "pck@0.1": 0.9166666666666666,
+            "pck@0.2": 1.0,
+            "pck@0.5": 1.0
+          }
+        }
+      ],
+      "correspondence": {
+        "hip_assignment": [
+          1,
+          0
+        ],
+        "error_assignment": [
+          1,
+          0
+        ],
+        "correct": true,
+        "cost_hip_px": 106.15383795740627,
+        "cost_best_px": 106.15383795740627,
+        "ambiguous": true
+      },
+      "hip_gap": {
+        "dwpose_px": 4.367382875843362,
+        "fit_px": 72.35316763865251,
+        "error_px": 67.98578476280915,
+        "error_relative": 15.566710475247895,
+        "error_norm": 0.37473189227557235,
+        "projected_gt_px": 73.53630046087024
+      },
+      "error_3d": [
+        {
+          "mpjpe3d_absolute_m": 0.18468279677269603,
+          "mpjpe3d_root_aligned_m": 0.12207823215093186,
+          "hip_gap_m": {
+            "ground_truth": 0.13508765696726327,
+            "fit": 0.12000610673783718,
+            "error_m": 0.015081550229426088
+          }
+        },
+        {
+          "mpjpe3d_absolute_m": 0.06601980238783699,
+          "mpjpe3d_root_aligned_m": 0.033432362085460604,
+          "hip_gap_m": {
+            "ground_truth": 0.12898034566728722,
+            "fit": 0.11521763513828233,
+            "error_m": 0.013762710529004893
+          }
+        }
+      ],
+      "assignment": {
+        "permutation": [
+          1,
+          0
+        ],
+        "cost_px": 85.26617178547596,
+        "cost_margin_to_next": 4.427306522350506,
+        "ambiguous": true,
+        "basis": "summed distance between hip centres, both permutations tried"
+      }
+    },
+    {
+      "name": "cross_dance_pair02_059_r424_from_pair00",
+      "kind": "cross_pair",
+      "available": true,
+      "person_count": 2,
+      "reproject_median_px": 0.1305525495054115,
+      "people": [
+        {
+          "gt_slot": 1,
+          "hi4d_side": "A",
+          "fit_index": 0,
+          "vs_dwpose": {
+            "comparable": true,
+            "joints": 7,
+            "torso_px": 192.53379590134892,
+            "mpjpe_px": 15.56348399705272,
+            "mpjpe_norm": 0.08083507585871932,
+            "pck@0.1": 0.7142857142857143,
+            "pck@0.2": 1.0,
+            "pck@0.5": 1.0
+          },
+          "torso_scale_ratio": 1.1009683352070676,
+          "vs_smpl_projected": {
+            "comparable": true,
+            "joints": 12,
+            "torso_px": 229.6249149048024,
+            "mpjpe_px": 31.452509412258763,
+            "mpjpe_norm": 0.13697341782488326,
+            "pck@0.1": 0.6666666666666666,
+            "pck@0.2": 0.8333333333333334,
+            "pck@0.5": 0.9166666666666666
+          }
+        },
+        {
+          "gt_slot": 2,
+          "hi4d_side": "B",
+          "fit_index": 1,
+          "vs_dwpose": {
+            "comparable": true,
+            "joints": 8,
+            "torso_px": 192.7478128091265,
+            "mpjpe_px": 20.161778597942487,
+            "mpjpe_norm": 0.10460185412276615,
+            "pck@0.1": 0.375,
+            "pck@0.2": 1.0,
+            "pck@0.5": 1.0
+          },
+          "torso_scale_ratio": 1.1495895987999858,
+          "vs_smpl_projected": {
+            "comparable": true,
+            "joints": 12,
+            "torso_px": 238.14368032055918,
+            "mpjpe_px": 18.29962640288266,
+            "mpjpe_norm": 0.0768427966606126,
+            "pck@0.1": 0.6666666666666666,
+            "pck@0.2": 1.0,
+            "pck@0.5": 1.0
+          }
+        }
+      ],
+      "correspondence": {
+        "hip_assignment": [
+          0,
+          1
+        ],
+        "error_assignment": [
+          0,
+          1
+        ],
+        "correct": true,
+        "cost_hip_px": 35.72526259499521,
+        "cost_best_px": 35.72526259499521,
+        "ambiguous": false
+      },
+      "hip_gap": {
+        "dwpose_px": 138.16729786309924,
+        "fit_px": 126.0867301519402,
+        "error_px": 12.080567711159034,
+        "error_relative": 0.08743434877860073,
+        "error_norm": 0.06271032635890557,
+        "projected_gt_px": 124.57877351675117
+      },
+      "error_3d": [
+        {
+          "mpjpe3d_absolute_m": 0.17181175530078627,
+          "mpjpe3d_root_aligned_m": 0.10644119350944502,
+          "hip_gap_m": {
+            "ground_truth": 0.13508764583245245,
+            "fit": 0.12001745611744952,
+            "error_m": 0.01507018971500293
+          }
+        },
+        {
+          "mpjpe3d_absolute_m": 0.07158995720670452,
+          "mpjpe3d_root_aligned_m": 0.05728441554165957,
+          "hip_gap_m": {
+            "ground_truth": 0.12898035728754945,
+            "fit": 0.11776578891805249,
+            "error_m": 0.011214568369496955
+          }
+        }
+      ],
+      "assignment": {
+        "permutation": [
+          0,
+          1
+        ],
+        "cost_px": 47.683137816546676,
+        "cost_margin_to_next": 220.37873370725737,
+        "ambiguous": false,
+        "basis": "summed distance between hip centres, both permutations tried"
+      }
+    },
+    {
+      "name": "cross_hug_pair00_084_r000_from_pair02",
+      "kind": "cross_pair",
+      "available": true,
+      "person_count": 2,
+      "reproject_median_px": 0.17430950159150255,
+      "people": [
+        {
+          "gt_slot": 1,
+          "hi4d_side": "B",
+          "fit_index": 1,
+          "vs_dwpose": {
+            "comparable": true,
+            "joints": 8,
+            "torso_px": 191.21829515423522,
+            "mpjpe_px": 22.128318105966766,
+            "mpjpe_norm": 0.11572280826015227,
+            "pck@0.1": 0.25,
+            "pck@0.2": 1.0,
+            "pck@0.5": 1.0
+          },
+          "torso_scale_ratio": 1.118189629745795,
+          "vs_smpl_projected": {
+            "comparable": true,
+            "joints": 12,
+            "torso_px": 225.76156958765856,
+            "mpjpe_px": 19.908440758243508,
+            "mpjpe_norm": 0.0881834795647692,
+            "pck@0.1": 0.75,
+            "pck@0.2": 0.9166666666666666,
+            "pck@0.5": 1.0
+          }
+        },
+        {
+          "gt_slot": 2,
+          "hi4d_side": "A",
+          "fit_index": 0,
+          "vs_dwpose": {
+            "comparable": true,
+            "joints": 10,
+            "torso_px": 195.7458028343368,
+            "mpjpe_px": 15.586868548475968,
+            "mpjpe_norm": 0.07962811116653885,
+            "pck@0.1": 0.8,
+            "pck@0.2": 1.0,
+            "pck@0.5": 1.0
+          },
+          "torso_scale_ratio": 1.0657487126180925,
+          "vs_smpl_projected": {
+            "comparable": true,
+            "joints": 12,
+            "torso_px": 219.0141991569799,
+            "mpjpe_px": 15.158561262187332,
+            "mpjpe_norm": 0.06921268721633125,
+            "pck@0.1": 0.9166666666666666,
+            "pck@0.2": 0.9166666666666666,
+            "pck@0.5": 1.0
+          }
+        }
+      ],
+      "correspondence": {
+        "hip_assignment": [
+          1,
+          0
+        ],
+        "error_assignment": [
+          1,
+          0
+        ],
+        "correct": true,
+        "cost_hip_px": 37.71518665444273,
+        "cost_best_px": 37.71518665444273,
+        "ambiguous": false
+      },
+      "hip_gap": {
+        "dwpose_px": 204.2027368725825,
+        "fit_px": 218.61402479423575,
+        "error_px": 14.41128792165324,
+        "error_relative": 0.07057343178826017,
+        "error_norm": 0.07448385003447447,
+        "projected_gt_px": 220.9225280703227
+      },
+      "error_3d": [
+        {
+          "mpjpe3d_absolute_m": 0.20647357231941313,
+          "mpjpe3d_root_aligned_m": 0.08395991098246577,
+          "hip_gap_m": {
+            "ground_truth": 0.12377955459992818,
+            "fit": 0.11457651472033065,
+            "error_m": 0.00920303987959753
+          }
+        },
+        {
+          "mpjpe3d_absolute_m": 0.14180007720882729,
+          "mpjpe3d_root_aligned_m": 0.0575026662659489,
+          "hip_gap_m": {
+            "ground_truth": 0.10133904238140169,
+            "fit": 0.11709881049049027,
+            "error_m": 0.01575976810908858
+          }
+        }
+      ],
+      "assignment": {
+        "permutation": [
+          1,
+          0
+        ],
+        "cost_px": 33.05897532325119,
+        "cost_margin_to_next": 389.81382935702675,
+        "ambiguous": false,
+        "basis": "summed distance between hip centres, both permutations tried"
+      }
+    },
+    {
+      "name": "cross_hug_pair00_086_r003_from_pair02",
+      "kind": "cross_pair",
+      "available": true,
+      "person_count": 2,
+      "reproject_median_px": 0.18096688967168784,
+      "people": [
+        {
+          "gt_slot": 1,
+          "hi4d_side": "B",
+          "fit_index": 1,
+          "vs_dwpose": {
+            "comparable": true,
+            "joints": 8,
+            "torso_px": 192.46890058355174,
+            "mpjpe_px": 23.467969410508836,
+            "mpjpe_norm": 0.12193122805479564,
+            "pck@0.1": 0.375,
+            "pck@0.2": 0.875,
+            "pck@0.5": 1.0
+          },
+          "torso_scale_ratio": 1.1052234817470616,
+          "vs_smpl_projected": {
+            "comparable": true,
+            "joints": 12,
+            "torso_px": 224.42530909705613,
+            "mpjpe_px": 33.1682621064976,
+            "mpjpe_norm": 0.1477919858501943,
+            "pck@0.1": 0.5833333333333334,
+            "pck@0.2": 0.75,
+            "pck@0.5": 0.9166666666666666
+          }
+        },
+        {
+          "gt_slot": 2,
+          "hi4d_side": "A",
+          "fit_index": 0,
+          "vs_dwpose": {
+            "comparable": true,
+            "joints": 9,
+            "torso_px": 192.9642449907163,
+            "mpjpe_px": 15.027991061223664,
+            "mpjpe_norm": 0.07787966657733236,
+            "pck@0.1": 0.7777777777777778,
+            "pck@0.2": 1.0,
+            "pck@0.5": 1.0
+          },
+          "torso_scale_ratio": 1.083842364733353,
+          "vs_smpl_projected": {
+            "comparable": true,
+            "joints": 12,
+            "torso_px": 219.0123392564102,
+            "mpjpe_px": 15.486526813783366,
+            "mpjpe_norm": 0.07071075020870128,
+            "pck@0.1": 0.8333333333333334,
+            "pck@0.2": 0.9166666666666666,
+            "pck@0.5": 1.0
+          }
+        }
+      ],
+      "correspondence": {
+        "hip_assignment": [
+          1,
+          0
+        ],
+        "error_assignment": [
+          1,
+          0
+        ],
+        "correct": true,
+        "cost_hip_px": 38.4959604717325,
+        "cost_best_px": 38.4959604717325,
+        "ambiguous": false
+      },
+      "hip_gap": {
+        "dwpose_px": 192.64609624002262,
+        "fit_px": 209.78563524488996,
+        "error_px": 17.139539004867345,
+        "error_relative": 0.08896904395878732,
+        "error_norm": 0.08893650793488789,
+        "projected_gt_px": 211.18525825537822
+      },
+      "error_3d": [
+        {
+          "mpjpe3d_absolute_m": 0.21596725726472335,
+          "mpjpe3d_root_aligned_m": 0.1108615564964298,
+          "hip_gap_m": {
+            "ground_truth": 0.1237795520681377,
+            "fit": 0.11463751424063087,
+            "error_m": 0.009142037827506833
+          }
+        },
+        {
+          "mpjpe3d_absolute_m": 0.1099403020638874,
+          "mpjpe3d_root_aligned_m": 0.05956701836140487,
+          "hip_gap_m": {
+            "ground_truth": 0.10133904820097714,
+            "fit": 0.11593595395766777,
+            "error_m": 0.014596905756690634
+          }
+        }
+      ],
+      "assignment": {
+        "permutation": [
+          1,
+          0
+        ],
+        "cost_px": 29.150906321091025,
+        "cost_margin_to_next": 373.3215179582125,
+        "ambiguous": false,
+        "basis": "summed distance between hip centres, both permutations tried"
+      }
+    },
+    {
+      "name": "cross_pose_pair02_034_r478_from_pair00",
+      "kind": "cross_pair",
+      "available": true,
+      "person_count": 2,
+      "reproject_median_px": 0.16804497895777842,
+      "people": [
+        {
+          "gt_slot": 1,
+          "hi4d_side": "B",
+          "fit_index": 1,
+          "vs_dwpose": {
+            "comparable": true,
+            "joints": 12,
+            "torso_px": 179.8887595646916,
+            "mpjpe_px": 13.280413368975148,
+            "mpjpe_norm": 0.0738256987324394,
+            "pck@0.1": 0.6666666666666666,
+            "pck@0.2": 1.0,
+            "pck@0.5": 1.0
+          },
+          "torso_scale_ratio": 1.14159059885467,
+          "vs_smpl_projected": {
+            "comparable": true,
+            "joints": 12,
+            "torso_px": 223.95179882308034,
+            "mpjpe_px": 11.352645745757934,
+            "mpjpe_norm": 0.05069236239859993,
+            "pck@0.1": 0.9166666666666666,
+            "pck@0.2": 1.0,
+            "pck@0.5": 1.0
+          }
+        },
+        {
+          "gt_slot": 2,
+          "hi4d_side": "A",
+          "fit_index": 0,
+          "vs_dwpose": {
+            "comparable": true,
+            "joints": 10,
+            "torso_px": 180.3899327690684,
+            "mpjpe_px": 14.301733552291637,
+            "mpjpe_norm": 0.07928232652872283,
+            "pck@0.1": 0.6,
+            "pck@0.2": 1.0,
+            "pck@0.5": 1.0
+          },
+          "torso_scale_ratio": 1.1607669232638174,
+          "vs_smpl_projected": {
+            "comparable": true,
+            "joints": 12,
+            "torso_px": 224.65265452558555,
+            "mpjpe_px": 14.817023066683378,
+            "mpjpe_norm": 0.0659552547819811,
+            "pck@0.1": 0.8333333333333334,
+            "pck@0.2": 0.9166666666666666,
+            "pck@0.5": 1.0
+          }
+        }
+      ],
+      "correspondence": {
+        "hip_assignment": [
+          1,
+          0
+        ],
+        "error_assignment": [
+          1,
+          0
+        ],
+        "correct": true,
+        "cost_hip_px": 27.582146921266784,
+        "cost_best_px": 27.582146921266784,
+        "ambiguous": false
+      },
+      "hip_gap": {
+        "dwpose_px": 197.294698931602,
+        "fit_px": 210.17925415594908,
+        "error_px": 12.884555224347082,
+        "error_relative": 0.06530613997294418,
+        "error_norm": 0.07152549122950023,
+        "projected_gt_px": 214.22778892629177
+      },
+      "error_3d": [
+        {
+          "mpjpe3d_absolute_m": 0.09203055913075461,
+          "mpjpe3d_root_aligned_m": 0.05126664750066577,
+          "hip_gap_m": {
+            "ground_truth": 0.13508763366386836,
+            "fit": 0.12610312321838993,
+            "error_m": 0.008984510445478433
+          }
+        },
+        {
+          "mpjpe3d_absolute_m": 0.10534855393854183,
+          "mpjpe3d_root_aligned_m": 0.05163333509704057,
+          "hip_gap_m": {
+            "ground_truth": 0.12898036089474368,
+            "fit": 0.11845452199072383,
+            "error_m": 0.010525838904019855
+          }
+        }
+      ],
+      "assignment": {
+        "permutation": [
+          1,
+          0
+        ],
+        "cost_px": 43.40256597845353,
+        "cost_margin_to_next": 366.0758758669845,
+        "ambiguous": false,
+        "basis": "summed distance between hip centres, both permutations tried"
+      }
+    }
+  ]
+}

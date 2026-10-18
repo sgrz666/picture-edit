@@ -1,0 +1,29 @@
+[
+  {
+    "source_rgb": "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/data/assets/sources/pair00/cam4/taichi00/000041/rgb.png",
+    "source_masks": [
+      "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/data/assets/sources/pair00/cam4/taichi00/000041/mask_A.png",
+      "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/data/assets/sources/pair00/cam4/taichi00/000041/mask_B.png"
+    ],
+    "source_features": "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/data/sources/pair00_taichi00_000041_cam4/source_features.pt",
+    "source_features_sha256": "63c45ef94d9584beb7e56f90cc374075d8e7886f7fa023febd3f898edfeaed06",
+    "target_geometry": "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/data/samples/pair00_taichi00_000041_to_hug00_000108_cam4/hug00_000108_cam4_geometry.npz",
+    "person_uids": [
+      "pair00_actor0",
+      "pair00_actor1"
+    ],
+    "seed": 42,
+    "resolution": 512,
+    "versions": {
+      "source": "source_v1",
+      "geometry": "smplx_dual_v1",
+      "crop": "exclusive_square_letterbox512_margin1p2_gray128_v1",
+      "encoder": "qwen21_rgba_vae_dinov2_g_whole224_v1",
+      "coordinate_convention": "Hi4D world metres Y-up; X_cam=R_cw@X_world+t_cw; normal=camera; depth=camera_z; part_centres/joints/orientations=world",
+      "rotation6d_convention": "columns_concatenated_R[:,0]_then_R[:,1]",
+      "partition_sha256": "30c061adaf06d90ddae36ebee258db9317e0c340e6561d3c592ace7c9bfff86e"
+    },
+    "target_geometry_known": true,
+    "prompt": "Make the two existing people hug. Preserve each person's face, hair, clothing and body identity, the background, and the original camera view."
+  }
+]

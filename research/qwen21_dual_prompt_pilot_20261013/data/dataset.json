@@ -1,0 +1,3687 @@
+{
+  "schema_version": "hi4d_dual_prompt_pilot_v1",
+  "split_manifest": "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/split.json",
+  "split_manifest_sha256": "b744ec1103e9086135656b7b1e716a17b8c13e755b740b86acf55e18c4c6c238",
+  "splits": {
+    "train": {
+      "sample_ids": [
+        "pair14_talk14_000032_to_hug14_000045_cam4",
+        "pair14_talk14_000032_to_hug14_000062_cam4",
+        "pair12_highfive12_000028_to_highfive12_000033_cam4",
+        "pair12_highfive12_000028_to_highfive12_000082_cam4"
+      ],
+      "short_generation": "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/data/train/short_generation.json",
+      "short_generation_sha256": "0af17fbd1c00f211ee3550f87dd8006298d1521118a220f1ac7aae8dc9793e35",
+      "structured_generation": "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/data/train/structured_generation.json",
+      "structured_generation_sha256": "081b798133476c58c09f9ce5925a6592d3d6ac45db1997b3172760fa65be463d",
+      "supervision": "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/data/train/supervision.json",
+      "supervision_sha256": "04bfee4433e4dd7da1e68bbee18c73b7b9f329bcb7ed292d71bca7011dce01ed"
+    },
+    "val": {
+      "sample_ids": [
+        "pair22_game22_000052_to_hug22_000046_cam4"
+      ],
+      "short_generation": "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/data/val/short_generation.json",
+      "short_generation_sha256": "e0a0bd42f6f421beee412277107ea8613344458f7079f44e83e913e12624c90a",
+      "structured_generation": "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/data/val/structured_generation.json",
+      "structured_generation_sha256": "43cea87a64dac38bfa39737babe0e2311e5207721bb67c78a194d3c266ed72a3",
+      "supervision": "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/data/val/supervision.json",
+      "supervision_sha256": "60f6c2f4e473dd985468c4f3a7bf63123150bbfb6df12b13f609787aed6b5049"
+    },
+    "test": {
+      "sample_ids": [
+        "pair00_taichi00_000041_to_hug00_000108_cam4"
+      ],
+      "short_generation": "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/data/test/short_generation.json",
+      "short_generation_sha256": "6e21d788364ab0faf36a81b9c7faaad88acc42e28af63b81dfd25f639042c83e",
+      "structured_generation": "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/data/test/structured_generation.json",
+      "structured_generation_sha256": "672e57e279a1d4d2c0258a252eff905d83c4922006281e5bf242aa649ff07166",
+      "supervision": "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/data/test/supervision.json",
+      "supervision_sha256": "5415df5548631ad572382ef10bb23d46fad5559eaa8788214022e7c0bd99814b"
+    }
+  },
+  "selected_samples": [
+    {
+      "sample_id": "pair14_talk14_000032_to_hug14_000045_cam4",
+      "split": "train",
+      "pair": "pair14",
+      "action": "hug14",
+      "source_frame": 32,
+      "target_frame": 45,
+      "camera": 4,
+      "person_uids": [
+        "pair14_actor0",
+        "pair14_actor1"
+      ],
+      "source_action": "talk14",
+      "target_action": "hug14",
+      "original_manifest": "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/native_interaction_v4_2/main_pairs_train.jsonl",
+      "original_manifest_line": 850,
+      "original_manifest_sha256": "6282353743b5f1cb7fe27dac3bc841e8fdad40471b929d7771689e0843e1142f",
+      "original_row_sha256": "ce87f8955c4bb62f48e66583ee5a9edeb8f5b5ba94c81f2190bd7f2d4f267c1a",
+      "source_assets": {
+        "source_rgb": "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/data/assets/sources/pair14/cam4/talk14/000032/rgb.png",
+        "source_masks": [
+          "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/data/assets/sources/pair14/cam4/talk14/000032/mask_A.png",
+          "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/data/assets/sources/pair14/cam4/talk14/000032/mask_B.png"
+        ],
+        "preprocessing": {
+          "native_size": [
+            940,
+            1280
+          ],
+          "resolution": 512,
+          "resize": "isotropic letterbox",
+          "affine": [
+            [
+              0.4000000059604645,
+              0.0,
+              68.0
+            ],
+            [
+              0.0,
+              0.4000000059604645,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "RGB_interpolation": "OpenCV linear",
+          "mask_interpolation": "nearest",
+          "output_encoding": "lossless PNG",
+          "raw_rgb": "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/raw/pair14/talk14/images/4/000032.jpg",
+          "raw_rgb_sha256": "d16fc287147433db12130a5a3dbe0b60af49edb66346bbf81331aae769813c98",
+          "raw_masks": [
+            "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/raw/pair14/talk14/seg/img_seg_mask/4/0/000032.png",
+            "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/raw/pair14/talk14/seg/img_seg_mask/4/1/000032.png"
+          ],
+          "raw_mask_sha256": [
+            "2e678f78f9c7e5c55dcc9e4d87f13d5b17421a806d7facd1ad661262c6f5c694",
+            "6884cf9006441c06c171fbbe2ce2ba9368143de5e304fbc1f03931618db76cf0"
+          ]
+        }
+      },
+      "target_truth_assets": {
+        "rgb": "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/data/assets/targets/pair14/hug14/cam4/000045/rgb.png",
+        "masks": [
+          "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/data/assets/targets/pair14/hug14/cam4/000045/gt_mask_A.png",
+          "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/data/assets/targets/pair14/hug14/cam4/000045/gt_mask_B.png"
+        ],
+        "preprocessing": {
+          "native_size": [
+            940,
+            1280
+          ],
+          "resolution": 512,
+          "resize": "isotropic letterbox",
+          "affine": [
+            [
+              0.4000000059604645,
+              0.0,
+              68.0
+            ],
+            [
+              0.0,
+              0.4000000059604645,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "RGB_interpolation": "OpenCV linear",
+          "mask_interpolation": "nearest",
+          "output_encoding": "lossless PNG",
+          "raw_rgb": "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/raw/pair14/hug14/images/4/000045.jpg",
+          "raw_rgb_sha256": "2cadf40a3bbc6ef459c331c6524df4fe2cc525eb6de433525234422ab7598d9c",
+          "raw_masks": [
+            "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/raw/pair14/hug14/seg/img_seg_mask/4/0/000045.png",
+            "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/raw/pair14/hug14/seg/img_seg_mask/4/1/000045.png"
+          ],
+          "raw_mask_sha256": [
+            "6d4a1dcf3da75054acf24a8bfa34bcc7435da5117b59d531afaf740d3387b6f0",
+            "a372cf2cf55ba21868bfd7fed81b1f74d8b19c3583382f8e487b18512fb7eae2"
+          ]
+        }
+      },
+      "source_fit": "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/data/sources/pair14_talk14_000032_cam4/source_smplx.npz",
+      "source_fit_sha256": "78f0ca4e4ca95c70e326ce5e6d43a4e6b11c8d05020738127ae40e7e3a8e7765",
+      "source_fit_quality": {
+        "model_type": "smplx",
+        "annotation_type": "fitted_geometry_proxy_not_official_ground_truth",
+        "source_shape_optimized": true,
+        "shape_inputs": "source SMPL 3D body only",
+        "body_joint_before_mm": [
+          35.30610656738281,
+          32.3591423034668
+        ],
+        "body_joint_after_mm": [
+          10.019696235656738,
+          11.878218650817871
+        ],
+        "body_joint_mm": [
+          [
+            8.71932315826416,
+            5.963228702545166,
+            10.234833717346191,
+            7.0668816566467285,
+            4.371285915374756,
+            5.220888137817383,
+            18.361793518066406,
+            4.680521488189697,
+            1.3629714250564575,
+            19.261451721191406,
+            1.0015323162078857,
+            0.8473253846168518,
+            27.85211753845215,
+            24.128738403320312,
+            23.922969818115234,
+            15.506200790405273,
+            7.846748352050781,
+            13.534814834594727,
+            6.057005882263184,
+            10.791850090026855,
+            1.946588158607483,
+            1.7542343139648438
+          ],
+          [
+            9.459386825561523,
+            8.44620418548584,
+            15.72614574432373,
+            10.730528831481934,
+            1.6504195928573608,
+            9.013143539428711,
+            15.571648597717285,
+            2.607515573501587,
+            1.7045347690582275,
+            22.299278259277344,
+            2.183500051498413,
+            2.042588949203491,
+            37.3931770324707,
+            34.193214416503906,
+            28.343517303466797,
+            24.572986602783203,
+            11.316523551940918,
+            9.286294937133789,
+            2.8366010189056396,
+            8.47657585144043,
+            0.8662119507789612,
+            2.6008222103118896
+          ]
+        ],
+        "confidence_rule": "uncalibrated heuristic: 0.9*exp(-individual joint error_mm/100); part=min assigned/bone endpoint body joints; hand<=0.25 prior",
+        "body_quality_within_30mm": true,
+        "hands": "zero model prior; no observed finger articulation",
+        "face": "zero jaw/expression/eye prior",
+        "constraints": [
+          "external SMPL first 22 homologous body joints",
+          "nearest external body surface proxy"
+        ],
+        "initialization": "external SMPL homologous axis-angle body pose; SMPL-X beta10 initialized at zero",
+        "fitting_scope": "offline mesh parameters only; frozen SMPL-X model; no Qwen/adapter model loaded",
+        "target_rgb_conditioning": false,
+        "target_true_mask_conditioning": false,
+        "fit_steps": 200,
+        "elapsed_seconds": 8.614818288013339,
+        "loss_history": [
+          {
+            "step": 0,
+            "loss": 0.10667320340871811,
+            "body_joint_mean_mm": [
+              35.30610656738281,
+              32.3591423034668
+            ]
+          },
+          {
+            "step": 50,
+            "loss": 0.020885981619358063,
+            "body_joint_mean_mm": [
+              12.741257667541504,
+              13.548981666564941
+            ]
+          },
+          {
+            "step": 100,
+            "loss": 0.017934225499629974,
+            "body_joint_mean_mm": [
+              11.010422706604004,
+              12.493342399597168
+            ]
+          },
+          {
+            "step": 150,
+            "loss": 0.01666383258998394,
+            "body_joint_mean_mm": [
+              10.40836238861084,
+              12.143819808959961
+            ]
+          },
+          {
+            "step": 199,
+            "loss": 0.015911897644400597,
+            "body_joint_mean_mm": [
+              10.02684211730957,
+              11.88190746307373
+            ]
+          }
+        ],
+        "source_smpl": "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/raw/pair14/talk14/smpl/000032.npz",
+        "source_smpl_sha256": "a9e11dc7e1ee4966c9d111eea578d965dd362d4dab83e7547a180c4f863f4755",
+        "source_shape_sha256": "78f0ca4e4ca95c70e326ce5e6d43a4e6b11c8d05020738127ae40e7e3a8e7765",
+        "source_assets": {
+          "source_rgb": "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/data/assets/sources/pair14/cam4/talk14/000032/rgb.png",
+          "source_masks": [
+            "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/data/assets/sources/pair14/cam4/talk14/000032/mask_A.png",
+            "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/data/assets/sources/pair14/cam4/talk14/000032/mask_B.png"
+          ],
+          "preprocessing": {
+            "native_size": [
+              940,
+              1280
+            ],
+            "resolution": 512,
+            "resize": "isotropic letterbox",
+            "affine": [
+              [
+                0.4000000059604645,
+                0.0,
+                68.0
+              ],
+              [
+                0.0,
+                0.4000000059604645,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "RGB_interpolation": "OpenCV linear",
+            "mask_interpolation": "nearest",
+            "output_encoding": "lossless PNG",
+            "raw_rgb": "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/raw/pair14/talk14/images/4/000032.jpg",
+            "raw_rgb_sha256": "d16fc287147433db12130a5a3dbe0b60af49edb66346bbf81331aae769813c98",
+            "raw_masks": [
+              "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/raw/pair14/talk14/seg/img_seg_mask/4/0/000032.png",
+              "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/raw/pair14/talk14/seg/img_seg_mask/4/1/000032.png"
+            ],
+            "raw_mask_sha256": [
+              "2e678f78f9c7e5c55dcc9e4d87f13d5b17421a806d7facd1ad661262c6f5c694",
+              "6884cf9006441c06c171fbbe2ce2ba9368143de5e304fbc1f03931618db76cf0"
+            ]
+          }
+        }
+      },
+      "target_fit": "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/data/samples/pair14_talk14_000032_to_hug14_000045_cam4/target_smplx.npz",
+      "target_fit_sha256": "9545ed7c0b25cee0fa95821af729a52a4ec791094a0a4f4442d6dd5efc46d817",
+      "target_fit_quality": {
+        "model_type": "smplx",
+        "annotation_type": "fitted_geometry_proxy_not_official_ground_truth",
+        "source_shape_optimized": false,
+        "shape_inputs": "fixed source actor beta10",
+        "body_joint_before_mm": [
+          26.49264144897461,
+          26.758371353149414
+        ],
+        "body_joint_after_mm": [
+          10.126974105834961,
+          12.20437240600586
+        ],
+        "body_joint_mm": [
+          [
+            8.520088195800781,
+            6.161625385284424,
+            10.376473426818848,
+            6.973509788513184,
+            3.6179866790771484,
+            5.1046342849731445,
+            17.613595962524414,
+            5.382691383361816,
+            1.2637097835540771,
+            18.861591339111328,
+            0.8470773696899414,
+            0.9418540596961975,
+            28.261472702026367,
+            24.141311645507812,
+            23.888811111450195,
+            15.004814147949219,
+            6.988062381744385,
+            13.327028274536133,
+            6.982464790344238,
+            10.718730926513672,
+            0.6267707943916321,
+            7.189119815826416
+          ],
+          [
+            9.528730392456055,
+            9.000988006591797,
+            15.704279899597168,
+            10.332913398742676,
+            1.727527141571045,
+            10.394200325012207,
+            16.359132766723633,
+            3.635150194168091,
+            2.6112024784088135,
+            21.934677124023438,
+            3.03686785697937,
+            1.6467572450637817,
+            36.10268020629883,
+            34.131900787353516,
+            28.974441528320312,
+            24.830787658691406,
+            9.606425285339355,
+            10.237281799316406,
+            1.7538495063781738,
+            9.674824714660645,
+            0.6242185235023499,
+            6.647332191467285
+          ]
+        ],
+        "confidence_rule": "uncalibrated heuristic: 0.9*exp(-individual joint error_mm/100); part=min assigned/bone endpoint body joints; hand<=0.25 prior",
+        "body_quality_within_30mm": true,
+        "hands": "zero model prior; no observed finger articulation",
+        "face": "zero jaw/expression/eye prior",
+        "constraints": [
+          "external SMPL first 22 homologous body joints",
+          "nearest external body surface proxy"
+        ],
+        "initialization": "external SMPL homologous axis-angle body pose; SMPL-X beta10 initialized at zero",
+        "fitting_scope": "offline mesh parameters only; frozen SMPL-X model; no Qwen/adapter model loaded",
+        "target_rgb_conditioning": false,
+        "target_true_mask_conditioning": false,
+        "fit_steps": 200,
+        "elapsed_seconds": 7.70884344499791,
+        "loss_history": [
+          {
+            "step": 0,
+            "loss": 0.06333427131175995,
+            "body_joint_mean_mm": [
+              26.49264144897461,
+              26.758371353149414
+            ]
+          },
+          {
+            "step": 50,
+            "loss": 0.017446458339691162,
+            "body_joint_mean_mm": [
+              11.098526954650879,
+              12.791925430297852
+            ]
+          },
+          {
+            "step": 100,
+            "loss": 0.016462869942188263,
+            "body_joint_mean_mm": [
+              10.395966529846191,
+              12.388893127441406
+            ]
+          },
+          {
+            "step": 150,
+            "loss": 0.016136102378368378,
+            "body_joint_mean_mm": [
+              10.222426414489746,
+              12.274425506591797
+            ]
+          },
+          {
+            "step": 199,
+            "loss": 0.01594526320695877,
+            "body_joint_mean_mm": [
+              10.128870010375977,
+              12.205167770385742
+            ]
+          }
+        ],
+        "target_smpl": "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/raw/pair14/hug14/smpl/000045.npz",
+        "target_smpl_sha256": "08f9bfaa8e66ac2bbbf45ef9aba6a99f6394dcc1e524f4a2d5de510eb2bb2b78",
+        "source_shape_sha256": "78f0ca4e4ca95c70e326ce5e6d43a4e6b11c8d05020738127ae40e7e3a8e7765",
+        "target_fit_sha256": "9545ed7c0b25cee0fa95821af729a52a4ec791094a0a4f4442d6dd5efc46d817"
+      },
+      "source_features": "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/data/sources/pair14_talk14_000032_cam4/source_features.pt",
+      "source_features_sha256": "7d0b3eaaf75a310f581ee7c5cf7744942a4b2464dd934c008528a2908cdf9ee8",
+      "source_cache_reused": true,
+      "target_geometry": "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/data/samples/pair14_talk14_000032_to_hug14_000045_cam4/hug14_000045_cam4_geometry.npz",
+      "target_geometry_sha256": "0d47bbb48877fdc319da873c3808725038b7133c667fb649104fa0ae988e3bd8",
+      "target_geometry_sidecar_sha256": "6993de2c0165d018c9cfceefec1fb2ac54f8646688c4fa9ecfa717321bbcd08d",
+      "external_pose_observations": "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/data/samples/pair14_talk14_000032_to_hug14_000045_cam4/external_pose_observations.npz",
+      "external_pose_observations_sha256": "ebe7e253dd7a358b10c3d35557ed8d66bf82d59879b0a47b9728d7c692330501",
+      "pose_observation_paths": [
+        "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/native_interaction_v2/dwpose_native/pair14/hug14/000045_A.npz",
+        "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/native_interaction_v2/dwpose_native/pair14/hug14/000045_B.npz"
+      ],
+      "pose_observation_sha256": [
+        "96dd9da011e169d01036dc07248f1356afb2daa90eb37693826823df7fe62d7b",
+        "4d2a63971d7bf47f2e5c85166c79cf114d490c430e5d811cf293c3be55589c74"
+      ],
+      "prompts": {
+        "short": "Make the two existing people hug. Preserve each person's face, hair, clothing and body identity, the background, and the original camera view.",
+        "structured": "A is the person on the left in the source image. B is the person on the right in the source image. Make the two existing people hug. A and B face toward one another. Keep A and B close together. A keeps the left hand at chest level and the right hand at shoulder level. A keeps the left elbow bent. A bends the right elbow tightly. A brings an arm around the other person's upper body. B keeps the left hand at chest level and the right hand at shoulder level. B keeps the left elbow bent. B bends the right elbow tightly. B brings an arm around the other person's upper body. Preserve each person's face, hair, clothing and body identity, the background, and the original camera view.",
+        "provenance": {
+          "template_version": "source_geometry_action_v1",
+          "action_label": "hug14",
+          "person_uids": [
+            "pair14_actor0",
+            "pair14_actor1"
+          ],
+          "source_anchors": [
+            {
+              "uid": "pair14_actor0",
+              "slot": "A",
+              "centroid_xy": [
+                0.4549704880717109,
+                0.467773106648786
+              ],
+              "anchor_provenance": "source_mask_centroid"
+            },
+            {
+              "uid": "pair14_actor1",
+              "slot": "B",
+              "centroid_xy": [
+                0.6712960587686567,
+                0.4729193874378109
+              ],
+              "anchor_provenance": "source_mask_centroid"
+            }
+          ],
+          "geometry_sha256": "0d47bbb48877fdc319da873c3808725038b7133c667fb649104fa0ae988e3bd8",
+          "confidence_threshold": 0.6,
+          "used": [
+            {
+              "feature": "root_relation",
+              "confidence": 0.8182005286216736,
+              "horizontal_distance_m": 0.20257100462913513,
+              "facing_cosines": [
+                0.8663024436707325,
+                0.8989936516093237
+              ],
+              "threshold": 0.6
+            },
+            {
+              "feature": "A_left_wrist_height",
+              "joint_indices": [
+                0,
+                15,
+                16,
+                17,
+                20
+              ],
+              "wrist_height_m": 1.491213321685791,
+              "waist_height_m": 1.2468886375427246,
+              "shoulder_height_m": 1.6771601438522339,
+              "head_height_m": 1.8405205011367798,
+              "confidence": 0.7745999097824097,
+              "threshold": 0.6
+            },
+            {
+              "feature": "A_right_wrist_height",
+              "joint_indices": [
+                0,
+                15,
+                16,
+                17,
+                21
+              ],
+              "wrist_height_m": 1.6090489625930786,
+              "waist_height_m": 1.2468886375427246,
+              "shoulder_height_m": 1.6771601438522339,
+              "head_height_m": 1.8405205011367798,
+              "confidence": 0.7745999097824097,
+              "threshold": 0.6
+            },
+            {
+              "feature": "A_left_elbow",
+              "joint_indices": [
+                16,
+                18,
+                20
+              ],
+              "angle_deg": 110.8949966430664,
+              "thresholds_deg": [
+                80,
+                135
+              ],
+              "confidence": 0.8392545580863953
+            },
+            {
+              "feature": "A_right_elbow",
+              "joint_indices": [
+                17,
+                19,
+                21
+              ],
+              "angle_deg": 73.54940032958984,
+              "thresholds_deg": [
+                80,
+                135
+              ],
+              "confidence": 0.7877057194709778
+            },
+            {
+              "feature": "A_arm_to_partner_torso",
+              "wrist_joint": 20,
+              "wrist_to_torso_m": 0.17210771143436432,
+              "threshold_m": 0.45,
+              "confidence": 0.7227388620376587
+            },
+            {
+              "feature": "B_left_wrist_height",
+              "joint_indices": [
+                0,
+                15,
+                16,
+                17,
+                20
+              ],
+              "wrist_height_m": 1.5729936361312866,
+              "waist_height_m": 1.2334662675857544,
+              "shoulder_height_m": 1.6921941041946411,
+              "head_height_m": 1.768435001373291,
+              "confidence": 0.7021077275276184,
+              "threshold": 0.6
+            },
+            {
+              "feature": "B_right_wrist_height",
+              "joint_indices": [
+                0,
+                15,
+                16,
+                17,
+                21
+              ],
+              "wrist_height_m": 1.7296748161315918,
+              "waist_height_m": 1.2334662675857544,
+              "shoulder_height_m": 1.6921941041946411,
+              "head_height_m": 1.768435001373291,
+              "confidence": 0.7021077275276184,
+              "threshold": 0.6
+            },
+            {
+              "feature": "B_left_elbow",
+              "joint_indices": [
+                16,
+                18,
+                20
+              ],
+              "angle_deg": 88.0863265991211,
+              "thresholds_deg": [
+                80,
+                135
+              ],
+              "confidence": 0.8175650238990784
+            },
+            {
+              "feature": "B_right_elbow",
+              "joint_indices": [
+                17,
+                19,
+                21
+              ],
+              "angle_deg": 67.43277740478516,
+              "thresholds_deg": [
+                80,
+                135
+              ],
+              "confidence": 0.8124236464500427
+            },
+            {
+              "feature": "B_arm_to_partner_torso",
+              "wrist_joint": 20,
+              "wrist_to_torso_m": 0.18640026450157166,
+              "threshold_m": 0.45,
+              "confidence": 0.7452939748764038
+            }
+          ],
+          "omitted": [
+            "finger_articulation: unobserved/model prior"
+          ],
+          "inputs": "source mask anchors + action label + external geometry only"
+        }
+      },
+      "source_GT_board": "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/data/samples/pair14_talk14_000032_to_hug14_000045_cam4/source_GT_dataset_truth.png"
+    },
+    {
+      "sample_id": "pair14_talk14_000032_to_hug14_000062_cam4",
+      "split": "train",
+      "pair": "pair14",
+      "action": "hug14",
+      "source_frame": 32,
+      "target_frame": 62,
+      "camera": 4,
+      "person_uids": [
+        "pair14_actor0",
+        "pair14_actor1"
+      ],
+      "source_action": "talk14",
+      "target_action": "hug14",
+      "original_manifest": "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/native_interaction_v4_2/main_pairs_train.jsonl",
+      "original_manifest_line": 886,
+      "original_manifest_sha256": "6282353743b5f1cb7fe27dac3bc841e8fdad40471b929d7771689e0843e1142f",
+      "original_row_sha256": "799e65ba7384b5aea5a4bba35337a5c8cb90f18f144101ccbab5bcc78bbaf7b3",
+      "source_assets": {
+        "source_rgb": "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/data/assets/sources/pair14/cam4/talk14/000032/rgb.png",
+        "source_masks": [
+          "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/data/assets/sources/pair14/cam4/talk14/000032/mask_A.png",
+          "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/data/assets/sources/pair14/cam4/talk14/000032/mask_B.png"
+        ],
+        "preprocessing": {
+          "native_size": [
+            940,
+            1280
+          ],
+          "resolution": 512,
+          "resize": "isotropic letterbox",
+          "affine": [
+            [
+              0.4000000059604645,
+              0.0,
+              68.0
+            ],
+            [
+              0.0,
+              0.4000000059604645,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "RGB_interpolation": "OpenCV linear",
+          "mask_interpolation": "nearest",
+          "output_encoding": "lossless PNG",
+          "raw_rgb": "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/raw/pair14/talk14/images/4/000032.jpg",
+          "raw_rgb_sha256": "d16fc287147433db12130a5a3dbe0b60af49edb66346bbf81331aae769813c98",
+          "raw_masks": [
+            "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/raw/pair14/talk14/seg/img_seg_mask/4/0/000032.png",
+            "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/raw/pair14/talk14/seg/img_seg_mask/4/1/000032.png"
+          ],
+          "raw_mask_sha256": [
+            "2e678f78f9c7e5c55dcc9e4d87f13d5b17421a806d7facd1ad661262c6f5c694",
+            "6884cf9006441c06c171fbbe2ce2ba9368143de5e304fbc1f03931618db76cf0"
+          ]
+        }
+      },
+      "target_truth_assets": {
+        "rgb": "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/data/assets/targets/pair14/hug14/cam4/000062/rgb.png",
+        "masks": [
+          "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/data/assets/targets/pair14/hug14/cam4/000062/gt_mask_A.png",
+          "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/data/assets/targets/pair14/hug14/cam4/000062/gt_mask_B.png"
+        ],
+        "preprocessing": {
+          "native_size": [
+            940,
+            1280
+          ],
+          "resolution": 512,
+          "resize": "isotropic letterbox",
+          "affine": [
+            [
+              0.4000000059604645,
+              0.0,
+              68.0
+            ],
+            [
+              0.0,
+              0.4000000059604645,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "RGB_interpolation": "OpenCV linear",
+          "mask_interpolation": "nearest",
+          "output_encoding": "lossless PNG",
+          "raw_rgb": "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/raw/pair14/hug14/images/4/000062.jpg",
+          "raw_rgb_sha256": "3bd92e30ce14646ed8bfe0080c64415bd05a97683dae82220219159029a85933",
+          "raw_masks": [
+            "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/raw/pair14/hug14/seg/img_seg_mask/4/0/000062.png",
+            "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/raw/pair14/hug14/seg/img_seg_mask/4/1/000062.png"
+          ],
+          "raw_mask_sha256": [
+            "7f0637f19a3da9cb4e3f93b9e432bbae194b5b77eea243fd38402c9eb729f1e8",
+            "32970f1adf9d6a7068b36cde0e20ad3ae08ad07196997bd0e64be9793def80d2"
+          ]
+        }
+      },
+      "source_fit": "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/data/sources/pair14_talk14_000032_cam4/source_smplx.npz",
+      "source_fit_sha256": "78f0ca4e4ca95c70e326ce5e6d43a4e6b11c8d05020738127ae40e7e3a8e7765",
+      "source_fit_quality": {
+        "model_type": "smplx",
+        "annotation_type": "fitted_geometry_proxy_not_official_ground_truth",
+        "source_shape_optimized": true,
+        "shape_inputs": "source SMPL 3D body only",
+        "body_joint_before_mm": [
+          35.30610656738281,
+          32.3591423034668
+        ],
+        "body_joint_after_mm": [
+          10.019696235656738,
+          11.878218650817871
+        ],
+        "body_joint_mm": [
+          [
+            8.71932315826416,
+            5.963228702545166,
+            10.234833717346191,
+            7.0668816566467285,
+            4.371285915374756,
+            5.220888137817383,
+            18.361793518066406,
+            4.680521488189697,
+            1.3629714250564575,
+            19.261451721191406,
+            1.0015323162078857,
+            0.8473253846168518,
+            27.85211753845215,
+            24.128738403320312,
+            23.922969818115234,
+            15.506200790405273,
+            7.846748352050781,
+            13.534814834594727,
+            6.057005882263184,
+            10.791850090026855,
+            1.946588158607483,
+            1.7542343139648438
+          ],
+          [
+            9.459386825561523,
+            8.44620418548584,
+            15.72614574432373,
+            10.730528831481934,
+            1.6504195928573608,
+            9.013143539428711,
+            15.571648597717285,
+            2.607515573501587,
+            1.7045347690582275,
+            22.299278259277344,
+            2.183500051498413,
+            2.042588949203491,
+            37.3931770324707,
+            34.193214416503906,
+            28.343517303466797,
+            24.572986602783203,
+            11.316523551940918,
+            9.286294937133789,
+            2.8366010189056396,
+            8.47657585144043,
+            0.8662119507789612,
+            2.6008222103118896
+          ]
+        ],
+        "confidence_rule": "uncalibrated heuristic: 0.9*exp(-individual joint error_mm/100); part=min assigned/bone endpoint body joints; hand<=0.25 prior",
+        "body_quality_within_30mm": true,
+        "hands": "zero model prior; no observed finger articulation",
+        "face": "zero jaw/expression/eye prior",
+        "constraints": [
+          "external SMPL first 22 homologous body joints",
+          "nearest external body surface proxy"
+        ],
+        "initialization": "external SMPL homologous axis-angle body pose; SMPL-X beta10 initialized at zero",
+        "fitting_scope": "offline mesh parameters only; frozen SMPL-X model; no Qwen/adapter model loaded",
+        "target_rgb_conditioning": false,
+        "target_true_mask_conditioning": false,
+        "fit_steps": 200,
+        "elapsed_seconds": 8.614818288013339,
+        "loss_history": [
+          {
+            "step": 0,
+            "loss": 0.10667320340871811,
+            "body_joint_mean_mm": [
+              35.30610656738281,
+              32.3591423034668
+            ]
+          },
+          {
+            "step": 50,
+            "loss": 0.020885981619358063,
+            "body_joint_mean_mm": [
+              12.741257667541504,
+              13.548981666564941
+            ]
+          },
+          {
+            "step": 100,
+            "loss": 0.017934225499629974,
+            "body_joint_mean_mm": [
+              11.010422706604004,
+              12.493342399597168
+            ]
+          },
+          {
+            "step": 150,
+            "loss": 0.01666383258998394,
+            "body_joint_mean_mm": [
+              10.40836238861084,
+              12.143819808959961
+            ]
+          },
+          {
+            "step": 199,
+            "loss": 0.015911897644400597,
+            "body_joint_mean_mm": [
+              10.02684211730957,
+              11.88190746307373
+            ]
+          }
+        ],
+        "source_smpl": "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/raw/pair14/talk14/smpl/000032.npz",
+        "source_smpl_sha256": "a9e11dc7e1ee4966c9d111eea578d965dd362d4dab83e7547a180c4f863f4755",
+        "source_shape_sha256": "78f0ca4e4ca95c70e326ce5e6d43a4e6b11c8d05020738127ae40e7e3a8e7765",
+        "source_assets": {
+          "source_rgb": "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/data/assets/sources/pair14/cam4/talk14/000032/rgb.png",
+          "source_masks": [
+            "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/data/assets/sources/pair14/cam4/talk14/000032/mask_A.png",
+            "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/data/assets/sources/pair14/cam4/talk14/000032/mask_B.png"
+          ],
+          "preprocessing": {
+            "native_size": [
+              940,
+              1280
+            ],
+            "resolution": 512,
+            "resize": "isotropic letterbox",
+            "affine": [
+              [
+                0.4000000059604645,
+                0.0,
+                68.0
+              ],
+              [
+                0.0,
+                0.4000000059604645,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "RGB_interpolation": "OpenCV linear",
+            "mask_interpolation": "nearest",
+            "output_encoding": "lossless PNG",
+            "raw_rgb": "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/raw/pair14/talk14/images/4/000032.jpg",
+            "raw_rgb_sha256": "d16fc287147433db12130a5a3dbe0b60af49edb66346bbf81331aae769813c98",
+            "raw_masks": [
+              "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/raw/pair14/talk14/seg/img_seg_mask/4/0/000032.png",
+              "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/raw/pair14/talk14/seg/img_seg_mask/4/1/000032.png"
+            ],
+            "raw_mask_sha256": [
+              "2e678f78f9c7e5c55dcc9e4d87f13d5b17421a806d7facd1ad661262c6f5c694",
+              "6884cf9006441c06c171fbbe2ce2ba9368143de5e304fbc1f03931618db76cf0"
+            ]
+          }
+        }
+      },
+      "target_fit": "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/data/samples/pair14_talk14_000032_to_hug14_000062_cam4/target_smplx.npz",
+      "target_fit_sha256": "a12e1282c09e28ef48db2af39a388772d1ed6a7390af76af8e1bd43f08f5d1a5",
+      "target_fit_quality": {
+        "model_type": "smplx",
+        "annotation_type": "fitted_geometry_proxy_not_official_ground_truth",
+        "source_shape_optimized": false,
+        "shape_inputs": "fixed source actor beta10",
+        "body_joint_before_mm": [
+          25.449249267578125,
+          27.255495071411133
+        ],
+        "body_joint_after_mm": [
+          10.151174545288086,
+          12.258130073547363
+        ],
+        "body_joint_mm": [
+          [
+            8.39889144897461,
+            6.365252494812012,
+            10.545794486999512,
+            6.186119079589844,
+            3.7123053073883057,
+            4.8948540687561035,
+            17.28213119506836,
+            5.244694709777832,
+            1.342211365699768,
+            19.337114334106445,
+            0.7959293723106384,
+            0.8885654807090759,
+            28.085412979125977,
+            23.63298797607422,
+            23.995521545410156,
+            15.22400188446045,
+            6.839316368103027,
+            14.146439552307129,
+            7.179233074188232,
+            10.516946792602539,
+            0.8809893727302551,
+            7.831120014190674
+          ],
+          [
+            9.857425689697266,
+            9.179588317871094,
+            15.272521018981934,
+            10.591879844665527,
+            1.7875782251358032,
+            10.899696350097656,
+            16.493011474609375,
+            3.685464859008789,
+            2.967696189880371,
+            21.767858505249023,
+            2.935271739959717,
+            1.5663723945617676,
+            36.56577682495117,
+            34.13727569580078,
+            28.984983444213867,
+            25.37040901184082,
+            8.663960456848145,
+            10.11776065826416,
+            1.7617170810699463,
+            9.774483680725098,
+            0.5906322598457336,
+            6.7074971199035645
+          ]
+        ],
+        "confidence_rule": "uncalibrated heuristic: 0.9*exp(-individual joint error_mm/100); part=min assigned/bone endpoint body joints; hand<=0.25 prior",
+        "body_quality_within_30mm": true,
+        "hands": "zero model prior; no observed finger articulation",
+        "face": "zero jaw/expression/eye prior",
+        "constraints": [
+          "external SMPL first 22 homologous body joints",
+          "nearest external body surface proxy"
+        ],
+        "initialization": "external SMPL homologous axis-angle body pose; SMPL-X beta10 initialized at zero",
+        "fitting_scope": "offline mesh parameters only; frozen SMPL-X model; no Qwen/adapter model loaded",
+        "target_rgb_conditioning": false,
+        "target_true_mask_conditioning": false,
+        "fit_steps": 200,
+        "elapsed_seconds": 7.698765240027569,
+        "loss_history": [
+          {
+            "step": 0,
+            "loss": 0.06140809878706932,
+            "body_joint_mean_mm": [
+              25.449249267578125,
+              27.255495071411133
+            ]
+          },
+          {
+            "step": 50,
+            "loss": 0.01752515882253647,
+            "body_joint_mean_mm": [
+              11.032245635986328,
+              12.995481491088867
+            ]
+          },
+          {
+            "step": 100,
+            "loss": 0.016598230227828026,
+            "body_joint_mean_mm": [
+              10.422764778137207,
+              12.442182540893555
+            ]
+          },
+          {
+            "step": 150,
+            "loss": 0.016269559040665627,
+            "body_joint_mean_mm": [
+              10.256232261657715,
+              12.332111358642578
+            ]
+          },
+          {
+            "step": 199,
+            "loss": 0.01607314497232437,
+            "body_joint_mean_mm": [
+              10.153350830078125,
+              12.258601188659668
+            ]
+          }
+        ],
+        "target_smpl": "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/raw/pair14/hug14/smpl/000062.npz",
+        "target_smpl_sha256": "7c0b78527af3c91209d4a40eef60a5de405908f488a6cc78d6778f5e268bc33b",
+        "source_shape_sha256": "78f0ca4e4ca95c70e326ce5e6d43a4e6b11c8d05020738127ae40e7e3a8e7765",
+        "target_fit_sha256": "a12e1282c09e28ef48db2af39a388772d1ed6a7390af76af8e1bd43f08f5d1a5"
+      },
+      "source_features": "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/data/sources/pair14_talk14_000032_cam4/source_features.pt",
+      "source_features_sha256": "7d0b3eaaf75a310f581ee7c5cf7744942a4b2464dd934c008528a2908cdf9ee8",
+      "source_cache_reused": true,
+      "target_geometry": "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/data/samples/pair14_talk14_000032_to_hug14_000062_cam4/hug14_000062_cam4_geometry.npz",
+      "target_geometry_sha256": "1df6b485965328a13a7f786d29f14aed585680749f4ca49b586c55de61d2cd75",
+      "target_geometry_sidecar_sha256": "aedfadac48ca7b2d6f4da30886c86e4262fb555b34b19585a2ecf3f147adee62",
+      "external_pose_observations": "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/data/samples/pair14_talk14_000032_to_hug14_000062_cam4/external_pose_observations.npz",
+      "external_pose_observations_sha256": "c879dae4f88c1d16c645abaf849131debd0db8f1db58711e547f55f61406aa77",
+      "pose_observation_paths": [
+        "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/native_interaction_v2/dwpose_native/pair14/hug14/000062_A.npz",
+        "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/native_interaction_v2/dwpose_native/pair14/hug14/000062_B.npz"
+      ],
+      "pose_observation_sha256": [
+        "3d277ddb83bba2de8c6cd6ae4b41bf2366c8c06611e43f3dff7bf4fa506b9db8",
+        "b274064bac71af229696fb87077c006794bfab2774834f1d56db2add47b37970"
+      ],
+      "prompts": {
+        "short": "Make the two existing people hug. Preserve each person's face, hair, clothing and body identity, the background, and the original camera view.",
+        "structured": "A is the person on the left in the source image. B is the person on the right in the source image. Make the two existing people hug. A and B face toward one another. Keep A and B close together. A keeps the left hand at chest level and the right hand at shoulder level. A keeps the left elbow bent. A bends the right elbow tightly. A brings an arm around the other person's upper body. B keeps the left hand at chest level and the right hand at shoulder level. B keeps the left elbow bent. B bends the right elbow tightly. B brings an arm around the other person's upper body. Preserve each person's face, hair, clothing and body identity, the background, and the original camera view.",
+        "provenance": {
+          "template_version": "source_geometry_action_v1",
+          "action_label": "hug14",
+          "person_uids": [
+            "pair14_actor0",
+            "pair14_actor1"
+          ],
+          "source_anchors": [
+            {
+              "uid": "pair14_actor0",
+              "slot": "A",
+              "centroid_xy": [
+                0.4549704880717109,
+                0.467773106648786
+              ],
+              "anchor_provenance": "source_mask_centroid"
+            },
+            {
+              "uid": "pair14_actor1",
+              "slot": "B",
+              "centroid_xy": [
+                0.6712960587686567,
+                0.4729193874378109
+              ],
+              "anchor_provenance": "source_mask_centroid"
+            }
+          ],
+          "geometry_sha256": "1df6b485965328a13a7f786d29f14aed585680749f4ca49b586c55de61d2cd75",
+          "confidence_threshold": 0.6,
+          "used": [
+            {
+              "feature": "root_relation",
+              "confidence": 0.8155155181884766,
+              "horizontal_distance_m": 0.21735472977161407,
+              "facing_cosines": [
+                0.831266581090269,
+                0.9272758649658952
+              ],
+              "threshold": 0.6
+            },
+            {
+              "feature": "A_left_wrist_height",
+              "joint_indices": [
+                0,
+                15,
+                16,
+                17,
+                20
+              ],
+              "wrist_height_m": 1.4891705513000488,
+              "waist_height_m": 1.2472105026245117,
+              "shoulder_height_m": 1.6857733726501465,
+              "head_height_m": 1.8367881774902344,
+              "confidence": 0.7729039192199707,
+              "threshold": 0.6
+            },
+            {
+              "feature": "A_right_wrist_height",
+              "joint_indices": [
+                0,
+                15,
+                16,
+                17,
+                21
+              ],
+              "wrist_height_m": 1.6220669746398926,
+              "waist_height_m": 1.2472105026245117,
+              "shoulder_height_m": 1.6857733726501465,
+              "head_height_m": 1.8367881774902344,
+              "confidence": 0.7729039192199707,
+              "threshold": 0.6
+            },
+            {
+              "feature": "A_left_elbow",
+              "joint_indices": [
+                16,
+                18,
+                20
+              ],
+              "angle_deg": 102.49908447265625,
+              "thresholds_deg": [
+                80,
+                135
+              ],
+              "confidence": 0.837651789188385
+            },
+            {
+              "feature": "A_right_elbow",
+              "joint_indices": [
+                17,
+                19,
+                21
+              ],
+              "angle_deg": 67.09214782714844,
+              "thresholds_deg": [
+                80,
+                135
+              ],
+              "confidence": 0.7812774777412415
+            },
+            {
+              "feature": "A_arm_to_partner_torso",
+              "wrist_joint": 20,
+              "wrist_to_torso_m": 0.15076442062854767,
+              "threshold_m": 0.45,
+              "confidence": 0.7239454388618469
+            },
+            {
+              "feature": "B_left_wrist_height",
+              "joint_indices": [
+                0,
+                15,
+                16,
+                17,
+                20
+              ],
+              "wrist_height_m": 1.580708622932434,
+              "waist_height_m": 1.2373154163360596,
+              "shoulder_height_m": 1.6909596920013428,
+              "head_height_m": 1.7515748739242554,
+              "confidence": 0.6983291506767273,
+              "threshold": 0.6
+            },
+            {
+              "feature": "B_right_wrist_height",
+              "joint_indices": [
+                0,
+                15,
+                16,
+                17,
+                21
+              ],
+              "wrist_height_m": 1.7232098579406738,
+              "waist_height_m": 1.2373154163360596,
+              "shoulder_height_m": 1.6909596920013428,
+              "head_height_m": 1.7515748739242554,
+              "confidence": 0.6983291506767273,
+              "threshold": 0.6
+            },
+            {
+              "feature": "B_left_elbow",
+              "joint_indices": [
+                16,
+                18,
+                20
+              ],
+              "angle_deg": 82.98029327392578,
+              "thresholds_deg": [
+                80,
+                135
+              ],
+              "confidence": 0.8253067135810852
+            },
+            {
+              "feature": "B_right_elbow",
+              "joint_indices": [
+                17,
+                19,
+                21
+              ],
+              "angle_deg": 67.13066101074219,
+              "thresholds_deg": [
+                80,
+                135
+              ],
+              "confidence": 0.8133952617645264
+            },
+            {
+              "feature": "B_arm_to_partner_torso",
+              "wrist_joint": 20,
+              "wrist_to_torso_m": 0.19398587942123413,
+              "threshold_m": 0.45,
+              "confidence": 0.741758406162262
+            }
+          ],
+          "omitted": [
+            "finger_articulation: unobserved/model prior"
+          ],
+          "inputs": "source mask anchors + action label + external geometry only"
+        }
+      },
+      "source_GT_board": "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/data/samples/pair14_talk14_000032_to_hug14_000062_cam4/source_GT_dataset_truth.png"
+    },
+    {
+      "sample_id": "pair12_highfive12_000028_to_highfive12_000033_cam4",
+      "split": "train",
+      "pair": "pair12",
+      "action": "highfive12",
+      "source_frame": 28,
+      "target_frame": 33,
+      "camera": 4,
+      "person_uids": [
+        "pair12_actor0",
+        "pair12_actor1"
+      ],
+      "source_action": "highfive12",
+      "target_action": "highfive12",
+      "original_manifest": "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/native_interaction_v4_2/main_pairs_train.jsonl",
+      "original_manifest_line": 445,
+      "original_manifest_sha256": "6282353743b5f1cb7fe27dac3bc841e8fdad40471b929d7771689e0843e1142f",
+      "original_row_sha256": "704a34deb57310033896ad593c5a3af372da3cf3069dcd639e08967be63d52a7",
+      "source_assets": {
+        "source_rgb": "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/data/assets/sources/pair12/cam4/highfive12/000028/rgb.png",
+        "source_masks": [
+          "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/data/assets/sources/pair12/cam4/highfive12/000028/mask_A.png",
+          "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/data/assets/sources/pair12/cam4/highfive12/000028/mask_B.png"
+        ],
+        "preprocessing": {
+          "native_size": [
+            940,
+            1280
+          ],
+          "resolution": 512,
+          "resize": "isotropic letterbox",
+          "affine": [
+            [
+              0.4000000059604645,
+              0.0,
+              68.0
+            ],
+            [
+              0.0,
+              0.4000000059604645,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "RGB_interpolation": "OpenCV linear",
+          "mask_interpolation": "nearest",
+          "output_encoding": "lossless PNG",
+          "raw_rgb": "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/raw/pair12/highfive12/images/4/000028.jpg",
+          "raw_rgb_sha256": "f891bfbd6c7294c5af769cef44a3e8ab3b184d12073f50eefa76a2e03674d89c",
+          "raw_masks": [
+            "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/raw/pair12/highfive12/seg/img_seg_mask/4/0/000028.png",
+            "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/raw/pair12/highfive12/seg/img_seg_mask/4/1/000028.png"
+          ],
+          "raw_mask_sha256": [
+            "7734487889f1c06d4f5a42d2d97cd2b2c144dff252e029e00c8de084e2e0e17f",
+            "b61043dbebc5df46d1588c4f08ec2839bd21257dff1c2714d87d541395a98787"
+          ]
+        }
+      },
+      "target_truth_assets": {
+        "rgb": "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/data/assets/targets/pair12/highfive12/cam4/000033/rgb.png",
+        "masks": [
+          "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/data/assets/targets/pair12/highfive12/cam4/000033/gt_mask_A.png",
+          "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/data/assets/targets/pair12/highfive12/cam4/000033/gt_mask_B.png"
+        ],
+        "preprocessing": {
+          "native_size": [
+            940,
+            1280
+          ],
+          "resolution": 512,
+          "resize": "isotropic letterbox",
+          "affine": [
+            [
+              0.4000000059604645,
+              0.0,
+              68.0
+            ],
+            [
+              0.0,
+              0.4000000059604645,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "RGB_interpolation": "OpenCV linear",
+          "mask_interpolation": "nearest",
+          "output_encoding": "lossless PNG",
+          "raw_rgb": "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/raw/pair12/highfive12/images/4/000033.jpg",
+          "raw_rgb_sha256": "6b03f8c345b2f828cd8a909d48d23c1aa5c736a56670f27bc5c0726ca713ef71",
+          "raw_masks": [
+            "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/raw/pair12/highfive12/seg/img_seg_mask/4/0/000033.png",
+            "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/raw/pair12/highfive12/seg/img_seg_mask/4/1/000033.png"
+          ],
+          "raw_mask_sha256": [
+            "685bf7211ed89991de712511dc9b3fc452d6e666c79d2ad4f72a05d6141d5549",
+            "0f1019a4b7c8cfbf303681f7448aaceae29edf9cc0f903a86571d241277c199b"
+          ]
+        }
+      },
+      "source_fit": "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/data/sources/pair12_highfive12_000028_cam4/source_smplx.npz",
+      "source_fit_sha256": "7386dc96a0084b28e99ff5680442caa5cc991499ebca0465fb1c4792195904fd",
+      "source_fit_quality": {
+        "model_type": "smplx",
+        "annotation_type": "fitted_geometry_proxy_not_official_ground_truth",
+        "source_shape_optimized": true,
+        "shape_inputs": "source SMPL 3D body only",
+        "body_joint_before_mm": [
+          39.681575775146484,
+          51.4483757019043
+        ],
+        "body_joint_after_mm": [
+          10.77874755859375,
+          11.288788795471191
+        ],
+        "body_joint_mm": [
+          [
+            9.756721496582031,
+            5.6654133796691895,
+            9.479413032531738,
+            9.259199142456055,
+            4.757524013519287,
+            5.803985595703125,
+            19.961177825927734,
+            4.050177574157715,
+            1.0645676851272583,
+            18.38885498046875,
+            1.7823286056518555,
+            0.7050905227661133,
+            28.94008445739746,
+            24.278797149658203,
+            24.95736312866211,
+            19.469572067260742,
+            8.051933288574219,
+            14.94428825378418,
+            8.9389009475708,
+            11.26054859161377,
+            0.5080694556236267,
+            5.108409881591797
+          ],
+          [
+            10.977635383605957,
+            5.34410285949707,
+            9.952954292297363,
+            9.59858512878418,
+            8.146100997924805,
+            5.050685405731201,
+            20.58817481994629,
+            3.1053733825683594,
+            3.8342812061309814,
+            20.47003173828125,
+            1.210873007774353,
+            2.513129472732544,
+            29.65791893005371,
+            26.542417526245117,
+            26.57823371887207,
+            20.359725952148438,
+            7.162618637084961,
+            13.24443244934082,
+            8.089825630187988,
+            11.597445487976074,
+            0.6942893266677856,
+            3.6345226764678955
+          ]
+        ],
+        "confidence_rule": "uncalibrated heuristic: 0.9*exp(-individual joint error_mm/100); part=min assigned/bone endpoint body joints; hand<=0.25 prior",
+        "body_quality_within_30mm": true,
+        "hands": "zero model prior; no observed finger articulation",
+        "face": "zero jaw/expression/eye prior",
+        "constraints": [
+          "external SMPL first 22 homologous body joints",
+          "nearest external body surface proxy"
+        ],
+        "initialization": "external SMPL homologous axis-angle body pose; SMPL-X beta10 initialized at zero",
+        "fitting_scope": "offline mesh parameters only; frozen SMPL-X model; no Qwen/adapter model loaded",
+        "target_rgb_conditioning": false,
+        "target_true_mask_conditioning": false,
+        "fit_steps": 200,
+        "elapsed_seconds": 8.065479899989441,
+        "loss_history": [
+          {
+            "step": 0,
+            "loss": 0.19810423254966736,
+            "body_joint_mean_mm": [
+              39.681575775146484,
+              51.4483757019043
+            ]
+          },
+          {
+            "step": 50,
+            "loss": 0.02181272767484188,
+            "body_joint_mean_mm": [
+              13.40380573272705,
+              15.331047058105469
+            ]
+          },
+          {
+            "step": 100,
+            "loss": 0.01725129783153534,
+            "body_joint_mean_mm": [
+              11.748738288879395,
+              12.711935043334961
+            ]
+          },
+          {
+            "step": 150,
+            "loss": 0.01560442615300417,
+            "body_joint_mean_mm": [
+              11.163091659545898,
+              11.841409683227539
+            ]
+          },
+          {
+            "step": 199,
+            "loss": 0.014675584621727467,
+            "body_joint_mean_mm": [
+              10.785057067871094,
+              11.297983169555664
+            ]
+          }
+        ],
+        "source_smpl": "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/raw/pair12/highfive12/smpl/000028.npz",
+        "source_smpl_sha256": "61d1e8a3b3bfbe822a0c6b00bdf3977ed5b0d8d035cdd45606edd9596105f332",
+        "source_shape_sha256": "7386dc96a0084b28e99ff5680442caa5cc991499ebca0465fb1c4792195904fd",
+        "source_assets": {
+          "source_rgb": "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/data/assets/sources/pair12/cam4/highfive12/000028/rgb.png",
+          "source_masks": [
+            "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/data/assets/sources/pair12/cam4/highfive12/000028/mask_A.png",
+            "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/data/assets/sources/pair12/cam4/highfive12/000028/mask_B.png"
+          ],
+          "preprocessing": {
+            "native_size": [
+              940,
+              1280
+            ],
+            "resolution": 512,
+            "resize": "isotropic letterbox",
+            "affine": [
+              [
+                0.4000000059604645,
+                0.0,
+                68.0
+              ],
+              [
+                0.0,
+                0.4000000059604645,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "RGB_interpolation": "OpenCV linear",
+            "mask_interpolation": "nearest",
+            "output_encoding": "lossless PNG",
+            "raw_rgb": "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/raw/pair12/highfive12/images/4/000028.jpg",
+            "raw_rgb_sha256": "f891bfbd6c7294c5af769cef44a3e8ab3b184d12073f50eefa76a2e03674d89c",
+            "raw_masks": [
+              "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/raw/pair12/highfive12/seg/img_seg_mask/4/0/000028.png",
+              "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/raw/pair12/highfive12/seg/img_seg_mask/4/1/000028.png"
+            ],
+            "raw_mask_sha256": [
+              "7734487889f1c06d4f5a42d2d97cd2b2c144dff252e029e00c8de084e2e0e17f",
+              "b61043dbebc5df46d1588c4f08ec2839bd21257dff1c2714d87d541395a98787"
+            ]
+          }
+        }
+      },
+      "target_fit": "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/data/samples/pair12_highfive12_000028_to_highfive12_000033_cam4/target_smplx.npz",
+      "target_fit_sha256": "1d42c343075ecaf60f38fd1e77941317bcfb9af2624742e88db6471dfc6f2d49",
+      "target_fit_quality": {
+        "model_type": "smplx",
+        "annotation_type": "fitted_geometry_proxy_not_official_ground_truth",
+        "source_shape_optimized": false,
+        "shape_inputs": "fixed source actor beta10",
+        "body_joint_before_mm": [
+          27.791704177856445,
+          28.549543380737305
+        ],
+        "body_joint_after_mm": [
+          10.619063377380371,
+          11.42009162902832
+        ],
+        "body_joint_mm": [
+          [
+            9.326288223266602,
+            6.204850673675537,
+            9.839493751525879,
+            8.878243446350098,
+            5.047767639160156,
+            5.6572041511535645,
+            20.12358283996582,
+            3.790252685546875,
+            0.8937699794769287,
+            18.12110710144043,
+            1.821128010749817,
+            0.7661604285240173,
+            28.208332061767578,
+            24.84532928466797,
+            25.304574966430664,
+            20.396595001220703,
+            8.684723854064941,
+            14.403606414794922,
+            8.253060340881348,
+            10.287452697753906,
+            0.9233014583587646,
+            1.8425476551055908
+          ],
+          [
+            10.71118450164795,
+            5.605217933654785,
+            10.241569519042969,
+            9.627346992492676,
+            8.275778770446777,
+            4.770277500152588,
+            19.606952667236328,
+            3.1225216388702393,
+            3.6666839122772217,
+            20.51471519470215,
+            1.121747612953186,
+            2.6212284564971924,
+            29.98810386657715,
+            27.226892471313477,
+            26.20897674560547,
+            20.061199188232422,
+            7.585249423980713,
+            14.428287506103516,
+            7.741462707519531,
+            11.203784942626953,
+            1.8815382719039917,
+            5.031311511993408
+          ]
+        ],
+        "confidence_rule": "uncalibrated heuristic: 0.9*exp(-individual joint error_mm/100); part=min assigned/bone endpoint body joints; hand<=0.25 prior",
+        "body_quality_within_30mm": true,
+        "hands": "zero model prior; no observed finger articulation",
+        "face": "zero jaw/expression/eye prior",
+        "constraints": [
+          "external SMPL first 22 homologous body joints",
+          "nearest external body surface proxy"
+        ],
+        "initialization": "external SMPL homologous axis-angle body pose; SMPL-X beta10 initialized at zero",
+        "fitting_scope": "offline mesh parameters only; frozen SMPL-X model; no Qwen/adapter model loaded",
+        "target_rgb_conditioning": false,
+        "target_true_mask_conditioning": false,
+        "fit_steps": 200,
+        "elapsed_seconds": 7.695087185013108,
+        "loss_history": [
+          {
+            "step": 0,
+            "loss": 0.0761815682053566,
+            "body_joint_mean_mm": [
+              27.791704177856445,
+              28.549543380737305
+            ]
+          },
+          {
+            "step": 50,
+            "loss": 0.01647384651005268,
+            "body_joint_mean_mm": [
+              11.737268447875977,
+              12.257221221923828
+            ]
+          },
+          {
+            "step": 100,
+            "loss": 0.01527816615998745,
+            "body_joint_mean_mm": [
+              10.87230396270752,
+              11.701647758483887
+            ]
+          },
+          {
+            "step": 150,
+            "loss": 0.014889109879732132,
+            "body_joint_mean_mm": [
+              10.716289520263672,
+              11.537652969360352
+            ]
+          },
+          {
+            "step": 199,
+            "loss": 0.014634166844189167,
+            "body_joint_mean_mm": [
+              10.620894432067871,
+              11.422228813171387
+            ]
+          }
+        ],
+        "target_smpl": "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/raw/pair12/highfive12/smpl/000033.npz",
+        "target_smpl_sha256": "2fb6af9c8728d551981b0a67366a326051187e1d22666a26b1964ccc80f50944",
+        "source_shape_sha256": "7386dc96a0084b28e99ff5680442caa5cc991499ebca0465fb1c4792195904fd",
+        "target_fit_sha256": "1d42c343075ecaf60f38fd1e77941317bcfb9af2624742e88db6471dfc6f2d49"
+      },
+      "source_features": "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/data/sources/pair12_highfive12_000028_cam4/source_features.pt",
+      "source_features_sha256": "498236c20e8a675f9475ba3e43a12e17c468e5f27df0fe6ce238a74230b23fa5",
+      "source_cache_reused": false,
+      "target_geometry": "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/data/samples/pair12_highfive12_000028_to_highfive12_000033_cam4/highfive12_000033_cam4_geometry.npz",
+      "target_geometry_sha256": "b43e0fe92deb8aaebf3b89ccf7a2e513f901f1594fa33e993af607904e9c3758",
+      "target_geometry_sidecar_sha256": "631b12ebeee5bd8de7b024dc6000411eed8fa83804b1cf9ce4e0d08d000c2400",
+      "external_pose_observations": "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/data/samples/pair12_highfive12_000028_to_highfive12_000033_cam4/external_pose_observations.npz",
+      "external_pose_observations_sha256": "0a6fa71b9c50c3b7a437f966926bd3b4ae97c069222b7b44b76ac179c7a30ab2",
+      "pose_observation_paths": [
+        "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/native_interaction_v2/dwpose_native/pair12/highfive12/000033_A.npz",
+        "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/native_interaction_v2/dwpose_native/pair12/highfive12/000033_B.npz"
+      ],
+      "pose_observation_sha256": [
+        "45265aac93ca36ee659270f56cc53d9eaea9e4420f9c72a8c701e5eed110a6bf",
+        "77dfcd36f947b512dafb9226cc6892854428262ea295cabdb4534b6aa32f1561"
+      ],
+      "prompts": {
+        "short": "Make the two existing people high-five. Preserve each person's face, hair, clothing and body identity, the background, and the original camera view.",
+        "structured": "A is the person on the left in the source image. B is the person on the right in the source image. Make the two existing people high-five. A and B face toward one another. A keeps the hands at chest level. A keeps the left elbow bent. A keeps the right elbow bent. B keeps the hands at chest level. B keeps the left elbow bent. B keeps the right elbow bent. Preserve each person's face, hair, clothing and body identity, the background, and the original camera view.",
+        "provenance": {
+          "template_version": "source_geometry_action_v1",
+          "action_label": "highfive12",
+          "person_uids": [
+            "pair12_actor0",
+            "pair12_actor1"
+          ],
+          "source_anchors": [
+            {
+              "uid": "pair12_actor0",
+              "slot": "A",
+              "centroid_xy": [
+                0.42477696610768767,
+                0.4637593601626427
+              ],
+              "anchor_provenance": "source_mask_centroid"
+            },
+            {
+              "uid": "pair12_actor1",
+              "slot": "B",
+              "centroid_xy": [
+                0.7035761773371954,
+                0.4463209773272073
+              ],
+              "anchor_provenance": "source_mask_centroid"
+            }
+          ],
+          "geometry_sha256": "b43e0fe92deb8aaebf3b89ccf7a2e513f901f1594fa33e993af607904e9c3758",
+          "confidence_threshold": 0.6,
+          "used": [
+            {
+              "feature": "root_relation",
+              "confidence": 0.8085826635360718,
+              "horizontal_distance_m": 1.1012704372406006,
+              "facing_cosines": [
+                0.9924057661040281,
+                0.9947978260487371
+              ],
+              "threshold": 0.6
+            },
+            {
+              "feature": "A_left_wrist_height",
+              "joint_indices": [
+                0,
+                15,
+                16,
+                17,
+                20
+              ],
+              "wrist_height_m": 1.4203611612319946,
+              "waist_height_m": 1.236009955406189,
+              "shoulder_height_m": 1.6588099002838135,
+              "head_height_m": 1.7936525344848633,
+              "confidence": 0.7339410781860352,
+              "threshold": 0.6
+            },
+            {
+              "feature": "A_right_wrist_height",
+              "joint_indices": [
+                0,
+                15,
+                16,
+                17,
+                21
+              ],
+              "wrist_height_m": 1.4117974042892456,
+              "waist_height_m": 1.236009955406189,
+              "shoulder_height_m": 1.6588099002838135,
+              "head_height_m": 1.7936525344848633,
+              "confidence": 0.7339410781860352,
+              "threshold": 0.6
+            },
+            {
+              "feature": "A_left_elbow",
+              "joint_indices": [
+                16,
+                18,
+                20
+              ],
+              "angle_deg": 113.0693359375,
+              "thresholds_deg": [
+                80,
+                135
+              ],
+              "confidence": 0.8251354098320007
+            },
+            {
+              "feature": "A_right_elbow",
+              "joint_indices": [
+                17,
+                19,
+                21
+              ],
+              "angle_deg": 125.86783599853516,
+              "thresholds_deg": [
+                80,
+                135
+              ],
+              "confidence": 0.7792708277702332
+            },
+            {
+              "feature": "B_left_wrist_height",
+              "joint_indices": [
+                0,
+                15,
+                16,
+                17,
+                20
+              ],
+              "wrist_height_m": 1.4421454668045044,
+              "waist_height_m": 1.2860572338104248,
+              "shoulder_height_m": 1.7240656614303589,
+              "head_height_m": 1.935913324356079,
+              "confidence": 0.7364068627357483,
+              "threshold": 0.6
+            },
+            {
+              "feature": "B_right_wrist_height",
+              "joint_indices": [
+                0,
+                15,
+                16,
+                17,
+                21
+              ],
+              "wrist_height_m": 1.4522639513015747,
+              "waist_height_m": 1.2860572338104248,
+              "shoulder_height_m": 1.7240656614303589,
+              "head_height_m": 1.935913324356079,
+              "confidence": 0.7364068627357483,
+              "threshold": 0.6
+            },
+            {
+              "feature": "B_left_elbow",
+              "joint_indices": [
+                16,
+                18,
+                20
+              ],
+              "angle_deg": 121.41793060302734,
+              "thresholds_deg": [
+                80,
+                135
+              ],
+              "confidence": 0.8329554200172424
+            },
+            {
+              "feature": "B_right_elbow",
+              "joint_indices": [
+                17,
+                19,
+                21
+              ],
+              "angle_deg": 121.80963134765625,
+              "thresholds_deg": [
+                80,
+                135
+              ],
+              "confidence": 0.779078483581543
+            }
+          ],
+          "omitted": [
+            "finger_articulation: unobserved/model prior"
+          ],
+          "inputs": "source mask anchors + action label + external geometry only"
+        }
+      },
+      "source_GT_board": "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/data/samples/pair12_highfive12_000028_to_highfive12_000033_cam4/source_GT_dataset_truth.png"
+    },
+    {
+      "sample_id": "pair12_highfive12_000028_to_highfive12_000082_cam4",
+      "split": "train",
+      "pair": "pair12",
+      "action": "highfive12",
+      "source_frame": 28,
+      "target_frame": 82,
+      "camera": 4,
+      "person_uids": [
+        "pair12_actor0",
+        "pair12_actor1"
+      ],
+      "source_action": "highfive12",
+      "target_action": "highfive12",
+      "original_manifest": "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/native_interaction_v4_2/main_pairs_train.jsonl",
+      "original_manifest_line": 456,
+      "original_manifest_sha256": "6282353743b5f1cb7fe27dac3bc841e8fdad40471b929d7771689e0843e1142f",
+      "original_row_sha256": "1c34c1e88959093a5d48c117c67f3c9206b8a19a81285979d97915d6a39a1054",
+      "source_assets": {
+        "source_rgb": "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/data/assets/sources/pair12/cam4/highfive12/000028/rgb.png",
+        "source_masks": [
+          "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/data/assets/sources/pair12/cam4/highfive12/000028/mask_A.png",
+          "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/data/assets/sources/pair12/cam4/highfive12/000028/mask_B.png"
+        ],
+        "preprocessing": {
+          "native_size": [
+            940,
+            1280
+          ],
+          "resolution": 512,
+          "resize": "isotropic letterbox",
+          "affine": [
+            [
+              0.4000000059604645,
+              0.0,
+              68.0
+            ],
+            [
+              0.0,
+              0.4000000059604645,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "RGB_interpolation": "OpenCV linear",
+          "mask_interpolation": "nearest",
+          "output_encoding": "lossless PNG",
+          "raw_rgb": "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/raw/pair12/highfive12/images/4/000028.jpg",
+          "raw_rgb_sha256": "f891bfbd6c7294c5af769cef44a3e8ab3b184d12073f50eefa76a2e03674d89c",
+          "raw_masks": [
+            "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/raw/pair12/highfive12/seg/img_seg_mask/4/0/000028.png",
+            "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/raw/pair12/highfive12/seg/img_seg_mask/4/1/000028.png"
+          ],
+          "raw_mask_sha256": [
+            "7734487889f1c06d4f5a42d2d97cd2b2c144dff252e029e00c8de084e2e0e17f",
+            "b61043dbebc5df46d1588c4f08ec2839bd21257dff1c2714d87d541395a98787"
+          ]
+        }
+      },
+      "target_truth_assets": {
+        "rgb": "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/data/assets/targets/pair12/highfive12/cam4/000082/rgb.png",
+        "masks": [
+          "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/data/assets/targets/pair12/highfive12/cam4/000082/gt_mask_A.png",
+          "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/data/assets/targets/pair12/highfive12/cam4/000082/gt_mask_B.png"
+        ],
+        "preprocessing": {
+          "native_size": [
+            940,
+            1280
+          ],
+          "resolution": 512,
+          "resize": "isotropic letterbox",
+          "affine": [
+            [
+              0.4000000059604645,
+              0.0,
+              68.0
+            ],
+            [
+              0.0,
+              0.4000000059604645,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "RGB_interpolation": "OpenCV linear",
+          "mask_interpolation": "nearest",
+          "output_encoding": "lossless PNG",
+          "raw_rgb": "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/raw/pair12/highfive12/images/4/000082.jpg",
+          "raw_rgb_sha256": "18ceb641a39afe7dd8fcc663541f0f3b1bbfca5b8907d8dd49be7f220ebdb6b1",
+          "raw_masks": [
+            "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/raw/pair12/highfive12/seg/img_seg_mask/4/0/000082.png",
+            "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/raw/pair12/highfive12/seg/img_seg_mask/4/1/000082.png"
+          ],
+          "raw_mask_sha256": [
+            "7abcc1c61dea9a01eb17d48e66a5e168ba27ac329e62f28ce7d7fbb81feabdf5",
+            "da669a4c213113ea39ac35816975be6cee33cb0f7a9a50adc232cc8fe0aac3d1"
+          ]
+        }
+      },
+      "source_fit": "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/data/sources/pair12_highfive12_000028_cam4/source_smplx.npz",
+      "source_fit_sha256": "7386dc96a0084b28e99ff5680442caa5cc991499ebca0465fb1c4792195904fd",
+      "source_fit_quality": {
+        "model_type": "smplx",
+        "annotation_type": "fitted_geometry_proxy_not_official_ground_truth",
+        "source_shape_optimized": true,
+        "shape_inputs": "source SMPL 3D body only",
+        "body_joint_before_mm": [
+          39.681575775146484,
+          51.4483757019043
+        ],
+        "body_joint_after_mm": [
+          10.77874755859375,
+          11.288788795471191
+        ],
+        "body_joint_mm": [
+          [
+            9.756721496582031,
+            5.6654133796691895,
+            9.479413032531738,
+            9.259199142456055,
+            4.757524013519287,
+            5.803985595703125,
+            19.961177825927734,
+            4.050177574157715,
+            1.0645676851272583,
+            18.38885498046875,
+            1.7823286056518555,
+            0.7050905227661133,
+            28.94008445739746,
+            24.278797149658203,
+            24.95736312866211,
+            19.469572067260742,
+            8.051933288574219,
+            14.94428825378418,
+            8.9389009475708,
+            11.26054859161377,
+            0.5080694556236267,
+            5.108409881591797
+          ],
+          [
+            10.977635383605957,
+            5.34410285949707,
+            9.952954292297363,
+            9.59858512878418,
+            8.146100997924805,
+            5.050685405731201,
+            20.58817481994629,
+            3.1053733825683594,
+            3.8342812061309814,
+            20.47003173828125,
+            1.210873007774353,
+            2.513129472732544,
+            29.65791893005371,
+            26.542417526245117,
+            26.57823371887207,
+            20.359725952148438,
+            7.162618637084961,
+            13.24443244934082,
+            8.089825630187988,
+            11.597445487976074,
+            0.6942893266677856,
+            3.6345226764678955
+          ]
+        ],
+        "confidence_rule": "uncalibrated heuristic: 0.9*exp(-individual joint error_mm/100); part=min assigned/bone endpoint body joints; hand<=0.25 prior",
+        "body_quality_within_30mm": true,
+        "hands": "zero model prior; no observed finger articulation",
+        "face": "zero jaw/expression/eye prior",
+        "constraints": [
+          "external SMPL first 22 homologous body joints",
+          "nearest external body surface proxy"
+        ],
+        "initialization": "external SMPL homologous axis-angle body pose; SMPL-X beta10 initialized at zero",
+        "fitting_scope": "offline mesh parameters only; frozen SMPL-X model; no Qwen/adapter model loaded",
+        "target_rgb_conditioning": false,
+        "target_true_mask_conditioning": false,
+        "fit_steps": 200,
+        "elapsed_seconds": 8.065479899989441,
+        "loss_history": [
+          {
+            "step": 0,
+            "loss": 0.19810423254966736,
+            "body_joint_mean_mm": [
+              39.681575775146484,
+              51.4483757019043
+            ]
+          },
+          {
+            "step": 50,
+            "loss": 0.02181272767484188,
+            "body_joint_mean_mm": [
+              13.40380573272705,
+              15.331047058105469
+            ]
+          },
+          {
+            "step": 100,
+            "loss": 0.01725129783153534,
+            "body_joint_mean_mm": [
+              11.748738288879395,
+              12.711935043334961
+            ]
+          },
+          {
+            "step": 150,
+            "loss": 0.01560442615300417,
+            "body_joint_mean_mm": [
+              11.163091659545898,
+              11.841409683227539
+            ]
+          },
+          {
+            "step": 199,
+            "loss": 0.014675584621727467,
+            "body_joint_mean_mm": [
+              10.785057067871094,
+              11.297983169555664
+            ]
+          }
+        ],
+        "source_smpl": "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/raw/pair12/highfive12/smpl/000028.npz",
+        "source_smpl_sha256": "61d1e8a3b3bfbe822a0c6b00bdf3977ed5b0d8d035cdd45606edd9596105f332",
+        "source_shape_sha256": "7386dc96a0084b28e99ff5680442caa5cc991499ebca0465fb1c4792195904fd",
+        "source_assets": {
+          "source_rgb": "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/data/assets/sources/pair12/cam4/highfive12/000028/rgb.png",
+          "source_masks": [
+            "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/data/assets/sources/pair12/cam4/highfive12/000028/mask_A.png",
+            "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/data/assets/sources/pair12/cam4/highfive12/000028/mask_B.png"
+          ],
+          "preprocessing": {
+            "native_size": [
+              940,
+              1280
+            ],
+            "resolution": 512,
+            "resize": "isotropic letterbox",
+            "affine": [
+              [
+                0.4000000059604645,
+                0.0,
+                68.0
+              ],
+              [
+                0.0,
+                0.4000000059604645,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "RGB_interpolation": "OpenCV linear",
+            "mask_interpolation": "nearest",
+            "output_encoding": "lossless PNG",
+            "raw_rgb": "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/raw/pair12/highfive12/images/4/000028.jpg",
+            "raw_rgb_sha256": "f891bfbd6c7294c5af769cef44a3e8ab3b184d12073f50eefa76a2e03674d89c",
+            "raw_masks": [
+              "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/raw/pair12/highfive12/seg/img_seg_mask/4/0/000028.png",
+              "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/raw/pair12/highfive12/seg/img_seg_mask/4/1/000028.png"
+            ],
+            "raw_mask_sha256": [
+              "7734487889f1c06d4f5a42d2d97cd2b2c144dff252e029e00c8de084e2e0e17f",
+              "b61043dbebc5df46d1588c4f08ec2839bd21257dff1c2714d87d541395a98787"
+            ]
+          }
+        }
+      },
+      "target_fit": "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/data/samples/pair12_highfive12_000028_to_highfive12_000082_cam4/target_smplx.npz",
+      "target_fit_sha256": "ad624b3846d205b4eb8188fecd55aa7a410f882740b5c81a0ef40c6be32e05db",
+      "target_fit_quality": {
+        "model_type": "smplx",
+        "annotation_type": "fitted_geometry_proxy_not_official_ground_truth",
+        "source_shape_optimized": false,
+        "shape_inputs": "fixed source actor beta10",
+        "body_joint_before_mm": [
+          27.764644622802734,
+          29.813920974731445
+        ],
+        "body_joint_after_mm": [
+          10.745601654052734,
+          11.56106948852539
+        ],
+        "body_joint_mm": [
+          [
+            8.317161560058594,
+            6.822834491729736,
+            11.066128730773926,
+            8.164776802062988,
+            5.90065860748291,
+            4.507957458496094,
+            21.325916290283203,
+            3.373961925506592,
+            1.3742228746414185,
+            18.342172622680664,
+            1.9595940113067627,
+            0.619881808757782,
+            27.15349006652832,
+            25.0446834564209,
+            25.086400985717773,
+            21.606464385986328,
+            8.210309982299805,
+            12.223196029663086,
+            9.392281532287598,
+            11.18201732635498,
+            0.8389807939529419,
+            3.8901240825653076
+          ],
+          [
+            10.193244934082031,
+            6.08378791809082,
+            10.813652992248535,
+            10.728609085083008,
+            8.634854316711426,
+            4.576836109161377,
+            24.87051010131836,
+            2.7714500427246094,
+            3.348686695098877,
+            19.9694881439209,
+            1.2333803176879883,
+            2.995271682739258,
+            29.269378662109375,
+            27.563350677490234,
+            26.900789260864258,
+            20.905460357666016,
+            6.792773723602295,
+            12.282918930053711,
+            7.526614189147949,
+            10.140543937683105,
+            1.3637911081314087,
+            5.378157138824463
+          ]
+        ],
+        "confidence_rule": "uncalibrated heuristic: 0.9*exp(-individual joint error_mm/100); part=min assigned/bone endpoint body joints; hand<=0.25 prior",
+        "body_quality_within_30mm": true,
+        "hands": "zero model prior; no observed finger articulation",
+        "face": "zero jaw/expression/eye prior",
+        "constraints": [
+          "external SMPL first 22 homologous body joints",
+          "nearest external body surface proxy"
+        ],
+        "initialization": "external SMPL homologous axis-angle body pose; SMPL-X beta10 initialized at zero",
+        "fitting_scope": "offline mesh parameters only; frozen SMPL-X model; no Qwen/adapter model loaded",
+        "target_rgb_conditioning": false,
+        "target_true_mask_conditioning": false,
+        "fit_steps": 200,
+        "elapsed_seconds": 7.773116233001929,
+        "loss_history": [
+          {
+            "step": 0,
+            "loss": 0.08015601336956024,
+            "body_joint_mean_mm": [
+              27.764644622802734,
+              29.813920974731445
+            ]
+          },
+          {
+            "step": 50,
+            "loss": 0.016938170418143272,
+            "body_joint_mean_mm": [
+              11.635760307312012,
+              12.705673217773438
+            ]
+          },
+          {
+            "step": 100,
+            "loss": 0.015661871060729027,
+            "body_joint_mean_mm": [
+              10.96635627746582,
+              11.832294464111328
+            ]
+          },
+          {
+            "step": 150,
+            "loss": 0.015303205698728561,
+            "body_joint_mean_mm": [
+              10.82467269897461,
+              11.63817310333252
+            ]
+          },
+          {
+            "step": 199,
+            "loss": 0.015094446018338203,
+            "body_joint_mean_mm": [
+              10.747082710266113,
+              11.562392234802246
+            ]
+          }
+        ],
+        "target_smpl": "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/raw/pair12/highfive12/smpl/000082.npz",
+        "target_smpl_sha256": "108182f699c210b12753d213eb6b6a7ffececa2288bb219810623b2028586c94",
+        "source_shape_sha256": "7386dc96a0084b28e99ff5680442caa5cc991499ebca0465fb1c4792195904fd",
+        "target_fit_sha256": "ad624b3846d205b4eb8188fecd55aa7a410f882740b5c81a0ef40c6be32e05db"
+      },
+      "source_features": "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/data/sources/pair12_highfive12_000028_cam4/source_features.pt",
+      "source_features_sha256": "498236c20e8a675f9475ba3e43a12e17c468e5f27df0fe6ce238a74230b23fa5",
+      "source_cache_reused": false,
+      "target_geometry": "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/data/samples/pair12_highfive12_000028_to_highfive12_000082_cam4/highfive12_000082_cam4_geometry.npz",
+      "target_geometry_sha256": "98d86f7c78ebbec897916367936cc82717dc248a9f3df9124724496d7d81715d",
+      "target_geometry_sidecar_sha256": "be206134019d9eeca53ea431d4b75091295acaa08c9aeff1caf5b338c9a747c2",
+      "external_pose_observations": "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/data/samples/pair12_highfive12_000028_to_highfive12_000082_cam4/external_pose_observations.npz",
+      "external_pose_observations_sha256": "7255328714e8ed46c249be8386e0491cfa69ec015ae06ab5f27b2a13a746f5d8",
+      "pose_observation_paths": [
+        "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/native_interaction_v2/dwpose_native/pair12/highfive12/000082_A.npz",
+        "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/native_interaction_v2/dwpose_native/pair12/highfive12/000082_B.npz"
+      ],
+      "pose_observation_sha256": [
+        "7ee607a9bb784f9644094550ca794a56c6dc610e35d91401174ca696f61a0575",
+        "684a91b82ba3354faf35107bdcc1418397f0c7543417ebd837c870f61e7b7b04"
+      ],
+      "prompts": {
+        "short": "Make the two existing people high-five. Preserve each person's face, hair, clothing and body identity, the background, and the original camera view.",
+        "structured": "A is the person on the left in the source image. B is the person on the right in the source image. Make the two existing people high-five. A and B face toward one another. A keeps the left hand at shoulder level and the right hand above head level. A keeps the left elbow bent. A keeps the right elbow bent. B keeps the hands at shoulder level. B extends the left arm. B keeps the right elbow bent. Preserve each person's face, hair, clothing and body identity, the background, and the original camera view.",
+        "provenance": {
+          "template_version": "source_geometry_action_v1",
+          "action_label": "highfive12",
+          "person_uids": [
+            "pair12_actor0",
+            "pair12_actor1"
+          ],
+          "source_anchors": [
+            {
+              "uid": "pair12_actor0",
+              "slot": "A",
+              "centroid_xy": [
+                0.42477696610768767,
+                0.4637593601626427
+              ],
+              "anchor_provenance": "source_mask_centroid"
+            },
+            {
+              "uid": "pair12_actor1",
+              "slot": "B",
+              "centroid_xy": [
+                0.7035761773371954,
+                0.4463209773272073
+              ],
+              "anchor_provenance": "source_mask_centroid"
+            }
+          ],
+          "geometry_sha256": "98d86f7c78ebbec897916367936cc82717dc248a9f3df9124724496d7d81715d",
+          "confidence_threshold": 0.6,
+          "used": [
+            {
+              "feature": "root_relation",
+              "confidence": 0.8127815127372742,
+              "horizontal_distance_m": 1.0794141292572021,
+              "facing_cosines": [
+                0.9873809828768781,
+                0.9949955273702189
+              ],
+              "threshold": 0.6
+            },
+            {
+              "feature": "A_left_wrist_height",
+              "joint_indices": [
+                0,
+                15,
+                16,
+                17,
+                20
+              ],
+              "wrist_height_m": 1.8732842206954956,
+              "waist_height_m": 1.241479754447937,
+              "shoulder_height_m": 1.701326608657837,
+              "head_height_m": 1.846765398979187,
+              "confidence": 0.7251148819923401,
+              "threshold": 0.6
+            },
+            {
+              "feature": "A_right_wrist_height",
+              "joint_indices": [
+                0,
+                15,
+                16,
+                17,
+                21
+              ],
+              "wrist_height_m": 1.8814008235931396,
+              "waist_height_m": 1.241479754447937,
+              "shoulder_height_m": 1.701326608657837,
+              "head_height_m": 1.846765398979187,
+              "confidence": 0.7251148819923401,
+              "threshold": 0.6
+            },
+            {
+              "feature": "A_left_elbow",
+              "joint_indices": [
+                16,
+                18,
+                20
+              ],
+              "angle_deg": 110.27311706542969,
+              "thresholds_deg": [
+                80,
+                135
+              ],
+              "confidence": 0.8193176984786987
+            },
+            {
+              "feature": "A_right_elbow",
+              "joint_indices": [
+                17,
+                19,
+                21
+              ],
+              "angle_deg": 97.59625244140625,
+              "thresholds_deg": [
+                80,
+                135
+              ],
+              "confidence": 0.7964487075805664
+            },
+            {
+              "feature": "B_left_wrist_height",
+              "joint_indices": [
+                0,
+                15,
+                16,
+                17,
+                20
+              ],
+              "wrist_height_m": 1.917330265045166,
+              "waist_height_m": 1.3000047206878662,
+              "shoulder_height_m": 1.799788475036621,
+              "head_height_m": 1.9510152339935303,
+              "confidence": 0.730215847492218,
+              "threshold": 0.6
+            },
+            {
+              "feature": "B_right_wrist_height",
+              "joint_indices": [
+                0,
+                15,
+                16,
+                17,
+                21
+              ],
+              "wrist_height_m": 1.8773704767227173,
+              "waist_height_m": 1.3000047206878662,
+              "shoulder_height_m": 1.799788475036621,
+              "head_height_m": 1.9510152339935303,
+              "confidence": 0.730215847492218,
+              "threshold": 0.6
+            },
+            {
+              "feature": "B_left_elbow",
+              "joint_indices": [
+                16,
+                18,
+                20
+              ],
+              "angle_deg": 138.37185668945312,
+              "thresholds_deg": [
+                80,
+                135
+              ],
+              "confidence": 0.8347469568252563
+            },
+            {
+              "feature": "B_right_elbow",
+              "joint_indices": [
+                17,
+                19,
+                21
+              ],
+              "angle_deg": 124.04999542236328,
+              "thresholds_deg": [
+                80,
+                135
+              ],
+              "confidence": 0.7959732413291931
+            }
+          ],
+          "omitted": [
+            "finger_articulation: unobserved/model prior"
+          ],
+          "inputs": "source mask anchors + action label + external geometry only"
+        }
+      },
+      "source_GT_board": "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/data/samples/pair12_highfive12_000028_to_highfive12_000082_cam4/source_GT_dataset_truth.png"
+    },
+    {
+      "sample_id": "pair22_game22_000052_to_hug22_000046_cam4",
+      "split": "val",
+      "pair": "pair22",
+      "action": "hug22",
+      "source_frame": 52,
+      "target_frame": 46,
+      "camera": 4,
+      "person_uids": [
+        "pair22_actor0",
+        "pair22_actor1"
+      ],
+      "source_action": "game22",
+      "target_action": "hug22",
+      "original_manifest": "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/native_interaction_v4_2/main_pairs_val.jsonl",
+      "original_manifest_line": 157,
+      "original_manifest_sha256": "167f1e88cbaa46a1e25fec14588f03f4edee467b22336cfb934f414e383a5707",
+      "original_row_sha256": "76ba72f78fff0c553d7ee14afb7b06f0afcbe42ec42c11f827aefa8a0af558f3",
+      "source_assets": {
+        "source_rgb": "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/data/assets/sources/pair22/cam4/game22/000052/rgb.png",
+        "source_masks": [
+          "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/data/assets/sources/pair22/cam4/game22/000052/mask_A.png",
+          "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/data/assets/sources/pair22/cam4/game22/000052/mask_B.png"
+        ],
+        "preprocessing": {
+          "native_size": [
+            940,
+            1280
+          ],
+          "resolution": 512,
+          "resize": "isotropic letterbox",
+          "affine": [
+            [
+              0.4000000059604645,
+              0.0,
+              68.0
+            ],
+            [
+              0.0,
+              0.4000000059604645,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "RGB_interpolation": "OpenCV linear",
+          "mask_interpolation": "nearest",
+          "output_encoding": "lossless PNG",
+          "raw_rgb": "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/raw/pair22/game22/images/4/000052.jpg",
+          "raw_rgb_sha256": "0fec7ec026a3128a64133ff136c8805bb0231fc064214870eb6845f5bb22fa07",
+          "raw_masks": [
+            "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/raw/pair22/game22/seg/img_seg_mask/4/0/000052.png",
+            "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/raw/pair22/game22/seg/img_seg_mask/4/1/000052.png"
+          ],
+          "raw_mask_sha256": [
+            "d5e4dc44f71d939c218153e0ac6bc44e3ae11b1c9716ba2b900244d0aa7d1906",
+            "43f71bcd580824cae77338ed2f292add00c1c531a0f62a477d2e46e7133c8dff"
+          ]
+        }
+      },
+      "target_truth_assets": {
+        "rgb": "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/data/assets/targets/pair22/hug22/cam4/000046/rgb.png",
+        "masks": [
+          "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/data/assets/targets/pair22/hug22/cam4/000046/gt_mask_A.png",
+          "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/data/assets/targets/pair22/hug22/cam4/000046/gt_mask_B.png"
+        ],
+        "preprocessing": {
+          "native_size": [
+            940,
+            1280
+          ],
+          "resolution": 512,
+          "resize": "isotropic letterbox",
+          "affine": [
+            [
+              0.4000000059604645,
+              0.0,
+              68.0
+            ],
+            [
+              0.0,
+              0.4000000059604645,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "RGB_interpolation": "OpenCV linear",
+          "mask_interpolation": "nearest",
+          "output_encoding": "lossless PNG",
+          "raw_rgb": "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/raw/pair22/hug22/images/4/000046.jpg",
+          "raw_rgb_sha256": "02426fccba9ab7323c7d00260e7911aa82dfbdffc94ae7cf515f0ab446a12163",
+          "raw_masks": [
+            "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/raw/pair22/hug22/seg/img_seg_mask/4/0/000046.png",
+            "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/raw/pair22/hug22/seg/img_seg_mask/4/1/000046.png"
+          ],
+          "raw_mask_sha256": [
+            "e44220b75269c5f1fab858f3981095b452e2ea2eb19a005efc5747db9efadb47",
+            "bc42f58e115d4a0ad18d5e595ad7f2ea95437589a09c9ca302c1c25d7698c1d1"
+          ]
+        }
+      },
+      "source_fit": "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/data/sources/pair22_game22_000052_cam4/source_smplx.npz",
+      "source_fit_sha256": "d0845bd4bbc62a2f01c90dac58aea8d71e4ad654b8ddb400fa2b725fa9819c88",
+      "source_fit_quality": {
+        "model_type": "smplx",
+        "annotation_type": "fitted_geometry_proxy_not_official_ground_truth",
+        "source_shape_optimized": true,
+        "shape_inputs": "source SMPL 3D body only",
+        "body_joint_before_mm": [
+          43.18891525268555,
+          32.41518020629883
+        ],
+        "body_joint_after_mm": [
+          10.37507438659668,
+          12.548492431640625
+        ],
+        "body_joint_mm": [
+          [
+            9.417298316955566,
+            6.453853130340576,
+            10.190871238708496,
+            6.36027193069458,
+            5.910135269165039,
+            5.479069232940674,
+            16.315847396850586,
+            4.16928243637085,
+            2.382611036300659,
+            20.59982681274414,
+            0.9182115197181702,
+            1.6939419507980347,
+            28.09737205505371,
+            24.819067001342773,
+            24.522859573364258,
+            17.314653396606445,
+            7.204744338989258,
+            14.542510032653809,
+            7.058030605316162,
+            11.32342529296875,
+            1.214125156402588,
+            2.2636196613311768
+          ],
+          [
+            9.9408540725708,
+            8.900459289550781,
+            16.356447219848633,
+            9.381739616394043,
+            2.4493088722229004,
+            11.046941757202148,
+            14.945966720581055,
+            3.7870848178863525,
+            1.701162338256836,
+            24.97679901123047,
+            2.7379298210144043,
+            1.5023010969161987,
+            36.04545211791992,
+            36.19744873046875,
+            29.201738357543945,
+            23.901844024658203,
+            10.875142097473145,
+            12.631904602050781,
+            2.830359935760498,
+            8.254318237304688,
+            0.5946769714355469,
+            7.807000160217285
+          ]
+        ],
+        "confidence_rule": "uncalibrated heuristic: 0.9*exp(-individual joint error_mm/100); part=min assigned/bone endpoint body joints; hand<=0.25 prior",
+        "body_quality_within_30mm": true,
+        "hands": "zero model prior; no observed finger articulation",
+        "face": "zero jaw/expression/eye prior",
+        "constraints": [
+          "external SMPL first 22 homologous body joints",
+          "nearest external body surface proxy"
+        ],
+        "initialization": "external SMPL homologous axis-angle body pose; SMPL-X beta10 initialized at zero",
+        "fitting_scope": "offline mesh parameters only; frozen SMPL-X model; no Qwen/adapter model loaded",
+        "target_rgb_conditioning": false,
+        "target_true_mask_conditioning": false,
+        "fit_steps": 200,
+        "elapsed_seconds": 8.122160034021363,
+        "loss_history": [
+          {
+            "step": 0,
+            "loss": 0.12704844772815704,
+            "body_joint_mean_mm": [
+              43.18891525268555,
+              32.41518020629883
+            ]
+          },
+          {
+            "step": 50,
+            "loss": 0.022242115810513496,
+            "body_joint_mean_mm": [
+              13.50240421295166,
+              14.015039443969727
+            ]
+          },
+          {
+            "step": 100,
+            "loss": 0.018939541652798653,
+            "body_joint_mean_mm": [
+              11.547675132751465,
+              13.186403274536133
+            ]
+          },
+          {
+            "step": 150,
+            "loss": 0.01766551285982132,
+            "body_joint_mean_mm": [
+              10.863703727722168,
+              12.814356803894043
+            ]
+          },
+          {
+            "step": 199,
+            "loss": 0.016832394525408745,
+            "body_joint_mean_mm": [
+              10.384586334228516,
+              12.553288459777832
+            ]
+          }
+        ],
+        "source_smpl": "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/raw/pair22/game22/smpl/000052.npz",
+        "source_smpl_sha256": "0ea4f74efb7550579aefd17961f12e8f1366b3d7b0e07898d1a980528f17df2b",
+        "source_shape_sha256": "d0845bd4bbc62a2f01c90dac58aea8d71e4ad654b8ddb400fa2b725fa9819c88",
+        "source_assets": {
+          "source_rgb": "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/data/assets/sources/pair22/cam4/game22/000052/rgb.png",
+          "source_masks": [
+            "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/data/assets/sources/pair22/cam4/game22/000052/mask_A.png",
+            "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/data/assets/sources/pair22/cam4/game22/000052/mask_B.png"
+          ],
+          "preprocessing": {
+            "native_size": [
+              940,
+              1280
+            ],
+            "resolution": 512,
+            "resize": "isotropic letterbox",
+            "affine": [
+              [
+                0.4000000059604645,
+                0.0,
+                68.0
+              ],
+              [
+                0.0,
+                0.4000000059604645,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "RGB_interpolation": "OpenCV linear",
+            "mask_interpolation": "nearest",
+            "output_encoding": "lossless PNG",
+            "raw_rgb": "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/raw/pair22/game22/images/4/000052.jpg",
+            "raw_rgb_sha256": "0fec7ec026a3128a64133ff136c8805bb0231fc064214870eb6845f5bb22fa07",
+            "raw_masks": [
+              "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/raw/pair22/game22/seg/img_seg_mask/4/0/000052.png",
+              "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/raw/pair22/game22/seg/img_seg_mask/4/1/000052.png"
+            ],
+            "raw_mask_sha256": [
+              "d5e4dc44f71d939c218153e0ac6bc44e3ae11b1c9716ba2b900244d0aa7d1906",
+              "43f71bcd580824cae77338ed2f292add00c1c531a0f62a477d2e46e7133c8dff"
+            ]
+          }
+        }
+      },
+      "target_fit": "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/data/samples/pair22_game22_000052_to_hug22_000046_cam4/target_smplx.npz",
+      "target_fit_sha256": "863885681c594c200ec5163dd385048c832d53c4a91d9e9c9ee55877a6c2a9fb",
+      "target_fit_quality": {
+        "model_type": "smplx",
+        "annotation_type": "fitted_geometry_proxy_not_official_ground_truth",
+        "source_shape_optimized": false,
+        "shape_inputs": "fixed source actor beta10",
+        "body_joint_before_mm": [
+          27.704885482788086,
+          28.088972091674805
+        ],
+        "body_joint_after_mm": [
+          10.761046409606934,
+          12.807394981384277
+        ],
+        "body_joint_mm": [
+          [
+            9.098491668701172,
+            6.279522895812988,
+            10.74014663696289,
+            8.408714294433594,
+            5.573379993438721,
+            5.01783561706543,
+            20.388805389404297,
+            4.420374870300293,
+            2.276007890701294,
+            20.01671028137207,
+            0.577605664730072,
+            1.9342931509017944,
+            28.247159957885742,
+            25.522167205810547,
+            24.777557373046875,
+            16.96148681640625,
+            6.902833461761475,
+            12.582806587219238,
+            7.657382965087891,
+            11.563158988952637,
+            1.0556317567825317,
+            6.740933895111084
+          ],
+          [
+            9.989166259765625,
+            9.355513572692871,
+            16.619335174560547,
+            9.223902702331543,
+            1.7221641540527344,
+            10.935672760009766,
+            17.546419143676758,
+            5.1310858726501465,
+            2.325453519821167,
+            22.565256118774414,
+            3.276303291320801,
+            1.311092495918274,
+            37.36540222167969,
+            36.261695861816406,
+            31.459148406982422,
+            22.68403434753418,
+            12.837130546569824,
+            9.802096366882324,
+            3.231297731399536,
+            11.866633415222168,
+            0.5251842141151428,
+            5.7287278175354
+          ]
+        ],
+        "confidence_rule": "uncalibrated heuristic: 0.9*exp(-individual joint error_mm/100); part=min assigned/bone endpoint body joints; hand<=0.25 prior",
+        "body_quality_within_30mm": true,
+        "hands": "zero model prior; no observed finger articulation",
+        "face": "zero jaw/expression/eye prior",
+        "constraints": [
+          "external SMPL first 22 homologous body joints",
+          "nearest external body surface proxy"
+        ],
+        "initialization": "external SMPL homologous axis-angle body pose; SMPL-X beta10 initialized at zero",
+        "fitting_scope": "offline mesh parameters only; frozen SMPL-X model; no Qwen/adapter model loaded",
+        "target_rgb_conditioning": false,
+        "target_true_mask_conditioning": false,
+        "fit_steps": 200,
+        "elapsed_seconds": 7.823983126960229,
+        "loss_history": [
+          {
+            "step": 0,
+            "loss": 0.07039609551429749,
+            "body_joint_mean_mm": [
+              27.704885482788086,
+              28.088972091674805
+            ]
+          },
+          {
+            "step": 50,
+            "loss": 0.01924881897866726,
+            "body_joint_mean_mm": [
+              11.672595024108887,
+              13.69035530090332
+            ]
+          },
+          {
+            "step": 100,
+            "loss": 0.018064944073557854,
+            "body_joint_mean_mm": [
+              11.031513214111328,
+              13.135137557983398
+            ]
+          },
+          {
+            "step": 150,
+            "loss": 0.017640836536884308,
+            "body_joint_mean_mm": [
+              10.871986389160156,
+              12.931853294372559
+            ]
+          },
+          {
+            "step": 199,
+            "loss": 0.017402561381459236,
+            "body_joint_mean_mm": [
+              10.763046264648438,
+              12.809093475341797
+            ]
+          }
+        ],
+        "target_smpl": "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/raw/pair22/hug22/smpl/000046.npz",
+        "target_smpl_sha256": "a56ec0e408672fab8886619a9ead068b83443da57ef9acf28c8c50d142f0bff5",
+        "source_shape_sha256": "d0845bd4bbc62a2f01c90dac58aea8d71e4ad654b8ddb400fa2b725fa9819c88",
+        "target_fit_sha256": "863885681c594c200ec5163dd385048c832d53c4a91d9e9c9ee55877a6c2a9fb"
+      },
+      "source_features": "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/data/sources/pair22_game22_000052_cam4/source_features.pt",
+      "source_features_sha256": "f011bf318c58053e369ba9624b82cd76b274c1548378658101d3e14741f6f989",
+      "source_cache_reused": false,
+      "target_geometry": "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/data/samples/pair22_game22_000052_to_hug22_000046_cam4/hug22_000046_cam4_geometry.npz",
+      "target_geometry_sha256": "b25ed41d874e7f377eaf1fa63f6864ef030927ba77aed87d8b6de88860ad4957",
+      "target_geometry_sidecar_sha256": "a1122b081430030458a261ec29e2c9541ae9debc3854d35264e8220faae50ada",
+      "external_pose_observations": "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/data/samples/pair22_game22_000052_to_hug22_000046_cam4/external_pose_observations.npz",
+      "external_pose_observations_sha256": "9acf891dcb03147bc4d2c02f713c9e7ec685e4bb3813bad09ce78378a74ebbc2",
+      "pose_observation_paths": [
+        "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/native_interaction_v2/dwpose_native/pair22/hug22/000046_A.npz",
+        "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/native_interaction_v2/dwpose_native/pair22/hug22/000046_B.npz"
+      ],
+      "pose_observation_sha256": [
+        "467d31ba5aefd8f2d940481dd42121fe1ceb2ca4d239f643cb1a696804781c0f",
+        "4aed16962f5ce877f85dcb03affdd6d258f9af6e5c0df1a3fc1c07317f7f98c9"
+      ],
+      "prompts": {
+        "short": "Make the two existing people hug. Preserve each person's face, hair, clothing and body identity, the background, and the original camera view.",
+        "structured": "A is the person on the left in the source image. B is the person on the right in the source image. Make the two existing people hug. A and B face toward one another. Keep A and B close together. A keeps the hands at chest level. A keeps the left elbow bent. A keeps the right elbow bent. A brings an arm around the other person's upper body. B keeps the hands at shoulder level. B bends the left elbow tightly. B bends the right elbow tightly. B brings an arm around the other person's upper body. Preserve each person's face, hair, clothing and body identity, the background, and the original camera view.",
+        "provenance": {
+          "template_version": "source_geometry_action_v1",
+          "action_label": "hug22",
+          "person_uids": [
+            "pair22_actor0",
+            "pair22_actor1"
+          ],
+          "source_anchors": [
+            {
+              "uid": "pair22_actor0",
+              "slot": "A",
+              "centroid_xy": [
+                0.4891153441337923,
+                0.46845833963295497
+              ],
+              "anchor_provenance": "source_mask_centroid"
+            },
+            {
+              "uid": "pair22_actor1",
+              "slot": "B",
+              "centroid_xy": [
+                0.6007846009497549,
+                0.48284632863562094
+              ],
+              "anchor_provenance": "source_mask_centroid"
+            }
+          ],
+          "geometry_sha256": "b25ed41d874e7f377eaf1fa63f6864ef030927ba77aed87d8b6de88860ad4957",
+          "confidence_threshold": 0.6,
+          "used": [
+            {
+              "feature": "root_relation",
+              "confidence": 0.8144418597221375,
+              "horizontal_distance_m": 0.21524296700954437,
+              "facing_cosines": [
+                0.9970704049393585,
+                0.9914366610137342
+              ],
+              "threshold": 0.6
+            },
+            {
+              "feature": "A_left_wrist_height",
+              "joint_indices": [
+                0,
+                15,
+                16,
+                17,
+                20
+              ],
+              "wrist_height_m": 1.4756267070770264,
+              "waist_height_m": 1.3107212781906128,
+              "shoulder_height_m": 1.7541563510894775,
+              "head_height_m": 1.921653389930725,
+              "confidence": 0.7595908045768738,
+              "threshold": 0.6
+            },
+            {
+              "feature": "A_right_wrist_height",
+              "joint_indices": [
+                0,
+                15,
+                16,
+                17,
+                21
+              ],
+              "wrist_height_m": 1.6376267671585083,
+              "waist_height_m": 1.3107212781906128,
+              "shoulder_height_m": 1.7541563510894775,
+              "head_height_m": 1.921653389930725,
+              "confidence": 0.7595908045768738,
+              "threshold": 0.6
+            },
+            {
+              "feature": "A_left_elbow",
+              "joint_indices": [
+                16,
+                18,
+                20
+              ],
+              "angle_deg": 100.33431243896484,
+              "thresholds_deg": [
+                80,
+                135
+              ],
+              "confidence": 0.8336560130119324
+            },
+            {
+              "feature": "A_right_elbow",
+              "joint_indices": [
+                17,
+                19,
+                21
+              ],
+              "angle_deg": 81.64908599853516,
+              "thresholds_deg": [
+                80,
+                135
+              ],
+              "confidence": 0.79358971118927
+            },
+            {
+              "feature": "A_arm_to_partner_torso",
+              "wrist_joint": 20,
+              "wrist_to_torso_m": 0.17684686183929443,
+              "threshold_m": 0.45,
+              "confidence": 0.7181957364082336
+            },
+            {
+              "feature": "B_left_wrist_height",
+              "joint_indices": [
+                0,
+                15,
+                16,
+                17,
+                20
+              ],
+              "wrist_height_m": 1.7352139949798584,
+              "waist_height_m": 1.229753851890564,
+              "shoulder_height_m": 1.6954915523529053,
+              "head_height_m": 1.7981297969818115,
+              "confidence": 0.7173431515693665,
+              "threshold": 0.6
+            },
+            {
+              "feature": "B_right_wrist_height",
+              "joint_indices": [
+                0,
+                15,
+                16,
+                17,
+                21
+              ],
+              "wrist_height_m": 1.7305870056152344,
+              "waist_height_m": 1.229753851890564,
+              "shoulder_height_m": 1.6954915523529053,
+              "head_height_m": 1.7981297969818115,
+              "confidence": 0.7173431515693665,
+              "threshold": 0.6
+            },
+            {
+              "feature": "B_left_elbow",
+              "joint_indices": [
+                16,
+                18,
+                20
+              ],
+              "angle_deg": 62.57396697998047,
+              "thresholds_deg": [
+                80,
+                135
+              ],
+              "confidence": 0.7915741205215454
+            },
+            {
+              "feature": "B_right_elbow",
+              "joint_indices": [
+                17,
+                19,
+                21
+              ],
+              "angle_deg": 78.84227752685547,
+              "thresholds_deg": [
+                80,
+                135
+              ],
+              "confidence": 0.7992936372756958
+            },
+            {
+              "feature": "B_arm_to_partner_torso",
+              "wrist_joint": 20,
+              "wrist_to_torso_m": 0.21286267042160034,
+              "threshold_m": 0.45,
+              "confidence": 0.7367345094680786
+            }
+          ],
+          "omitted": [
+            "finger_articulation: unobserved/model prior"
+          ],
+          "inputs": "source mask anchors + action label + external geometry only"
+        }
+      },
+      "source_GT_board": "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/data/samples/pair22_game22_000052_to_hug22_000046_cam4/source_GT_dataset_truth.png"
+    },
+    {
+      "sample_id": "pair00_taichi00_000041_to_hug00_000108_cam4",
+      "split": "test",
+      "pair": "pair00",
+      "action": "hug00",
+      "source_frame": 41,
+      "target_frame": 108,
+      "camera": 4,
+      "person_uids": [
+        "pair00_actor0",
+        "pair00_actor1"
+      ],
+      "source_action": "taichi00",
+      "target_action": "hug00",
+      "original_manifest": "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/native_interaction_v4_2/main_pairs_test.jsonl",
+      "original_manifest_line": 46,
+      "original_manifest_sha256": "31538e1f081e83820b3cf5ccd15f668096cf5a2c03e556251a4b5e855e3a47a7",
+      "original_row_sha256": "46f49b7fb2ab795dd16e73768f166cbfe88bda7019fb4179a441965b29ba24ac",
+      "source_assets": {
+        "source_rgb": "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/data/assets/sources/pair00/cam4/taichi00/000041/rgb.png",
+        "source_masks": [
+          "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/data/assets/sources/pair00/cam4/taichi00/000041/mask_A.png",
+          "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/data/assets/sources/pair00/cam4/taichi00/000041/mask_B.png"
+        ],
+        "preprocessing": {
+          "native_size": [
+            940,
+            1280
+          ],
+          "resolution": 512,
+          "resize": "isotropic letterbox",
+          "affine": [
+            [
+              0.4000000059604645,
+              0.0,
+              68.0
+            ],
+            [
+              0.0,
+              0.4000000059604645,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "RGB_interpolation": "OpenCV linear",
+          "mask_interpolation": "nearest",
+          "output_encoding": "lossless PNG",
+          "raw_rgb": "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/raw/pair00/taichi00/images/4/000041.jpg",
+          "raw_rgb_sha256": "684fa8cc87b315ca822657b9d33adc7fad0768da63b9883ba8aff71bf7b47f4c",
+          "raw_masks": [
+            "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/raw/pair00/taichi00/seg/img_seg_mask/4/0/000041.png",
+            "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/raw/pair00/taichi00/seg/img_seg_mask/4/1/000041.png"
+          ],
+          "raw_mask_sha256": [
+            "95cc3d984864959f53ac40405fc5900a6dffc108411b0c2ce4fff7da409c4b6e",
+            "cccdafae0b64540d6e1c0af52fb264df0c2c6b2f062ba0a70ebb195fa1b405a9"
+          ]
+        }
+      },
+      "target_truth_assets": {
+        "rgb": "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/data/assets/targets/pair00/hug00/cam4/000108/rgb.png",
+        "masks": [
+          "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/data/assets/targets/pair00/hug00/cam4/000108/gt_mask_A.png",
+          "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/data/assets/targets/pair00/hug00/cam4/000108/gt_mask_B.png"
+        ],
+        "preprocessing": {
+          "native_size": [
+            940,
+            1280
+          ],
+          "resolution": 512,
+          "resize": "isotropic letterbox",
+          "affine": [
+            [
+              0.4000000059604645,
+              0.0,
+              68.0
+            ],
+            [
+              0.0,
+              0.4000000059604645,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "RGB_interpolation": "OpenCV linear",
+          "mask_interpolation": "nearest",
+          "output_encoding": "lossless PNG",
+          "raw_rgb": "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/raw/pair00/hug00/images/4/000108.jpg",
+          "raw_rgb_sha256": "a083f6866b090693d134d2444d3db721f189acae5974ece11f26016522aa21ca",
+          "raw_masks": [
+            "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/raw/pair00/hug00/seg/img_seg_mask/4/0/000108.png",
+            "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/raw/pair00/hug00/seg/img_seg_mask/4/1/000108.png"
+          ],
+          "raw_mask_sha256": [
+            "8873dbeabe65802d2456f8510f29dfe4f8e340f1d91666b9658ebd00028b6301",
+            "83d68a9de6230be011960451ba1c201da1e9f5dc0a577eee1150467296d80cbc"
+          ]
+        }
+      },
+      "source_fit": "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/data/sources/pair00_taichi00_000041_cam4/source_smplx.npz",
+      "source_fit_sha256": "40a0329bd18f9678f41f944043a991a2033f8bd5439d95095099c234c27f8330",
+      "source_fit_quality": {
+        "model_type": "smplx",
+        "annotation_type": "fitted_geometry_proxy_not_official_ground_truth",
+        "source_shape_optimized": true,
+        "shape_inputs": "source SMPL 3D body only",
+        "body_joint_before_mm": [
+          40.476863861083984,
+          32.89592742919922
+        ],
+        "body_joint_after_mm": [
+          12.381229400634766,
+          9.708306312561035
+        ],
+        "body_joint_mm": [
+          [
+            8.935149192810059,
+            10.156906127929688,
+            15.176508903503418,
+            8.793306350708008,
+            1.1955770254135132,
+            11.63850212097168,
+            13.528724670410156,
+            3.485365629196167,
+            3.8928184509277344,
+            19.905012130737305,
+            2.710594654083252,
+            2.8252010345458984,
+            37.31229019165039,
+            34.06178283691406,
+            27.565139770507812,
+            27.722633361816406,
+            11.49148941040039,
+            10.98586654663086,
+            6.7987751960754395,
+            9.469656944274902,
+            3.460952043533325,
+            1.2748054265975952
+          ],
+          [
+            8.17495059967041,
+            5.919133186340332,
+            9.767873764038086,
+            6.212418079376221,
+            2.0694375038146973,
+            5.038187503814697,
+            17.903125762939453,
+            5.351137638092041,
+            2.722034215927124,
+            17.752241134643555,
+            0.3513978123664856,
+            0.4392563998699188,
+            28.028074264526367,
+            23.862348556518555,
+            24.14305877685547,
+            15.21091079711914,
+            7.271681785583496,
+            12.385481834411621,
+            6.533573150634766,
+            9.704172134399414,
+            2.117966890335083,
+            2.624289035797119
+          ]
+        ],
+        "confidence_rule": "uncalibrated heuristic: 0.9*exp(-individual joint error_mm/100); part=min assigned/bone endpoint body joints; hand<=0.25 prior",
+        "body_quality_within_30mm": true,
+        "hands": "zero model prior; no observed finger articulation",
+        "face": "zero jaw/expression/eye prior",
+        "constraints": [
+          "external SMPL first 22 homologous body joints",
+          "nearest external body surface proxy"
+        ],
+        "initialization": "external SMPL homologous axis-angle body pose; SMPL-X beta10 initialized at zero",
+        "fitting_scope": "offline mesh parameters only; frozen SMPL-X model; no Qwen/adapter model loaded",
+        "target_rgb_conditioning": false,
+        "target_true_mask_conditioning": false,
+        "fit_steps": 200,
+        "elapsed_seconds": 8.133209602965508,
+        "loss_history": [
+          {
+            "step": 0,
+            "loss": 0.12750224769115448,
+            "body_joint_mean_mm": [
+              40.476863861083984,
+              32.89592742919922
+            ]
+          },
+          {
+            "step": 50,
+            "loss": 0.021740566939115524,
+            "body_joint_mean_mm": [
+              15.941271781921387,
+              11.8573579788208
+            ]
+          },
+          {
+            "step": 100,
+            "loss": 0.017917286604642868,
+            "body_joint_mean_mm": [
+              13.529492378234863,
+              10.551258087158203
+            ]
+          },
+          {
+            "step": 150,
+            "loss": 0.016465025022625923,
+            "body_joint_mean_mm": [
+              12.81693172454834,
+              10.028288841247559
+            ]
+          },
+          {
+            "step": 199,
+            "loss": 0.015623897314071655,
+            "body_joint_mean_mm": [
+              12.388154029846191,
+              9.713605880737305
+            ]
+          }
+        ],
+        "source_smpl": "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/raw/pair00/taichi00/smpl/000041.npz",
+        "source_smpl_sha256": "dfffa2b99dbfe6c55ef92f9fcd7d442d2fbb657a95450d6dad2f9b4fd7e80201",
+        "source_shape_sha256": "40a0329bd18f9678f41f944043a991a2033f8bd5439d95095099c234c27f8330",
+        "source_assets": {
+          "source_rgb": "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/data/assets/sources/pair00/cam4/taichi00/000041/rgb.png",
+          "source_masks": [
+            "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/data/assets/sources/pair00/cam4/taichi00/000041/mask_A.png",
+            "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/data/assets/sources/pair00/cam4/taichi00/000041/mask_B.png"
+          ],
+          "preprocessing": {
+            "native_size": [
+              940,
+              1280
+            ],
+            "resolution": 512,
+            "resize": "isotropic letterbox",
+            "affine": [
+              [
+                0.4000000059604645,
+                0.0,
+                68.0
+              ],
+              [
+                0.0,
+                0.4000000059604645,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "RGB_interpolation": "OpenCV linear",
+            "mask_interpolation": "nearest",
+            "output_encoding": "lossless PNG",
+            "raw_rgb": "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/raw/pair00/taichi00/images/4/000041.jpg",
+            "raw_rgb_sha256": "684fa8cc87b315ca822657b9d33adc7fad0768da63b9883ba8aff71bf7b47f4c",
+            "raw_masks": [
+              "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/raw/pair00/taichi00/seg/img_seg_mask/4/0/000041.png",
+              "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/raw/pair00/taichi00/seg/img_seg_mask/4/1/000041.png"
+            ],
+            "raw_mask_sha256": [
+              "95cc3d984864959f53ac40405fc5900a6dffc108411b0c2ce4fff7da409c4b6e",
+              "cccdafae0b64540d6e1c0af52fb264df0c2c6b2f062ba0a70ebb195fa1b405a9"
+            ]
+          }
+        }
+      },
+      "target_fit": "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/data/samples/pair00_taichi00_000041_to_hug00_000108_cam4/target_smplx.npz",
+      "target_fit_sha256": "c1b14725bd2cd28e78a63efa52b10a571e3a9e028217172e3f2b1dccf9e8bc73",
+      "target_fit_quality": {
+        "model_type": "smplx",
+        "annotation_type": "fitted_geometry_proxy_not_official_ground_truth",
+        "source_shape_optimized": false,
+        "shape_inputs": "fixed source actor beta10",
+        "body_joint_before_mm": [
+          26.88843536376953,
+          27.31394386291504
+        ],
+        "body_joint_after_mm": [
+          12.45889949798584,
+          10.014517784118652
+        ],
+        "body_joint_mm": [
+          [
+            10.30866813659668,
+            10.355212211608887,
+            15.023221969604492,
+            8.926597595214844,
+            1.8166083097457886,
+            12.557019233703613,
+            13.487046241760254,
+            3.2622666358947754,
+            4.553021430969238,
+            20.012826919555664,
+            4.41986083984375,
+            2.4846465587615967,
+            35.955238342285156,
+            34.63180923461914,
+            27.552946090698242,
+            29.250886917114258,
+            8.804779052734375,
+            9.218753814697266,
+            6.138173580169678,
+            11.350140571594238,
+            1.5357848405838013,
+            2.45027494430542
+          ],
+          [
+            8.261983871459961,
+            5.731809616088867,
+            9.772486686706543,
+            6.17248010635376,
+            1.949294090270996,
+            5.41829252243042,
+            16.654098510742188,
+            5.609245300292969,
+            2.4476048946380615,
+            17.78363800048828,
+            0.41025835275650024,
+            0.3277423679828644,
+            28.62203025817871,
+            23.58353042602539,
+            24.150636672973633,
+            15.590753555297852,
+            7.594839096069336,
+            14.60026741027832,
+            6.554230213165283,
+            11.089755058288574,
+            2.8047285079956055,
+            5.1896867752075195
+          ]
+        ],
+        "confidence_rule": "uncalibrated heuristic: 0.9*exp(-individual joint error_mm/100); part=min assigned/bone endpoint body joints; hand<=0.25 prior",
+        "body_quality_within_30mm": true,
+        "hands": "zero model prior; no observed finger articulation",
+        "face": "zero jaw/expression/eye prior",
+        "constraints": [
+          "external SMPL first 22 homologous body joints",
+          "nearest external body surface proxy"
+        ],
+        "initialization": "external SMPL homologous axis-angle body pose; SMPL-X beta10 initialized at zero",
+        "fitting_scope": "offline mesh parameters only; frozen SMPL-X model; no Qwen/adapter model loaded",
+        "target_rgb_conditioning": false,
+        "target_true_mask_conditioning": false,
+        "fit_steps": 200,
+        "elapsed_seconds": 7.6093092180090025,
+        "loss_history": [
+          {
+            "step": 0,
+            "loss": 0.06910925358533859,
+            "body_joint_mean_mm": [
+              26.88843536376953,
+              27.31394386291504
+            ]
+          },
+          {
+            "step": 50,
+            "loss": 0.017224585637450218,
+            "body_joint_mean_mm": [
+              13.054758071899414,
+              10.896896362304688
+            ]
+          },
+          {
+            "step": 100,
+            "loss": 0.016262374818325043,
+            "body_joint_mean_mm": [
+              12.65549373626709,
+              10.277800559997559
+            ]
+          },
+          {
+            "step": 150,
+            "loss": 0.015914903953671455,
+            "body_joint_mean_mm": [
+              12.526762008666992,
+              10.111590385437012
+            ]
+          },
+          {
+            "step": 199,
+            "loss": 0.015718163922429085,
+            "body_joint_mean_mm": [
+              12.460289001464844,
+              10.016140937805176
+            ]
+          }
+        ],
+        "target_smpl": "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/raw/pair00/hug00/smpl/000108.npz",
+        "target_smpl_sha256": "da5c740fbe4d005f3b86a87286a94e5c0d20aacd7da858f49f99180a662715d5",
+        "source_shape_sha256": "40a0329bd18f9678f41f944043a991a2033f8bd5439d95095099c234c27f8330",
+        "target_fit_sha256": "c1b14725bd2cd28e78a63efa52b10a571e3a9e028217172e3f2b1dccf9e8bc73"
+      },
+      "source_features": "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/data/sources/pair00_taichi00_000041_cam4/source_features.pt",
+      "source_features_sha256": "63c45ef94d9584beb7e56f90cc374075d8e7886f7fa023febd3f898edfeaed06",
+      "source_cache_reused": false,
+      "target_geometry": "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/data/samples/pair00_taichi00_000041_to_hug00_000108_cam4/hug00_000108_cam4_geometry.npz",
+      "target_geometry_sha256": "6947ec01962ca2e64567d14fadeb863dcf2b93e105027029b183570f89f83a39",
+      "target_geometry_sidecar_sha256": "52aa932027f5ddeb14db353f4a6a1bf5c0f0d77fe46658dfd7edd8206e17346b",
+      "external_pose_observations": "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/data/samples/pair00_taichi00_000041_to_hug00_000108_cam4/external_pose_observations.npz",
+      "external_pose_observations_sha256": "bfa32581f161a6e61c9c442e6835023081a3ed6411188b2741910cf52d607f95",
+      "pose_observation_paths": [
+        "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/native_interaction_v2/dwpose_native/pair00/hug00/000108_A.npz",
+        "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/native_interaction_v2/dwpose_native/pair00/hug00/000108_B.npz"
+      ],
+      "pose_observation_sha256": [
+        "905b5e73604b2f0fcee5c0dc0f5a681609cf3915078e74a8b3dcd6f112d7888a",
+        "7520e0ef4ee67302431ad8b0f52dc42954e813fe2d00cc55ac055f067828ba20"
+      ],
+      "prompts": {
+        "short": "Make the two existing people hug. Preserve each person's face, hair, clothing and body identity, the background, and the original camera view.",
+        "structured": "A is the person on the right in the source image. B is the person on the left in the source image. Make the two existing people hug. A and B face toward one another. Keep A and B close together. A keeps the left hand at shoulder level and the right hand near waist level. A keeps the left elbow bent. A keeps the right elbow bent. A brings an arm around the other person's upper body. B keeps the left hand at shoulder level and the right hand near waist level. B bends the left elbow tightly. B keeps the right elbow bent. B brings an arm around the other person's upper body. Preserve each person's face, hair, clothing and body identity, the background, and the original camera view.",
+        "provenance": {
+          "template_version": "source_geometry_action_v1",
+          "action_label": "hug00",
+          "person_uids": [
+            "pair00_actor0",
+            "pair00_actor1"
+          ],
+          "source_anchors": [
+            {
+              "uid": "pair00_actor0",
+              "slot": "A",
+              "centroid_xy": [
+                0.6377336128048781,
+                0.49043464176829266
+              ],
+              "anchor_provenance": "source_mask_centroid"
+            },
+            {
+              "uid": "pair00_actor1",
+              "slot": "B",
+              "centroid_xy": [
+                0.43145845223397317,
+                0.48558851448937757
+              ],
+              "anchor_provenance": "source_mask_centroid"
+            }
+          ],
+          "geometry_sha256": "6947ec01962ca2e64567d14fadeb863dcf2b93e105027029b183570f89f83a39",
+          "confidence_threshold": 0.6,
+          "used": [
+            {
+              "feature": "root_relation",
+              "confidence": 0.8118438124656677,
+              "horizontal_distance_m": 0.4329509735107422,
+              "facing_cosines": [
+                0.9504656917626882,
+                0.9871724006303885
+              ],
+              "threshold": 0.6
+            },
+            {
+              "feature": "A_left_wrist_height",
+              "joint_indices": [
+                0,
+                15,
+                16,
+                17,
+                20
+              ],
+              "wrist_height_m": 1.6712499856948853,
+              "waist_height_m": 1.1592295169830322,
+              "shoulder_height_m": 1.5265069007873535,
+              "head_height_m": 1.6539239883422852,
+              "confidence": 0.6717497110366821,
+              "threshold": 0.6
+            },
+            {
+              "feature": "A_right_wrist_height",
+              "joint_indices": [
+                0,
+                15,
+                16,
+                17,
+                21
+              ],
+              "wrist_height_m": 1.2917404174804688,
+              "waist_height_m": 1.1592295169830322,
+              "shoulder_height_m": 1.5265069007873535,
+              "head_height_m": 1.6539239883422852,
+              "confidence": 0.6717497110366821,
+              "threshold": 0.6
+            },
+            {
+              "feature": "A_left_elbow",
+              "joint_indices": [
+                16,
+                18,
+                20
+              ],
+              "angle_deg": 81.5383529663086,
+              "thresholds_deg": [
+                80,
+                135
+              ],
+              "confidence": 0.8241453766822815
+            },
+            {
+              "feature": "A_right_elbow",
+              "joint_indices": [
+                17,
+                19,
+                21
+              ],
+              "angle_deg": 94.05109405517578,
+              "thresholds_deg": [
+                80,
+                135
+              ],
+              "confidence": 0.8034325838088989
+            },
+            {
+              "feature": "A_arm_to_partner_torso",
+              "wrist_joint": 20,
+              "wrist_to_torso_m": 0.23604905605316162,
+              "threshold_m": 0.45,
+              "confidence": 0.7533714175224304
+            },
+            {
+              "feature": "B_left_wrist_height",
+              "joint_indices": [
+                0,
+                15,
+                16,
+                17,
+                20
+              ],
+              "wrist_height_m": 1.5169939994812012,
+              "waist_height_m": 1.193368673324585,
+              "shoulder_height_m": 1.5938894748687744,
+              "head_height_m": 1.716683030128479,
+              "confidence": 0.7700744867324829,
+              "threshold": 0.6
+            },
+            {
+              "feature": "B_right_wrist_height",
+              "joint_indices": [
+                0,
+                15,
+                16,
+                17,
+                21
+              ],
+              "wrist_height_m": 1.3313530683517456,
+              "waist_height_m": 1.193368673324585,
+              "shoulder_height_m": 1.5938894748687744,
+              "head_height_m": 1.716683030128479,
+              "confidence": 0.7700744867324829,
+              "threshold": 0.6
+            },
+            {
+              "feature": "B_left_elbow",
+              "joint_indices": [
+                16,
+                18,
+                20
+              ],
+              "angle_deg": 62.78456497192383,
+              "thresholds_deg": [
+                80,
+                135
+              ],
+              "confidence": 0.8341776728630066
+            },
+            {
+              "feature": "B_right_elbow",
+              "joint_indices": [
+                17,
+                19,
+                21
+              ],
+              "angle_deg": 96.15377807617188,
+              "thresholds_deg": [
+                80,
+                135
+              ],
+              "confidence": 0.7777398228645325
+            },
+            {
+              "feature": "B_arm_to_partner_torso",
+              "wrist_joint": 20,
+              "wrist_to_torso_m": 0.1851208209991455,
+              "threshold_m": 0.45,
+              "confidence": 0.7367631793022156
+            }
+          ],
+          "omitted": [
+            "finger_articulation: unobserved/model prior"
+          ],
+          "inputs": "source mask anchors + action label + external geometry only"
+        }
+      },
+      "source_GT_board": "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/data/samples/pair00_taichi00_000041_to_hug00_000108_cam4/source_GT_dataset_truth.png"
+    }
+  ],
+  "pair_holdout_disjoint": true,
+  "identity_scope": "pair groups; no global cross-pair actor identity proof",
+  "selected_pair_groups": {
+    "train": [
+      "pair12",
+      "pair14"
+    ],
+    "val": [
+      "pair22"
+    ],
+    "test": [
+      "pair00"
+    ]
+  },
+  "selected_pair_group_counts": {
+    "train": 2,
+    "val": 1,
+    "test": 1
+  },
+  "resolution": 512,
+  "fit_steps": 200,
+  "body_model": "/home/shangguanrz/project/pic-edit/add/tools/SMPLest-X/human_models/human_model_files/smplx/SMPLX_NEUTRAL.npz",
+  "body_model_sha256": "376021446ddc86e99acacd795182bbef903e61d33b76b9d8b359c2b0865bd992",
+  "selection_lock": "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/selection_lock.json",
+  "selection_lock_sha256": "70576c43761876ba7b794fc4e5c2fb5d1a85639b2efd255a8f0ee863fe967910",
+  "offline_geometry_preparation": {
+    "optimized": "mesh pose/root/translation and source-only shape",
+    "SMPLX_model_frozen": true,
+    "Qwen_or_adapter_loaded": false,
+    "target_RGB_or_true_masks_condition_geometry": false,
+    "test_model_backpropagation": false,
+    "fit_parameters_do_not_update_generation_model": true
+  },
+  "elapsed_seconds": 118.11059945699526
+}

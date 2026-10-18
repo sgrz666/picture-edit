@@ -208,21 +208,15 @@ def joint_group_gradients(adapter, names):
 def run_joint_loss(pipe, adapter, cache, dataset, store, index, *, seed, auxiliary=False,
                    evaluators=None, supervision=None, backward=True, fixed_sigma=None,
                    face_weight=.5, check_auxiliary_gradients=False,
-                   with_hand=False, hand_store=None, hand_weight=.5, prompt: str | None = None):
+                   with_hand=False, hand_store=None, hand_weight=.5):
     from .execution import (batch_one, crop_batch, decode_tokens, face_loss_mask, feature,
                             pair_metadata, prepare, transformer_inputs)
     from .face_coordinates import valid_image_tokens
     from .qwen_adapter import Qwen21FullControlContext
-    from .prompt_study.protocol import text_sha256
     device = next(adapter.parameters()).device
     batch = batch_one(dataset, index)
     metadata = [dataset.samples[index]]
-    if prompt is None:
-        pair = cache.pair(pipe, batch, device)
-    else:
-        if not isinstance(prompt, str) or not prompt.strip():
-            raise ValueError("Joint prompt must be nonempty")
-        pair = cache.pair(pipe, batch, device, prompts=[prompt])
+    pair = cache.pair(pipe, batch, device)
     target = pair['target_latent']
     if pair.get('target_token_hw') is not None:
         target_token_hw = tuple(pair['target_token_hw'])
@@ -318,7 +312,6 @@ def run_joint_loss(pipe, adapter, cache, dataset, store, index, *, seed, auxilia
         'pair_index': index, 'pair_id': meta['pair_id'], 'noise_seed': seed,
         'source_stem': meta['source_stem'], 'target_stem': meta['target_stem'],
         'source_appearance': meta['source_appearance'], 'target_appearance': meta['target_appearance'],
-        'prompt_sha256': text_sha256(cache.prompt if prompt is None else prompt),
     }
     if check_auxiliary_gradients:
         report['auxiliary_gradient_norms'] = auxiliary_gradients

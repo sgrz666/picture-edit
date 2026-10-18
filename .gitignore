@@ -37,19 +37,8 @@ evidence.zip
 /evidence_controlnet_residual/
 /results/
 
-# 会话/工具工作区与快照：整仓副本与 git bundle，体积大且可从历史重建，不进 Git
-/.wt/
-/.inspect/
-/.mimosa/
-/.dirdocs_staging/
-/.wfsrc/
-/.wfnew/
-/_workflow_view/
-/.pytest_cache/
 
-# 派生的大包（模型下载包、导出归档、安全 bundle）：>100MB GitHub 会直接拒绝推送
-*.bundle
-research/dfm_preview_20261008/*.zip
-workflow/diagnostics/**/*.tar
-*_champ_samples/**/*.zip
-
+# Union 控制网权重（实体从 /data 迁入，目录内仅保留 README 说明）
+/union-adapter/*
+!/union-adapter/README.md
+!/union-adapter/fulladapter/

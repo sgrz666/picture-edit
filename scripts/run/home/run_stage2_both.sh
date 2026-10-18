@@ -1,0 +1,1 @@
+/home/shangguanrz/run_stage2_both.sh

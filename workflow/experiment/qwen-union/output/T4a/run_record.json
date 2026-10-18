@@ -1,0 +1,39 @@
+{
+  "arm": "T4a",
+  "status": "completed",
+  "description": "Inpaint + Control + source_person 框对齐",
+  "mode": "inpaint_control",
+  "layout": "source_person",
+  "parameters": {
+    "steps": 40,
+    "seed": 42,
+    "true_cfg_scale": 1.0,
+    "control_context_scale": 1.0,
+    "use_kv_cache": false,
+    "canvas_hw": [
+      928,
+      640
+    ]
+  },
+  "inputs": {
+    "prompt_sha256": "47a60b3f9e620c8cdde6cd89f00ea6b315228fd13072ff97bad110dd24db9da7",
+    "pose_path": "/home/shangguanrz/project/pic-edit/workflow/experiment/qwen-union/data/prepared_controls/pose_source_person.png",
+    "pose_sha256": "e6a2aa60044aeeb2870846b0eb8e68c23216048c0ba7b83a3eb4b17f24292959",
+    "mask_path": "/home/shangguanrz/project/pic-edit/workflow/experiment/qwen-union/data/prepared_controls/mask_source_person.png",
+    "mask_sha256": "ac9008be64ea25b542643a2faec729e74e9d0edc2a0a60c637c4ce08cc4e2e58",
+    "inpaint_source": "/home/shangguanrz/project/pic-edit/workflow/runs/test/hard_05/inputs/A_reference.png",
+    "inpaint_sha256": "deeef9d0447f718f7402a7d1af48228bde55a15eb90919a8cab1d9805e6d9440"
+  },
+  "output": {
+    "path": "/home/shangguanrz/project/pic-edit/workflow/experiment/qwen-union/output/T4a/final_image.png",
+    "sha256": "40c5152661ef3f5e90111987eaf3e1f4fec62af58338f65480179e48373ef968",
+    "size_wh": [
+      640,
+      928
+    ]
+  },
+  "performance": {
+    "generation_seconds": 111.22,
+    "peak_gpu_vram_gib": 3.74
+  }
+}

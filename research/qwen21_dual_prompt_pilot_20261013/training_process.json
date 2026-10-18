@@ -1,0 +1,24 @@
+{
+  "pid": 57591,
+  "command": [
+    "/home/shangguanrz/nihaochen/envs/qwen21/bin/python",
+    "-u",
+    "scripts/train/train_qwen21_dual_prompt_pilot.py",
+    "--data-dir",
+    "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/data",
+    "--output",
+    "/home/shangguanrz/project/pic-edit/experiments/4.two man /qwen21_dual_prompt_pilot/20261013_v1",
+    "--steps",
+    "300",
+    "--variants",
+    "short",
+    "structured",
+    "--save-every",
+    "50",
+    "--lr",
+    "0.0001"
+  ],
+  "started": 1791889721.963941,
+  "log": "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/training.log",
+  "run": "/home/shangguanrz/project/pic-edit/experiments/4.two man /qwen21_dual_prompt_pilot/20261013_v1"
+}

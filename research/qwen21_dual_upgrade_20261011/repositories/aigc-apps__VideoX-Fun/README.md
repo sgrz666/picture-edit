@@ -1,0 +1,673 @@
+# VideoX-Fun
+
+😊 Welcome!
+
+CogVideoX-Fun:
+[![Hugging Face Spaces](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Spaces-yellow)](https://huggingface.co/spaces/alibaba-pai/CogVideoX-Fun-5b)
+
+Wan-Fun:
+[![Hugging Face Spaces](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Spaces-yellow)](https://huggingface.co/spaces/alibaba-pai/Wan2.1-Fun-1.3B-InP)
+
+English | [简体中文](./README_zh-CN.md) | [日本語](./README_ja-JP.md)
+
+# Table of Contents
+- [I. Introduction](#i-introduction)
+- [II. Quick Start and Usage](#ii-quick-start-and-usage)
+  - [1. Environment Preparation](#1-environment-preparation)
+  - [2. Inference Generation](#2-inference-generation)
+  - [3. Model Training](#3-model-training)
+- [III. Supported Models](#iii-supported-models)
+- [IV. Video Works](#iv-video-works)
+- [V. References](#v-references)
+- [VI. Citation](#vi-citation)
+- [VII. Limitations and Risks](#vii-limitations-and-risks)
+- [VIII. License](#viii-license)
+
+# I. Introduction
+VideoX-Fun is a video generation pipeline that can be used to generate AI images and videos, as well as to train baseline and Lora models for Diffusion Transformer. We support direct prediction from pre-trained baseline models to generate videos with different resolutions, durations, and FPS. Additionally, we also support users in training their own baseline and Lora models to perform specific style transformations.
+
+# II. Quick Start and Usage
+
+<a id="quick-start"></a>
+
+## 1. Environment Preparation
+
+### 1.1 Cloud Usage: AliyunDSW
+
+DSW has free GPU time, which can be applied once by a user and is valid for 3 months after applying.
+
+Aliyun provide free GPU time in [Freetier](https://free.aliyun.com/?product=9602825&crowd=enterprise&spm=5176.28055625.J_5831864660.1.e939154aRgha4e&scm=20140722.M_9974135.P_110.MO_1806-ID_9974135-MID_9974135-CID_30683-ST_8512-V_1), get it and use in Aliyun PAI-DSW to start CogVideoX-Fun within 5min!
+
+[![DSW Notebook](https://pai-aigc-photog.oss-cn-hangzhou.aliyuncs.com/easyanimate/asset/dsw.png)](https://gallery.pai-ml.com/#/preview/deepLearning/cv/cogvideox_fun)
+
+### 1.2 Local Dependency Installation
+
+We have verified this repo execution on the following environment:
+
+The detailed of Windows:
+- OS: Windows 10
+- python: python3.10 & python3.11
+- pytorch: torch2.2.0
+- CUDA: 11.8 & 12.1
+- CUDNN: 8+
+- GPU： Nvidia-3060 12G & Nvidia-3090 24G
+
+The detailed of Linux:
+- OS: Ubuntu 20.04, CentOS
+- python: python3.10 & python3.11
+- pytorch: torch2.2.0
+- CUDA: 11.8 & 12.1
+- CUDNN: 8+
+- GPU：Nvidia-V100 16G & Nvidia-A10 24G & Nvidia-A100 40G & Nvidia-A100 80G
+
+We need about 60GB available on disk (for saving weights), please check!
+
+### 1.3 Using Docker
+
+If you are using docker, please make sure that the graphics card driver and CUDA environment have been installed correctly in your machine.
+
+Then execute the following commands in this way:
+
+```
+# pull image
+docker pull mybigpai-public-registry.cn-beijing.cr.aliyuncs.com/easycv/torch_cuda:cogvideox_fun
+
+# enter image
+docker run -it -p 7860:7860 --network host --gpus all --security-opt seccomp:unconfined --shm-size 200g mybigpai-public-registry.cn-beijing.cr.aliyuncs.com/easycv/torch_cuda:cogvideox_fun
+
+# clone code
+git clone https://github.com/aigc-apps/VideoX-Fun.git
+
+# enter VideoX-Fun's dir
+cd VideoX-Fun
+
+# download weights
+mkdir models/Diffusion_Transformer
+mkdir models/Personalized_Model
+
+# Please use the hugginface link or modelscope link to download the model.
+# CogVideoX-Fun
+# https://huggingface.co/alibaba-pai/CogVideoX-Fun-V1.1-5b-InP
+# https://modelscope.cn/models/PAI/CogVideoX-Fun-V1.1-5b-InP
+
+# Wan
+# https://huggingface.co/alibaba-pai/Wan2.1-Fun-V1.1-14B-InP
+# https://modelscope.cn/models/PAI/Wan2.1-Fun-V1.1-14B-InP
+```
+
+### 1.4 Weight Placement
+
+We'd better place the [weights](#iii-supported-models) along the specified path:
+
+**Via ComfyUI**:
+Put the models into the ComfyUI weights folder `ComfyUI/models/Fun_Models/`:
+```
+📦 ComfyUI/
+├── 📂 models/
+│   └── 📂 Fun_Models/
+│       ├── 📂 CogVideoX-Fun-V1.1-2b-InP/
+│       ├── 📂 CogVideoX-Fun-V1.1-5b-InP/
+│       ├── 📂 Wan2.1-Fun-14B-InP
+│       └── 📂 Wan2.1-Fun-1.3B-InP/
+```
+
+**Run its own python file or UI interface**:
+```
+📦 models/
+├── 📂 Diffusion_Transformer/
+│   ├── 📂 CogVideoX-Fun-V1.1-2b-InP/
+│   ├── 📂 CogVideoX-Fun-V1.1-5b-InP/
+│   ├── 📂 Wan2.1-Fun-14B-InP
+│   └── 📂 Wan2.1-Fun-1.3B-InP/
+├── 📂 Personalized_Model/
+│   └── your trained trainformer model / your trained lora model (for UI load)
+```
+
+## 2. Inference Generation
+
+<a id="video-gen"></a>
+
+Video and image models share the exact same inference entry, provided by scripts or UI under `examples/{model_name}/`.
+
+### 2.1 Entry Selection
+
+| Entry | Suitable Scenario | Config Granularity |
+|--|--|--|
+| Python file | Batch generation, parameter debugging | Full parameters |
+| WebUI | Interactive experience | Common parameters only |
+| ComfyUI | Existing ComfyUI workflow | Node parameters |
+
+Table: inference entry selection
+
+### 2.2 GPU Memory Saving Options
+
+Since Wan2.1 has a very large number of parameters, we need to consider memory optimization strategies to adapt to consumer-grade GPUs. We provide `GPU_memory_mode` for each prediction file, allowing you to choose between `model_cpu_offload`, `model_cpu_offload_and_qfloat8`, and `sequential_cpu_offload`. This solution is also applicable to CogVideoX-Fun generation.
+
+- `model_cpu_offload`: The entire model is moved to the CPU after use, saving some GPU memory.
+- `model_cpu_offload_and_qfloat8`: The entire model is moved to the CPU after use, and the transformer model is quantized to float8, saving more GPU memory.
+- `sequential_cpu_offload`: Each layer of the model is moved to the CPU after use. It is slower but saves a significant amount of GPU memory.
+
+`qfloat8` may slightly reduce model performance but saves more GPU memory. If you have sufficient GPU memory, it is recommended to use `model_cpu_offload`.
+
+### 2.3 Via Python Files
+
+##### i. Single-GPU Inference:
+
+- **Step 1**: Download the corresponding [weights](#iii-supported-models) and place them in the `models` folder.
+- **Step 2**: Use different files for prediction based on the weights and prediction goals. This library currently supports CogVideoX-Fun, Wan2.1, and Wan2.1-Fun. Different models are distinguished by folder names under the `examples` folder, and their supported features vary. Use them accordingly. Below is an example using CogVideoX-Fun:
+  - **Text-to-Video**:
+    - Modify `prompt`, `neg_prompt`, `guidance_scale`, and `seed` in the file `examples/cogvideox_fun/predict_t2v.py`.
+    - Run the file `examples/cogvideox_fun/predict_t2v.py` and wait for the results. The generated videos will be saved in the folder `samples/cogvideox-fun-videos`.
+  - **Image-to-Video**:
+    - Modify `validation_image_start`, `validation_image_end`, `prompt`, `neg_prompt`, `guidance_scale`, and `seed` in the file `examples/cogvideox_fun/predict_i2v.py`.
+    - `validation_image_start` is the starting image of the video, and `validation_image_end` is the ending image of the video.
+    - Run the file `examples/cogvideox_fun/predict_i2v.py` and wait for the results. The generated videos will be saved in the folder `samples/cogvideox-fun-videos_i2v`.
+  - **Video-to-Video**:
+    - Modify `validation_video`, `validation_image_end`, `prompt`, `neg_prompt`, `guidance_scale`, and `seed` in the file `examples/cogvideox_fun/predict_v2v.py`.
+    - `validation_video` is the reference video for video-to-video generation. You can use the following demo video: [Demo Video](https://pai-aigc-photog.oss-cn-hangzhou.aliyuncs.com/cogvideox_fun/asset/v1/play_guitar.mp4).
+    - Run the file `examples/cogvideox_fun/predict_v2v.py` and wait for the results. The generated videos will be saved in the folder `samples/cogvideox-fun-videos_v2v`.
+  - **Controlled Video Generation (Canny, Pose, Depth, etc.)**:
+    - Modify `control_video`, `validation_image_end`, `prompt`, `neg_prompt`, `guidance_scale`, and `seed` in the file `examples/cogvideox_fun/predict_v2v_control.py`.
+    - `control_video` is the control video extracted using operators such as Canny, Pose, or Depth. You can use the following demo video: [Demo Video](https://pai-aigc-photog.oss-cn-hangzhou.aliyuncs.com/cogvideox_fun/asset/v1.1/pose.mp4).
+    - Run the file `examples/cogvideox_fun/predict_v2v_control.py` and wait for the results. The generated videos will be saved in the folder `samples/cogvideox-fun-videos_v2v_control`.
+- **Step 3**: If you want to integrate other backbones or Loras trained by yourself, modify `lora_path` and relevant paths in `examples/{model_name}/predict_t2v.py` or `examples/{model_name}/predict_i2v.py` as needed.
+
+##### ii. Multi-GPU Inference:
+When using multi-GPU inference, please make sure to install the xfuser. We recommend installing xfuser==0.4.2 and yunchang==0.6.2.
+```
+pip install xfuser==0.4.2 --progress-bar off -i https://mirrors.aliyun.com/pypi/simple/
+pip install yunchang==0.6.2 --progress-bar off -i https://mirrors.aliyun.com/pypi/simple/
+```
+
+Please ensure that the product of `ulysses_degree` and `ring_degree` equals the number of GPUs being used. For example, if you are using 8 GPUs, you can set `ulysses_degree=2` and `ring_degree=4`, or alternatively `ulysses_degree=4` and `ring_degree=2`.
+
+- `ulysses_degree` performs parallelization after splitting across the heads.
+- `ring_degree` performs parallelization after splitting across the sequence.
+
+Compared to `ulysses_degree`, `ring_degree` incurs higher communication costs. Therefore, when setting these parameters, you should take into account both the sequence length and the number of heads in the model.
+
+Let’s take 8-GPU parallel inference as an example:
+
+- **For Wan2.1-Fun-V1.1-14B-InP**, which has 40 heads, `ulysses_degree` should be set to a divisor of 40 (e.g., 2, 4, 8, etc.). Thus, when using 8 GPUs for parallel inference, you can set `ulysses_degree=8` and `ring_degree=1`.
+
+- **For Wan2.1-Fun-V1.1-1.3B-InP**, which has 12 heads, `ulysses_degree` should be set to a divisor of 12 (e.g., 2, 4, etc.). Thus, when using 8 GPUs for parallel inference, you can set `ulysses_degree=4` and `ring_degree=2`.
+
+After setting the parameters, run the following command for parallel inference:
+
+```sh
+torchrun --nproc-per-node=8 examples/wan2.1_fun/predict_t2v.py
+```
+
+### 2.4 Via the Web UI
+
+The web UI supports text-to-video, image-to-video, video-to-video, and controlled video generation (Canny, Pose, Depth, etc.). This library currently supports CogVideoX-Fun, Wan2.1, and Wan2.1-Fun. Different models are distinguished by folder names under the `examples` folder, and their supported features vary. Use them accordingly. Below is an example using CogVideoX-Fun:
+
+- **Step 1**: Download the corresponding [weights](#iii-supported-models) and place them in the `models` folder.
+- **Step 2**: Run the file `examples/cogvideox_fun/app.py` to access the Gradio interface.
+- **Step 3**: Select the generation model on the page, fill in `prompt`, `neg_prompt`, `guidance_scale`, and `seed`, click "Generate," and wait for the results. The generated videos will be saved in the `sample` folder.
+
+### 2.5 Via ComfyUI
+
+For details, refer to [ComfyUI README](comfyui/README.md).
+
+
+## 3. Model Training
+
+A complete model training pipeline consists of data preprocessing and Video DiT training.
+
+### 3.1 Data Preprocessing
+
+<a id="data-preprocess"></a>
+Training documents for each model are unified under `scripts/{model_name}/`. For details, see [3.3 Training Documents per Model](#33-training-documents-per-model).
+
+A complete data preprocessing link for long video segmentation, cleaning, and description can refer to [README](videox_fun/video_caption/README.md) in the video captions section. 
+
+If you want to train a text to image and video generation model. You need to arrange the dataset in this format.
+
+```
+📦 project/
+├── 📂 datasets/
+│   ├── 📂 internal_datasets/
+│       ├── 📂 train/
+│       │   ├── 📄 00000001.mp4
+│       │   ├── 📄 00000002.jpg
+│       │   └── 📄 .....
+│       └── 📄 json_of_internal_datasets.json
+```
+
+The json_of_internal_datasets.json is a standard JSON file. The file_path in the json can to be set as relative path, as shown in below:
+```json
+[
+    {
+      "file_path": "train/00000001.mp4",
+      "text": "A group of young men in suits and sunglasses are walking down a city street.",
+      "type": "video"
+    },
+    {
+      "file_path": "train/00000002.jpg",
+      "text": "A group of young men in suits and sunglasses are walking down a city street.",
+      "type": "image"
+    },
+    .....
+]
+```
+
+You can also set the path as absolute path as follow:
+```json
+[
+    {
+      "file_path": "/mnt/data/videos/00000001.mp4",
+      "text": "A group of young men in suits and sunglasses are walking down a city street.",
+      "type": "video"
+    },
+    {
+      "file_path": "/mnt/data/train/00000001.jpg",
+      "text": "A group of young men in suits and sunglasses are walking down a city street.",
+      "type": "image"
+    },
+    .....
+]
+```
+
+### 3.2 Video DiT Training
+
+<a id="dit-train"></a>
+The training scripts and launch sh files for each model are located under `scripts/{model_name}/`. The sh file names vary by task, such as `train.sh`, `train_lora.sh`, `train_control.sh`, `train_control_distill.sh`, etc.; refer to the actual files in the directory.
+
+If the data format is relative path during data preprocessing, please set ```scripts/{model_name}/train.sh``` as follow.
+```
+export DATASET_NAME="datasets/internal_datasets/"
+export DATASET_META_NAME="datasets/internal_datasets/json_of_internal_datasets.json"
+```
+
+If the data format is absolute path during data preprocessing, please set ```scripts/{model_name}/train.sh``` as follow (`DATASET_NAME` is left empty so the dataset directory prefix is no longer concatenated).
+```
+export DATASET_NAME=""
+export DATASET_META_NAME="/mnt/data/json_of_internal_datasets.json"
+```
+
+Finally, run the corresponding script.
+```sh
+sh scripts/{model_name}/train.sh
+```
+
+### 3.3 Training Documents per Model
+
+For parameter details, training documents for each model are unified under `scripts/{model_name}/`.
+
+| Model | Baseline Training | LoRA Training | Others |
+|--|--|--|--|
+| Wan2.1-Fun | [EN](scripts/wan2.1_fun/README_TRAIN.md) / [ZH](scripts/wan2.1_fun/README_TRAIN_zh-CN.md) | [EN](scripts/wan2.1_fun/README_TRAIN_LORA.md) / [ZH](scripts/wan2.1_fun/README_TRAIN_LORA_zh-CN.md) | [Control EN](scripts/wan2.1_fun/README_TRAIN_CONTROL.md)、[Reward LoRA](scripts/wan2.1_fun/README_TRAIN_REWARD.md) |
+| Wan2.2 | [EN](scripts/wan2.2/README_TRAIN.md) / [ZH](scripts/wan2.2/README_TRAIN_zh-CN.md) | [EN](scripts/wan2.2/README_TRAIN_LORA.md) / [ZH](scripts/wan2.2/README_TRAIN_LORA_zh-CN.md) | [Distill EN](scripts/wan2.2/README_TRAIN_DISTILL.md)、[S2V](scripts/wan2.2/README_TRAIN_S2V.md)、[Animate](scripts/wan2.2/README_TRAIN_ANIMATE.md) |
+| Wan2.2-Fun | [EN](scripts/wan2.2_fun/README_TRAIN.md) / [ZH](scripts/wan2.2_fun/README_TRAIN_zh-CN.md) | [EN](scripts/wan2.2_fun/README_TRAIN_LORA.md) / [ZH](scripts/wan2.2_fun/README_TRAIN_LORA_zh-CN.md) | [Control LoRA EN](scripts/wan2.2_fun/README_TRAIN_CONTROL_LORA.md) |
+| CogVideoX-Fun | [EN](scripts/cogvideox_fun/README_TRAIN.md) / [ZH](scripts/cogvideox_fun/README_TRAIN_zh-CN.md) | [EN](scripts/cogvideox_fun/README_TRAIN_LORA.md) / [ZH](scripts/cogvideox_fun/README_TRAIN_LORA_zh-CN.md) | [Control EN](scripts/cogvideox_fun/README_TRAIN_CONTROL.md)、[Reward LoRA](scripts/cogvideox_fun/README_TRAIN_REWARD.md) |
+| Qwen-Image | [EN](scripts/qwenimage/README_TRAIN.md) / [ZH](scripts/qwenimage/README_TRAIN_zh-CN.md) | [EN](scripts/qwenimage/README_TRAIN_LORA.md) / [ZH](scripts/qwenimage/README_TRAIN_LORA_zh-CN.md) | [Edit EN](scripts/qwenimage/README_TRAIN_EDIT.md) |
+| Qwen-Image-2.1 | [EN](scripts/qwenimage21/README_TRAIN.md) / [ZH](scripts/qwenimage21/README_TRAIN_zh-CN.md) | - | [Control EN](scripts/qwenimage21_fun/README_TRAIN.md) / [ZH](scripts/qwenimage21_fun/README_TRAIN_zh-CN.md) |
+| Z-Image | [EN](scripts/z_image/README_TRAIN.md) / [ZH](scripts/z_image/README_TRAIN_zh-CN.md) | [EN](scripts/z_image/README_TRAIN_LORA.md) / [ZH](scripts/z_image/README_TRAIN_LORA_zh-CN.md) | [GRPO LoRA EN](scripts/z_image/README_TRAIN_GRPO_LORA.md) |
+
+For other models, check the READMEs under `scripts/{model_name}/`.
+
+# III. Supported Models
+
+The table below summarizes currently supported model families and weights. Video and image models share the same inference and training entry. Each row represents one model family; the fourth column is an embedded four-column HTML table (Weight, Hugging Face, ModelScope, Description). 🤗 is Hugging Face, 🤖 is ModelScope (recommended for users in mainland China), and `-` means the corresponding channel has no public repo or requires authentication. For training docs of each model, see [3.3 Training Documents per Model](#33-training-documents-per-model).
+
+| Model Family | Modality | Supported Tasks | Weight / Download / Description |
+|--|--|--|--|
+| Wan2.2-Fun | Video | Series trained by this project on Wan2.2, covering T2V, I2V, first/last frame, controlled generation, and camera control | <table style="width:100%;border-collapse:collapse;"><tr><td valign="top" style="padding:2px 8px 2px 0;">Wan2.2-Fun-A14B-InP</td><td valign="top" style="padding:2px 8px;"><a href="https://huggingface.co/alibaba-pai/Wan2.2-Fun-A14B-InP">🤗</a></td><td valign="top" style="padding:2px 8px;"><a href="https://modelscope.cn/models/PAI/Wan2.2-Fun-A14B-InP">🤖</a></td><td valign="top" style="padding:2px 0;">Wan2.2-Fun-14B text-to-video generation weights, trained at multiple resolutions, supports start-end image prediction.</td></tr><tr><td valign="top" style="padding:2px 8px 2px 0;">Wan2.2-Fun-A14B-Control</td><td valign="top" style="padding:2px 8px;"><a href="https://huggingface.co/alibaba-pai/Wan2.2-Fun-A14B-Control">🤗</a></td><td valign="top" style="padding:2px 8px;"><a href="https://modelscope.cn/models/PAI/Wan2.2-Fun-A14B-Control">🤖</a></td><td valign="top" style="padding:2px 0;">Wan2.2-Fun-14B video control weights, supporting various control conditions such as Canny, Depth, Pose, MLSD, etc., and trajectory control. Supports multi-resolution (512, 768, 1024) video prediction at 81 frames, trained at 16 frames per second, with multilingual prediction support.</td></tr><tr><td valign="top" style="padding:2px 8px 2px 0;">Wan2.2-Fun-A14B-Control-Camera</td><td valign="top" style="padding:2px 8px;"><a href="https://huggingface.co/alibaba-pai/Wan2.2-Fun-A14B-Control-Camera">🤗</a></td><td valign="top" style="padding:2px 8px;"><a href="https://modelscope.cn/models/PAI/Wan2.2-Fun-A14B-Control-Camera">🤖</a></td><td valign="top" style="padding:2px 0;">Wan2.2-Fun-14B camera lens control weights. Supports multi-resolution (512, 768, 1024) video prediction, trained with 81 frames at 16 FPS, supports multilingual prediction.</td></tr><tr><td valign="top" style="padding:2px 8px 2px 0;">Wan2.2-Fun-5B-InP</td><td valign="top" style="padding:2px 8px;"><a href="https://huggingface.co/alibaba-pai/Wan2.2-Fun-5B-InP">🤗</a></td><td valign="top" style="padding:2px 8px;"><a href="https://modelscope.cn/models/PAI/Wan2.2-Fun-5B-InP">🤖</a></td><td valign="top" style="padding:2px 0;">Wan2.2-Fun-5B text-to-video weights trained at 121 frames, 24 FPS, supporting first/last frame prediction.</td></tr><tr><td valign="top" style="padding:2px 8px 2px 0;">Wan2.2-Fun-5B-Control</td><td valign="top" style="padding:2px 8px;"><a href="https://huggingface.co/alibaba-pai/Wan2.2-Fun-5B-Control">🤗</a></td><td valign="top" style="padding:2px 8px;"><a href="https://modelscope.cn/models/PAI/Wan2.2-Fun-5B-Control">🤖</a></td><td valign="top" style="padding:2px 0;">Wan2.2-Fun-5B video control weights, supporting control conditions like Canny, Depth, Pose, MLSD, and trajectory control. Trained at 121 frames, 24 FPS, with multilingual prediction support.</td></tr><tr><td valign="top" style="padding:2px 8px 2px 0;">Wan2.2-Fun-5B-Control-Camera</td><td valign="top" style="padding:2px 8px;"><a href="https://huggingface.co/alibaba-pai/Wan2.2-Fun-5B-Control-Camera">🤗</a></td><td valign="top" style="padding:2px 8px;"><a href="https://modelscope.cn/models/PAI/Wan2.2-Fun-5B-Control-Camera">🤖</a></td><td valign="top" style="padding:2px 0;">Wan2.2-Fun-5B camera lens control weights. Trained at 121 frames, 24 FPS, with multilingual prediction support.</td></tr><tr><td valign="top" style="padding:2px 8px 2px 0;">Wan2.2-Fun-Reward-LoRAs</td><td valign="top" style="padding:2px 8px;"><a href="https://huggingface.co/alibaba-pai/Wan2.2-Fun-Reward-LoRAs">🤗</a></td><td valign="top" style="padding:2px 8px;"><a href="https://modelscope.cn/models/PAI/Wan2.2-Fun-Reward-LoRAs">🤖</a></td><td valign="top" style="padding:2px 0;">Reward LoRAs that optimize Wan2.2-Fun generated videos via reward backpropagation</td></tr></table> |
+| Wan2.2-VACE-Fun | Video | Series trained by this project with the VACE scheme, covering controlled generation and subject reference | <table style="width:100%;border-collapse:collapse;"><tr><td valign="top" style="padding:2px 8px 2px 0;">Wan2.2-VACE-Fun-A14B</td><td valign="top" style="padding:2px 8px;"><a href="https://huggingface.co/alibaba-pai/Wan2.2-VACE-Fun-A14B">🤗</a></td><td valign="top" style="padding:2px 8px;"><a href="https://modelscope.cn/models/PAI/Wan2.2-VACE-Fun-A14B">🤖</a></td><td valign="top" style="padding:2px 0;">Control weights for Wan2.2 trained using the VACE scheme (based on the base model Wan2.2-T2V-A14B), supporting various control conditions such as Canny, Depth, Pose, MLSD, trajectory control, etc. It supports video generation by specifying the subject. It supports multi-resolution (512, 768, 1024) video prediction, and is trained with 81 frames at 16 FPS. It also supports multi-language prediction.</td></tr></table> |
+| Wan2.2 | Video | Official Wan weights covering T2V, I2V, audio-driven, and character animation; can be used as training baseline for Wan2.2-Fun | <table style="width:100%;border-collapse:collapse;"><tr><td valign="top" style="padding:2px 8px 2px 0;">Wan2.2-TI2V-5B</td><td valign="top" style="padding:2px 8px;"><a href="https://huggingface.co/Wan-AI/Wan2.2-TI2V-5B">🤗</a></td><td valign="top" style="padding:2px 8px;"><a href="https://www.modelscope.cn/models/Wan-AI/Wan2.2-TI2V-5B">🤖</a></td><td valign="top" style="padding:2px 0;">Wan2.2-5B text/image-to-video weights</td></tr><tr><td valign="top" style="padding:2px 8px 2px 0;">Wan2.2-T2V-A14B</td><td valign="top" style="padding:2px 8px;"><a href="https://huggingface.co/Wan-AI/Wan2.2-T2V-A14B">🤗</a></td><td valign="top" style="padding:2px 8px;"><a href="https://www.modelscope.cn/models/Wan-AI/Wan2.2-T2V-A14B">🤖</a></td><td valign="top" style="padding:2px 0;">Wan2.2-14B text-to-video weights</td></tr><tr><td valign="top" style="padding:2px 8px 2px 0;">Wan2.2-I2V-A14B</td><td valign="top" style="padding:2px 8px;"><a href="https://huggingface.co/Wan-AI/Wan2.2-I2V-A14B">🤗</a></td><td valign="top" style="padding:2px 8px;"><a href="https://www.modelscope.cn/models/Wan-AI/Wan2.2-I2V-A14B">🤖</a></td><td valign="top" style="padding:2px 0;">Wan2.2-14B image-to-video weights</td></tr><tr><td valign="top" style="padding:2px 8px 2px 0;">Wan2.2-S2V-14B</td><td valign="top" style="padding:2px 8px;"><a href="https://huggingface.co/Wan-AI/Wan2.2-S2V-14B">🤗</a></td><td valign="top" style="padding:2px 8px;"><a href="https://modelscope.cn/models/Wan-AI/Wan2.2-S2V-14B">🤖</a></td><td valign="top" style="padding:2px 0;">Wan2.2-14B audio-to-video weights, speaker-driven digital human</td></tr><tr><td valign="top" style="padding:2px 8px 2px 0;">Wan2.2-Animate-14B</td><td valign="top" style="padding:2px 8px;"><a href="https://huggingface.co/Wan-AI/Wan2.2-Animate-14B">🤗</a></td><td valign="top" style="padding:2px 8px;"><a href="https://modelscope.cn/models/Wan-AI/Wan2.2-Animate-14B">🤖</a></td><td valign="top" style="padding:2px 0;">Wan2.2-14B character replacement and motion transfer weights; repo contains multiple precision files</td></tr></table> |
+| Wan2.1-Fun V1.1 | Video | V1.1 series trained by this project on Wan2.1, multi-resolution (512/768/1024), 81 frames at 16fps, covering T2V, I2V, first/last frame, controlled generation, and camera control | <table style="width:100%;border-collapse:collapse;"><tr><td valign="top" style="padding:2px 8px 2px 0;">Wan2.1-Fun-V1.1-1.3B-InP</td><td valign="top" style="padding:2px 8px;"><a href="https://huggingface.co/alibaba-pai/Wan2.1-Fun-V1.1-1.3B-InP">🤗</a></td><td valign="top" style="padding:2px 8px;"><a href="https://modelscope.cn/models/PAI/Wan2.1-Fun-V1.1-1.3B-InP">🤖</a></td><td valign="top" style="padding:2px 0;">Wan2.1-Fun-V1.1-1.3B text-to-video generation weights, trained at multiple resolutions, supports start-end image prediction.</td></tr><tr><td valign="top" style="padding:2px 8px 2px 0;">Wan2.1-Fun-V1.1-14B-InP</td><td valign="top" style="padding:2px 8px;"><a href="https://huggingface.co/alibaba-pai/Wan2.1-Fun-V1.1-14B-InP">🤗</a></td><td valign="top" style="padding:2px 8px;"><a href="https://modelscope.cn/models/PAI/Wan2.1-Fun-V1.1-14B-InP">🤖</a></td><td valign="top" style="padding:2px 0;">Wan2.1-Fun-V1.1-14B text-to-video generation weights, trained at multiple resolutions, supports start-end image prediction.</td></tr><tr><td valign="top" style="padding:2px 8px 2px 0;">Wan2.1-Fun-V1.1-1.3B-Control</td><td valign="top" style="padding:2px 8px;"><a href="https://huggingface.co/alibaba-pai/Wan2.1-Fun-V1.1-1.3B-Control">🤗</a></td><td valign="top" style="padding:2px 8px;"><a href="https://modelscope.cn/models/PAI/Wan2.1-Fun-V1.1-1.3B-Control">🤖</a></td><td valign="top" style="padding:2px 0;">Wan2.1-Fun-V1.1-1.3B video control weights support various control conditions such as Canny, Depth, Pose, MLSD, etc., supports reference image + control condition-based control, and trajectory control. Supports multi-resolution (512, 768, 1024) video prediction, trained with 81 frames at 16 FPS, supports multilingual prediction.</td></tr><tr><td valign="top" style="padding:2px 8px 2px 0;">Wan2.1-Fun-V1.1-14B-Control</td><td valign="top" style="padding:2px 8px;"><a href="https://huggingface.co/alibaba-pai/Wan2.1-Fun-V1.1-14B-Control">🤗</a></td><td valign="top" style="padding:2px 8px;"><a href="https://modelscope.cn/models/PAI/Wan2.1-Fun-V1.1-14B-Control">🤖</a></td><td valign="top" style="padding:2px 0;">Wan2.1-Fun-V1.1-14B video control weights support various control conditions such as Canny, Depth, Pose, MLSD, etc., supports reference image + control condition-based control, and trajectory control. Supports multi-resolution (512, 768, 1024) video prediction, trained with 81 frames at 16 FPS, supports multilingual prediction.</td></tr><tr><td valign="top" style="padding:2px 8px 2px 0;">Wan2.1-Fun-V1.1-1.3B-Control-Camera</td><td valign="top" style="padding:2px 8px;"><a href="https://huggingface.co/alibaba-pai/Wan2.1-Fun-V1.1-1.3B-Control-Camera">🤗</a></td><td valign="top" style="padding:2px 8px;"><a href="https://modelscope.cn/models/PAI/Wan2.1-Fun-V1.1-1.3B-Control-Camera">🤖</a></td><td valign="top" style="padding:2px 0;">Wan2.1-Fun-V1.1-1.3B camera lens control weights. Supports multi-resolution (512, 768, 1024) video prediction, trained with 81 frames at 16 FPS, supports multilingual prediction.</td></tr><tr><td valign="top" style="padding:2px 8px 2px 0;">Wan2.1-Fun-V1.1-14B-Control-Camera</td><td valign="top" style="padding:2px 8px;"><a href="https://huggingface.co/alibaba-pai/Wan2.1-Fun-V1.1-14B-Control-Camera">🤗</a></td><td valign="top" style="padding:2px 8px;"><a href="https://modelscope.cn/models/PAI/Wan2.1-Fun-V1.1-14B-Control-Camera">🤖</a></td><td valign="top" style="padding:2px 0;">Wan2.1-Fun-V1.1-14B camera lens control weights. Supports multi-resolution (512, 768, 1024) video prediction, trained with 81 frames at 16 FPS, supports multilingual prediction.</td></tr></table> |
+| Wan2.1-Fun V1.0 | Video | V1.0 series trained by this project on Wan2.1; same capabilities as V1.1 but without camera control | <table style="width:100%;border-collapse:collapse;"><tr><td valign="top" style="padding:2px 8px 2px 0;">Wan2.1-Fun-1.3B-InP</td><td valign="top" style="padding:2px 8px;"><a href="https://huggingface.co/alibaba-pai/Wan2.1-Fun-1.3B-InP">🤗</a></td><td valign="top" style="padding:2px 8px;"><a href="https://modelscope.cn/models/PAI/Wan2.1-Fun-1.3B-InP">🤖</a></td><td valign="top" style="padding:2px 0;">Wan2.1-Fun-1.3B text-to-video weights, trained at multiple resolutions, supporting start and end frame prediction.</td></tr><tr><td valign="top" style="padding:2px 8px 2px 0;">Wan2.1-Fun-14B-InP</td><td valign="top" style="padding:2px 8px;"><a href="https://huggingface.co/alibaba-pai/Wan2.1-Fun-14B-InP">🤗</a></td><td valign="top" style="padding:2px 8px;"><a href="https://modelscope.cn/models/PAI/Wan2.1-Fun-14B-InP">🤖</a></td><td valign="top" style="padding:2px 0;">Wan2.1-Fun-14B text-to-video weights, trained at multiple resolutions, supporting start and end frame prediction.</td></tr><tr><td valign="top" style="padding:2px 8px 2px 0;">Wan2.1-Fun-1.3B-Control</td><td valign="top" style="padding:2px 8px;"><a href="https://huggingface.co/alibaba-pai/Wan2.1-Fun-1.3B-Control">🤗</a></td><td valign="top" style="padding:2px 8px;"><a href="https://modelscope.cn/models/PAI/Wan2.1-Fun-1.3B-Control">🤖</a></td><td valign="top" style="padding:2px 0;">Wan2.1-Fun-1.3B video control weights, supporting various control conditions such as Canny, Depth, Pose, MLSD, etc., and trajectory control. Supports multi-resolution (512, 768, 1024) video prediction at 81 frames, trained at 16 frames per second, with multilingual prediction support.</td></tr><tr><td valign="top" style="padding:2px 8px 2px 0;">Wan2.1-Fun-14B-Control</td><td valign="top" style="padding:2px 8px;"><a href="https://huggingface.co/alibaba-pai/Wan2.1-Fun-14B-Control">🤗</a></td><td valign="top" style="padding:2px 8px;"><a href="https://modelscope.cn/models/PAI/Wan2.1-Fun-14B-Control">🤖</a></td><td valign="top" style="padding:2px 0;">Wan2.1-Fun-14B video control weights, supporting various control conditions such as Canny, Depth, Pose, MLSD, etc., and trajectory control. Supports multi-resolution (512, 768, 1024) video prediction at 81 frames, trained at 16 frames per second, with multilingual prediction support.</td></tr><tr><td valign="top" style="padding:2px 8px 2px 0;">Wan2.1-Fun-Reward-LoRAs</td><td valign="top" style="padding:2px 8px;"><a href="https://huggingface.co/alibaba-pai/Wan2.1-Fun-Reward-LoRAs">🤗</a></td><td valign="top" style="padding:2px 8px;"><a href="https://modelscope.cn/models/PAI/Wan2.1-Fun-Reward-LoRAs">🤖</a></td><td valign="top" style="padding:2px 0;">Alignment LoRAs trained with reward backpropagation</td></tr></table> |
+| Wan2.1 | Video | Official Wan weights covering T2V, I2V, audio-driven, and controlled generation; can be used as training baseline for Wan2.1-Fun | <table style="width:100%;border-collapse:collapse;"><tr><td valign="top" style="padding:2px 8px 2px 0;">Wan2.1-T2V-1.3B</td><td valign="top" style="padding:2px 8px;"><a href="https://huggingface.co/Wan-AI/Wan2.1-T2V-1.3B">🤗</a></td><td valign="top" style="padding:2px 8px;"><a href="https://www.modelscope.cn/models/Wan-AI/Wan2.1-T2V-1.3B">🤖</a></td><td valign="top" style="padding:2px 0;">1.3B文生视频</td></tr><tr><td valign="top" style="padding:2px 8px 2px 0;">Wan2.1-T2V-14B</td><td valign="top" style="padding:2px 8px;"><a href="https://huggingface.co/Wan-AI/Wan2.1-T2V-14B">🤗</a></td><td valign="top" style="padding:2px 8px;"><a href="https://www.modelscope.cn/models/Wan-AI/Wan2.1-T2V-14B">🤖</a></td><td valign="top" style="padding:2px 0;">14B文生视频</td></tr><tr><td valign="top" style="padding:2px 8px 2px 0;">Wan2.1-I2V-14B-480P</td><td valign="top" style="padding:2px 8px;"><a href="https://huggingface.co/Wan-AI/Wan2.1-I2V-14B-480P">🤗</a></td><td valign="top" style="padding:2px 8px;"><a href="https://www.modelscope.cn/models/Wan-AI/Wan2.1-I2V-14B-480P">🤖</a></td><td valign="top" style="padding:2px 0;">480P图生视频，是InfiniteTalk的基础模型</td></tr><tr><td valign="top" style="padding:2px 8px 2px 0;">Wan2.1-I2V-14B-720P</td><td valign="top" style="padding:2px 8px;"><a href="https://huggingface.co/Wan-AI/Wan2.1-I2V-14B-720P">🤗</a></td><td valign="top" style="padding:2px 8px;"><a href="https://www.modelscope.cn/models/Wan-AI/Wan2.1-I2V-14B-720P">🤖</a></td><td valign="top" style="padding:2px 0;">Wan 2.1-14B-720P image-to-video model weights</td></tr><tr><td valign="top" style="padding:2px 8px 2px 0;">Wan2.1-VACE-1.3B</td><td valign="top" style="padding:2px 8px;"><a href="https://huggingface.co/Wan-AI/Wan2.1-VACE-1.3B">🤗</a></td><td valign="top" style="padding:2px 8px;"><a href="https://modelscope.cn/models/Wan-AI/Wan2.1-VACE-1.3B">🤖</a></td><td valign="top" style="padding:2px 0;">1.3B VACE control and subject reference</td></tr><tr><td valign="top" style="padding:2px 8px 2px 0;">Wan2.1-VACE-14B</td><td valign="top" style="padding:2px 8px;"><a href="https://huggingface.co/Wan-AI/Wan2.1-VACE-14B">🤗</a></td><td valign="top" style="padding:2px 8px;"><a href="https://modelscope.cn/models/Wan-AI/Wan2.1-VACE-14B">🤖</a></td><td valign="top" style="padding:2px 0;">14B VACE control and subject reference</td></tr></table> |
+| Self-Forcing / Causal-Forcing / Flex-Forcing | Video | Autoregressive distillation schemes covering streaming, interactive generation, and flexible chunked attention | <table style="width:100%;border-collapse:collapse;"><tr><td valign="top" style="padding:2px 8px 2px 0;">Self-Forcing</td><td valign="top" style="padding:2px 8px;"><a href="https://huggingface.co/gdhe17/Self-Forcing">🤗</a></td><td valign="top" style="padding:2px 8px;"><a href="https://modelscope.cn/models/AI-ModelScope/Self-Forcing">🤖</a></td><td valign="top" style="padding:2px 0;">Autoregressive distillation weights, use with Wan2.1-T2V for streaming and interactive generation; Flex-Forcing (chunk-wise causal/bidirectional attention) weights are produced by `scripts/wan2.1_flex_forcing`</td></tr></table> |
+| TurboWan / TurboDiffusion | Video | Distilled few-step weights publicly released by the TurboDiffusion scheme | <table style="width:100%;border-collapse:collapse;"><tr><td valign="top" style="padding:2px 8px 2px 0;">TurboWan2.1-T2V-1.3B-480P</td><td valign="top" style="padding:2px 8px;"><a href="https://huggingface.co/TurboDiffusion/TurboWan2.1-T2V-1.3B-480P">🤗</a></td><td valign="top" style="padding:2px 8px;"><a href="https://modelscope.cn/models/TurboDiffusion/TurboWan2.1-T2V-1.3B-480P">🤖</a></td><td valign="top" style="padding:2px 0;">1.3B text-to-video distilled weights; officially released as .pth, the repo also ships a quantised version</td></tr><tr><td valign="top" style="padding:2px 8px 2px 0;">TurboWan2.2-I2V-A14B-720P</td><td valign="top" style="padding:2px 8px;"><a href="https://huggingface.co/TurboDiffusion/TurboWan2.2-I2V-A14B-720P">🤗</a></td><td valign="top" style="padding:2px 8px;"><a href="https://modelscope.cn/models/TurboDiffusion/TurboWan2.2-I2V-A14B-720P">🤖</a></td><td valign="top" style="padding:2px 0;">14B image-to-video distilled weights; the repo contains low/high noise variants (plus quantised). Place them in Personalized_Model and reference via transformer_path / transformer_high_path</td></tr></table> |
+| CogVideoX-Fun V1.5 | Video | Official CogVideoX-Fun V1.5 weights, multi-resolution (512/768/1024), 85 frames at 8fps, covering I2V and reward alignment | <table style="width:100%;border-collapse:collapse;"><tr><td valign="top" style="padding:2px 8px 2px 0;">CogVideoX-Fun-V1.5-5b-InP</td><td valign="top" style="padding:2px 8px;"><a href="https://huggingface.co/alibaba-pai/CogVideoX-Fun-V1.5-5b-InP">🤗</a></td><td valign="top" style="padding:2px 8px;"><a href="https://modelscope.cn/models/PAI/CogVideoX-Fun-V1.5-5b-InP">🤖</a></td><td valign="top" style="padding:2px 0;">Our official graph-generated video model is capable of predicting videos at multiple resolutions (512, 768, 1024) and has been trained on 85 frames at a rate of 8 frames per second.</td></tr><tr><td valign="top" style="padding:2px 8px 2px 0;">CogVideoX-Fun-V1.5-Reward-LoRAs</td><td valign="top" style="padding:2px 8px;"><a href="https://huggingface.co/alibaba-pai/CogVideoX-Fun-V1.5-Reward-LoRAs">🤗</a></td><td valign="top" style="padding:2px 8px;"><a href="https://modelscope.cn/models/PAI/CogVideoX-Fun-V1.5-Reward-LoRAs">🤖</a></td><td valign="top" style="padding:2px 0;">奖励反向传播训练的对齐LoRA</td></tr></table> |
+| CogVideoX-Fun V1.1 | Video | Official CogVideoX-Fun V1.1 weights, multi-resolution (512/768/1024/1280), 49 frames at 8fps, covering I2V, pose control, controlled generation, and reward alignment | <table style="width:100%;border-collapse:collapse;"><tr><td valign="top" style="padding:2px 8px 2px 0;">CogVideoX-Fun-V1.1-2b-InP</td><td valign="top" style="padding:2px 8px;"><a href="https://huggingface.co/alibaba-pai/CogVideoX-Fun-V1.1-2b-InP">🤗</a></td><td valign="top" style="padding:2px 8px;"><a href="https://modelscope.cn/models/PAI/CogVideoX-Fun-V1.1-2b-InP">🤖</a></td><td valign="top" style="padding:2px 0;">Our official graph-generated video model is capable of predicting videos at multiple resolutions (512, 768, 1024, 1280) and has been trained on 49 frames at a rate of 8 frames per second.</td></tr><tr><td valign="top" style="padding:2px 8px 2px 0;">CogVideoX-Fun-V1.1-5b-InP</td><td valign="top" style="padding:2px 8px;"><a href="https://huggingface.co/alibaba-pai/CogVideoX-Fun-V1.1-5b-InP">🤗</a></td><td valign="top" style="padding:2px 8px;"><a href="https://modelscope.cn/models/PAI/CogVideoX-Fun-V1.1-5b-InP">🤖</a></td><td valign="top" style="padding:2px 0;">Our official graph-generated video model is capable of predicting videos at multiple resolutions (512, 768, 1024, 1280) and has been trained on 49 frames at a rate of 8 frames per second. Noise has been added to the reference image, and the amplitude of motion is greater compared to V1.0.</td></tr><tr><td valign="top" style="padding:2px 8px 2px 0;">CogVideoX-Fun-V1.1-2b-Pose</td><td valign="top" style="padding:2px 8px;"><a href="https://huggingface.co/alibaba-pai/CogVideoX-Fun-V1.1-2b-Pose">🤗</a></td><td valign="top" style="padding:2px 8px;"><a href="https://modelscope.cn/models/PAI/CogVideoX-Fun-V1.1-2b-Pose">🤖</a></td><td valign="top" style="padding:2px 0;">Our official pose-control video model is capable of predicting videos at multiple resolutions (512, 768, 1024, 1280) and has been trained on 49 frames at a rate of 8 frames per second.</td></tr><tr><td valign="top" style="padding:2px 8px 2px 0;">CogVideoX-Fun-V1.1-5b-Pose</td><td valign="top" style="padding:2px 8px;"><a href="https://huggingface.co/alibaba-pai/CogVideoX-Fun-V1.1-5b-Pose">🤗</a></td><td valign="top" style="padding:2px 8px;"><a href="https://modelscope.cn/models/PAI/CogVideoX-Fun-V1.1-5b-Pose">🤖</a></td><td valign="top" style="padding:2px 0;">Our official pose-control video model is capable of predicting videos at multiple resolutions (512, 768, 1024, 1280) and has been trained on 49 frames at a rate of 8 frames per second.</td></tr><tr><td valign="top" style="padding:2px 8px 2px 0;">CogVideoX-Fun-V1.1-2b-Control</td><td valign="top" style="padding:2px 8px;"><a href="https://huggingface.co/alibaba-pai/CogVideoX-Fun-V1.1-2b-Control">🤗</a></td><td valign="top" style="padding:2px 8px;"><a href="https://modelscope.cn/models/PAI/CogVideoX-Fun-V1.1-2b-Control">🤖</a></td><td valign="top" style="padding:2px 0;">Our official control video model is capable of predicting videos at multiple resolutions (512, 768, 1024, 1280) and has been trained on 49 frames at a rate of 8 frames per second. Supporting various control conditions such as Canny, Depth, Pose, MLSD, etc.</td></tr><tr><td valign="top" style="padding:2px 8px 2px 0;">CogVideoX-Fun-V1.1-5b-Control</td><td valign="top" style="padding:2px 8px;"><a href="https://huggingface.co/alibaba-pai/CogVideoX-Fun-V1.1-5b-Control">🤗</a></td><td valign="top" style="padding:2px 8px;"><a href="https://modelscope.cn/models/PAI/CogVideoX-Fun-V1.1-5b-Control">🤖</a></td><td valign="top" style="padding:2px 0;">Our official control video model is capable of predicting videos at multiple resolutions (512, 768, 1024, 1280) and has been trained on 49 frames at a rate of 8 frames per second. Supporting various control conditions such as Canny, Depth, Pose, MLSD, etc.</td></tr><tr><td valign="top" style="padding:2px 8px 2px 0;">CogVideoX-Fun-V1.1-Reward-LoRAs</td><td valign="top" style="padding:2px 8px;"><a href="https://huggingface.co/alibaba-pai/CogVideoX-Fun-V1.1-Reward-LoRAs">🤗</a></td><td valign="top" style="padding:2px 8px;"><a href="https://modelscope.cn/models/PAI/CogVideoX-Fun-V1.1-Reward-LoRAs">🤖</a></td><td valign="top" style="padding:2px 0;">奖励反向传播训练的对齐LoRA</td></tr></table> |
+| CogVideoX-Fun V1.0 | Video | Legacy weights trained at 49 frames 8fps, superseded by V1.1/V1.5 | <table style="width:100%;border-collapse:collapse;"><tr><td valign="top" style="padding:2px 8px 2px 0;">CogVideoX-Fun-2b-InP</td><td valign="top" style="padding:2px 8px;"><a href="https://huggingface.co/alibaba-pai/CogVideoX-Fun-2b-InP">🤗</a></td><td valign="top" style="padding:2px 8px;"><a href="https://modelscope.cn/models/PAI/CogVideoX-Fun-2b-InP">🤖</a></td><td valign="top" style="padding:2px 0;">Our official graph-generated video model is capable of predicting videos at multiple resolutions (512, 768, 1024, 1280) and has been trained on 49 frames at a rate of 8 frames per second.</td></tr><tr><td valign="top" style="padding:2px 8px 2px 0;">CogVideoX-Fun-5b-InP</td><td valign="top" style="padding:2px 8px;"><a href="https://huggingface.co/alibaba-pai/CogVideoX-Fun-5b-InP">🤗</a></td><td valign="top" style="padding:2px 8px;"><a href="https://modelscope.cn/models/PAI/CogVideoX-Fun-5b-InP">🤖</a></td><td valign="top" style="padding:2px 0;">Our official graph-generated video model is capable of predicting videos at multiple resolutions (512, 768, 1024, 1280) and has been trained on 49 frames at a rate of 8 frames per second.</td></tr></table> |
+| HunyuanVideo | Video | Official diffusers-format weights; this project directly supports inference and LoRA training | <table style="width:100%;border-collapse:collapse;"><tr><td valign="top" style="padding:2px 8px 2px 0;">HunyuanVideo</td><td valign="top" style="padding:2px 8px;"><a href="https://huggingface.co/hunyuanvideo-community/HunyuanVideo">🤗</a></td><td valign="top" style="padding:2px 8px;"><a href="https://modelscope.cn/models/Tencent-Hunyuan/HunyuanVideo">🤖</a></td><td valign="top" style="padding:2px 0;">文生视频</td></tr><tr><td valign="top" style="padding:2px 8px 2px 0;">HunyuanVideo-I2V</td><td valign="top" style="padding:2px 8px;"><a href="https://huggingface.co/hunyuanvideo-community/HunyuanVideo-I2V">🤗</a></td><td valign="top" style="padding:2px 8px;"><a href="https://modelscope.cn/models/Tencent-Hunyuan/HunyuanVideo-I2V">🤖</a></td><td valign="top" style="padding:2px 0;">图生视频</td></tr></table> |
+| MiniMax-H3 | Video | Official video generation weights and the ControlNet trained by this project | <table style="width:100%;border-collapse:collapse;"><tr><td valign="top" style="padding:2px 8px 2px 0;">MiniMax-H3</td><td valign="top" style="padding:2px 8px;"><a href="https://huggingface.co/MiniMaxAI/MiniMax-H3">🤗</a></td><td valign="top" style="padding:2px 8px;"><a href="https://modelscope.cn/models/MiniMax/MiniMax-H3">🤖</a></td><td valign="top" style="padding:2px 0;">Official MiniMax-H3 T2V/I2V weights</td></tr><tr><td valign="top" style="padding:2px 8px 2px 0;">MiniMax-H3-Fun-Controlnet-Union</td><td valign="top" style="padding:2px 8px;"><a href="https://huggingface.co/alibaba-pai/MiniMax-H3-Fun-Controlnet-Union">🤗</a></td><td valign="top" style="padding:2px 8px;"><a href="https://modelscope.cn/models/PAI/MiniMax-H3-Fun-Controlnet-Union">🤖</a></td><td valign="top" style="padding:2px 0;">ControlNet trained by this project, supports multiple control conditions and trajectory control</td></tr><tr><td valign="top" style="padding:2px 8px 2px 0;">MiniMax-H3-Fun-Controlnet-Union-2.0</td><td valign="top" style="padding:2px 8px;"><a href="https://huggingface.co/alibaba-pai/MiniMax-H3-Fun-Controlnet-Union-2.0">🤗</a></td><td valign="top" style="padding:2px 8px;"><a href="https://modelscope.cn/models/PAI/MiniMax-H3-Fun-Controlnet-Union-2.0">🤖</a></td><td valign="top" style="padding:2px 0;">ControlNet trained by this project (2.0), supporting multiple control conditions, trajectory control, and inpaint checkpoints</td></tr></table> |
+| TaoMate-H3 | Video+Audio | Official streaming audio-video generation adapter built on MiniMax-H3 | <table style="width:100%;border-collapse:collapse;"><tr><td valign="top" style="padding:2px 8px 2px 0;">TaoMate-H3-Adapter</td><td valign="top" style="padding:2px 8px;"><a href="https://huggingface.co/TaoLiveAIGC/TaoMate-H3">🤗</a></td><td valign="top" style="padding:2px 8px;"><a href="https://modelscope.cn/models/TaoLiveAIGC/TaoMate-H3">🤖</a></td><td valign="top" style="padding:2px 0;">Official rank-128 adapter (step-3000 EMA) with a built-in 3-step distilled schedule for streaming speech-driven generation; requires the MiniMax-H3 base weights</td></tr></table> |
+| LTX-2 | Video+Audio | Official DiT audio-video joint generation weights | <table style="width:100%;border-collapse:collapse;"><tr><td valign="top" style="padding:2px 8px 2px 0;">LTX-2</td><td valign="top" style="padding:2px 8px;"><a href="https://huggingface.co/Lightricks/LTX-2">🤗</a></td><td valign="top" style="padding:2px 8px;"><a href="https://modelscope.cn/models/Lightricks/LTX-2">🤖</a></td><td valign="top" style="padding:2px 0;">Official audio-video joint generation weights; repo contains multiple precision files</td></tr><tr><td valign="top" style="padding:2px 8px 2px 0;">LTX-2.3-Diffusers</td><td valign="top" style="padding:2px 8px;"><a href="https://huggingface.co/dg845/LTX-2.3-Diffusers">🤗</a></td><td valign="top" style="padding:2px 8px;">-</td><td valign="top" style="padding:2px 0;">v2.3 requires community-converted diffusers weights; see Lightricks/LTX-2.3 for official weights</td></tr></table> |
+| LongCat-Video | Video | Official long-video generation weights; supports LoRA training | <table style="width:100%;border-collapse:collapse;"><tr><td valign="top" style="padding:2px 8px 2px 0;">LongCat-Video</td><td valign="top" style="padding:2px 8px;"><a href="https://huggingface.co/meituan-longcat/LongCat-Video">🤗</a></td><td valign="top" style="padding:2px 8px;"><a href="https://modelscope.cn/models/meituan-longcat/LongCat-Video">🤖</a></td><td valign="top" style="padding:2px 0;">Official LongCat-Video T2V weights</td></tr><tr><td valign="top" style="padding:2px 8px 2px 0;">LongCat-Video-Avatar</td><td valign="top" style="padding:2px 8px;"><a href="https://huggingface.co/meituan-longcat/LongCat-Video-Avatar">🤗</a></td><td valign="top" style="padding:2px 8px;"><a href="https://modelscope.cn/models/meituan-longcat/LongCat-Video-Avatar">🤖</a></td><td valign="top" style="padding:2px 0;">Official LongCat-Video avatar/digital-human weights</td></tr></table> |
+| FantasyTalking | Audio-driven Video | Audio-conditioned incremental weights; requires base video weights and audio encoder | <table style="width:100%;border-collapse:collapse;"><tr><td valign="top" style="padding:2px 8px 2px 0;">FantasyTalking</td><td valign="top" style="padding:2px 8px;"><a href="https://huggingface.co/acvlab/FantasyTalking">🤗</a></td><td valign="top" style="padding:2px 8px;"><a href="https://www.modelscope.cn/models/amap_cvlab/FantasyTalking">🤖</a></td><td valign="top" style="padding:2px 0;">需搭配Wan2.1-I2V-14B-720P使用</td></tr><tr><td valign="top" style="padding:2px 8px 2px 0;">wav2vec2-base-960h</td><td valign="top" style="padding:2px 8px;"><a href="https://huggingface.co/facebook/wav2vec2-base-960h">🤗</a></td><td valign="top" style="padding:2px 8px;"><a href="https://modelscope.cn/models/AI-ModelScope/wav2vec2-base-960h">🤖</a></td><td valign="top" style="padding:2px 0;">音频编码器，放入基础权重目录并命名为audio_encoder</td></tr></table> |
+| InfiniteTalk | Audio-driven Video | Audio-conditioned incremental weights; requires base video weights and audio encoder | <table style="width:100%;border-collapse:collapse;"><tr><td valign="top" style="padding:2px 8px 2px 0;">InfiniteTalk</td><td valign="top" style="padding:2px 8px;"><a href="https://huggingface.co/MeiGen-AI/InfiniteTalk">🤗</a></td><td valign="top" style="padding:2px 8px;"><a href="https://modelscope.cn/models/MeiGen-AI/InfiniteTalk">🤖</a></td><td valign="top" style="padding:2px 0;">Official InfiniteTalk audio-driven weights</td></tr><tr><td valign="top" style="padding:2px 8px 2px 0;">chinese-wav2vec2-base</td><td valign="top" style="padding:2px 8px;"><a href="https://huggingface.co/TencentGameMate/chinese-wav2vec2-base">🤗</a></td><td valign="top" style="padding:2px 8px;"><a href="https://modelscope.cn/models/TencentGameMate/chinese-wav2vec2-base">🤖</a></td><td valign="top" style="padding:2px 0;">Chinese audio encoder</td></tr></table> |
+| FlashHead | Audio-driven Video | Official high-fidelity audio-driven head weights | <table style="width:100%;border-collapse:collapse;"><tr><td valign="top" style="padding:2px 8px 2px 0;">SoulX-FlashHead-1_3B</td><td valign="top" style="padding:2px 8px;"><a href="https://huggingface.co/Soul-AILab/SoulX-FlashHead-1_3B">🤗</a></td><td valign="top" style="padding:2px 8px;"><a href="https://modelscope.cn/models/Soul-AILab/SoulX-FlashHead-1_3B">🤖</a></td><td valign="top" style="padding:2px 0;">SoulX FlashHead 1.3B audio-driven head weights; requires wav2vec audio encoder</td></tr></table> |
+| MOVA | Video+Audio | Official MOVA weights | <table style="width:100%;border-collapse:collapse;"><tr><td valign="top" style="padding:2px 8px 2px 0;">MOVA-360p</td><td valign="top" style="padding:2px 8px;"><a href="https://huggingface.co/OpenMOSS-Team/MOVA-360p">🤗</a></td><td valign="top" style="padding:2px 8px;"><a href="https://modelscope.cn/models/OpenMOSS/MOVA-360p">🤖</a></td><td valign="top" style="padding:2px 0;">Image-to-video and audio-video joint generation</td></tr></table> |
+| LingBot | Video | Camera-controllable world model; directory structure matches Wan2.2-I2V-A14B | <table style="width:100%;border-collapse:collapse;"><tr><td valign="top" style="padding:2px 8px 2px 0;">lingbot-world-base-cam</td><td valign="top" style="padding:2px 8px;"><a href="https://huggingface.co/Robbyant/lingbot-world-base-cam">🤗</a></td><td valign="top" style="padding:2px 8px;"><a href="https://modelscope.cn/models/Robbyant/lingbot-world-base-cam">🤖</a></td><td valign="top" style="padding:2px 0;">Camera-control baseline weights</td></tr><tr><td valign="top" style="padding:2px 8px 2px 0;">lingbot-video-rewriter-lora</td><td valign="top" style="padding:2px 8px;"><a href="https://huggingface.co/Robbyant/lingbot-video-rewriter-lora">🤗</a></td><td valign="top" style="padding:2px 8px;"><a href="https://modelscope.cn/models/Robbyant/lingbot-video-rewriter-lora">🤖</a></td><td valign="top" style="padding:2px 0;">rewriter LoRA; use with Qwen3.6-27B generated structured captions</td></tr><tr><td valign="top" style="padding:2px 8px 2px 0;">lingbot-video-dense-1.3b</td><td valign="top" style="padding:2px 8px;"><a href="https://huggingface.co/Robbyant/lingbot-video-dense-1.3b">🤗</a></td><td valign="top" style="padding:2px 8px;"><a href="https://modelscope.cn/models/Robbyant/lingbot-video-dense-1.3b">🤖</a></td><td valign="top" style="padding:2px 0;">1.3B dense video generation weights; trainable on 1-2 GPUs</td></tr><tr><td valign="top" style="padding:2px 8px 2px 0;">lingbot-video-moe-30b-a3b</td><td valign="top" style="padding:2px 8px;"><a href="https://huggingface.co/Robbyant/lingbot-video-moe-30b-a3b">🤗</a></td><td valign="top" style="padding:2px 8px;"><a href="https://modelscope.cn/models/Robbyant/lingbot-video-moe-30b-a3b">🤖</a></td><td valign="top" style="padding:2px 0;">30B MoE (3B active) video generation weights; training requires 8x80GB or more</td></tr><tr><td valign="top" style="padding:2px 8px 2px 0;">lingbot-world-fast</td><td valign="top" style="padding:2px 8px;"><a href="https://huggingface.co/Robbyant/lingbot-world-fast">🤗</a></td><td valign="top" style="padding:2px 8px;"><a href="https://modelscope.cn/models/Robbyant/lingbot-world-fast">🤖</a></td><td valign="top" style="padding:2px 0;">Distilled few-step world model checkpoint (16 transformer shards); its VAE/T5 are reused from lingbot-world-base-cam, and inference must use the Flow_Unipc sampler</td></tr></table> |
+| Phantom | Video | Incremental weights for multi-subject reference video generation; based on Wan2.1-T2V | <table style="width:100%;border-collapse:collapse;"><tr><td valign="top" style="padding:2px 8px 2px 0;">Phantom-Wan-1.3B</td><td valign="top" style="padding:2px 8px;"><a href="https://huggingface.co/bytedance-research/Phantom">🤗</a></td><td valign="top" style="padding:2px 8px;">-</td><td valign="top" style="padding:2px 0;">1.3B version. Officially released as .pth; place in Personalized_Model and reference via transformer_path in predict file</td></tr><tr><td valign="top" style="padding:2px 8px 2px 0;">Phantom-Wan-14B</td><td valign="top" style="padding:2px 8px;"><a href="https://huggingface.co/bytedance-research/Phantom">🤗</a></td><td valign="top" style="padding:2px 8px;">-</td><td valign="top" style="padding:2px 0;">14B version. Officially released as sharded safetensors</td></tr></table> |
+| Qwen-Image | Image | Official text-to-image and image-editing weights; supports baseline and LoRA training | <table style="width:100%;border-collapse:collapse;"><tr><td valign="top" style="padding:2px 8px 2px 0;">Qwen-Image</td><td valign="top" style="padding:2px 8px;"><a href="https://huggingface.co/Qwen/Qwen-Image">🤗</a></td><td valign="top" style="padding:2px 8px;"><a href="https://modelscope.cn/models/Qwen/Qwen-Image">🤖</a></td><td valign="top" style="padding:2px 0;">文生图基础权重</td></tr><tr><td valign="top" style="padding:2px 8px 2px 0;">Qwen-Image-2512</td><td valign="top" style="padding:2px 8px;"><a href="https://huggingface.co/Qwen/Qwen-Image-2512">🤗</a></td><td valign="top" style="padding:2px 8px;"><a href="https://modelscope.cn/models/Qwen/Qwen-Image-2512">🤖</a></td><td valign="top" style="padding:2px 0;">Updated text-to-image version</td></tr><tr><td valign="top" style="padding:2px 8px 2px 0;">Qwen-Image-Edit</td><td valign="top" style="padding:2px 8px;"><a href="https://huggingface.co/Qwen/Qwen-Image-Edit">🤗</a></td><td valign="top" style="padding:2px 8px;"><a href="https://modelscope.cn/models/Qwen/Qwen-Image-Edit">🤖</a></td><td valign="top" style="padding:2px 0;">图像编辑</td></tr><tr><td valign="top" style="padding:2px 8px 2px 0;">Qwen-Image-Edit-2509</td><td valign="top" style="padding:2px 8px;"><a href="https://huggingface.co/Qwen/Qwen-Image-Edit-2509">🤗</a></td><td valign="top" style="padding:2px 8px;"><a href="https://modelscope.cn/models/Qwen/Qwen-Image-Edit-2509">🤖</a></td><td valign="top" style="padding:2px 0;">图像编辑更新版本</td></tr><tr><td valign="top" style="padding:2px 8px 2px 0;">Qwen-Image-Layered</td><td valign="top" style="padding:2px 8px;"><a href="https://huggingface.co/Qwen/Qwen-Image-Layered">🤗</a></td><td valign="top" style="padding:2px 8px;"><a href="https://modelscope.cn/models/Qwen/Qwen-Image-Layered">🤖</a></td><td valign="top" style="padding:2px 0;">Image layer-decomposition weights; splits an image into multiple editable RGBA layers</td></tr></table> |
+| Qwen-Image-2.1 | Image | Official next-generation text-to-image weights; single-stream block-causal transformer with prefix KV cache | <table style="width:100%;border-collapse:collapse;"><tr><td valign="top" style="padding:2px 8px 2px 0;">Qwen-Image-2.1</td><td valign="top" style="padding:2px 8px;"><a href="https://huggingface.co/Qwen/Qwen-Image-2.1">🤗</a></td><td valign="top" style="padding:2px 8px;"><a href="https://modelscope.cn/models/Qwen/Qwen-Image-2.1">🤖</a></td><td valign="top" style="padding:2px 0;">Single-stream block-causal transformer; supports full-parameter training, prefix KV cache speeds up inference</td></tr></table> |
+| Qwen-Image ControlNet | Image | Image controlled generation; supports Canny, Depth, Pose, MLSD, and Scribble | <table style="width:100%;border-collapse:collapse;"><tr><td valign="top" style="padding:2px 8px 2px 0;">Qwen-Image-2512-Fun-Controlnet-Union</td><td valign="top" style="padding:2px 8px;"><a href="https://huggingface.co/alibaba-pai/Qwen-Image-2512-Fun-Controlnet-Union">🤗</a></td><td valign="top" style="padding:2px 8px;"><a href="https://modelscope.cn/models/PAI/Qwen-Image-2512-Fun-Controlnet-Union">🤖</a></td><td valign="top" style="padding:2px 0;">ControlNet weights for Qwen-Image-2512, supporting multiple control conditions such as Canny, Depth, Pose, MLSD, Scribble, etc.</td></tr><tr><td valign="top" style="padding:2px 8px 2px 0;">Qwen-Image-2.1-Fun-Controlnet-Union</td><td valign="top" style="padding:2px 8px;"><a href="https://huggingface.co/alibaba-pai/Qwen-Image-2.1-Fun-Controlnet-Union">🤗</a></td><td valign="top" style="padding:2px 8px;"><a href="https://modelscope.cn/models/PAI/Qwen-Image-2.1-Fun-Controlnet-Union">🤖</a></td><td valign="top" style="padding:2px 0;">ControlNet-Union weights for Qwen-Image-2.1 trained by this project, supporting control conditions such as Canny, Depth, Pose, MLSD, and image inpainting</td></tr><tr><td valign="top" style="padding:2px 8px 2px 0;">Qwen-Image-ControlNet-Union</td><td valign="top" style="padding:2px 8px;"><a href="https://huggingface.co/InstantX/Qwen-Image-ControlNet-Union">🤗</a></td><td valign="top" style="padding:2px 8px;"><a href="https://modelscope.cn/models/InstantX/Qwen-Image-ControlNet-Union">🤖</a></td><td valign="top" style="padding:2px 0;">Equivalent ControlNet provided by InstantX</td></tr></table> |
+| Z-Image | Image | Official text-to-image weights | <table style="width:100%;border-collapse:collapse;"><tr><td valign="top" style="padding:2px 8px 2px 0;">Z-Image</td><td valign="top" style="padding:2px 8px;"><a href="https://huggingface.co/Tongyi-MAI/Z-Image">🤗</a></td><td valign="top" style="padding:2px 8px;"><a href="https://www.modelscope.cn/models/Tongyi-MAI/Z-Image">🤖</a></td><td valign="top" style="padding:2px 0;">基础版</td></tr><tr><td valign="top" style="padding:2px 8px 2px 0;">Z-Image-Turbo</td><td valign="top" style="padding:2px 8px;"><a href="https://huggingface.co/Tongyi-MAI/Z-Image-Turbo">🤗</a></td><td valign="top" style="padding:2px 8px;"><a href="https://www.modelscope.cn/models/Tongyi-MAI/Z-Image-Turbo">🤖</a></td><td valign="top" style="padding:2px 0;">加速版</td></tr></table> |
+| Z-Image-Fun | Image | ControlNet and distillation LoRA trained by this project on Z-Image; supports Canny, Depth, Pose, MLSD, Scribble, and Gray | <table style="width:100%;border-collapse:collapse;"><tr><td valign="top" style="padding:2px 8px 2px 0;">Z-Image-Fun-Controlnet-Union-2.1</td><td valign="top" style="padding:2px 8px;"><a href="https://huggingface.co/alibaba-pai/Z-Image-Fun-Controlnet-Union-2.1">🤗</a></td><td valign="top" style="padding:2px 8px;"><a href="https://modelscope.cn/models/PAI/Z-Image-Fun-Controlnet-Union-2.1">🤖</a></td><td valign="top" style="padding:2px 0;">ControlNet weights for Z-Image. Compared to the first version, it adds to more layers and has been trained for a longer period. It supports multiple control conditions including Canny, Depth, Pose, MLSD, Scribble and Gray.</td></tr><tr><td valign="top" style="padding:2px 8px 2px 0;">Z-Image-Turbo-Fun-Controlnet-Union</td><td valign="top" style="padding:2px 8px;"><a href="https://huggingface.co/alibaba-pai/Z-Image-Turbo-Fun-Controlnet-Union">🤗</a></td><td valign="top" style="padding:2px 8px;"><a href="https://modelscope.cn/models/PAI/Z-Image-Turbo-Fun-Controlnet-Union">🤖</a></td><td valign="top" style="padding:2px 0;">ControlNet weights for Z-Image-Turbo, supporting multiple control conditions such as Canny, Depth, Pose, MLSD, etc.</td></tr><tr><td valign="top" style="padding:2px 8px 2px 0;">Z-Image-Turbo-Fun-Controlnet-Union-2.1</td><td valign="top" style="padding:2px 8px;"><a href="https://huggingface.co/alibaba-pai/Z-Image-Turbo-Fun-Controlnet-Union-2.1">🤗</a></td><td valign="top" style="padding:2px 8px;"><a href="https://modelscope.cn/models/PAI/Z-Image-Turbo-Fun-Controlnet-Union-2.1">🤖</a></td><td valign="top" style="padding:2px 0;">ControlNet weights for Z-Image-Turbo. Compared to the first version, it adds to more layers and has been trained for a longer period. It supports multiple control conditions including Canny, Depth, Pose, MLSD, and more.</td></tr><tr><td valign="top" style="padding:2px 8px 2px 0;">Z-Image-Fun-Lora-Distill</td><td valign="top" style="padding:2px 8px;"><a href="https://huggingface.co/alibaba-pai/Z-Image-Fun-Lora-Distill">🤗</a></td><td valign="top" style="padding:2px 8px;"><a href="https://modelscope.cn/models/PAI/Z-Image-Fun-Lora-Distill">🤖</a></td><td valign="top" style="padding:2px 0;">This is a Distill LoRA for Z-Image that distills both steps and CFG. This model does not require CFG and uses 8 steps for inference.</td></tr></table> |
+| Flux | Image | Official FLUX.1/FLUX.2 weights and the ControlNet trained by this project | <table style="width:100%;border-collapse:collapse;"><tr><td valign="top" style="padding:2px 8px 2px 0;">FLUX.1-dev</td><td valign="top" style="padding:2px 8px;"><a href="https://huggingface.co/black-forest-labs/FLUX.1-dev">🤗</a></td><td valign="top" style="padding:2px 8px;"><a href="https://www.modelscope.cn/models/black-forest-labs/FLUX.1-dev">🤖</a></td><td valign="top" style="padding:2px 0;">文生图与图像编辑</td></tr><tr><td valign="top" style="padding:2px 8px 2px 0;">FLUX.2-dev</td><td valign="top" style="padding:2px 8px;"><a href="https://huggingface.co/black-forest-labs/FLUX.2-dev">🤗</a></td><td valign="top" style="padding:2px 8px;"><a href="https://www.modelscope.cn/models/black-forest-labs/FLUX.2-dev">🤖</a></td><td valign="top" style="padding:2px 0;">第二代官方权重</td></tr><tr><td valign="top" style="padding:2px 8px 2px 0;">FLUX.2-dev-Fun-Controlnet-Union</td><td valign="top" style="padding:2px 8px;"><a href="https://huggingface.co/alibaba-pai/FLUX.2-dev-Fun-Controlnet-Union">🤗</a></td><td valign="top" style="padding:2px 8px;"><a href="https://modelscope.cn/models/PAI/FLUX.2-dev-Fun-Controlnet-Union">🤖</a></td><td valign="top" style="padding:2px 0;">ControlNet weights for FLUX.2-dev</td></tr></table> |
+| ERNIE-Image | Image | Official Baidu text-to-image weights | <table style="width:100%;border-collapse:collapse;"><tr><td valign="top" style="padding:2px 8px 2px 0;">ERNIE-Image</td><td valign="top" style="padding:2px 8px;"><a href="https://huggingface.co/baidu/ERNIE-Image">🤗</a></td><td valign="top" style="padding:2px 8px;"><a href="https://modelscope.cn/models/PaddlePaddle/ERNIE-Image">🤖</a></td><td valign="top" style="padding:2px 0;">Official ERNIE-Image text-to-image weights</td></tr></table> |
+| Lens | Image | Official Microsoft camera-control weights | <table style="width:100%;border-collapse:collapse;"><tr><td valign="top" style="padding:2px 8px 2px 0;">Lens</td><td valign="top" style="padding:2px 8px;">-</td><td valign="top" style="padding:2px 8px;"><a href="https://modelscope.cn/models/microsoft/Lens">🤖</a></td><td valign="top" style="padding:2px 0;">Official Lens camera-control weights</td></tr></table> |
+| Auxiliary Models | - | Non-generative models used for reward alignment, data annotation, and fast decoding | <table style="width:100%;border-collapse:collapse;"><tr><td valign="top" style="padding:2px 8px 2px 0;">HPSv3</td><td valign="top" style="padding:2px 8px;"><a href="https://huggingface.co/MizzenAI/HPSv3">🤗</a></td><td valign="top" style="padding:2px 8px;"><a href="https://modelscope.cn/models/MizzenAI/HPSv3">🤖</a></td><td valign="top" style="padding:2px 0;">Scoring model used in reward backpropagation</td></tr><tr><td valign="top" style="padding:2px 8px 2px 0;">Qwen2-VL-7B-Instruct</td><td valign="top" style="padding:2px 8px;"><a href="https://huggingface.co/Qwen/Qwen2-VL-7B-Instruct">🤗</a></td><td valign="top" style="padding:2px 8px;"><a href="https://modelscope.cn/models/Qwen/Qwen2-VL-7B-Instruct">🤖</a></td><td valign="top" style="padding:2px 0;">Multimodal encoder used in the video captioning pipeline</td></tr><tr><td valign="top" style="padding:2px 8px 2px 0;">taew2_1 / taew2_2</td><td valign="top" style="padding:2px 8px;">-</td><td valign="top" style="padding:2px 8px;">-</td><td valign="top" style="padding:2px 0;">Tiny AutoEncoders (~20 MB) sharing the latent spaces of the Wan2.1 / Wan2.2 VAEs, ~100x faster decoding for previews and low-memory generation; weights from <a href="https://github.com/madebyollin/taehv">madebyollin/taehv</a></td></tr></table> |
+
+> Notes:
+> - Audio-driven and reference models (FantasyTalking, InfiniteTalk, Phantom, TaoMate-H3) are incremental weights and must be used together with the corresponding base video weights and audio encoder.
+> - The TurboWan weights released by the TurboDiffusion scheme are listed above; other distillation schemes such as Flex-Forcing and PDD have no publicly released weights — train them following `scripts/{model_name}/README_TRAIN*.md` and then fill the resulting path into `transformer_path`.
+> - Weight names map one-to-one to folder names under `models/Diffusion_Transformer/`. Weights within the same family are not interchangeable; choose according to the inference task. If a weight is not listed here, it is either produced by this project or should be obtained from the upstream official repository.
+
+# IV. Video Works
+
+### Wan2.1-Fun-V1.1-14B-InP && Wan2.1-Fun-V1.1-1.3B-InP
+
+<table border="0" style="width: 100%; text-align: left; margin-top: 20px;">
+  <tr>
+      <td>
+          <video src="https://github.com/user-attachments/assets/d6a46051-8fe6-4174-be12-95ee52c96298" width="100%" controls preload="none"></video>
+      </td>
+       <td>
+          <video src="https://github.com/user-attachments/assets/8572c656-8548-4b1f-9ec8-8107c6236cb1" width="100%" controls preload="none"></video>
+     </td>
+      <td>
+          <video src="https://github.com/user-attachments/assets/d3411c95-483d-4e30-bc72-483c2b288918" width="100%" controls preload="none"></video>
+      </td>
+      <td>
+          <video src="https://github.com/user-attachments/assets/b2f5addc-06bd-49d9-b925-973090a32800" width="100%" controls preload="none"></video>
+     </td>
+  </tr>
+</table>
+
+<table border="0" style="width: 100%; text-align: left; margin-top: 20px;">
+  <tr>
+      <td>
+          <video src="https://github.com/user-attachments/assets/747b6ab8-9617-4ba2-84a0-b51c0efbd4f8" width="100%" controls preload="none"></video>
+      </td>
+      <td>
+          <video src="https://github.com/user-attachments/assets/ae94dcda-9d5e-4bae-a86f-882c4282a367" width="100%" controls preload="none"></video>
+      </td>
+       <td>
+          <video src="https://github.com/user-attachments/assets/a4aa1a82-e162-4ab5-8f05-72f79568a191" width="100%" controls preload="none"></video>
+     </td>
+      <td>
+          <video src="https://github.com/user-attachments/assets/83c005b8-ccbc-44a0-a845-c0472763119c" width="100%" controls preload="none"></video>
+     </td>
+  </tr>
+</table>
+
+<details>
+<summary><b>Wan2.1-Fun-V1.1-14B-Control && Wan2.1-Fun-V1.1-1.3B-Control</b></summary>
+
+Generic Control Video + Reference Image:
+
+<table border="0" style="width: 100%; text-align: left; margin-top: 20px;">
+  <tr>
+      <td>
+          Reference Image
+      </td>
+      <td>
+          Control Video
+      </td>
+      <td>
+          Wan2.1-Fun-V1.1-14B-Control
+      </td>
+      <td>
+          Wan2.1-Fun-V1.1-1.3B-Control
+      </td>
+  </tr>
+  <tr>
+      <td>
+          <image src="https://github.com/user-attachments/assets/221f2879-3b1b-4fbd-84f9-c3e0b0b3533e" width="100%" controls preload="none"></image>
+      </td>
+      <td>
+          <video src="https://github.com/user-attachments/assets/f361af34-b3b3-4be4-9d03-cd478cb3dfc5" width="100%" controls preload="none"></video>
+      </td>
+       <td>
+          <video src="https://github.com/user-attachments/assets/85e2f00b-6ef0-4922-90ab-4364afb2c93d" width="100%" controls preload="none"></video>
+     </td>
+       <td>
+          <video src="https://github.com/user-attachments/assets/1f3fe763-2754-4215-bc9a-ae804950d4b3" width="100%" controls preload="none"></video>
+     </td>
+  </tr>
+</table>
+
+
+Generic Control Video (Canny, Pose, Depth, etc.) and Trajectory Control:
+
+<table border="0" style="width: 100%; text-align: left; margin-top: 20px;">
+  <tr>
+      <td>
+          <video src="https://github.com/user-attachments/assets/f35602c4-9f0a-4105-9762-1e3a88abbac6" width="100%" controls preload="none"></video>
+      </td>
+      <td>
+          <video src="https://github.com/user-attachments/assets/8b0f0e87-f1be-4915-bb35-2d53c852333e" width="100%" controls preload="none"></video>
+      </td>
+       <td>
+          <video src="https://github.com/user-attachments/assets/972012c1-772b-427a-bce6-ba8b39edcfad" width="100%" controls preload="none"></video>
+     </td>
+  </tr>
+</table>
+
+<table border="0" style="width: 100%; text-align: left; margin-top: 20px;">
+  <tr>
+      <td>
+          <video src="https://github.com/user-attachments/assets/ce62d0bd-82c0-4d7b-9c49-7e0e4b605745" width="100%" controls preload="none"></video>
+      </td>
+      <td>
+          <video src="https://github.com/user-attachments/assets/89dfbffb-c4a6-4821-bcef-8b1489a3ca00" width="100%" controls preload="none"></video>
+      </td>
+       <td>
+          <video src="https://github.com/user-attachments/assets/72a43e33-854f-4349-861b-c959510d1a84" width="100%" controls preload="none"></video>
+     </td>
+  </tr>
+  <tr>
+      <td>
+          <video src="https://github.com/user-attachments/assets/bb0ce13d-dee0-4049-9eec-c92f3ebc1358" width="100%" controls preload="none"></video>
+      </td>
+      <td>
+          <video src="https://github.com/user-attachments/assets/7840c333-7bec-4582-ba63-20a39e1139c4" width="100%" controls preload="none"></video>
+      </td>
+       <td>
+          <video src="https://github.com/user-attachments/assets/85147d30-ae09-4f36-a077-2167f7a578c0" width="100%" controls preload="none"></video>
+     </td>
+  </tr>
+</table>
+
+</details>
+
+<details>
+<summary><b>Wan2.1-Fun-V1.1-14B-Control-Camera && Wan2.1-Fun-V1.1-1.3B-Control-Camera</b></summary>
+
+<table border="0" style="width: 100%; text-align: left; margin-top: 20px;">
+  <tr>
+      <td>
+          Pan Up
+      </td>
+      <td>
+          Pan Left
+      </td>
+       <td>
+          Pan Right
+     </td>
+  </tr>
+  <tr>
+      <td>
+          <video src="https://github.com/user-attachments/assets/869fe2ef-502a-484e-8656-fe9e626b9f63" width="100%" controls preload="none"></video>
+      </td>
+      <td>
+          <video src="https://github.com/user-attachments/assets/2d4185c8-d6ec-4831-83b4-b1dbfc3616fa" width="100%" controls preload="none"></video>
+      </td>
+       <td>
+          <video src="https://github.com/user-attachments/assets/7dfb7cad-ed24-4acc-9377-832445a07ec7" width="100%" controls preload="none"></video>
+     </td>
+  </tr>
+  <tr>
+      <td>
+          Pan Down
+      </td>
+      <td>
+          Pan Up + Pan Left
+      </td>
+       <td>
+          Pan Up + Pan Right
+     </td>
+  </tr>
+  <tr>
+      <td>
+          <video src="https://github.com/user-attachments/assets/3ea3a08d-f2df-43a2-976e-bf2659345373" width="100%" controls preload="none"></video>
+      </td>
+      <td>
+          <video src="https://github.com/user-attachments/assets/4a85b028-4120-4293-886b-b8afe2d01713" width="100%" controls preload="none"></video>
+      </td>
+       <td>
+          <video src="https://github.com/user-attachments/assets/ad0d58c1-13ef-450c-b658-4fed7ff5ed36" width="100%" controls preload="none"></video>
+     </td>
+  </tr>
+</table>
+
+</details>
+
+<details>
+<summary><b>CogVideoX-Fun-V1.1-5B</b></summary>
+
+Resolution-1024
+
+<table border="0" style="width: 100%; text-align: left; margin-top: 20px;">
+  <tr>
+      <td>
+          <video src="https://github.com/user-attachments/assets/34e7ec8f-293e-4655-bb14-5e1ee476f788" width="100%" controls preload="none"></video>
+      </td>
+      <td>
+          <video src="https://github.com/user-attachments/assets/7809c64f-eb8c-48a9-8bdc-ca9261fd5434" width="100%" controls preload="none"></video>
+      </td>
+       <td>
+          <video src="https://github.com/user-attachments/assets/8e76aaa4-c602-44ac-bcb4-8b24b72c386c" width="100%" controls preload="none"></video>
+     </td>
+      <td>
+          <video src="https://github.com/user-attachments/assets/19dba894-7c35-4f25-b15c-384167ab3b03" width="100%" controls preload="none"></video>
+     </td>
+  </tr>
+</table>
+
+
+Resolution-768
+
+<table border="0" style="width: 100%; text-align: left; margin-top: 20px;">
+  <tr>
+      <td>
+          <video src="https://github.com/user-attachments/assets/0bc339b9-455b-44fd-8917-80272d702737" width="100%" controls preload="none"></video>
+      </td>
+      <td>
+          <video src="https://github.com/user-attachments/assets/70a043b9-6721-4bd9-be47-78b7ec5c27e9" width="100%" controls preload="none"></video>
+      </td>
+       <td>
+          <video src="https://github.com/user-attachments/assets/d5dd6c09-14f3-40f8-8b6d-91e26519b8ac" width="100%" controls preload="none"></video>
+     </td>
+      <td>
+          <video src="https://github.com/user-attachments/assets/9327e8bc-4f17-46b0-b50d-38c250a9483a" width="100%" controls preload="none"></video>
+     </td>
+  </tr>
+</table>
+
+Resolution-512
+
+<table border="0" style="width: 100%; text-align: left; margin-top: 20px;">
+  <tr>
+      <td>
+          <video src="https://github.com/user-attachments/assets/ef407030-8062-454d-aba3-131c21e6b58c" width="100%" controls preload="none"></video>
+      </td>
+      <td>
+          <video src="https://github.com/user-attachments/assets/7610f49e-38b6-4214-aa48-723ae4d1b07e" width="100%" controls preload="none"></video>
+      </td>
+       <td>
+          <video src="https://github.com/user-attachments/assets/1fff0567-1e15-415c-941e-53ee8ae2c841" width="100%" controls preload="none"></video>
+     </td>
+      <td>
+          <video src="https://github.com/user-attachments/assets/bcec48da-b91b-43a0-9d50-cf026e00fa4f" width="100%" controls preload="none"></video>
+     </td>
+  </tr>
+</table>
+
+</details>
+
+<details>
+<summary><b>CogVideoX-Fun-V1.1-5B-Control</b></summary>
+
+<table border="0" style="width: 100%; text-align: left; margin-top: 20px;">
+  <tr>
+      <td>
+          <video src="https://github.com/user-attachments/assets/53002ce2-dd18-4d4f-8135-b6f68364cabd" width="100%" controls preload="none"></video>
+      </td>
+      <td>
+          <video src="https://github.com/user-attachments/assets/a1a07cf8-d86d-4cd2-831f-18a6c1ceee1d" width="100%" controls preload="none"></video>
+      </td>
+       <td>
+          <video src="https://github.com/user-attachments/assets/3224804f-342d-4947-918d-d9fec8e3d273" width="100%" controls preload="none"></video>
+     </td>
+  </tr>
+  <tr>
+      <td>
+          A young woman with beautiful clear eyes and blonde hair, wearing white clothes and twisting her body, with the camera focused on her face. High quality, masterpiece, best quality, high resolution, ultra-fine, dreamlike.
+      </td>
+      <td>
+          A young woman with beautiful clear eyes and blonde hair, wearing white clothes and twisting her body, with the camera focused on her face. High quality, masterpiece, best quality, high resolution, ultra-fine, dreamlike.
+      </td>
+       <td>
+          A young bear.
+     </td>
+  </tr>
+  <tr>
+      <td>
+          <video src="https://github.com/user-attachments/assets/ea908454-684b-4d60-b562-3db229a250a9" width="100%" controls preload="none"></video>
+      </td>
+      <td>
+          <video src="https://github.com/user-attachments/assets/ffb7c6fc-8b69-453b-8aad-70dfae3899b9" width="100%" controls preload="none"></video>
+      </td>
+       <td>
+          <video src="https://github.com/user-attachments/assets/d3f757a3-3551-4dcb-9372-7a61469813f5" width="100%" controls preload="none"></video>
+     </td>
+  </tr>
+</table>
+
+</details>
+
+# V. References
+- CogVideo: https://github.com/THUDM/CogVideo/
+- EasyAnimate: https://github.com/aigc-apps/EasyAnimate
+- Wan2.1: https://github.com/Wan-Video/Wan2.1/
+- Wan2.2: https://github.com/Wan-Video/Wan2.2/
+- Diffusers: https://github.com/huggingface/diffusers
+- Qwen-Image: https://github.com/QwenLM/Qwen-Image
+- Self-Forcing: https://github.com/guandeh17/Self-Forcing
+- Flux: https://github.com/black-forest-labs/flux
+- Flux2: https://github.com/black-forest-labs/flux2
+- HunyuanVideo: https://github.com/Tencent-Hunyuan/HunyuanVideo
+- ComfyUI-KJNodes: https://github.com/kijai/ComfyUI-KJNodes
+- ComfyUI-EasyAnimateWrapper: https://github.com/kijai/ComfyUI-EasyAnimateWrapper
+- ComfyUI-CameraCtrl-Wrapper: https://github.com/chaojie/ComfyUI-CameraCtrl-Wrapper
+- CameraCtrl: https://github.com/hehao13/CameraCtrl
+
+# VI. Citation
+
+If you use VideoX-Fun in your research or project, please cite it as follows:
+
+```bibtex
+@misc{aigc_apps_VideoX_Fun_2026,
+  author = {aigc-apps},
+  title = {VideoX-Fun: A Video Generation Pipeline for Diffusion Transformer},
+  year = {2026},
+  publisher = {GitHub},
+  url = {https://github.com/aigc-apps/VideoX-Fun}
+}
+```
+
+# VII. Limitations and Risks
+
+- Generated videos may have artifacts or quality issues, especially in complex scenes.
+- The model may struggle with fine details, text rendering, or specific artistic styles.
+- Performance varies with input prompt quality, resolution, and other parameters.
+- The technology could be misused to create misleading content (e.g., deepfakes). Users are responsible for ethical use.
+- The model may reflect biases present in the training data.
+- Users should respect privacy and copyright when using real people's images or videos.
+
+We encourage responsible use and recommend implementing safeguards in production environments.
+
+# VIII. License
+This project is licensed under the [Apache License (Version 2.0)](https://github.com/modelscope/modelscope/blob/master/LICENSE).
+
+The CogVideoX-2B model (including its corresponding Transformers module and VAE module) is released under the [Apache 2.0 License](LICENSE).
+
+The CogVideoX-5B model (Transformers module) is released under the [CogVideoX LICENSE](https://huggingface.co/THUDM/CogVideoX-5b/blob/main/LICENSE).

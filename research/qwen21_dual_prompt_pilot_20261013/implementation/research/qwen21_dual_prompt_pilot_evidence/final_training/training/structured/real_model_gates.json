@@ -1,0 +1,44 @@
+{
+  "zero_init_exact": true,
+  "probe_seed": 42,
+  "probe_sigma": 0.65,
+  "gradients_none": true,
+  "optimizer_steps": 0,
+  "initial_adapter_sha256": "afd20ae9c480c8b4ed83e19c8bdad40632bef9e99ee30ab815e36a1b82c2ce90",
+  "frozen_coverage": {
+    "required": true,
+    "complete": true,
+    "missing": [],
+    "scopes": {
+      "geometry_encoder.spatial_encoder.": {
+        "expected_tensor_count": 141,
+        "matched_tensor_count": 141,
+        "expected_numel": 5061152,
+        "matched_numel": 5061152,
+        "missing": [],
+        "complete": true
+      },
+      "reasoner.person_reasoner.": {
+        "expected_tensor_count": 36,
+        "matched_tensor_count": 36,
+        "expected_numel": 15219712,
+        "matched_numel": 15219712,
+        "missing": [],
+        "complete": true
+      },
+      "reasoner.shared_role_offset": {
+        "expected_tensor_count": 1,
+        "matched_tensor_count": 1,
+        "expected_numel": 512,
+        "matched_numel": 512,
+        "missing": [],
+        "complete": true
+      }
+    },
+    "expected_tensor_count": 178,
+    "matched_tensor_count": 178,
+    "expected_numel": 20281376,
+    "matched_numel": 20281376
+  },
+  "source_step": 19500
+}

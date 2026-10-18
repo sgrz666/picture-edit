@@ -28,5 +28,5 @@
 - [x] 导出逐样本整图与头部放大对照、结果 JSON / CSV 和中文报告。头部角度 / 表情仅做明确标注的视觉检查，不用身体 PCK 代替。
 - [x] 检查 30 对和 8 实际人物 / 10 衣着组覆盖、图片数量、结果有限值、权重覆盖、局部参考输入和重跑命令。输入参考脸有效 24 对，另外 6 对作为源脸无检测的回退案例。同步报告到本地，说明完成内容、结果限制和如何查看 / 复现。
 
-输出：`/home/shangguanrz/nihaochen/qwen21_full/bfs_compare_30_20261004/`，本地记录归入 `experiments/bfs_compare_30_20261004/`。命令由入口 `--help` 定义，默认固定 30 对配置，`--score-only` 仅重评已保存图片。
+输出：`/home/shangguanrz/nihaochen/qwen21_full/bfs_compare_30_20261004/`，本地记录归入 `research/bfs_compare_30_20261004/`。命令由入口 `--help` 定义，默认固定 30 对配置，`--score-only` 仅重评已保存图片。
 

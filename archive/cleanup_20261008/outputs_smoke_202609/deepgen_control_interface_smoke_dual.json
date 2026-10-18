@@ -1,0 +1,61 @@
+{
+  "status": "PASS",
+  "mode": "dual",
+  "image_size": 512,
+  "steps": 2,
+  "device": "cuda",
+  "dtype": "torch.bfloat16",
+  "person_count": [
+    2
+  ],
+  "adapter_trainable_parameters": 227980664,
+  "parameters_by_module": {
+    "condition_injector": 7154762,
+    "reasoner": 64092930,
+    "reasoner_control_bridge": 4849792,
+    "appearance_and_binding": 3202592,
+    "dynamic_control_core": 148680576,
+    "control_strength": 12
+  },
+  "dynamic_control_calls": 2,
+  "denoise_progress": [
+    0.0,
+    1.0
+  ],
+  "residual_shapes": [
+    [
+      1,
+      2048,
+      1536
+    ],
+    [
+      1,
+      2048,
+      1536
+    ],
+    [
+      1,
+      2048,
+      1536
+    ],
+    [
+      1,
+      2048,
+      1536
+    ],
+    [
+      1,
+      2048,
+      1536
+    ],
+    [
+      1,
+      2048,
+      1536
+    ]
+  ],
+  "max_zero_residual": 0.0,
+  "max_deepgen_equivalence_error": 0.0,
+  "backbone_frozen": true,
+  "training_started": false
+}

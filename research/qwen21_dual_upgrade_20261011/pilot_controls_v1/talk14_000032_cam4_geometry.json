@@ -1,0 +1,108 @@
+{
+  "version": "smplx_dual_v1",
+  "geometry": "talk14_000032_cam4_geometry.npz",
+  "fitted_pseudo_annotation": true,
+  "source_shape_shared": true,
+  "coordinates": "Hi4D world metres; camera z depth",
+  "smplx_sha256": "e96bf462b86e10111f050d31d2242146bc4d39cbc19cea2cce73fd984f69da25",
+  "observation_sha256": "3af8a534a319ee3956133b3ed789062a281d7999f6033167da12458788e395ed",
+  "contact_source_sha256": "a9e11dc7e1ee4966c9d111eea578d965dd362d4dab83e7547a180c4f863f4755",
+  "contacts": [],
+  "pose_provenance": [
+    [
+      "camera_dwpose",
+      "camera_dwpose",
+      "camera_dwpose",
+      "camera_dwpose",
+      "camera_dwpose",
+      "camera_dwpose",
+      "camera_dwpose",
+      "camera_dwpose",
+      "camera_dwpose",
+      "camera_dwpose",
+      "camera_dwpose",
+      "camera_dwpose",
+      "camera_dwpose",
+      "camera_dwpose",
+      "camera_dwpose",
+      "camera_dwpose",
+      "camera_dwpose",
+      "camera_dwpose",
+      "camera_dwpose",
+      "camera_dwpose",
+      "camera_dwpose",
+      "camera_dwpose",
+      "camera_dwpose",
+      "camera_dwpose"
+    ],
+    [
+      "camera_dwpose",
+      "camera_dwpose",
+      "camera_dwpose",
+      "camera_dwpose",
+      "multiview_triangulated",
+      "camera_dwpose",
+      "camera_dwpose",
+      "camera_dwpose",
+      "camera_dwpose",
+      "camera_dwpose",
+      "camera_dwpose",
+      "camera_dwpose",
+      "camera_dwpose",
+      "camera_dwpose",
+      "camera_dwpose",
+      "camera_dwpose",
+      "camera_dwpose",
+      "camera_dwpose",
+      "camera_dwpose",
+      "camera_dwpose",
+      "camera_dwpose",
+      "camera_dwpose",
+      "camera_dwpose",
+      "camera_dwpose"
+    ]
+  ],
+  "K512": [
+    [
+      447.43350494293855,
+      3.240074923346935e-13,
+      249.99293093086968
+    ],
+    [
+      0.0,
+      447.4124577637393,
+      252.77137168056538
+    ],
+    [
+      0.0,
+      0.0,
+      0.9999999999999996
+    ]
+  ],
+  "extrinsics": [
+    [
+      0.9962004510589092,
+      -0.0870678597904351,
+      0.0019619127245902052,
+      0.2573697968295119
+    ],
+    [
+      -0.0856661711492532,
+      -0.975608598646685,
+      0.20211177443998188,
+      1.1360328209086594
+    ],
+    [
+      -0.01568338071503184,
+      -0.20151191041267108,
+      -0.9793604962071845,
+      3.077242942722977
+    ]
+  ],
+  "source_neutral_heights": [
+    1.7298039197921753,
+    1.658921718597412
+  ],
+  "signed_gap_valid": false,
+  "contact_mapping": "Hi4D one-based SMPL correspondences -> nearest fitted SMPL-X surfaces"
+}

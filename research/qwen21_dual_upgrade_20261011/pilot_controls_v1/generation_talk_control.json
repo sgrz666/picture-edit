@@ -1,0 +1,21 @@
+{
+  "source_rgb": "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/final_assets_v4_2/sources/pair14/cam4/talk14/000032/rgb.jpg",
+  "source_masks": [
+    "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/final_assets_v4_2/sources/pair14/cam4/talk14/000032/mask_A.png",
+    "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/final_assets_v4_2/sources/pair14/cam4/talk14/000032/mask_B.png"
+  ],
+  "source_features": "/home/shangguanrz/project/pic-edit/research/qwen21_dual_upgrade_20261011/pilot_controls_v1/source_features.pt",
+  "target_geometry": "/home/shangguanrz/project/pic-edit/research/qwen21_dual_upgrade_20261011/pilot_controls_v1/talk14_000032_cam4_geometry.npz",
+  "person_uids": [
+    "pair14_actor0",
+    "pair14_actor1"
+  ],
+  "prompt": "Make the two existing people hug. Preserve their appearance and background.",
+  "seed": 42,
+  "resolution": 512,
+  "versions": {
+    "source": "source_v1",
+    "geometry": "smplx_dual_v1"
+  },
+  "target_geometry_known": true
+}

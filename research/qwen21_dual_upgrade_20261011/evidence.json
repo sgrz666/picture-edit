@@ -256,11 +256,6 @@
     30
   ],
   "repositories": {
-    "aigc-apps__VideoX-Fun": {
-      "revision": "4b7b6402a1e0f0406bd6801fb66c0a00bd922621",
-      "tree_truncated": false,
-      "python_files_in_tree": 524
-    },
     "AliManjotho__coshmdm-code": {
       "revision": "c5116ab3bead55051ffec2ec9a161a38d2ab5116",
       "tree_truncated": false,
@@ -271,15 +266,20 @@
       "tree_truncated": false,
       "python_files_in_tree": 88
     },
-    "bytedance__XVerse": {
-      "revision": "65e2581aac0faffe4607881a10cc486186f6499d",
-      "tree_truncated": false,
-      "python_files_in_tree": 55
-    },
     "MS-Diffusion__MS-Diffusion": {
       "revision": "fefbc7cadabf65f351a48023a7f59ecfcd16754d",
       "tree_truncated": false,
       "python_files_in_tree": 13
+    },
+    "aigc-apps__VideoX-Fun": {
+      "revision": "4b7b6402a1e0f0406bd6801fb66c0a00bd922621",
+      "tree_truncated": false,
+      "python_files_in_tree": 524
+    },
+    "bytedance__XVerse": {
+      "revision": "65e2581aac0faffe4607881a10cc486186f6499d",
+      "tree_truncated": false,
+      "python_files_in_tree": 55
     },
     "tr3e__InterGen": {
       "revision": "b1750df4a859443b8a69329f759ce3a7503ae179",
@@ -431,11 +431,6 @@
     "source_snapshot/src/pose_control/v6/reasoning/reasoner.py": "a9eccf162b5eb0617478db88a9c4c071315dea7b84cbea310f0f5bbf519810df",
     "source_snapshot/src/pose_control/v6/reasoning/state.py": "cd7e60ea37946d1c6dcf8639cd5f983a0a09a050a3450595ac65a8a71b681e67",
     "source_snapshot/src/pose_control/v6/token_encoders.py": "fd609c7fe1f55ad1fd54385fd524d9c00ca9c2adc692749152e007c6d4327f7e",
-    "repositories/aigc-apps__VideoX-Fun/config/qwenimage21/qwenimage21_control.yaml": "2c543f2eebad82f1d4828d6185da76ae041b350b4f8a0b201cde734f08efeff0",
-    "repositories/aigc-apps__VideoX-Fun/repo.json": "79803d1cb08c8f74c0390ff32540e3f71466ecc0e365cfb4bf4e0cb0124d5976",
-    "repositories/aigc-apps__VideoX-Fun/scripts/qwenimage21_fun/train_control.py": "ebd89488062280c14ab4dc64a8f05a314d59ad2ffb24e900458e7f9094b9b749",
-    "repositories/aigc-apps__VideoX-Fun/tree.json": "a6da755061bf93b1c9158ef280dd0f28eb34b78fda70b874dabdfac9187ef069",
-    "repositories/aigc-apps__VideoX-Fun/videox_fun/models/qwenimage21_transformer2d_control.py": "9a59ed89ea72ab6b4900caa411b756b16d15dcdf53e52dec4610dda1e094f991",
     "repositories/AliManjotho__coshmdm-code/common/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
     "repositories/AliManjotho__coshmdm-code/common/quaternion.py": "7cefe9caa94daf15da55a746ef1f74f96eeac636ebbccbed6da95de9c7747722",
     "repositories/AliManjotho__coshmdm-code/configs/__init__.py": "bb5d2b082f27fca6354a379ac58d3914687a9b13fbfe0583acc4258eca7617ee",
@@ -460,10 +455,10 @@
     "repositories/AliManjotho__coshmdm-code/tools/infer.py": "ae34d0a66cc41dbfc95ae79d49b4628b904125583ef0d4abd4985ff0d7f1b86b",
     "repositories/AliManjotho__coshmdm-code/tools/train.py": "e98962034df5821f165061e2bb0350a6ad0a673c6320937f6443338d5e8e0af3",
     "repositories/AliManjotho__coshmdm-code/tree.json": "947b10c4d5891e0a45a27d56d8c5315d803ee35c31825e0ea386777a142cff17",
+    "repositories/AliManjotho__coshmdm-code/utils/OLD_rotation_conversions.py": "bd4bcf1adec89ab15877e8022131633c38087b4b5908f38a75b02ff436e4b5ff",
     "repositories/AliManjotho__coshmdm-code/utils/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
     "repositories/AliManjotho__coshmdm-code/utils/config.py": "5ece49e1cb38b0b926a2365630231c94e7af9148c9dd6679ba3abc50dafd0ad9",
     "repositories/AliManjotho__coshmdm-code/utils/metrics.py": "f939128b1ebb3d43af0f3987900b287858f9de6ea2bf1d5241c222ba7f34b9fa",
-    "repositories/AliManjotho__coshmdm-code/utils/OLD_rotation_conversions.py": "bd4bcf1adec89ab15877e8022131633c38087b4b5908f38a75b02ff436e4b5ff",
     "repositories/AliManjotho__coshmdm-code/utils/paramUtil.py": "fe0265f3dcd0d466690d816eae973fcece145f64551cef7e46fed7ef3de80d34",
     "repositories/AliManjotho__coshmdm-code/utils/plot_script.py": "4a7acfe86ff44a400b4b2c5264929d4b2d8b63158d4f9e32bce0257831278b5d",
     "repositories/AliManjotho__coshmdm-code/utils/preprocess.py": "b676d7d393005e910efadd3bce188e806147ac8586b3f3602489e5899e44189b",
@@ -486,14 +481,6 @@
     "repositories/AnnLin0628__mpie-bench/code/eval/score_mesh_v3.py": "6b9cee1ee9503c77bd7b05571b1117668ceb8259e44e6afe8d441def06c9cb75",
     "repositories/AnnLin0628__mpie-bench/repo.json": "ebc52a86b9e808e4897577ad484afd17dcb8df0d1bc2052a173e506e0ac8318f",
     "repositories/AnnLin0628__mpie-bench/tree.json": "58c82959bc32558ae642ec46523e3d89ce36fed075fa71a7cf192a33ca8aa9c8",
-    "repositories/bytedance__XVerse/inference_single_sample.py": "8c58b7abd248017937a4576972fe5fcd49a83224e4ce36b26abade622facad43",
-    "repositories/bytedance__XVerse/repo.json": "7fbaec02a7c3950112e675012146f3e56eaf53e37fb9db324168f8f4cabd1583",
-    "repositories/bytedance__XVerse/src/adapters/mod_adapters.py": "f2a753f0c5314d85553013e3335aaac56f9d03bfe0ac7ad2333d0570e9b993ea",
-    "repositories/bytedance__XVerse/src/flux/block.py": "361397fa6d9a2ddeac668b66a6e7fd11d1a9c7d304df322bf7d163dcedac2670",
-    "repositories/bytedance__XVerse/src/flux/condition.py": "0bd96b24dd8102d6652215424b7f965f2cd8fae07256484c1c4dad5d0a8f59e7",
-    "repositories/bytedance__XVerse/src/flux/transformer.py": "a35bd14ed5bd7f09433ec4b3b30d149f9c734cfa651fbc7812a58d534f9a3bb4",
-    "repositories/bytedance__XVerse/src/utils/modulation_utils.py": "11b5a577ea1d4f72ec6470ebade5226a85ab4e531c3531142fc4fd4f071a44c9",
-    "repositories/bytedance__XVerse/tree.json": "bdb020c1a2918941a7207abd4dd1072c58b042d366f52398a1417697ba69aaea",
     "repositories/MS-Diffusion__MS-Diffusion/msdiffusion/models/attention_processor.py": "8f6d99ced03ac534b39902e2bd3298a9df07eb90bebbd2216bed6732469631b5",
     "repositories/MS-Diffusion__MS-Diffusion/msdiffusion/models/model.py": "95b5d787da150f2bf9c42d54f1ec187d281853faa9bb43d0881245f68ce38488",
     "repositories/MS-Diffusion__MS-Diffusion/msdiffusion/models/projection.py": "2ba94cb83074be115b60fe5b73902a73db6f3f0883c50321e19919aa5f97abae",
@@ -506,6 +493,19 @@
     "repositories/PeopleComposer/src/flux/sampling.py": "0300062f1668bff33217409e2c835945d990474f2ce795a6ee2e86194a5b6b72",
     "repositories/PeopleComposer/train.py": "a6299008bac7fae54a10e1b24bbbf863c080c197923a1f9491cdb799ffdf2a77",
     "repositories/PeopleComposer_tree.json": "abdfbffecbe18ed94df9829819e596ee285b52a94aa108514452a9121721c789",
+    "repositories/aigc-apps__VideoX-Fun/config/qwenimage21/qwenimage21_control.yaml": "2c543f2eebad82f1d4828d6185da76ae041b350b4f8a0b201cde734f08efeff0",
+    "repositories/aigc-apps__VideoX-Fun/repo.json": "79803d1cb08c8f74c0390ff32540e3f71466ecc0e365cfb4bf4e0cb0124d5976",
+    "repositories/aigc-apps__VideoX-Fun/scripts/qwenimage21_fun/train_control.py": "ebd89488062280c14ab4dc64a8f05a314d59ad2ffb24e900458e7f9094b9b749",
+    "repositories/aigc-apps__VideoX-Fun/tree.json": "a6da755061bf93b1c9158ef280dd0f28eb34b78fda70b874dabdfac9187ef069",
+    "repositories/aigc-apps__VideoX-Fun/videox_fun/models/qwenimage21_transformer2d_control.py": "9a59ed89ea72ab6b4900caa411b756b16d15dcdf53e52dec4610dda1e094f991",
+    "repositories/bytedance__XVerse/inference_single_sample.py": "8c58b7abd248017937a4576972fe5fcd49a83224e4ce36b26abade622facad43",
+    "repositories/bytedance__XVerse/repo.json": "7fbaec02a7c3950112e675012146f3e56eaf53e37fb9db324168f8f4cabd1583",
+    "repositories/bytedance__XVerse/src/adapters/mod_adapters.py": "f2a753f0c5314d85553013e3335aaac56f9d03bfe0ac7ad2333d0570e9b993ea",
+    "repositories/bytedance__XVerse/src/flux/block.py": "361397fa6d9a2ddeac668b66a6e7fd11d1a9c7d304df322bf7d163dcedac2670",
+    "repositories/bytedance__XVerse/src/flux/condition.py": "0bd96b24dd8102d6652215424b7f965f2cd8fae07256484c1c4dad5d0a8f59e7",
+    "repositories/bytedance__XVerse/src/flux/transformer.py": "a35bd14ed5bd7f09433ec4b3b30d149f9c734cfa651fbc7812a58d534f9a3bb4",
+    "repositories/bytedance__XVerse/src/utils/modulation_utils.py": "11b5a577ea1d4f72ec6470ebade5226a85ab4e531c3531142fc4fd4f071a44c9",
+    "repositories/bytedance__XVerse/tree.json": "bdb020c1a2918941a7207abd4dd1072c58b042d366f52398a1417697ba69aaea",
     "repositories/tr3e__InterGen/models/blocks.py": "db25461955c235d506e7ba84e7dc467366190a8e6e50345614fcadbb4a0d9bf0",
     "repositories/tr3e__InterGen/models/losses.py": "082e5ebb7ff31146dcd6948339c6647b9751e7a9541a0ed4334f2ac02e72a3c9",
     "repositories/tr3e__InterGen/models/nets.py": "c1bd6b8c8542a67e6de9e60993485d325aa1d341c8ff78c65198afa6b53d9e8b",

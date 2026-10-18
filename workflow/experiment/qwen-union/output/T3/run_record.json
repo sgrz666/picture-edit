@@ -1,0 +1,39 @@
+{
+  "arm": "T3",
+  "status": "completed",
+  "description": "Inpaint + Control + B 原生布局",
+  "mode": "inpaint_control",
+  "layout": "native",
+  "parameters": {
+    "steps": 40,
+    "seed": 42,
+    "true_cfg_scale": 1.0,
+    "control_context_scale": 1.0,
+    "use_kv_cache": false,
+    "canvas_hw": [
+      928,
+      640
+    ]
+  },
+  "inputs": {
+    "prompt_sha256": "47a60b3f9e620c8cdde6cd89f00ea6b315228fd13072ff97bad110dd24db9da7",
+    "pose_path": "/home/shangguanrz/project/pic-edit/workflow/experiment/qwen-union/data/prepared_controls/pose_native.png",
+    "pose_sha256": "8330f821fbd3ac3657ff2015269ff0b0545952fe978cfeb9b3db755badb169f1",
+    "mask_path": "/home/shangguanrz/project/pic-edit/workflow/experiment/qwen-union/data/prepared_controls/mask_native.png",
+    "mask_sha256": "1863097f846d7823f686ae7b3d55582637b0fb85b4539da00c796c5c1d8105c8",
+    "inpaint_source": "/home/shangguanrz/project/pic-edit/workflow/runs/test/hard_05/inputs/A_reference.png",
+    "inpaint_sha256": "deeef9d0447f718f7402a7d1af48228bde55a15eb90919a8cab1d9805e6d9440"
+  },
+  "output": {
+    "path": "/home/shangguanrz/project/pic-edit/workflow/experiment/qwen-union/output/T3/final_image.png",
+    "sha256": "48704e888b89b30414c8343951ea6381a69d5cde9fded7addf5e9308f125a116",
+    "size_wh": [
+      640,
+      928
+    ]
+  },
+  "performance": {
+    "generation_seconds": 110.9,
+    "peak_gpu_vram_gib": 3.74
+  }
+}

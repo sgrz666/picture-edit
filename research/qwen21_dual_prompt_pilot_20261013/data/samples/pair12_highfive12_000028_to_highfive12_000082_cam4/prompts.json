@@ -1,0 +1,170 @@
+{
+  "short": "Make the two existing people high-five. Preserve each person's face, hair, clothing and body identity, the background, and the original camera view.",
+  "structured": "A is the person on the left in the source image. B is the person on the right in the source image. Make the two existing people high-five. A and B face toward one another. A keeps the left hand at shoulder level and the right hand above head level. A keeps the left elbow bent. A keeps the right elbow bent. B keeps the hands at shoulder level. B extends the left arm. B keeps the right elbow bent. Preserve each person's face, hair, clothing and body identity, the background, and the original camera view.",
+  "provenance": {
+    "template_version": "source_geometry_action_v1",
+    "action_label": "highfive12",
+    "person_uids": [
+      "pair12_actor0",
+      "pair12_actor1"
+    ],
+    "source_anchors": [
+      {
+        "uid": "pair12_actor0",
+        "slot": "A",
+        "centroid_xy": [
+          0.42477696610768767,
+          0.4637593601626427
+        ],
+        "anchor_provenance": "source_mask_centroid"
+      },
+      {
+        "uid": "pair12_actor1",
+        "slot": "B",
+        "centroid_xy": [
+          0.7035761773371954,
+          0.4463209773272073
+        ],
+        "anchor_provenance": "source_mask_centroid"
+      }
+    ],
+    "geometry_sha256": "98d86f7c78ebbec897916367936cc82717dc248a9f3df9124724496d7d81715d",
+    "confidence_threshold": 0.6,
+    "used": [
+      {
+        "feature": "root_relation",
+        "confidence": 0.8127815127372742,
+        "horizontal_distance_m": 1.0794141292572021,
+        "facing_cosines": [
+          0.9873809828768781,
+          0.9949955273702189
+        ],
+        "threshold": 0.6
+      },
+      {
+        "feature": "A_left_wrist_height",
+        "joint_indices": [
+          0,
+          15,
+          16,
+          17,
+          20
+        ],
+        "wrist_height_m": 1.8732842206954956,
+        "waist_height_m": 1.241479754447937,
+        "shoulder_height_m": 1.701326608657837,
+        "head_height_m": 1.846765398979187,
+        "confidence": 0.7251148819923401,
+        "threshold": 0.6
+      },
+      {
+        "feature": "A_right_wrist_height",
+        "joint_indices": [
+          0,
+          15,
+          16,
+          17,
+          21
+        ],
+        "wrist_height_m": 1.8814008235931396,
+        "waist_height_m": 1.241479754447937,
+        "shoulder_height_m": 1.701326608657837,
+        "head_height_m": 1.846765398979187,
+        "confidence": 0.7251148819923401,
+        "threshold": 0.6
+      },
+      {
+        "feature": "A_left_elbow",
+        "joint_indices": [
+          16,
+          18,
+          20
+        ],
+        "angle_deg": 110.27311706542969,
+        "thresholds_deg": [
+          80,
+          135
+        ],
+        "confidence": 0.8193176984786987
+      },
+      {
+        "feature": "A_right_elbow",
+        "joint_indices": [
+          17,
+          19,
+          21
+        ],
+        "angle_deg": 97.59625244140625,
+        "thresholds_deg": [
+          80,
+          135
+        ],
+        "confidence": 0.7964487075805664
+      },
+      {
+        "feature": "B_left_wrist_height",
+        "joint_indices": [
+          0,
+          15,
+          16,
+          17,
+          20
+        ],
+        "wrist_height_m": 1.917330265045166,
+        "waist_height_m": 1.3000047206878662,
+        "shoulder_height_m": 1.799788475036621,
+        "head_height_m": 1.9510152339935303,
+        "confidence": 0.730215847492218,
+        "threshold": 0.6
+      },
+      {
+        "feature": "B_right_wrist_height",
+        "joint_indices": [
+          0,
+          15,
+          16,
+          17,
+          21
+        ],
+        "wrist_height_m": 1.8773704767227173,
+        "waist_height_m": 1.3000047206878662,
+        "shoulder_height_m": 1.799788475036621,
+        "head_height_m": 1.9510152339935303,
+        "confidence": 0.730215847492218,
+        "threshold": 0.6
+      },
+      {
+        "feature": "B_left_elbow",
+        "joint_indices": [
+          16,
+          18,
+          20
+        ],
+        "angle_deg": 138.37185668945312,
+        "thresholds_deg": [
+          80,
+          135
+        ],
+        "confidence": 0.8347469568252563
+      },
+      {
+        "feature": "B_right_elbow",
+        "joint_indices": [
+          17,
+          19,
+          21
+        ],
+        "angle_deg": 124.04999542236328,
+        "thresholds_deg": [
+          80,
+          135
+        ],
+        "confidence": 0.7959732413291931
+      }
+    ],
+    "omitted": [
+      "finger_articulation: unobserved/model prior"
+    ],
+    "inputs": "source mask anchors + action label + external geometry only"
+  }
+}

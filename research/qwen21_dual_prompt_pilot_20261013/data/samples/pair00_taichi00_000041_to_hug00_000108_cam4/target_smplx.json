@@ -1,0 +1,124 @@
+{
+  "model_type": "smplx",
+  "annotation_type": "fitted_geometry_proxy_not_official_ground_truth",
+  "source_shape_optimized": false,
+  "shape_inputs": "fixed source actor beta10",
+  "body_joint_before_mm": [
+    26.88843536376953,
+    27.31394386291504
+  ],
+  "body_joint_after_mm": [
+    12.45889949798584,
+    10.014517784118652
+  ],
+  "body_joint_mm": [
+    [
+      10.30866813659668,
+      10.355212211608887,
+      15.023221969604492,
+      8.926597595214844,
+      1.8166083097457886,
+      12.557019233703613,
+      13.487046241760254,
+      3.2622666358947754,
+      4.553021430969238,
+      20.012826919555664,
+      4.41986083984375,
+      2.4846465587615967,
+      35.955238342285156,
+      34.63180923461914,
+      27.552946090698242,
+      29.250886917114258,
+      8.804779052734375,
+      9.218753814697266,
+      6.138173580169678,
+      11.350140571594238,
+      1.5357848405838013,
+      2.45027494430542
+    ],
+    [
+      8.261983871459961,
+      5.731809616088867,
+      9.772486686706543,
+      6.17248010635376,
+      1.949294090270996,
+      5.41829252243042,
+      16.654098510742188,
+      5.609245300292969,
+      2.4476048946380615,
+      17.78363800048828,
+      0.41025835275650024,
+      0.3277423679828644,
+      28.62203025817871,
+      23.58353042602539,
+      24.150636672973633,
+      15.590753555297852,
+      7.594839096069336,
+      14.60026741027832,
+      6.554230213165283,
+      11.089755058288574,
+      2.8047285079956055,
+      5.1896867752075195
+    ]
+  ],
+  "confidence_rule": "uncalibrated heuristic: 0.9*exp(-individual joint error_mm/100); part=min assigned/bone endpoint body joints; hand<=0.25 prior",
+  "body_quality_within_30mm": true,
+  "hands": "zero model prior; no observed finger articulation",
+  "face": "zero jaw/expression/eye prior",
+  "constraints": [
+    "external SMPL first 22 homologous body joints",
+    "nearest external body surface proxy"
+  ],
+  "initialization": "external SMPL homologous axis-angle body pose; SMPL-X beta10 initialized at zero",
+  "fitting_scope": "offline mesh parameters only; frozen SMPL-X model; no Qwen/adapter model loaded",
+  "target_rgb_conditioning": false,
+  "target_true_mask_conditioning": false,
+  "fit_steps": 200,
+  "elapsed_seconds": 7.6093092180090025,
+  "loss_history": [
+    {
+      "step": 0,
+      "loss": 0.06910925358533859,
+      "body_joint_mean_mm": [
+        26.88843536376953,
+        27.31394386291504
+      ]
+    },
+    {
+      "step": 50,
+      "loss": 0.017224585637450218,
+      "body_joint_mean_mm": [
+        13.054758071899414,
+        10.896896362304688
+      ]
+    },
+    {
+      "step": 100,
+      "loss": 0.016262374818325043,
+      "body_joint_mean_mm": [
+        12.65549373626709,
+        10.277800559997559
+      ]
+    },
+    {
+      "step": 150,
+      "loss": 0.015914903953671455,
+      "body_joint_mean_mm": [
+        12.526762008666992,
+        10.111590385437012
+      ]
+    },
+    {
+      "step": 199,
+      "loss": 0.015718163922429085,
+      "body_joint_mean_mm": [
+        12.460289001464844,
+        10.016140937805176
+      ]
+    }
+  ],
+  "target_smpl": "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/raw/pair00/hug00/smpl/000108.npz",
+  "target_smpl_sha256": "da5c740fbe4d005f3b86a87286a94e5c0d20aacd7da858f49f99180a662715d5",
+  "source_shape_sha256": "40a0329bd18f9678f41f944043a991a2033f8bd5439d95095099c234c27f8330",
+  "target_fit_sha256": "c1b14725bd2cd28e78a63efa52b10a571e3a9e028217172e3f2b1dccf9e8bc73"
+}

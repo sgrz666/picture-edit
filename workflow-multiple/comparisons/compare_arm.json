@@ -1,0 +1,2309 @@
+{
+  "by": "arm",
+  "rows": [
+    {
+      "pair": "backhug_pair02_037_c64_r545",
+      "left": "skeleton_only",
+      "right": "with_b",
+      "metrics": {
+        "count_ok": {
+          "left": 1.0,
+          "right": 0.0,
+          "delta": 1.0,
+          "verdict": "left"
+        },
+        "pck": {
+          "left": 0.5,
+          "right": 1.0,
+          "delta": -0.5,
+          "verdict": "right"
+        },
+        "mpjpe": {
+          "left": 0.23003913443987417,
+          "right": 0.03638900212960218,
+          "delta": 0.193650132310272,
+          "verdict": "right"
+        },
+        "torso_ratio": {
+          "left": 0.9093421600729268,
+          "right": 0.9929945230250474,
+          "delta": -0.08365236295212064,
+          "verdict": "informative only"
+        },
+        "gap_error": {
+          "left": 16.74784179856257,
+          "right": 0.664045674618247,
+          "delta": 16.08379612394432,
+          "verdict": "right"
+        },
+        "identity": {
+          "left": 0.6582115292549133,
+          "right": 0.798397570848465,
+          "delta": -0.14018604159355164,
+          "verdict": "right"
+        }
+      },
+      "wins": {
+        "left": 1,
+        "right": 4,
+        "tie": 0,
+        "skipped": 0
+      },
+      "held": {
+        "framing": "b_canvas",
+        "source": "dwpose"
+      },
+      "left_run": "backhug_pair02_037_c64_r545.skeleton_only.b_canvas",
+      "right_run": "backhug_pair02_037_c64_r545.with_b.b_canvas"
+    },
+    {
+      "pair": "backhug_pair02_037_c64_r545",
+      "left": "skeleton_only",
+      "right": "with_b",
+      "metrics": {
+        "count_ok": {
+          "left": 1.0,
+          "right": 0.0,
+          "delta": 1.0,
+          "verdict": "left"
+        },
+        "pck": {
+          "left": 0.5,
+          "right": 1.0,
+          "delta": -0.5,
+          "verdict": "right"
+        },
+        "mpjpe": {
+          "left": 0.3205999474065607,
+          "right": 0.040383826973531475,
+          "delta": 0.28021612043302924,
+          "verdict": "right"
+        },
+        "torso_ratio": {
+          "left": 0.8978776713025682,
+          "right": 0.9780462925980228,
+          "delta": -0.08016862129545455,
+          "verdict": "informative only"
+        },
+        "gap_error": {
+          "left": 25.421940635978196,
+          "right": 0.6371669368459297,
+          "delta": 24.784773699132266,
+          "verdict": "right"
+        },
+        "identity": {
+          "left": 0.7881436347961426,
+          "right": 0.8178597986698151,
+          "delta": -0.029716163873672485,
+          "verdict": "right"
+        }
+      },
+      "wins": {
+        "left": 1,
+        "right": 4,
+        "tie": 0,
+        "skipped": 0
+      },
+      "held": {
+        "framing": "source_fit",
+        "source": "dwpose"
+      },
+      "left_run": "backhug_pair02_037_c64_r545.skeleton_only.source_fit",
+      "right_run": "backhug_pair02_037_c64_r545.with_b.source_fit"
+    },
+    {
+      "pair": "backhug_pair02_039_c64_r546",
+      "left": "skeleton_only",
+      "right": "with_b",
+      "metrics": {
+        "count_ok": {
+          "left": 0.0,
+          "right": 0.0,
+          "delta": 0.0,
+          "verdict": "tie"
+        },
+        "pck": {
+          "left": 1.0,
+          "right": 1.0,
+          "delta": 0.0,
+          "verdict": "tie"
+        },
+        "mpjpe": {
+          "left": 0.05602930509109155,
+          "right": 0.046802663401869116,
+          "delta": 0.009226641689222437,
+          "verdict": "tie"
+        },
+        "torso_ratio": {
+          "left": 0.9558729145350203,
+          "right": 0.951609387738787,
+          "delta": 0.004263526796233319,
+          "verdict": "informative only"
+        },
+        "gap_error": {
+          "left": 0.6247004682226764,
+          "right": 0.3034026913028293,
+          "delta": 0.3212977769198471,
+          "verdict": "right"
+        },
+        "identity": {
+          "left": 0.781220018863678,
+          "right": 0.788286030292511,
+          "delta": -0.007066011428833008,
+          "verdict": "tie"
+        }
+      },
+      "wins": {
+        "left": 0,
+        "right": 1,
+        "tie": 4,
+        "skipped": 0
+      },
+      "held": {
+        "framing": "b_canvas",
+        "source": "dwpose"
+      },
+      "left_run": "backhug_pair02_039_c64_r546.skeleton_only.b_canvas",
+      "right_run": "backhug_pair02_039_c64_r546.with_b.b_canvas"
+    },
+    {
+      "pair": "backhug_pair02_039_c64_r546",
+      "left": "skeleton_only",
+      "right": "with_b",
+      "metrics": {
+        "count_ok": {
+          "left": 1.0,
+          "right": 0.0,
+          "delta": 1.0,
+          "verdict": "left"
+        },
+        "pck": {
+          "left": 0.7083333333333334,
+          "right": 1.0,
+          "delta": -0.29166666666666663,
+          "verdict": "right"
+        },
+        "mpjpe": {
+          "left": 0.14179548011375492,
+          "right": 0.04726992207495943,
+          "delta": 0.09452555803879549,
+          "verdict": "right"
+        },
+        "torso_ratio": {
+          "left": 0.9576393637709175,
+          "right": 0.9650690262422758,
+          "delta": -0.007429662471358234,
+          "verdict": "informative only"
+        },
+        "gap_error": {
+          "left": 5.408464154747121,
+          "right": 0.49543487986090406,
+          "delta": 4.913029274886217,
+          "verdict": "right"
+        },
+        "identity": {
+          "left": 0.7978549897670746,
+          "right": 0.8025720417499542,
+          "delta": -0.004717051982879639,
+          "verdict": "tie"
+        }
+      },
+      "wins": {
+        "left": 1,
+        "right": 3,
+        "tie": 1,
+        "skipped": 0
+      },
+      "held": {
+        "framing": "source_fit",
+        "source": "dwpose"
+      },
+      "left_run": "backhug_pair02_039_c64_r546.skeleton_only.source_fit",
+      "right_run": "backhug_pair02_039_c64_r546.with_b.source_fit"
+    },
+    {
+      "pair": "cross_backhug_pair02_037_r545_from_pair00",
+      "left": "skeleton_only",
+      "right": "with_b",
+      "metrics": {
+        "count_ok": {
+          "left": 0.0,
+          "right": 0.0,
+          "delta": 0.0,
+          "verdict": "tie"
+        },
+        "pck": {
+          "left": 0.9393382352941176,
+          "right": 1.0,
+          "delta": -0.06066176470588236,
+          "verdict": "right"
+        },
+        "mpjpe": {
+          "left": 0.075557369929933,
+          "right": 0.04830462362999104,
+          "delta": 0.02725274629994196,
+          "verdict": "right"
+        },
+        "torso_ratio": {
+          "left": 1.0044269183584915,
+          "right": 1.050018775415848,
+          "delta": -0.04559185705735658,
+          "verdict": "informative only"
+        },
+        "gap_error": {
+          "left": 0.8594040439213464,
+          "right": 0.4194446732579427,
+          "delta": 0.4399593706634037,
+          "verdict": "right"
+        },
+        "identity": {
+          "left": 0.7133691012859344,
+          "right": 0.7132750749588013,
+          "delta": 9.402632713317871e-05,
+          "verdict": "tie"
+        }
+      },
+      "wins": {
+        "left": 0,
+        "right": 3,
+        "tie": 2,
+        "skipped": 0
+      },
+      "held": {
+        "framing": "b_canvas",
+        "source": "dwpose"
+      },
+      "left_run": "cross_backhug_pair02_037_r545_from_pair00.skeleton_only.b_canvas",
+      "right_run": "cross_backhug_pair02_037_r545_from_pair00.with_b.b_canvas"
+    },
+    {
+      "pair": "cross_backhug_pair02_037_r545_from_pair00",
+      "left": "skeleton_only",
+      "right": "with_b",
+      "metrics": {
+        "count_ok": {
+          "left": 0.0,
+          "right": 0.0,
+          "delta": 0.0,
+          "verdict": "tie"
+        },
+        "pck": {
+          "left": 1.0,
+          "right": 0.9705882352941176,
+          "delta": 0.02941176470588236,
+          "verdict": "left"
+        },
+        "mpjpe": {
+          "left": 0.03964023985954788,
+          "right": 0.06018825923192811,
+          "delta": -0.02054801937238023,
+          "verdict": "left"
+        },
+        "torso_ratio": {
+          "left": 1.062507878427203,
+          "right": 1.0742619350640643,
+          "delta": -0.011754056636861243,
+          "verdict": "informative only"
+        },
+        "gap_error": {
+          "left": 0.8480414953313118,
+          "right": 0.44460322126017127,
+          "delta": 0.4034382740711405,
+          "verdict": "right"
+        },
+        "identity": {
+          "left": 0.6844082474708557,
+          "right": 0.6664246916770935,
+          "delta": 0.017983555793762207,
+          "verdict": "tie"
+        }
+      },
+      "wins": {
+        "left": 2,
+        "right": 1,
+        "tie": 2,
+        "skipped": 0
+      },
+      "held": {
+        "framing": "source_fit",
+        "source": "dwpose"
+      },
+      "left_run": "cross_backhug_pair02_037_r545_from_pair00.skeleton_only.source_fit",
+      "right_run": "cross_backhug_pair02_037_r545_from_pair00.with_b.source_fit"
+    },
+    {
+      "pair": "cross_dance_pair02_059_r424_from_pair00",
+      "left": "skeleton_only",
+      "right": "with_b",
+      "metrics": {
+        "count_ok": {
+          "left": 1.0,
+          "right": 0.0,
+          "delta": 1.0,
+          "verdict": "left"
+        },
+        "pck": {
+          "left": null,
+          "right": null,
+          "verdict": "not measured"
+        },
+        "mpjpe": {
+          "left": null,
+          "right": null,
+          "verdict": "not measured"
+        },
+        "torso_ratio": {
+          "left": null,
+          "right": null,
+          "verdict": "not measured"
+        },
+        "gap_error": {
+          "left": null,
+          "right": null,
+          "verdict": "not measured"
+        },
+        "identity": {
+          "left": null,
+          "right": null,
+          "verdict": "not measured"
+        }
+      },
+      "wins": {
+        "left": 1,
+        "right": 0,
+        "tie": 0,
+        "skipped": 5
+      },
+      "held": {
+        "framing": "b_canvas",
+        "source": "dwpose"
+      },
+      "left_run": "cross_dance_pair02_059_r424_from_pair00.skeleton_only.b_canvas",
+      "right_run": "cross_dance_pair02_059_r424_from_pair00.with_b.b_canvas"
+    },
+    {
+      "pair": "cross_dance_pair02_059_r424_from_pair00",
+      "left": "skeleton_only",
+      "right": "with_b",
+      "metrics": {
+        "count_ok": {
+          "left": 0.0,
+          "right": 0.0,
+          "delta": 0.0,
+          "verdict": "tie"
+        },
+        "pck": {
+          "left": 0.875,
+          "right": 0.8452380952380952,
+          "delta": 0.029761904761904767,
+          "verdict": "left"
+        },
+        "mpjpe": {
+          "left": 0.08227596017998226,
+          "right": 0.08173553420311915,
+          "delta": 0.0005404259768631153,
+          "verdict": "tie"
+        },
+        "torso_ratio": {
+          "left": 1.0842856508531986,
+          "right": 1.0197855362876276,
+          "delta": 0.06450011456557103,
+          "verdict": "informative only"
+        },
+        "gap_error": {
+          "left": 0.03320856987319243,
+          "right": 0.11881540499713973,
+          "delta": -0.0856068351239473,
+          "verdict": "left"
+        },
+        "identity": {
+          "left": 0.6643472611904144,
+          "right": 0.6475869715213776,
+          "delta": 0.016760289669036865,
+          "verdict": "tie"
+        }
+      },
+      "wins": {
+        "left": 2,
+        "right": 0,
+        "tie": 3,
+        "skipped": 0
+      },
+      "held": {
+        "framing": "source_fit",
+        "source": "dwpose"
+      },
+      "left_run": "cross_dance_pair02_059_r424_from_pair00.skeleton_only.source_fit",
+      "right_run": "cross_dance_pair02_059_r424_from_pair00.with_b.source_fit"
+    },
+    {
+      "pair": "cross_hug_pair00_084_r000_from_pair02",
+      "left": "skeleton_only",
+      "right": "with_b",
+      "metrics": {
+        "count_ok": {
+          "left": 1.0,
+          "right": 0.0,
+          "delta": 1.0,
+          "verdict": "left"
+        },
+        "pck": {
+          "left": 0.6641025641025642,
+          "right": 0.8333333333333333,
+          "delta": -0.16923076923076907,
+          "verdict": "right"
+        },
+        "mpjpe": {
+          "left": 0.2291070133174743,
+          "right": 0.14914974152343843,
+          "delta": 0.07995727179403586,
+          "verdict": "right"
+        },
+        "torso_ratio": {
+          "left": null,
+          "right": null,
+          "verdict": "not measured"
+        },
+        "gap_error": {
+          "left": null,
+          "right": null,
+          "verdict": "not measured"
+        },
+        "identity": {
+          "left": 0.8204573392868042,
+          "right": 0.7114542424678802,
+          "delta": 0.10900309681892395,
+          "verdict": "left"
+        }
+      },
+      "wins": {
+        "left": 2,
+        "right": 2,
+        "tie": 0,
+        "skipped": 2
+      },
+      "held": {
+        "framing": "b_canvas",
+        "source": "dwpose"
+      },
+      "left_run": "cross_hug_pair00_084_r000_from_pair02.skeleton_only.b_canvas",
+      "right_run": "cross_hug_pair00_084_r000_from_pair02.with_b.b_canvas"
+    },
+    {
+      "pair": "cross_hug_pair00_084_r000_from_pair02",
+      "left": "skeleton_only",
+      "right": "with_b",
+      "metrics": {
+        "count_ok": {
+          "left": 0.0,
+          "right": 0.0,
+          "delta": 0.0,
+          "verdict": "tie"
+        },
+        "pck": {
+          "left": 0.5166666666666667,
+          "right": 0.9166666666666667,
+          "delta": -0.4,
+          "verdict": "right"
+        },
+        "mpjpe": {
+          "left": 0.3806530318546829,
+          "right": 0.0733212425473302,
+          "delta": 0.3073317893073527,
+          "verdict": "right"
+        },
+        "torso_ratio": {
+          "left": null,
+          "right": null,
+          "verdict": "not measured"
+        },
+        "gap_error": {
+          "left": null,
+          "right": null,
+          "verdict": "not measured"
+        },
+        "identity": {
+          "left": 0.6458389759063721,
+          "right": 0.6517200469970703,
+          "delta": -0.005881071090698242,
+          "verdict": "tie"
+        }
+      },
+      "wins": {
+        "left": 0,
+        "right": 2,
+        "tie": 2,
+        "skipped": 2
+      },
+      "held": {
+        "framing": "source_fit",
+        "source": "dwpose"
+      },
+      "left_run": "cross_hug_pair00_084_r000_from_pair02.skeleton_only.source_fit",
+      "right_run": "cross_hug_pair00_084_r000_from_pair02.with_b.source_fit"
+    },
+    {
+      "pair": "cross_hug_pair00_086_r003_from_pair02",
+      "left": "skeleton_only",
+      "right": "with_b",
+      "metrics": {
+        "count_ok": {
+          "left": 1.0,
+          "right": 0.0,
+          "delta": 1.0,
+          "verdict": "left"
+        },
+        "pck": {
+          "left": 0.7615384615384615,
+          "right": 0.7777777777777778,
+          "delta": -0.016239316239316293,
+          "verdict": "tie"
+        },
+        "mpjpe": {
+          "left": 0.12705515950650537,
+          "right": 0.11809745976901852,
+          "delta": 0.008957699737486849,
+          "verdict": "tie"
+        },
+        "torso_ratio": {
+          "left": 0.9633418979524623,
+          "right": 0.9945893728045881,
+          "delta": -0.031247474852125867,
+          "verdict": "informative only"
+        },
+        "gap_error": {
+          "left": 0.1281388420232395,
+          "right": 0.16286648918254903,
+          "delta": -0.03472764715930954,
+          "verdict": "left"
+        },
+        "identity": {
+          "left": 0.724993884563446,
+          "right": 0.7674961388111115,
+          "delta": -0.042502254247665405,
+          "verdict": "right"
+        }
+      },
+      "wins": {
+        "left": 2,
+        "right": 1,
+        "tie": 2,
+        "skipped": 0
+      },
+      "held": {
+        "framing": "b_canvas",
+        "source": "dwpose"
+      },
+      "left_run": "cross_hug_pair00_086_r003_from_pair02.skeleton_only.b_canvas",
+      "right_run": "cross_hug_pair00_086_r003_from_pair02.with_b.b_canvas"
+    },
+    {
+      "pair": "cross_hug_pair00_086_r003_from_pair02",
+      "left": "skeleton_only",
+      "right": "with_b",
+      "metrics": {
+        "count_ok": {
+          "left": 0.0,
+          "right": 0.0,
+          "delta": 0.0,
+          "verdict": "tie"
+        },
+        "pck": {
+          "left": 0.8333333333333333,
+          "right": 0.75,
+          "delta": 0.08333333333333326,
+          "verdict": "left"
+        },
+        "mpjpe": {
+          "left": 0.12043215615192662,
+          "right": 0.23837857958753939,
+          "delta": -0.11794642343561276,
+          "verdict": "left"
+        },
+        "torso_ratio": {
+          "left": null,
+          "right": null,
+          "verdict": "not measured"
+        },
+        "gap_error": {
+          "left": null,
+          "right": null,
+          "verdict": "not measured"
+        },
+        "identity": {
+          "left": 0.7060961723327637,
+          "right": 0.706867128610611,
+          "delta": -0.00077095627784729,
+          "verdict": "tie"
+        }
+      },
+      "wins": {
+        "left": 2,
+        "right": 0,
+        "tie": 2,
+        "skipped": 2
+      },
+      "held": {
+        "framing": "source_fit",
+        "source": "dwpose"
+      },
+      "left_run": "cross_hug_pair00_086_r003_from_pair02.skeleton_only.source_fit",
+      "right_run": "cross_hug_pair00_086_r003_from_pair02.with_b.source_fit"
+    },
+    {
+      "pair": "cross_pose_pair02_034_r478_from_pair00",
+      "left": "skeleton_only",
+      "right": "with_b",
+      "metrics": {
+        "count_ok": {
+          "left": 0.0,
+          "right": 1.0,
+          "delta": -1.0,
+          "verdict": "right"
+        },
+        "pck": {
+          "left": 0.0,
+          "right": 0.8786764705882353,
+          "delta": -0.8786764705882353,
+          "verdict": "right"
+        },
+        "mpjpe": {
+          "left": 0.904612848170385,
+          "right": 0.061609547590422885,
+          "delta": 0.8430033005799621,
+          "verdict": "right"
+        },
+        "torso_ratio": {
+          "left": 1.1892383199646113,
+          "right": 1.066988711898408,
+          "delta": 0.12224960806620322,
+          "verdict": "informative only"
+        },
+        "gap_error": {
+          "left": 0.14576285867379937,
+          "right": 0.018660940016474645,
+          "delta": 0.12710191865732473,
+          "verdict": "right"
+        },
+        "identity": {
+          "left": 0.6905089616775513,
+          "right": 0.7063642740249634,
+          "delta": -0.01585531234741211,
+          "verdict": "tie"
+        }
+      },
+      "wins": {
+        "left": 0,
+        "right": 4,
+        "tie": 1,
+        "skipped": 0
+      },
+      "held": {
+        "framing": "b_canvas",
+        "source": "dwpose"
+      },
+      "left_run": "cross_pose_pair02_034_r478_from_pair00.skeleton_only.b_canvas",
+      "right_run": "cross_pose_pair02_034_r478_from_pair00.with_b.b_canvas"
+    },
+    {
+      "pair": "cross_pose_pair02_034_r478_from_pair00",
+      "left": "skeleton_only",
+      "right": "with_b",
+      "metrics": {
+        "count_ok": {
+          "left": 0.0,
+          "right": 0.0,
+          "delta": 0.0,
+          "verdict": "tie"
+        },
+        "pck": {
+          "left": 0.4411764705882353,
+          "right": 0.4411764705882353,
+          "delta": 0.0,
+          "verdict": "tie"
+        },
+        "mpjpe": {
+          "left": 0.6923272367329811,
+          "right": 0.6825584971465241,
+          "delta": 0.009768739586457076,
+          "verdict": "tie"
+        },
+        "torso_ratio": {
+          "left": 1.0038627925044317,
+          "right": 0.9884049017007431,
+          "delta": 0.015457890803688534,
+          "verdict": "informative only"
+        },
+        "gap_error": {
+          "left": 1.02941722183744,
+          "right": 1.015112029309686,
+          "delta": 0.014305192527753974,
+          "verdict": "tie"
+        },
+        "identity": {
+          "left": 0.7215123176574707,
+          "right": 0.7015246748924255,
+          "delta": 0.019987642765045166,
+          "verdict": "tie"
+        }
+      },
+      "wins": {
+        "left": 0,
+        "right": 0,
+        "tie": 5,
+        "skipped": 0
+      },
+      "held": {
+        "framing": "source_fit",
+        "source": "dwpose"
+      },
+      "left_run": "cross_pose_pair02_034_r478_from_pair00.skeleton_only.source_fit",
+      "right_run": "cross_pose_pair02_034_r478_from_pair00.with_b.source_fit"
+    },
+    {
+      "pair": "dance_pair02_059_c4_r424",
+      "left": "skeleton_only",
+      "right": "with_b",
+      "metrics": {
+        "count_ok": {
+          "left": 0.0,
+          "right": 0.0,
+          "delta": 0.0,
+          "verdict": "tie"
+        },
+        "pck": {
+          "left": 0.9128787878787878,
+          "right": 0.9166666666666667,
+          "delta": -0.0037878787878788955,
+          "verdict": "tie"
+        },
+        "mpjpe": {
+          "left": 0.06837810255310045,
+          "right": 0.050824066576170716,
+          "delta": 0.017554035976929734,
+          "verdict": "tie"
+        },
+        "torso_ratio": {
+          "left": 0.9577821868188486,
+          "right": 0.9787033459472452,
+          "delta": -0.020921159128396538,
+          "verdict": "informative only"
+        },
+        "gap_error": {
+          "left": null,
+          "right": null,
+          "verdict": "not measured"
+        },
+        "identity": {
+          "left": 0.6578026413917542,
+          "right": 0.6212245523929596,
+          "delta": 0.036578088998794556,
+          "verdict": "left"
+        }
+      },
+      "wins": {
+        "left": 1,
+        "right": 0,
+        "tie": 3,
+        "skipped": 1
+      },
+      "held": {
+        "framing": "b_canvas",
+        "source": "dwpose"
+      },
+      "left_run": "dance_pair02_059_c4_r424.skeleton_only.b_canvas",
+      "right_run": "dance_pair02_059_c4_r424.with_b.b_canvas"
+    },
+    {
+      "pair": "dance_pair02_059_c4_r424",
+      "left": "skeleton_only",
+      "right": "with_b",
+      "metrics": {
+        "count_ok": {
+          "left": 0.0,
+          "right": 0.0,
+          "delta": 0.0,
+          "verdict": "tie"
+        },
+        "pck": {
+          "left": 0.95,
+          "right": 0.875,
+          "delta": 0.07499999999999996,
+          "verdict": "left"
+        },
+        "mpjpe": {
+          "left": 0.0676389723455318,
+          "right": 0.05927925243220454,
+          "delta": 0.008359719913327263,
+          "verdict": "tie"
+        },
+        "torso_ratio": {
+          "left": 0.9653363925198325,
+          "right": 0.9646263024436811,
+          "delta": 0.0007100900761514151,
+          "verdict": "informative only"
+        },
+        "gap_error": {
+          "left": null,
+          "right": null,
+          "verdict": "not measured"
+        },
+        "identity": {
+          "left": 0.595075786113739,
+          "right": 0.5420706868171692,
+          "delta": 0.053005099296569824,
+          "verdict": "left"
+        }
+      },
+      "wins": {
+        "left": 2,
+        "right": 0,
+        "tie": 2,
+        "skipped": 1
+      },
+      "held": {
+        "framing": "source_fit",
+        "source": "dwpose"
+      },
+      "left_run": "dance_pair02_059_c4_r424.skeleton_only.source_fit",
+      "right_run": "dance_pair02_059_c4_r424.with_b.source_fit"
+    },
+    {
+      "pair": "dance_pair02_120_c4_r459",
+      "left": "skeleton_only",
+      "right": "with_b",
+      "metrics": {
+        "count_ok": {
+          "left": 0.0,
+          "right": 1.0,
+          "delta": -1.0,
+          "verdict": "right"
+        },
+        "pck": {
+          "left": null,
+          "right": null,
+          "verdict": "not measured"
+        },
+        "mpjpe": {
+          "left": null,
+          "right": null,
+          "verdict": "not measured"
+        },
+        "torso_ratio": {
+          "left": null,
+          "right": null,
+          "verdict": "not measured"
+        },
+        "gap_error": {
+          "left": null,
+          "right": null,
+          "verdict": "not measured"
+        },
+        "identity": {
+          "left": null,
+          "right": null,
+          "verdict": "not measured"
+        }
+      },
+      "wins": {
+        "left": 0,
+        "right": 1,
+        "tie": 0,
+        "skipped": 5
+      },
+      "held": {
+        "framing": "b_canvas",
+        "source": "dwpose"
+      },
+      "left_run": "dance_pair02_120_c4_r459.skeleton_only.b_canvas",
+      "right_run": "dance_pair02_120_c4_r459.with_b.b_canvas"
+    },
+    {
+      "pair": "dance_pair02_120_c4_r459",
+      "left": "skeleton_only",
+      "right": "with_b",
+      "metrics": {
+        "count_ok": {
+          "left": 1.0,
+          "right": 0.0,
+          "delta": 1.0,
+          "verdict": "left"
+        },
+        "pck": {
+          "left": 0.8846153846153846,
+          "right": 0.42857142857142855,
+          "delta": 0.45604395604395603,
+          "verdict": "left"
+        },
+        "mpjpe": {
+          "left": 0.07225235036831919,
+          "right": 0.24021328897229216,
+          "delta": -0.167960938603973,
+          "verdict": "left"
+        },
+        "torso_ratio": {
+          "left": null,
+          "right": null,
+          "verdict": "not measured"
+        },
+        "gap_error": {
+          "left": null,
+          "right": null,
+          "verdict": "not measured"
+        },
+        "identity": {
+          "left": 0.7010321021080017,
+          "right": 0.6391946077346802,
+          "delta": 0.06183749437332153,
+          "verdict": "left"
+        }
+      },
+      "wins": {
+        "left": 4,
+        "right": 0,
+        "tie": 0,
+        "skipped": 2
+      },
+      "held": {
+        "framing": "source_fit",
+        "source": "dwpose"
+      },
+      "left_run": "dance_pair02_120_c4_r459.skeleton_only.source_fit",
+      "right_run": "dance_pair02_120_c4_r459.with_b.source_fit"
+    },
+    {
+      "pair": "hug_pair00_084_c4_r000",
+      "left": "skeleton_only",
+      "right": "with_b",
+      "metrics": {
+        "count_ok": {
+          "left": 1.0,
+          "right": 0.0,
+          "delta": 1.0,
+          "verdict": "left"
+        },
+        "pck": {
+          "left": 0.9333333333333333,
+          "right": 0.3333333333333333,
+          "delta": 0.6000000000000001,
+          "verdict": "left"
+        },
+        "mpjpe": {
+          "left": 0.06066278060804549,
+          "right": 0.5942168803175754,
+          "delta": -0.5335540997095298,
+          "verdict": "left"
+        },
+        "torso_ratio": {
+          "left": 0.9214996358611646,
+          "right": 1.12900124100033,
+          "delta": -0.2075016051391655,
+          "verdict": "informative only"
+        },
+        "gap_error": {
+          "left": null,
+          "right": null,
+          "verdict": "not measured"
+        },
+        "identity": {
+          "left": 0.7388666868209839,
+          "right": 0.8422501981258392,
+          "delta": -0.10338351130485535,
+          "verdict": "right"
+        }
+      },
+      "wins": {
+        "left": 3,
+        "right": 1,
+        "tie": 0,
+        "skipped": 1
+      },
+      "held": {
+        "framing": "b_canvas",
+        "source": "dwpose"
+      },
+      "left_run": "hug_pair00_084_c4_r000.skeleton_only.b_canvas",
+      "right_run": "hug_pair00_084_c4_r000.with_b.b_canvas"
+    },
+    {
+      "pair": "hug_pair00_084_c4_r000",
+      "left": "skeleton_only",
+      "right": "with_b",
+      "metrics": {
+        "count_ok": {
+          "left": 0.0,
+          "right": 0.0,
+          "delta": 0.0,
+          "verdict": "tie"
+        },
+        "pck": {
+          "left": 0.25,
+          "right": 0.3333333333333333,
+          "delta": -0.08333333333333331,
+          "verdict": "right"
+        },
+        "mpjpe": {
+          "left": 0.7899861177637546,
+          "right": 0.6999350591637482,
+          "delta": 0.0900510586000064,
+          "verdict": "right"
+        },
+        "torso_ratio": {
+          "left": 1.0308655249311196,
+          "right": 1.0274725699108342,
+          "delta": 0.0033929550202853598,
+          "verdict": "informative only"
+        },
+        "gap_error": {
+          "left": null,
+          "right": null,
+          "verdict": "not measured"
+        },
+        "identity": {
+          "left": 0.7929758131504059,
+          "right": 0.8084509074687958,
+          "delta": -0.015475094318389893,
+          "verdict": "tie"
+        }
+      },
+      "wins": {
+        "left": 0,
+        "right": 2,
+        "tie": 2,
+        "skipped": 1
+      },
+      "held": {
+        "framing": "source_fit",
+        "source": "dwpose"
+      },
+      "left_run": "hug_pair00_084_c4_r000.skeleton_only.source_fit",
+      "right_run": "hug_pair00_084_c4_r000.with_b.source_fit"
+    },
+    {
+      "pair": "hug_pair00_086_c4_r003",
+      "left": "skeleton_only",
+      "right": "with_b",
+      "metrics": {
+        "count_ok": {
+          "left": 1.0,
+          "right": 1.0,
+          "delta": 0.0,
+          "verdict": "tie"
+        },
+        "pck": {
+          "left": 0.9285714285714286,
+          "right": 0.5,
+          "delta": 0.4285714285714286,
+          "verdict": "left"
+        },
+        "mpjpe": {
+          "left": 0.06155701878919435,
+          "right": 0.43062949504601145,
+          "delta": -0.3690724762568171,
+          "verdict": "left"
+        },
+        "torso_ratio": {
+          "left": 0.9800772628514078,
+          "right": 1.045354449680671,
+          "delta": -0.0652771868292632,
+          "verdict": "informative only"
+        },
+        "gap_error": {
+          "left": 0.0875968989960876,
+          "right": 0.6023729521432637,
+          "delta": -0.5147760531471761,
+          "verdict": "left"
+        },
+        "identity": {
+          "left": 0.7618657648563385,
+          "right": 0.7301763594150543,
+          "delta": 0.03168940544128418,
+          "verdict": "left"
+        }
+      },
+      "wins": {
+        "left": 4,
+        "right": 0,
+        "tie": 1,
+        "skipped": 0
+      },
+      "held": {
+        "framing": "b_canvas",
+        "source": "dwpose"
+      },
+      "left_run": "hug_pair00_086_c4_r003.skeleton_only.b_canvas",
+      "right_run": "hug_pair00_086_c4_r003.with_b.b_canvas"
+    },
+    {
+      "pair": "hug_pair00_086_c4_r003",
+      "left": "skeleton_only",
+      "right": "with_b",
+      "metrics": {
+        "count_ok": {
+          "left": 0.0,
+          "right": 0.0,
+          "delta": 0.0,
+          "verdict": "tie"
+        },
+        "pck": {
+          "left": 0.8333333333333333,
+          "right": 0.8333333333333333,
+          "delta": 0.0,
+          "verdict": "tie"
+        },
+        "mpjpe": {
+          "left": 0.12304625747931619,
+          "right": 0.1246934686589341,
+          "delta": -0.0016472111796179134,
+          "verdict": "tie"
+        },
+        "torso_ratio": {
+          "left": null,
+          "right": null,
+          "verdict": "not measured"
+        },
+        "gap_error": {
+          "left": null,
+          "right": null,
+          "verdict": "not measured"
+        },
+        "identity": {
+          "left": 0.7108792960643768,
+          "right": 0.6704073250293732,
+          "delta": 0.04047197103500366,
+          "verdict": "left"
+        }
+      },
+      "wins": {
+        "left": 1,
+        "right": 0,
+        "tie": 3,
+        "skipped": 2
+      },
+      "held": {
+        "framing": "source_fit",
+        "source": "dwpose"
+      },
+      "left_run": "hug_pair00_086_c4_r003.skeleton_only.source_fit",
+      "right_run": "hug_pair00_086_c4_r003.with_b.source_fit"
+    },
+    {
+      "pair": "pose_pair02_032_c52_r477",
+      "left": "skeleton_only",
+      "right": "with_b",
+      "metrics": {
+        "count_ok": {
+          "left": 1.0,
+          "right": 1.0,
+          "delta": 0.0,
+          "verdict": "tie"
+        },
+        "pck": {
+          "left": 0.9375,
+          "right": 0.9375,
+          "delta": 0.0,
+          "verdict": "tie"
+        },
+        "mpjpe": {
+          "left": 0.055084159271991104,
+          "right": 0.04567264399499417,
+          "delta": 0.009411515276996935,
+          "verdict": "tie"
+        },
+        "torso_ratio": {
+          "left": 0.9971932080200192,
+          "right": 1.0044684717274288,
+          "delta": -0.007275263707409607,
+          "verdict": "informative only"
+        },
+        "gap_error": {
+          "left": 0.04390497897175841,
+          "right": 0.0026193655557952746,
+          "delta": 0.04128561341596313,
+          "verdict": "right"
+        },
+        "identity": {
+          "left": 0.6982630789279938,
+          "right": 0.6771324872970581,
+          "delta": 0.02113059163093567,
+          "verdict": "left"
+        }
+      },
+      "wins": {
+        "left": 1,
+        "right": 1,
+        "tie": 3,
+        "skipped": 0
+      },
+      "held": {
+        "framing": "b_canvas",
+        "source": "dwpose"
+      },
+      "left_run": "pose_pair02_032_c52_r477.skeleton_only.b_canvas",
+      "right_run": "pose_pair02_032_c52_r477.with_b.b_canvas"
+    },
+    {
+      "pair": "pose_pair02_032_c52_r477",
+      "left": "skeleton_only",
+      "right": "with_b",
+      "metrics": {
+        "count_ok": {
+          "left": 0.0,
+          "right": 0.0,
+          "delta": 0.0,
+          "verdict": "tie"
+        },
+        "pck": {
+          "left": 0.9097222222222222,
+          "right": 0.9375,
+          "delta": -0.02777777777777779,
+          "verdict": "right"
+        },
+        "mpjpe": {
+          "left": 0.057017967742622924,
+          "right": 0.05625285780980953,
+          "delta": 0.0007651099328133959,
+          "verdict": "tie"
+        },
+        "torso_ratio": {
+          "left": 1.0254749794317046,
+          "right": 0.9857221429961085,
+          "delta": 0.03975283643559613,
+          "verdict": "informative only"
+        },
+        "gap_error": {
+          "left": 0.0057601698666772784,
+          "right": 0.0005371047958214192,
+          "delta": 0.005223065070855859,
+          "verdict": "tie"
+        },
+        "identity": {
+          "left": 0.6936150789260864,
+          "right": 0.6972101926803589,
+          "delta": -0.003595113754272461,
+          "verdict": "tie"
+        }
+      },
+      "wins": {
+        "left": 0,
+        "right": 1,
+        "tie": 4,
+        "skipped": 0
+      },
+      "held": {
+        "framing": "source_fit",
+        "source": "dwpose"
+      },
+      "left_run": "pose_pair02_032_c52_r477.skeleton_only.source_fit",
+      "right_run": "pose_pair02_032_c52_r477.with_b.source_fit"
+    },
+    {
+      "pair": "pose_pair02_034_c52_r478",
+      "left": "skeleton_only",
+      "right": "with_b",
+      "metrics": {
+        "count_ok": {
+          "left": 1.0,
+          "right": 1.0,
+          "delta": 0.0,
+          "verdict": "tie"
+        },
+        "pck": {
+          "left": 0.8786764705882353,
+          "right": 0.8786764705882353,
+          "delta": 0.0,
+          "verdict": "tie"
+        },
+        "mpjpe": {
+          "left": 0.05361059497910557,
+          "right": 0.04438542817433782,
+          "delta": 0.009225166804767752,
+          "verdict": "tie"
+        },
+        "torso_ratio": {
+          "left": 0.9859156257943191,
+          "right": 0.9975574287949063,
+          "delta": -0.011641803000587148,
+          "verdict": "informative only"
+        },
+        "gap_error": {
+          "left": 0.03312784131346588,
+          "right": 0.003114080586668076,
+          "delta": 0.030013760726797806,
+          "verdict": "right"
+        },
+        "identity": {
+          "left": 0.687105119228363,
+          "right": 0.6755631268024445,
+          "delta": 0.011541992425918579,
+          "verdict": "tie"
+        }
+      },
+      "wins": {
+        "left": 0,
+        "right": 1,
+        "tie": 4,
+        "skipped": 0
+      },
+      "held": {
+        "framing": "b_canvas",
+        "source": "dwpose"
+      },
+      "left_run": "pose_pair02_034_c52_r478.skeleton_only.b_canvas",
+      "right_run": "pose_pair02_034_c52_r478.with_b.b_canvas"
+    },
+    {
+      "pair": "pose_pair02_034_c52_r478",
+      "left": "skeleton_only",
+      "right": "with_b",
+      "metrics": {
+        "count_ok": {
+          "left": 1.0,
+          "right": 0.0,
+          "delta": 1.0,
+          "verdict": "left"
+        },
+        "pck": {
+          "left": 0.8786764705882353,
+          "right": 0.8786764705882353,
+          "delta": 0.0,
+          "verdict": "tie"
+        },
+        "mpjpe": {
+          "left": 0.05434857016012552,
+          "right": 0.04986207863272363,
+          "delta": 0.004486491527401895,
+          "verdict": "tie"
+        },
+        "torso_ratio": {
+          "left": 0.9861643459930811,
+          "right": 0.9861304229837774,
+          "delta": 3.392300930371572e-05,
+          "verdict": "informative only"
+        },
+        "gap_error": {
+          "left": 0.0173515308985962,
+          "right": 0.0006060577222871996,
+          "delta": 0.016745473176309002,
+          "verdict": "tie"
+        },
+        "identity": {
+          "left": 0.6802640855312347,
+          "right": 0.6314475536346436,
+          "delta": 0.048816531896591187,
+          "verdict": "left"
+        }
+      },
+      "wins": {
+        "left": 2,
+        "right": 0,
+        "tie": 3,
+        "skipped": 0
+      },
+      "held": {
+        "framing": "source_fit",
+        "source": "dwpose"
+      },
+      "left_run": "pose_pair02_034_c52_r478.skeleton_only.source_fit",
+      "right_run": "pose_pair02_034_c52_r478.with_b.source_fit"
+    },
+    {
+      "pair": "taichi_pair00_048_c4_r129",
+      "left": "skeleton_only",
+      "right": "with_b",
+      "metrics": {
+        "count_ok": {
+          "left": 1.0,
+          "right": 1.0,
+          "delta": 0.0,
+          "verdict": "tie"
+        },
+        "pck": {
+          "left": 0.9099264705882353,
+          "right": 0.8819444444444444,
+          "delta": 0.02798202614379086,
+          "verdict": "left"
+        },
+        "mpjpe": {
+          "left": 0.06467039711375625,
+          "right": 0.042699766731243545,
+          "delta": 0.0219706303825127,
+          "verdict": "right"
+        },
+        "torso_ratio": {
+          "left": 1.0052490109461498,
+          "right": 0.9859599719371731,
+          "delta": 0.019289039008976716,
+          "verdict": "informative only"
+        },
+        "gap_error": {
+          "left": 0.003322237152090546,
+          "right": 0.005796670823761874,
+          "delta": -0.002474433671671328,
+          "verdict": "tie"
+        },
+        "identity": {
+          "left": 0.786984920501709,
+          "right": 0.8043027520179749,
+          "delta": -0.01731783151626587,
+          "verdict": "tie"
+        }
+      },
+      "wins": {
+        "left": 1,
+        "right": 1,
+        "tie": 3,
+        "skipped": 0
+      },
+      "held": {
+        "framing": "b_canvas",
+        "source": "dwpose"
+      },
+      "left_run": "taichi_pair00_048_c4_r129.skeleton_only.b_canvas",
+      "right_run": "taichi_pair00_048_c4_r129.with_b.b_canvas"
+    },
+    {
+      "pair": "taichi_pair00_048_c4_r129",
+      "left": "skeleton_only",
+      "right": "with_b",
+      "metrics": {
+        "count_ok": {
+          "left": 1.0,
+          "right": 1.0,
+          "delta": 0.0,
+          "verdict": "tie"
+        },
+        "pck": {
+          "left": 0.8777777777777778,
+          "right": 0.8819444444444444,
+          "delta": -0.004166666666666652,
+          "verdict": "tie"
+        },
+        "mpjpe": {
+          "left": 0.06255487247991422,
+          "right": 0.05395634982039819,
+          "delta": 0.00859852265951603,
+          "verdict": "tie"
+        },
+        "torso_ratio": {
+          "left": 1.0050094101798586,
+          "right": 0.9937475015149313,
+          "delta": 0.011261908664927267,
+          "verdict": "informative only"
+        },
+        "gap_error": {
+          "left": 0.0015810281302114718,
+          "right": 0.013616661630063398,
+          "delta": -0.012035633499851926,
+          "verdict": "tie"
+        },
+        "identity": {
+          "left": 0.7942907810211182,
+          "right": 0.7709499895572662,
+          "delta": 0.02334079146385193,
+          "verdict": "left"
+        }
+      },
+      "wins": {
+        "left": 1,
+        "right": 0,
+        "tie": 4,
+        "skipped": 0
+      },
+      "held": {
+        "framing": "source_fit",
+        "source": "dwpose"
+      },
+      "left_run": "taichi_pair00_048_c4_r129.skeleton_only.source_fit",
+      "right_run": "taichi_pair00_048_c4_r129.with_b.source_fit"
+    },
+    {
+      "pair": "taichi_pair00_049_c4_r132",
+      "left": "skeleton_only",
+      "right": "with_b",
+      "metrics": {
+        "count_ok": {
+          "left": 1.0,
+          "right": 1.0,
+          "delta": 0.0,
+          "verdict": "tie"
+        },
+        "pck": {
+          "left": 0.8492647058823529,
+          "right": 0.8819444444444444,
+          "delta": -0.0326797385620915,
+          "verdict": "right"
+        },
+        "mpjpe": {
+          "left": 0.08192782674625954,
+          "right": 0.04432018051266485,
+          "delta": 0.03760764623359469,
+          "verdict": "right"
+        },
+        "torso_ratio": {
+          "left": 0.9943925854707701,
+          "right": 0.9917608401567539,
+          "delta": 0.0026317453140162206,
+          "verdict": "informative only"
+        },
+        "gap_error": {
+          "left": 0.0037532826723236886,
+          "right": 0.008007695137567774,
+          "delta": -0.004254412465244085,
+          "verdict": "tie"
+        },
+        "identity": {
+          "left": 0.7668462991714478,
+          "right": 0.7409376204013824,
+          "delta": 0.025908678770065308,
+          "verdict": "left"
+        }
+      },
+      "wins": {
+        "left": 1,
+        "right": 2,
+        "tie": 2,
+        "skipped": 0
+      },
+      "held": {
+        "framing": "b_canvas",
+        "source": "dwpose"
+      },
+      "left_run": "taichi_pair00_049_c4_r132.skeleton_only.b_canvas",
+      "right_run": "taichi_pair00_049_c4_r132.with_b.b_canvas"
+    },
+    {
+      "pair": "taichi_pair00_049_c4_r132",
+      "left": "skeleton_only",
+      "right": "with_b",
+      "metrics": {
+        "count_ok": {
+          "left": 1.0,
+          "right": 0.0,
+          "delta": 1.0,
+          "verdict": "left"
+        },
+        "pck": {
+          "left": 0.8708333333333333,
+          "right": 0.875,
+          "delta": -0.004166666666666652,
+          "verdict": "tie"
+        },
+        "mpjpe": {
+          "left": 0.056863202109547296,
+          "right": 0.05151659222166321,
+          "delta": 0.005346609887884088,
+          "verdict": "tie"
+        },
+        "torso_ratio": {
+          "left": 0.976558194049112,
+          "right": 0.9820219776295214,
+          "delta": -0.0054637835804093315,
+          "verdict": "informative only"
+        },
+        "gap_error": {
+          "left": 0.029258068169061898,
+          "right": 0.02609321516129964,
+          "delta": 0.0031648530077622583,
+          "verdict": "tie"
+        },
+        "identity": {
+          "left": 0.7808254957199097,
+          "right": 0.784107506275177,
+          "delta": -0.003282010555267334,
+          "verdict": "tie"
+        }
+      },
+      "wins": {
+        "left": 1,
+        "right": 0,
+        "tie": 4,
+        "skipped": 0
+      },
+      "held": {
+        "framing": "source_fit",
+        "source": "dwpose"
+      },
+      "left_run": "taichi_pair00_049_c4_r132.skeleton_only.source_fit",
+      "right_run": "taichi_pair00_049_c4_r132.with_b.source_fit"
+    },
+    {
+      "pair": "yoga_pair00_052_c4_r261",
+      "left": "skeleton_only",
+      "right": "with_b",
+      "metrics": {
+        "count_ok": {
+          "left": 1.0,
+          "right": 0.0,
+          "delta": 1.0,
+          "verdict": "left"
+        },
+        "pck": {
+          "left": 0.9117647058823529,
+          "right": 0.6071428571428571,
+          "delta": 0.3046218487394958,
+          "verdict": "left"
+        },
+        "mpjpe": {
+          "left": 0.0521631168343275,
+          "right": 0.2628504647277891,
+          "delta": -0.2106873478934616,
+          "verdict": "left"
+        },
+        "torso_ratio": {
+          "left": 1.0047490340377956,
+          "right": 0.9823396659364382,
+          "delta": 0.022409368101357408,
+          "verdict": "informative only"
+        },
+        "gap_error": {
+          "left": 0.018546408702504357,
+          "right": 0.9704769140568464,
+          "delta": -0.9519305053543421,
+          "verdict": "left"
+        },
+        "identity": {
+          "left": 0.7369754910469055,
+          "right": 0.7163294553756714,
+          "delta": 0.02064603567123413,
+          "verdict": "left"
+        }
+      },
+      "wins": {
+        "left": 5,
+        "right": 0,
+        "tie": 0,
+        "skipped": 0
+      },
+      "held": {
+        "framing": "b_canvas",
+        "source": "dwpose"
+      },
+      "left_run": "yoga_pair00_052_c4_r261.skeleton_only.b_canvas",
+      "right_run": "yoga_pair00_052_c4_r261.with_b.b_canvas"
+    },
+    {
+      "pair": "yoga_pair00_052_c4_r261",
+      "left": "skeleton_only",
+      "right": "with_b",
+      "metrics": {
+        "count_ok": {
+          "left": 1.0,
+          "right": 1.0,
+          "delta": 0.0,
+          "verdict": "tie"
+        },
+        "pck": {
+          "left": 0.9705882352941176,
+          "right": 0.9411764705882353,
+          "delta": 0.02941176470588236,
+          "verdict": "left"
+        },
+        "mpjpe": {
+          "left": 0.04341235927874566,
+          "right": 0.03998944683264315,
+          "delta": 0.003422912446102516,
+          "verdict": "tie"
+        },
+        "torso_ratio": {
+          "left": 0.9497934088743939,
+          "right": 0.9812270403575278,
+          "delta": -0.03143363148313394,
+          "verdict": "informative only"
+        },
+        "gap_error": {
+          "left": 0.009090654416429105,
+          "right": 0.0045468838390397125,
+          "delta": 0.004543770577389392,
+          "verdict": "tie"
+        },
+        "identity": {
+          "left": 0.7658613324165344,
+          "right": 0.7661388218402863,
+          "delta": -0.00027748942375183105,
+          "verdict": "tie"
+        }
+      },
+      "wins": {
+        "left": 1,
+        "right": 0,
+        "tie": 4,
+        "skipped": 0
+      },
+      "held": {
+        "framing": "source_fit",
+        "source": "dwpose"
+      },
+      "left_run": "yoga_pair00_052_c4_r261.skeleton_only.source_fit",
+      "right_run": "yoga_pair00_052_c4_r261.with_b.source_fit"
+    },
+    {
+      "pair": "yoga_pair00_052_c4_r263",
+      "left": "skeleton_only",
+      "right": "with_b",
+      "metrics": {
+        "count_ok": {
+          "left": 1.0,
+          "right": 1.0,
+          "delta": 0.0,
+          "verdict": "tie"
+        },
+        "pck": {
+          "left": 0.9411764705882353,
+          "right": 0.9411764705882353,
+          "delta": 0.0,
+          "verdict": "tie"
+        },
+        "mpjpe": {
+          "left": 0.05727649899851209,
+          "right": 0.030479273128796856,
+          "delta": 0.02679722586971523,
+          "verdict": "right"
+        },
+        "torso_ratio": {
+          "left": 0.9930152241488729,
+          "right": 0.9928328281983587,
+          "delta": 0.00018239595051416924,
+          "verdict": "informative only"
+        },
+        "gap_error": {
+          "left": 0.052095415447762965,
+          "right": 0.003302619256168088,
+          "delta": 0.04879279619159488,
+          "verdict": "right"
+        },
+        "identity": {
+          "left": 0.7410594820976257,
+          "right": 0.8048947751522064,
+          "delta": -0.06383529305458069,
+          "verdict": "right"
+        }
+      },
+      "wins": {
+        "left": 0,
+        "right": 3,
+        "tie": 2,
+        "skipped": 0
+      },
+      "held": {
+        "framing": "b_canvas",
+        "source": "dwpose"
+      },
+      "left_run": "yoga_pair00_052_c4_r263.skeleton_only.b_canvas",
+      "right_run": "yoga_pair00_052_c4_r263.with_b.b_canvas"
+    },
+    {
+      "pair": "yoga_pair00_052_c4_r263",
+      "left": "skeleton_only",
+      "right": "with_b",
+      "metrics": {
+        "count_ok": {
+          "left": 1.0,
+          "right": 1.0,
+          "delta": 0.0,
+          "verdict": "tie"
+        },
+        "pck": {
+          "left": 0.9411764705882353,
+          "right": 0.9411764705882353,
+          "delta": 0.0,
+          "verdict": "tie"
+        },
+        "mpjpe": {
+          "left": 0.04891732833462101,
+          "right": 0.04497602883561479,
+          "delta": 0.0039412994990062206,
+          "verdict": "tie"
+        },
+        "torso_ratio": {
+          "left": 0.9856571191536454,
+          "right": 0.977784531640213,
+          "delta": 0.00787258751343245,
+          "verdict": "informative only"
+        },
+        "gap_error": {
+          "left": 0.0846388788808276,
+          "right": 0.04602820820817438,
+          "delta": 0.038610670672653224,
+          "verdict": "right"
+        },
+        "identity": {
+          "left": 0.804416298866272,
+          "right": 0.8209542036056519,
+          "delta": -0.016537904739379883,
+          "verdict": "tie"
+        }
+      },
+      "wins": {
+        "left": 0,
+        "right": 1,
+        "tie": 4,
+        "skipped": 0
+      },
+      "held": {
+        "framing": "source_fit",
+        "source": "dwpose"
+      },
+      "left_run": "yoga_pair00_052_c4_r263.skeleton_only.source_fit",
+      "right_run": "yoga_pair00_052_c4_r263.with_b.source_fit"
+    }
+  ],
+  "missing": [
+    {
+      "pair": "backhug_pair02_037_c64_r545",
+      "held": {
+        "framing": "b_canvas",
+        "source": "fit"
+      },
+      "held_variables": [
+        "framing",
+        "source"
+      ],
+      "left": "skeleton_only",
+      "right": "with_b",
+      "only": [
+        "skeleton_only"
+      ]
+    },
+    {
+      "pair": "backhug_pair02_039_c64_r546",
+      "held": {
+        "framing": "b_canvas",
+        "source": "fit"
+      },
+      "held_variables": [
+        "framing",
+        "source"
+      ],
+      "left": "skeleton_only",
+      "right": "with_b",
+      "only": [
+        "skeleton_only"
+      ]
+    },
+    {
+      "pair": "cross_backhug_pair02_037_r545_from_pair00",
+      "held": {
+        "framing": "b_canvas",
+        "source": "fit"
+      },
+      "held_variables": [
+        "framing",
+        "source"
+      ],
+      "left": "skeleton_only",
+      "right": "with_b",
+      "only": [
+        "skeleton_only"
+      ]
+    },
+    {
+      "pair": "cross_dance_pair02_059_r424_from_pair00",
+      "held": {
+        "framing": "b_canvas",
+        "source": "fit"
+      },
+      "held_variables": [
+        "framing",
+        "source"
+      ],
+      "left": "skeleton_only",
+      "right": "with_b",
+      "only": [
+        "skeleton_only"
+      ]
+    },
+    {
+      "pair": "cross_hug_pair00_084_r000_from_pair02",
+      "held": {
+        "framing": "b_canvas",
+        "source": "fit"
+      },
+      "held_variables": [
+        "framing",
+        "source"
+      ],
+      "left": "skeleton_only",
+      "right": "with_b",
+      "only": [
+        "skeleton_only"
+      ]
+    },
+    {
+      "pair": "cross_hug_pair00_086_r003_from_pair02",
+      "held": {
+        "framing": "b_canvas",
+        "source": "fit"
+      },
+      "held_variables": [
+        "framing",
+        "source"
+      ],
+      "left": "skeleton_only",
+      "right": "with_b",
+      "only": [
+        "skeleton_only"
+      ]
+    },
+    {
+      "pair": "cross_pose_pair02_034_r478_from_pair00",
+      "held": {
+        "framing": "b_canvas",
+        "source": "fit"
+      },
+      "held_variables": [
+        "framing",
+        "source"
+      ],
+      "left": "skeleton_only",
+      "right": "with_b",
+      "only": [
+        "skeleton_only"
+      ]
+    },
+    {
+      "pair": "dance_pair02_059_c4_r424",
+      "held": {
+        "framing": "b_canvas",
+        "source": "fit"
+      },
+      "held_variables": [
+        "framing",
+        "source"
+      ],
+      "left": "skeleton_only",
+      "right": "with_b",
+      "only": [
+        "skeleton_only"
+      ]
+    },
+    {
+      "pair": "dance_pair02_120_c4_r459",
+      "held": {
+        "framing": "b_canvas",
+        "source": "fit"
+      },
+      "held_variables": [
+        "framing",
+        "source"
+      ],
+      "left": "skeleton_only",
+      "right": "with_b",
+      "only": [
+        "skeleton_only"
+      ]
+    },
+    {
+      "pair": "hug_pair00_084_c4_r000",
+      "held": {
+        "framing": "b_canvas",
+        "source": "fit"
+      },
+      "held_variables": [
+        "framing",
+        "source"
+      ],
+      "left": "skeleton_only",
+      "right": "with_b",
+      "only": [
+        "skeleton_only"
+      ]
+    },
+    {
+      "pair": "hug_pair00_086_c4_r003",
+      "held": {
+        "framing": "b_canvas",
+        "source": "fit"
+      },
+      "held_variables": [
+        "framing",
+        "source"
+      ],
+      "left": "skeleton_only",
+      "right": "with_b",
+      "only": [
+        "skeleton_only"
+      ]
+    },
+    {
+      "pair": "pose_pair02_032_c52_r477",
+      "held": {
+        "framing": "b_canvas",
+        "source": "fit"
+      },
+      "held_variables": [
+        "framing",
+        "source"
+      ],
+      "left": "skeleton_only",
+      "right": "with_b",
+      "only": [
+        "skeleton_only"
+      ]
+    },
+    {
+      "pair": "pose_pair02_034_c52_r478",
+      "held": {
+        "framing": "b_canvas",
+        "source": "fit"
+      },
+      "held_variables": [
+        "framing",
+        "source"
+      ],
+      "left": "skeleton_only",
+      "right": "with_b",
+      "only": [
+        "skeleton_only"
+      ]
+    },
+    {
+      "pair": "taichi_pair00_048_c4_r129",
+      "held": {
+        "framing": "b_canvas",
+        "source": "fit"
+      },
+      "held_variables": [
+        "framing",
+        "source"
+      ],
+      "left": "skeleton_only",
+      "right": "with_b",
+      "only": [
+        "skeleton_only"
+      ]
+    },
+    {
+      "pair": "taichi_pair00_049_c4_r132",
+      "held": {
+        "framing": "b_canvas",
+        "source": "fit"
+      },
+      "held_variables": [
+        "framing",
+        "source"
+      ],
+      "left": "skeleton_only",
+      "right": "with_b",
+      "only": [
+        "skeleton_only"
+      ]
+    },
+    {
+      "pair": "yoga_pair00_052_c4_r261",
+      "held": {
+        "framing": "b_canvas",
+        "source": "fit"
+      },
+      "held_variables": [
+        "framing",
+        "source"
+      ],
+      "left": "skeleton_only",
+      "right": "with_b",
+      "only": [
+        "skeleton_only"
+      ]
+    },
+    {
+      "pair": "yoga_pair00_052_c4_r263",
+      "held": {
+        "framing": "b_canvas",
+        "source": "fit"
+      },
+      "held_variables": [
+        "framing",
+        "source"
+      ],
+      "left": "skeleton_only",
+      "right": "with_b",
+      "only": [
+        "skeleton_only"
+      ]
+    }
+  ],
+  "summary": {
+    "comparisons": 34,
+    "by_metric": {
+      "count_ok": {
+        "n": 34,
+        "left_wins": 11,
+        "right_wins": 2,
+        "ties": 21,
+        "not_measured": 0,
+        "median_delta": 0.0,
+        "mean_delta": 0.2647058823529412
+      },
+      "pck": {
+        "n": 32,
+        "left_wins": 10,
+        "right_wins": 10,
+        "ties": 12,
+        "not_measured": 2,
+        "median_delta": 0.0,
+        "mean_delta": -0.028382781944362827
+      },
+      "mpjpe": {
+        "n": 32,
+        "left_wins": 6,
+        "right_wins": 11,
+        "ties": 15,
+        "not_measured": 2,
+        "median_delta": 0.0090914332711273,
+        "mean_delta": 0.02126724544726878
+      },
+      "torso_ratio": {
+        "n": 27,
+        "left_wins": 0,
+        "right_wins": 0,
+        "ties": 0,
+        "not_measured": 7,
+        "median_delta": 3.392300930371572e-05,
+        "mean_delta": -0.010938906622495756
+      },
+      "gap_error": {
+        "n": 23,
+        "left_wins": 4,
+        "right_wins": 11,
+        "ties": 8,
+        "not_measured": 11,
+        "median_delta": 0.016745473176309002,
+        "mean_delta": 1.9856641788356546
+      },
+      "identity": {
+        "n": 32,
+        "left_wins": 11,
+        "right_wins": 5,
+        "ties": 16,
+        "not_measured": 2,
+        "median_delta": -9.173154830932617e-05,
+        "mean_delta": 0.00213738065212965
+      }
+    },
+    "by_context": {
+      "framing=b_canvas source=dwpose": {
+        "comparisons": 17,
+        "by_metric": {
+          "count_ok": {
+            "n": 17,
+            "left_wins": 6,
+            "right_wins": 2,
+            "ties": 9,
+            "not_measured": 0,
+            "median_delta": 0.0,
+            "mean_delta": 0.23529411764705882
+          },
+          "pck": {
+            "n": 15,
+            "left_wins": 4,
+            "right_wins": 5,
+            "ties": 6,
+            "not_measured": 2,
+            "median_delta": 0.0,
+            "mean_delta": -0.020006708977297203
+          },
+          "mpjpe": {
+            "n": 15,
+            "left_wins": 3,
+            "right_wins": 7,
+            "ties": 5,
+            "not_measured": 2,
+            "median_delta": 0.017554035976929734,
+            "mean_delta": 0.011420005939708645
+          },
+          "torso_ratio": {
+            "n": 14,
+            "left_wins": 0,
+            "right_wins": 0,
+            "ties": 0,
+            "not_measured": 3,
+            "median_delta": -0.009458533353998377,
+            "mean_delta": -0.02157735924493743
+          },
+          "gap_error": {
+            "n": 12,
+            "left_wins": 3,
+            "right_wins": 7,
+            "ties": 2,
+            "not_measured": 5,
+            "median_delta": 0.03564968707138047,
+            "mean_delta": 1.2986736923934592
+          },
+          "identity": {
+            "n": 15,
+            "left_wins": 6,
+            "right_wins": 4,
+            "ties": 5,
+            "not_measured": 2,
+            "median_delta": 9.402632713317871e-05,
+            "mean_delta": -0.0089036226272583
+          }
+        }
+      },
+      "framing=source_fit source=dwpose": {
+        "comparisons": 17,
+        "by_metric": {
+          "count_ok": {
+            "n": 17,
+            "left_wins": 5,
+            "right_wins": 0,
+            "ties": 12,
+            "not_measured": 0,
+            "median_delta": 0.0,
+            "mean_delta": 0.29411764705882354
+          },
+          "pck": {
+            "n": 17,
+            "left_wins": 6,
+            "right_wins": 5,
+            "ties": 6,
+            "not_measured": 0,
+            "median_delta": 0.0,
+            "mean_delta": -0.0357734345623619
+          },
+          "mpjpe": {
+            "n": 17,
+            "left_wins": 3,
+            "right_wins": 4,
+            "ties": 10,
+            "not_measured": 0,
+            "median_delta": 0.004486491527401895,
+            "mean_delta": 0.029955986189233615
+          },
+          "torso_ratio": {
+            "n": 13,
+            "left_wins": 0,
+            "right_wins": 0,
+            "ties": 0,
+            "not_measured": 4,
+            "median_delta": 0.0007100900761514151,
+            "mean_delta": 0.0005178885093645083
+          },
+          "gap_error": {
+            "n": 11,
+            "left_wins": 1,
+            "right_wins": 4,
+            "ties": 6,
+            "not_measured": 6,
+            "median_delta": 0.014305192527753974,
+            "mean_delta": 2.7351083458635044
+          },
+          "identity": {
+            "n": 17,
+            "left_wins": 5,
+            "right_wins": 1,
+            "ties": 11,
+            "not_measured": 0,
+            "median_delta": -0.00027748942375183105,
+            "mean_delta": 0.011879442369236666
+          }
+        }
+      }
+    },
+    "contexts": [
+      "framing=b_canvas source=dwpose",
+      "framing=source_fit source=dwpose"
+    ],
+    "quote": "quote the per-context block; the pooled by_metric block mixes rows whose held variables differ"
+  }
+}

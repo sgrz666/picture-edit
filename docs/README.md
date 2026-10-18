@@ -8,22 +8,21 @@
 
 | 文件 | 主题 | 日期 |
 |---|---|---|
-| `Qwen2.1_项目框架总览_20261015.md` | 项目现行核心框架、各模块契约与端到端流水线总览 | 2026-10-15 |
-| `Qwen21_双人Adapter适配性与实验调查报告_20261017.md` | 远端 `4.two man ` 实验深度调查，Adapter 架构适配性与 SOTA 双人方案对比调研 | 2026-10-17 |
-| `空间清理审计与清单_20261017.md` | 2026-10-17 远端根盘空间释放（+126GB）与权重迁移对账审计 | 2026-10-17 |
-| `workflow_multiple_设计_20261013.md` | `workflow-multiple/`（双人姿态编辑与交互迁移基线）的设计记录与阶段状态 | 2026-10-13 |
-| `workflow_PE蒸馏到Qwen3VL任务分支_20261015.md` | workflow PE-I2I 蒸馏与小模型选型调研 | 2026-10-15 |
-| `workflow_PE_I2I量化选型_GGUF社区权重评估_20261014.md` | GGUF 社区量化评估报告 | 2026-10-14 |
-| `workflow_PE重写成本_量化与蒸馏调研_20261014.md` | 提示词重写低延迟优化与成本测算 | 2026-10-14 |
-| `workflow_无GT定量评测调研_20261013.md` | 单人 workflow 无 GT 定量评测多轴指标体系 | 2026-10-13 |
-| `workflow_大方向优化调研_20261014.md` | workflow 单人/双人方向层缺口与优化方案调研 | 2026-10-14 |
-| `workflow审查与整改_20261012.md` | workflow 流水线规范审查与整改记录 | 2026-10-12 |
-| `BFS_扩大样本对照_20261004.md` | BFS 扩大样本对照评估 | 2026-10-04 |
-| `BFS_面部保持移用评估_20261004.md` | BFS 面部保持移用评估报告 | 2026-10-04 |
-| `tiktok_qwen21_full_training.md` | TikTok 数据集及 Qwen 2.1 全量训练规范 | 2026-10-03 |
-| `qwen21_hi4d_dual.md` | Qwen-Image-2.1 双人主体控制说明 | 2026-09-29 |
-
-> **历史记录归档**：2026 年 9 月至 10 月初早期的阶段性清理对账、临时目录整理方案已统一归档至 [`archive/legacy_docs_202610/`](../archive/legacy_docs_202610/)。
+| `架构审查_20261012.md` | 对 node01/sg 工作区的**只读架构审查**（目录统计、git 状态、`diff`/`md5sum`、pytest 收集与运行），文内统计快照数字唯一来源于审查时刻实况 | 2026-10-12 |
+| `目录清理执行记录_20261003.md` | 首轮目录大清理执行记录：远端辅助脚本归类入 `scripts/`，HOME 旧诊断/临时脚本逐字节归档，本地报告与 TikTok 历史成果迁移 | 2026-10-03 |
+| `目录清理执行记录_20261009.md` | 二轮整理（R1–R8，缓存清理等），验收脚本输出 `passed: true`、`pending_assets: []`、`problems: []`，无 git 提交/推送 | 2026-10-09 |
+| `adapter_v6_architecture.md` | DeepGen **Unified SMPL-X Adapter V6.3** 架构：`SMPLXConditionInjector → ConditionBundle → SMPLXAdapterReasoner → SharedRecurrentControlCore` 的上下文感知循环控制管线 | 9-17 |
+| `BFS_扩大样本对照_20261004.md` | BFS（Body-Face-Skeleton）扩大样本对照（30 对 / 8 位人物 / 10 衣着组），身份有改善但存头部方向取舍 | 2026-10-04 |
+| `BFS_面部保持移用评估_20261004.md` | BFS 面部保持移用评估：Qwen 2.1 LoRA 与当前底座结构兼容，建议「姿态生成 → 局部头部修复」两阶段方案 | 2026-10-04 |
+| `champ_deepgen_single_sample_runbook.md` | CHAMP + DeepGen PoseAdapter **单样本运行手册**：数据契约（normal / depth / openpose / semantic 四张控制图） | 10-12 |
+| `iper_v6_training_plan.md` | DeepGen V6.3 iPER 单人姿态控制**训练实施计划**（方案 A）：废弃旧 `train_iper_adapter.py`、数据隔离、分阶段推进 | 10-12 |
+| `PROJECT_STRUCTURE_20261003.md` | 2026-10-03 的**工作线与目录快照**（DeepGen V6/V6.5/V6.6、Qwen 2.1 简化/完整、数据工程），历史结构快照 | 2026-10-03 |
+| `qwen21_hi4d_dual.md` | Qwen-Image-2.1 **双人主体控制**说明：Hi4D 渲染几何作目标，A/B 源掩码绑外观，512 等比画布，`main_pairs` 的 train/val/test 分流 | 9-29 |
+| `tiktok_qwen21_full_training.md` | TikTok → Qwen 2.1 完整版**训练使用说明**：512 小规模 Body 试训、受控 Face 验证，测试集只查分组交叉不进训练 | 10-03 |
+| `README_部署清单_20261012.md` | 人工撰写 README 的部署记录：120 份逐目录人工 README（含 2 份 `README.pic-edit.md`）投递、md5 逐字节校验、软链目录单独 scp、`/data` 备份 | 2026-10-12 |
+| `workflow_multiple_设计_20261013.md` | `workflow-multiple/`（双人姿态编辑与交互迁移基线）的**设计记录与阶段状态**：为何这样设计、已定决策、还剩什么；命令与实测数字集中在 `workflow-multiple/README.md` | 2026-10-13 |
+| `workflow_无GT定量评测调研_20261013.md` | 单人 workflow **无 GT 定量评测调研**：现状只测了"一种参照轴"，给出可落地的多轴补测方案与文献，文中"本机可用性"均为 `ssh sg` 实测 | 2026-10-13 |
+| `workflow_大方向优化调研_20261014.md` | workflow 单人/双人**方向层缺口与优化方案**调研，对照任务书 `task/人物图像姿态编辑任务书_v3.docx`，数字指向各诊断/评测专文不重抄 | 2026-10-14 |
 
 子目录：
 

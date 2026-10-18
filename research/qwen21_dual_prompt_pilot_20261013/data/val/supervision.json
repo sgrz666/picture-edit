@@ -1,0 +1,27 @@
+[
+  {
+    "target_rgb": "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/data/assets/targets/pair22/hug22/cam4/000046/rgb.png",
+    "target_masks": [
+      "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/data/assets/targets/pair22/hug22/cam4/000046/gt_mask_A.png",
+      "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/data/assets/targets/pair22/hug22/cam4/000046/gt_mask_B.png"
+    ],
+    "pair": "pair22",
+    "action": "hug22",
+    "source_frame": 52,
+    "target_frame": 46,
+    "camera": 4,
+    "schema_version": "dual_supervision_v1",
+    "person_uids": [
+      "pair22_actor0",
+      "pair22_actor1"
+    ],
+    "target_geometry": "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/data/samples/pair22_game22_000052_to_hug22_000046_cam4/hug22_000046_cam4_geometry.npz",
+    "target_rgb_sha256": "be1458eb436f63a045e890183a226e83454525ef1670631fd47bf9622c1b0907",
+    "target_mask_sha256": [
+      "c67af2875a64af1d57e2c1cde498f5e283a48846e7185aded3fc6391a7549573",
+      "0f3c77e1afb89a9d07f9b6d0591d826b662335230541ca235255a660f0955a05"
+    ],
+    "target_geometry_sha256": "b25ed41d874e7f377eaf1fa63f6864ef030927ba77aed87d8b6de88860ad4957",
+    "target_geometry_sidecar_sha256": "a1122b081430030458a261ec29e2c9541ae9debc3854d35264e8220faae50ada"
+  }
+]
