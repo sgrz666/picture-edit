@@ -94,12 +94,19 @@ Run: `python -m pytest tests/test_qwen21_pro_preparation.py tests/test_qwen21_pr
 - Create: `src/pose_control/qwen21_pro/geometry.py`
 - Test: `tests/test_qwen21_pro_geometry.py`
 
-- [ ] `retarget_request(source_shape,driver_pose,camera,body_model)`分离source beta与target pose；body_model为显式SMPL-X接口，禁止调用要求mesh_cam一致的旧reconstruct后私改beta。
-- [ ] `solve_contacts(request,relations,body_model,...)`保留driver/requested/solved三层，固定camera和地面锚点；root偏移≤源身高5%、关节偏移≤5°。不收敛/超限返回requested与失败理由；无contact不动姿态。保存求解前后偏差，不声称RGB受3D碰撞监督。
-- [ ] 真实SMPL-X backend在已有SMPL环境惰性加载，记录model与params指纹。缺失参数拒绝自动伪造；已有配对GT资产仅以一致的requested=solved准备训练，非零求解不能继续当原GT精确配对。
-- [ ] 测试不同source shape/相同driver pose、两个端点/地面约束、超限回退、camera不改、原数组不被修改；服务器用实际SMPL-X资产作一次前向审计。
+- [x] `retarget_request(source_shape,driver_pose,camera,body_model)`分离source beta与target pose；单人显式SMPL-X、Hi4D显式SMPL，不混63/69维body pose或10475/6890顶点。禁止调用要求mesh_cam一致的旧reconstruct后私改beta。匹配male SMPL原pkl仅含literal `chumpy.ch.Ch.state.x`，可新增受限兼容读取再交现有SMPL constructor，不装包；模型与loader SHA均登记。
+- [x] `solve_contacts(request,relations,body_model,...)`保留driver/requested/solved三层，固定camera和地面锚点；root偏移≤源身高5%、关节偏移≤5°。不收敛/超限返回requested与失败理由；无contact不动姿态。保存求解前后偏差，不声称RGB受3D碰撞监督。
+- [x] 真实body backend在已有SMPL环境惰性加载，记录model与params指纹。缺失参数拒绝自动伪造；SMPL-X的144 joints须按真实joint_idx选137后转134，SMPL不伪造缺失的手指/脸点。既有GT精确配对要求driver/requested/solved几何均一致，改变beta或非零求解不得继续配旧GT；相机、法线、深度与poseguide必须从当前请求几何重生成。
+- [x] 提供真实三角面renderer的接入（惰性nvdiffrast或已验证NvDiffRasterRenderer），输出有basis、units、pixel变换和slot约定的normal/depth/mask/owner/part/contact；由实际mesh部位可投影source hand/face ROI，不依赖不存在的Hi4D source DWPose，不把SMPL body点冒充134个完整关键点。点云splat不充当dense renderer。
+- [x] 测试不同source shape/相同driver pose、两个端点/地面约束、超限回退、camera不改、原数组不被修改；服务器用实际SMPL-X资产作一次前向审计。
 
 Run: `python -m pytest tests/test_qwen21_pro_geometry.py -q`。
+
+实施证据（2026-10-18）：Task4先22项red，真实映射重复/稳定ID/codec与loader边界修复后29passed/3skip；quality发现cached parent package可绑定错误checkout，补三项实际red→green并修正epsilon投影主点，最终32passed/3skip，spec与quality均通过。父线程回归已完成Task1–4：192passed/4skip（31.39s）。
+
+服务器44文件SCP快照`code_task4_20261018T113627`归档SHA=`6dae154ed73e1b4474ff769b21c6cc6c68eb5c9d5e1d96bd0aab3fc18fba0ec6`，compileall通过。真实`runs/geometry_cpu_20261018T113627`与`runs/geometry_render_20261018T113627`均6/6通过；mesh最大误差3.815e-6m，单人投影最大误差2.442e-4px；重定向单人β均变化并拒绝旧GT，Hi4D原β相同可保持精确配对。真实nvdiffrast三角面输出六模态32² typed条件，双人owner标签0/1/2。talk09有8条vertex接触，原始残差1.05–2.27mm，默认1cm容差已满足、0次迭代；不将此称为已优化修复。最早`geometry_cpu_20261018T113313`因审计误把12×16 heatmap当原图像素而失败，原失败保留，未改数据或放宽阈值。
+
+补充真实求解与renderer闭环：`code_task4_20261018T114018`（归档SHA=`a9a293222c79768eec4f2a0ba609f8c7fe7f615f1432d5cd460710a69381771d`）的 `runs/geometry_probes_20261018T114018` 六例通过；已知三角形289像素，metric Z、top-down、CV normal、nearest owner、填充面5项断言通过。真实SMPL的2cm root扰动探针36次迭代收敛，8条残差4.27–6.83mm，root各5.61mm，最大关节4.988°，未改相机。现有SMPL环境无pytest，未装包；改用独立脚本执行同样的GPU几何断言，缺包日志另存并保持失败。
 
 ## Task 5: 独立训练状态、区域flow与checkpoint
 
@@ -141,6 +148,7 @@ Run: `python -m pytest tests/test_qwen21_pro_inference.py tests/test_qwen21_pro_
 - [ ] 新workspace`/data/shangguanrz/pic-edit-experiments/qwen21_pro_adapter_v1`，独立代码快照与现有B环境，只增代码不改torch/diffusers。向远端发送脚本一律scp，编译/AST校验；检查Git日志和GPU实际可用内存。
 - [ ] GPU smoke逐项保存：180权重不变、zero-pro等价、task prefix差分、头/上游梯度、单/双人、checkpoint恢复、两步coarse/ROI产物与SHA。任一失败先修再继续，失败不改为通过。
 - [ ] 跑overfit6新200updates及固定18位置/step0&200图；结果另名、不能续旧B假装新方案。通过后具备按锁定数据扩大训练与val96图的入口；若长期训练仍运行，最终如实报告进程与完成范围，不宣称效果。
+- [ ] 小规模消融实际执行：锁定同seed/noise/timestep的有/无geometry、person bank、contact分支比较，分别报告六例loss与有效模态覆盖；训练拓扑4/8位置要用各自新checkpoint与相同预算，不能拿关层推理替代重训对比。val12×4arm×2seed=96图的40steps协议与可复现入口登记；先执行单/双人pilot并报告实跑数量，完整96图与正式1024图未跑完时保留待完成状态，不冒称质量验证通过。
 
 Run local: `$paths=(Get-ChildItem tests -File -Filter 'test_qwen21_pro_*.py').FullName; python -m pytest $paths -q`（PowerShell）；服务器`python -m pytest tests/test_qwen21_pro_*.py -q`。
 
