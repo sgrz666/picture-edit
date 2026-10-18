@@ -62,8 +62,11 @@ class ReferenceUnionPipeline(QwenImage21ControlPipeline):
         callback_on_step_end_tensor_inputs: Optional[List[str]] = None,
         guidance_scale: Optional[float] = None,
         injection_scope: Optional[str] = None,
+        cfg_norm_rescale: bool = False,
     ):
         from .pipeline import normalize_inference_options
+        if type(cfg_norm_rescale) is not bool:
+            raise ValueError("cfg_norm_rescale must be bool")
         true_cfg_scale = normalize_inference_options(
             true_cfg_scale, guidance_scale, injection_scope, self.transformer
         )
@@ -290,7 +293,10 @@ class ReferenceUnionPipeline(QwenImage21ControlPipeline):
                         return_dict=False,
                     )[0]
                     neg_noise_pred = neg_noise_pred[:, -latents.size(1):]
+                    positive_norm = noise_pred.norm(dim=-1, keepdim=True) if cfg_norm_rescale else None
                     noise_pred = neg_noise_pred + true_cfg_scale * (noise_pred - neg_noise_pred)
+                    if cfg_norm_rescale:
+                        noise_pred = noise_pred * (positive_norm / noise_pred.norm(dim=-1, keepdim=True).clamp_min(1e-12))
 
                 latents_dtype = latents.dtype
                 latents = self.scheduler.step(noise_pred, t, latents, return_dict=False)[0]

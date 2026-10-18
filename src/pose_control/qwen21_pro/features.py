@@ -188,9 +188,20 @@ class FrozenSourceFeatureExtractor:
 
     @torch.no_grad()
     def extract(self, condition, cached_condition, *, project_root, assets=None):
-        record, order, hw, source_latent = validate_cached_binding(condition, cached_condition)
+        from .encoded import EncodedCondition
+        if isinstance(cached_condition,EncodedCondition):
+            record,order,hw,source_latent=cached_condition.validate_source_binding(_record(condition))
+        else:
+            record, order, hw, source_latent = validate_cached_binding(condition, cached_condition)
         assets = resolve_condition_assets(record, project_root) if assets is None else assets
         validate_source_assets(record, assets, project_root)
+        source_geometry = assets.get("source_geometry")
+        if source_geometry is not None:
+            from .geometry_preparation import validate_source_geometry
+            validate_source_geometry(source_geometry, record, assets)
+        elif (record["dataset"] == "hi4d" and self.include_roi and _exists(assets.get("source_raw_parameters"))
+              and not all(_exists(p) for p in assets.get("source_keypoints", []))):
+            raise ValueError("Hi4D source geometry ROIs required: run geometry_preparation source_geometry_only in existing SMPL environment")
         with Image.open(assets["source_rgb"]) as image:
             rgb = np.asarray(image.convert("RGB")).copy()
         transform = _transform(record["source_transform"])
@@ -223,6 +234,14 @@ class FrozenSourceFeatureExtractor:
                             minimum, maximum = selected.min(0), selected.max(0)
                             if min(maximum - minimum) >= self.extraction["min_roi_pixels"]:
                                 crops.append((name, (*minimum, *maximum)))
+                elif source_geometry is not None:
+                    for name in ("face", "left_hand", "right_hand"):
+                        box = source_geometry["rois"][slot].get(name)
+                        if box is not None:
+                            x0, y0 = np.floor(box[:2]).astype(int).clip(0, image.size)
+                            x1, y1 = np.ceil(box[2:]).astype(int).clip(0, image.size)
+                            if x1 > x0 and y1 > y0 and mask[y0:y1, x0:x1].sum() >= 8:
+                                crops.append((name, (x0, y0, x1, y1)))
             patches, valids, crop_coverage = [], [], []
             for name, box in crops:
                 crop, crop_support, native_xy = square_person_crop(rgb, mask, margin=self.extraction["margin"], box=box)

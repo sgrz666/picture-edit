@@ -33,6 +33,7 @@ def main():
     parser.add_argument("--base-model", default="/data/shangguanrz/pic-edit-models/Qwen-Image-2.1")
     parser.add_argument("--updates", type=int, default=2)
     parser.add_argument("--exact-resume", action="store_true")
+    parser.add_argument("--source-geometry-index")
     args = parser.parse_args()
     if args.updates != (4 if args.exact_resume else 2):
         parser.error("普通门禁固定两次更新；精确续跑门禁固定四次更新")
@@ -86,6 +87,8 @@ def main():
             raise ValueError("six verified effect1600 records required")
         cfg = ProAdapterConfig.from_dict(report["config"])
         raw_cache = ProCache(feature / "cache", namespace="raw_source")
+        source_index = (json.loads(Path(args.source_geometry_index).read_text())
+                        if args.source_geometry_index else {})
         samples, source_models = {}, []
         for row in conditions:
             sid = row["sample_id"]
@@ -93,6 +96,9 @@ def main():
             meta = raw_cache.metadata(sid)
             raw = RawSourceFeatures.from_dict(raw_cache.get(sid, expected_hash=meta["hash"], signature=meta["signature"]))
             assets = resolve_condition_assets(row, project)
+            if sid in source_index:
+                from src.pose_control.qwen21_pro.geometry_preparation import load_source_geometry
+                assets["source_geometry"] = load_source_geometry(source_index[sid], row, assets)
             if row["dataset"] == "hi4d":
                 assets["contact_vertex_parts"] = feature.parents[1] / "data/smpl_male_v6_parts_20261018.npz"
             pack = prepare_task_condition(row, condition, project_root=project, config=cfg, raw_source_features=raw, assets=assets)

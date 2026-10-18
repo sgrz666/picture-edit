@@ -146,6 +146,10 @@ Run: `python -m pytest tests/test_qwen21_pro_inference.py tests/test_qwen21_pro_
 
 ## Task 7: CLI、实验目录与真实GPU门禁
 
+2026-10-18按实际val盘证补充顺序：先完成Task7a匹配gender的Hi4D backend，再做Task7b CLI/训练门禁。锁定val有iPER/TikTok/Hi4D各24条；Hi4D的pair22/28全部为male+female，不能沿用早期male-only后端。现有`SMPL_FEMALE.pkl`独立CPU重建pair28 source6/target45的female人物，verts/joints最大误差1.19209e-7m，SHA=`6d4a1791b6b94880397e1a3a4539b703a228d2150c57de7b288389a8115f4ef0`，与male同faces/6890顶点、14类LBS标签有11处不同。因此补逐stable-person的gender选择、匹配模型/part标签与permutation、source/driver元数据与模型文件SHA绑定；缺失/不明gender继续拒绝，不能默认male或neutral。先CPU真实forward，再GPU dense和Qwen handoff；不安装包。
+
+- [ ] Task7a：`geometry.py/geometry_preparation.py`及对应测试接入matched mixed SMPL；renderer、projected ROI与contact codec接受按人物排序的[P,V]部位标签，同时保持旧[V]兼容。source/driver自己的参数、pair gender元数据、male/female权重与loader文件均进入只读签名；原male路径和旧失败证据保留。
+
 **Files:**
 - Create: `src/pose_control/qwen21_pro/{runner,gates}.py`
 - Create: `scripts/train/qwen21_pro.py`, `scripts/run/qwen21_pro.py`

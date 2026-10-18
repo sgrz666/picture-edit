@@ -1,0 +1,2884 @@
+{
+  "报告类型": "Task7 val12预登记，只读数据接口；尚未执行生成",
+  "范围": {
+    "访问": "锁定val条件、val监督manifest行、source mask/keypoints/参数及几何；不访问test，不读取GT RGB像素",
+    "仓库改动": false,
+    "远端写入": false,
+    "GPU使用": false,
+    "新图像生成": 0
+  },
+  "根路径": {
+    "ROOT": "/home/shangguanrz/project/pic-edit",
+    "B": "/data/shangguanrz/pic-edit-experiments/qwen21_union_dataset_adaptation_v1",
+    "P": "/data/shangguanrz/pic-edit-experiments/qwen21_pro_adapter_v1"
+  },
+  "manifest绑定": {
+    "val_conditions.jsonl": {
+      "path": "/data/shangguanrz/pic-edit-experiments/qwen21_union_dataset_adaptation_v1/data/val_conditions.jsonl",
+      "sha256": "09d7f6a12d853e463d63db32adf97880c49dd003b0305f18599684ff05004d23",
+      "expected_lock_sha256": "09d7f6a12d853e463d63db32adf97880c49dd003b0305f18599684ff05004d23",
+      "lock_match": true
+    },
+    "val_supervision.jsonl": {
+      "path": "/data/shangguanrz/pic-edit-experiments/qwen21_union_dataset_adaptation_v1/data/val_supervision.jsonl",
+      "sha256": "bb798802d32221719f79204394d20bf275cf51bdefb18969c1575793217ab56f",
+      "expected_lock_sha256": "bb798802d32221719f79204394d20bf275cf51bdefb18969c1575793217ab56f",
+      "lock_match": true
+    }
+  },
+  "候选盘证": {
+    "val数量": {
+      "iper": 24,
+      "tiktok": 24,
+      "hi4d": 24
+    },
+    "Hi4D实际分组": [
+      "pair22",
+      "pair28"
+    ],
+    "Hi4D全部候选性别": "24行的raw source/target均为A male、B female，没有male-only val行",
+    "Hi4D按pair覆盖": {
+      "pair22": {
+        "total": 12,
+        "positive_metadata_count": 7,
+        "zero_metadata_count": 5,
+        "male_only": 0
+      },
+      "pair28": {
+        "total": 12,
+        "positive_metadata_count": 6,
+        "zero_metadata_count": 6,
+        "male_only": 0
+      }
+    }
+  },
+  "选择规则": {
+    "总数": "iPER4、TikTok4、Hi4D4",
+    "iPER": "按锁定manifest顺序取前两个motion源身份，再取不同身份的前两个standard源，四个appearance不同；几何路径完整、参数有限、source mask非空。保留真实稀疏手部与小脸情况，不根据生成效果筛除。",
+    "TikTok": "锁定顺序前4条，覆盖3个source_video_group、4个sequence；3组无法各取相同数量，第4条重复首组。",
+    "Hi4D": "pair22与pair28各取锁定顺序第一条positive和第一条zero；selected raw contact已复核，不按target_contact_label布尔值替代。",
+    "选择依据": "条件几何、metadata、source支持；没有查看生成结果或GT RGB。"
+  },
+  "顺序": [
+    {
+      "order": 1,
+      "manifest_ordinal0": 0,
+      "sample_id": "iper_val_3e055c495922a4a0565b873b",
+      "dataset": "iper",
+      "person_order": [
+        0
+      ]
+    },
+    {
+      "order": 2,
+      "manifest_ordinal0": 1,
+      "sample_id": "iper_val_e36352d6b4b72ae362cb1ce3",
+      "dataset": "iper",
+      "person_order": [
+        0
+      ]
+    },
+    {
+      "order": 3,
+      "manifest_ordinal0": 12,
+      "sample_id": "iper_val_39842ce9498a68896d1b05b1",
+      "dataset": "iper",
+      "person_order": [
+        0
+      ]
+    },
+    {
+      "order": 4,
+      "manifest_ordinal0": 13,
+      "sample_id": "iper_val_31da9d9ccf0154f59d12415b",
+      "dataset": "iper",
+      "person_order": [
+        0
+      ]
+    },
+    {
+      "order": 5,
+      "manifest_ordinal0": 24,
+      "sample_id": "tiktok_val_acfe90683fb41b38ae11c1c5",
+      "dataset": "tiktok",
+      "person_order": [
+        0
+      ]
+    },
+    {
+      "order": 6,
+      "manifest_ordinal0": 25,
+      "sample_id": "tiktok_val_ea011d7b83fe36018f7d3b30",
+      "dataset": "tiktok",
+      "person_order": [
+        0
+      ]
+    },
+    {
+      "order": 7,
+      "manifest_ordinal0": 26,
+      "sample_id": "tiktok_val_620150df6d235ef787eed7ef",
+      "dataset": "tiktok",
+      "person_order": [
+        0
+      ]
+    },
+    {
+      "order": 8,
+      "manifest_ordinal0": 27,
+      "sample_id": "tiktok_val_9be575fa9d56ae4cd93cea7e",
+      "dataset": "tiktok",
+      "person_order": [
+        0
+      ]
+    },
+    {
+      "order": 9,
+      "manifest_ordinal0": 50,
+      "sample_id": "hi4d_val_5cafdf21df976516d0153722",
+      "dataset": "hi4d",
+      "person_order": [
+        0,
+        1
+      ]
+    },
+    {
+      "order": 10,
+      "manifest_ordinal0": 48,
+      "sample_id": "hi4d_val_e495c21b541e203a99a48f4c",
+      "dataset": "hi4d",
+      "person_order": [
+        0,
+        1
+      ]
+    },
+    {
+      "order": 11,
+      "manifest_ordinal0": 53,
+      "sample_id": "hi4d_val_1cdfa27cfed29647a42be809",
+      "dataset": "hi4d",
+      "person_order": [
+        1,
+        0
+      ]
+    },
+    {
+      "order": 12,
+      "manifest_ordinal0": 49,
+      "sample_id": "hi4d_val_49022ee2eedf1a1d90b0ef32",
+      "dataset": "hi4d",
+      "person_order": [
+        0,
+        1
+      ]
+    }
+  ],
+  "十二条完整condition记录": [
+    {
+      "sample_id": "iper_val_3e055c495922a4a0565b873b",
+      "dataset": "iper",
+      "split": "val",
+      "group_id": "012_4",
+      "source_rgb": "/data/shangguanrz/pic-edit-experiments/qwen21_union_dataset_adaptation_v1/data/assets/iper_val_3e055c495922a4a0565b873b/source.png",
+      "reference_pose_images": [
+        "/data/shangguanrz/pic-edit-experiments/qwen21_union_dataset_adaptation_v1/data/assets/iper_val_3e055c495922a4a0565b873b/control.png"
+      ],
+      "control_image": "/data/shangguanrz/pic-edit-experiments/qwen21_union_dataset_adaptation_v1/data/assets/iper_val_3e055c495922a4a0565b873b/control.png",
+      "prompt": "Change the person in image 1 to the pose shown in image 2. Preserve the person's identity, clothing, and background.",
+      "person_order": [
+        0
+      ],
+      "source_transform": {
+        "original_wh": [
+          1024,
+          1024
+        ],
+        "resized_wh": [
+          512,
+          512
+        ],
+        "offset_xy": [
+          0,
+          0
+        ],
+        "canvas_wh": [
+          512,
+          512
+        ]
+      },
+      "target_transform": {
+        "original_wh": [
+          1024,
+          1024
+        ],
+        "resized_wh": [
+          512,
+          512
+        ],
+        "offset_xy": [
+          0,
+          0
+        ],
+        "canvas_wh": [
+          512,
+          512
+        ]
+      },
+      "provenance": "iPER DWPose-134 keypoints_134_px; existing native assets",
+      "metadata": {
+        "original_condition_assets": {
+          "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_sampled_6src64tgt/012_4/rgb_1024/source_motion/source_motion_f000585.png": "d73c3e856fe42db7248c80ade106a48f52c6d6ee12f591652908af1b1d637550",
+          "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_sampled_6src64tgt/012_4/keypoints/source_motion/source_motion_f000585.npz": "cd0360b81b166cd9c57b0c828b98aa1f9bb72962caa7427375126c0a8f04877e",
+          "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_sampled_6src64tgt/012_4/keypoints/target/target_f000640.npz": "57abb6f5b19d7e134c422d01000758c2b5197cd0f545c523284295584eb2b175",
+          "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_sampled_6src64tgt/012_4/dwpose_512/target/target_f000640.png": "2bdb1d7d59ae00126883ae98f1a579850c6f7fc44d8ffd2c9e85db78e1353cb7"
+        },
+        "original_target_sha256": "d02f6eaa9c02efd0f8700edb98632ca53aab7095f7cf1d89bbed9edded709519",
+        "original_target_content_sha256": "5f86fb91545b5e329fc836eaceb51fe93349167583c54a1047227b612ff41e38",
+        "original_source_rgb": "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_sampled_6src64tgt/012_4/rgb_1024/source_motion/source_motion_f000585.png",
+        "original_source_masks": [],
+        "control_transform": {
+          "original_wh": [
+            512,
+            512
+          ],
+          "resized_wh": [
+            512,
+            512
+          ],
+          "offset_xy": [
+            0,
+            0
+          ],
+          "canvas_wh": [
+            512,
+            512
+          ]
+        },
+        "person_order_ambiguous": false,
+        "source_mask_centers": [],
+        "sequence_id": "012_4",
+        "target_frame": 640
+      }
+    },
+    {
+      "sample_id": "iper_val_e36352d6b4b72ae362cb1ce3",
+      "dataset": "iper",
+      "split": "val",
+      "group_id": "024_2",
+      "source_rgb": "/data/shangguanrz/pic-edit-experiments/qwen21_union_dataset_adaptation_v1/data/assets/iper_val_e36352d6b4b72ae362cb1ce3/source.png",
+      "reference_pose_images": [
+        "/data/shangguanrz/pic-edit-experiments/qwen21_union_dataset_adaptation_v1/data/assets/iper_val_e36352d6b4b72ae362cb1ce3/control.png"
+      ],
+      "control_image": "/data/shangguanrz/pic-edit-experiments/qwen21_union_dataset_adaptation_v1/data/assets/iper_val_e36352d6b4b72ae362cb1ce3/control.png",
+      "prompt": "Change the person in image 1 to the pose shown in image 2. Preserve the person's identity, clothing, and background.",
+      "person_order": [
+        0
+      ],
+      "source_transform": {
+        "original_wh": [
+          1024,
+          1024
+        ],
+        "resized_wh": [
+          512,
+          512
+        ],
+        "offset_xy": [
+          0,
+          0
+        ],
+        "canvas_wh": [
+          512,
+          512
+        ]
+      },
+      "target_transform": {
+        "original_wh": [
+          1024,
+          1024
+        ],
+        "resized_wh": [
+          512,
+          512
+        ],
+        "offset_xy": [
+          0,
+          0
+        ],
+        "canvas_wh": [
+          512,
+          512
+        ]
+      },
+      "provenance": "iPER DWPose-134 keypoints_134_px; existing native assets",
+      "metadata": {
+        "original_condition_assets": {
+          "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_sampled_6src64tgt/024_2/rgb_1024/source_motion/source_motion_f000454.png": "baff8a2c4fa5b512e95ba453fe4a1a827101bcf25d7d77184019909367506167",
+          "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_sampled_6src64tgt/024_2/keypoints/source_motion/source_motion_f000454.npz": "b1fbdcb851210147a3a503591236e6cf34eaaddb7169e19fd193ba5478098d5f",
+          "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_sampled_6src64tgt/024_2/keypoints/target/target_f000282.npz": "f0ef59e5e4b8545649676fbe4472db5b65bd4338e2f7beef5cd060d3be264245",
+          "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_sampled_6src64tgt/024_2/dwpose_512/target/target_f000282.png": "79891668410fec30b57c96a2b7639addc7a812fb3ccc32b3ed36fa4dca387eb1"
+        },
+        "original_target_sha256": "419e35ca144bf473639f3a4da19bfe91bccd47cac29315fc7787ba86e66cf7c5",
+        "original_target_content_sha256": "f918f4a2baff96da78f11a331d4d8f5d8b3d713b689148f3132653c45928d632",
+        "original_source_rgb": "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_sampled_6src64tgt/024_2/rgb_1024/source_motion/source_motion_f000454.png",
+        "original_source_masks": [],
+        "control_transform": {
+          "original_wh": [
+            512,
+            512
+          ],
+          "resized_wh": [
+            512,
+            512
+          ],
+          "offset_xy": [
+            0,
+            0
+          ],
+          "canvas_wh": [
+            512,
+            512
+          ]
+        },
+        "person_order_ambiguous": false,
+        "source_mask_centers": [],
+        "sequence_id": "024_2",
+        "target_frame": 282
+      }
+    },
+    {
+      "sample_id": "iper_val_39842ce9498a68896d1b05b1",
+      "dataset": "iper",
+      "split": "val",
+      "group_id": "019_3",
+      "source_rgb": "/data/shangguanrz/pic-edit-experiments/qwen21_union_dataset_adaptation_v1/data/assets/iper_val_39842ce9498a68896d1b05b1/source.png",
+      "reference_pose_images": [
+        "/data/shangguanrz/pic-edit-experiments/qwen21_union_dataset_adaptation_v1/data/assets/iper_val_39842ce9498a68896d1b05b1/control.png"
+      ],
+      "control_image": "/data/shangguanrz/pic-edit-experiments/qwen21_union_dataset_adaptation_v1/data/assets/iper_val_39842ce9498a68896d1b05b1/control.png",
+      "prompt": "Change the person in image 1 to the pose shown in image 2. Preserve the person's identity, clothing, and background.",
+      "person_order": [
+        0
+      ],
+      "source_transform": {
+        "original_wh": [
+          1024,
+          1024
+        ],
+        "resized_wh": [
+          512,
+          512
+        ],
+        "offset_xy": [
+          0,
+          0
+        ],
+        "canvas_wh": [
+          512,
+          512
+        ]
+      },
+      "target_transform": {
+        "original_wh": [
+          1024,
+          1024
+        ],
+        "resized_wh": [
+          512,
+          512
+        ],
+        "offset_xy": [
+          0,
+          0
+        ],
+        "canvas_wh": [
+          512,
+          512
+        ]
+      },
+      "provenance": "iPER DWPose-134 keypoints_134_px; existing native assets",
+      "metadata": {
+        "original_condition_assets": {
+          "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_sampled_6src64tgt/019_3/rgb_1024/source_standard/source_standard_f000136.png": "c1b18221553ca4448176c605a4328d504075f74362831ca1a31d51fad5fbfb56",
+          "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_sampled_6src64tgt/019_3/keypoints/source_standard/source_standard_f000136.npz": "f861381051d932fec8cbaf95ec046f92ee8e101497d1fa4b3c6ea3773d8b12df",
+          "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_sampled_6src64tgt/019_3/keypoints/target/target_f000648.npz": "10f89dc23dcde5b401e62db01dcbd9fe1387649a53ab5574a01fb22c5ac6da10",
+          "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_sampled_6src64tgt/019_3/dwpose_512/target/target_f000648.png": "e8e64aabff14890653834c1b38a8c0c1e0a81cbba636fd04ba131d3815b47565"
+        },
+        "original_target_sha256": "855a06f2405faf578aedeeaa174d514ac7d55390b9a9cc469cb5c18c05b395e6",
+        "original_target_content_sha256": "03175105c2035ab375ddc36fb6f0444e7f4606b5918ebd762971675a7138442d",
+        "original_source_rgb": "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_sampled_6src64tgt/019_3/rgb_1024/source_standard/source_standard_f000136.png",
+        "original_source_masks": [],
+        "control_transform": {
+          "original_wh": [
+            512,
+            512
+          ],
+          "resized_wh": [
+            512,
+            512
+          ],
+          "offset_xy": [
+            0,
+            0
+          ],
+          "canvas_wh": [
+            512,
+            512
+          ]
+        },
+        "person_order_ambiguous": false,
+        "source_mask_centers": [],
+        "sequence_id": "019_3",
+        "target_frame": 648
+      }
+    },
+    {
+      "sample_id": "iper_val_31da9d9ccf0154f59d12415b",
+      "dataset": "iper",
+      "split": "val",
+      "group_id": "021_1",
+      "source_rgb": "/data/shangguanrz/pic-edit-experiments/qwen21_union_dataset_adaptation_v1/data/assets/iper_val_31da9d9ccf0154f59d12415b/source.png",
+      "reference_pose_images": [
+        "/data/shangguanrz/pic-edit-experiments/qwen21_union_dataset_adaptation_v1/data/assets/iper_val_31da9d9ccf0154f59d12415b/control.png"
+      ],
+      "control_image": "/data/shangguanrz/pic-edit-experiments/qwen21_union_dataset_adaptation_v1/data/assets/iper_val_31da9d9ccf0154f59d12415b/control.png",
+      "prompt": "Change the person in image 1 to the pose shown in image 2. Preserve the person's identity, clothing, and background.",
+      "person_order": [
+        0
+      ],
+      "source_transform": {
+        "original_wh": [
+          1024,
+          1024
+        ],
+        "resized_wh": [
+          512,
+          512
+        ],
+        "offset_xy": [
+          0,
+          0
+        ],
+        "canvas_wh": [
+          512,
+          512
+        ]
+      },
+      "target_transform": {
+        "original_wh": [
+          1024,
+          1024
+        ],
+        "resized_wh": [
+          512,
+          512
+        ],
+        "offset_xy": [
+          0,
+          0
+        ],
+        "canvas_wh": [
+          512,
+          512
+        ]
+      },
+      "provenance": "iPER DWPose-134 keypoints_134_px; existing native assets",
+      "metadata": {
+        "original_condition_assets": {
+          "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_sampled_6src64tgt/021_1/rgb_1024/source_standard/source_standard_f000359.png": "0f12f67eafae599971f686dde324ff58a1972a2c85643d8824cde911d41a5fe7",
+          "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_sampled_6src64tgt/021_1/keypoints/source_standard/source_standard_f000359.npz": "47af6eb74b847829feaa22c339555a46fab90b13c149c9a7e7aa948bf996a2e7",
+          "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_sampled_6src64tgt/021_1/keypoints/target/target_f000411.npz": "2190285dfd659ff0b6da45f937fd7ccfb531e18d51ac47d72124de02070115f5",
+          "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_sampled_6src64tgt/021_1/dwpose_512/target/target_f000411.png": "9b28eeeb78d1730a60b9c02e1384c64b8fa78368fd4640f1994045564955f70d"
+        },
+        "original_target_sha256": "9f90d233c42e01a609ddd2b07b7c0afaaaef57105631309326f8e5790c35f493",
+        "original_target_content_sha256": "2fb7978f73a16dd15eeeb471ec5ed41d87c665626767f811f26757f8ef1ff936",
+        "original_source_rgb": "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_sampled_6src64tgt/021_1/rgb_1024/source_standard/source_standard_f000359.png",
+        "original_source_masks": [],
+        "control_transform": {
+          "original_wh": [
+            512,
+            512
+          ],
+          "resized_wh": [
+            512,
+            512
+          ],
+          "offset_xy": [
+            0,
+            0
+          ],
+          "canvas_wh": [
+            512,
+            512
+          ]
+        },
+        "person_order_ambiguous": false,
+        "source_mask_centers": [],
+        "sequence_id": "021_1",
+        "target_frame": 411
+      }
+    },
+    {
+      "sample_id": "tiktok_val_acfe90683fb41b38ae11c1c5",
+      "dataset": "tiktok",
+      "split": "val",
+      "group_id": "seq_00282_00288",
+      "source_rgb": "/data/shangguanrz/pic-edit-experiments/qwen21_union_dataset_adaptation_v1/data/assets/tiktok_val_acfe90683fb41b38ae11c1c5/source.png",
+      "reference_pose_images": [
+        "/data/shangguanrz/pic-edit-experiments/qwen21_union_dataset_adaptation_v1/data/assets/tiktok_val_acfe90683fb41b38ae11c1c5/control.png"
+      ],
+      "control_image": "/data/shangguanrz/pic-edit-experiments/qwen21_union_dataset_adaptation_v1/data/assets/tiktok_val_acfe90683fb41b38ae11c1c5/control.png",
+      "prompt": "Change the person in image 1 to the pose shown in image 2. Preserve the person's identity, clothing, and background.",
+      "person_order": [
+        0
+      ],
+      "source_transform": {
+        "original_wh": [
+          604,
+          1080
+        ],
+        "resized_wh": [
+          286,
+          512
+        ],
+        "offset_xy": [
+          113,
+          0
+        ],
+        "canvas_wh": [
+          512,
+          512
+        ]
+      },
+      "target_transform": {
+        "original_wh": [
+          604,
+          1080
+        ],
+        "resized_wh": [
+          286,
+          512
+        ],
+        "offset_xy": [
+          113,
+          0
+        ],
+        "canvas_wh": [
+          512,
+          512
+        ]
+      },
+      "provenance": "TikTok pairs_strict_v1 DWPose-134 normalized; existing native assets",
+      "metadata": {
+        "original_condition_assets": {
+          "/home/shangguanrz/project/pic-edit/datasets/TikTokDataset/TikTok_dataset/TikTok_dataset/00287/images/0130.png": "79494889aa2dee138d4a62410f14932c28542b9d19454d6cbb9f11ee15bc4edb",
+          "/home/shangguanrz/project/pic-edit/datasets/TikTokDataset/TikTok_dataset/TikTok_dataset/00287/masks/0130.png": "b100aa3571fa44f5916d804ae6b244ac12aeb0cc8ce41ee8da8e1c39d7b2da98",
+          "/home/shangguanrz/project/pic-edit/datasets/TikTokDataset/TikTok_v3/dwpose_v1/00287/dwpose_json/0130.json": "3e170b65b2be150c551daec4555260649884c78fe2bc1d2f23e172b90806cd12",
+          "/home/shangguanrz/project/pic-edit/datasets/TikTokDataset/TikTok_v3/dwpose_v1/00287/dwpose_json/0267.json": "9380e7beffc3c2c0cc3f4ea95ec6e554fc055828d879be740954f30f7e757560",
+          "/home/shangguanrz/project/pic-edit/datasets/TikTokDataset/TikTok_v3/dwpose_v1/00287/dwpose/0267.png": "87fef9767dea8b7de517a35c656f5e53f4cca0450e383dde6879e4c0834a1a64"
+        },
+        "original_target_sha256": "abb06bb893a1500f60c3d9c3c54d2438a7fc0ec59c37c01ad5d8e2ae3c90fac5",
+        "original_target_content_sha256": "5e40c1bc38af8e0a2ffd6fad56f82c6309290e60a4cb3861d2f68c80fe428113",
+        "original_source_rgb": "/home/shangguanrz/project/pic-edit/datasets/TikTokDataset/TikTok_dataset/TikTok_dataset/00287/images/0130.png",
+        "original_source_masks": [
+          "/home/shangguanrz/project/pic-edit/datasets/TikTokDataset/TikTok_dataset/TikTok_dataset/00287/masks/0130.png"
+        ],
+        "control_transform": {
+          "original_wh": [
+            604,
+            1080
+          ],
+          "resized_wh": [
+            286,
+            512
+          ],
+          "offset_xy": [
+            113,
+            0
+          ],
+          "canvas_wh": [
+            512,
+            512
+          ]
+        },
+        "person_order_ambiguous": false,
+        "source_mask_centers": [],
+        "sequence_id": "00287",
+        "target_frame": 267
+      }
+    },
+    {
+      "sample_id": "tiktok_val_ea011d7b83fe36018f7d3b30",
+      "dataset": "tiktok",
+      "split": "val",
+      "group_id": "seq_00231_00240",
+      "source_rgb": "/data/shangguanrz/pic-edit-experiments/qwen21_union_dataset_adaptation_v1/data/assets/tiktok_val_ea011d7b83fe36018f7d3b30/source.png",
+      "reference_pose_images": [
+        "/data/shangguanrz/pic-edit-experiments/qwen21_union_dataset_adaptation_v1/data/assets/tiktok_val_ea011d7b83fe36018f7d3b30/control.png"
+      ],
+      "control_image": "/data/shangguanrz/pic-edit-experiments/qwen21_union_dataset_adaptation_v1/data/assets/tiktok_val_ea011d7b83fe36018f7d3b30/control.png",
+      "prompt": "Change the person in image 1 to the pose shown in image 2. Preserve the person's identity, clothing, and background.",
+      "person_order": [
+        0
+      ],
+      "source_transform": {
+        "original_wh": [
+          604,
+          1080
+        ],
+        "resized_wh": [
+          286,
+          512
+        ],
+        "offset_xy": [
+          113,
+          0
+        ],
+        "canvas_wh": [
+          512,
+          512
+        ]
+      },
+      "target_transform": {
+        "original_wh": [
+          604,
+          1080
+        ],
+        "resized_wh": [
+          286,
+          512
+        ],
+        "offset_xy": [
+          113,
+          0
+        ],
+        "canvas_wh": [
+          512,
+          512
+        ]
+      },
+      "provenance": "TikTok pairs_strict_v1 DWPose-134 normalized; existing native assets",
+      "metadata": {
+        "original_condition_assets": {
+          "/home/shangguanrz/project/pic-edit/datasets/TikTokDataset/TikTok_dataset/TikTok_dataset/00233/images/0013.png": "3027869c7d076832a974098f2ff1a30d55992bfe5dfde1d029930ec13e36b8c3",
+          "/home/shangguanrz/project/pic-edit/datasets/TikTokDataset/TikTok_dataset/TikTok_dataset/00233/masks/0013.png": "09c1c671f0cd94e2a0bc4b2f912b1e5fdf8a91a6bb5340c292ab33f95427fb23",
+          "/home/shangguanrz/project/pic-edit/datasets/TikTokDataset/TikTok_v3/dwpose_v1/00233/dwpose_json/0013.json": "83ab95d9e2e863673cc715d1d64db4925d0647fa17c002af830c486737abbe2e",
+          "/home/shangguanrz/project/pic-edit/datasets/TikTokDataset/TikTok_v3/dwpose_v1/00233/dwpose_json/0183.json": "04d45104ca5cb80f19e85d530d9ad081c1cdbc229f6346ca841bf84828d70c96",
+          "/home/shangguanrz/project/pic-edit/datasets/TikTokDataset/TikTok_v3/dwpose_v1/00233/dwpose/0183.png": "0cfbf835094fc22eacc42434edcf95bfe81616d96571c8f8d79ffe079c23773a"
+        },
+        "original_target_sha256": "9ef89b249b243c75df0abd5eeac18b875d15cd3d8a25de276931bc7c5b5908be",
+        "original_target_content_sha256": "2448dbd5947d0d3567f6f0cb2662b642951951f71d4cb173aa2a795273c085c4",
+        "original_source_rgb": "/home/shangguanrz/project/pic-edit/datasets/TikTokDataset/TikTok_dataset/TikTok_dataset/00233/images/0013.png",
+        "original_source_masks": [
+          "/home/shangguanrz/project/pic-edit/datasets/TikTokDataset/TikTok_dataset/TikTok_dataset/00233/masks/0013.png"
+        ],
+        "control_transform": {
+          "original_wh": [
+            604,
+            1080
+          ],
+          "resized_wh": [
+            286,
+            512
+          ],
+          "offset_xy": [
+            113,
+            0
+          ],
+          "canvas_wh": [
+            512,
+            512
+          ]
+        },
+        "person_order_ambiguous": false,
+        "source_mask_centers": [],
+        "sequence_id": "00233",
+        "target_frame": 183
+      }
+    },
+    {
+      "sample_id": "tiktok_val_620150df6d235ef787eed7ef",
+      "dataset": "tiktok",
+      "split": "val",
+      "group_id": "seq_00125_00139",
+      "source_rgb": "/data/shangguanrz/pic-edit-experiments/qwen21_union_dataset_adaptation_v1/data/assets/tiktok_val_620150df6d235ef787eed7ef/source.png",
+      "reference_pose_images": [
+        "/data/shangguanrz/pic-edit-experiments/qwen21_union_dataset_adaptation_v1/data/assets/tiktok_val_620150df6d235ef787eed7ef/control.png"
+      ],
+      "control_image": "/data/shangguanrz/pic-edit-experiments/qwen21_union_dataset_adaptation_v1/data/assets/tiktok_val_620150df6d235ef787eed7ef/control.png",
+      "prompt": "Change the person in image 1 to the pose shown in image 2. Preserve the person's identity, clothing, and background.",
+      "person_order": [
+        0
+      ],
+      "source_transform": {
+        "original_wh": [
+          604,
+          1080
+        ],
+        "resized_wh": [
+          286,
+          512
+        ],
+        "offset_xy": [
+          113,
+          0
+        ],
+        "canvas_wh": [
+          512,
+          512
+        ]
+      },
+      "target_transform": {
+        "original_wh": [
+          604,
+          1080
+        ],
+        "resized_wh": [
+          286,
+          512
+        ],
+        "offset_xy": [
+          113,
+          0
+        ],
+        "canvas_wh": [
+          512,
+          512
+        ]
+      },
+      "provenance": "TikTok pairs_strict_v1 DWPose-134 normalized; existing native assets",
+      "metadata": {
+        "original_condition_assets": {
+          "/home/shangguanrz/project/pic-edit/datasets/TikTokDataset/TikTok_dataset/TikTok_dataset/00139/images/0119.png": "60c02a7522359d11f5b528920d96497302a57737dd38533092a0ee6a20f5b5d4",
+          "/home/shangguanrz/project/pic-edit/datasets/TikTokDataset/TikTok_dataset/TikTok_dataset/00139/masks/0119.png": "580879dc70995097ed4a146ed242dde0bc55d88f7e6ac5474f6f05a6894dcabd",
+          "/home/shangguanrz/project/pic-edit/datasets/TikTokDataset/TikTok_v3/dwpose_v1/00139/dwpose_json/0119.json": "33932e8a0957425424148500bb02da6a6d5c2e8172bfcb45aeab52a362f3e5e5",
+          "/home/shangguanrz/project/pic-edit/datasets/TikTokDataset/TikTok_v3/dwpose_v1/00139/dwpose_json/0003.json": "8002e388a0cd91884e93c953ee2625d6b3b8f2a5c31a6d7d89f0053588f23518",
+          "/home/shangguanrz/project/pic-edit/datasets/TikTokDataset/TikTok_v3/dwpose_v1/00139/dwpose/0003.png": "e220d47f40e223c7b6bfd4ba500e7a36f1c2e3ca7b3558eb04469c4ca2eea506"
+        },
+        "original_target_sha256": "d4235b17ae11c93891d951e6e2bb12d2635dcabe042783d2904675ef0c9d2560",
+        "original_target_content_sha256": "a123229333cb07ee864dbcc0c3ccda41baf10b7f9aef22f7ca149123ccfc4467",
+        "original_source_rgb": "/home/shangguanrz/project/pic-edit/datasets/TikTokDataset/TikTok_dataset/TikTok_dataset/00139/images/0119.png",
+        "original_source_masks": [
+          "/home/shangguanrz/project/pic-edit/datasets/TikTokDataset/TikTok_dataset/TikTok_dataset/00139/masks/0119.png"
+        ],
+        "control_transform": {
+          "original_wh": [
+            604,
+            1080
+          ],
+          "resized_wh": [
+            286,
+            512
+          ],
+          "offset_xy": [
+            113,
+            0
+          ],
+          "canvas_wh": [
+            512,
+            512
+          ]
+        },
+        "person_order_ambiguous": false,
+        "source_mask_centers": [],
+        "sequence_id": "00139",
+        "target_frame": 3
+      }
+    },
+    {
+      "sample_id": "tiktok_val_9be575fa9d56ae4cd93cea7e",
+      "dataset": "tiktok",
+      "split": "val",
+      "group_id": "seq_00282_00288",
+      "source_rgb": "/data/shangguanrz/pic-edit-experiments/qwen21_union_dataset_adaptation_v1/data/assets/tiktok_val_9be575fa9d56ae4cd93cea7e/source.png",
+      "reference_pose_images": [
+        "/data/shangguanrz/pic-edit-experiments/qwen21_union_dataset_adaptation_v1/data/assets/tiktok_val_9be575fa9d56ae4cd93cea7e/control.png"
+      ],
+      "control_image": "/data/shangguanrz/pic-edit-experiments/qwen21_union_dataset_adaptation_v1/data/assets/tiktok_val_9be575fa9d56ae4cd93cea7e/control.png",
+      "prompt": "Change the person in image 1 to the pose shown in image 2. Preserve the person's identity, clothing, and background.",
+      "person_order": [
+        0
+      ],
+      "source_transform": {
+        "original_wh": [
+          604,
+          1080
+        ],
+        "resized_wh": [
+          286,
+          512
+        ],
+        "offset_xy": [
+          113,
+          0
+        ],
+        "canvas_wh": [
+          512,
+          512
+        ]
+      },
+      "target_transform": {
+        "original_wh": [
+          604,
+          1080
+        ],
+        "resized_wh": [
+          286,
+          512
+        ],
+        "offset_xy": [
+          113,
+          0
+        ],
+        "canvas_wh": [
+          512,
+          512
+        ]
+      },
+      "provenance": "TikTok pairs_strict_v1 DWPose-134 normalized; existing native assets",
+      "metadata": {
+        "original_condition_assets": {
+          "/home/shangguanrz/project/pic-edit/datasets/TikTokDataset/TikTok_dataset/TikTok_dataset/00286/images/0297.png": "d8a08a2060d13dddce09fc50c4751efec472ec085ea8d01bfa45d3076df38122",
+          "/home/shangguanrz/project/pic-edit/datasets/TikTokDataset/TikTok_dataset/TikTok_dataset/00286/masks/0297.png": "b741596e878a7ed33d4c7ff88410130d6a68fc1b5c5d0c1ef6f9890ebe6fc295",
+          "/home/shangguanrz/project/pic-edit/datasets/TikTokDataset/TikTok_v3/dwpose_v1/00286/dwpose_json/0297.json": "01da9a90e67ce2b40c4fca68ad9ff8cc4a126311b2f1d0e8d6d51e357aa81933",
+          "/home/shangguanrz/project/pic-edit/datasets/TikTokDataset/TikTok_v3/dwpose_v1/00286/dwpose_json/0055.json": "59901f950cdadd112fc91e093a98cfc475572d89d8eda61492cc79b16db1fba0",
+          "/home/shangguanrz/project/pic-edit/datasets/TikTokDataset/TikTok_v3/dwpose_v1/00286/dwpose/0055.png": "55878fd318aa50b795bb977b75b1f81cc2ee6381c83f91a49a52165d38fdcee9"
+        },
+        "original_target_sha256": "da7bd3555be6294ed6bac641bf245dc58d11de8b7153592da965c837c97f9d93",
+        "original_target_content_sha256": "679f36e403740c56978d30ddaa2ee6c65cc0c258e22f0badf18eb94bf315f7c1",
+        "original_source_rgb": "/home/shangguanrz/project/pic-edit/datasets/TikTokDataset/TikTok_dataset/TikTok_dataset/00286/images/0297.png",
+        "original_source_masks": [
+          "/home/shangguanrz/project/pic-edit/datasets/TikTokDataset/TikTok_dataset/TikTok_dataset/00286/masks/0297.png"
+        ],
+        "control_transform": {
+          "original_wh": [
+            604,
+            1080
+          ],
+          "resized_wh": [
+            286,
+            512
+          ],
+          "offset_xy": [
+            113,
+            0
+          ],
+          "canvas_wh": [
+            512,
+            512
+          ]
+        },
+        "person_order_ambiguous": false,
+        "source_mask_centers": [],
+        "sequence_id": "00286",
+        "target_frame": 55
+      }
+    },
+    {
+      "sample_id": "hi4d_val_5cafdf21df976516d0153722",
+      "dataset": "hi4d",
+      "split": "val",
+      "group_id": "pair22",
+      "source_rgb": "/data/shangguanrz/pic-edit-experiments/qwen21_union_dataset_adaptation_v1/data/assets/hi4d_val_5cafdf21df976516d0153722/source.png",
+      "reference_pose_images": [
+        "/data/shangguanrz/pic-edit-experiments/qwen21_union_dataset_adaptation_v1/data/assets/hi4d_val_5cafdf21df976516d0153722/pose_person_0.png",
+        "/data/shangguanrz/pic-edit-experiments/qwen21_union_dataset_adaptation_v1/data/assets/hi4d_val_5cafdf21df976516d0153722/pose_person_1.png"
+      ],
+      "control_image": "/data/shangguanrz/pic-edit-experiments/qwen21_union_dataset_adaptation_v1/data/assets/hi4d_val_5cafdf21df976516d0153722/control.png",
+      "prompt": "Move the person on the left in image 1 to the pose in image 2, and the person on the right in image 1 to the pose in image 3. Preserve each person's identity and clothing and preserve the background. Keep the two people distinct.",
+      "person_order": [
+        0,
+        1
+      ],
+      "source_transform": {
+        "original_wh": [
+          940,
+          1280
+        ],
+        "resized_wh": [
+          376,
+          512
+        ],
+        "offset_xy": [
+          68,
+          0
+        ],
+        "canvas_wh": [
+          512,
+          512
+        ]
+      },
+      "target_transform": {
+        "original_wh": [
+          940,
+          1280
+        ],
+        "resized_wh": [
+          376,
+          512
+        ],
+        "offset_xy": [
+          68,
+          0
+        ],
+        "canvas_wh": [
+          512,
+          512
+        ]
+      },
+      "provenance": "Hi4D_mask_bbox_DWPose_official; existing assets used target mask upstream",
+      "metadata": {
+        "action_family": "game",
+        "target_contact_label": true,
+        "upstream_target_mask_assisted": true,
+        "contact_count": 504,
+        "original_condition_assets": {
+          "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/final_assets_v4_2/sources/pair22/cam4/game22/000052/rgb.jpg": "0fec7ec026a3128a64133ff136c8805bb0231fc064214870eb6845f5bb22fa07",
+          "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/final_assets_v4_2/sources/pair22/cam4/game22/000052/mask_A.png": "d5e4dc44f71d939c218153e0ac6bc44e3ae11b1c9716ba2b900244d0aa7d1906",
+          "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/final_assets_v4_2/sources/pair22/cam4/game22/000052/mask_B.png": "43f71bcd580824cae77338ed2f292add00c1c531a0f62a477d2e46e7133c8dff",
+          "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/final_assets_v4_2/targets/pair22/game22/cam4/000014/dwpose_A.npz": "13d1ef2f0789d4058a9e86d877ae8c8e892ca05dbcc06d0cdf43b03d65992ccd",
+          "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/final_assets_v4_2/targets/pair22/game22/cam4/000014/dwpose_B.npz": "d79938a2a28ce787dd4ef9bbe1f5394ca4f3be1d41c6d5f528541b5fb217e446"
+        },
+        "original_target_sha256": "c8a7d12379a0729c96759ec2dedb13879b567c69e522bc958967415b88a17680",
+        "original_target_content_sha256": "38d1b6f154605c51c142b3abda360875604274836c9f5bb815942fb2c9ac1ec7",
+        "original_source_rgb": "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/final_assets_v4_2/sources/pair22/cam4/game22/000052/rgb.jpg",
+        "original_source_masks": [
+          "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/final_assets_v4_2/sources/pair22/cam4/game22/000052/mask_A.png",
+          "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/final_assets_v4_2/sources/pair22/cam4/game22/000052/mask_B.png"
+        ],
+        "control_transform": {
+          "original_wh": [
+            940,
+            1280
+          ],
+          "resized_wh": [
+            376,
+            512
+          ],
+          "offset_xy": [
+            68,
+            0
+          ],
+          "canvas_wh": [
+            512,
+            512
+          ]
+        },
+        "person_order_ambiguous": false,
+        "source_mask_centers": [
+          [
+            456.29939745592503,
+            600.0217957301197,
+            0
+          ],
+          [
+            599.2343841939406,
+            618.0358277652105,
+            1
+          ]
+        ],
+        "sequence_id": "pair22/game22/cam4",
+        "target_frame": 14
+      }
+    },
+    {
+      "sample_id": "hi4d_val_e495c21b541e203a99a48f4c",
+      "dataset": "hi4d",
+      "split": "val",
+      "group_id": "pair22",
+      "source_rgb": "/data/shangguanrz/pic-edit-experiments/qwen21_union_dataset_adaptation_v1/data/assets/hi4d_val_e495c21b541e203a99a48f4c/source.png",
+      "reference_pose_images": [
+        "/data/shangguanrz/pic-edit-experiments/qwen21_union_dataset_adaptation_v1/data/assets/hi4d_val_e495c21b541e203a99a48f4c/pose_person_0.png",
+        "/data/shangguanrz/pic-edit-experiments/qwen21_union_dataset_adaptation_v1/data/assets/hi4d_val_e495c21b541e203a99a48f4c/pose_person_1.png"
+      ],
+      "control_image": "/data/shangguanrz/pic-edit-experiments/qwen21_union_dataset_adaptation_v1/data/assets/hi4d_val_e495c21b541e203a99a48f4c/control.png",
+      "prompt": "Move the person on the left in image 1 to the pose in image 2, and the person on the right in image 1 to the pose in image 3. Preserve each person's identity and clothing and preserve the background. Keep the two people distinct.",
+      "person_order": [
+        0,
+        1
+      ],
+      "source_transform": {
+        "original_wh": [
+          940,
+          1280
+        ],
+        "resized_wh": [
+          376,
+          512
+        ],
+        "offset_xy": [
+          68,
+          0
+        ],
+        "canvas_wh": [
+          512,
+          512
+        ]
+      },
+      "target_transform": {
+        "original_wh": [
+          940,
+          1280
+        ],
+        "resized_wh": [
+          376,
+          512
+        ],
+        "offset_xy": [
+          68,
+          0
+        ],
+        "canvas_wh": [
+          512,
+          512
+        ]
+      },
+      "provenance": "Hi4D_mask_bbox_DWPose_official; existing assets used target mask upstream",
+      "metadata": {
+        "action_family": "hug",
+        "target_contact_label": true,
+        "upstream_target_mask_assisted": true,
+        "contact_count": 0,
+        "original_condition_assets": {
+          "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/final_assets_v4_2/sources/pair22/cam4/game22/000052/rgb.jpg": "0fec7ec026a3128a64133ff136c8805bb0231fc064214870eb6845f5bb22fa07",
+          "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/final_assets_v4_2/sources/pair22/cam4/game22/000052/mask_A.png": "d5e4dc44f71d939c218153e0ac6bc44e3ae11b1c9716ba2b900244d0aa7d1906",
+          "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/final_assets_v4_2/sources/pair22/cam4/game22/000052/mask_B.png": "43f71bcd580824cae77338ed2f292add00c1c531a0f62a477d2e46e7133c8dff",
+          "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/final_assets_v4_2/targets/pair22/hug22/cam4/000091/dwpose_A.npz": "e0efe623a66255963c8d1cec816da64ef231504173d0f92136280ce4f7c08473",
+          "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/final_assets_v4_2/targets/pair22/hug22/cam4/000091/dwpose_B.npz": "380ecbbbeb6453fc614711e1968152458ec983ba69f31cddfd87b8be6b060e5f"
+        },
+        "original_target_sha256": "7ded60207d61e4750816e5d257fb39ba26c3a1901c4e3761c2fa291240c02bd7",
+        "original_target_content_sha256": "15a26a1896bf2171dc9e00a7efef8b803a5315b1308c318b48ed73a7686d5f18",
+        "original_source_rgb": "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/final_assets_v4_2/sources/pair22/cam4/game22/000052/rgb.jpg",
+        "original_source_masks": [
+          "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/final_assets_v4_2/sources/pair22/cam4/game22/000052/mask_A.png",
+          "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/final_assets_v4_2/sources/pair22/cam4/game22/000052/mask_B.png"
+        ],
+        "control_transform": {
+          "original_wh": [
+            940,
+            1280
+          ],
+          "resized_wh": [
+            376,
+            512
+          ],
+          "offset_xy": [
+            68,
+            0
+          ],
+          "canvas_wh": [
+            512,
+            512
+          ]
+        },
+        "person_order_ambiguous": false,
+        "source_mask_centers": [
+          [
+            456.29939745592503,
+            600.0217957301197,
+            0
+          ],
+          [
+            599.2343841939406,
+            618.0358277652105,
+            1
+          ]
+        ],
+        "sequence_id": "pair22/hug22/cam4",
+        "target_frame": 91
+      }
+    },
+    {
+      "sample_id": "hi4d_val_1cdfa27cfed29647a42be809",
+      "dataset": "hi4d",
+      "split": "val",
+      "group_id": "pair28",
+      "source_rgb": "/data/shangguanrz/pic-edit-experiments/qwen21_union_dataset_adaptation_v1/data/assets/hi4d_val_1cdfa27cfed29647a42be809/source.png",
+      "reference_pose_images": [
+        "/data/shangguanrz/pic-edit-experiments/qwen21_union_dataset_adaptation_v1/data/assets/hi4d_val_1cdfa27cfed29647a42be809/pose_person_1.png",
+        "/data/shangguanrz/pic-edit-experiments/qwen21_union_dataset_adaptation_v1/data/assets/hi4d_val_1cdfa27cfed29647a42be809/pose_person_0.png"
+      ],
+      "control_image": "/data/shangguanrz/pic-edit-experiments/qwen21_union_dataset_adaptation_v1/data/assets/hi4d_val_1cdfa27cfed29647a42be809/control.png",
+      "prompt": "Move the person on the left in image 1 to the pose in image 2, and the person on the right in image 1 to the pose in image 3. Preserve each person's identity and clothing and preserve the background. Keep the two people distinct.",
+      "person_order": [
+        1,
+        0
+      ],
+      "source_transform": {
+        "original_wh": [
+          940,
+          1280
+        ],
+        "resized_wh": [
+          376,
+          512
+        ],
+        "offset_xy": [
+          68,
+          0
+        ],
+        "canvas_wh": [
+          512,
+          512
+        ]
+      },
+      "target_transform": {
+        "original_wh": [
+          940,
+          1280
+        ],
+        "resized_wh": [
+          376,
+          512
+        ],
+        "offset_xy": [
+          68,
+          0
+        ],
+        "canvas_wh": [
+          512,
+          512
+        ]
+      },
+      "provenance": "Hi4D_mask_bbox_DWPose_official; existing assets used target mask upstream",
+      "metadata": {
+        "action_family": "dance",
+        "target_contact_label": true,
+        "upstream_target_mask_assisted": true,
+        "contact_count": 1109,
+        "original_condition_assets": {
+          "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/final_assets_v4_2/sources/pair28/cam4/dance28/000006/rgb.jpg": "1b897600d498cebcbc8db89ac9f5cda42500204c5592d12d3ed1f73fe25e48a7",
+          "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/final_assets_v4_2/sources/pair28/cam4/dance28/000006/mask_A.png": "e801e7805270655ccba9705c865ae09edc096f96be04559d5c748a0f7b9c5e04",
+          "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/final_assets_v4_2/sources/pair28/cam4/dance28/000006/mask_B.png": "ba3e91acd8be85c40f8fa97c785f57d291ef9ed75a9a7ad227903ef3e3694f27",
+          "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/final_assets_v4_2/targets/pair28/dance28/cam4/000045/dwpose_A.npz": "ae28a22799c83c245b5a948799e5dbc6d79f3c606edbc7403d996b43297c95e6",
+          "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/final_assets_v4_2/targets/pair28/dance28/cam4/000045/dwpose_B.npz": "ae16d1c24bb18003a7dda7034dd0606d0cca1460977b24dc8c690279b6533fd1"
+        },
+        "original_target_sha256": "575c36ce7ecf508524779e2b6b5957d4e7c07ed344ca2a8be416c63b34f08fa2",
+        "original_target_content_sha256": "a9d00197f65daa4bdf98fc1cb1144362505ad9033dc264226e61941ee08b5c89",
+        "original_source_rgb": "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/final_assets_v4_2/sources/pair28/cam4/dance28/000006/rgb.jpg",
+        "original_source_masks": [
+          "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/final_assets_v4_2/sources/pair28/cam4/dance28/000006/mask_B.png",
+          "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/final_assets_v4_2/sources/pair28/cam4/dance28/000006/mask_A.png"
+        ],
+        "control_transform": {
+          "original_wh": [
+            940,
+            1280
+          ],
+          "resized_wh": [
+            376,
+            512
+          ],
+          "offset_xy": [
+            68,
+            0
+          ],
+          "canvas_wh": [
+            512,
+            512
+          ]
+        },
+        "person_order_ambiguous": false,
+        "source_mask_centers": [
+          [
+            595.8538638780574,
+            610.8418261845682,
+            0
+          ],
+          [
+            376.23302207766903,
+            649.5980755107241,
+            1
+          ]
+        ],
+        "sequence_id": "pair28/dance28/cam4",
+        "target_frame": 45
+      }
+    },
+    {
+      "sample_id": "hi4d_val_49022ee2eedf1a1d90b0ef32",
+      "dataset": "hi4d",
+      "split": "val",
+      "group_id": "pair28",
+      "source_rgb": "/data/shangguanrz/pic-edit-experiments/qwen21_union_dataset_adaptation_v1/data/assets/hi4d_val_49022ee2eedf1a1d90b0ef32/source.png",
+      "reference_pose_images": [
+        "/data/shangguanrz/pic-edit-experiments/qwen21_union_dataset_adaptation_v1/data/assets/hi4d_val_49022ee2eedf1a1d90b0ef32/pose_person_0.png",
+        "/data/shangguanrz/pic-edit-experiments/qwen21_union_dataset_adaptation_v1/data/assets/hi4d_val_49022ee2eedf1a1d90b0ef32/pose_person_1.png"
+      ],
+      "control_image": "/data/shangguanrz/pic-edit-experiments/qwen21_union_dataset_adaptation_v1/data/assets/hi4d_val_49022ee2eedf1a1d90b0ef32/control.png",
+      "prompt": "Move the person on the left in image 1 to the pose in image 2, and the person on the right in image 1 to the pose in image 3. Preserve each person's identity and clothing and preserve the background. Keep the two people distinct.",
+      "person_order": [
+        0,
+        1
+      ],
+      "source_transform": {
+        "original_wh": [
+          940,
+          1280
+        ],
+        "resized_wh": [
+          376,
+          512
+        ],
+        "offset_xy": [
+          68,
+          0
+        ],
+        "canvas_wh": [
+          512,
+          512
+        ]
+      },
+      "target_transform": {
+        "original_wh": [
+          940,
+          1280
+        ],
+        "resized_wh": [
+          376,
+          512
+        ],
+        "offset_xy": [
+          68,
+          0
+        ],
+        "canvas_wh": [
+          512,
+          512
+        ]
+      },
+      "provenance": "Hi4D_mask_bbox_DWPose_official; existing assets used target mask upstream",
+      "metadata": {
+        "action_family": "basketball",
+        "target_contact_label": true,
+        "upstream_target_mask_assisted": true,
+        "contact_count": 0,
+        "original_condition_assets": {
+          "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/final_assets_v4_2/sources/pair28/cam4/basketball28/000009/rgb.jpg": "dd673254695f37771097f212256f8fe6eeca0c7746100629ae64dcdad50111ae",
+          "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/final_assets_v4_2/sources/pair28/cam4/basketball28/000009/mask_A.png": "c1563c7c62cbf3bac00b85faa915282c9f2eeb9b93d33c1ed1ae2410fff87455",
+          "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/final_assets_v4_2/sources/pair28/cam4/basketball28/000009/mask_B.png": "df029e84442092d4bb97182e2eddfd28e0f559135ccf8076d1f718dd8117be0a",
+          "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/final_assets_v4_2/targets/pair28/basketball28/cam4/000089/dwpose_A.npz": "544d4ea0d68ddb3c932e7a032186c08606324b0a1005e2b353258d4b5ab2bac5",
+          "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/final_assets_v4_2/targets/pair28/basketball28/cam4/000089/dwpose_B.npz": "89f8be7819984f22b80e81de6ca90d62fb69815e3bfaddfc9a9e47bb8a79500f"
+        },
+        "original_target_sha256": "fb7222761f1d8dfb8af8221662c7e1e0389065ef85467f7097e706864a97a906",
+        "original_target_content_sha256": "b834aa2c3a6da5808723d012395fa5ee2b26b464fa25bda224f2d32eb2314772",
+        "original_source_rgb": "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/final_assets_v4_2/sources/pair28/cam4/basketball28/000009/rgb.jpg",
+        "original_source_masks": [
+          "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/final_assets_v4_2/sources/pair28/cam4/basketball28/000009/mask_A.png",
+          "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/final_assets_v4_2/sources/pair28/cam4/basketball28/000009/mask_B.png"
+        ],
+        "control_transform": {
+          "original_wh": [
+            940,
+            1280
+          ],
+          "resized_wh": [
+            376,
+            512
+          ],
+          "offset_xy": [
+            68,
+            0
+          ],
+          "canvas_wh": [
+            512,
+            512
+          ]
+        },
+        "person_order_ambiguous": false,
+        "source_mask_centers": [
+          [
+            328.76086302488505,
+            631.826034010974,
+            0
+          ],
+          [
+            643.6954789202236,
+            660.1279815103662,
+            1
+          ]
+        ],
+        "sequence_id": "pair28/basketball28/cam4",
+        "target_frame": 89
+      }
+    }
+  ],
+  "对应supervision行_仅供后续评测": [
+    {
+      "sample_id": "iper_val_3e055c495922a4a0565b873b",
+      "target_rgb": "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_sampled_6src64tgt/012_4/rgb_1024/target/target_f000640.png",
+      "target_masks": [],
+      "requested_keypoints": [
+        "/data/shangguanrz/pic-edit-experiments/qwen21_union_dataset_adaptation_v1/data/assets/iper_val_3e055c495922a4a0565b873b/requested_keypoints_person_0.json"
+      ],
+      "target_transform": {
+        "original_wh": [
+          1024,
+          1024
+        ],
+        "resized_wh": [
+          512,
+          512
+        ],
+        "offset_xy": [
+          0,
+          0
+        ],
+        "canvas_wh": [
+          512,
+          512
+        ]
+      },
+      "person_order": [
+        0
+      ],
+      "metadata": {
+        "target_sha256": "d02f6eaa9c02efd0f8700edb98632ca53aab7095f7cf1d89bbed9edded709519",
+        "keypoint_source": "iPER DWPose-134 keypoints_134_px; existing native assets",
+        "target_keypoint_assets": [
+          "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_sampled_6src64tgt/012_4/keypoints/target/target_f000640.npz"
+        ]
+      }
+    },
+    {
+      "sample_id": "iper_val_e36352d6b4b72ae362cb1ce3",
+      "target_rgb": "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_sampled_6src64tgt/024_2/rgb_1024/target/target_f000282.png",
+      "target_masks": [],
+      "requested_keypoints": [
+        "/data/shangguanrz/pic-edit-experiments/qwen21_union_dataset_adaptation_v1/data/assets/iper_val_e36352d6b4b72ae362cb1ce3/requested_keypoints_person_0.json"
+      ],
+      "target_transform": {
+        "original_wh": [
+          1024,
+          1024
+        ],
+        "resized_wh": [
+          512,
+          512
+        ],
+        "offset_xy": [
+          0,
+          0
+        ],
+        "canvas_wh": [
+          512,
+          512
+        ]
+      },
+      "person_order": [
+        0
+      ],
+      "metadata": {
+        "target_sha256": "419e35ca144bf473639f3a4da19bfe91bccd47cac29315fc7787ba86e66cf7c5",
+        "keypoint_source": "iPER DWPose-134 keypoints_134_px; existing native assets",
+        "target_keypoint_assets": [
+          "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_sampled_6src64tgt/024_2/keypoints/target/target_f000282.npz"
+        ]
+      }
+    },
+    {
+      "sample_id": "iper_val_39842ce9498a68896d1b05b1",
+      "target_rgb": "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_sampled_6src64tgt/019_3/rgb_1024/target/target_f000648.png",
+      "target_masks": [],
+      "requested_keypoints": [
+        "/data/shangguanrz/pic-edit-experiments/qwen21_union_dataset_adaptation_v1/data/assets/iper_val_39842ce9498a68896d1b05b1/requested_keypoints_person_0.json"
+      ],
+      "target_transform": {
+        "original_wh": [
+          1024,
+          1024
+        ],
+        "resized_wh": [
+          512,
+          512
+        ],
+        "offset_xy": [
+          0,
+          0
+        ],
+        "canvas_wh": [
+          512,
+          512
+        ]
+      },
+      "person_order": [
+        0
+      ],
+      "metadata": {
+        "target_sha256": "855a06f2405faf578aedeeaa174d514ac7d55390b9a9cc469cb5c18c05b395e6",
+        "keypoint_source": "iPER DWPose-134 keypoints_134_px; existing native assets",
+        "target_keypoint_assets": [
+          "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_sampled_6src64tgt/019_3/keypoints/target/target_f000648.npz"
+        ]
+      }
+    },
+    {
+      "sample_id": "iper_val_31da9d9ccf0154f59d12415b",
+      "target_rgb": "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_sampled_6src64tgt/021_1/rgb_1024/target/target_f000411.png",
+      "target_masks": [],
+      "requested_keypoints": [
+        "/data/shangguanrz/pic-edit-experiments/qwen21_union_dataset_adaptation_v1/data/assets/iper_val_31da9d9ccf0154f59d12415b/requested_keypoints_person_0.json"
+      ],
+      "target_transform": {
+        "original_wh": [
+          1024,
+          1024
+        ],
+        "resized_wh": [
+          512,
+          512
+        ],
+        "offset_xy": [
+          0,
+          0
+        ],
+        "canvas_wh": [
+          512,
+          512
+        ]
+      },
+      "person_order": [
+        0
+      ],
+      "metadata": {
+        "target_sha256": "9f90d233c42e01a609ddd2b07b7c0afaaaef57105631309326f8e5790c35f493",
+        "keypoint_source": "iPER DWPose-134 keypoints_134_px; existing native assets",
+        "target_keypoint_assets": [
+          "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_sampled_6src64tgt/021_1/keypoints/target/target_f000411.npz"
+        ]
+      }
+    },
+    {
+      "sample_id": "tiktok_val_acfe90683fb41b38ae11c1c5",
+      "target_rgb": "/home/shangguanrz/project/pic-edit/datasets/TikTokDataset/TikTok_dataset/TikTok_dataset/00287/images/0267.png",
+      "target_masks": [
+        "/home/shangguanrz/project/pic-edit/datasets/TikTokDataset/TikTok_dataset/TikTok_dataset/00287/masks/0267.png"
+      ],
+      "requested_keypoints": [
+        "/data/shangguanrz/pic-edit-experiments/qwen21_union_dataset_adaptation_v1/data/assets/tiktok_val_acfe90683fb41b38ae11c1c5/requested_keypoints_person_0.json"
+      ],
+      "target_transform": {
+        "original_wh": [
+          604,
+          1080
+        ],
+        "resized_wh": [
+          286,
+          512
+        ],
+        "offset_xy": [
+          113,
+          0
+        ],
+        "canvas_wh": [
+          512,
+          512
+        ]
+      },
+      "person_order": [
+        0
+      ],
+      "metadata": {
+        "target_sha256": "abb06bb893a1500f60c3d9c3c54d2438a7fc0ec59c37c01ad5d8e2ae3c90fac5",
+        "keypoint_source": "TikTok pairs_strict_v1 DWPose-134 normalized; existing native assets",
+        "target_keypoint_assets": [
+          "/home/shangguanrz/project/pic-edit/datasets/TikTokDataset/TikTok_v3/dwpose_v1/00287/dwpose_json/0267.json"
+        ]
+      }
+    },
+    {
+      "sample_id": "tiktok_val_ea011d7b83fe36018f7d3b30",
+      "target_rgb": "/home/shangguanrz/project/pic-edit/datasets/TikTokDataset/TikTok_dataset/TikTok_dataset/00233/images/0183.png",
+      "target_masks": [
+        "/home/shangguanrz/project/pic-edit/datasets/TikTokDataset/TikTok_dataset/TikTok_dataset/00233/masks/0183.png"
+      ],
+      "requested_keypoints": [
+        "/data/shangguanrz/pic-edit-experiments/qwen21_union_dataset_adaptation_v1/data/assets/tiktok_val_ea011d7b83fe36018f7d3b30/requested_keypoints_person_0.json"
+      ],
+      "target_transform": {
+        "original_wh": [
+          604,
+          1080
+        ],
+        "resized_wh": [
+          286,
+          512
+        ],
+        "offset_xy": [
+          113,
+          0
+        ],
+        "canvas_wh": [
+          512,
+          512
+        ]
+      },
+      "person_order": [
+        0
+      ],
+      "metadata": {
+        "target_sha256": "9ef89b249b243c75df0abd5eeac18b875d15cd3d8a25de276931bc7c5b5908be",
+        "keypoint_source": "TikTok pairs_strict_v1 DWPose-134 normalized; existing native assets",
+        "target_keypoint_assets": [
+          "/home/shangguanrz/project/pic-edit/datasets/TikTokDataset/TikTok_v3/dwpose_v1/00233/dwpose_json/0183.json"
+        ]
+      }
+    },
+    {
+      "sample_id": "tiktok_val_620150df6d235ef787eed7ef",
+      "target_rgb": "/home/shangguanrz/project/pic-edit/datasets/TikTokDataset/TikTok_dataset/TikTok_dataset/00139/images/0003.png",
+      "target_masks": [
+        "/home/shangguanrz/project/pic-edit/datasets/TikTokDataset/TikTok_dataset/TikTok_dataset/00139/masks/0003.png"
+      ],
+      "requested_keypoints": [
+        "/data/shangguanrz/pic-edit-experiments/qwen21_union_dataset_adaptation_v1/data/assets/tiktok_val_620150df6d235ef787eed7ef/requested_keypoints_person_0.json"
+      ],
+      "target_transform": {
+        "original_wh": [
+          604,
+          1080
+        ],
+        "resized_wh": [
+          286,
+          512
+        ],
+        "offset_xy": [
+          113,
+          0
+        ],
+        "canvas_wh": [
+          512,
+          512
+        ]
+      },
+      "person_order": [
+        0
+      ],
+      "metadata": {
+        "target_sha256": "d4235b17ae11c93891d951e6e2bb12d2635dcabe042783d2904675ef0c9d2560",
+        "keypoint_source": "TikTok pairs_strict_v1 DWPose-134 normalized; existing native assets",
+        "target_keypoint_assets": [
+          "/home/shangguanrz/project/pic-edit/datasets/TikTokDataset/TikTok_v3/dwpose_v1/00139/dwpose_json/0003.json"
+        ]
+      }
+    },
+    {
+      "sample_id": "tiktok_val_9be575fa9d56ae4cd93cea7e",
+      "target_rgb": "/home/shangguanrz/project/pic-edit/datasets/TikTokDataset/TikTok_dataset/TikTok_dataset/00286/images/0055.png",
+      "target_masks": [
+        "/home/shangguanrz/project/pic-edit/datasets/TikTokDataset/TikTok_dataset/TikTok_dataset/00286/masks/0055.png"
+      ],
+      "requested_keypoints": [
+        "/data/shangguanrz/pic-edit-experiments/qwen21_union_dataset_adaptation_v1/data/assets/tiktok_val_9be575fa9d56ae4cd93cea7e/requested_keypoints_person_0.json"
+      ],
+      "target_transform": {
+        "original_wh": [
+          604,
+          1080
+        ],
+        "resized_wh": [
+          286,
+          512
+        ],
+        "offset_xy": [
+          113,
+          0
+        ],
+        "canvas_wh": [
+          512,
+          512
+        ]
+      },
+      "person_order": [
+        0
+      ],
+      "metadata": {
+        "target_sha256": "da7bd3555be6294ed6bac641bf245dc58d11de8b7153592da965c837c97f9d93",
+        "keypoint_source": "TikTok pairs_strict_v1 DWPose-134 normalized; existing native assets",
+        "target_keypoint_assets": [
+          "/home/shangguanrz/project/pic-edit/datasets/TikTokDataset/TikTok_v3/dwpose_v1/00286/dwpose_json/0055.json"
+        ]
+      }
+    },
+    {
+      "sample_id": "hi4d_val_5cafdf21df976516d0153722",
+      "target_rgb": "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/final_assets_v4_2/targets/pair22/game22/cam4/000014/rgb.jpg",
+      "target_masks": [
+        "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/final_assets_v4_2/targets/pair22/game22/cam4/000014/gt_mask_A.png",
+        "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/final_assets_v4_2/targets/pair22/game22/cam4/000014/gt_mask_B.png"
+      ],
+      "requested_keypoints": [
+        "/data/shangguanrz/pic-edit-experiments/qwen21_union_dataset_adaptation_v1/data/assets/hi4d_val_5cafdf21df976516d0153722/requested_keypoints_person_0.json",
+        "/data/shangguanrz/pic-edit-experiments/qwen21_union_dataset_adaptation_v1/data/assets/hi4d_val_5cafdf21df976516d0153722/requested_keypoints_person_1.json"
+      ],
+      "target_transform": {
+        "original_wh": [
+          940,
+          1280
+        ],
+        "resized_wh": [
+          376,
+          512
+        ],
+        "offset_xy": [
+          68,
+          0
+        ],
+        "canvas_wh": [
+          512,
+          512
+        ]
+      },
+      "person_order": [
+        0,
+        1
+      ],
+      "metadata": {
+        "target_sha256": "c8a7d12379a0729c96759ec2dedb13879b567c69e522bc958967415b88a17680",
+        "keypoint_source": "Hi4D_mask_bbox_DWPose_official; existing assets used target mask upstream",
+        "target_keypoint_assets": [
+          "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/final_assets_v4_2/targets/pair22/game22/cam4/000014/dwpose_A.npz",
+          "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/final_assets_v4_2/targets/pair22/game22/cam4/000014/dwpose_B.npz"
+        ]
+      }
+    },
+    {
+      "sample_id": "hi4d_val_e495c21b541e203a99a48f4c",
+      "target_rgb": "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/final_assets_v4_2/targets/pair22/hug22/cam4/000091/rgb.jpg",
+      "target_masks": [
+        "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/final_assets_v4_2/targets/pair22/hug22/cam4/000091/gt_mask_A.png",
+        "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/final_assets_v4_2/targets/pair22/hug22/cam4/000091/gt_mask_B.png"
+      ],
+      "requested_keypoints": [
+        "/data/shangguanrz/pic-edit-experiments/qwen21_union_dataset_adaptation_v1/data/assets/hi4d_val_e495c21b541e203a99a48f4c/requested_keypoints_person_0.json",
+        "/data/shangguanrz/pic-edit-experiments/qwen21_union_dataset_adaptation_v1/data/assets/hi4d_val_e495c21b541e203a99a48f4c/requested_keypoints_person_1.json"
+      ],
+      "target_transform": {
+        "original_wh": [
+          940,
+          1280
+        ],
+        "resized_wh": [
+          376,
+          512
+        ],
+        "offset_xy": [
+          68,
+          0
+        ],
+        "canvas_wh": [
+          512,
+          512
+        ]
+      },
+      "person_order": [
+        0,
+        1
+      ],
+      "metadata": {
+        "target_sha256": "7ded60207d61e4750816e5d257fb39ba26c3a1901c4e3761c2fa291240c02bd7",
+        "keypoint_source": "Hi4D_mask_bbox_DWPose_official; existing assets used target mask upstream",
+        "target_keypoint_assets": [
+          "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/final_assets_v4_2/targets/pair22/hug22/cam4/000091/dwpose_A.npz",
+          "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/final_assets_v4_2/targets/pair22/hug22/cam4/000091/dwpose_B.npz"
+        ]
+      }
+    },
+    {
+      "sample_id": "hi4d_val_1cdfa27cfed29647a42be809",
+      "target_rgb": "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/final_assets_v4_2/targets/pair28/dance28/cam4/000045/rgb.jpg",
+      "target_masks": [
+        "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/final_assets_v4_2/targets/pair28/dance28/cam4/000045/gt_mask_B.png",
+        "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/final_assets_v4_2/targets/pair28/dance28/cam4/000045/gt_mask_A.png"
+      ],
+      "requested_keypoints": [
+        "/data/shangguanrz/pic-edit-experiments/qwen21_union_dataset_adaptation_v1/data/assets/hi4d_val_1cdfa27cfed29647a42be809/requested_keypoints_person_1.json",
+        "/data/shangguanrz/pic-edit-experiments/qwen21_union_dataset_adaptation_v1/data/assets/hi4d_val_1cdfa27cfed29647a42be809/requested_keypoints_person_0.json"
+      ],
+      "target_transform": {
+        "original_wh": [
+          940,
+          1280
+        ],
+        "resized_wh": [
+          376,
+          512
+        ],
+        "offset_xy": [
+          68,
+          0
+        ],
+        "canvas_wh": [
+          512,
+          512
+        ]
+      },
+      "person_order": [
+        1,
+        0
+      ],
+      "metadata": {
+        "target_sha256": "575c36ce7ecf508524779e2b6b5957d4e7c07ed344ca2a8be416c63b34f08fa2",
+        "keypoint_source": "Hi4D_mask_bbox_DWPose_official; existing assets used target mask upstream",
+        "target_keypoint_assets": [
+          "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/final_assets_v4_2/targets/pair28/dance28/cam4/000045/dwpose_A.npz",
+          "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/final_assets_v4_2/targets/pair28/dance28/cam4/000045/dwpose_B.npz"
+        ]
+      }
+    },
+    {
+      "sample_id": "hi4d_val_49022ee2eedf1a1d90b0ef32",
+      "target_rgb": "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/final_assets_v4_2/targets/pair28/basketball28/cam4/000089/rgb.jpg",
+      "target_masks": [
+        "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/final_assets_v4_2/targets/pair28/basketball28/cam4/000089/gt_mask_A.png",
+        "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/final_assets_v4_2/targets/pair28/basketball28/cam4/000089/gt_mask_B.png"
+      ],
+      "requested_keypoints": [
+        "/data/shangguanrz/pic-edit-experiments/qwen21_union_dataset_adaptation_v1/data/assets/hi4d_val_49022ee2eedf1a1d90b0ef32/requested_keypoints_person_0.json",
+        "/data/shangguanrz/pic-edit-experiments/qwen21_union_dataset_adaptation_v1/data/assets/hi4d_val_49022ee2eedf1a1d90b0ef32/requested_keypoints_person_1.json"
+      ],
+      "target_transform": {
+        "original_wh": [
+          940,
+          1280
+        ],
+        "resized_wh": [
+          376,
+          512
+        ],
+        "offset_xy": [
+          68,
+          0
+        ],
+        "canvas_wh": [
+          512,
+          512
+        ]
+      },
+      "person_order": [
+        0,
+        1
+      ],
+      "metadata": {
+        "target_sha256": "fb7222761f1d8dfb8af8221662c7e1e0389065ef85467f7097e706864a97a906",
+        "keypoint_source": "Hi4D_mask_bbox_DWPose_official; existing assets used target mask upstream",
+        "target_keypoint_assets": [
+          "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/final_assets_v4_2/targets/pair28/basketball28/cam4/000089/dwpose_A.npz",
+          "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/final_assets_v4_2/targets/pair28/basketball28/cam4/000089/dwpose_B.npz"
+        ]
+      }
+    }
+  ],
+  "单人参数与source支持盘证": [
+    {
+      "id": "iper_val_3e055c495922a4a0565b873b",
+      "dataset": "iper",
+      "group": "012_4",
+      "sequence": "012_4",
+      "source_role": "source_motion",
+      "source_stem": "source_motion_f000585",
+      "target_stem": "target_f000640",
+      "params": "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_sampled_6src64tgt/012_4/smplestx/params.pt",
+      "frame_map": "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_sampled_6src64tgt/012_4/smplestx/frame_map.json",
+      "source_index": 5,
+      "target_index": 39,
+      "camera_fields": [
+        "transl_raw",
+        "focal_length_xy_raw",
+        "princpt_raw"
+      ],
+      "geometry_paths": {
+        "source_mask": {
+          "path": "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_assets_512_nvdiffrast/012_4/mask_512/source_motion/source_motion_f000585.png",
+          "exists": true
+        },
+        "source_keypoints": {
+          "path": "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_sampled_6src64tgt/012_4/keypoints/source_motion/source_motion_f000585.npz",
+          "exists": true
+        },
+        "target_keypoints": {
+          "path": "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_sampled_6src64tgt/012_4/keypoints/target/target_f000640.npz",
+          "exists": true
+        },
+        "target_normal": {
+          "path": "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_assets_512_nvdiffrast/012_4/normal_512/target/target_f000640.png",
+          "exists": true
+        },
+        "target_depth": {
+          "path": "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_assets_512_nvdiffrast/012_4/depth_npy_512/target/target_f000640.npy",
+          "exists": true
+        },
+        "target_mask": {
+          "path": "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_assets_512_nvdiffrast/012_4/mask_512/target/target_f000640.png",
+          "exists": true
+        },
+        "target_part": {
+          "path": "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_assets_512_nvdiffrast/012_4/part_512/target/target_f000640.png",
+          "exists": true
+        }
+      },
+      "source_mask_wh": [
+        512,
+        512
+      ],
+      "source_mask_support": 20754,
+      "source_mask_bbox": [
+        230,
+        41,
+        457,
+        386
+      ],
+      "source_keypoint_counts": {
+        "body24": 23,
+        "face68": 68,
+        "left_hand21": 0,
+        "right_hand21": 21
+      },
+      "source_face_keypoint_bbox_native": [
+        563.6084594726562,
+        151.16375732421875,
+        627.2156982421875,
+        208.0755157470703
+      ],
+      "params_frame_geometry_finite": true
+    },
+    {
+      "id": "iper_val_e36352d6b4b72ae362cb1ce3",
+      "dataset": "iper",
+      "group": "024_2",
+      "sequence": "024_2",
+      "source_role": "source_motion",
+      "source_stem": "source_motion_f000454",
+      "target_stem": "target_f000282",
+      "params": "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_sampled_6src64tgt/024_2/smplestx/params.pt",
+      "frame_map": "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_sampled_6src64tgt/024_2/smplestx/frame_map.json",
+      "source_index": 3,
+      "target_index": 15,
+      "camera_fields": [
+        "transl_raw",
+        "focal_length_xy_raw",
+        "princpt_raw"
+      ],
+      "geometry_paths": {
+        "source_mask": {
+          "path": "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_assets_512_nvdiffrast/024_2/mask_512/source_motion/source_motion_f000454.png",
+          "exists": true
+        },
+        "source_keypoints": {
+          "path": "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_sampled_6src64tgt/024_2/keypoints/source_motion/source_motion_f000454.npz",
+          "exists": true
+        },
+        "target_keypoints": {
+          "path": "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_sampled_6src64tgt/024_2/keypoints/target/target_f000282.npz",
+          "exists": true
+        },
+        "target_normal": {
+          "path": "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_assets_512_nvdiffrast/024_2/normal_512/target/target_f000282.png",
+          "exists": true
+        },
+        "target_depth": {
+          "path": "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_assets_512_nvdiffrast/024_2/depth_npy_512/target/target_f000282.npy",
+          "exists": true
+        },
+        "target_mask": {
+          "path": "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_assets_512_nvdiffrast/024_2/mask_512/target/target_f000282.png",
+          "exists": true
+        },
+        "target_part": {
+          "path": "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_assets_512_nvdiffrast/024_2/part_512/target/target_f000282.png",
+          "exists": true
+        }
+      },
+      "source_mask_wh": [
+        512,
+        512
+      ],
+      "source_mask_support": 22269,
+      "source_mask_bbox": [
+        194,
+        52,
+        360,
+        433
+      ],
+      "source_keypoint_counts": {
+        "body24": 24,
+        "face68": 68,
+        "left_hand21": 21,
+        "right_hand21": 21
+      },
+      "source_face_keypoint_bbox_native": [
+        494.78765869140625,
+        284.9405517578125,
+        564.037841796875,
+        343.4449768066406
+      ],
+      "params_frame_geometry_finite": true
+    },
+    {
+      "id": "iper_val_39842ce9498a68896d1b05b1",
+      "dataset": "iper",
+      "group": "019_3",
+      "sequence": "019_3",
+      "source_role": "source_standard",
+      "source_stem": "source_standard_f000136",
+      "target_stem": "target_f000648",
+      "params": "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_sampled_6src64tgt/019_3/smplestx/params.pt",
+      "frame_map": "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_sampled_6src64tgt/019_3/smplestx/frame_map.json",
+      "source_index": 1,
+      "target_index": 27,
+      "camera_fields": [
+        "transl_raw",
+        "focal_length_xy_raw",
+        "princpt_raw"
+      ],
+      "geometry_paths": {
+        "source_mask": {
+          "path": "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_assets_512_nvdiffrast/019_3/mask_512/source_standard/source_standard_f000136.png",
+          "exists": true
+        },
+        "source_keypoints": {
+          "path": "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_sampled_6src64tgt/019_3/keypoints/source_standard/source_standard_f000136.npz",
+          "exists": true
+        },
+        "target_keypoints": {
+          "path": "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_sampled_6src64tgt/019_3/keypoints/target/target_f000648.npz",
+          "exists": true
+        },
+        "target_normal": {
+          "path": "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_assets_512_nvdiffrast/019_3/normal_512/target/target_f000648.png",
+          "exists": true
+        },
+        "target_depth": {
+          "path": "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_assets_512_nvdiffrast/019_3/depth_npy_512/target/target_f000648.npy",
+          "exists": true
+        },
+        "target_mask": {
+          "path": "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_assets_512_nvdiffrast/019_3/mask_512/target/target_f000648.png",
+          "exists": true
+        },
+        "target_part": {
+          "path": "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_assets_512_nvdiffrast/019_3/part_512/target/target_f000648.png",
+          "exists": true
+        }
+      },
+      "source_mask_wh": [
+        512,
+        512
+      ],
+      "source_mask_support": 19976,
+      "source_mask_bbox": [
+        165,
+        98,
+        368,
+        427
+      ],
+      "source_keypoint_counts": {
+        "body24": 24,
+        "face68": 68,
+        "left_hand21": 21,
+        "right_hand21": 21
+      },
+      "source_face_keypoint_bbox_native": [
+        540.544921875,
+        237.15516662597656,
+        564.79931640625,
+        270.6493835449219
+      ],
+      "params_frame_geometry_finite": true
+    },
+    {
+      "id": "iper_val_31da9d9ccf0154f59d12415b",
+      "dataset": "iper",
+      "group": "021_1",
+      "sequence": "021_1",
+      "source_role": "source_standard",
+      "source_stem": "source_standard_f000359",
+      "target_stem": "target_f000411",
+      "params": "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_sampled_6src64tgt/021_1/smplestx/params.pt",
+      "frame_map": "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_sampled_6src64tgt/021_1/smplestx/frame_map.json",
+      "source_index": 2,
+      "target_index": 15,
+      "camera_fields": [
+        "transl_raw",
+        "focal_length_xy_raw",
+        "princpt_raw"
+      ],
+      "geometry_paths": {
+        "source_mask": {
+          "path": "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_assets_512_nvdiffrast/021_1/mask_512/source_standard/source_standard_f000359.png",
+          "exists": true
+        },
+        "source_keypoints": {
+          "path": "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_sampled_6src64tgt/021_1/keypoints/source_standard/source_standard_f000359.npz",
+          "exists": true
+        },
+        "target_keypoints": {
+          "path": "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_sampled_6src64tgt/021_1/keypoints/target/target_f000411.npz",
+          "exists": true
+        },
+        "target_normal": {
+          "path": "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_assets_512_nvdiffrast/021_1/normal_512/target/target_f000411.png",
+          "exists": true
+        },
+        "target_depth": {
+          "path": "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_assets_512_nvdiffrast/021_1/depth_npy_512/target/target_f000411.npy",
+          "exists": true
+        },
+        "target_mask": {
+          "path": "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_assets_512_nvdiffrast/021_1/mask_512/target/target_f000411.png",
+          "exists": true
+        },
+        "target_part": {
+          "path": "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_assets_512_nvdiffrast/021_1/part_512/target/target_f000411.png",
+          "exists": true
+        }
+      },
+      "source_mask_wh": [
+        512,
+        512
+      ],
+      "source_mask_support": 15681,
+      "source_mask_bbox": [
+        268,
+        128,
+        375,
+        445
+      ],
+      "source_keypoint_counts": {
+        "body24": 23,
+        "face68": 68,
+        "left_hand21": 21,
+        "right_hand21": 21
+      },
+      "source_face_keypoint_bbox_native": [
+        670.1296997070312,
+        301.861328125,
+        688.8399047851562,
+        333.0450439453125
+      ],
+      "params_frame_geometry_finite": true
+    },
+    {
+      "id": "tiktok_val_acfe90683fb41b38ae11c1c5",
+      "dataset": "tiktok",
+      "group": "seq_00282_00288",
+      "sequence": "00287",
+      "source_role": "images",
+      "source_stem": "0130",
+      "target_stem": "0267",
+      "params": "/home/shangguanrz/project/pic-edit/datasets/TikTokDataset/TikTok_3d_assets_native/00287/smplestx/params.pt",
+      "frame_map": "/home/shangguanrz/project/pic-edit/datasets/TikTokDataset/TikTok_3d_assets_native/00287/smplestx/frame_map.json",
+      "source_index": 129,
+      "target_index": 266,
+      "camera_fields": [
+        "transl",
+        "focal_length_xy",
+        "princpt"
+      ],
+      "geometry_paths": {
+        "source_mask": {
+          "path": "/home/shangguanrz/project/pic-edit/datasets/TikTokDataset/TikTok_dataset/TikTok_dataset/00287/masks/0130.png",
+          "exists": true
+        },
+        "source_keypoints": {
+          "path": "/home/shangguanrz/project/pic-edit/datasets/TikTokDataset/TikTok_v3/dwpose_v1/00287/dwpose_json/0130.json",
+          "exists": true
+        },
+        "target_keypoints": {
+          "path": "/home/shangguanrz/project/pic-edit/datasets/TikTokDataset/TikTok_v3/dwpose_v1/00287/dwpose_json/0267.json",
+          "exists": true
+        },
+        "target_normal": {
+          "path": "/home/shangguanrz/project/pic-edit/datasets/TikTokDataset/TikTok_3d_assets_native/00287/normal/0267.png",
+          "exists": true
+        },
+        "target_depth": {
+          "path": "/home/shangguanrz/project/pic-edit/datasets/TikTokDataset/TikTok_3d_assets_native/00287/depth_vis/0267.png",
+          "exists": true
+        },
+        "target_mask": {
+          "path": "/home/shangguanrz/project/pic-edit/datasets/TikTokDataset/TikTok_3d_assets_native/00287/smplx_mask/0267.png",
+          "exists": true
+        },
+        "target_part": {
+          "path": "/home/shangguanrz/project/pic-edit/datasets/TikTokDataset/TikTok_3d_assets_native/00287/part_512/0267.png",
+          "exists": true
+        }
+      },
+      "source_mask_wh": [
+        604,
+        1080
+      ],
+      "source_mask_support": 113960,
+      "source_mask_bbox": [
+        200,
+        382,
+        428,
+        1080
+      ],
+      "source_keypoint_counts": {
+        "body24": 20,
+        "face68": 68,
+        "left_hand21": 21,
+        "right_hand21": 17
+      },
+      "source_face_keypoint_bbox_native": [
+        231.02506351470947,
+        450.3901219367981,
+        323.4606785774231,
+        538.3166456222534
+      ],
+      "params_frame_geometry_finite": true
+    },
+    {
+      "id": "tiktok_val_ea011d7b83fe36018f7d3b30",
+      "dataset": "tiktok",
+      "group": "seq_00231_00240",
+      "sequence": "00233",
+      "source_role": "images",
+      "source_stem": "0013",
+      "target_stem": "0183",
+      "params": "/home/shangguanrz/project/pic-edit/datasets/TikTokDataset/TikTok_3d_assets_native/00233/smplestx/params.pt",
+      "frame_map": "/home/shangguanrz/project/pic-edit/datasets/TikTokDataset/TikTok_3d_assets_native/00233/smplestx/frame_map.json",
+      "source_index": 12,
+      "target_index": 182,
+      "camera_fields": [
+        "transl",
+        "focal_length_xy",
+        "princpt"
+      ],
+      "geometry_paths": {
+        "source_mask": {
+          "path": "/home/shangguanrz/project/pic-edit/datasets/TikTokDataset/TikTok_dataset/TikTok_dataset/00233/masks/0013.png",
+          "exists": true
+        },
+        "source_keypoints": {
+          "path": "/home/shangguanrz/project/pic-edit/datasets/TikTokDataset/TikTok_v3/dwpose_v1/00233/dwpose_json/0013.json",
+          "exists": true
+        },
+        "target_keypoints": {
+          "path": "/home/shangguanrz/project/pic-edit/datasets/TikTokDataset/TikTok_v3/dwpose_v1/00233/dwpose_json/0183.json",
+          "exists": true
+        },
+        "target_normal": {
+          "path": "/home/shangguanrz/project/pic-edit/datasets/TikTokDataset/TikTok_3d_assets_native/00233/normal/0183.png",
+          "exists": true
+        },
+        "target_depth": {
+          "path": "/home/shangguanrz/project/pic-edit/datasets/TikTokDataset/TikTok_3d_assets_native/00233/depth_vis/0183.png",
+          "exists": true
+        },
+        "target_mask": {
+          "path": "/home/shangguanrz/project/pic-edit/datasets/TikTokDataset/TikTok_3d_assets_native/00233/smplx_mask/0183.png",
+          "exists": true
+        },
+        "target_part": {
+          "path": "/home/shangguanrz/project/pic-edit/datasets/TikTokDataset/TikTok_3d_assets_native/00233/part_512/0183.png",
+          "exists": true
+        }
+      },
+      "source_mask_wh": [
+        278,
+        500
+      ],
+      "source_mask_support": 56140,
+      "source_mask_bbox": [
+        24,
+        73,
+        252,
+        500
+      ],
+      "source_keypoint_counts": {
+        "body24": 14,
+        "face68": 68,
+        "left_hand21": 21,
+        "right_hand21": 21
+      },
+      "source_face_keypoint_bbox_native": [
+        255.0470118522644,
+        399.92167711257935,
+        360.5734932422638,
+        515.8521687984467
+      ],
+      "params_frame_geometry_finite": true
+    },
+    {
+      "id": "tiktok_val_620150df6d235ef787eed7ef",
+      "dataset": "tiktok",
+      "group": "seq_00125_00139",
+      "sequence": "00139",
+      "source_role": "images",
+      "source_stem": "0119",
+      "target_stem": "0003",
+      "params": "/home/shangguanrz/project/pic-edit/datasets/TikTokDataset/TikTok_3d_assets_native/00139/smplestx/params.pt",
+      "frame_map": "/home/shangguanrz/project/pic-edit/datasets/TikTokDataset/TikTok_3d_assets_native/00139/smplestx/frame_map.json",
+      "source_index": 118,
+      "target_index": 2,
+      "camera_fields": [
+        "transl",
+        "focal_length_xy",
+        "princpt"
+      ],
+      "geometry_paths": {
+        "source_mask": {
+          "path": "/home/shangguanrz/project/pic-edit/datasets/TikTokDataset/TikTok_dataset/TikTok_dataset/00139/masks/0119.png",
+          "exists": true
+        },
+        "source_keypoints": {
+          "path": "/home/shangguanrz/project/pic-edit/datasets/TikTokDataset/TikTok_v3/dwpose_v1/00139/dwpose_json/0119.json",
+          "exists": true
+        },
+        "target_keypoints": {
+          "path": "/home/shangguanrz/project/pic-edit/datasets/TikTokDataset/TikTok_v3/dwpose_v1/00139/dwpose_json/0003.json",
+          "exists": true
+        },
+        "target_normal": {
+          "path": "/home/shangguanrz/project/pic-edit/datasets/TikTokDataset/TikTok_3d_assets_native/00139/normal/0003.png",
+          "exists": true
+        },
+        "target_depth": {
+          "path": "/home/shangguanrz/project/pic-edit/datasets/TikTokDataset/TikTok_3d_assets_native/00139/depth_vis/0003.png",
+          "exists": true
+        },
+        "target_mask": {
+          "path": "/home/shangguanrz/project/pic-edit/datasets/TikTokDataset/TikTok_3d_assets_native/00139/smplx_mask/0003.png",
+          "exists": true
+        },
+        "target_part": {
+          "path": "/home/shangguanrz/project/pic-edit/datasets/TikTokDataset/TikTok_3d_assets_native/00139/part_512/0003.png",
+          "exists": true
+        }
+      },
+      "source_mask_wh": [
+        604,
+        1080
+      ],
+      "source_mask_support": 273478,
+      "source_mask_bbox": [
+        85,
+        144,
+        522,
+        1080
+      ],
+      "source_keypoint_counts": {
+        "body24": 16,
+        "face68": 68,
+        "left_hand21": 21,
+        "right_hand21": 21
+      },
+      "source_face_keypoint_bbox_native": [
+        261.59161698818207,
+        259.2054980993271,
+        385.06018114089966,
+        382.6740539073944
+      ],
+      "params_frame_geometry_finite": true
+    },
+    {
+      "id": "tiktok_val_9be575fa9d56ae4cd93cea7e",
+      "dataset": "tiktok",
+      "group": "seq_00282_00288",
+      "sequence": "00286",
+      "source_role": "images",
+      "source_stem": "0297",
+      "target_stem": "0055",
+      "params": "/home/shangguanrz/project/pic-edit/datasets/TikTokDataset/TikTok_3d_assets_native/00286/smplestx/params.pt",
+      "frame_map": "/home/shangguanrz/project/pic-edit/datasets/TikTokDataset/TikTok_3d_assets_native/00286/smplestx/frame_map.json",
+      "source_index": 296,
+      "target_index": 54,
+      "camera_fields": [
+        "transl",
+        "focal_length_xy",
+        "princpt"
+      ],
+      "geometry_paths": {
+        "source_mask": {
+          "path": "/home/shangguanrz/project/pic-edit/datasets/TikTokDataset/TikTok_dataset/TikTok_dataset/00286/masks/0297.png",
+          "exists": true
+        },
+        "source_keypoints": {
+          "path": "/home/shangguanrz/project/pic-edit/datasets/TikTokDataset/TikTok_v3/dwpose_v1/00286/dwpose_json/0297.json",
+          "exists": true
+        },
+        "target_keypoints": {
+          "path": "/home/shangguanrz/project/pic-edit/datasets/TikTokDataset/TikTok_v3/dwpose_v1/00286/dwpose_json/0055.json",
+          "exists": true
+        },
+        "target_normal": {
+          "path": "/home/shangguanrz/project/pic-edit/datasets/TikTokDataset/TikTok_3d_assets_native/00286/normal/0055.png",
+          "exists": true
+        },
+        "target_depth": {
+          "path": "/home/shangguanrz/project/pic-edit/datasets/TikTokDataset/TikTok_3d_assets_native/00286/depth_vis/0055.png",
+          "exists": true
+        },
+        "target_mask": {
+          "path": "/home/shangguanrz/project/pic-edit/datasets/TikTokDataset/TikTok_3d_assets_native/00286/smplx_mask/0055.png",
+          "exists": true
+        },
+        "target_part": {
+          "path": "/home/shangguanrz/project/pic-edit/datasets/TikTokDataset/TikTok_3d_assets_native/00286/part_512/0055.png",
+          "exists": true
+        }
+      },
+      "source_mask_wh": [
+        604,
+        1080
+      ],
+      "source_mask_support": 191674,
+      "source_mask_bbox": [
+        0,
+        296,
+        491,
+        1080
+      ],
+      "source_keypoint_counts": {
+        "body24": 17,
+        "face68": 68,
+        "left_hand21": 15,
+        "right_hand21": 12
+      },
+      "source_face_keypoint_bbox_native": [
+        300.6781257390976,
+        374.0633261203766,
+        456.78279066085815,
+        541.4981532096863
+      ],
+      "params_frame_geometry_finite": true
+    }
+  ],
+  "Hi4D参数与source支持盘证": [
+    {
+      "id": "hi4d_val_5cafdf21df976516d0153722",
+      "ordinal0": 50,
+      "pair": "pair22",
+      "person_order": [
+        0,
+        1
+      ],
+      "contact_stratum": "positive",
+      "metadata_contact_count": 504,
+      "raw_flagged_A_B": [
+        165,
+        339
+      ],
+      "raw_contact_count_matches_metadata": true,
+      "source_raw_smpl": "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/raw/pair22/game22/smpl/000052.npz",
+      "target_raw_smpl": "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/raw/pair22/game22/smpl/000014.npz",
+      "source_camera": "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/raw/pair22/game22/cameras/rgb_cameras.npz",
+      "target_camera": "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/raw/pair22/game22/cameras/rgb_cameras.npz",
+      "geometry": "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/final_assets_v4_2/targets/pair22/game22/cam4/000014/geometry.npz",
+      "source_image_wh": [
+        940,
+        1280
+      ],
+      "source_genders_raw_A_B": [
+        "male",
+        "female"
+      ],
+      "target_genders_raw_A_B": [
+        "male",
+        "female"
+      ],
+      "source_genders_in_bank_order": [
+        "male",
+        "female"
+      ],
+      "male_backend_supported_slots": [
+        true,
+        false
+      ],
+      "male_backend_complete": false,
+      "source_target_betas_equal": true,
+      "source_mask_support_in_bank_order": [
+        67215,
+        76477
+      ],
+      "source_geometry_finite": true,
+      "target_geometry_finite": true,
+      "asset_exists": {
+        "source_smpl": true,
+        "target_smpl": true,
+        "source_camera": true,
+        "target_camera": true,
+        "geometry": true
+      },
+      "geometry_keys": [
+        "height",
+        "width",
+        "K_runtime",
+        "depth_scene",
+        "normal_scene",
+        "semantic_A",
+        "semantic_B",
+        "front_owner",
+        "contact_A",
+        "contact_B",
+        "surface_layer_count",
+        "occlusion_mask",
+        "occlusion_depth_gradient",
+        "interperson_overlap",
+        "A_occluded_by_B",
+        "B_occluded_by_A",
+        "depth_A",
+        "depth_B",
+        "asset_version"
+      ],
+      "source_camera_index": 0,
+      "target_camera_index": 0
+    },
+    {
+      "id": "hi4d_val_e495c21b541e203a99a48f4c",
+      "ordinal0": 48,
+      "pair": "pair22",
+      "person_order": [
+        0,
+        1
+      ],
+      "contact_stratum": "zero",
+      "metadata_contact_count": 0,
+      "raw_flagged_A_B": [
+        0,
+        0
+      ],
+      "raw_contact_count_matches_metadata": true,
+      "source_raw_smpl": "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/raw/pair22/game22/smpl/000052.npz",
+      "target_raw_smpl": "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/raw/pair22/hug22/smpl/000091.npz",
+      "source_camera": "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/raw/pair22/game22/cameras/rgb_cameras.npz",
+      "target_camera": "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/raw/pair22/hug22/cameras/rgb_cameras.npz",
+      "geometry": "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/final_assets_v4_2/targets/pair22/hug22/cam4/000091/geometry.npz",
+      "source_image_wh": [
+        940,
+        1280
+      ],
+      "source_genders_raw_A_B": [
+        "male",
+        "female"
+      ],
+      "target_genders_raw_A_B": [
+        "male",
+        "female"
+      ],
+      "source_genders_in_bank_order": [
+        "male",
+        "female"
+      ],
+      "male_backend_supported_slots": [
+        true,
+        false
+      ],
+      "male_backend_complete": false,
+      "source_target_betas_equal": true,
+      "source_mask_support_in_bank_order": [
+        67215,
+        76477
+      ],
+      "source_geometry_finite": true,
+      "target_geometry_finite": true,
+      "asset_exists": {
+        "source_smpl": true,
+        "target_smpl": true,
+        "source_camera": true,
+        "target_camera": true,
+        "geometry": true
+      },
+      "geometry_keys": [
+        "height",
+        "width",
+        "K_runtime",
+        "depth_scene",
+        "normal_scene",
+        "semantic_A",
+        "semantic_B",
+        "front_owner",
+        "contact_A",
+        "contact_B",
+        "surface_layer_count",
+        "occlusion_mask",
+        "occlusion_depth_gradient",
+        "interperson_overlap",
+        "A_occluded_by_B",
+        "B_occluded_by_A",
+        "depth_A",
+        "depth_B",
+        "asset_version"
+      ],
+      "source_camera_index": 0,
+      "target_camera_index": 0
+    },
+    {
+      "id": "hi4d_val_1cdfa27cfed29647a42be809",
+      "ordinal0": 53,
+      "pair": "pair28",
+      "person_order": [
+        1,
+        0
+      ],
+      "contact_stratum": "positive",
+      "metadata_contact_count": 1109,
+      "raw_flagged_A_B": [
+        999,
+        110
+      ],
+      "raw_contact_count_matches_metadata": true,
+      "source_raw_smpl": "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/raw/pair28/dance28/smpl/000006.npz",
+      "target_raw_smpl": "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/raw/pair28/dance28/smpl/000045.npz",
+      "source_camera": "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/raw/pair28/dance28/cameras/rgb_cameras.npz",
+      "target_camera": "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/raw/pair28/dance28/cameras/rgb_cameras.npz",
+      "geometry": "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/final_assets_v4_2/targets/pair28/dance28/cam4/000045/geometry.npz",
+      "source_image_wh": [
+        940,
+        1280
+      ],
+      "source_genders_raw_A_B": [
+        "male",
+        "female"
+      ],
+      "target_genders_raw_A_B": [
+        "male",
+        "female"
+      ],
+      "source_genders_in_bank_order": [
+        "female",
+        "male"
+      ],
+      "male_backend_supported_slots": [
+        false,
+        true
+      ],
+      "male_backend_complete": false,
+      "source_target_betas_equal": true,
+      "source_mask_support_in_bank_order": [
+        66719,
+        67704
+      ],
+      "source_geometry_finite": true,
+      "target_geometry_finite": true,
+      "asset_exists": {
+        "source_smpl": true,
+        "target_smpl": true,
+        "source_camera": true,
+        "target_camera": true,
+        "geometry": true
+      },
+      "geometry_keys": [
+        "height",
+        "width",
+        "K_runtime",
+        "depth_scene",
+        "normal_scene",
+        "semantic_A",
+        "semantic_B",
+        "front_owner",
+        "contact_A",
+        "contact_B",
+        "surface_layer_count",
+        "occlusion_mask",
+        "occlusion_depth_gradient",
+        "interperson_overlap",
+        "A_occluded_by_B",
+        "B_occluded_by_A",
+        "depth_A",
+        "depth_B",
+        "asset_version"
+      ],
+      "source_camera_index": 0,
+      "target_camera_index": 0
+    },
+    {
+      "id": "hi4d_val_49022ee2eedf1a1d90b0ef32",
+      "ordinal0": 49,
+      "pair": "pair28",
+      "person_order": [
+        0,
+        1
+      ],
+      "contact_stratum": "zero",
+      "metadata_contact_count": 0,
+      "raw_flagged_A_B": [
+        0,
+        0
+      ],
+      "raw_contact_count_matches_metadata": true,
+      "source_raw_smpl": "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/raw/pair28/basketball28/smpl/000009.npz",
+      "target_raw_smpl": "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/raw/pair28/basketball28/smpl/000089.npz",
+      "source_camera": "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/raw/pair28/basketball28/cameras/rgb_cameras.npz",
+      "target_camera": "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/raw/pair28/basketball28/cameras/rgb_cameras.npz",
+      "geometry": "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/final_assets_v4_2/targets/pair28/basketball28/cam4/000089/geometry.npz",
+      "source_image_wh": [
+        940,
+        1280
+      ],
+      "source_genders_raw_A_B": [
+        "male",
+        "female"
+      ],
+      "target_genders_raw_A_B": [
+        "male",
+        "female"
+      ],
+      "source_genders_in_bank_order": [
+        "male",
+        "female"
+      ],
+      "male_backend_supported_slots": [
+        true,
+        false
+      ],
+      "male_backend_complete": false,
+      "source_target_betas_equal": true,
+      "source_mask_support_in_bank_order": [
+        69801,
+        87833
+      ],
+      "source_geometry_finite": true,
+      "target_geometry_finite": true,
+      "asset_exists": {
+        "source_smpl": true,
+        "target_smpl": true,
+        "source_camera": true,
+        "target_camera": true,
+        "geometry": true
+      },
+      "geometry_keys": [
+        "height",
+        "width",
+        "K_runtime",
+        "depth_scene",
+        "normal_scene",
+        "semantic_A",
+        "semantic_B",
+        "front_owner",
+        "contact_A",
+        "contact_B",
+        "surface_layer_count",
+        "occlusion_mask",
+        "occlusion_depth_gradient",
+        "interperson_overlap",
+        "A_occluded_by_B",
+        "B_occluded_by_A",
+        "depth_A",
+        "depth_B",
+        "asset_version"
+      ],
+      "source_camera_index": 0,
+      "target_camera_index": 0
+    }
+  ],
+  "相机与模型约定": {
+    "iPER": "params.pt内取transl_raw/focal_length_xy_raw/princpt_raw，按source_index与target_index各自读取；mesh_cam仍为原相机。",
+    "TikTok": "params.pt内取transl/focal_length_xy/princpt；depth_vis是前景P1/P99近白远黑的灰度可视化，不是metric Z。",
+    "Hi4D": "按source action取source raw SMPL/camera，按target action取target raw SMPL/camera；原始A/B性别随person_order映射，不可对female套male。"
+  },
+  "matched模型覆盖": {
+    "单人8条": "SMPL-X neutral估计器路径已存在，source/target参数与几何有限；不声称人物生理性别为neutral。",
+    "Hi4D所选4条male适配": "8个人物slot中4个male，4个female；male-only生产backend无法完整覆盖任何一条。",
+    "female独立CPU盘证": {
+      "female_model_path": "/home/shangguanrz/project/pic-edit/add/tools/SMPLest-X/human_models/human_model_files/smpl/SMPL_FEMALE.pkl",
+      "female_model_sha256": "6d4a1791b6b94880397e1a3a4539b703a228d2150c57de7b288389a8115f4ef0",
+      "female_model_bytes": 247530000,
+      "literal_reader": "/data/shangguanrz/pic-edit-experiments/qwen21_pro_adapter_v1/code_task6_20261018T130610/src/pose_control/qwen21_pro/geometry.py::load_literal_smpl_model",
+      "schema": {
+        "f": {
+          "shape": [
+            13776,
+            3
+          ],
+          "dtype": "uint32"
+        },
+        "J_regressor": {
+          "shape": [
+            24,
+            6890
+          ],
+          "dtype": "float64"
+        },
+        "kintree_table": {
+          "shape": [
+            2,
+            24
+          ],
+          "dtype": "uint32"
+        },
+        "weights": {
+          "shape": [
+            6890,
+            24
+          ],
+          "dtype": "float64"
+        },
+        "posedirs": {
+          "shape": [
+            6890,
+            3,
+            207
+          ],
+          "dtype": "float64"
+        },
+        "v_template": {
+          "shape": [
+            6890,
+            3
+          ],
+          "dtype": "float64"
+        },
+        "shapedirs": {
+          "shape": [
+            6890,
+            3,
+            300
+          ],
+          "dtype": "float64"
+        }
+      },
+      "faces_same_as_male": true,
+      "vertex_count": 6890,
+      "v6_parts_difference_vs_male": 11,
+      "constructor": "smplx.create(human_model_root,model_type=smpl,gender=female,batch_size=2,data_struct=Struct(**female_literal))",
+      "output_vertices_shape": [
+        2,
+        6890,
+        3
+      ],
+      "output_joints_shape": [
+        2,
+        45,
+        3
+      ],
+      "cpu_only": true,
+      "cases": [
+        {
+          "role": "source",
+          "raw_path": "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/raw/pair28/dance28/smpl/000006.npz",
+          "raw_person": 1,
+          "slot_in_selected_pilot": 0,
+          "gender": "female",
+          "vertices_maxabs_error_m": 1.1920928955078125e-07,
+          "joints24_maxabs_error_m": 1.1920928955078125e-07
+        },
+        {
+          "role": "target",
+          "raw_path": "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/raw/pair28/dance28/smpl/000045.npz",
+          "raw_person": 1,
+          "slot_in_selected_pilot": 0,
+          "gender": "female",
+          "vertices_maxabs_error_m": 1.1920928955078125e-07,
+          "joints24_maxabs_error_m": 1.1920928955078125e-07
+        }
+      ],
+      "production_mixed_backend_implemented": false,
+      "new_weights_written": false
+    },
+    "当前生产mixed接线状态": "尚未实现/验收，不能因独立female构造成功就声称两人matched backend已上线。"
+  },
+  "先行pilot": {
+    "单人": {
+      "sample_id": "iper_val_e36352d6b4b72ae362cb1ce3",
+      "状态": "几何/source支持已就绪；仍需新P native encode与source features",
+      "理由": "所有geometry路径存在、参数有限；source body24/24、face68/68、左右手各21/21有效，metric depth存在，raw camera明确。FaceID未实提取，不预设valid。"
+    },
+    "双人": {
+      "sample_id": "hi4d_val_1cdfa27cfed29647a42be809",
+      "状态": "预登记候选；当前需先补matched male/female生产backend及其cache绑定",
+      "理由": "pair28 positive，raw flags999/110共1109，与metadata一致；source/target beta相同，source两人mask非空；person_order[1,0]覆盖稳定身份倒序绑定，slot0必须female。"
+    },
+    "pilot图数计划": "2样本×full4×seeds42/43=4图，为96图计划的子集；不依据pilot效果替换这12条。"
+  },
+  "固定评测协议": {
+    "arms": [
+      "full4",
+      "no_dense",
+      "no_appearance",
+      "no_contact"
+    ],
+    "seeds": [
+      42,
+      43
+    ],
+    "num_inference_steps": 40,
+    "true_cfg_scale": 1,
+    "use_kv_cache": false,
+    "计划图数": 96,
+    "粗采样scheduler步骤总数": 3840,
+    "计划已执行图数": 0,
+    "分辨率": "消费新P geometry_signature与native encoded condition记录的canvas；不把旧B prepared512 latent当native缓存。",
+    "arm操作要求": "四个arm分别使用同初始化、同sample/noise/timestep与25次更新训练出的独立checkpoint；full4取主200次更新run的step25。native refs保留，no_dense保留owner/ROI routing，no_appearance清task bank/FaceID，no_contact清显式contact。推理关分支只能单列diagnostic，不能代替重训消融。所有arm固定seeds42/43、40steps、CFG1、KV关闭。"
+  },
+  "入口与前置项": {
+    "实际采样函数": "src.pose_control.qwen21_pro.inference.sample_cached(pipe,condition,task_condition=...,num_inference_steps=40,seed=42或43,true_cfg_scale=1.0,use_kv_cache=False,...)",
+    "新编码入口": "src.pose_control.qwen21_pro.encoded.encode_prepared_condition(...) → EncodedConditionCache；绑定当前geometry/source/model/代码SHA。",
+    "当前audit脚本": "experiments/qwen21_pro_adapter_v1/scripts/audit_inference.py当前是2步验收入口，不是已执行的val12四arm runner。",
+    "val12专用job": "待Task7实现/登记；本报告只预登记。",
+    "B缓存": "12条val的B condition index均不存在；当前train6缓存不能用于这些样本，需新P encode/source features。",
+    "B缓存逐条检查": [
+      {
+        "sample_id": "iper_val_3e055c495922a4a0565b873b",
+        "path": "/data/shangguanrz/pic-edit-experiments/qwen21_union_dataset_adaptation_v1/cache/conditions/index/037a5b38c16ecfc4f781b86b77ff0b3f6b9927d33728d38ad9093f022c7b8707.json",
+        "exists": false
+      },
+      {
+        "sample_id": "iper_val_e36352d6b4b72ae362cb1ce3",
+        "path": "/data/shangguanrz/pic-edit-experiments/qwen21_union_dataset_adaptation_v1/cache/conditions/index/ad7c51d16f57826b7286d2af0edb181cbb36929fc6a0f3f818069ac1bf12ed20.json",
+        "exists": false
+      },
+      {
+        "sample_id": "iper_val_39842ce9498a68896d1b05b1",
+        "path": "/data/shangguanrz/pic-edit-experiments/qwen21_union_dataset_adaptation_v1/cache/conditions/index/09dc09c80ef2a7f0b22960f5c64bd30789c9148fcc066d8a52c24e0cf7fa1d63.json",
+        "exists": false
+      },
+      {
+        "sample_id": "iper_val_31da9d9ccf0154f59d12415b",
+        "path": "/data/shangguanrz/pic-edit-experiments/qwen21_union_dataset_adaptation_v1/cache/conditions/index/29bdb8dcb6a0a702e6ab26a2a12230b3ebd8f7b07e50a22175e50c3d5e349255.json",
+        "exists": false
+      },
+      {
+        "sample_id": "tiktok_val_acfe90683fb41b38ae11c1c5",
+        "path": "/data/shangguanrz/pic-edit-experiments/qwen21_union_dataset_adaptation_v1/cache/conditions/index/0b9c9503e6f684e36522d18bbe11148f544feb50dc36023452ff44bc875cb8d2.json",
+        "exists": false
+      },
+      {
+        "sample_id": "tiktok_val_ea011d7b83fe36018f7d3b30",
+        "path": "/data/shangguanrz/pic-edit-experiments/qwen21_union_dataset_adaptation_v1/cache/conditions/index/7186c9d7dd22f9e1dcad40559788a661827b9acb0ecf26789b93cd47df4e5666.json",
+        "exists": false
+      },
+      {
+        "sample_id": "tiktok_val_620150df6d235ef787eed7ef",
+        "path": "/data/shangguanrz/pic-edit-experiments/qwen21_union_dataset_adaptation_v1/cache/conditions/index/8bbb2c8e2db166ac0046e2292feb19f3f2065894a48de562d01b5fd200571174.json",
+        "exists": false
+      },
+      {
+        "sample_id": "tiktok_val_9be575fa9d56ae4cd93cea7e",
+        "path": "/data/shangguanrz/pic-edit-experiments/qwen21_union_dataset_adaptation_v1/cache/conditions/index/fa8388aca0c482cf9bdf74bf48f6efb9fa5c90343cb79b6ae2dd05e50a60be46.json",
+        "exists": false
+      },
+      {
+        "sample_id": "hi4d_val_5cafdf21df976516d0153722",
+        "path": "/data/shangguanrz/pic-edit-experiments/qwen21_union_dataset_adaptation_v1/cache/conditions/index/e289b9d9e39c021d3f30bd31df936bf40858ac5fea193a0385620d9545bfef97.json",
+        "exists": false
+      },
+      {
+        "sample_id": "hi4d_val_e495c21b541e203a99a48f4c",
+        "path": "/data/shangguanrz/pic-edit-experiments/qwen21_union_dataset_adaptation_v1/cache/conditions/index/e25a2f73389432799fb9a7382d14fb295955a08ad496e2959e20e5e9677faf0b.json",
+        "exists": false
+      },
+      {
+        "sample_id": "hi4d_val_1cdfa27cfed29647a42be809",
+        "path": "/data/shangguanrz/pic-edit-experiments/qwen21_union_dataset_adaptation_v1/cache/conditions/index/9fcf7ea3d3cbc7902cf0210e037ba612fd9f8ce1fe5f3456f8a5d930960b0021.json",
+        "exists": false
+      },
+      {
+        "sample_id": "hi4d_val_49022ee2eedf1a1d90b0ef32",
+        "path": "/data/shangguanrz/pic-edit-experiments/qwen21_union_dataset_adaptation_v1/cache/conditions/index/3f99a94751dc9ffa9dfe643bb9db82bd2de9ae95c73477664d9f2bd58beaf1b4.json",
+        "exists": false
+      }
+    ],
+    "其他未执行": "未加载VLM/DINO/FaceID，未生成条件缓存或采样图。"
+  },
+  "解释边界": [
+    "source keypoint face bbox不等于人脸检测结果；FaceID validity以实际source-only提取状态为准。",
+    "TikTok00233原source mask存储278x500，而source原始FoV604x1080；按完整FoV归一化映射，不将存储分辨率当原始RGB坐标。",
+    "4条Hi4D数据资产完整不等于male-only模型适配完整。",
+    "尚无GPU耗时/显存实测；96图是计划数量，不是完成数量。"
+  ],
+  "来源报告SHA256": "1bec2bbb4137b511b87ff16743580c3cfd48a0c7e5cb744795cf17f87b301b4b"
+}

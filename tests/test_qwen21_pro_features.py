@@ -133,3 +133,31 @@ def test_raw_feature_fingerprint_stays_source_only_across_verified_pose_requests
     after = extractor.extract(another_record, another_bound, project_root=tmp_path, assets=assets)
     assert before.fingerprint == after.fingerprint
     assert torch.equal(before.tokens, after.tokens)
+
+
+def test_verified_source_mesh_rois_append_native_source_patches_and_hash_camera(tmp_path):
+    import copy
+    from src.pose_control.qwen21_pro.features import FrozenSourceFeatureExtractor
+    from src.pose_control.qwen21_pro.cache import file_sha256
+    from src.pose_control.qwen21_pro.geometry_preparation import validate_source_geometry
+    from test_qwen21_pro_preparation import fixture_assets
+    record, cached, assets = fixture_assets(tmp_path, dual=True)
+    camera = tmp_path / 'own_source_camera.npz'; camera.write_bytes(b'camera-v1')
+    assets['source_geometry'] = dict(person_ids=list(record['person_order']),
+        rois=[{'face': [9, 1, 16, 12], 'left_hand': [9, 12, 16, 22]}, {'face': [0, 1, 7, 12]}],
+        asset_files={'source_camera': str(camera)}, asset_hashes={'source_camera': file_sha256(camera)},
+        policy={'min_support_pixels': 8, 'landmarks': 'head_mesh_bounds_not_face_landmarks'},
+        source_rgb_sha256=file_sha256(assets['source_rgb']), source_image_wh=[16, 32],
+        code_signature={'test_producer': 'explicit-fixture'})
+    class Processor:
+        def __call__(self, **kwargs): return {'pixel_values': torch.zeros(1, 3, 224, 224)}
+    class Dino(torch.nn.Module):
+        def forward(self, **kwargs): return type('Out', (), {'last_hidden_state': torch.ones(1, 257, 1536)})()
+    extractor = FrozenSourceFeatureExtractor(Dino(), Processor(), model_signature={'dino': 'fixture'})
+    value = extractor.extract(record, cached, project_root=tmp_path, assets=assets)
+    assert value.tokens.shape[2] == 768
+    assert len(value.provenance['coverage'][0]['crops']) == 3
+    assert value.provenance['coverage'][0]['crops'][1]['kind'] == 'face'
+    camera.write_bytes(b'camera-v2')
+    with pytest.raises(ValueError, match='source geometry|source.*SHA|fingerprint'):
+        value.validate_binding(record, cached['reference_latents'][:, :16], assets, cached.producer_signature)

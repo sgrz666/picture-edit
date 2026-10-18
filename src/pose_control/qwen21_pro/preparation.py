@@ -110,6 +110,12 @@ def resolve_condition_assets(condition, project_root):
             result["camera"] = native_root / pair / action / "cameras/rgb_cameras.npz"
             result["camera_id"] = int(camera.removeprefix("cam"))
         result["source_keypoints"] = [source.parent / f"dwpose_{'AB'[raw]}.npz" for raw in order]
+        # Own source action/camera; target raw paths above are different roles.
+        from .geometry_preparation import source_geometry_paths
+        try:
+            result.update(source_geometry_paths(record, root))
+        except ValueError:
+            pass  # Small explicit CPU fixtures need not use dataset path layout.
     elif dataset == "iper":
         source_kp = next((p for p in paths if p.suffix == ".npz" and p.stem == source.stem), None)
         target_kp = next((p for p in paths if p.suffix == ".npz" and p != source_kp), None)
@@ -153,6 +159,13 @@ def source_asset_roles(assets, condition=None):
         result["prepared_rgb"] = _record(condition)["source_rgb"]
     for key in ("source_masks", "source_keypoints"):
         result.update({f"{key}_{i}": value for i, value in enumerate(assets.get(key, []))})
+    if assets.get("source_geometry") is not None:
+        bundle = assets["source_geometry"]
+        if condition is not None:
+            from .geometry_preparation import validate_source_geometry
+            validate_source_geometry(bundle, _record(condition), assets)
+        result.update({f"source_geometry_{k}": v for k, v in bundle["asset_files"].items()})
+        result["source_geometry_binding"] = {key: value for key, value in bundle.items() if key != "asset_files"}
     return result
 
 
@@ -577,3 +590,25 @@ def build_contact_relations(assets, person_order, person_valid):
              torch.tensor([relative], dtype=torch.float32), torch.tensor([confidence], dtype=torch.float32),
              torch.ones(1, n, dtype=torch.bool))
     return relations, metadata
+
+
+def prepare_source_task_condition(raw_source_features, *, config, target_hw=(32,32)):
+    """新记录没有旧 B cache 时的 source-only typed 起点；几何保持显式 unavailable。
+
+    后续必须经 geometry_task_condition/load_geometry_task_condition 装配当前几何，
+    再 EncodedCondition.with_source_binding；不能从 GT/driver 外观构造身份 bank。
+    """
+    raw_source_features.validate()
+    order=raw_source_features.person_ids; p=len(order); h,w=target_hw; n=h*w
+    if raw_source_features.tokens.shape[-1]!=config.source_dim:
+        raise ValueError("Raw source feature width differs from task config")
+    person_valid=raw_source_features.valid.any(-1)
+    spatial={name:torch.full((1,p,channels,h,w),-1 if name=="part" else 0,
+        dtype=torch.long if name=="part" else torch.float32) for name,channels in
+        (("normal",3),("depth",1),("mask",1),("visibility",1),("contact",1),("part",1))}
+    zero=torch.zeros(1,p,n)
+    return TaskCondition(tuple(target_hw),order,spatial,{name:torch.zeros(1,p,dtype=torch.bool) for name in spatial},
+        zero,zero.clone(),zero.clone(),torch.zeros(1,p,2,n),person_valid,raw_source_features.tokens,
+        raw_source_features.valid&person_valid[...,None],raw_source_features.face_identity,
+        raw_source_features.face_identity_valid&person_valid,_empty_relations(),raw_source_features.fingerprint,
+        {"source":raw_source_features.provenance,"availability":{name:False for name in spatial}}).validate(config)

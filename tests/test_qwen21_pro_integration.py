@@ -416,6 +416,8 @@ def test_pipeline_registers_pro_before_offload_and_delegates_reference_inpaint_a
         events.append("offload")
         return FakePipeline(base), {"transformer_setup": audit}
     monkeypatch.setattr(old, "build_pipeline", build)
+    monkeypatch.setattr(old, "_upstream", lambda root: (None, None, None, SimpleNamespace(
+        register_auto_device_hook=lambda model: None, safe_enable_group_offload=lambda *args, **kwargs: None)))
     pipe, audit = pipeline_api().build_pro_pipeline(config=cfg(), device="cuda", cached=False)
     image, mask, refs = object(), object(), [object()]
     outputs = pipe(image=image, mask_image=mask, reference_images=refs, task_condition=make_condition())
@@ -532,6 +534,19 @@ def test_cached_cfg_guidance_alias_requires_negative_embeddings():
              true_cfg_scale=1., guidance_scale=2., task_condition=make_condition())
 
 
+def test_pro_pipeline_enables_cfg_norm_rescale_by_default_with_explicit_opt_out():
+    class OptionsPipeline(FakePipeline):
+        def __call__(self,*args,cfg_norm_rescale=False,**kwargs):
+            self.actual_rescale=cfg_norm_rescale
+            return super().__call__(*args,**kwargs)
+    native=OptionsPipeline(installed())
+    pipe=pipeline_api().ProPipeline(native)
+    pipe(task_condition=make_condition())
+    assert native.actual_rescale is True
+    pipe(task_condition=make_condition(),cfg_norm_rescale=False)
+    assert native.actual_rescale is False
+
+
 def test_install_task_parameters_follow_existing_model_device_without_dtype_cast():
     base = model().to(device="meta", dtype=torch.bfloat16)
     integration().install_pro_adapter(base, cfg())
@@ -572,3 +587,34 @@ def test_pipeline_to_preserves_native_exception():
         pipe.to(device="unsupported", dtype=torch.bfloat16)
     assert raised.value is failure
     assert native.to_arguments == ((), {"device": "unsupported", "dtype": torch.bfloat16})
+
+
+@pytest.mark.parametrize('requested_offload', ['sync_group_offload','model_group_offload'])
+def test_checkpoint_and_composition_execute_before_sync_group_snapshot(monkeypatch, requested_offload):
+    from src.pose_control.qwen21_union import pipeline as old
+    from src.pose_control.qwen21_pro import checkpoint as checkpoints
+    base, events = model(), []
+    def build(*args, transformer_setup=None, **kwargs):
+        assert args[2:4] == ('cpu', 'none')
+        audit = transformer_setup(base)
+        return FakePipeline(base), {'transformer_setup': audit}
+    def load(path, transformer, *, expected_metadata):
+        assert hasattr(transformer, 'task_adapter')
+        assert events == ['composition']
+        events.append('weights'); transformer.task_adapter.output_heads['0'].weight.data.fill_(.5)
+        return {'loaded': str(path), 'state_sha256': 'actual-file-sha', 'metadata': expected_metadata}
+    def hook(transformer):
+        assert transformer.task_adapter.output_heads['0'].weight.mean() == .5
+        events.append('hook')
+    def groups(pipe, **kwargs):
+        assert kwargs == dict(onload_device='cuda', offload_device='cpu', offload_type='leaf_level', use_stream=False)
+        events.append('groups')
+    monkeypatch.setattr(old, 'build_pipeline', build)
+    monkeypatch.setattr(old, '_upstream', lambda root: (None, None, None, SimpleNamespace(register_auto_device_hook=hook, safe_enable_group_offload=groups)))
+    monkeypatch.setattr(checkpoints, 'load_adapter_weights', load)
+    pipe, audit = pipeline_api().build_pro_pipeline(config=cfg(), device='cuda', offload=requested_offload,
+        checkpoint_path='locked-stage1', expected_metadata={'current': 'caller-computed'},
+        transformer_setup=lambda model: events.append('composition'))
+    assert events == ['composition', 'weights', 'hook', 'groups']
+    assert audit['offload'] == 'sync_group_offload'
+    assert audit['requested_offload'] == requested_offload

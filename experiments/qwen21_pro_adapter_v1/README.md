@@ -39,17 +39,17 @@ B=/data/shangguanrz/pic-edit-experiments/qwen21_union_dataset_adaptation_v1
 
 ## 当前证据
 
-截至2026-10-18，Pro本地255项通过、8项需外部模型/CUDA而跳过；旧Union回归116项通过、1项跳过。服务器小型32层官方Qwen通过零分支等价与checkpoint梯度测试。真实六例VAE64审计和VAE64+DINO1536提取、缓存读回均通过，talk09得到5条部位接触边。训练接口与小型CUDA对照已通过，全尺寸训练和质量评估尚未运行，当前没有效果提升结论。
+截至2026-10-18，冻结Task6的fullPro、Union pipeline与真实Reference循环回归共327项通过、9项外部条件跳过；独立spec与quality均批准。完整发布模型训练的zero/prefix/梯度/精确续跑门禁已通过，数据和几何准备已有真实六例证据。当前正在验证修复版CFG4 coarse/ROI与真实精修训练缓存；200步与消融尚未完成，没有效果提升结论。
 
-效果配置的4条单人 bank 均为 `[1,1,1024,1600]`，各含 body/face/两手 crop；双人 bank 为 `[1,2,256,1600]`，因源帧缺关键点只含 body crop。FaceID通过质量门槛的只有两条TikTok（8个人物中的2个），其余明确invalid。Hi4D normal的basis未确认、像素part不存在，仍invalid；depth、mask、visibility、soft contact有效。DINO在Torch CUDA运行，当前ONNX GPU依赖与系统不匹配，FaceID回退CPU，无需改环境。
+最新`conditions_task6_20261018T130005`六例提取与缓存读回6/6通过（64.28s）。4条单人bank为 `[1,1,1024,1600]`，两条双人bank已由早期body-only的256tokens扩为 `[1,2,1024,1600]`，加入source动作自身SMPL/camera投影的head/左右手bounds。Hi4D四个人物有效token分别569/387/473/595。FaceID仍仅两条TikTok有效（2/8）；bounds不等于脸部或手指关键点，也不证明遮挡部位可见。旧Hi4D normal/像素part仍invalid；新的current-geometry路径才使用有明确CV basis和部位codec的重渲染。DINO在Torch CUDA运行，ONNX FaceID回退CPU，环境未修改。
 
-Hi4D 两例标记 male。已用现有 `smpl_clean` 读取原始male模型的literal NumPy值，再由SMPLest-X环境的现有SMPL constructor做CPU验证：两例target mesh误差均≤2.39e-7m。新几何后端将接入该兼容读取方式。neutral与male的14类顶点标签有11/6890处差异，正式准备优先用male标签；初始neutral审计保留独立产物。
+Hi4D 两例标记male，几何后端已接入原始male模型的受限literal NumPy兼容读取；两例target mesh误差均≤2.39e-7m。neutral与male的14类顶点标签有11/6890处差异，正式准备使用male标签，初始neutral审计保留。female/mixed样本尚无匹配后端，不能据这两例声称全1536例几何已覆盖。
 
 几何后端现已接入匹配模型。`geometry_cpu_20261018T113627` 与 `geometry_render_20261018T113627` 均6/6通过，mesh最大误差3.815e-6m、单人投影最大误差2.442e-4px。`geometry_probes_20261018T114018` 的已知三角形5项断言通过；真实SMPL在2cm扰动后36次迭代满足8条接触约束，最终残差4.27–6.83mm，root改动各5.61mm，最大关节改动4.988°，相机不变。该结果只证明已提供约束的求解能力，不是RGB质量或全身无碰撞结论。
 
 renderer现按完整逆仿射裁掉原相机FoV外的像素，避免mesh漏进letterbox白边。`geometry_fov_20261018T120424`六例及7项已知三角形GPU断言通过（9.51s），含白边各模态归零。8帧旧normal/mask支持逐像素一致；其投影IoU为iPER 0.9498–0.9666、TikTok 0.9861–0.9873，source fallback mask可保留。
 
-训练模块位于 `qwen21_pro/{training,checkpoint,losses,offload}.py`。可选 `frozen_linear_cpu` 让原始冻结 Linear 权重保持CPU原dtype，反向仍计算输入梯度；task/LoRA和AdamW保持GPU FP32。新checkpoint保存完整task、显式LoRA、optimizer/LR、RNG及数据/源码/内存策略绑定；推理用 `load_adapter_weights()`，须在注册offload前调用。CPU训练相关77项通过、3项CUDA跳过；服务器固定32层小型Qwen的有/无LoRA两步resident/offload对照、CUDA 4=2+2精确续跑共3项通过（286.67s），新增hook guard后的snapshot再次通过CUDA精确续跑（214.10s）。完整模型显存门禁仍待执行，不能据小型测试推断峰值。
+训练模块位于 `qwen21_pro/{training,checkpoint,losses,offload}.py`。可选 `frozen_linear_cpu` 让原始冻结Linear权重保持CPU原dtype，反向仍计算输入梯度；task/LoRA和AdamW保持GPU FP32。新checkpoint保存完整task、显式LoRA、optimizer/LR、RNG及数据/源码/内存策略绑定；推理用 `load_adapter_weights()`，须在注册offload前调用。CPU训练相关77项通过、3项CUDA跳过；服务器小型Qwen的有/无LoRA两步resident/offload对照、CUDA 4=2+2精确续跑共3项通过（286.67s），新增hook guard后再次通过CUDA精确续跑（214.10s）。以下完整模型门禁单独记录真实峰值。
 
 `conditions_bound1600_20261018T115624` 六例以male标签重新提取并通过缓存读回（84.02s）。typed pack现在绑定对应原生条件的sample、完整payload、prepared source与source VAE SHA，不能把另一条同尺寸pack混进训练；本轮使用新目录，原有缓存保留。
 
@@ -66,6 +66,25 @@ cd "$P/code_fullgate_20261018T121250"
   --feature-run "$P/runs/conditions_bound1600_20261018T115624" \
   --run-dir "$P/runs/fullgate_manual_v1"
 ```
+
+`scripts/audit_inference.py geometry`在SMPL环境生成source-only bundle与当前目标控制图；`inference`在Qwen环境读回、重新编码native refs/control、生成512 coarse，再跑768 face/paired-hand。额外HH样本固定为train中的`hi4d_train_aeb388ac9f51195bf39345f3`（pair12/highfive12，A右手part7→B左手part4，原始接触距离0.476mm）。overfit6的两条Hi4D没有hand–hand边，不能冒充该正例。
+
+已执行`inference_geometry_20261018T130005`：3份source bundle、2份driver_exact和1份source_shape，共6个worker job通过（14.55s）。source_shape明确unpaired，不能用原GT训练。下面的source index也须传给新版`audit_training.py`，使双人raw feature的几何指纹能被重算验证。
+
+```bash
+G="$P/runs/inference_geometry_20261018T130005"
+"$B/env/bin/python" experiments/qwen21_pro_adapter_v1/scripts/audit_conditions.py \
+  --legacy-workspace "$B" --project-root /home/shangguanrz/project/pic-edit \
+  --run-dir "$P/runs/conditions_with_source_geometry_<新名称>" --profile effect1600 --device cuda \
+  --contact-vertex-parts "$P/data/smpl_male_v6_parts_20261018.npz" \
+  --source-geometry-index "$G/source_geometry_index.json"
+```
+
+代码与geometry helper有字节绑定；运行须使用与bundle匹配的冻结代码快照。未封口的`EncodedCondition`只可为新样本提取source features，必须与当前typed pack核对并seal后才能cache/sample/train。局部请求还会核对parent geometry、ROI affine、完整pack和source crop部位/文件签名，不能用face bank配hand references。
+
+`code_task6_20261018T130610`的首次真实coarse/768 ROI采样已执行，但native RGBA贴回RGB时失败，`runs/inference_task6_20261018T130610/failure.json`保留。修复后的`code_task6_20261018T132022`通过完整模型两次更新（432.76s），五分支梯度与frozen/prefix检查通过；新的`inference_cfg4_task6_20261018T132022`使用CFG4验证官方L2 rescale和RGBA合成，并额外检查真实768精修训练缓存。运行尚未结束，不能把原失败标为通过。
+
+`data/val12_conditions_20261018.jsonl`与`val12_supervision_20261018.jsonl`预登记iPER/TikTok/Hi4D各4例；中文`val12_preregistration_20261018.json`保存原manifest SHA、选样规则、source/geometry覆盖与96图预算。四个arm各使用25次更新的独立checkpoint，full4取主200次更新run的step25；同一checkpoint的关分支只算diagnostic。当前0/96张val图，未访问test。val Hi4D实际全为male+female，现有female模型已独立CPU验证到1.20e-7m以内；matched mixed runtime正在接线，不能套用male后端。
 
 ## 与其他实验的关系
 

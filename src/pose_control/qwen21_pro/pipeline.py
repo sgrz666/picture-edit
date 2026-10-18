@@ -10,7 +10,7 @@ from .contracts import ProAdapterConfig
 from .integration import bind_task_condition, install_pro_adapter
 
 
-def _setup(config, control_lora, lora_options):
+def _setup(config, control_lora, lora_options, *, checkpoint_path=None, expected_metadata=None, transformer_setup=None):
     if type(control_lora) is not bool:
         raise ValueError("control_lora must be bool")
     if lora_options is not None and not isinstance(lora_options, Mapping):
@@ -19,6 +19,10 @@ def _setup(config, control_lora, lora_options):
         raise ValueError("lora_options requires control_lora=True")
     if config is not None and not isinstance(config, ProAdapterConfig):
         raise ValueError("config must be ProAdapterConfig")
+    if (checkpoint_path is None) != (expected_metadata is None):
+        raise ValueError("checkpoint_path and caller-computed expected_metadata are required together")
+    if transformer_setup is not None and not callable(transformer_setup):
+        raise ValueError("transformer_setup must be callable")
 
     def install(transformer):
         lora_audit = None
@@ -26,24 +30,32 @@ def _setup(config, control_lora, lora_options):
             from ..qwen21_union.weights import install_control_lora
             lora_audit = install_control_lora(transformer, **dict(lora_options or {}))
         pro_audit = install_pro_adapter(transformer, config)
-        return {"control_lora": lora_audit, "pro_adapter": pro_audit}
+        composition = transformer_setup(transformer) if transformer_setup is not None else None
+        checkpoint_audit = None
+        if checkpoint_path is not None:
+            from .checkpoint import load_adapter_weights
+            checkpoint_audit = load_adapter_weights(checkpoint_path, transformer, expected_metadata=expected_metadata)
+        return {"control_lora": lora_audit, "pro_adapter": pro_audit,
+                "composition": composition, "checkpoint": checkpoint_audit}
 
     return install
 
 
 def build_pro_transformer(scope="joint", device="cpu", dtype=None, *, config: ProAdapterConfig | None = None,
                           control_lora=False, lora_options=None, source_root=None, base_model=None,
-                          union_checkpoint=None):
+                          union_checkpoint=None, checkpoint_path=None, expected_metadata=None, transformer_setup=None):
     """返回 (model,audit)：验证/加载原180参数 → 可选控制LoRA → FP32任务模块。
 
     source_root/base_model/union_checkpoint 与旧 build_transformer 同义。默认不装
     LoRA；control_lora=True 复用旧130目标白名单。原网络冻结但不使用 no_grad。
     """
-    setup = _setup(config, control_lora, lora_options)
+    setup = _setup(config, control_lora, lora_options, checkpoint_path=checkpoint_path,
+                   expected_metadata=expected_metadata, transformer_setup=transformer_setup)
     from ..qwen21_union import pipeline as union
-    transformer, audit = union.build_transformer(scope, device, dtype, source_root=source_root,
+    transformer, audit = union.build_transformer(scope, "cpu", dtype, source_root=source_root,
                                                   base_model=base_model, union_checkpoint=union_checkpoint)
-    return transformer, dict(audit, **setup(transformer))
+    extra = setup(transformer)
+    return transformer.to(device), dict(audit, **extra)
 
 
 class ProPipeline:
@@ -64,6 +76,7 @@ class ProPipeline:
         return self
 
     def __call__(self, *args, task_condition=None, task_enabled=True, **native_kwargs):
+        native_kwargs.setdefault("cfg_norm_rescale", True)
         bound = inspect.signature(self._pipeline.__call__).bind_partial(*args, **native_kwargs)
         values = dict(native_kwargs, **{k: v for k, v in bound.arguments.items() if k != "kwargs"})
         if values.get("num_images_per_prompt", 1) != 1:
@@ -95,20 +108,41 @@ class ProPipeline:
 
 def build_pro_pipeline(scope="joint", device="cpu", offload="model_group_offload", dtype=None, *,
                        config: ProAdapterConfig | None = None, control_lora=False, lora_options=None,
-                       source_root=None, base_model=None, union_checkpoint=None, cached=False):
+                       source_root=None, base_model=None, union_checkpoint=None, cached=False,
+                       checkpoint_path=None, expected_metadata=None, transformer_setup=None):
     """返回 (ProPipeline,audit)，所有新参数在原加载器 offload 扫描之前注册。
 
     cached=True 省略 VLM，只适合已编码 coarse 输入；原始 ROI reference_images
     必须 cached=False。沿用原 group_offload 的 device hooks，不转换任务 FP32 存储。
     """
-    setup = _setup(config, control_lora, lora_options)
+    setup = _setup(config, control_lora, lora_options, checkpoint_path=checkpoint_path,
+                   expected_metadata=expected_metadata, transformer_setup=transformer_setup)
     from ..qwen21_union import pipeline as union
-    pipeline, audit = union.build_pipeline("union", scope, device, offload, dtype, source_root=source_root,
+    requested_offload = offload
+    synchronous = (offload == "sync_group_offload" or
+                   (str(device).startswith("cuda") and offload == "model_group_offload"))
+    if synchronous and not str(device).startswith("cuda"):
+        raise ValueError("sync_group_offload requires CUDA onload device")
+    pipeline, audit = union.build_pipeline("union", scope, "cpu" if synchronous else device,
+                                           "none" if synchronous else offload, dtype, source_root=source_root,
                                            base_model=base_model, union_checkpoint=union_checkpoint,
                                            transformer_setup=setup, cached=cached)
     audit = dict(audit, **audit["transformer_setup"])
+    audit["requested_offload"] = requested_offload
+    if synchronous:
+        _, _, _, utils = union._upstream(source_root)
+        # Shared Pro adapter executes at stages0/4/8/12. Synchronous groups avoid
+        # stream prefetch replacing a shared parameter before its current use.
+        utils.register_auto_device_hook(pipeline.transformer)
+        utils.safe_enable_group_offload(pipeline, onload_device=str(device), offload_device="cpu",
+                                        offload_type="leaf_level", use_stream=False)
+        audit["offload"] = "sync_group_offload"
+        pipeline.union_audit = audit
     result = ProPipeline(pipeline)
     result.pro_audit = audit
+    result.trained_model_signature = None if audit["checkpoint"] is None else {
+        "state_sha256": audit["checkpoint"]["state_sha256"],
+        "metadata": audit["checkpoint"]["metadata"]}
     return result, audit
 
 

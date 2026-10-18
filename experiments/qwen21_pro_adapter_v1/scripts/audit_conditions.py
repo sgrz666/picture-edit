@@ -32,6 +32,7 @@ def main(argv=None):
     parser.add_argument("--producer-event")
     parser.add_argument("--producer-sha256", default=PRODUCER_SHA256)
     parser.add_argument("--contact-vertex-parts")
+    parser.add_argument("--source-geometry-index", help="sample_id → 已验证 source_geometry.json 的 JSON；Hi4D ROI bank 必需")
     args = parser.parse_args(argv)
     legacy = Path(args.legacy_workspace).resolve()
     run = Path(args.run_dir)
@@ -82,11 +83,17 @@ def main(argv=None):
         typed = ProCache(run / "cache", namespace="typed_condition")
         raw_cache = ProCache(run / "cache", namespace="raw_source")
         extractor, results = None, []
+        geometry_index = (json.loads(Path(args.source_geometry_index).read_text(encoding="utf-8"))
+                          if args.source_geometry_index else {})
         for original in records:
             record = copy.deepcopy(original)
             record["target_rgb"] = "/unreadable/target_rgb_must_not_be_used.png"
             cached = load_bound_condition(record, legacy / "cache", model_signature=producer, vae_config=vae_config)
             assets = resolve_condition_assets(record, args.project_root)
+            if record["sample_id"] in geometry_index:
+                from src.pose_control.qwen21_pro.geometry_preparation import load_source_geometry
+                assets["source_geometry"] = load_source_geometry(
+                    geometry_index[record["sample_id"]], record, assets)
             if record["dataset"] == "hi4d" and args.contact_vertex_parts:
                 assets["contact_vertex_parts"] = Path(args.contact_vertex_parts)
             raw = None
