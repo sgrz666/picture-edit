@@ -34,6 +34,7 @@ def main():
     parser.add_argument("--updates", type=int, default=2)
     parser.add_argument("--exact-resume", action="store_true")
     parser.add_argument("--source-geometry-index")
+    parser.add_argument("--memory-mode", choices=("resident", "frozen_linear_cpu"), default="frozen_linear_cpu")
     args = parser.parse_args()
     if args.updates != (4 if args.exact_resume else 2):
         parser.error("普通门禁固定两次更新；精确续跑门禁固定四次更新")
@@ -123,7 +124,7 @@ def main():
             union_checkpoint=project / "union-adapter/Qwen-Image-2.1-Fun-Controlnet-Union/Qwen-Image-2.1-Fun-Controlnet-Union.safetensors")
         write_json(run / "backend.json", audit)
         phase = "selective_cuda_placement"
-        memory = place_training_model(model, "cuda", memory_mode="frozen_linear_cpu")
+        memory = place_training_model(model, "cuda", memory_mode=args.memory_mode)
         model.gradient_checkpointing = True
         parameter_ids = {name: id(parameter) for name, parameter in model.named_parameters()}
         write_json(run / "memory_policy.json", memory)
@@ -137,8 +138,8 @@ def main():
         metadata = {"config": cfg.to_dict(), "scope": "joint", "task_signature": stable_hash(RegionalLossConfig().to_dict()),
             "source_signature": stable_hash(source_models[0]), "cache_signature": file_sha256(feature / "report.json"),
             "code_signature": stable_hash(package_code), "data_signature": file_sha256(legacy / "data/lock.json"),
-            "trajectory_signature": training.trajectory_signature(order, memory_mode="frozen_linear_cpu"),
-            "memory_mode": "frozen_linear_cpu", "control_lora_targets": [], "selection_role": "engineering_probe",
+            "trajectory_signature": training.trajectory_signature(order, memory_mode=args.memory_mode),
+            "memory_mode": args.memory_mode, "control_lora_targets": [], "selection_role": "engineering_probe",
             "engineering_updates": args.updates, "repeat_samples": args.exact_resume}
         checkpoint.save_checkpoint(run / "checkpoint_000000", model, optimizer, lr, metadata=metadata,
                                    cursor=checkpoint.TrainingCursor())

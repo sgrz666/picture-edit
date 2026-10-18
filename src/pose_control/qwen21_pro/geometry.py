@@ -11,6 +11,7 @@ from dataclasses import dataclass, field, fields, replace
 import hashlib
 import importlib
 import importlib.util
+import inspect
 import json
 import math
 from pathlib import Path
@@ -26,6 +27,12 @@ import torch.nn.functional as F
 
 _FAMILIES = {"smpl": (69, 6890), "smplx": (63, 10475)}
 HI4D_MALE_MODEL_SHA256 = "ed4d55bb3041fefc6f73b70694d6c8edc1020c0d07340be5cc651cae2c6a6ae3"
+HI4D_FEMALE_MODEL_SHA256 = "6d4a1791b6b94880397e1a3a4539b703a228d2150c57de7b288389a8115f4ef0"
+# Original-weight CPU audit, tensor_sha256(long [6890]); float32 LBS argmax.
+HI4D_PARTS_SHA256 = {
+    "male": "f6ac0bb73e15ae1b567bc0b2070f966de52fdba55023c9fa88f1f10ee66dc7d5",
+    "female": "5d486c82a83e3bca518ade5da9df9fc4771dab6e1f102d80e06157bfc5ea46df",
+}
 _SMPL_TO_V6 = (1, 8, 11, 1, 9, 12, 1, 10, 13, 1, 10, 13,
                0, 1, 1, 0, 2, 5, 3, 6, 4, 7, 4, 7)
 _SMPLX_TO_V6 = (1, 8, 11, 1, 9, 12, 1, 10, 13, 1, 10, 13,
@@ -284,6 +291,76 @@ class BodyModelBackend:
                 raise ValueError("SMPL model output is missing body joints")
             joints = result.joints[:, :24]
         return BodyOutput(result.vertices, joints)
+
+
+def vertex_parts_for(body_model, person_ids):
+    """Return [P,V] in state order; a shared [V] keeps the legacy ABI."""
+    _ids(person_ids)
+    validator = getattr(body_model, "validate_binding", None)
+    if validator is not None:
+        validator()
+    labels = body_model.vertex_parts
+    if not isinstance(labels, Tensor) or labels.dtype != torch.long or labels.numel() == 0 or labels.min() < 0 or labels.max() > 13:
+        raise ValueError("vertex parts must be V6 zero-based integer labels")
+    if labels.ndim == 1 and labels.shape[0] == body_model.vertex_count:
+        return labels[None].expand(len(person_ids), -1)
+    canonical = getattr(body_model, "person_ids", None)
+    if canonical is None:
+        raise ValueError("per-person vertex parts require explicit stable person_ids")
+    _ids(canonical)
+    if labels.shape != (len(canonical), body_model.vertex_count) or any(pid not in canonical for pid in person_ids):
+        raise ValueError("per-person vertex part/person binding differs")
+    return labels[[canonical.index(pid) for pid in person_ids]]
+
+
+class GenderedBodyModelBackend:
+    """Matched SMPL layers selected by stable raw person IDs, never batch gender."""
+    family, vertex_count = "smpl", 6890
+
+    def __init__(self, models, person_genders, *, provenance=None):
+        from .cache import _payload_digest
+        self.person_ids = tuple(sorted(person_genders))
+        _ids(self.person_ids)
+        if any(gender not in {"male", "female"} for gender in person_genders.values()):
+            raise ValueError("Hi4D gender must explicitly be male or female")
+        self.person_genders = dict(person_genders)
+        self.models = dict(models)
+        if set(models) != set(person_genders.values()) or any(model.family != "smpl" or model.vertex_count != 6890 for model in models.values()):
+            raise ValueError("matched gender models must cover exactly the declared SMPL genders")
+        self.faces = next(iter(models.values())).faces.detach().cpu().clone()
+        if any(not torch.equal(self.faces, model.faces.cpu()) for model in models.values()):
+            raise ValueError("gendered models must share the verified SMPL triangle topology")
+        self.vertex_parts = torch.stack([models[person_genders[pid]].vertex_parts for pid in self.person_ids])
+        self.provenance = dict(provenance or {"backend": "explicit_gendered_smpl",
+            "person_genders": [{"person_id": pid, "gender": person_genders[pid]} for pid in self.person_ids]})
+        self._binding = _payload_digest(self._binding_payload())
+        self._layer_tensors = self._tensor_versions()
+
+    def _binding_payload(self):
+        return {"genders": self.person_genders, "person_ids": self.person_ids, "parts": self.vertex_parts,
+                "faces": self.faces, "provenance": self.provenance,
+                "models": {g: {"parts": m.vertex_parts, "faces": m.faces, "provenance": m.provenance}
+                           for g, m in self.models.items()}}
+
+    def _tensor_versions(self):
+        return tuple((g, id(t), t._version) for g, m in self.models.items()
+                     for t in (*m.layer.parameters(), *m.layer.buffers()))
+
+    def validate_binding(self):
+        from .cache import _payload_digest
+        if _payload_digest(self._binding_payload()) != self._binding or self._tensor_versions() != self._layer_tensors:
+            raise ValueError("gendered body model/parts/signature binding changed")
+
+    def forward(self, parameters):
+        self.validate_binding()
+        if parameters.family != "smpl" or any(pid not in self.person_genders for pid in parameters.person_ids):
+            raise ValueError("gendered body person/family binding differs")
+        outputs = []
+        for slot, pid in enumerate(parameters.person_ids):
+            single = replace(parameters, person_ids=(pid,), **{f.name: getattr(parameters, f.name)[slot:slot + 1]
+                             for f in fields(parameters) if isinstance(getattr(parameters, f.name), Tensor)})
+            outputs.append(self.models[self.person_genders[pid]].forward(single))
+        return BodyOutput(torch.cat([o.vertices for o in outputs]), torch.cat([o.joints for o in outputs]))
 
 
 def dwpose134(body: BodyOutput, *, family):
@@ -695,25 +772,98 @@ def load_smplestx_backend(smplest_root):
                                         "joint_mapping": list(wrapper.joint_idx), "part_labels": "SMPLX55_LBS_argmax_to_V6_14"})
 
 
-def load_hi4d_smpl_backend(model_path):
-    """CPU male SMPL from original literal-state weights (not neutral substitute)."""
+def _load_hi4d_smpl_gender_backend(model_path, gender):
+    from .cache import tensor_sha256
     model_path = Path(model_path).resolve()
-    if model_path.name != "SMPL_MALE.pkl":
-        raise ValueError("Hi4D requires the matched SMPL_MALE.pkl")
+    if gender not in {"male", "female"} or model_path.name != f"SMPL_{gender.upper()}.pkl":
+        raise ValueError("Hi4D requires the explicitly matched gender model filename")
     model_hash = _sha256(model_path)
-    if model_hash != HI4D_MALE_MODEL_SHA256:
-        raise ValueError("Hi4D male model fingerprint differs from the verified original weights")
+    expected = HI4D_MALE_MODEL_SHA256 if gender == "male" else HI4D_FEMALE_MODEL_SHA256
+    if model_hash != expected:
+        raise ValueError(f"Hi4D {gender} model fingerprint differs from the verified original weights")
     literal = load_literal_smpl_model(model_path)
     import smplx
     from smplx.utils import Struct
-    layer = smplx.create(str(model_path.parent), model_type="smpl", gender="male", batch_size=2,
+    layer = smplx.create(str(model_path.parent), model_type="smpl", gender=gender, batch_size=1,
                          data_struct=Struct(**literal)).cpu().eval()
+    body_loader = Path(inspect.getfile(type(layer))).resolve()
     labels = torch.tensor(_SMPL_TO_V6)[layer.lbs_weights.detach().cpu().argmax(1)]
+    if tensor_sha256(labels) != HI4D_PARTS_SHA256[gender]:
+        raise ValueError("Hi4D matched gender model LBS/parts fingerprint differs")
     return BodyModelBackend("smpl", layer, literal["f"], vertex_parts=labels,
-        provenance={"backend": "hi4d_matched_male_cpu", "model_path": str(model_path), "model_sha256": model_hash,
-                    "loader": "restricted_literal_chumpy_x_v1", "loader_sha256": _sha256(__file__),
+        provenance={"backend": f"hi4d_matched_{gender}_cpu", "model_path": str(model_path), "model_sha256": model_hash,
+                    "loader": "restricted_literal_chumpy_x_v1", "loader_path": str(Path(__file__).resolve()), "loader_sha256": _sha256(__file__),
                     "smplx_loader_path": str(Path(smplx.__file__).resolve()), "smplx_loader_sha256": _sha256(smplx.__file__),
-                    "joint_mapping": "raw_smpl24_only", "part_labels": "matched_male_SMPL24_LBS_argmax_to_V6_14"})
+                    "smplx_body_loader_path": str(body_loader), "smplx_body_loader_sha256": _sha256(body_loader),
+                    "joint_mapping": "raw_smpl24_only", "part_labels": f"matched_{gender}_SMPL24_LBS_argmax_to_V6_14"})
+
+
+def load_hi4d_smpl_backend(model_path):
+    """Legacy explicit male-only API; no neutral/female fallback."""
+    return _load_hi4d_smpl_gender_backend(model_path, "male")
+
+
+def _hi4d_genders(values):
+    values = np.asarray(values)
+    if values.shape != (2,) or values.dtype.kind not in "US":
+        raise ValueError("Hi4D genders must be two explicit string declarations in raw A/B order")
+    result = []
+    for value in values:
+        name = (value.decode("utf-8") if isinstance(value, bytes) else str(value)).lower()
+        if name not in {"male", "female"}:
+            raise ValueError("Hi4D gender must explicitly be male or female; missing/unknown is not inferred")
+        result.append(name)
+    return result
+
+
+def load_hi4d_gender_metadata(metadata_path, parameters_path, *, person_order=(0, 1), person_ids=None, expected_pair=None):
+    """Read own-action (or pair-level) meta.npz; raw A/B retain stable IDs."""
+    metadata, parameters = Path(metadata_path).resolve(), Path(parameters_path).resolve()
+    pair, action = parameters.parents[2], parameters.parents[1]
+    if parameters.parent.name != "smpl" or not pair.name.startswith("pair") or metadata.name != "meta.npz" or metadata.parent not in {pair, action}:
+        raise ValueError("Hi4D gender metadata must belong to the parameters' own pair/action")
+    if expected_pair is not None and pair.name != expected_pair:
+        raise ValueError("Hi4D gender metadata pair differs from the declared source group")
+    person_ids = tuple(person_order) if person_ids is None else person_ids
+    _ids(person_ids)
+    if len(person_ids) != 2 or sorted(person_order) != [0, 1]:
+        raise ValueError("Hi4D gender metadata needs the explicit raw A/B permutation")
+    with np.load(metadata, allow_pickle=False) as raw:
+        if "genders" not in raw:
+            raise ValueError("Hi4D gender metadata is missing genders")
+        genders = _hi4d_genders(raw["genders"])
+    binding = {"path": str(metadata), "sha256": _sha256(metadata), "pair": pair.name,
+               "parameters_path": str(parameters), "raw_genders": genders,
+               "parameters_sha256": _sha256(parameters),
+               "person_bindings": [{"person_id": pid, "raw_person_index": raw, "gender": genders[raw]}
+                                   for pid, raw in zip(person_ids, person_order)]}
+    return {pid: genders[raw] for pid, raw in zip(person_ids, person_order)}, binding
+
+
+def load_hi4d_gendered_backend(body_model_root, gender_metadata, *, parameters_path,
+                               person_order=(0, 1), person_ids=None,
+                               driver_gender_metadata=None, driver_parameters_path=None, expected_pair=None):
+    """Explicit matched male/female CPU layers, with source/driver gender agreement."""
+    from .cache import tensor_sha256
+    genders, source = load_hi4d_gender_metadata(gender_metadata, parameters_path,
+                                               person_order=person_order, person_ids=person_ids, expected_pair=expected_pair)
+    bindings = {"source": source}
+    if driver_gender_metadata is not None or driver_parameters_path is not None:
+        if driver_gender_metadata is None or driver_parameters_path is None:
+            raise ValueError("driver gender metadata and parameters must both be explicit")
+        driver_genders, driver = load_hi4d_gender_metadata(driver_gender_metadata, driver_parameters_path,
+                                                         person_order=person_order, person_ids=person_ids)
+        if genders != driver_genders or source["pair"] != driver["pair"]:
+            raise ValueError("source/driver stable person gender or pair declarations differ")
+        bindings["driver"] = driver
+    root = Path(body_model_root).resolve()
+    models = {gender: _load_hi4d_smpl_gender_backend(root / "smpl" / f"SMPL_{gender.upper()}.pkl", gender)
+              for gender in sorted(set(genders.values()), reverse=True)}
+    provenance = {"backend": "hi4d_matched_gendered_cpu_v1", "gender_metadata": bindings,
+        "person_genders": sorted(source["person_bindings"], key=lambda b: b["person_id"]),
+        "models": {g: {**m.provenance, "vertex_parts_sha256": tensor_sha256(m.vertex_parts)} for g, m in models.items()},
+        "part_labels": "matched_per_person_SMPL24_LBS_argmax_to_V6_14", "joint_mapping": "raw_smpl24_only"}
+    return GenderedBodyModelBackend(models, genders, provenance=provenance)
 
 
 def _frame_record(frame_map, selector):
@@ -899,8 +1049,8 @@ class NVDiffDenseRenderer:
         if (vertices[..., 2] <= 0).any():
             raise ValueError("renderer requires meshes in front of the physical camera")
         faces = body_model.faces.to(self.device, torch.int32).contiguous()
-        labels = body_model.vertex_parts.to(self.device)
-        triangle_labels = F.one_hot(labels[faces.long()], 14).sum(1).argmax(-1) + 1
+        labels = vertex_parts_for(body_model, state.parameters.person_ids).to(self.device)
+        triangle_labels = F.one_hot(labels[:, faces.long()], 14).sum(2).argmax(-1) + 1
         support = torch.zeros(vertices.shape[:2], device=self.device)
         ids = state.parameters.person_ids
         for contact in contacts:
@@ -930,7 +1080,7 @@ class NVDiffDenseRenderer:
             normals.append(F.normalize(interpolated[..., :3], dim=-1) * mask[..., None])
             depths.append(interpolated[..., 3] * mask)
             masks.append(mask)
-            parts.append(torch.where(mask, triangle_labels[face_index], torch.zeros_like(face_index)))
+            parts.append(torch.where(mask, triangle_labels[slot, face_index], torch.zeros_like(face_index)))
             projected_contacts.append(interpolated[..., 4].clamp(0, 1) * mask)
         result = compose_dense_geometry(torch.stack(normals), torch.stack(depths), torch.stack(masks), torch.stack(parts),
                                         torch.stack(projected_contacts), person_ids=ids, camera=camera, canvas=canvas)
@@ -945,12 +1095,12 @@ def projected_part_rois(state, camera, body_model, *, canvas=None, margin_px=0.)
     if margin_px < 0 or not math.isfinite(margin_px):
         raise ValueError("ROI margin must be finite and nonnegative")
     xy = camera.project(state.body.vertices, frame=state.parameters.frame, canvas=canvas)
-    labels = body_model.vertex_parts.to(xy.device)
+    labels = vertex_parts_for(body_model, state.parameters.person_ids).to(xy.device)
     output = []
-    for person in xy:
+    for slot, person in enumerate(xy):
         bounds = {}
         for name, part in (("face", 0), ("left_hand", 4), ("right_hand", 7)):
-            points = person[(labels == part) & torch.isfinite(person).all(-1)]
+            points = person[(labels[slot] == part) & torch.isfinite(person).all(-1)]
             bounds[name] = None if not len(points) else torch.cat([points.amin(0) - margin_px, points.amax(0) + margin_px]).detach().cpu().tolist()
         output.append({"mesh_part_bounds_xyxy": bounds, "landmark_availability": "SMPLX137" if state.parameters.family == "smplx" else "SMPL24_body_only_no_fingers",
                        "bounds_provenance": "projected_body_mesh_parts; head_bounds_are_not_face_landmarks"})

@@ -134,21 +134,29 @@ Run: `python -m pytest tests/test_qwen21_pro_training.py tests/test_qwen21_pro_c
 - Create: `src/pose_control/qwen21_pro/{inference,refinement}.py`
 - Test: `tests/test_qwen21_pro_{inference,refinement}.py`
 
-- [ ] denoising支持传入实际H/W、native img_shapes和task grid，不能沿用旧generate_cached固定1024target tokens的假设。正负CFG保持相同source绑定，KV cache关闭。
-- [ ] 区分精确GT训练的driver条件与无配对source-shape请求；后者从requested/solved的当前mesh重新生成dense和pose/control参考，重新编码原生条件，禁止混用旧driver缓存或旧RGB GT。Hi4D仅SMPL24，不伪造脸/手指关键点；mesh part可提供标注为bounds的ROI。重定向入口必须可从prepare/infer调用，不能只留下未接入函数。
-- [ ] Hi4D缺source KP时，用source action自己的raw SMPL、camera与source mask建立face/head/hand crop，按稳定person_order重排；禁止借target pose裁source。将新增参数、camera、模型/LBS标签与ROI策略字节加入source指纹，保留低支持invalid。已核实两source图940×1280，raw K与现有K_runtime仅浮点舍入差异，通用逻辑仍绑定source校准。
-- [ ] `RefinementRequest`固定coarse图、目标geometry ROI、source references、person bindings、white-edit mask、seed和已训练模型签名。hand contact ROI覆盖双方并联合处理；source-only bank重建到ROI坐标。
-- [ ] 官方ReferenceUnionPipeline以`image=coarse_roi,mask_image=edit_mask,reference_images=source_crops,control_image=geometry_roi,height=width=output_resolution=768,use_kv_cache=False`采样，最后按mask显式合成回coarse，mask外像素保持不变；无有效ROI退回coarse并记录原因。
-- [ ] builder在CPU的transformer_setup中严格装载Task5权重，再注册inference offload；首次使用同步leaf group（use_stream=False）验证共享task在0/4/8/12多次调用，无装载后旧CPU快照覆盖。完整raw refiner需cached=False的VLM/VAE/DiT各自offload；当前ReferenceUnionPipeline不接收cached image slots，不能去掉VLM后假装同一路径可运行。refiner训练使用真实keep1+masked_coarse64通道，并经Task5的显式sample verifier绑定新缓存。
-- [ ] 首版refiner训练底图来自锁定stage1 checkpoint离线生成并detach，记录每张底图/ROI/采样协议哈希；GT只入监督。测试坐标roundtrip、face/paired-hands分组、mask外无变化、GT不能充底图、无validity退回以及1024/768尺寸不误用32×32。
+- [x] denoising支持传入实际H/W、native img_shapes和task grid，不能沿用旧generate_cached固定1024target tokens的假设。正负CFG保持相同source绑定，KV cache关闭。
+- [x] 区分精确GT训练的driver条件与无配对source-shape请求；后者从requested/solved的当前mesh重新生成dense和pose/control参考，重新编码原生条件，禁止混用旧driver缓存或旧RGB GT。Hi4D仅SMPL24，不伪造脸/手指关键点；mesh part可提供标注为bounds的ROI。重定向入口必须可从prepare/infer调用，不能只留下未接入函数。
+- [x] Hi4D缺source KP时，用source action自己的raw SMPL、camera与source mask建立face/head/hand crop，按稳定person_order重排；禁止借target pose裁source。将新增参数、camera、模型/LBS标签与ROI策略字节加入source指纹，保留低支持invalid。已核实两source图940×1280，raw K与现有K_runtime仅浮点舍入差异，通用逻辑仍绑定source校准。
+- [x] `RefinementRequest`固定coarse图、目标geometry ROI、source references、person bindings、white-edit mask、seed和已训练模型签名。hand contact ROI覆盖双方并联合处理；source-only bank重建到ROI坐标。
+- [x] 官方ReferenceUnionPipeline以`image=coarse_roi,mask_image=edit_mask,reference_images=source_crops,control_image=geometry_roi,height=width=output_resolution=768,use_kv_cache=False`采样，最后按mask显式合成回coarse，mask外像素保持不变；无有效ROI退回coarse并记录原因。
+- [x] builder在CPU的transformer_setup中严格装载Task5权重，再注册inference offload；首次使用同步leaf group（use_stream=False）验证共享task在0/4/8/12多次调用，无装载后旧CPU快照覆盖。完整raw refiner需cached=False的VLM/VAE/DiT各自offload；当前ReferenceUnionPipeline不接收cached image slots，不能去掉VLM后假装同一路径可运行。refiner训练使用真实keep1+masked_coarse64通道，并经Task5的显式sample verifier绑定新缓存。
+- [x] 首版refiner训练底图来自锁定stage1 checkpoint离线生成并detach，记录每张底图/ROI/采样协议哈希；GT只入监督。测试坐标roundtrip、face/paired-hands分组、mask外无变化、GT不能充底图、无validity退回以及1024/768尺寸不误用32×32。
 
 Run: `python -m pytest tests/test_qwen21_pro_inference.py tests/test_qwen21_pro_refinement.py -q`。服务器至少执行单人/双人coarse与局部两步smoke；两步图只证明管线可运行，不作质量结论。
+
+实施证据（2026-10-18）：独立spec/quality均批准；fullPro+Union pipeline+实际Reference循环回归327passed/9expectedskip。Encoded首次封口与fullpack/currentgeometry、ROI parent/affine、part端点及bank/native crop逐项签名的错配均通过真实red→green修复。quality补官方逐token CFG L2 norm rescale（旧Union默认False保兼容、Pro/refiner默认True），真实GPU补RGBA→RGB贴回；原失败`inference_task6_20261018T130610`保留。
+
+冻结78文件`code_task6_20261018T132022`（归档SHA=`d3ee7f3b3e8057a88252ac9c85c9ee21da2c8589a2d77bb7ed37a1a9e2df5518`）SCP/compileall通过；完整发布模型新六例2updates门禁通过（432.76s）。`runs/inference_cfg4_task6_20261018T132022/report.json`单人TikTok与真实Hi4D high-five全部通过（443.74s）：每例2步512 coarse+2步768 ROI，CFG4、KVoff、同步leaf offload；local grids均48²，source crops分别1/2，编辑像素13056/2301，mask外逐位不变；两个真实refiner训练工厂/cache/attestation均通过，keep1/inpaint64/GT监督独立。peak allocated/reserved=8,644,746,752/12,859,736,064bytes，initialfree=83,863,470,080bytes。2步仅工程证明，不作质量结论。代码已提交0072032d，Task7a另行开发，未混入该提交。
 
 ## Task 7: CLI、实验目录与真实GPU门禁
 
 2026-10-18按实际val盘证补充顺序：先完成Task7a匹配gender的Hi4D backend，再做Task7b CLI/训练门禁。锁定val有iPER/TikTok/Hi4D各24条；Hi4D的pair22/28全部为male+female，不能沿用早期male-only后端。现有`SMPL_FEMALE.pkl`独立CPU重建pair28 source6/target45的female人物，verts/joints最大误差1.19209e-7m，SHA=`6d4a1791b6b94880397e1a3a4539b703a228d2150c57de7b288389a8115f4ef0`，与male同faces/6890顶点、14类LBS标签有11处不同。因此补逐stable-person的gender选择、匹配模型/part标签与permutation、source/driver元数据与模型文件SHA绑定；缺失/不明gender继续拒绝，不能默认male或neutral。先CPU真实forward，再GPU dense和Qwen handoff；不安装包。
 
-- [ ] Task7a：`geometry.py/geometry_preparation.py`及对应测试接入matched mixed SMPL；renderer、projected ROI与contact codec接受按人物排序的[P,V]部位标签，同时保持旧[V]兼容。source/driver自己的参数、pair gender元数据、male/female权重与loader文件均进入只读签名；原male路径和旧失败证据保留。
+- [x] Task7a：`geometry.py/geometry_preparation.py`及对应测试接入matched mixed SMPL；renderer、projected ROI与contact codec接受按人物排序的[P,V]部位标签，同时保持旧[V]兼容。source/driver自己的参数、pair gender元数据、male/female权重与loader文件均进入只读签名；原male路径和旧失败证据保留。
+
+Task7a证据：spec+quality均批准；完整Pro+旧Union455passed/9expectedskip。补齐删除全部mixed标记/绑定后降级male的source/current拒绝，旧shared[V]导出保持兼容。`code_task7a_20261018T140821`（82文件、归档SHA=`459d751b8494bc1425ca5d728523111fb3f1970005404adef75d792ed134b14c`）SCP/compileall通过；`mixed_cpu_20261018T140821`四例8个source/driver状态及人物置换通过（15.72s），mesh/joints最大误差2.38419e-7m；`mixed_geometry_20261018T140821`四例8个source/current worker通过（44.52s），state-order female/male labels逐行pin正确；`mixed_handoff_20261018T140821`Qwen环境4/4通过（7.03s），无smplx导入，geometry-only dummy source未cache/sample/train，不能宣称已提取val外观。两个positive各保留256条raw vertex contact pairs，两个zero E0。
+
+85GB resident工程补充：`code_resident_20261018T134310`由冻结Task6归档派生、仅替换新增memory-mode参数的audit helper；归档SHA=`0e0bb11eaae7c5738493e339967ea70330b2332d89f30b306ebf854dec0b4dbb`。`resident_resume_20261018T134310/gate.json`完整模型4continuous=2+2逐位续跑通过（571.69s），frozen/prefix/各分支梯度通过；peak allocated/reserved=29,799,127,552/30,987,517,952bytes。后续pilot预登记采用resident（与原B resident相同），正式启动前复核实际free；若资源不足改模式须新run/明确协议，不能静默回退。
 
 **Files:**
 - Create: `src/pose_control/qwen21_pro/{runner,gates}.py`

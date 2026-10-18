@@ -585,3 +585,129 @@ def test_real_smplestx_cpu_backend_contract():
     assert result.source_rest_heights_m.item() > 1
     assert backend.provenance["model_sha256"]
     result.require_exact_gt_pairing()
+
+
+class GenderSentinelLayer(torch.nn.Module):
+    """Distinct real Tensor geometry/parts, without external licensed weights."""
+    def __init__(self, value):
+        super().__init__()
+        self.register_buffer("value", torch.tensor(float(value)))
+
+    def forward(self, **kwargs):
+        vertices = kwargs["betas"][:, :1, None] + self.value
+        vertices = vertices.expand(-1, 6890, 3) + kwargs["transl"][:, None]
+        offset = vertices.new_zeros(6890, 3)
+        offset[:, 1] = torch.linspace(-1, 1, 6890)
+        vertices = vertices + offset
+        return types.SimpleNamespace(vertices=vertices, joints=vertices[:, :24])
+
+
+def mixed_sentinel_backend():
+    m = api()
+    models = {gender: m.BodyModelBackend("smpl", GenderSentinelLayer(value), [[0, 1, 2]],
+              vertex_parts=torch.full((6890,), part, dtype=torch.long))
+              for gender, value, part in (("male", 2, 4), ("female", 7, 7))}
+    return m.GenderedBodyModelBackend(models, {0: "male", 1: "female"})
+
+
+def test_gendered_backend_keeps_raw_identity_geometry_parts_and_gradients_under_permutation():
+    m = api()
+    assert hasattr(m, "GenderedBodyModelBackend"), "matched gendered backend is missing"
+    backend = mixed_sentinel_backend()
+    params = replace(parameters(), person_ids=(0, 1), frame="world",
+                     betas=torch.tensor([[.1] * 10, [.9] * 10], requires_grad=True))
+    forward = backend.forward(params)
+    assert torch.allclose(forward.vertices[:, 0, 0], torch.tensor([2.06, 7.94]))
+    assert forward.joints.shape == (2, 24, 3)
+    reverse = replace(params, person_ids=(1, 0), **{name: getattr(params, name).flip(0)
+                      for name in ("betas", "global_orient", "body_pose", "transl")})
+    assert torch.equal(backend.forward(reverse).vertices, forward.vertices.flip(0))
+    assert m.vertex_parts_for(backend, (1, 0))[:, 0].tolist() == [7, 4]
+    forward.vertices.sum().backward()
+    assert params.betas.grad.abs().sum() > 0
+    with pytest.raises(ValueError, match="gender|person"):
+        backend.forward(replace(params, person_ids=(0, 8)))
+    with pytest.raises(ValueError, match="gender"):
+        m.GenderedBodyModelBackend(backend.models, {0: "unknown", 1: "female"})
+
+
+def test_projected_rois_gather_two_dimensional_parts_by_stable_person_id():
+    m = api()
+    class Parts(RodBody):
+        person_ids = (7, 41)  # canonical order deliberately differs from state
+        vertex_parts = torch.tensor([[1, 7, 1, 1], [1, 4, 1, 1]])
+    state = request().driver
+    result = m.projected_part_rois(state, camera(), Parts())
+    assert result[0]["mesh_part_bounds_xyxy"]["left_hand"] is not None
+    assert result[0]["mesh_part_bounds_xyxy"]["right_hand"] is None
+    assert result[1]["mesh_part_bounds_xyxy"]["right_hand"] is not None
+
+
+def test_gender_metadata_binds_raw_ids_own_pair_action_and_model_fingerprints(tmp_path):
+    m = api()
+    assert hasattr(m, "load_hi4d_gender_metadata"), "explicit gender metadata loader is missing"
+    action = tmp_path / "pair28/dance28"
+    (action / "smpl").mkdir(parents=True)
+    params = action / "smpl/000006.npz"
+    params.write_bytes(b"raw params")
+    metadata = action / "meta.npz"
+    np.savez(metadata, genders=np.array([b"male", b"female"]))
+    genders, binding = m.load_hi4d_gender_metadata(metadata, params, person_order=(1, 0))
+    assert genders == {1: "female", 0: "male"}
+    assert binding["raw_genders"] == ["male", "female"]
+    assert binding["pair"] == "pair28" and binding["sha256"] == m._sha256(metadata)
+    other = tmp_path / "pair22/game22"
+    other.mkdir(parents=True)
+    wrong = other / "meta.npz"
+    np.savez(wrong, genders=np.array(["male", "female"]))
+    with pytest.raises(ValueError, match="own|pair|action"):
+        m.load_hi4d_gender_metadata(wrong, params)
+    with pytest.raises(ValueError, match="pair"):
+        m.load_hi4d_gender_metadata(metadata, params, expected_pair="pair22")
+    np.savez(metadata, genders=np.array(["male", "unknown"]))
+    with pytest.raises(ValueError, match="gender"):
+        m.load_hi4d_gender_metadata(metadata, params)
+    model_root = tmp_path / "body"
+    (model_root / "smpl").mkdir(parents=True)
+    (model_root / "smpl/SMPL_MALE.pkl").write_bytes(b"different model")
+    np.savez(metadata, genders=np.array(["male", "female"]))
+    with pytest.raises(ValueError, match="fingerprint"):
+        m.load_hi4d_gendered_backend(model_root, metadata, parameters_path=params)
+
+
+def test_dense_renderer_uses_each_person_triangle_parts_with_cpu_raster_sentinel():
+    m = api()
+    class Parts(RodBody):
+        person_ids = (7, 41)
+        vertex_parts = torch.tensor([[7, 7, 7, 7], [4, 4, 4, 4]])
+    class Raster:
+        @staticmethod
+        def rasterize(context, clip, faces, resolution, **kwargs):
+            h, w = resolution
+            raster = torch.zeros(1, h, w, 4)
+            raster[..., 3] = 1
+            return raster, None
+        @staticmethod
+        def interpolate(attributes, raster, faces):
+            return attributes[:, 1:2, None].expand(-1, *raster.shape[1:3], -1), None
+    renderer = object.__new__(m.NVDiffDenseRenderer)
+    renderer.device, renderer.dr, renderer.context = torch.device("cpu"), Raster(), None
+    rendered = renderer.render(request().driver, camera(), Parts())
+    assert rendered.part[:, 0, 0].tolist() == [5, 8]  # raster part encoding is +1
+
+
+@pytest.mark.parametrize("mutation", ["labels", "genders", "provenance", "layer", "child_parts"])
+def test_gendered_backend_rejects_model_parts_and_signature_mutation(mutation):
+    backend = mixed_sentinel_backend()
+    if mutation == "labels":
+        backend.vertex_parts[0, 0] = 1
+    elif mutation == "genders":
+        backend.person_genders[0] = "female"
+    elif mutation == "provenance":
+        backend.provenance["backend"] = "some other backend"
+    elif mutation == "layer":
+        backend.models["female"].layer.value.add_(1)
+    else:
+        backend.models["female"].vertex_parts[0] = 4
+    with pytest.raises(ValueError, match="binding|changed"):
+        backend.forward(replace(parameters(), person_ids=(0, 1)))

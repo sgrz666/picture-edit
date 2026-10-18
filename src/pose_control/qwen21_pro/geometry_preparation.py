@@ -33,6 +33,7 @@ from .geometry import (
     dwpose134,
     projected_part_rois,
     retarget_request,
+    vertex_parts_for,
 )
 
 P_ROOT = Path("/data/shangguanrz/pic-edit-experiments/qwen21_pro_adapter_v1")
@@ -90,28 +91,38 @@ def load_hi4d_camera(path, camera_id, image_hw):
     return Camera(k, tuple(image_hw), extrinsic)
 
 
-def verify_hi4d_forward(path, state, *, person_order):
-    """Matched male backend 只覆盖原始 male mesh；拒绝性别/网格不一致的 GT。"""
+def verify_hi4d_forward(path, state, *, person_order, body_model=None):
+    """原始逐人性别/mesh/joints 与 matched forward 的 1e-4m 门禁。"""
+    from .geometry import _hi4d_genders
+    mixed = body_model is not None and body_model.provenance.get("backend") == "hi4d_matched_gendered_cpu_v1"
+    genders = None
+    if mixed:
+        labels = vertex_parts_for(body_model, state.parameters.person_ids)
+        _validate_body_binding(body_model.provenance, state.parameters.person_ids, labels=labels)
+        bindings = body_model.provenance["gender_metadata"]
+        matches = [b for b in bindings.values() if Path(b["parameters_path"]).resolve() == Path(path).resolve()]
+        if not matches:
+            raise ValueError("Hi4D raw forward has no own gender metadata binding")
+        genders = matches[0]["raw_genders"]
+        expected_ids = tuple(next(b["person_id"] for b in matches[0]["person_bindings"] if b["raw_person_index"] == raw)
+                             for raw in person_order)
+        if state.parameters.person_ids != expected_ids:
+            raise ValueError("Hi4D raw forward person order/gender binding differs")
     with np.load(path, allow_pickle=False) as raw:
         expected = torch.from_numpy(raw["verts"][list(person_order)].copy()).to(
             state.body.vertices
         )
-        genders = None
         for key in ("genders", "gender"):
             if key in raw:
-                declared = np.asarray(raw[key]).reshape(-1)
-                if declared.dtype.kind in "US":
-                    genders = [
-                        (
-                            value.decode() if isinstance(value, bytes) else str(value)
-                        ).lower()
-                        for value in declared
-                    ]
-                    if any(value not in ("male", "m") for value in genders):
-                        raise ValueError(
-                            "Matched male Hi4D backend cannot reconstruct female/mixed gender records"
-                        )
+                declared = _hi4d_genders(raw[key])
+                if mixed and declared != genders:
+                    raise ValueError("Hi4D raw gender declarations differ from own metadata binding")
+                genders = declared
+                if not mixed and any(value != "male" for value in genders):
+                    raise ValueError("Matched male Hi4D backend cannot reconstruct female/mixed gender records")
                 break
+        joints = next((torch.from_numpy(raw[key][list(person_order), :24].copy()).to(state.body.joints)
+                       for key in ("joints_3d", "joints") if key in raw), None)
     if (
         expected.shape != state.body.vertices.shape
         or not torch.isfinite(expected).all()
@@ -119,14 +130,93 @@ def verify_hi4d_forward(path, state, *, person_order):
         raise ValueError("Hi4D raw mesh shape/values differ from matched body forward")
     error = float((expected - state.body.vertices).abs().max())
     if error > 1e-4:
-        raise ValueError(f"Hi4D matched male forward mismatch: {error}m")
+        raise ValueError(f"Hi4D matched body forward mismatch: {error}m")
+    joint_error = None
+    if joints is not None:
+        if joints.shape != state.body.joints.shape or not torch.isfinite(joints).all():
+            raise ValueError("Hi4D raw joints differ from matched body forward")
+        joint_error = float((joints - state.body.joints).abs().max())
+        if joint_error > 1e-4:
+            raise ValueError(f"Hi4D matched body joint forward mismatch: {joint_error}m")
     return {
         "path": str(path),
         "sha256": file_sha256(path),
         "max_abs_error_m": error,
+        "max_abs_joint_error_m": joint_error,
         "genders": genders,
-        "coverage": "matched_male_only;no_full_mixed_gender_coverage_claim",
+        "coverage": "matched_declared_gender_per_person" if mixed else "matched_male_only;no_full_mixed_gender_coverage_claim",
     }
+
+
+def _body_asset_files(provenance):
+    """Flatten model/metadata/loader bindings into inspectable actual files."""
+    path_keys = ("model_path", "loader_path", "smplx_loader_path", "smplx_body_loader_path")
+    files = {key: provenance[key] for key in path_keys if provenance.get(key)}
+    if provenance.get("backend") == "hi4d_matched_gendered_cpu_v1":
+        for gender, model in provenance["models"].items():
+            files.update({f"{gender}_{key}": model[key] for key in path_keys})
+        for role, binding in provenance["gender_metadata"].items():
+            files[f"{role}_gender_metadata"] = binding["path"]
+            files[f"{role}_raw_parameters"] = binding["parameters_path"]
+    return {key: str(Path(value).resolve()) for key, value in files.items()}
+
+
+def _validate_body_binding(provenance, person_ids, *, labels=None, part_bindings=None,
+                           asset_files=None, vertex_parts_shape=None):
+    """Qwen consumer checks actual assets and gender/parts without importing smplx."""
+    shape = tuple(labels.shape) if labels is not None else tuple(vertex_parts_shape or ())
+    per_person_smpl = len(shape) == 2 and shape == (len(person_ids), 6890)
+    # Classification comes from the payload and SHA-checked input files, before
+    # trusting an optional backend marker. Removing provenance cannot downgrade
+    # an actual mixed handoff into the shared-[V] legacy contract.
+    gender_assets = any(Path(path).name.lower() in {"meta.npz", "smpl_female.pkl"}
+                        for path in (asset_files or {}).values())
+    if (per_person_smpl or gender_assets) and provenance.get("backend") != "hi4d_matched_gendered_cpu_v1":
+        raise ValueError("Hi4D actual per-person geometry/gender assets require complete gender proof binding")
+    if provenance.get("backend") != "hi4d_matched_gendered_cpu_v1":
+        if any(key in provenance for key in ("models", "person_genders", "gender_metadata")) or part_bindings:
+            raise ValueError("Hi4D gender model backend signature binding differs")
+        return []
+    from . import geometry
+    bindings = provenance["gender_metadata"]
+    if set(bindings) not in ({"source"}, {"source", "driver"}):
+        raise ValueError("Hi4D body gender metadata role binding differs")
+    source = bindings["source"]
+    for binding in bindings.values():
+        rows = binding["person_bindings"]
+        _, actual = geometry.load_hi4d_gender_metadata(binding["path"], binding["parameters_path"],
+            person_order=tuple(row["raw_person_index"] for row in rows), person_ids=tuple(row["person_id"] for row in rows))
+        if actual != binding:
+            raise ValueError("Hi4D gender metadata/parameters SHA256 binding differs")
+        if binding["pair"] != source["pair"] or sorted(rows, key=lambda row: row["person_id"]) != sorted(source["person_bindings"], key=lambda row: row["person_id"]):
+            raise ValueError("Hi4D source/driver gender binding differs")
+    expected = sorted(source["person_bindings"], key=lambda row: row["person_id"])
+    if provenance["person_genders"] != expected or set(person_ids) != {row["person_id"] for row in expected}:
+        raise ValueError("Hi4D stable person gender/model binding differs")
+    genders = {row["person_id"]: row["gender"] for row in expected}
+    if set(provenance["models"]) != set(genders.values()):
+        raise ValueError("Hi4D model genders differ from actual declared people")
+    for gender, model in provenance["models"].items():
+        pin = geometry.HI4D_MALE_MODEL_SHA256 if gender == "male" else geometry.HI4D_FEMALE_MODEL_SHA256
+        if model["model_sha256"] != pin or file_sha256(model["model_path"]) != pin:
+            raise ValueError("Hi4D gender model fingerprint binding differs")
+        for stem in ("loader", "smplx_loader", "smplx_body_loader"):
+            if file_sha256(model[f"{stem}_path"]) != model[f"{stem}_sha256"]:
+                raise ValueError("Hi4D model loader SHA256 binding differs")
+        if model["loader_sha256"] != file_sha256(geometry.__file__) or model["joint_mapping"] != "raw_smpl24_only":
+            raise ValueError("Hi4D model loader/joints signature differs")
+        if model["vertex_parts_sha256"] != geometry.HI4D_PARTS_SHA256[gender]:
+            raise ValueError("Hi4D gender model/parts signature differs")
+    expected_parts = [{"person_id": pid, "gender": genders[pid], "sha256": geometry.HI4D_PARTS_SHA256[genders[pid]]} for pid in person_ids]
+    if labels is not None:
+        if labels.dtype != torch.long or tuple(labels.shape) != (len(person_ids), 6890):
+            raise ValueError("Hi4D current vertex parts must be long [P,6890] in stable person order")
+        actual_parts = [{"person_id": pid, "gender": genders[pid], "sha256": tensor_sha256(labels[slot])} for slot, pid in enumerate(person_ids)]
+        if actual_parts != expected_parts:
+            raise ValueError("Hi4D actual gender model/vertex parts binding differs")
+    elif part_bindings != expected_parts:
+        raise ValueError("Hi4D source gender/vertex parts binding differs")
+    return expected_parts
 
 
 def source_geometry_paths(record, project_root):
@@ -154,6 +244,17 @@ def validate_source_geometry(bundle, record, assets):
         raise ValueError("source geometry RGB SHA256 differs")
     if asset_hashes(bundle["asset_files"]) != bundle["asset_hashes"]:
         raise ValueError("source geometry asset SHA256 differs")
+    model_binding = bundle.get("body_model", {})
+    if bundle.get("schema") == "source_mesh_rois_v1" and not model_binding:
+        raise ValueError("source geometry body model binding is missing")
+    _validate_body_binding(model_binding, tuple(bundle["person_ids"]),
+        part_bindings=bundle.get("vertex_part_bindings"), asset_files=bundle["asset_files"],
+        vertex_parts_shape=bundle.get("vertex_parts_shape"))
+    if model_binding.get("backend") == "hi4d_matched_gendered_cpu_v1" and record.get("group_id") is not None and record["group_id"] != model_binding["gender_metadata"]["source"]["pair"]:
+        raise ValueError("source geometry gender metadata pair differs from declared source group")
+    required_files = _body_asset_files(model_binding)
+    if any(bundle["asset_files"].get(f"source_{key}") != value for key, value in required_files.items()):
+        raise ValueError("source geometry model input file binding differs")
     if (
         bundle.get("code_signature", {}).get("geometry.py") is not None
         and bundle["code_signature"] != _geometry_code()
@@ -173,7 +274,7 @@ def build_source_geometry(
     """原始源 mesh + 自己的 camera + 可见源 mask；不猜隐藏面部与手指。"""
     if state.parameters.person_ids != tuple(record["person_order"]):
         raise ValueError("source geometry state/person binding differs")
-    original = Path(assets["source_rgb"])
+    original = Path(record.get("metadata", {}).get("original_source_rgb", assets["source_rgb"]))
     if (
         len(original.parts) >= 5
         and original.parts[-5].startswith("pair")
@@ -206,6 +307,10 @@ def build_source_geometry(
         wh = opened.size
     if camera.image_hw != wh[::-1]:
         raise ValueError("source geometry camera and original RGB dimensions differ")
+    labels = vertex_parts_for(body_model, state.parameters.person_ids).detach().cpu().clone()
+    if body_model.vertex_parts.ndim == 1:
+        labels = labels[0].clone()
+    part_bindings = _validate_body_binding(body_model.provenance, state.parameters.person_ids, labels=labels)
     raw_rois = projected_part_rois(state, camera, body_model)
     rois, coverage = [], []
     for slot, path in enumerate(assets["source_masks"]):
@@ -228,9 +333,7 @@ def build_source_geometry(
         rois.append(valid)
         coverage.append(counts)
     files = {key: str(Path(value).resolve()) for key, value in asset_files.items()}
-    for key in ("model_path", "loader_path", "smplx_loader_path"):
-        if body_model.provenance.get(key):
-            files[f"source_{key}"] = str(body_model.provenance[key])
+    files.update({f"source_{key}": value for key, value in _body_asset_files(body_model.provenance).items()})
     files.update(
         {f"source_mask_{i}": str(p) for i, p in enumerate(assets["source_masks"])}
     )
@@ -254,7 +357,9 @@ def build_source_geometry(
                 else camera.world_to_camera.tolist()
             ),
         },
-        "vertex_parts_sha256": tensor_sha256(body_model.vertex_parts),
+        "vertex_parts_sha256": tensor_sha256(labels),
+        "vertex_parts_shape": list(labels.shape),
+        "vertex_part_bindings": part_bindings,
         "code_signature": _geometry_code(),
         "policy": ROI_POLICY,
         "landmark_availability": raw_rois[0]["landmark_availability"],
@@ -362,6 +467,18 @@ def prepare_geometry(
     if any(v % 32 for v in canvas_hw):
         raise ValueError("native canvas must be divisible by32")
     state = request.driver if mode == "driver_exact" else request.solved
+    labels = vertex_parts_for(body_model, state.parameters.person_ids).detach().cpu().clone()
+    if body_model.vertex_parts.ndim == 1:
+        labels = labels[0].clone()
+    if request.provenance.get("body_model") != body_model.provenance:
+        raise ValueError("Current geometry request and body model signature differ")
+    bound_assets = dict(input_assets or {})
+    for key, value in _body_asset_files(body_model.provenance).items():
+        if key in bound_assets and Path(bound_assets[key]).resolve() != Path(value).resolve():
+            raise ValueError("Current geometry input asset/model binding differs")
+        bound_assets[key] = value
+    _validate_body_binding(body_model.provenance, state.parameters.person_ids,
+                           labels=labels, asset_files=bound_assets)
     canvas = PixelCanvasTransform.letterbox(request.camera.image_hw, tuple(canvas_hw))
     dense = renderer.render(
         state, request.camera, body_model, canvas=canvas, contacts=contacts
@@ -407,7 +524,7 @@ def prepare_geometry(
         "camera": ordinary_cpu(asdict(request.camera)),
         "source_rest_heights_m": ordinary_cpu(request.source_rest_heights_m),
         "contacts": [asdict(c) for c in contacts],
-        "vertex_parts": ordinary_cpu(body_model.vertex_parts),
+        "vertex_parts": ordinary_cpu(labels),
         "visible_owner": ordinary_cpu(dense.visible_owner),
     }
     with (path / "geometry.pt").open("xb") as stream:
@@ -420,13 +537,14 @@ def prepare_geometry(
         },
         "camera": _payload_digest(asdict(request.camera)),
         "body_model": body_model.provenance,
+        "vertex_parts_sha256": tensor_sha256(labels),
         "canvas": canvas.to_dict(),
         "code": _geometry_code(),
         "dense_sha256": file_sha256(path / "geometry.pt"),
         "input_asset_files": {
-            k: str(Path(v).resolve()) for k, v in (input_assets or {}).items()
+            k: str(Path(v).resolve()) for k, v in bound_assets.items()
         },
-        "input_asset_hashes": asset_hashes(input_assets or {}),
+        "input_asset_hashes": asset_hashes(bound_assets),
         "request_provenance": request.provenance,
     }
     manifest = {
@@ -459,7 +577,7 @@ def prepare_geometry(
         rois,
         canvas,
         tuple(contacts),
-        body_model.vertex_parts.detach().cpu().clone(),
+        labels,
         manifest,
     )
 
@@ -536,8 +654,8 @@ def geometry_task_condition(source_pack, prepared, *, config):
             ) / scale
             src.append(sa)
             dst.append(sb)
-            src_parts.append(int(labels[a.vertex_index]))
-            dst_parts.append(int(labels[b.vertex_index]))
+            src_parts.append(int(labels[sa, a.vertex_index] if labels.ndim == 2 else labels[a.vertex_index]))
+            dst_parts.append(int(labels[sb, b.vertex_index] if labels.ndim == 2 else labels[b.vertex_index]))
             relative.append(
                 [
                     *delta.tolist(),
@@ -599,6 +717,8 @@ def load_geometry_task_condition(source_pack, manifest_path, *, config):
     path = Path(manifest_path)
     manifest = json.loads(path.read_text(encoding="utf-8"))
     signature = manifest["geometry_signature"]
+    if signature["body_model"] != signature["request_provenance"].get("body_model"):
+        raise ValueError("Current geometry request/body model binding differs")
     if asset_hashes(signature.get("input_asset_files", {})) != signature.get(
         "input_asset_hashes", {}
     ):
@@ -619,6 +739,12 @@ def load_geometry_task_condition(source_pack, manifest_path, *, config):
     )
     if tuple(data["person_ids"]) != source_pack.person_ids:
         raise ValueError("Current geometry handoff person binding differs")
+    if tensor_sha256(data["vertex_parts"]) != signature.get("vertex_parts_sha256"):
+        raise ValueError("Current geometry vertex parts SHA256 binding differs")
+    _validate_body_binding(signature["body_model"], tuple(data["person_ids"]),
+                           labels=data["vertex_parts"], asset_files=signature["input_asset_files"])
+    if any(signature["input_asset_files"].get(key) != value for key, value in _body_asset_files(signature["body_model"]).items()):
+        raise ValueError("Current geometry model input file binding differs")
     params = BodyParameters(**data["state"]["parameters"])
     state = GeometryState(params, BodyOutput(**data["state"]["body"]))
     contacts = tuple(
@@ -659,6 +785,7 @@ def _job_main(job):
     from .geometry import (
         load_hi4d_parameters,
         load_hi4d_smpl_backend,
+        load_hi4d_gendered_backend,
         load_smplestx_backend,
         load_smplestx_parameters,
         NVDiffDenseRenderer,
@@ -675,7 +802,11 @@ def _job_main(job):
             raise ValueError(
                 "source mesh ROI worker currently needs Hi4D raw source/camera inputs"
             )
-        backend = load_hi4d_smpl_backend(job["body_model_path"])
+        backend = (
+            load_hi4d_gendered_backend(job["body_model_root"], job["gender_metadata"],
+                parameters_path=job["source_params"], person_order=tuple(job["person_order"]), expected_pair=job.get("group_id"))
+            if "body_model_root" in job else load_hi4d_smpl_backend(job["body_model_path"])
+        )
         _, source, _, _ = load_hi4d_parameters(
             job["source_params"],
             job["source_params"],
@@ -688,9 +819,9 @@ def _job_main(job):
         )
         state = GeometryState(source, backend.forward(source))
         forward_audit = verify_hi4d_forward(
-            job["source_params"], state, person_order=tuple(job["person_order"])
+            job["source_params"], state, person_order=tuple(job["person_order"]), body_model=backend
         )
-        record = {"person_order": job["person_order"]}
+        record = {"person_order": job["person_order"], "group_id": job.get("group_id")}
         assets = {"source_rgb": job["source_rgb"], "source_masks": job["source_masks"]}
         bundle = build_source_geometry(
             record,
@@ -709,7 +840,12 @@ def _job_main(job):
         _save_json(path / "source_geometry.json", bundle)
         return
     if dataset == "hi4d":
-        backend = load_hi4d_smpl_backend(job["body_model_path"])
+        backend = (
+            load_hi4d_gendered_backend(job["body_model_root"], job["gender_metadata"],
+                parameters_path=job["source_params"], person_order=tuple(job["person_order"]),
+                driver_gender_metadata=job["driver_gender_metadata"], driver_parameters_path=job["driver_params"], expected_pair=job.get("group_id"))
+            if "body_model_root" in job else load_hi4d_smpl_backend(job["body_model_path"])
+        )
         shape, driver, flags, provenance = load_hi4d_parameters(
             job["source_params"],
             job["driver_params"],
@@ -728,11 +864,13 @@ def _job_main(job):
                 job["source_params"],
                 GeometryState(source, backend.forward(source)),
                 person_order=tuple(job["person_order"]),
+                body_model=backend,
             ),
             "driver": verify_hi4d_forward(
                 job["driver_params"],
                 GeometryState(driver, backend.forward(driver)),
                 person_order=tuple(job["person_order"]),
+                body_model=backend,
             ),
         }
         input_assets = {
