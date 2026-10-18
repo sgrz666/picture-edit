@@ -157,13 +157,15 @@ Run: `python -m pytest tests/test_qwen21_pro_inference.py tests/test_qwen21_pro_
 - [ ] 新workspace`/data/shangguanrz/pic-edit-experiments/qwen21_pro_adapter_v1`，独立代码快照与现有B环境，只增代码不改torch/diffusers。向远端发送脚本一律scp，编译/AST校验；检查Git日志和GPU实际可用内存。
 - [ ] GPU smoke逐项保存：180权重不变、zero-pro等价、task prefix差分、头/上游梯度、单/双人、checkpoint恢复、两步coarse/ROI产物与SHA。任一失败先修再继续，失败不改为通过。
 - [ ] 跑overfit6新200updates及固定18位置/step0&200图；结果另名、不能续旧B假装新方案。通过后具备按锁定数据扩大训练与val96图的入口；若长期训练仍运行，最终如实报告进程与完成范围，不宣称效果。
+- [ ] 对齐旧B的overfit预算：200updates、accumulation=1、train_seed3407、sampler_seed20261015、AdamW lr1e-4/warmup32、循环同六例顺序；正式512的accumulation=3另登记。固定18位置仍每样本重置noise_seed43、timestep index250/500/750；门槛用同定义global content flow MSE下降≥20%，新regional总loss另列，不能混比或更改旧17.7868%失败。
 - [ ] 小规模消融实际执行：锁定同seed/noise/timestep的有/无geometry、person bank、contact分支比较，分别报告六例loss与有效模态覆盖；训练拓扑4/8位置要用各自新checkpoint与相同预算，不能拿关层推理替代重训对比。val12×4arm×2seed=96图的40steps协议与可复现入口登记；先执行单/双人pilot并报告实跑数量，完整96图与正式1024图未跑完时保留待完成状态，不冒称质量验证通过。
+- [ ] 消融预算先登记为各25updates、accumulation=1：完整4位置（保存主200run的step25）、去dense normal/depth/part但保留owner/ROI的routing、去task bank/FaceID但保留native source refs、去显式contact、8位置完整分支。比较同样18位置与覆盖，报告实际活跃参数量；4/8共享参数初始化核对一致，新增head均零。输入干预另标diagnostic，不代替重训结论；val两seed固定42/43。
 
 Run local: `$paths=(Get-ChildItem tests -File -Filter 'test_qwen21_pro_*.py').FullName; python -m pytest $paths -q`（PowerShell）；服务器`python -m pytest tests/test_qwen21_pro_*.py -q`。
 
 ## Task 8: 审查、部署与交付
 
-Task7提前工程证据：`code_fullgate_20261018T121250`由冻结Task5/FoV代码快照派生并加入独立`audit_training.py`（53文件，归档SHA=`5274e710aa889b0a59aa4b86bcf56b717874ec226b7d5803266910f5fffa7710`），SCP/compileall通过。`runs/fullgate_20261018T121250/gate.json`通过完整发布模型真实六例两次平衡更新（346.44s）；180tensor恢复、zero逐值等价、训练后prefix及frozen SHA不变，head/geometry/contact/appearance/identity上游梯度均非零。peak allocated/reserved=8,111,991,296/9,202,302,976bytes，初始free=42,869,784,576bytes；362个frozen Linear共21,781,176,320bytes CPU BF16，task与optimizer GPU FP32。更强的完整模型4=2+2精确续跑在新`full_resume_20261018T122119`单独执行，尚待结果；coarse/ROI图和200步/消融仍未完成。
+Task7提前工程证据：`code_fullgate_20261018T121250`由冻结Task5/FoV代码快照派生并加入独立`audit_training.py`（53文件，归档SHA=`5274e710aa889b0a59aa4b86bcf56b717874ec226b7d5803266910f5fffa7710`），SCP/compileall通过。`runs/fullgate_20261018T121250/gate.json`通过完整发布模型真实六例两次平衡更新（346.44s）；180tensor恢复、zero逐值等价、训练后prefix及frozen SHA不变，head/geometry/contact/appearance/identity上游梯度均非零。peak allocated/reserved=8,111,991,296/9,202,302,976bytes，初始free=42,869,784,576bytes；362个frozen Linear共21,781,176,320bytes CPU BF16，task与optimizer GPU FP32。更强的`full_resume_20261018T122119`在独立53文件快照（归档SHA=`ded69a06223a112f9e7b9bb4da3d6f10e71f7b9c0a6b17b348c6bea6428114e0`）中通过完整发布模型4continuous=2+2精确续跑（651.04s），task/AdamW/LR/RNG与noise/timestep/loss轨迹均零容差，参数对象不变，frozen/prefix再次通过；peak allocated/reserved=8,118,249,984/9,307,160,576bytes。coarse/ROI图和200步/消融仍未完成。
 
 - [ ] 每任务先spec再quality review，修复所有会造成错配、梯度截断、缓存污染、旧权重覆盖的问题；最终整体再审查一次。
 - [ ] 旧Union回归、全Pro测试、服务器语法与真实GPU证据通过；检查未删移媒体、未改环境、未覆盖旧run、无大文件入Git。

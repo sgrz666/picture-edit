@@ -55,6 +55,8 @@ renderer现按完整逆仿射裁掉原相机FoV外的像素，避免mesh漏进le
 
 `scripts/audit_training.py` 是完整发布权重的工程门禁。`runs/fullgate_20261018T121250` 已通过六例、两次平衡更新（346.44s）：180个官方tensor恢复、零分支逐值等价、训练后参考prefix与冻结参数SHA保持一致；head/geometry/contact/appearance/identity梯度均非零。362个冻结Linear的21,781,176,320bytes权重保持CPU BF16，任务/AdamW GPU FP32；峰值分配8,111,991,296bytes，含缓存9,202,302,976bytes。此时卡上可用42,869,784,576bytes，不能把它描述为独占85GB压测。checkpoint仅为工程探针，不是效果模型。
 
+`runs/full_resume_20261018T122119` 另通过完整模型4步连续训练=2+2恢复：task参数、AdamW/LR、全RNG、noise/timestep/loss轨迹零容差一致，Parameter对象不变，冻结SHA与prefix再次通过。用时651.04s，峰值分配8,118,249,984bytes、含缓存9,307,160,576bytes。复跑切到 `code_fullgate_20261018T122119`，在下述命令末追加 `--updates 4 --exact-resume` 并换新run名称。
+
 以下命令使用登记的冻结代码与条件缓存；运行目录须换新名称：
 
 ```bash
