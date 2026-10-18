@@ -1,0 +1,5 @@
+Arm,Description,ArcFace Cosine,Face Detected,Body PCK@0.2,Strict PCK,Hand PCK,Norm MPJPE,Gen Time (s),Peak VRAM (GiB)
+H0,Native Qwen Baseline (No Union),0.2381,True,0.3889,0.3889,0.0000,0.2945,158.18,20.31
+H1,Hybrid + Pose (Hints injected),0.0835,True,0.3889,0.3889,0.0000,0.2846,155.18,20.31
+H2,Hybrid + Depth (Hints injected),0.1526,True,0.3889,0.3889,0.0000,0.2756,152.04,20.31
+H3,Hybrid + Pose + Depth (Residual Fusion),N/A,False,0.3889,0.3889,0.0000,0.2845,189.07,20.31

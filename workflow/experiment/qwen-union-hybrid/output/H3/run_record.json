@@ -1,0 +1,21 @@
+{
+  "arm": "H3",
+  "status": "completed",
+  "output": {
+    "path": "/home/shangguanrz/project/pic-edit/workflow/experiment/qwen-union-hybrid/output/H3/final_image.png",
+    "sha256": "21b8638f33f6d614ce90a082fb7137fd6ee9033aed464ea4218c415502ceb4dc",
+    "size_wh": [
+      640,
+      928
+    ]
+  },
+  "performance": {
+    "arm": "H3",
+    "steps": 40,
+    "seed": 42,
+    "alpha": 1.0,
+    "beta": 1.0,
+    "generation_seconds": 189.07,
+    "peak_vram_gib": 20.31
+  }
+}
