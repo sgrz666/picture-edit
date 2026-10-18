@@ -75,12 +75,18 @@ Run: `python -m pytest tests/test_qwen21_pro_integration.py -q`，并回归旧Un
 - Create: `src/pose_control/qwen21_pro/{preparation,features,cache}.py`
 - Test: `tests/test_qwen21_pro_{preparation,cache}.py`
 
-- [ ] 接受锁定B的condition记录与已缓存source VAE latent；按`person_order`重排原始person0/1。源bank只用第一幅source参考latent或源图的冻结特征，不混入后续pose参考。
-- [ ] Hi4D读取geometry.npz的normal/depth/semantic/front_owner/contact与per-person maps；iPER/TikTok读取已有normal/depth/mask；变换用各自实际resize/offset，normal/深度编码与units/convention登记，scene统一深度归一化。明确未知part/contact relation为invalid，而不是伪造已训练能力。
-- [ ] 从数值目标关键点/几何产生face/hand soft支持区域；source mask/bbox只从source得到。生成source Face ID可用已安装ONNX作为冻结提取，缺失记录validity与原因。source高分辨率特征可缓存，训练resampler不可缓存。
-- [ ] 缓存带模型/源码/原资产字节/输入条件/geometry codec/顺序/target_hw指纹，payload SHA校验。新产物落独立root，不修改旧B lock/index；target_rgb只保留在监督路径。测试替换target图为不可读路径仍能完成条件准备。
+- [x] 接受锁定B的condition记录与已缓存source VAE latent；按`person_order`重排原始person0/1。源bank只用第一幅source参考latent或源图的冻结特征，不混入后续pose参考。
+- [x] Hi4D读取geometry.npz的normal/depth/semantic/front_owner/contact与per-person maps；iPER/TikTok读取已有normal/depth/mask；变换用各自实际resize/offset，normal/深度编码与units/convention登记，scene统一深度归一化。明确未知part/contact relation为invalid，而不是伪造已训练能力。
+- [x] 从数值目标关键点/几何产生face/hand soft支持区域；source mask/bbox只从source得到。生成source Face ID可用已安装ONNX作为冻结提取，缺失记录validity与原因。source高分辨率特征可缓存，训练resampler不可缓存。
+- [x] 缓存带模型/源码/原资产字节/输入条件/geometry codec/顺序/target_hw指纹，payload SHA校验。新产物落独立root，不修改旧B lock/index；target_rgb只保留在监督路径。测试替换target图为不可读路径仍能完成条件准备。
 
 Run: `python -m pytest tests/test_qwen21_pro_preparation.py tests/test_qwen21_pro_cache.py -q`。服务器实查overfit6的单/双人pack及覆盖率，按新run名称保存QA与资产索引。
+
+实施证据（2026-10-18）：先32项green；spec发现bare cache可错配source，新增`BoundUnionCondition/load_bound_condition`验证expected输入指纹、payload SHA、sample/record、源文件及源段/全payload摘要后43项green；真实six在talk09发现raw contact为0..6335的annotation，改为>0 membership并补共享KP/CanvasTransform代码签名依赖，48项Task3green。最终spec与quality均批准；父线程专属Pro160passed/1skip（50.60s），compileall/diff检查通过。
+
+服务器代码快照`code_task3_20261018T105338`经SCP/归档SHA/38文件compileall核验。真实`runs/conditions_vae64_20261018T105338`与`runs/conditions_effect1600_20261018T105844`均6/6通过（117.89s/107.45s）；首个错误编码失败run`conditions_vae64_20261018T104541`保留。两个Hi4D的contact edges为0/5；单人bank均[1,1,1024,1600]，双人为[1,2,256,1600]；FaceID仅TikTok两人有效(2/8)，Hi4D source缺KP故仅body crop，normal/像素part仍invalid。DINO实际CUDA、ONNX因CUDA13依赖缺失回退CPU，未改环境。有效B producer事件SHA=`ffb3077938662e16277d5e4862af8c3466e316de4f0c3b64ec107981d23ad0ae`。
+
+匹配male模型已在现有环境CPU以literal NumPy data_struct验证：Hi4D两例mesh最大误差2.384e-7m，source/target beta相同。male标签另存`data/smpl_male_v6_parts_20261018.npz`，SHA=`69928b1d17e4187068dcc81635b61ffa7235482549b15c23269a7dd24d8775bd`，原模型SHA=`ed4d55bb3041fefc6f73b70694d6c8edc1020c0d07340be5cc651cae2c6a6ae3`；neutral与male有11/6890个14类标签差异，后续几何优先匹配male，不覆盖neutral证据。
 
 ## Task 4: 源体型重定向与接触求解契约
 
@@ -98,12 +104,13 @@ Run: `python -m pytest tests/test_qwen21_pro_geometry.py -q`。
 ## Task 5: 独立训练状态、区域flow与checkpoint
 
 **Files:**
-- Create: `src/pose_control/qwen21_pro/{training,checkpoint,losses}.py`
-- Test: `tests/test_qwen21_pro_{training,checkpoint,losses}.py`
+- Create: `src/pose_control/qwen21_pro/{training,checkpoint,losses,offload}.py`
+- Test: `tests/test_qwen21_pro_{training,checkpoint,losses,offload}.py`
 
 - [ ] 复用旧schedule/noise stream/transformer_inputs，新增`task_condition`，但optimizer/trainable whitelist/frozen digest/checkpoint独立实现，不套旧“130 LoRA only”审计。
 - [ ] 区域mask按face→contact→remaining hand→body分区；`L=lambda_global*Lcontent+sum(lambda_r*sum(mask*error)/(C*sum(mask)))`，invalid面积跳过且记录覆盖。DWPose/ONNX不作可微loss。可微feature loss只接收固定geometry crop与保留输入梯度的Torch encoder。
 - [ ] 只优化`pro_adapter`与明确启用的control LoRA；原始Union/base冻结且checkpoint边界保存frozen hash。新格式完整保存config、task/source/cache/code签名、所有新增参数、optimizer/LR、RNG、sample/noise/timestep与日志游标，保存时独占新目录。
+- [ ] 2026-10-18实测85GB卡仅空闲20,502,216,704bytes，旧resident训练峰值约29GiB。增加可选`frozen_linear_cpu`训练模式：只让原始冻结大Linear权重常驻CPU，前向/grad_input计算时按原dtype临时传GPU；task与LoRA FP32参数及optimizer常驻GPU。保留原参数对象/名称，不量化、不降分辨率，不用会回填安装时快照的inference group-offload训练。先验证真实小Qwen resident/offload输出、梯度与更新一致及参数设备，再做全尺寸门禁；memory_mode写入checkpoint绑定。推理group-offload必须在装载新权重后注册，避免旧CPU快照覆盖已训练head。
 - [ ] CPU先做4continuous vs2+2 exact state、跨scope/config/data拒绝、文件损坏拒绝、旧B checkpoint拒绝；再服务器真实CUDA复核。geometry/ID/contact有效分支分别检查head和上游梯度，不用降低resume误差门槛掩盖问题。
 
 Run: `python -m pytest tests/test_qwen21_pro_training.py tests/test_qwen21_pro_checkpoint.py tests/test_qwen21_pro_losses.py -q`。
