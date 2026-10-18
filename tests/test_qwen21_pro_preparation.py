@@ -285,3 +285,11 @@ def test_bare_cache_from_another_sample_cannot_be_mixed_with_locked_source(tmp_p
     bare["reference_latents"][:, :16] = 9
     with pytest.raises(ValueError, match="bound|verified|binding"):
         prepare_task_condition(record, bare, project_root=tmp_path, config=ProAdapterConfig(), assets=assets)
+
+
+def test_typed_pack_carries_exact_verified_legacy_condition_attestation(tmp_path):
+    from src.pose_control.qwen21_pro.preparation import prepare_task_condition
+    record, cached, assets = fixture_assets(tmp_path)
+    result = prepare_task_condition(record, cached, project_root=tmp_path, config=ProAdapterConfig(), assets=assets)
+    keys = ("sample_id", "condition_fingerprint", "payload_sha256", "prepared_source_sha256", "source_latent_sha256")
+    assert result.provenance["cache_binding"] == {key: cached.attestation[key] for key in keys}

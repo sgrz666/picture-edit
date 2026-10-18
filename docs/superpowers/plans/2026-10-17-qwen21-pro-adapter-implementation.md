@@ -97,7 +97,7 @@ Run: `python -m pytest tests/test_qwen21_pro_preparation.py tests/test_qwen21_pr
 - [x] `retarget_request(source_shape,driver_pose,camera,body_model)`分离source beta与target pose；单人显式SMPL-X、Hi4D显式SMPL，不混63/69维body pose或10475/6890顶点。禁止调用要求mesh_cam一致的旧reconstruct后私改beta。匹配male SMPL原pkl仅含literal `chumpy.ch.Ch.state.x`，可新增受限兼容读取再交现有SMPL constructor，不装包；模型与loader SHA均登记。
 - [x] `solve_contacts(request,relations,body_model,...)`保留driver/requested/solved三层，固定camera和地面锚点；root偏移≤源身高5%、关节偏移≤5°。不收敛/超限返回requested与失败理由；无contact不动姿态。保存求解前后偏差，不声称RGB受3D碰撞监督。
 - [x] 真实body backend在已有SMPL环境惰性加载，记录model与params指纹。缺失参数拒绝自动伪造；SMPL-X的144 joints须按真实joint_idx选137后转134，SMPL不伪造缺失的手指/脸点。既有GT精确配对要求driver/requested/solved几何均一致，改变beta或非零求解不得继续配旧GT；相机、法线、深度与poseguide必须从当前请求几何重生成。
-- [x] 提供真实三角面renderer的接入（惰性nvdiffrast或已验证NvDiffRasterRenderer），输出有basis、units、pixel变换和slot约定的normal/depth/mask/owner/part/contact；由实际mesh部位可投影source hand/face ROI，不依赖不存在的Hi4D source DWPose，不把SMPL body点冒充134个完整关键点。点云splat不充当dense renderer。
+- [ ] 提供真实三角面renderer的接入（惰性nvdiffrast或已验证NvDiffRasterRenderer），输出有basis、units、pixel变换和slot约定的normal/depth/mask/owner/part/contact；由实际mesh部位可投影source hand/face ROI，不依赖不存在的Hi4D source DWPose，不把SMPL body点冒充134个完整关键点。点云splat不充当dense renderer。
 - [x] 测试不同source shape/相同driver pose、两个端点/地面约束、超限回退、camera不改、原数组不被修改；服务器用实际SMPL-X资产作一次前向审计。
 
 Run: `python -m pytest tests/test_qwen21_pro_geometry.py -q`。
@@ -108,19 +108,25 @@ Run: `python -m pytest tests/test_qwen21_pro_geometry.py -q`。
 
 补充真实求解与renderer闭环：`code_task4_20261018T114018`（归档SHA=`a9a293222c79768eec4f2a0ba609f8c7fe7f615f1432d5cd460710a69381771d`）的 `runs/geometry_probes_20261018T114018` 六例通过；已知三角形289像素，metric Z、top-down、CV normal、nearest owner、填充面5项断言通过。真实SMPL的2cm root扰动探针36次迭代收敛，8条残差4.27–6.83mm，root各5.61mm，最大关节4.988°，未改相机。现有SMPL环境无pytest，未装包；改用独立脚本执行同样的GPU几何断言，缺包日志另存并保持失败。
 
+Task4补充复核进行中：8帧旧normal/mask支持完全一致，CPU投影IoU显示source fallback正确；新renderer直接映射letterbox会把超出物理FoV的mesh投到padding，已追加有效视野逆变换裁切与回归要求。旧GPU通过记录仅覆盖原先5项断言，保留产物，不把它等同于新FoV门禁。
+
 ## Task 5: 独立训练状态、区域flow与checkpoint
 
 **Files:**
 - Create: `src/pose_control/qwen21_pro/{training,checkpoint,losses,offload}.py`
 - Test: `tests/test_qwen21_pro_{training,checkpoint,losses,offload}.py`
 
-- [ ] 复用旧schedule/noise stream/transformer_inputs，新增`task_condition`，但optimizer/trainable whitelist/frozen digest/checkpoint独立实现，不套旧“130 LoRA only”审计。
-- [ ] 区域mask按face→contact→remaining hand→body分区；`L=lambda_global*Lcontent+sum(lambda_r*sum(mask*error)/(C*sum(mask)))`，invalid面积跳过且记录覆盖。DWPose/ONNX不作可微loss。可微feature loss只接收固定geometry crop与保留输入梯度的Torch encoder。
-- [ ] 只优化`pro_adapter`与明确启用的control LoRA；原始Union/base冻结且checkpoint边界保存frozen hash。新格式完整保存config、task/source/cache/code签名、所有新增参数、optimizer/LR、RNG、sample/noise/timestep与日志游标，保存时独占新目录。
-- [ ] 2026-10-18实测85GB卡仅空闲20,502,216,704bytes，旧resident训练峰值约29GiB。增加可选`frozen_linear_cpu`训练模式：只让原始冻结大Linear权重常驻CPU，前向/grad_input计算时按原dtype临时传GPU；task与LoRA FP32参数及optimizer常驻GPU。保留原参数对象/名称，不量化、不降分辨率，不用会回填安装时快照的inference group-offload训练。先验证真实小Qwen resident/offload输出、梯度与更新一致及参数设备，再做全尺寸门禁；memory_mode写入checkpoint绑定。推理group-offload必须在装载新权重后注册，避免旧CPU快照覆盖已训练head。
-- [ ] CPU先做4continuous vs2+2 exact state、跨scope/config/data拒绝、文件损坏拒绝、旧B checkpoint拒绝；再服务器真实CUDA复核。geometry/ID/contact有效分支分别检查head和上游梯度，不用降低resume误差门槛掩盖问题。
+- [x] 复用旧schedule/noise stream/transformer_inputs，新增`task_condition`，但optimizer/trainable whitelist/frozen digest/checkpoint独立实现，不套旧“130 LoRA only”审计。
+- [x] 区域mask按face→contact→remaining hand→body分区；`L=lambda_global*Lcontent+sum(lambda_r*sum(mask*error)/(C*sum(mask)))`，invalid面积跳过且记录覆盖。DWPose/ONNX不作可微loss。可微feature loss只接收固定geometry crop与保留输入梯度的Torch encoder。
+- [x] 只优化`pro_adapter`与明确启用的control LoRA；原始Union/base冻结且checkpoint边界保存frozen hash。新格式完整保存config、task/source/cache/code签名、所有新增参数、optimizer/LR、RNG、sample/noise/timestep与日志游标，保存时独占新目录。
+- [x] 2026-10-18实测85GB卡仅空闲20,502,216,704bytes，旧resident训练峰值约29GiB。增加可选`frozen_linear_cpu`训练模式：只让原始冻结大Linear权重常驻CPU，前向/grad_input计算时按原dtype临时传GPU；task与LoRA FP32参数及optimizer常驻GPU。保留原参数对象/名称，不量化、不降分辨率，不用会回填安装时快照的inference group-offload训练。先验证真实小Qwen resident/offload输出、梯度与更新一致及参数设备，再做全尺寸门禁；memory_mode写入checkpoint绑定。推理group-offload必须在装载新权重后注册，避免旧CPU快照覆盖已训练head。
+- [x] CPU先做4continuous vs2+2 exact state、跨scope/config/data拒绝、文件损坏拒绝、旧B checkpoint拒绝；再服务器真实CUDA复核。geometry/ID/contact有效分支分别检查head和上游梯度，不用降低resume误差门槛掩盖问题。
 
 Run: `python -m pytest tests/test_qwen21_pro_training.py tests/test_qwen21_pro_checkpoint.py tests/test_qwen21_pro_losses.py -q`。
+
+实施证据（2026-10-18）：loss/offload先13项red→green，training/checkpoint再25项；补齐source64/1600逐条件cache_binding、自定义SampleAttestation、真实refiner keep1+inpaint64、参数/optimizer有序绑定、RNG及完整checkpoint。spec与quality均批准；加载器四类hook及实际VideoX _auto_device_hooks先11项red→green，额外证明placement后新增真实snapshot pre-hook会让直接训练入口复用旧head，补两项red→green并在flow_loss/run前统一拒绝。父线程最终训练相关77passed/3skip（15.45s）；先前全Pro248passed/7skip（29.44s）在末两项hook回归之前完成。
+
+服务器`code_task5_20261018T115036`（归档SHA=`116abf72ec1832ca6b81ff176a3e8e3721b2df59af0a398d3aaebb74b4a99253`）52文件compileall通过；固定32层小型native CUDA有/无LoRA resident/offload两步对照及4continuous=2+2 exactresume，3passed（286.67s）。加载hook guard后的`code_task5_20261018T115624`（SHA=`fd493ddada012f0f7410ca0b43d7b13d8483b3b4c2c1338a4422ef55d4d87055`）再次CUDA exactresume 1passed（214.10s）；随后仅新增入口hook拒绝的CPU回归，未改计算图。真实`runs/conditions_bound1600_20261018T115624`以male标签六例重新提取、条件绑定与缓存读回6/6通过（84.02s）。未加载完整发布模型训练，未产生新训练权重或质量收益结论。
 
 ## Task 6: 可运行coarse推理与脸/双手局部精修
 
@@ -129,8 +135,11 @@ Run: `python -m pytest tests/test_qwen21_pro_training.py tests/test_qwen21_pro_c
 - Test: `tests/test_qwen21_pro_{inference,refinement}.py`
 
 - [ ] denoising支持传入实际H/W、native img_shapes和task grid，不能沿用旧generate_cached固定1024target tokens的假设。正负CFG保持相同source绑定，KV cache关闭。
+- [ ] 区分精确GT训练的driver条件与无配对source-shape请求；后者从requested/solved的当前mesh重新生成dense和pose/control参考，重新编码原生条件，禁止混用旧driver缓存或旧RGB GT。Hi4D仅SMPL24，不伪造脸/手指关键点；mesh part可提供标注为bounds的ROI。重定向入口必须可从prepare/infer调用，不能只留下未接入函数。
+- [ ] Hi4D缺source KP时，用source action自己的raw SMPL、camera与source mask建立face/head/hand crop，按稳定person_order重排；禁止借target pose裁source。将新增参数、camera、模型/LBS标签与ROI策略字节加入source指纹，保留低支持invalid。已核实两source图940×1280，raw K与现有K_runtime仅浮点舍入差异，通用逻辑仍绑定source校准。
 - [ ] `RefinementRequest`固定coarse图、目标geometry ROI、source references、person bindings、white-edit mask、seed和已训练模型签名。hand contact ROI覆盖双方并联合处理；source-only bank重建到ROI坐标。
 - [ ] 官方ReferenceUnionPipeline以`image=coarse_roi,mask_image=edit_mask,reference_images=source_crops,control_image=geometry_roi,height=width=output_resolution=768,use_kv_cache=False`采样，最后按mask显式合成回coarse，mask外像素保持不变；无有效ROI退回coarse并记录原因。
+- [ ] builder在CPU的transformer_setup中严格装载Task5权重，再注册inference offload；首次使用同步leaf group（use_stream=False）验证共享task在0/4/8/12多次调用，无装载后旧CPU快照覆盖。完整raw refiner需cached=False的VLM/VAE/DiT各自offload；当前ReferenceUnionPipeline不接收cached image slots，不能去掉VLM后假装同一路径可运行。refiner训练使用真实keep1+masked_coarse64通道，并经Task5的显式sample verifier绑定新缓存。
 - [ ] 首版refiner训练底图来自锁定stage1 checkpoint离线生成并detach，记录每张底图/ROI/采样协议哈希；GT只入监督。测试坐标roundtrip、face/paired-hands分组、mask外无变化、GT不能充底图、无validity退回以及1024/768尺寸不误用32×32。
 
 Run: `python -m pytest tests/test_qwen21_pro_inference.py tests/test_qwen21_pro_refinement.py -q`。服务器至少执行单人/双人coarse与局部两步smoke；两步图只证明管线可运行，不作质量结论。

@@ -474,7 +474,10 @@ def prepare_task_condition(condition, cached_condition, *, project_root, config:
     availability = {name: {"valid": bool(value.all()), "reason": "available" if value.all() else "missing_or_invalid_person"}
                     for name, value in spatial_valid.items()}
     availability["faceid"] = {"valid": bool(identity_valid.all()), "reason": "source_face_quality_gate"}
-    provenance = {"source": source_provenance, "geometry": {**geometry_provenance, "relations": relation_metadata,
+    binding_keys = ("sample_id", "condition_fingerprint", "payload_sha256", "prepared_source_sha256", "source_latent_sha256")
+    provenance = {"source": source_provenance,
+                  "cache_binding": {key: cached_condition.attestation[key] for key in binding_keys},
+                  "geometry": {**geometry_provenance, "relations": relation_metadata,
                    "asset_hashes": asset_hashes(geometry_asset_roles(assets)), "target_transform": record["target_transform"]},
                   "availability": availability}
     result = TaskCondition(hw, order, spatial, spatial_valid, person_mask, owner, roi[:, :, 0].flatten(2),
