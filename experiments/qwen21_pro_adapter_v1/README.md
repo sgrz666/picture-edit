@@ -84,7 +84,7 @@ G="$P/runs/inference_geometry_20261018T130005"
 
 `code_task6_20261018T130610`的首次真实coarse/768 ROI采样已执行，但native RGBA贴回RGB时失败，`runs/inference_task6_20261018T130610/failure.json`保留。修复后的`code_task6_20261018T132022`通过完整模型两次更新（432.76s），五分支梯度与frozen/prefix检查通过；`inference_cfg4_task6_20261018T132022`随后单/双人全部通过（443.74s）：各2步512 coarse、2步768 face/paired-hand，CFG4、KVoff，编辑像素分别13056/2301，mask外逐位不变。两个真实精修训练缓存均验证keep1/inpaint64/独立GT监督与48²网格。峰值分配8,644,746,752bytes、含缓存12,859,736,064bytes；初始可用83,863,470,080bytes。这里只证明工程链路，2步图不作质量结论。
 
-`data/val12_conditions_20261018.jsonl`与`val12_supervision_20261018.jsonl`预登记iPER/TikTok/Hi4D各4例；中文`val12_preregistration_20261018.json`保存原manifest SHA、选样规则、source/geometry覆盖与96图预算。四个arm各使用25次更新的独立checkpoint，full4取主200次更新run的step25；同一checkpoint的关分支只算diagnostic。当前0/96张val图，未访问test。val Hi4D实际全为male+female；matched mixed runtime已通过spec/quality及真实四例，male/female分别使用自己的权重与14类标签。
+`data/val12_conditions_20261018.jsonl`与`val12_supervision_20261018.jsonl`预登记iPER/TikTok/Hi4D各4例；中文`val12_preregistration_20261018.json`保存原manifest SHA、选样规则、source/geometry覆盖与96图预算。四个arm各使用25次更新的独立checkpoint，full4取主200次更新run的step25；同一checkpoint的关分支只算diagnostic。当前0/96张val图，没有用test做训练、生成、评测或选模。legacy入口启动时的全workspace完整性校验会读取train/val/test清单和已登记资产做SHA校验，这与读取test像素做模型实验不同。val Hi4D实际全为male+female；matched mixed runtime已通过spec/quality及真实四例，male/female分别使用自己的权重与14类标签。
 
 `scripts/audit_mixed_geometry.py`分`cpu / geometry / handoff`三阶段。`code_task7a_20261018T140821`中的四例CPU审计通过（15.72s），8个source/driver状态的mesh/joints最大误差2.38419e-7m，人物置换逐位一致；`mixed_geometry_20261018T140821`的8个worker通过（44.52s），`mixed_handoff_20261018T140821`在Qwen环境4/4通过（7.03s）且不导入smplx。handoff只验证真实几何与路由，临时source张量没有缓存、训练或采样；后续val外观编码证据另列如下。
 
@@ -163,5 +163,9 @@ CKPT="$P/runs/pilot_main_20261018_v1/checkpoint_000025"
 本地回归可运行 `python -m pytest -q tests/test_qwen21_pro_runner.py tests/test_qwen21_pro_gates.py tests/test_qwen21_pro_ablations.py`。它覆盖路径独占/status只读、初始化/arm绑定、sealed条件不变、固定18指标、STOP、真实小Torch的4=2+2恢复、变尺寸coarse与768精修API路由、显存预算和native缓存适配；CPU测试不冒充完整模型GPU验收。
 
 ## 与其他实验的关系
+
+私有诊断采样与消融汇总见 [`scripts/README.md`](scripts/README.md)。`render_pilot.py` 保持原B六例条件，生成step0/200各6张40步图；`summarize_pilot.py` 核对独立重训的25步消融、原始fixed18、检查点与门禁，并明确区分CUDA确定性重放与训练时捕获的noise SHA。34项私有工具测试通过，模型代码签名仍为 `1be3083d0447b44b55e393586404190a98ccbac9fcca52daa4989fcf2bb2f05e`。
+
+本次串行运行清单为服务器 `scripts/pilot_sequence_20261018T165900.py`，dry-run清单保存于 `logs/pilot_sequence_20261018T165900.plan.json`；进度见 `runs/pilot_sequence_20261018T165900/events.jsonl`。它等待主200步工程门禁完成，再依次执行四个25步arm、训练六例的step0/200共12图、预登记val单/双人两seed共4图和CUDA重放汇总；任一步工程失败即停，质量阈值失败会如实保留。登记清单不代表任务已执行完。
 
 上游为 `qwen21_union_dataset_adaptation_v1` 的数据锁与冻结缓存，设计见 `research/union_adapter_architecture_20261017/ARCHITECTURE.zh-CN.md`。新方案有独立代码、条件缓存、检查点和门禁；旧方案200步固定loss仅下降17.7868%，仍是失败，不作为新方案的训练结果。官方48张基线已补评，产物在 `qwen21_union_migration_v1/runs/baseline_reaudit_20261017_v2/`。
