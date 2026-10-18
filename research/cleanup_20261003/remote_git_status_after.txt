@@ -1,0 +1,351 @@
+ D "DeepGen\346\234\200\346\226\260\345\256\236\351\252\214\347\273\223\346\236\234\344\270\216\346\230\276\345\255\230\345\210\206\346\236\220\347\256\200\346\212\245.docx"
+ D QWEN_EDIT_20B_MEMORY_ANALYSIS.md
+ D "Qwen_Edit_20B\346\230\276\345\255\230\351\242\204\347\256\227\344\270\216\345\217\257\350\241\214\346\200\247\345\210\206\346\236\220\347\256\200\346\212\245.docx"
+ M README.md
+ T build_20b_memory_docx.py
+ T build_architecture_docx.py
+ T build_brief_architecture_docx.py
+ T build_latest_experiment_report_docx.py
+ T create_debug_samples.py
+ D "demooutput/DeepGen\346\234\200\346\226\260\345\256\236\351\252\214\347\273\223\346\236\234\344\270\216\346\230\276\345\255\230\345\210\206\346\236\220\347\256\200\346\212\245.docx"
+ D "demooutput/Qwen_Edit_20B\346\230\276\345\255\230\351\242\204\347\256\227\344\270\216\345\217\257\350\241\214\346\200\247\345\210\206\346\236\220\347\256\200\346\212\245.docx"
+ D demooutput/comparison_dual_pose_shake_hands.png
+ D demooutput/comparison_dual_pose_shoulder.png
+ D demooutput/comparison_single_pose_celebration.png
+ D demooutput/comparison_single_pose_sitting.png
+ D demooutput/comparison_single_pose_wave.png
+ D demooutput/control_contact.png
+ D demooutput/control_depth.png
+ D demooutput/control_normal.png
+ D demooutput/control_skeleton.png
+ D demooutput/deepgen_vram_requirement_dashboard.png
+ D demooutput/demo_batch_1_sitting.png
+ D demooutput/demo_batch_2_highfive.png
+ D demooutput/demo_dual_pose_shake_hands.png
+ D demooutput/demo_dual_pose_shoulder.png
+ D demooutput/demo_single_pose_celebration.png
+ D demooutput/demo_single_pose_wave.png
+ D demooutput/diag_vae_rec.png
+ D demooutput/manual_test_apple.png
+ D demooutput/native_input_src.png
+ D demooutput/native_test_result.png
+ D demooutput/test_t2i.png
+ D demooutput/vram_adapter_scale_and_latency.png
+ D demooutput/vram_comparison_by_mode.png
+ D demooutput/walkthrough.md
+ D "demooutput/\344\272\272\347\211\251\345\233\276\345\203\217\345\247\277\346\200\201\347\274\226\350\276\221\347\263\273\347\273\237\346\236\266\346\236\204\350\256\276\350\256\241\344\270\216\346\240\270\345\277\203\346\212\200\346\234\257\346\226\271\346\241\210.docx"
+ D "demooutput/\344\272\272\347\211\251\345\233\276\345\203\217\345\247\277\346\200\201\347\274\226\350\276\221\351\241\271\347\233\256\346\236\266\346\236\204\344\270\216\350\277\233\345\261\225\347\256\200\346\212\245_\347\247\221\347\240\224\345\220\214\346\255\245\347\211\210.docx"
+ M eval_iper_v6.py
+ M experiments/README.md
+ T multi_stage_eval_v6.py
+ T plot_vram_requirement_dashboard.py
+A  run_tiktok_sample_00001_smoke.py
+AM scripts/build_tiktok_v6_conditions.py
+ T scripts/precompute_iper_face_features_v65.py
+ T scripts/precompute_iper_hand_features_v66.py
+A  scripts/precompute_tiktok_face_features_v65.py
+ T scripts/smoke_adapter_reasoner.py
+ T scripts/smoke_adapter_v6.py
+ T scripts/smoke_deepgen_control_interface.py
+ T scripts/split_iper_train_val.py
+AM src/data/tiktok_dataset.py
+AM tests/test_tiktok_data_contract.py
+A  tests/test_train_tiktok_v65_face_smoke.py
+A  train_tiktok_overfit_sanity.py
+A  train_tiktok_v65_face.py
+ D "\344\272\272\347\211\251\345\233\276\345\203\217\345\247\277\346\200\201\347\274\226\350\276\221\344\273\273\345\212\241\344\271\246_v3.docx"
+ D "\344\272\272\347\211\251\345\233\276\345\203\217\345\247\277\346\200\201\347\274\226\350\276\221\347\263\273\347\273\237\346\236\266\346\236\204\350\256\276\350\256\241\344\270\216\346\240\270\345\277\203\346\212\200\346\234\257\346\226\271\346\241\210.docx"
+ D "\344\272\272\347\211\251\345\233\276\345\203\217\345\247\277\346\200\201\347\274\226\350\276\221\351\241\271\347\233\256\346\236\266\346\236\204\344\270\216\350\277\233\345\261\225\347\256\200\346\212\245_\347\247\221\347\240\224\345\220\214\346\255\245\347\211\210.docx"
+?? archive/cleanup_20261003/.gitignore
+?? archive/cleanup_20261003/README.md
+?? archive/home_tools_202609/.gitignore
+?? archive/home_tools_202609/README.md
+?? audit_hi4d_qwen21_prompt_leak.py
+?? audit_tiktok_v3_blur_sample.py
+?? audit_tiktok_v3_final_pairs.py
+?? audit_tiktok_v3_pose_redundancy.py
+?? audit_tiktok_v3_strict_final.py
+?? audit_tiktok_v3_visual_quality_v2.py
+?? audit_tiktok_v3_visual_quality_v3.py
+?? build_tiktok_v3_candidate_pool.py
+?? build_tiktok_v3_condition_inventory.py
+?? build_tiktok_v3_pairs.py
+?? build_tiktok_v3_pairs_strict.py
+?? build_tiktok_v3_strict_visual_pool.py
+?? build_tiktok_v3_usable_pool.py
+?? caches/qwen21_hi4d_controls
+?? complete_hi4d_qwen21_dual.py
+?? configs/asset_registry.json
+?? demooutput
+?? docs/PROJECT_STRUCTURE_20261003.md
+?? docs/qwen21_hi4d_dual.md
+?? docs/tiktok_qwen21_full_training.md
+?? "docs/\347\233\256\345\275\225\346\270\205\347\220\206\346\211\247\350\241\214\350\256\260\345\275\225_20261003.md"
+?? eval_hi4d_qwen21_dual.py
+?? eval_iper_four_arm.py
+?? eval_iper_qwen21_body.py
+?? eval_iper_qwen21_face.py
+?? eval_iper_qwen21_full.py
+?? eval_qwen21_face_cross_person.py
+?? eval_qwen21_face_references.py
+?? eval_qwen21_face_variants.py
+?? fill_tiktok_v3_missing_geometry.py
+?? finalize_tiktok_v3_visual_quality_v1.py
+?? model-qwen-edit
+?? reports/README.md
+?? reports/legacy_demo_202609
+?? reports/qwen21
+?? requirements_qwen21.txt
+?? research/cleanup_20261003/apply_job.json
+?? research/cleanup_20261003/archive_home_tools.py
+?? research/cleanup_20261003/checkpoint_load_verification.json
+?? research/cleanup_20261003/data_path_verification.json
+?? research/cleanup_20261003/dry_run_pid.json
+?? research/cleanup_20261003/dry_run_result.json
+?? research/cleanup_20261003/final_source_closure.json
+?? research/cleanup_20261003/final_verification.json
+?? research/cleanup_20261003/full_verification_job.json
+?? research/cleanup_20261003/full_verification_result.json
+?? research/cleanup_20261003/home_classification.json
+?? research/cleanup_20261003/navigation_operations.json
+?? research/cleanup_20261003/run_full_check.py
+?? research/cleanup_20261003/structure_verification.json
+?? research/tiktok_training_20261003/REPORT.zh-CN.md
+?? research/tiktok_training_20261003/comparison.png
+?? research/tiktok_training_20261003/readiness.json
+?? research/tiktok_training_20261003/verification.json
+?? run_tiktok_v3_dwpose.py
+?? run_tiktok_v3_fill_missing_geometry_bg.sh
+?? sample_tiktok_v3_dwpose_qc.py
+?? sample_tiktok_v3_geometry_rejects.py
+?? scripts/README.md
+?? scripts/audit/audit_hi4d_qwen21_prompt_leak.py
+?? scripts/audit/audit_qwen21_face_alignment.py
+?? scripts/audit/audit_qwen21_weight_compatibility.py
+?? scripts/audit/audit_tiktok_v3_blur_sample.py
+?? scripts/audit/audit_tiktok_v3_final_pairs.py
+?? scripts/audit/audit_tiktok_v3_pose_redundancy.py
+?? scripts/audit/audit_tiktok_v3_strict_final.py
+?? scripts/audit/audit_tiktok_v3_visual_quality_v2.py
+?? scripts/audit/audit_tiktok_v3_visual_quality_v3.py
+?? scripts/audit/check_qwen21_full_preservation.py
+?? scripts/audit/inventory_qwen21_full_weights.py
+?? scripts/audit/probe_qwen21_face_single_sample.py
+?? scripts/audit/smoke_adapter_reasoner.py
+?? scripts/audit/smoke_adapter_v6.py
+?? scripts/audit/smoke_deepgen_control_interface.py
+?? scripts/audit/verify_project_organization.py
+?? scripts/audit/verify_qwen21_face_repair.py
+?? scripts/audit/verify_qwen21_face_single_sample.py
+?? scripts/audit/verify_qwen21_full_resume.py
+?? scripts/audit/verify_qwen21_full_runtime.py
+?? scripts/audit_qwen21_face_alignment.py
+?? scripts/audit_qwen21_weight_compatibility.py
+?? scripts/build_iper1024_comparison_panels.py
+?? scripts/build_qwen21_face_panels.py
+?? scripts/check_qwen21_full_preservation.py
+?? scripts/data/build_tiktok_v3_candidate_pool.py
+?? scripts/data/build_tiktok_v3_condition_inventory.py
+?? scripts/data/build_tiktok_v3_pairs.py
+?? scripts/data/build_tiktok_v3_pairs_strict.py
+?? scripts/data/build_tiktok_v3_strict_visual_pool.py
+?? scripts/data/build_tiktok_v3_usable_pool.py
+?? scripts/data/build_tiktok_v6_conditions.py
+?? scripts/data/create_debug_samples.py
+?? scripts/data/fill_tiktok_v3_missing_geometry.py
+?? scripts/data/finalize_tiktok_v3_visual_quality_v1.py
+?? scripts/data/precompute_iper_face_features_v65.py
+?? scripts/data/precompute_iper_hand_features_v66.py
+?? scripts/data/precompute_qwen21_face_features.py
+?? scripts/data/precompute_tiktok_face_features_v65.py
+?? scripts/data/prepare_qwen21_face_multisample.py
+?? scripts/data/prepare_qwen21_face_split.py
+?? scripts/data/prepare_qwen21_full_data.py
+?? scripts/data/prepare_tiktok_qwen21_face.py
+?? scripts/data/prepare_tiktok_qwen21_training.py
+?? scripts/data/run_tiktok_v3_dwpose.py
+?? scripts/data/sample_tiktok_v3_dwpose_qc.py
+?? scripts/data/sample_tiktok_v3_geometry_rejects.py
+?? scripts/data/split_iper_train_val.py
+?? scripts/data/split_tiktok_v3_groupwise.py
+?? scripts/data/test_control_signals.py
+?? scripts/eval/diagnose_qwen21_full_face.py
+?? scripts/eval/eval_hi4d_qwen21_dual.py
+?? scripts/eval/eval_iper_four_arm.py
+?? scripts/eval/eval_iper_qwen21_body.py
+?? scripts/eval/eval_iper_qwen21_face.py
+?? scripts/eval/eval_iper_qwen21_full.py
+?? scripts/eval/eval_iper_v6.py
+?? scripts/eval/eval_qwen21_face_cross_person.py
+?? scripts/eval/eval_qwen21_face_references.py
+?? scripts/eval/eval_qwen21_face_repair.py
+?? scripts/eval/eval_qwen21_face_variants.py
+?? scripts/eval/evaluate_qwen21_weight_inheritance.py
+?? scripts/eval/multi_stage_eval_v6.py
+?? scripts/eval_qwen21_face_repair.py
+?? scripts/evaluate_qwen21_weight_inheritance.py
+?? scripts/finalize_qwen21_face_repair.py
+?? scripts/finalize_qwen21_face_single_sample.py
+?? scripts/inherit_qwen21_full_weights.py
+?? scripts/inventory_qwen21_full_weights.py
+?? scripts/precompute_qwen21_face_features.py
+?? scripts/prepare_qwen21_face_split.py
+?? scripts/prepare_qwen21_full_data.py
+?? scripts/prepare_tiktok_qwen21_face.py
+?? scripts/prepare_tiktok_qwen21_training.py
+?? scripts/probe_qwen21_face_single_sample.py
+?? scripts/reports/build_20b_memory_docx.py
+?? scripts/reports/build_architecture_docx.py
+?? scripts/reports/build_brief_architecture_docx.py
+?? scripts/reports/build_iper1024_comparison_panels.py
+?? scripts/reports/build_latest_experiment_report_docx.py
+?? scripts/reports/build_qwen21_face_panels.py
+?? scripts/reports/plot_vram_requirement_dashboard.py
+?? scripts/reports/summarize_qwen21_face_groups.py
+?? scripts/reports/visualize_tiktok_v3_final_global_blur.py
+?? scripts/reports/write_iper1024_result.py
+?? scripts/reports/write_qwen21_face_repair_report.py
+?? scripts/reports/write_qwen21_face_report.py
+?? scripts/reports/write_qwen21_face_single_sample_report.py
+?? scripts/reports/write_qwen21_full_report.py
+?? scripts/reports/write_qwen21_inheritance_report.py
+?? scripts/reports/write_qwen21_weight_audit_report.py
+?? scripts/run/complete_hi4d_qwen21_dual.py
+?? scripts/run/finalize_qwen21_face_repair.py
+?? scripts/run/finalize_qwen21_face_single_sample.py
+?? scripts/run/home/run_smplestx.sh
+?? scripts/run/home/run_stage1.sh
+?? scripts/run/home/run_stage2_both.sh
+?? scripts/run/home/watch_and_run.sh
+?? scripts/run/run_champ_single_overfit.py
+?? scripts/run/run_deepgen_no_control_ablation.py
+?? scripts/run/run_demo_pose_edit.py
+?? scripts/run/run_qwen21_face_single_sample.py
+?? scripts/run/run_qwen21_weight_inheritance.py
+?? scripts/run/run_tiktok_sample_00001_smoke.py
+?? scripts/run/run_tiktok_v3_fill_missing_geometry_bg.sh
+?? scripts/run/run_v6_comparative_3000.sh
+?? scripts/run_qwen21_face_single_sample.py
+?? scripts/run_qwen21_weight_inheritance.py
+?? scripts/run_tiktok_qwen21_full.sh
+?? scripts/summarize_qwen21_face_groups.py
+?? scripts/train/train_adapter.py
+?? scripts/train/train_hi4d_qwen21_dual.py
+?? scripts/train/train_iper_qwen21_body.py
+?? scripts/train/train_iper_qwen21_face.py
+?? scripts/train/train_iper_qwen21_full.py
+?? scripts/train/train_iper_v65_face.py
+?? scripts/train/train_iper_v66_hand.py
+?? scripts/train/train_iper_v6_native.py
+?? scripts/train/train_tiktok_overfit_sanity.py
+?? scripts/train/train_tiktok_v65_face.py
+?? scripts/verify_qwen21_face_repair.py
+?? scripts/verify_qwen21_face_single_sample.py
+?? scripts/verify_qwen21_full_resume.py
+?? scripts/verify_qwen21_full_runtime.py
+?? scripts/weights/inherit_qwen21_full_weights.py
+?? scripts/write_iper1024_result.py
+?? scripts/write_qwen21_face_repair_report.py
+?? scripts/write_qwen21_face_report.py
+?? scripts/write_qwen21_face_single_sample_report.py
+?? scripts/write_qwen21_full_report.py
+?? scripts/write_qwen21_inheritance_report.py
+?? scripts/write_qwen21_weight_audit_report.py
+?? split_tiktok_v3_groupwise.py
+?? src/data/__init__.py
+?? src/data/hi4d_qwen21_dataset.py
+?? src/evaluation/dwpose_onnx/LICENSE
+?? src/evaluation/dwpose_onnx/__init__.py
+?? src/evaluation/dwpose_onnx/onnxdet.py
+?? src/evaluation/dwpose_onnx/onnxpose.py
+?? src/pose_control/qwen21/__init__.py
+?? src/pose_control/qwen21/action_prompts.py
+?? src/pose_control/qwen21/body_adapter.py
+?? src/pose_control/qwen21/dual_adapter.py
+?? src/pose_control/qwen21/dual_inference.py
+?? src/pose_control/qwen21/face_adapter.py
+?? src/pose_control/qwen21/runtime.py
+?? src/pose_control/qwen21_full/__init__.py
+?? src/pose_control/qwen21_full/checkpoint.py
+?? src/pose_control/qwen21_full/condition_bridge.py
+?? src/pose_control/qwen21_full/condition_injector.py
+?? src/pose_control/qwen21_full/conditions.py
+?? src/pose_control/qwen21_full/control_core.py
+?? src/pose_control/qwen21_full/controlled_pipeline.py
+?? src/pose_control/qwen21_full/data_runtime.py
+?? src/pose_control/qwen21_full/deepgen_adapter.py
+?? src/pose_control/qwen21_full/detail/__init__.py
+?? src/pose_control/qwen21_full/detail/binder.py
+?? src/pose_control/qwen21_full/detail/conditions.py
+?? src/pose_control/qwen21_full/detail/encoders.py
+?? src/pose_control/qwen21_full/detail/hand.py
+?? src/pose_control/qwen21_full/detail/preparer.py
+?? src/pose_control/qwen21_full/execution.py
+?? src/pose_control/qwen21_full/experts.py
+?? src/pose_control/qwen21_full/face/__init__.py
+?? src/pose_control/qwen21_full/face/adapter.py
+?? src/pose_control/qwen21_full/face/conditions.py
+?? src/pose_control/qwen21_full/face/content_encoder.py
+?? src/pose_control/qwen21_full/face/geometry.py
+?? src/pose_control/qwen21_full/face/iper_dataset.py
+?? src/pose_control/qwen21_full/face/preparer.py
+?? src/pose_control/qwen21_full/face/resampler.py
+?? src/pose_control/qwen21_full/face/spatial.py
+?? src/pose_control/qwen21_full/face_loss_alignment.py
+?? src/pose_control/qwen21_full/face_supervision.py
+?? src/pose_control/qwen21_full/geometry_encoder.py
+?? src/pose_control/qwen21_full/hand/__init__.py
+?? src/pose_control/qwen21_full/hand/adapter.py
+?? src/pose_control/qwen21_full/hand/conditions.py
+?? src/pose_control/qwen21_full/hand/geometry.py
+?? src/pose_control/qwen21_full/hand/preparer.py
+?? src/pose_control/qwen21_full/hand/quality.py
+?? src/pose_control/qwen21_full/hand/refiner_export.py
+?? src/pose_control/qwen21_full/hand/vton_layers.py
+?? src/pose_control/qwen21_full/interface/__init__.py
+?? src/pose_control/qwen21_full/interface/deepgen_interface.py
+?? src/pose_control/qwen21_full/interface/outputs.py
+?? src/pose_control/qwen21_full/interface/strength.py
+?? src/pose_control/qwen21_full/qwen_adapter.py
+?? src/pose_control/qwen21_full/qwen_runtime.py
+?? src/pose_control/qwen21_full/reasoning/__init__.py
+?? src/pose_control/qwen21_full/reasoning/blocks.py
+?? src/pose_control/qwen21_full/reasoning/config.py
+?? src/pose_control/qwen21_full/reasoning/contact.py
+?? src/pose_control/qwen21_full/reasoning/cross_person.py
+?? src/pose_control/qwen21_full/reasoning/fusion.py
+?? src/pose_control/qwen21_full/reasoning/person_geometry.py
+?? src/pose_control/qwen21_full/reasoning/reasoner.py
+?? src/pose_control/qwen21_full/reasoning/state.py
+?? src/pose_control/qwen21_full/token_encoders.py
+?? tests/test_hi4d_geometry_registration.py
+?? tests/test_qwen21_action_prompts.py
+?? tests/test_qwen21_control_contract.py
+?? tests/test_qwen21_dual_control.py
+?? tests/test_qwen21_dual_inference_boundary.py
+?? tests/test_qwen21_face_control.py
+?? tests/test_qwen21_face_loss_alignment.py
+?? tests/test_qwen21_face_multisample_data.py
+?? tests/test_qwen21_face_objective.py
+?? tests/test_qwen21_face_reference_grid.py
+?? tests/test_qwen21_full_bridge.py
+?? tests/test_qwen21_full_face_diagnostics.py
+?? tests/test_qwen21_full_preservation.py
+?? tests/test_qwen21_full_training_runtime.py
+?? tests/test_qwen21_resume_reconciliation.py
+?? tests/test_qwen21_weight_audit.py
+?? tests/test_qwen21_weight_inheritance.py
+?? tests/test_tiktok_qwen21_face_cache.py
+?? tests/test_tiktok_qwen21_full_chain.py
+?? tests/test_tiktok_qwen21_learning_rates.py
+?? tests/test_tiktok_qwen21_readiness.py
+?? tools/render_3dpw_60_pairs_report_style_v1.py
+?? tools/visualize_3dpw_20_pairs_assets.py
+?? tools/visualize_3dpw_20_pairs_assets_diverse.py
+?? tools/visualize_3dpw_60_pairs_diverse_dinov2_v2.py
+?? tools/visualize_3dpw_60_pairs_large_pose.py
+?? train_hi4d_qwen21_dual.py
+?? train_iper_qwen21_body.py
+?? train_iper_qwen21_face.py
+?? train_iper_qwen21_full.py
+?? visualize_tiktok_v3_final_global_blur.py

@@ -1,0 +1,646 @@
+{
+  "sha": "fefbc7cadabf65f351a48023a7f59ecfcd16754d",
+  "url": "https://api.github.com/repos/MS-Diffusion/MS-Diffusion/git/trees/fefbc7cadabf65f351a48023a7f59ecfcd16754d",
+  "tree": [
+    {
+      "path": ".gitignore",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "b4981b447ccb8d4af96cd01dae232455d7de0d03",
+      "size": 72,
+      "url": "https://api.github.com/repos/MS-Diffusion/MS-Diffusion/git/blobs/b4981b447ccb8d4af96cd01dae232455d7de0d03"
+    },
+    {
+      "path": "LICENSE",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "d49c074c6662b9db48f413c88bea8e0d2b7fb1a7",
+      "size": 1069,
+      "url": "https://api.github.com/repos/MS-Diffusion/MS-Diffusion/git/blobs/d49c074c6662b9db48f413c88bea8e0d2b7fb1a7"
+    },
+    {
+      "path": "README.md",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "29a3f0ef95e334be9ca32ed570ad09d486e5d2cc",
+      "size": 8127,
+      "url": "https://api.github.com/repos/MS-Diffusion/MS-Diffusion/git/blobs/29a3f0ef95e334be9ca32ed570ad09d486e5d2cc"
+    },
+    {
+      "path": "config.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f8ad13ba33ed54a99f05da8ed29876cc6eda3921",
+      "size": 6775,
+      "url": "https://api.github.com/repos/MS-Diffusion/MS-Diffusion/git/blobs/f8ad13ba33ed54a99f05da8ed29876cc6eda3921"
+    },
+    {
+      "path": "configs",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "6b31cbb8d8bd6a469d891f5df199c0406df57a70",
+      "url": "https://api.github.com/repos/MS-Diffusion/MS-Diffusion/git/trees/6b31cbb8d8bd6a469d891f5df199c0406df57a70"
+    },
+    {
+      "path": "configs/accelerate",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "b6c44a393df6e29c011d396f858e77ced7aca6c2",
+      "url": "https://api.github.com/repos/MS-Diffusion/MS-Diffusion/git/trees/b6c44a393df6e29c011d396f858e77ced7aca6c2"
+    },
+    {
+      "path": "configs/accelerate/local.yaml",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "ce626d1211d04b9abf05f10d1a6311c9d94c5222",
+      "size": 285,
+      "url": "https://api.github.com/repos/MS-Diffusion/MS-Diffusion/git/blobs/ce626d1211d04b9abf05f10d1a6311c9d94c5222"
+    },
+    {
+      "path": "examples",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "ab4aa180107b5e2feff34f52a52dacd3ac4819f6",
+      "url": "https://api.github.com/repos/MS-Diffusion/MS-Diffusion/git/trees/ab4aa180107b5e2feff34f52a52dacd3ac4819f6"
+    },
+    {
+      "path": "examples/depth.png",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "812cf0f5ad1ab2d1bb505498f0ba8abbf8cb62a9",
+      "size": 52899,
+      "url": "https://api.github.com/repos/MS-Diffusion/MS-Diffusion/git/blobs/812cf0f5ad1ab2d1bb505498f0ba8abbf8cb62a9"
+    },
+    {
+      "path": "examples/example_cat.jpg",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "1859cfcf0e21afd6327c1e66ab2797e9df173ffd",
+      "size": 352222,
+      "url": "https://api.github.com/repos/MS-Diffusion/MS-Diffusion/git/blobs/1859cfcf0e21afd6327c1e66ab2797e9df173ffd"
+    },
+    {
+      "path": "examples/example_dog.jpg",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "2e6c6bc937f85a0f58846e2ed222210d7e40bf5c",
+      "size": 76883,
+      "url": "https://api.github.com/repos/MS-Diffusion/MS-Diffusion/git/blobs/2e6c6bc937f85a0f58846e2ed222210d7e40bf5c"
+    },
+    {
+      "path": "imgs",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "72a459736679e96850685ebcd3571f93d5d20058",
+      "url": "https://api.github.com/repos/MS-Diffusion/MS-Diffusion/git/trees/72a459736679e96850685ebcd3571f93d5d20058"
+    },
+    {
+      "path": "imgs/overall.png",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "eb5117ccc697b17c2fed8fd98a99483b999b120b",
+      "size": 552015,
+      "url": "https://api.github.com/repos/MS-Diffusion/MS-Diffusion/git/blobs/eb5117ccc697b17c2fed8fd98a99483b999b120b"
+    },
+    {
+      "path": "imgs/teaser_new.png",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "15cf4fb77df9882e7ac3eb3126790876fc40b147",
+      "size": 1397804,
+      "url": "https://api.github.com/repos/MS-Diffusion/MS-Diffusion/git/blobs/15cf4fb77df9882e7ac3eb3126790876fc40b147"
+    },
+    {
+      "path": "inference.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "b3b0477a65ec011e3108bb9ce9eef100fc8bfd5f",
+      "size": 3711,
+      "url": "https://api.github.com/repos/MS-Diffusion/MS-Diffusion/git/blobs/b3b0477a65ec011e3108bb9ce9eef100fc8bfd5f"
+    },
+    {
+      "path": "inference_controlnet.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "3502af64b00ddc01274c065d7e2d011ff55050cf",
+      "size": 4175,
+      "url": "https://api.github.com/repos/MS-Diffusion/MS-Diffusion/git/blobs/3502af64b00ddc01274c065d7e2d011ff55050cf"
+    },
+    {
+      "path": "msbench",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "a0b1055de054f9fabddbe2bcdb44bab51d716293",
+      "url": "https://api.github.com/repos/MS-Diffusion/MS-Diffusion/git/trees/a0b1055de054f9fabddbe2bcdb44bab51d716293"
+    },
+    {
+      "path": "msbench/downwearing",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "24deb17ea29ba816aa70b0d0f1740166d950018c",
+      "url": "https://api.github.com/repos/MS-Diffusion/MS-Diffusion/git/trees/24deb17ea29ba816aa70b0d0f1740166d950018c"
+    },
+    {
+      "path": "msbench/downwearing/jeans.png",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "fdf55ede48861f1a331707d60fbc41fb8ea54363",
+      "size": 228682,
+      "url": "https://api.github.com/repos/MS-Diffusion/MS-Diffusion/git/blobs/fdf55ede48861f1a331707d60fbc41fb8ea54363"
+    },
+    {
+      "path": "msbench/downwearing/shorts1.png",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "2fdaf797d30cffd3317eab36faa480e8f7534202",
+      "size": 219702,
+      "url": "https://api.github.com/repos/MS-Diffusion/MS-Diffusion/git/blobs/2fdaf797d30cffd3317eab36faa480e8f7534202"
+    },
+    {
+      "path": "msbench/downwearing/trousers.jpg",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "335f7ce318b7aeac9d5c23959ac8181a2ca2bf3f",
+      "size": 136471,
+      "url": "https://api.github.com/repos/MS-Diffusion/MS-Diffusion/git/blobs/335f7ce318b7aeac9d5c23959ac8181a2ca2bf3f"
+    },
+    {
+      "path": "msbench/living",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "5b8c5fe0e220d30c772befd86f573e35c28fbddf",
+      "url": "https://api.github.com/repos/MS-Diffusion/MS-Diffusion/git/trees/5b8c5fe0e220d30c772befd86f573e35c28fbddf"
+    },
+    {
+      "path": "msbench/living/cat.jpg",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "8210529fa5674021cdab0d35807066645427f869",
+      "size": 178039,
+      "url": "https://api.github.com/repos/MS-Diffusion/MS-Diffusion/git/blobs/8210529fa5674021cdab0d35807066645427f869"
+    },
+    {
+      "path": "msbench/living/cat1.jpg",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "836f1a880a504e1cb1b067579fbb8352bdb1a2f0",
+      "size": 7456085,
+      "url": "https://api.github.com/repos/MS-Diffusion/MS-Diffusion/git/blobs/836f1a880a504e1cb1b067579fbb8352bdb1a2f0"
+    },
+    {
+      "path": "msbench/living/cat2.jpg",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "1859cfcf0e21afd6327c1e66ab2797e9df173ffd",
+      "size": 352222,
+      "url": "https://api.github.com/repos/MS-Diffusion/MS-Diffusion/git/blobs/1859cfcf0e21afd6327c1e66ab2797e9df173ffd"
+    },
+    {
+      "path": "msbench/living/dog.jpg",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "2e6c6bc937f85a0f58846e2ed222210d7e40bf5c",
+      "size": 76883,
+      "url": "https://api.github.com/repos/MS-Diffusion/MS-Diffusion/git/blobs/2e6c6bc937f85a0f58846e2ed222210d7e40bf5c"
+    },
+    {
+      "path": "msbench/living/dog1.jpg",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "c8a789a7fa6dd03644854750de1232a0f226c877",
+      "size": 439333,
+      "url": "https://api.github.com/repos/MS-Diffusion/MS-Diffusion/git/blobs/c8a789a7fa6dd03644854750de1232a0f226c877"
+    },
+    {
+      "path": "msbench/living/dog2.jpg",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "a4965ab9087cd8c28121b77a3d186b4948f8c059",
+      "size": 452361,
+      "url": "https://api.github.com/repos/MS-Diffusion/MS-Diffusion/git/blobs/a4965ab9087cd8c28121b77a3d186b4948f8c059"
+    },
+    {
+      "path": "msbench/living/dog5.jpg",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "c6ab78d127b4acedca0cd4fc5db3405175a94761",
+      "size": 395537,
+      "url": "https://api.github.com/repos/MS-Diffusion/MS-Diffusion/git/blobs/c6ab78d127b4acedca0cd4fc5db3405175a94761"
+    },
+    {
+      "path": "msbench/living/dog6.jpg",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "72148ad1a229fc249f48951659620e41946d4279",
+      "size": 314975,
+      "url": "https://api.github.com/repos/MS-Diffusion/MS-Diffusion/git/blobs/72148ad1a229fc249f48951659620e41946d4279"
+    },
+    {
+      "path": "msbench/living/dog7.jpg",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "722b09e393fe7705ed132326f3e15eb329182ac4",
+      "size": 1096844,
+      "url": "https://api.github.com/repos/MS-Diffusion/MS-Diffusion/git/blobs/722b09e393fe7705ed132326f3e15eb329182ac4"
+    },
+    {
+      "path": "msbench/living/dog8.jpg",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "1af3342ef3d3ba1f7cfb84342123eb3fd8ebb0e5",
+      "size": 273303,
+      "url": "https://api.github.com/repos/MS-Diffusion/MS-Diffusion/git/blobs/1af3342ef3d3ba1f7cfb84342123eb3fd8ebb0e5"
+    },
+    {
+      "path": "msbench/midwearing",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "fd2f13158f3d8037234df7843a8d4f632422c7cb",
+      "url": "https://api.github.com/repos/MS-Diffusion/MS-Diffusion/git/trees/fd2f13158f3d8037234df7843a8d4f632422c7cb"
+    },
+    {
+      "path": "msbench/midwearing/coat.jpg",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "ea69b21d9dd26775e9c4ef03f7768e6601f67f3f",
+      "size": 325173,
+      "url": "https://api.github.com/repos/MS-Diffusion/MS-Diffusion/git/blobs/ea69b21d9dd26775e9c4ef03f7768e6601f67f3f"
+    },
+    {
+      "path": "msbench/midwearing/jacket.png",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "9ebdda6216bb8bca84ae9a76fcefcef8e5141964",
+      "size": 212911,
+      "url": "https://api.github.com/repos/MS-Diffusion/MS-Diffusion/git/blobs/9ebdda6216bb8bca84ae9a76fcefcef8e5141964"
+    },
+    {
+      "path": "msbench/midwearing/shirt.jpg",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "9902c9fe3f8820205452f00a4bdebcb105332981",
+      "size": 40256,
+      "url": "https://api.github.com/repos/MS-Diffusion/MS-Diffusion/git/blobs/9902c9fe3f8820205452f00a4bdebcb105332981"
+    },
+    {
+      "path": "msbench/midwearing/shirt1.jpg",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "5e92c184eed09038378b732e54db8f0919d81bb9",
+      "size": 148887,
+      "url": "https://api.github.com/repos/MS-Diffusion/MS-Diffusion/git/blobs/5e92c184eed09038378b732e54db8f0919d81bb9"
+    },
+    {
+      "path": "msbench/midwearing/sweater.jpg",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "2018d5bf749858034e45ce007807917ec5bef021",
+      "size": 122016,
+      "url": "https://api.github.com/repos/MS-Diffusion/MS-Diffusion/git/blobs/2018d5bf749858034e45ce007807917ec5bef021"
+    },
+    {
+      "path": "msbench/midwearing/t-shirt.jpg",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "75524305bbe2b3b8448f54f944a22f03cf372984",
+      "size": 103706,
+      "url": "https://api.github.com/repos/MS-Diffusion/MS-Diffusion/git/blobs/75524305bbe2b3b8448f54f944a22f03cf372984"
+    },
+    {
+      "path": "msbench/object",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "b1b69b6304df785dc5212ab357f8eb23e0273634",
+      "url": "https://api.github.com/repos/MS-Diffusion/MS-Diffusion/git/trees/b1b69b6304df785dc5212ab357f8eb23e0273634"
+    },
+    {
+      "path": "msbench/object/backpack.jpg",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f37555718b036603d7a242c7c7c2f7383d848e16",
+      "size": 332724,
+      "url": "https://api.github.com/repos/MS-Diffusion/MS-Diffusion/git/blobs/f37555718b036603d7a242c7c7c2f7383d848e16"
+    },
+    {
+      "path": "msbench/object/clock.jpg",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f1b00dae223c6a7e493b55bef54f55b8fa4b40e9",
+      "size": 139451,
+      "url": "https://api.github.com/repos/MS-Diffusion/MS-Diffusion/git/blobs/f1b00dae223c6a7e493b55bef54f55b8fa4b40e9"
+    },
+    {
+      "path": "msbench/object/colorful_sneaker.jpg",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "599d2da6e10a2d33e2fa121247f72a15be33e9f7",
+      "size": 1631668,
+      "url": "https://api.github.com/repos/MS-Diffusion/MS-Diffusion/git/blobs/599d2da6e10a2d33e2fa121247f72a15be33e9f7"
+    },
+    {
+      "path": "msbench/object/duck_toy.jpg",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "a4074cd0b1d1e3b9e4844a9f8bb689216ad417a0",
+      "size": 314403,
+      "url": "https://api.github.com/repos/MS-Diffusion/MS-Diffusion/git/blobs/a4074cd0b1d1e3b9e4844a9f8bb689216ad417a0"
+    },
+    {
+      "path": "msbench/object/flower.jpg",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "0f938de1857cb2e0f5f00cce51e4973a25d1bf4a",
+      "size": 132724,
+      "url": "https://api.github.com/repos/MS-Diffusion/MS-Diffusion/git/blobs/0f938de1857cb2e0f5f00cce51e4973a25d1bf4a"
+    },
+    {
+      "path": "msbench/object/grey_sloth_plushie.jpg",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "271cfdfa8fc39a643493ae0b00cf73c7ffd6ad43",
+      "size": 2342398,
+      "url": "https://api.github.com/repos/MS-Diffusion/MS-Diffusion/git/blobs/271cfdfa8fc39a643493ae0b00cf73c7ffd6ad43"
+    },
+    {
+      "path": "msbench/object/lantern.jpg",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "5bb2394d30cd3550d654ff34060a9b03ea592afb",
+      "size": 22669,
+      "url": "https://api.github.com/repos/MS-Diffusion/MS-Diffusion/git/blobs/5bb2394d30cd3550d654ff34060a9b03ea592afb"
+    },
+    {
+      "path": "msbench/object/teapot.jpg",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "24b1825c2b700e06dadbf26654628f5fc2ef14f7",
+      "size": 219149,
+      "url": "https://api.github.com/repos/MS-Diffusion/MS-Diffusion/git/blobs/24b1825c2b700e06dadbf26654628f5fc2ef14f7"
+    },
+    {
+      "path": "msbench/object/teddybear.jpg",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "6225fb76666bacbbdd643d043451c633b38c654b",
+      "size": 1815935,
+      "url": "https://api.github.com/repos/MS-Diffusion/MS-Diffusion/git/blobs/6225fb76666bacbbdd643d043451c633b38c654b"
+    },
+    {
+      "path": "msbench/object/wolf_plushie.jpg",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "424307c34990b529147eea31ec2b0a6f7d25294b",
+      "size": 1406024,
+      "url": "https://api.github.com/repos/MS-Diffusion/MS-Diffusion/git/blobs/424307c34990b529147eea31ec2b0a6f7d25294b"
+    },
+    {
+      "path": "msbench/scene",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "44e83f0092c7f1b7ef70320aadbf247b05d6b138",
+      "url": "https://api.github.com/repos/MS-Diffusion/MS-Diffusion/git/trees/44e83f0092c7f1b7ef70320aadbf247b05d6b138"
+    },
+    {
+      "path": "msbench/scene/barn.jpg",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "c0bc80f5b4521ce57f00f0011502710ae2c609a7",
+      "size": 3598514,
+      "url": "https://api.github.com/repos/MS-Diffusion/MS-Diffusion/git/blobs/c0bc80f5b4521ce57f00f0011502710ae2c609a7"
+    },
+    {
+      "path": "msbench/scene/forest.png",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "64b6d040b542d73a9276e5af58fb19b250bb6ff2",
+      "size": 1581222,
+      "url": "https://api.github.com/repos/MS-Diffusion/MS-Diffusion/git/blobs/64b6d040b542d73a9276e5af58fb19b250bb6ff2"
+    },
+    {
+      "path": "msbench/scene/mountain.jpg",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "dcf640ab1d843c2f67b8c5027176e7dbb87d888c",
+      "size": 512313,
+      "url": "https://api.github.com/repos/MS-Diffusion/MS-Diffusion/git/blobs/dcf640ab1d843c2f67b8c5027176e7dbb87d888c"
+    },
+    {
+      "path": "msbench/scene/waterfall.png",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f2be41f7267c6bfb87e0d0fdc084b5e9d9859829",
+      "size": 1059905,
+      "url": "https://api.github.com/repos/MS-Diffusion/MS-Diffusion/git/blobs/f2be41f7267c6bfb87e0d0fdc084b5e9d9859829"
+    },
+    {
+      "path": "msbench/upwearing",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "7762854d3b537fb619a3e4765eb7aa239b926234",
+      "url": "https://api.github.com/repos/MS-Diffusion/MS-Diffusion/git/trees/7762854d3b537fb619a3e4765eb7aa239b926234"
+    },
+    {
+      "path": "msbench/upwearing/cap.jpg",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "bed831ab307185df999fe0e829180e2e8f938352",
+      "size": 377842,
+      "url": "https://api.github.com/repos/MS-Diffusion/MS-Diffusion/git/blobs/bed831ab307185df999fe0e829180e2e8f938352"
+    },
+    {
+      "path": "msbench/upwearing/cap1.png",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "b72f243ab47bff545c5953656efa9c2147f90891",
+      "size": 619097,
+      "url": "https://api.github.com/repos/MS-Diffusion/MS-Diffusion/git/blobs/b72f243ab47bff545c5953656efa9c2147f90891"
+    },
+    {
+      "path": "msbench/upwearing/hat.png",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "85ae4cafefeff8c27489bbe4c61406e6b2060d52",
+      "size": 556960,
+      "url": "https://api.github.com/repos/MS-Diffusion/MS-Diffusion/git/blobs/85ae4cafefeff8c27489bbe4c61406e6b2060d52"
+    },
+    {
+      "path": "msbench/upwearing/hat1.png",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "6ed2b1dc9856dfa52cce332fec5aa9ec97040ba6",
+      "size": 312759,
+      "url": "https://api.github.com/repos/MS-Diffusion/MS-Diffusion/git/blobs/6ed2b1dc9856dfa52cce332fec5aa9ec97040ba6"
+    },
+    {
+      "path": "msbench/upwearing/hat2.png",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "d571a186866aebb47c7e18b6e6b5c83c8df71231",
+      "size": 200835,
+      "url": "https://api.github.com/repos/MS-Diffusion/MS-Diffusion/git/blobs/d571a186866aebb47c7e18b6e6b5c83c8df71231"
+    },
+    {
+      "path": "msbench/wholewearing",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "bb23b1c9707ae4a4e3f4925aeb4830d835fad97b",
+      "url": "https://api.github.com/repos/MS-Diffusion/MS-Diffusion/git/trees/bb23b1c9707ae4a4e3f4925aeb4830d835fad97b"
+    },
+    {
+      "path": "msbench/wholewearing/dress.png",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "a35672467641dae3a9bbf479bbbf20d8f0e0de93",
+      "size": 259951,
+      "url": "https://api.github.com/repos/MS-Diffusion/MS-Diffusion/git/blobs/a35672467641dae3a9bbf479bbbf20d8f0e0de93"
+    },
+    {
+      "path": "msbench/wholewearing/dress1.png",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "4068ff01d84a4f726e9820ff4b3f71263d3020c8",
+      "size": 290729,
+      "url": "https://api.github.com/repos/MS-Diffusion/MS-Diffusion/git/blobs/4068ff01d84a4f726e9820ff4b3f71263d3020c8"
+    },
+    {
+      "path": "msdiffusion",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "181d7ce608ff2a36bb9e8866cccf47f971ce1b26",
+      "url": "https://api.github.com/repos/MS-Diffusion/MS-Diffusion/git/trees/181d7ce608ff2a36bb9e8866cccf47f971ce1b26"
+    },
+    {
+      "path": "msdiffusion/__init__.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "size": 0,
+      "url": "https://api.github.com/repos/MS-Diffusion/MS-Diffusion/git/blobs/e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "msdiffusion/dataset",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "0fea46326664027ed4d673bf371e1c2c35e2d4f2",
+      "url": "https://api.github.com/repos/MS-Diffusion/MS-Diffusion/git/trees/0fea46326664027ed4d673bf371e1c2c35e2d4f2"
+    },
+    {
+      "path": "msdiffusion/dataset/__init__.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "size": 0,
+      "url": "https://api.github.com/repos/MS-Diffusion/MS-Diffusion/git/blobs/e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "msdiffusion/dataset/datagenerator.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "ab962d10eebaf222dbe4e79cfd4faea40d8f2f7f",
+      "size": 13963,
+      "url": "https://api.github.com/repos/MS-Diffusion/MS-Diffusion/git/blobs/ab962d10eebaf222dbe4e79cfd4faea40d8f2f7f"
+    },
+    {
+      "path": "msdiffusion/dataset/prompts",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "a3cf0c5dc76b777a4a30fc9fd9f6373ded75411b",
+      "url": "https://api.github.com/repos/MS-Diffusion/MS-Diffusion/git/trees/a3cf0c5dc76b777a4a30fc9fd9f6373ded75411b"
+    },
+    {
+      "path": "msdiffusion/dataset/prompts/msbench.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "4680516e75661ec2f6ad822b9cd266b0ffc6c3f6",
+      "size": 4991,
+      "url": "https://api.github.com/repos/MS-Diffusion/MS-Diffusion/git/blobs/4680516e75661ec2f6ad822b9cd266b0ffc6c3f6"
+    },
+    {
+      "path": "msdiffusion/models",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "b46ea42d2de0574e258d6d0165db995b1ff25f9b",
+      "url": "https://api.github.com/repos/MS-Diffusion/MS-Diffusion/git/trees/b46ea42d2de0574e258d6d0165db995b1ff25f9b"
+    },
+    {
+      "path": "msdiffusion/models/__init__.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "5734b80a85a464bfb0856168a33ef86a8e845c6c",
+      "size": 60,
+      "url": "https://api.github.com/repos/MS-Diffusion/MS-Diffusion/git/blobs/5734b80a85a464bfb0856168a33ef86a8e845c6c"
+    },
+    {
+      "path": "msdiffusion/models/attention_processor.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "0e2b73d1252081626777aeee9fd050bccaba718d",
+      "size": 24236,
+      "url": "https://api.github.com/repos/MS-Diffusion/MS-Diffusion/git/blobs/0e2b73d1252081626777aeee9fd050bccaba718d"
+    },
+    {
+      "path": "msdiffusion/models/model.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "56951c3f2e000bc570c8fe1f9db71cdffc84dec1",
+      "size": 15639,
+      "url": "https://api.github.com/repos/MS-Diffusion/MS-Diffusion/git/blobs/56951c3f2e000bc570c8fe1f9db71cdffc84dec1"
+    },
+    {
+      "path": "msdiffusion/models/projection.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "b61e57c6808f22c220d24f691c3ee5704d8cb9fa",
+      "size": 9639,
+      "url": "https://api.github.com/repos/MS-Diffusion/MS-Diffusion/git/blobs/b61e57c6808f22c220d24f691c3ee5704d8cb9fa"
+    },
+    {
+      "path": "msdiffusion/utils.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "2eed4b79a9b09bd4e15ec71fe2f6c4e4bb776e7c",
+      "size": 1632,
+      "url": "https://api.github.com/repos/MS-Diffusion/MS-Diffusion/git/blobs/2eed4b79a9b09bd4e15ec71fe2f6c4e4bb776e7c"
+    },
+    {
+      "path": "requirements.txt",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "a4cc1a0989a62c126061e74ac3cfdfa584313183",
+      "size": 183,
+      "url": "https://api.github.com/repos/MS-Diffusion/MS-Diffusion/git/blobs/a4cc1a0989a62c126061e74ac3cfdfa584313183"
+    },
+    {
+      "path": "scripts",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "c20323ff6ce84a83ed6344055c68f08da0b8d62b",
+      "url": "https://api.github.com/repos/MS-Diffusion/MS-Diffusion/git/trees/c20323ff6ce84a83ed6344055c68f08da0b8d62b"
+    },
+    {
+      "path": "scripts/download.sh",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "07b7cb900e1b6f81c1d34f0c703c7439b27e4a56",
+      "size": 840,
+      "url": "https://api.github.com/repos/MS-Diffusion/MS-Diffusion/git/blobs/07b7cb900e1b6f81c1d34f0c703c7439b27e4a56"
+    },
+    {
+      "path": "scripts/train.sh",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "e1bd00045368a0267211af51aa4db1174624ca63",
+      "size": 2054,
+      "url": "https://api.github.com/repos/MS-Diffusion/MS-Diffusion/git/blobs/e1bd00045368a0267211af51aa4db1174624ca63"
+    },
+    {
+      "path": "tutorial_train_sdxl.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "ce14a8c23a2ccd46e2397ff913c9f7d1f0c2eb3d",
+      "size": 22356,
+      "url": "https://api.github.com/repos/MS-Diffusion/MS-Diffusion/git/blobs/ce14a8c23a2ccd46e2397ff913c9f7d1f0c2eb3d"
+    }
+  ],
+  "truncated": false
+}

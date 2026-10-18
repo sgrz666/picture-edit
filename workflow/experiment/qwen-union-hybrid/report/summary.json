@@ -1,0 +1,59 @@
+{
+  "experiment": "hybrid_qwen_union_no_mask",
+  "sample": "hard_05_torso",
+  "timestamp": null,
+  "results": {
+    "H0": {
+      "arm": "H0",
+      "description": "Native Qwen Baseline (No Union)",
+      "arcface_cosine": 0.2381,
+      "face_detected": true,
+      "body_pck_02": 0.3889,
+      "strict_body_pck_02": 0.3889,
+      "hand_pck_02": 0.0,
+      "normalized_mpjpe": 0.2945,
+      "generation_seconds": 158.18,
+      "peak_vram_gib": 20.31,
+      "sha256": "9068e40fb4a19df40e17948b3be0df95db42c9231278f3fb069db7aa774beb23"
+    },
+    "H1": {
+      "arm": "H1",
+      "description": "Hybrid + Pose (Hints injected)",
+      "arcface_cosine": 0.0835,
+      "face_detected": true,
+      "body_pck_02": 0.3889,
+      "strict_body_pck_02": 0.3889,
+      "hand_pck_02": 0.0,
+      "normalized_mpjpe": 0.2846,
+      "generation_seconds": 155.18,
+      "peak_vram_gib": 20.31,
+      "sha256": "f9f16f370b9520dac83a86f750316f976d94e00f101257ba274e0152ed0d4224"
+    },
+    "H2": {
+      "arm": "H2",
+      "description": "Hybrid + Depth (Hints injected)",
+      "arcface_cosine": 0.1526,
+      "face_detected": true,
+      "body_pck_02": 0.3889,
+      "strict_body_pck_02": 0.3889,
+      "hand_pck_02": 0.0,
+      "normalized_mpjpe": 0.2756,
+      "generation_seconds": 152.04,
+      "peak_vram_gib": 20.31,
+      "sha256": "6f942dfb49d2e4fb1f7868966fd473fd90e96d312cf5c5cfba9b189dbaf88f91"
+    },
+    "H3": {
+      "arm": "H3",
+      "description": "Hybrid + Pose + Depth (Residual Fusion)",
+      "arcface_cosine": null,
+      "face_detected": false,
+      "body_pck_02": 0.3889,
+      "strict_body_pck_02": 0.3889,
+      "hand_pck_02": 0.0,
+      "normalized_mpjpe": 0.2845,
+      "generation_seconds": 189.07,
+      "peak_vram_gib": 20.31,
+      "sha256": "21b8638f33f6d614ce90a082fb7137fd6ee9033aed464ea4218c415502ceb4dc"
+    }
+  }
+}

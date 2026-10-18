@@ -1,0 +1,39 @@
+{
+  "arm": "T2b",
+  "status": "completed",
+  "description": "Control Only + source_torso 躯干对齐",
+  "mode": "control_only",
+  "layout": "source_torso",
+  "parameters": {
+    "steps": 40,
+    "seed": 42,
+    "true_cfg_scale": 1.0,
+    "control_context_scale": 1.0,
+    "use_kv_cache": false,
+    "canvas_hw": [
+      928,
+      640
+    ]
+  },
+  "inputs": {
+    "prompt_sha256": "47a60b3f9e620c8cdde6cd89f00ea6b315228fd13072ff97bad110dd24db9da7",
+    "pose_path": "/home/shangguanrz/project/pic-edit/workflow/experiment/qwen-union/data/prepared_controls/pose_source_torso.png",
+    "pose_sha256": "77ee8fad230d421462009d0eea41facc71db518c00a10fef71e1e0db79fc6aa9",
+    "mask_path": null,
+    "mask_sha256": null,
+    "inpaint_source": null,
+    "inpaint_sha256": null
+  },
+  "output": {
+    "path": "/home/shangguanrz/project/pic-edit/workflow/experiment/qwen-union/output/T2b/final_image.png",
+    "sha256": "efd16799af37e6d4f4bf338d862f03c24855c419eb21da8c31db118622f95e82",
+    "size_wh": [
+      640,
+      928
+    ]
+  },
+  "performance": {
+    "generation_seconds": 110.62,
+    "peak_gpu_vram_gib": 3.74
+  }
+}

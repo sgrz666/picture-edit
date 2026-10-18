@@ -1,0 +1,14 @@
+{
+  "reason": "exclude letterbox padding from background scoring",
+  "training_code_closure_unchanged": true,
+  "training_closure_files": 81,
+  "files": {
+    "src/evaluation/qwen21_dual_prompt_pilot.py": "aad6732858743ba23ee7ebbee33de170e838b44de5c2696f0bde876f2db363b4",
+    "scripts/eval/eval_qwen21_dual_prompt_pilot.py": "078db5942d5261a020e7d6907b52f1b0ff39d39725d1ca8c5cf34fd593f66de3",
+    "tests/test_qwen21_dual_prompt_pilot_eval.py": "513b37277257b67c5d0e9d87c0be4ae729b7be5e27ebced8e2f80d1a442b30c8"
+  },
+  "zip_path": "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/evaluation_padding_snapshot_v2.zip",
+  "zip_sha256": "46051076193a5b76c75b10b8b9525194cf33976f06118513c9caa3ffbf90f0a2",
+  "regression_log": "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/regression_eval_padding.log",
+  "regression_log_sha256": "585ada266038c036ec8357b13939034a10de6bb87cb55182b246859406abe139"
+}

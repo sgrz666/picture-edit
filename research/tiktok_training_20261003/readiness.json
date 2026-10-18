@@ -1,0 +1,52 @@
+{
+  "dataset": "tiktok_v3",
+  "architecture": "qwen21_full_v1",
+  "splits": {
+    "train": {
+      "input_pairs": 8574,
+      "eligible_pairs": 8548,
+      "excluded_pairs": 26,
+      "exclusion_reasons": {
+        "fewer_than_8_body_keypoints": 26
+      },
+      "sequences": 223,
+      "video_groups": 20
+    },
+    "val": {
+      "input_pairs": 1120,
+      "eligible_pairs": 1112,
+      "excluded_pairs": 8,
+      "exclusion_reasons": {
+        "fewer_than_8_body_keypoints": 8
+      },
+      "sequences": 28,
+      "video_groups": 3
+    }
+  },
+  "test": {
+    "pairs": 1156,
+    "sequences": 29,
+    "video_groups": 3,
+    "rgb_or_features_used": false
+  },
+  "split_overlap": false,
+  "body_status": "eligible_for_bounded_training_after_runtime_smoke",
+  "face_status": "requires_full_ArcFace_DINO_cache_and_supervision",
+  "alignment": "resize; same normalized coordinates for RGB, geometry and face",
+  "input_sha256": {
+    "train": "09914aad3f26223ac7b42242022c0b684ceb1b5ede8d81401ff1f5cd75bde66c",
+    "val": "6149e6e9e40a7bed58497095ee7dbe5db5ee44c7e61abea84c76edca12aa00de",
+    "test": "70359c66e8660884a76bcf44136800ef562ccde0dfebcd5b5de12b15a926c907"
+  },
+  "output_sha256": {
+    "train": "571b6af1bc9086b1cbd169ef1690dc695626f478e471297ae6b41bf13d9c58ac",
+    "val": "0eef46b1ff3eacd84ea8a9e510eaf98a6cc78168d13eacd8bdff0e7d501ca1db"
+  },
+  "original_assets_modified": false,
+  "minimum_visible_body_keypoints": 8,
+  "limits": [
+    "Raw-video group disjointness does not certify identity disjointness",
+    "A smoke run does not establish generative quality or convergence",
+    "Only representative images are decoded; every selected runtime sample still validates conditions"
+  ]
+}

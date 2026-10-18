@@ -1,0 +1,168 @@
+{
+  "model_type": "smplx",
+  "annotation_type": "fitted_geometry_proxy_not_official_ground_truth",
+  "source_shape_optimized": true,
+  "shape_inputs": "source SMPL 3D body only",
+  "body_joint_before_mm": [
+    39.681575775146484,
+    51.4483757019043
+  ],
+  "body_joint_after_mm": [
+    10.77874755859375,
+    11.288788795471191
+  ],
+  "body_joint_mm": [
+    [
+      9.756721496582031,
+      5.6654133796691895,
+      9.479413032531738,
+      9.259199142456055,
+      4.757524013519287,
+      5.803985595703125,
+      19.961177825927734,
+      4.050177574157715,
+      1.0645676851272583,
+      18.38885498046875,
+      1.7823286056518555,
+      0.7050905227661133,
+      28.94008445739746,
+      24.278797149658203,
+      24.95736312866211,
+      19.469572067260742,
+      8.051933288574219,
+      14.94428825378418,
+      8.9389009475708,
+      11.26054859161377,
+      0.5080694556236267,
+      5.108409881591797
+    ],
+    [
+      10.977635383605957,
+      5.34410285949707,
+      9.952954292297363,
+      9.59858512878418,
+      8.146100997924805,
+      5.050685405731201,
+      20.58817481994629,
+      3.1053733825683594,
+      3.8342812061309814,
+      20.47003173828125,
+      1.210873007774353,
+      2.513129472732544,
+      29.65791893005371,
+      26.542417526245117,
+      26.57823371887207,
+      20.359725952148438,
+      7.162618637084961,
+      13.24443244934082,
+      8.089825630187988,
+      11.597445487976074,
+      0.6942893266677856,
+      3.6345226764678955
+    ]
+  ],
+  "confidence_rule": "uncalibrated heuristic: 0.9*exp(-individual joint error_mm/100); part=min assigned/bone endpoint body joints; hand<=0.25 prior",
+  "body_quality_within_30mm": true,
+  "hands": "zero model prior; no observed finger articulation",
+  "face": "zero jaw/expression/eye prior",
+  "constraints": [
+    "external SMPL first 22 homologous body joints",
+    "nearest external body surface proxy"
+  ],
+  "initialization": "external SMPL homologous axis-angle body pose; SMPL-X beta10 initialized at zero",
+  "fitting_scope": "offline mesh parameters only; frozen SMPL-X model; no Qwen/adapter model loaded",
+  "target_rgb_conditioning": false,
+  "target_true_mask_conditioning": false,
+  "fit_steps": 200,
+  "elapsed_seconds": 8.065479899989441,
+  "loss_history": [
+    {
+      "step": 0,
+      "loss": 0.19810423254966736,
+      "body_joint_mean_mm": [
+        39.681575775146484,
+        51.4483757019043
+      ]
+    },
+    {
+      "step": 50,
+      "loss": 0.02181272767484188,
+      "body_joint_mean_mm": [
+        13.40380573272705,
+        15.331047058105469
+      ]
+    },
+    {
+      "step": 100,
+      "loss": 0.01725129783153534,
+      "body_joint_mean_mm": [
+        11.748738288879395,
+        12.711935043334961
+      ]
+    },
+    {
+      "step": 150,
+      "loss": 0.01560442615300417,
+      "body_joint_mean_mm": [
+        11.163091659545898,
+        11.841409683227539
+      ]
+    },
+    {
+      "step": 199,
+      "loss": 0.014675584621727467,
+      "body_joint_mean_mm": [
+        10.785057067871094,
+        11.297983169555664
+      ]
+    }
+  ],
+  "source_smpl": "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/raw/pair12/highfive12/smpl/000028.npz",
+  "source_smpl_sha256": "61d1e8a3b3bfbe822a0c6b00bdf3977ed5b0d8d035cdd45606edd9596105f332",
+  "source_shape_sha256": "7386dc96a0084b28e99ff5680442caa5cc991499ebca0465fb1c4792195904fd",
+  "source_assets": {
+    "source_rgb": "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/data/assets/sources/pair12/cam4/highfive12/000028/rgb.png",
+    "source_masks": [
+      "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/data/assets/sources/pair12/cam4/highfive12/000028/mask_A.png",
+      "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/data/assets/sources/pair12/cam4/highfive12/000028/mask_B.png"
+    ],
+    "preprocessing": {
+      "native_size": [
+        940,
+        1280
+      ],
+      "resolution": 512,
+      "resize": "isotropic letterbox",
+      "affine": [
+        [
+          0.4000000059604645,
+          0.0,
+          68.0
+        ],
+        [
+          0.0,
+          0.4000000059604645,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "RGB_interpolation": "OpenCV linear",
+      "mask_interpolation": "nearest",
+      "output_encoding": "lossless PNG",
+      "raw_rgb": "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/raw/pair12/highfive12/images/4/000028.jpg",
+      "raw_rgb_sha256": "f891bfbd6c7294c5af769cef44a3e8ab3b184d12073f50eefa76a2e03674d89c",
+      "raw_masks": [
+        "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/raw/pair12/highfive12/seg/img_seg_mask/4/0/000028.png",
+        "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/raw/pair12/highfive12/seg/img_seg_mask/4/1/000028.png"
+      ],
+      "raw_mask_sha256": [
+        "7734487889f1c06d4f5a42d2d97cd2b2c144dff252e029e00c8de084e2e0e17f",
+        "b61043dbebc5df46d1588c4f08ec2839bd21257dff1c2714d87d541395a98787"
+      ]
+    }
+  }
+}

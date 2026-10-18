@@ -7,12 +7,27 @@ cd "$workflow_dir"
 
 QWEN_PY=/home/shangguanrz/nihaochen/envs/qwen21/bin/python
 GEOMETRY_PY="$("$QWEN_PY" -c 'import json;print(json.load(open("config.json"))["geometry_python"])')"
-PAIRS="${1:-../experiments/qwen-2.1-test/data/testset/pairs}"
+# experiments/ is flat on the Windows mirror and grouped by family on sg (AGENTS.md 2.1), so the
+# default is resolved rather than hardcoded. An explicit argument must exist; no silent fallback.
+if [ $# -ge 1 ]; then
+    PAIRS="$1"
+    [ -d "$PAIRS" ] || { echo "PAIRS_NOT_FOUND $PAIRS"; exit 2; }
+else
+    PAIRS=""
+    for candidate in ../experiments/qwen-2.1-test/data/testset/pairs \
+                     ../experiments/2.qwen-test/qwen-2.1-test/data/testset/pairs; do
+        [ -d "$candidate" ] && { PAIRS="$candidate"; break; }
+    done
+    [ -n "$PAIRS" ] || { echo "PAIRS_NOT_FOUND tried both flat and grouped experiments layouts"; exit 2; }
+fi
 RESOLUTION="${RESOLUTION:-768}"
 started_all=$(date +%s)
+echo "=== pairs dir $PAIRS"
+attempted=0
 
 for directory in "$PAIRS"/*/; do
     [ -f "${directory}A_source.png" ] || continue
+    attempted=$(( attempted + 1 ))
     name="$(basename "$directory")"
     started=$(date +%s)
     echo "=== PAIR $name resolution=$RESOLUTION $(date '+%F %T')"
@@ -31,4 +46,5 @@ for directory in "$PAIRS"/*/; do
 done
 
 echo "=== batch finished in $(( $(date +%s) - started_all ))s"
+[ "$attempted" -gt 0 ] || { echo "BATCH_NO_PAIRS matched 0 directories holding A_source.png under $PAIRS"; exit 2; }
 "$QWEN_PY" report.py

@@ -1,0 +1,158 @@
+pair                                       left           right                 count_ok             pck           mpjpe     torso_ratio       gap_error        identity
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+backhug_pair02_037_c64_r545                dwpose         fit            [arm=skeleton_only framing=b_canvas] 1.000|0.000L 0.500|1.000R 0.230|0.087R 0.909|0.888i -|-. 0.658|0.807R
+backhug_pair02_039_c64_r546                dwpose         fit            [arm=skeleton_only framing=b_canvas] 0.000|1.000R 1.000|0.899L 0.056|0.093L 0.956|0.918i 0.625|0.217R 0.781|0.698L
+cross_backhug_pair02_037_r545_from_pair00  dwpose         fit            [arm=skeleton_only framing=b_canvas] 0.000|1.000R 0.939|0.500L 0.076|0.532L 1.004|0.973i 0.859|2.618L 0.713|0.689L
+cross_dance_pair02_059_r424_from_pair00    dwpose         fit            [arm=skeleton_only framing=b_canvas] 1.000|1.000= -|-. -|-. -|-. -|-. -|-.
+cross_hug_pair00_084_r000_from_pair02      dwpose         fit            [arm=skeleton_only framing=b_canvas] 1.000|1.000= 0.664|0.673= 0.229|0.215= 0.930|0.915i 0.073|0.041R 0.820|0.681L
+cross_hug_pair00_086_r003_from_pair02      dwpose         fit            [arm=skeleton_only framing=b_canvas] 1.000|0.000L 0.762|0.727L 0.127|0.177L 0.963|0.879i -|-. 0.725|0.711=
+cross_pose_pair02_034_r478_from_pair00     dwpose         fit            [arm=skeleton_only framing=b_canvas] 0.000|1.000R 0.000|1.000R 0.905|0.063R 1.189|0.924i 0.146|0.055R 0.691|0.682=
+dance_pair02_059_c4_r424                   dwpose         fit            [arm=skeleton_only framing=b_canvas] 0.000|0.000= 0.913|1.000R 0.068|0.064= -|-. -|-. 0.658|0.634L
+dance_pair02_120_c4_r459                   dwpose         fit            [arm=skeleton_only framing=b_canvas] 0.000|0.000= 0.500|0.500= 0.336|0.442L -|-. -|-. 0.706|0.627L
+hug_pair00_084_c4_r000                     dwpose         fit            [arm=skeleton_only framing=b_canvas] 1.000|1.000= 0.933|0.662L 0.061|0.158L 0.921|0.982i 0.022|0.176L 0.739|0.708L
+hug_pair00_086_c4_r003                     dwpose         fit            [arm=skeleton_only framing=b_canvas] 1.000|0.000L 0.929|0.800L 0.062|0.104L 0.980|0.966i 0.088|0.084= 0.762|0.720L
+pose_pair02_032_c52_r477                   dwpose         fit            [arm=skeleton_only framing=b_canvas] 1.000|1.000= 0.938|0.962R 0.055|0.080L 0.997|0.831i 0.044|0.075L 0.698|0.672L
+pose_pair02_034_c52_r478                   dwpose         fit            [arm=skeleton_only framing=b_canvas] 1.000|1.000= 0.879|0.846L 0.054|0.116L 0.986|0.857i 0.033|0.044= 0.687|0.582L
+taichi_pair00_048_c4_r129                  dwpose         fit            [arm=skeleton_only framing=b_canvas] 1.000|1.000= 0.910|1.000R 0.065|0.085= 1.005|0.966i 0.003|0.013= 0.787|0.794=
+taichi_pair00_049_c4_r132                  dwpose         fit            [arm=skeleton_only framing=b_canvas] 1.000|1.000= 0.849|1.000R 0.082|0.079= 0.994|0.933i 0.004|0.084L 0.767|0.655L
+yoga_pair00_052_c4_r261                    dwpose         fit            [arm=skeleton_only framing=b_canvas] 1.000|1.000= 0.912|0.625L 0.052|0.275L 1.005|0.906i 0.019|0.007= 0.737|0.748=
+yoga_pair00_052_c4_r263                    dwpose         fit            [arm=skeleton_only framing=b_canvas] 1.000|1.000= 0.941|1.000R 0.057|0.059= 0.993|0.943i 0.052|0.134L 0.741|0.763R
+--- held [arm=skeleton_only framing=b_canvas] with 17 row(s) ---
+  count_ok   n=17 left_wins= 3 right_wins= 3 ties=11 not_measured= 0 median_delta=0.000
+  pck        n=16 left_wins= 7 right_wins= 7 ties= 2 not_measured= 1 median_delta=-0.004
+  mpjpe      n=16 left_wins= 9 right_wins= 2 ties= 5 not_measured= 1 median_delta=-0.031
+  torso_ratio n=14 left_wins= 0 right_wins= 0 ties= 0 not_measured= 3 median_delta=0.045
+  gap_error  n=12 left_wins= 5 right_wins= 3 ties= 4 not_measured= 5 median_delta=-0.010
+  identity   n=16 left_wins=10 right_wins= 2 ties= 4 not_measured= 1 median_delta=0.025
+  count_ok   n=17 left_wins= 3 right_wins= 3 ties=11 not_measured= 0 median_delta=0.000
+  pck        n=16 left_wins= 7 right_wins= 7 ties= 2 not_measured= 1 median_delta=-0.004
+  mpjpe      n=16 left_wins= 9 right_wins= 2 ties= 5 not_measured= 1 median_delta=-0.031
+  torso_ratio n=14 left_wins= 0 right_wins= 0 ties= 0 not_measured= 3 median_delta=0.045
+  gap_error  n=12 left_wins= 5 right_wins= 3 ties= 4 not_measured= 5 median_delta=-0.010
+  identity   n=16 left_wins=10 right_wins= 2 ties= 4 not_measured= 1 median_delta=0.025
+one-sided (the other variables had to match, so these could not vote): backhug_pair02_037_c64_r545 at arm=skeleton_only framing=source_fit only ran dwpose of dwpose/fit, backhug_pair02_037_c64_r545 at arm=with_b framing=b_canvas only ran dwpose of dwpose/fit, backhug_pair02_037_c64_r545 at arm=with_b framing=source_fit only ran dwpose of dwpose/fit, backhug_pair02_039_c64_r546 at arm=skeleton_only framing=source_fit only ran dwpose of dwpose/fit, backhug_pair02_039_c64_r546 at arm=with_b framing=b_canvas only ran dwpose of dwpose/fit, backhug_pair02_039_c64_r546 at arm=with_b framing=source_fit only ran dwpose of dwpose/fit, cross_backhug_pair02_037_r545_from_pair00 at arm=skeleton_only framing=source_fit only ran dwpose of dwpose/fit, cross_backhug_pair02_037_r545_from_pair00 at arm=with_b framing=b_canvas only ran dwpose of dwpose/fit, cross_backhug_pair02_037_r545_from_pair00 at arm=with_b framing=source_fit only ran dwpose of dwpose/fit, cross_dance_pair02_059_r424_from_pair00 at arm=skeleton_only framing=source_fit only ran dwpose of dwpose/fit, cross_dance_pair02_059_r424_from_pair00 at arm=with_b framing=b_canvas only ran dwpose of dwpose/fit, cross_dance_pair02_059_r424_from_pair00 at arm=with_b framing=source_fit only ran dwpose of dwpose/fit, cross_hug_pair00_084_r000_from_pair02 at arm=skeleton_only framing=source_fit only ran dwpose of dwpose/fit, cross_hug_pair00_084_r000_from_pair02 at arm=with_b framing=b_canvas only ran dwpose of dwpose/fit, cross_hug_pair00_084_r000_from_pair02 at arm=with_b framing=source_fit only ran dwpose of dwpose/fit, cross_hug_pair00_086_r003_from_pair02 at arm=skeleton_only framing=source_fit only ran dwpose of dwpose/fit, cross_hug_pair00_086_r003_from_pair02 at arm=with_b framing=b_canvas only ran dwpose of dwpose/fit, cross_hug_pair00_086_r003_from_pair02 at arm=with_b framing=source_fit only ran dwpose of dwpose/fit, cross_pose_pair02_034_r478_from_pair00 at arm=skeleton_only framing=source_fit only ran dwpose of dwpose/fit, cross_pose_pair02_034_r478_from_pair00 at arm=with_b framing=b_canvas only ran dwpose of dwpose/fit, cross_pose_pair02_034_r478_from_pair00 at arm=with_b framing=source_fit only ran dwpose of dwpose/fit, dance_pair02_059_c4_r424 at arm=skeleton_only framing=source_fit only ran dwpose of dwpose/fit, dance_pair02_059_c4_r424 at arm=with_b framing=b_canvas only ran dwpose of dwpose/fit, dance_pair02_059_c4_r424 at arm=with_b framing=source_fit only ran dwpose of dwpose/fit, dance_pair02_120_c4_r459 at arm=skeleton_only framing=source_fit only ran dwpose of dwpose/fit, dance_pair02_120_c4_r459 at arm=with_b framing=b_canvas only ran dwpose of dwpose/fit, dance_pair02_120_c4_r459 at arm=with_b framing=source_fit only ran dwpose of dwpose/fit, hug_pair00_084_c4_r000 at arm=skeleton_only framing=source_fit only ran dwpose of dwpose/fit, hug_pair00_084_c4_r000 at arm=with_b framing=b_canvas only ran dwpose of dwpose/fit, hug_pair00_084_c4_r000 at arm=with_b framing=source_fit only ran dwpose of dwpose/fit, hug_pair00_086_c4_r003 at arm=skeleton_only framing=source_fit only ran dwpose of dwpose/fit, hug_pair00_086_c4_r003 at arm=with_b framing=b_canvas only ran dwpose of dwpose/fit, hug_pair00_086_c4_r003 at arm=with_b framing=source_fit only ran dwpose of dwpose/fit, pose_pair02_032_c52_r477 at arm=skeleton_only framing=source_fit only ran dwpose of dwpose/fit, pose_pair02_032_c52_r477 at arm=with_b framing=b_canvas only ran dwpose of dwpose/fit, pose_pair02_032_c52_r477 at arm=with_b framing=source_fit only ran dwpose of dwpose/fit, pose_pair02_034_c52_r478 at arm=skeleton_only framing=source_fit only ran dwpose of dwpose/fit, pose_pair02_034_c52_r478 at arm=with_b framing=b_canvas only ran dwpose of dwpose/fit, pose_pair02_034_c52_r478 at arm=with_b framing=source_fit only ran dwpose of dwpose/fit, taichi_pair00_048_c4_r129 at arm=skeleton_only framing=source_fit only ran dwpose of dwpose/fit, taichi_pair00_048_c4_r129 at arm=with_b framing=b_canvas only ran dwpose of dwpose/fit, taichi_pair00_048_c4_r129 at arm=with_b framing=source_fit only ran dwpose of dwpose/fit, taichi_pair00_049_c4_r132 at arm=skeleton_only framing=source_fit only ran dwpose of dwpose/fit, taichi_pair00_049_c4_r132 at arm=with_b framing=b_canvas only ran dwpose of dwpose/fit, taichi_pair00_049_c4_r132 at arm=with_b framing=source_fit only ran dwpose of dwpose/fit, yoga_pair00_052_c4_r261 at arm=skeleton_only framing=source_fit only ran dwpose of dwpose/fit, yoga_pair00_052_c4_r261 at arm=with_b framing=b_canvas only ran dwpose of dwpose/fit, yoga_pair00_052_c4_r261 at arm=with_b framing=source_fit only ran dwpose of dwpose/fit, yoga_pair00_052_c4_r263 at arm=skeleton_only framing=source_fit only ran dwpose of dwpose/fit, yoga_pair00_052_c4_r263 at arm=with_b framing=b_canvas only ran dwpose of dwpose/fit, yoga_pair00_052_c4_r263 at arm=with_b framing=source_fit only ran dwpose of dwpose/fit
+each cell is left|right then a verdict mark: L=left wins, R=right wins, ==tie within 0.02, .=one side did not measure that metric, i=informative only
+a metric only votes when both sides measured it; the summary counts and median delta below are over the pairs that could vote
+torso_ratio never votes: it is a distance from 1.0, not a higher-or-lower-is-better quantity
+pair                                       left           right                 count_ok             pck           mpjpe     torso_ratio       gap_error        identity
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+backhug_pair02_037_c64_r545                skeleton_only  with_b         [framing=b_canvas source=dwpose    ] 1.000|0.000L 0.500|1.000R 0.230|0.036R 0.909|0.993i 16.748|0.664R 0.658|0.798R
+backhug_pair02_037_c64_r545                skeleton_only  with_b         [framing=source_fit source=dwpose  ] 1.000|0.000L 0.500|1.000R 0.321|0.040R 0.898|0.978i 25.422|0.637R 0.788|0.818R
+backhug_pair02_039_c64_r546                skeleton_only  with_b         [framing=b_canvas source=dwpose    ] 0.000|0.000= 1.000|1.000= 0.056|0.047= 0.956|0.952i 0.625|0.303R 0.781|0.788=
+backhug_pair02_039_c64_r546                skeleton_only  with_b         [framing=source_fit source=dwpose  ] 1.000|0.000L 0.708|1.000R 0.142|0.047R 0.958|0.965i 5.408|0.495R 0.798|0.803=
+cross_backhug_pair02_037_r545_from_pair00  skeleton_only  with_b         [framing=b_canvas source=dwpose    ] 0.000|0.000= 0.939|1.000R 0.076|0.048R 1.004|1.050i 0.859|0.419R 0.713|0.713=
+cross_backhug_pair02_037_r545_from_pair00  skeleton_only  with_b         [framing=source_fit source=dwpose  ] 0.000|0.000= 1.000|0.971L 0.040|0.060L 1.063|1.074i 0.848|0.445R 0.684|0.666=
+cross_dance_pair02_059_r424_from_pair00    skeleton_only  with_b         [framing=b_canvas source=dwpose    ] 1.000|0.000L -|-. -|-. -|-. -|-. -|-.
+cross_dance_pair02_059_r424_from_pair00    skeleton_only  with_b         [framing=source_fit source=dwpose  ] 0.000|0.000= 0.875|0.845L 0.082|0.082= 1.084|1.020i 0.033|0.119L 0.664|0.648=
+cross_hug_pair00_084_r000_from_pair02      skeleton_only  with_b         [framing=b_canvas source=dwpose    ] 1.000|0.000L 0.664|0.833R 0.229|0.149R -|-. -|-. 0.820|0.711L
+cross_hug_pair00_084_r000_from_pair02      skeleton_only  with_b         [framing=source_fit source=dwpose  ] 0.000|0.000= 0.517|0.917R 0.381|0.073R -|-. -|-. 0.646|0.652=
+cross_hug_pair00_086_r003_from_pair02      skeleton_only  with_b         [framing=b_canvas source=dwpose    ] 1.000|0.000L 0.762|0.778= 0.127|0.118= 0.963|0.995i 0.128|0.163L 0.725|0.767R
+cross_hug_pair00_086_r003_from_pair02      skeleton_only  with_b         [framing=source_fit source=dwpose  ] 0.000|0.000= 0.833|0.750L 0.120|0.238L -|-. -|-. 0.706|0.707=
+cross_pose_pair02_034_r478_from_pair00     skeleton_only  with_b         [framing=b_canvas source=dwpose    ] 0.000|1.000R 0.000|0.879R 0.905|0.062R 1.189|1.067i 0.146|0.019R 0.691|0.706=
+cross_pose_pair02_034_r478_from_pair00     skeleton_only  with_b         [framing=source_fit source=dwpose  ] 0.000|0.000= 0.441|0.441= 0.692|0.683= 1.004|0.988i 1.029|1.015= 0.722|0.702=
+dance_pair02_059_c4_r424                   skeleton_only  with_b         [framing=b_canvas source=dwpose    ] 0.000|0.000= 0.913|0.917= 0.068|0.051= 0.958|0.979i -|-. 0.658|0.621L
+dance_pair02_059_c4_r424                   skeleton_only  with_b         [framing=source_fit source=dwpose  ] 0.000|0.000= 0.950|0.875L 0.068|0.059= 0.965|0.965i -|-. 0.595|0.542L
+dance_pair02_120_c4_r459                   skeleton_only  with_b         [framing=b_canvas source=dwpose    ] 0.000|1.000R -|-. -|-. -|-. -|-. -|-.
+dance_pair02_120_c4_r459                   skeleton_only  with_b         [framing=source_fit source=dwpose  ] 1.000|0.000L 0.885|0.429L 0.072|0.240L -|-. -|-. 0.701|0.639L
+hug_pair00_084_c4_r000                     skeleton_only  with_b         [framing=b_canvas source=dwpose    ] 1.000|0.000L 0.933|0.333L 0.061|0.594L 0.921|1.129i -|-. 0.739|0.842R
+hug_pair00_084_c4_r000                     skeleton_only  with_b         [framing=source_fit source=dwpose  ] 0.000|0.000= 0.250|0.333R 0.790|0.700R 1.031|1.027i -|-. 0.793|0.808=
+hug_pair00_086_c4_r003                     skeleton_only  with_b         [framing=b_canvas source=dwpose    ] 1.000|1.000= 0.929|0.500L 0.062|0.431L 0.980|1.045i 0.088|0.602L 0.762|0.730L
+hug_pair00_086_c4_r003                     skeleton_only  with_b         [framing=source_fit source=dwpose  ] 0.000|0.000= 0.833|0.833= 0.123|0.125= -|-. -|-. 0.711|0.670L
+pose_pair02_032_c52_r477                   skeleton_only  with_b         [framing=b_canvas source=dwpose    ] 1.000|1.000= 0.938|0.938= 0.055|0.046= 0.997|1.004i 0.044|0.003R 0.698|0.677L
+pose_pair02_032_c52_r477                   skeleton_only  with_b         [framing=source_fit source=dwpose  ] 0.000|0.000= 0.910|0.938R 0.057|0.056= 1.025|0.986i 0.006|0.001= 0.694|0.697=
+pose_pair02_034_c52_r478                   skeleton_only  with_b         [framing=b_canvas source=dwpose    ] 1.000|1.000= 0.879|0.879= 0.054|0.044= 0.986|0.998i 0.033|0.003R 0.687|0.676=
+pose_pair02_034_c52_r478                   skeleton_only  with_b         [framing=source_fit source=dwpose  ] 1.000|0.000L 0.879|0.879= 0.054|0.050= 0.986|0.986i 0.017|0.001= 0.680|0.631L
+taichi_pair00_048_c4_r129                  skeleton_only  with_b         [framing=b_canvas source=dwpose    ] 1.000|1.000= 0.910|0.882L 0.065|0.043R 1.005|0.986i 0.003|0.006= 0.787|0.804=
+taichi_pair00_048_c4_r129                  skeleton_only  with_b         [framing=source_fit source=dwpose  ] 1.000|1.000= 0.878|0.882= 0.063|0.054= 1.005|0.994i 0.002|0.014= 0.794|0.771L
+taichi_pair00_049_c4_r132                  skeleton_only  with_b         [framing=b_canvas source=dwpose    ] 1.000|1.000= 0.849|0.882R 0.082|0.044R 0.994|0.992i 0.004|0.008= 0.767|0.741L
+taichi_pair00_049_c4_r132                  skeleton_only  with_b         [framing=source_fit source=dwpose  ] 1.000|0.000L 0.871|0.875= 0.057|0.052= 0.977|0.982i 0.029|0.026= 0.781|0.784=
+yoga_pair00_052_c4_r261                    skeleton_only  with_b         [framing=b_canvas source=dwpose    ] 1.000|0.000L 0.912|0.607L 0.052|0.263L 1.005|0.982i 0.019|0.970L 0.737|0.716L
+yoga_pair00_052_c4_r261                    skeleton_only  with_b         [framing=source_fit source=dwpose  ] 1.000|1.000= 0.971|0.941L 0.043|0.040= 0.950|0.981i 0.009|0.005= 0.766|0.766=
+yoga_pair00_052_c4_r263                    skeleton_only  with_b         [framing=b_canvas source=dwpose    ] 1.000|1.000= 0.941|0.941= 0.057|0.030R 0.993|0.993i 0.052|0.003R 0.741|0.805R
+yoga_pair00_052_c4_r263                    skeleton_only  with_b         [framing=source_fit source=dwpose  ] 1.000|1.000= 0.941|0.941= 0.049|0.045= 0.986|0.978i 0.085|0.046R 0.804|0.821=
+--- held [framing=b_canvas source=dwpose] with 17 row(s) ---
+  count_ok   n=17 left_wins= 6 right_wins= 2 ties= 9 not_measured= 0 median_delta=0.000
+  pck        n=15 left_wins= 4 right_wins= 5 ties= 6 not_measured= 2 median_delta=0.000
+  mpjpe      n=15 left_wins= 3 right_wins= 7 ties= 5 not_measured= 2 median_delta=0.018
+  torso_ratio n=14 left_wins= 0 right_wins= 0 ties= 0 not_measured= 3 median_delta=-0.009
+  gap_error  n=12 left_wins= 3 right_wins= 7 ties= 2 not_measured= 5 median_delta=0.036
+  identity   n=15 left_wins= 6 right_wins= 4 ties= 5 not_measured= 2 median_delta=0.000
+--- held [framing=source_fit source=dwpose] with 17 row(s) ---
+  count_ok   n=17 left_wins= 5 right_wins= 0 ties=12 not_measured= 0 median_delta=0.000
+  pck        n=17 left_wins= 6 right_wins= 5 ties= 6 not_measured= 0 median_delta=0.000
+  mpjpe      n=17 left_wins= 3 right_wins= 4 ties=10 not_measured= 0 median_delta=0.004
+  torso_ratio n=13 left_wins= 0 right_wins= 0 ties= 0 not_measured= 4 median_delta=0.001
+  gap_error  n=11 left_wins= 1 right_wins= 4 ties= 6 not_measured= 6 median_delta=0.014
+  identity   n=17 left_wins= 5 right_wins= 1 ties=11 not_measured= 0 median_delta=-0.000
+--- POOLED over 2 held contexts: not a single-framing result ---
+  count_ok   n=34 left_wins=11 right_wins= 2 ties=21 not_measured= 0 median_delta=0.000
+  pck        n=32 left_wins=10 right_wins=10 ties=12 not_measured= 2 median_delta=0.000
+  mpjpe      n=32 left_wins= 6 right_wins=11 ties=15 not_measured= 2 median_delta=0.009
+  torso_ratio n=27 left_wins= 0 right_wins= 0 ties= 0 not_measured= 7 median_delta=0.000
+  gap_error  n=23 left_wins= 4 right_wins=11 ties= 8 not_measured=11 median_delta=0.017
+  identity   n=32 left_wins=11 right_wins= 5 ties=16 not_measured= 2 median_delta=-0.000
+one-sided (the other variables had to match, so these could not vote): backhug_pair02_037_c64_r545 at framing=b_canvas source=fit only ran skeleton_only of skeleton_only/with_b, backhug_pair02_039_c64_r546 at framing=b_canvas source=fit only ran skeleton_only of skeleton_only/with_b, cross_backhug_pair02_037_r545_from_pair00 at framing=b_canvas source=fit only ran skeleton_only of skeleton_only/with_b, cross_dance_pair02_059_r424_from_pair00 at framing=b_canvas source=fit only ran skeleton_only of skeleton_only/with_b, cross_hug_pair00_084_r000_from_pair02 at framing=b_canvas source=fit only ran skeleton_only of skeleton_only/with_b, cross_hug_pair00_086_r003_from_pair02 at framing=b_canvas source=fit only ran skeleton_only of skeleton_only/with_b, cross_pose_pair02_034_r478_from_pair00 at framing=b_canvas source=fit only ran skeleton_only of skeleton_only/with_b, dance_pair02_059_c4_r424 at framing=b_canvas source=fit only ran skeleton_only of skeleton_only/with_b, dance_pair02_120_c4_r459 at framing=b_canvas source=fit only ran skeleton_only of skeleton_only/with_b, hug_pair00_084_c4_r000 at framing=b_canvas source=fit only ran skeleton_only of skeleton_only/with_b, hug_pair00_086_c4_r003 at framing=b_canvas source=fit only ran skeleton_only of skeleton_only/with_b, pose_pair02_032_c52_r477 at framing=b_canvas source=fit only ran skeleton_only of skeleton_only/with_b, pose_pair02_034_c52_r478 at framing=b_canvas source=fit only ran skeleton_only of skeleton_only/with_b, taichi_pair00_048_c4_r129 at framing=b_canvas source=fit only ran skeleton_only of skeleton_only/with_b, taichi_pair00_049_c4_r132 at framing=b_canvas source=fit only ran skeleton_only of skeleton_only/with_b, yoga_pair00_052_c4_r261 at framing=b_canvas source=fit only ran skeleton_only of skeleton_only/with_b, yoga_pair00_052_c4_r263 at framing=b_canvas source=fit only ran skeleton_only of skeleton_only/with_b
+each cell is left|right then a verdict mark: L=left wins, R=right wins, ==tie within 0.02, .=one side did not measure that metric, i=informative only
+a metric only votes when both sides measured it; the summary counts and median delta below are over the pairs that could vote
+torso_ratio never votes: it is a distance from 1.0, not a higher-or-lower-is-better quantity
+pair                                       left           right                 count_ok             pck           mpjpe     torso_ratio       gap_error        identity
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+backhug_pair02_037_c64_r545                b_canvas       source_fit     [arm=skeleton_only source=dwpose   ] 1.000|1.000= 0.500|0.500= 0.230|0.321L 0.909|0.898i 16.748|25.422L 0.658|0.788R
+backhug_pair02_037_c64_r545                b_canvas       source_fit     [arm=with_b source=dwpose          ] 0.000|0.000= 1.000|1.000= 0.036|0.040= 0.993|0.978i 0.664|0.637R 0.798|0.818=
+backhug_pair02_039_c64_r546                b_canvas       source_fit     [arm=skeleton_only source=dwpose   ] 0.000|1.000R 1.000|0.708L 0.056|0.142L 0.956|0.958i 0.625|5.408L 0.781|0.798=
+backhug_pair02_039_c64_r546                b_canvas       source_fit     [arm=with_b source=dwpose          ] 0.000|0.000= 1.000|1.000= 0.047|0.047= 0.952|0.965i 0.303|0.495L 0.788|0.803=
+cross_backhug_pair02_037_r545_from_pair00  b_canvas       source_fit     [arm=skeleton_only source=dwpose   ] 0.000|0.000= 0.939|1.000R 0.076|0.040R 1.004|1.063i 0.859|0.848= 0.713|0.684L
+cross_backhug_pair02_037_r545_from_pair00  b_canvas       source_fit     [arm=with_b source=dwpose          ] 0.000|0.000= 1.000|0.971L 0.048|0.060= 1.050|1.074i 0.419|0.445L 0.713|0.666L
+cross_dance_pair02_059_r424_from_pair00    b_canvas       source_fit     [arm=skeleton_only source=dwpose   ] 1.000|0.000L -|-. -|-. -|-. -|-. -|-.
+cross_dance_pair02_059_r424_from_pair00    b_canvas       source_fit     [arm=with_b source=dwpose          ] 0.000|0.000= 0.875|0.845L 0.048|0.082L 0.986|1.020i -|-. 0.656|0.648=
+cross_hug_pair00_084_r000_from_pair02      b_canvas       source_fit     [arm=skeleton_only source=dwpose   ] 1.000|0.000L 0.664|0.517L 0.229|0.381L 0.930|0.963i 0.073|0.997L 0.820|0.646L
+cross_hug_pair00_084_r000_from_pair02      b_canvas       source_fit     [arm=with_b source=dwpose          ] 0.000|0.000= 0.833|0.917R 0.149|0.073R -|-. -|-. 0.711|0.652L
+cross_hug_pair00_086_r003_from_pair02      b_canvas       source_fit     [arm=skeleton_only source=dwpose   ] 1.000|0.000L 0.762|0.833R 0.127|0.120= -|-. -|-. 0.725|0.706=
+cross_hug_pair00_086_r003_from_pair02      b_canvas       source_fit     [arm=with_b source=dwpose          ] 0.000|0.000= 0.778|0.750L 0.118|0.238L -|-. 0.163|0.851L 0.767|0.707L
+cross_pose_pair02_034_r478_from_pair00     b_canvas       source_fit     [arm=skeleton_only source=dwpose   ] 0.000|0.000= 0.000|0.441R 0.905|0.692R 1.189|1.004i 0.146|1.029L 0.691|0.722R
+cross_pose_pair02_034_r478_from_pair00     b_canvas       source_fit     [arm=with_b source=dwpose          ] 1.000|0.000L 0.879|0.441L 0.062|0.683L 1.067|0.988i 0.019|1.015L 0.706|0.702=
+dance_pair02_059_c4_r424                   b_canvas       source_fit     [arm=skeleton_only source=dwpose   ] 0.000|0.000= 0.913|0.950R 0.068|0.068= 0.958|0.965i 0.057|0.081L 0.658|0.595L
+dance_pair02_059_c4_r424                   b_canvas       source_fit     [arm=with_b source=dwpose          ] 0.000|0.000= 0.917|0.875L 0.051|0.059= 0.979|0.965i -|-. 0.621|0.542L
+dance_pair02_120_c4_r459                   b_canvas       source_fit     [arm=skeleton_only source=dwpose   ] 0.000|1.000R 0.500|0.885R 0.336|0.072R -|-. 0.996|0.082R 0.706|0.701=
+dance_pair02_120_c4_r459                   b_canvas       source_fit     [arm=with_b source=dwpose          ] 1.000|0.000L -|-. -|-. -|-. -|-. -|-.
+hug_pair00_084_c4_r000                     b_canvas       source_fit     [arm=skeleton_only source=dwpose   ] 1.000|0.000L 0.933|0.250L 0.061|0.790L 0.921|1.031i -|-. 0.739|0.793R
+hug_pair00_084_c4_r000                     b_canvas       source_fit     [arm=with_b source=dwpose          ] 0.000|0.000= 0.333|0.333= 0.594|0.700L 1.129|1.027i -|-. 0.842|0.808L
+hug_pair00_086_c4_r003                     b_canvas       source_fit     [arm=skeleton_only source=dwpose   ] 1.000|0.000L 0.929|0.833L 0.062|0.123L 0.980|1.020i -|-. 0.762|0.711L
+hug_pair00_086_c4_r003                     b_canvas       source_fit     [arm=with_b source=dwpose          ] 1.000|0.000L 0.500|0.833R 0.431|0.125R -|-. -|-. 0.730|0.670L
+pose_pair02_032_c52_r477                   b_canvas       source_fit     [arm=skeleton_only source=dwpose   ] 1.000|0.000L 0.938|0.910L 0.055|0.057= 0.997|1.025i 0.044|0.006R 0.698|0.694=
+pose_pair02_032_c52_r477                   b_canvas       source_fit     [arm=with_b source=dwpose          ] 1.000|0.000L 0.938|0.938= 0.046|0.056= 1.004|0.986i 0.003|0.001= 0.677|0.697R
+pose_pair02_034_c52_r478                   b_canvas       source_fit     [arm=skeleton_only source=dwpose   ] 1.000|1.000= 0.879|0.879= 0.054|0.054= 0.986|0.986i 0.033|0.017= 0.687|0.680=
+pose_pair02_034_c52_r478                   b_canvas       source_fit     [arm=with_b source=dwpose          ] 1.000|0.000L 0.879|0.879= 0.044|0.050= 0.998|0.986i 0.003|0.001= 0.676|0.631L
+taichi_pair00_048_c4_r129                  b_canvas       source_fit     [arm=skeleton_only source=dwpose   ] 1.000|1.000= 0.910|0.878L 0.065|0.063= 1.005|1.005i 0.003|0.002= 0.787|0.794=
+taichi_pair00_048_c4_r129                  b_canvas       source_fit     [arm=with_b source=dwpose          ] 1.000|1.000= 0.882|0.882= 0.043|0.054= 0.986|0.994i 0.006|0.014= 0.804|0.771L
+taichi_pair00_049_c4_r132                  b_canvas       source_fit     [arm=skeleton_only source=dwpose   ] 1.000|1.000= 0.849|0.871R 0.082|0.057R 0.994|0.977i 0.004|0.029L 0.767|0.781=
+taichi_pair00_049_c4_r132                  b_canvas       source_fit     [arm=with_b source=dwpose          ] 1.000|0.000L 0.882|0.875= 0.044|0.052= 0.992|0.982i 0.008|0.026= 0.741|0.784R
+yoga_pair00_052_c4_r261                    b_canvas       source_fit     [arm=skeleton_only source=dwpose   ] 1.000|1.000= 0.912|0.971R 0.052|0.043= 1.005|0.950i 0.019|0.009= 0.737|0.766R
+yoga_pair00_052_c4_r261                    b_canvas       source_fit     [arm=with_b source=dwpose          ] 0.000|1.000R 0.607|0.941R 0.263|0.040R 0.982|0.981i 0.970|0.005R 0.716|0.766R
+yoga_pair00_052_c4_r263                    b_canvas       source_fit     [arm=skeleton_only source=dwpose   ] 1.000|1.000= 0.941|0.941= 0.057|0.049= 0.993|0.986i 0.052|0.085L 0.741|0.804R
+yoga_pair00_052_c4_r263                    b_canvas       source_fit     [arm=with_b source=dwpose          ] 1.000|1.000= 0.941|0.941= 0.030|0.045= 0.993|0.978i 0.003|0.046L 0.805|0.821=
+--- held [arm=skeleton_only source=dwpose] with 17 row(s) ---
+  count_ok   n=17 left_wins= 6 right_wins= 2 ties= 9 not_measured= 0 median_delta=0.000
+  pck        n=16 left_wins= 6 right_wins= 7 ties= 3 not_measured= 1 median_delta=0.000
+  mpjpe      n=16 left_wins= 5 right_wins= 4 ties= 7 not_measured= 1 median_delta=0.001
+  torso_ratio n=14 left_wins= 0 right_wins= 0 ties= 0 not_measured= 3 median_delta=-0.001
+  gap_error  n=13 left_wins= 7 right_wins= 2 ties= 4 not_measured= 4 median_delta=-0.024
+  identity   n=16 left_wins= 4 right_wins= 5 ties= 7 not_measured= 1 median_delta=-0.001
+--- held [arm=with_b source=dwpose] with 17 row(s) ---
+  count_ok   n=17 left_wins= 6 right_wins= 1 ties=10 not_measured= 0 median_delta=0.000
+  pck        n=16 left_wins= 5 right_wins= 3 ties= 8 not_measured= 1 median_delta=0.000
+  mpjpe      n=16 left_wins= 4 right_wins= 3 ties= 9 not_measured= 1 median_delta=-0.010
+  torso_ratio n=13 left_wins= 0 right_wins= 0 ties= 0 not_measured= 4 median_delta=0.011
+  gap_error  n=11 left_wins= 5 right_wins= 2 ties= 4 not_measured= 6 median_delta=-0.018
+  identity   n=16 left_wins= 8 right_wins= 3 ties= 5 not_measured= 1 median_delta=0.021
+--- POOLED over 2 held contexts: not a single-framing result ---
+  count_ok   n=34 left_wins=12 right_wins= 3 ties=19 not_measured= 0 median_delta=0.000
+  pck        n=32 left_wins=11 right_wins=10 ties=11 not_measured= 2 median_delta=0.000
+  mpjpe      n=32 left_wins= 9 right_wins= 7 ties=16 not_measured= 2 median_delta=-0.005
+  torso_ratio n=27 left_wins= 0 right_wins= 0 ties= 0 not_measured= 7 median_delta=0.001
+  gap_error  n=24 left_wins=12 right_wins= 4 ties= 8 not_measured=10 median_delta=-0.021
+  identity   n=32 left_wins=12 right_wins= 8 ties=12 not_measured= 2 median_delta=0.005
+one-sided (the other variables had to match, so these could not vote): backhug_pair02_037_c64_r545 at arm=skeleton_only source=fit only ran b_canvas of b_canvas/source_fit, backhug_pair02_039_c64_r546 at arm=skeleton_only source=fit only ran b_canvas of b_canvas/source_fit, cross_backhug_pair02_037_r545_from_pair00 at arm=skeleton_only source=fit only ran b_canvas of b_canvas/source_fit, cross_dance_pair02_059_r424_from_pair00 at arm=skeleton_only source=fit only ran b_canvas of b_canvas/source_fit, cross_hug_pair00_084_r000_from_pair02 at arm=skeleton_only source=fit only ran b_canvas of b_canvas/source_fit, cross_hug_pair00_086_r003_from_pair02 at arm=skeleton_only source=fit only ran b_canvas of b_canvas/source_fit, cross_pose_pair02_034_r478_from_pair00 at arm=skeleton_only source=fit only ran b_canvas of b_canvas/source_fit, dance_pair02_059_c4_r424 at arm=skeleton_only source=fit only ran b_canvas of b_canvas/source_fit, dance_pair02_120_c4_r459 at arm=skeleton_only source=fit only ran b_canvas of b_canvas/source_fit, hug_pair00_084_c4_r000 at arm=skeleton_only source=fit only ran b_canvas of b_canvas/source_fit, hug_pair00_086_c4_r003 at arm=skeleton_only source=fit only ran b_canvas of b_canvas/source_fit, pose_pair02_032_c52_r477 at arm=skeleton_only source=fit only ran b_canvas of b_canvas/source_fit, pose_pair02_034_c52_r478 at arm=skeleton_only source=fit only ran b_canvas of b_canvas/source_fit, taichi_pair00_048_c4_r129 at arm=skeleton_only source=fit only ran b_canvas of b_canvas/source_fit, taichi_pair00_049_c4_r132 at arm=skeleton_only source=fit only ran b_canvas of b_canvas/source_fit, yoga_pair00_052_c4_r261 at arm=skeleton_only source=fit only ran b_canvas of b_canvas/source_fit, yoga_pair00_052_c4_r263 at arm=skeleton_only source=fit only ran b_canvas of b_canvas/source_fit
+each cell is left|right then a verdict mark: L=left wins, R=right wins, ==tie within 0.02, .=one side did not measure that metric, i=informative only
+a metric only votes when both sides measured it; the summary counts and median delta below are over the pairs that could vote
+torso_ratio never votes: it is a distance from 1.0, not a higher-or-lower-is-better quantity

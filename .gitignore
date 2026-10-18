@@ -37,3 +37,8 @@ evidence.zip
 /evidence_controlnet_residual/
 /results/
 
+
+# Union 控制网权重（实体从 /data 迁入，目录内仅保留 README 说明）
+/union-adapter/*
+!/union-adapter/README.md
+!/union-adapter/fulladapter/

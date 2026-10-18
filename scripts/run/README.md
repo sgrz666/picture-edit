@@ -1,42 +1,65 @@
-# scripts/run/ —— 目录层级与功能说明
+# scripts/run/ —— 实验编排与收尾运行入口
 
-> 本文件由 `scripts/gen_folder_docs.py` 依据目录实际内容自动生成（生成时间：2026-10-11 16:23）；如需补充人工说明，请写在本目录 `README.md` 中（生成器不会覆盖 README）。
+本目录是系统的「一键运行 / 编排」层：把 `scripts/train/` 的训练、`scripts/eval/` 的评测与 `scripts/data/` 的补数据步骤串成可重复的实验流程，并提供 demo、消融、单样例诊断与事后收尾脚本。它直接驱动 `experiments/<run>/` 下的真实产物（图像、checkpoint、日志），因此多数为有 GPU/有副作用的入口；少数 `.sh`/`.ps1` 只是带环境的启动器。父级 [`../README.md`](../README.md) 把 `run/` 定位为「实验编排与收尾」。
 
-- **路径**：`scripts/run`　- **层级**：第 3 级　- **上级**：[../目录说明.md](scripts)
+## 里面有什么
 
-## 一、目录定位
+### DeepGen 演示 / 消融 / 单体过拟合
 
-全流程实验编排与一键运行脚本目录。
+| 文件 | 一句话职责 |
+|---|---|
+| `run_demo_pose_edit.py` | 基于 DeepGen-1.0-diffusers 的单图姿态编辑 demo |
+| `run_deepgen_no_control_ablation.py` | 纯 DeepGen 消融：不注入 adapter 或空间控制，作为基线 |
+| `run_champ_single_overfit.py` | 在单个对齐 CHAMP source/target pair 上过拟合 PoseConditionAdapter |
+| `run_tiktok_sample_00001_smoke.py` | TikTok 序列 00001（Source 0014→Target 0074）的冒烟：校验条件加载、V6.5 Face 特征对齐、前反向梯度流、VRAM<24GiB、预览导出 |
 
-- **本级内容**：文件 7 个，76.8 KB
-- **子树规模**：文件 7 个，逻辑体积 76.8 KB
+### Qwen21 运行入口
 
-## 二、层级目录
+| 文件 | 一句话职责 |
+|---|---|
+| `run_qwen21_weight_inheritance.py` | 不训练，验证并生成固定的 60 图权重继承对照 |
+| `run_qwen21_condition_combinations.py` | 跑两个锁定的正式推理批次，带持久化阶段状态 |
+| `run_qwen21_face_single_sample.py` | 有界单 pair 诊断，每个 GPU 动作都用完整 controller（被 `scripts/audit/probe_qwen21_face_single_sample.py` 依赖） |
+| `run_qwen21_joint_pilot.py` | 有界 joint Body+Face pilot；先看已保存图像再批准 mid-stage 续跑 |
 
-本子目录（1 个，其中符号链接 0 个）：
+### 收尾 / 完成
 
-- [`home/`](home/目录说明.md) — 全流程实验编排与一键运行脚本目录。 下按内容自然分组形成的子目录。（子树 0 个文件、0 B）
+| 文件 | 一句话职责 |
+|---|---|
+| `finalize_qwen21_face_repair.py` | 汇总已保存 Face-repair 检查与人工复核的单样例 |
+| `finalize_qwen21_face_single_sample.py` | 收集有界运行结果并核对显式单样例标准 |
+| `complete_hi4d_qwen21_dual.py` | 跑完长时 Qwen21 dual 运行，再评测留出的 Hi4D test split |
 
-## 三、文件清单
+### Shell / PowerShell 启动器
 
-共 **7** 个文件（不含隐藏文件与自动生成的说明文件）。类型分布：Python 源码×6、PS1 文件×1
+| 文件 | 一句话职责 |
+|---|---|
+| `run_tiktok_v3_fill_missing_geometry_bg.sh` | 后台跑 TikTok V3 缺失几何补全（用 `add/envs/smplestx_bw` 环境） |
+| `run_v6_comparative_3000.sh` | V6.3 对照训练启动器：在精确基线样本流上跑 3000 微步到 `experiments/iper_v6_comparative_3000`（deepgen 环境） |
+| `sync_qwen21_joint_pilot.ps1` | 同步 joint pilot 产物的 PowerShell 脚本 |
 
-| 文件 | 类型 | 大小 | 内容摘要 |
-|---|---|---|---|
-| `finalize_qwen21_face_repair.py` | Python 源码 | 9.4 KB | 模块 docstring：Consolidate saved Face-repair checks and the manually inspected single case.；顶层定义 3 个（`read`, `sha`, `main`） |
-| `finalize_qwen21_face_single_sample.py` | Python 源码 | 7.4 KB | 模块 docstring：Collect bounded-run results and verify the explicit single-case criteria.；顶层定义 4 个（`read`, `write`, `csv_write`, `main`） |
-| `run_qwen21_condition_combinations.py` | Python 源码 | 2.4 KB | 模块 docstring：Run the two locked formal inference batches, with durable stage status.；顶层定义 1 个（`main`） |
-| `run_qwen21_face_single_sample.py` | Python 源码 | 12.6 KB | 模块 docstring：Bounded single-pair diagnosis. Every GPU action uses the complete controller.；顶层定义 8 个（`sha`, `command`, `generate`, `Metrics`…） |
-| `run_qwen21_joint_pilot.py` | Python 源码 | 27.0 KB | 模块 docstring：Run a bounded pilot phase. Inspect saved images before approving a mid-stage continuation.；顶层定义 9 个（`invoke`, `train`, `evaluate`, `_sha256`…） |
-| `run_qwen21_weight_inheritance.py` | Python 源码 | 16.7 KB | 模块 docstring：Verify and generate the fixed 60-image inheritance comparison, without training.；顶层定义 4 个（`source_pair`, `verify_gpu`, `check_sample_boundaries`, `main`） |
-| `sync_qwen21_joint_pilot.ps1` | PS1 文件 | 1.4 KB | PS1 文件 |
+### `home/` 子目录 —— 统一运行入口
 
-## 四、构成画像
+`scripts/run/home/` 不是脚本集合，而是 **4 个指向宿主目录 `/home/shangguanrz/` 正式 HOME runner 的软链接**，由父级 `scripts/README.md` 的整理说明明确登记（「`run/home/` 另有四个正式 HOME runner 的链接；原 HOME 脚本继续保留」）：
 
-- **直属类型分布**：Python 源码×6、PS1 文件×1
-- **子树类型构成**：Python 源码×6、PS1 文件×1
+| 软链接 | 指向 | 作用 |
+|---|---|---|
+| `run_smplestx.sh` | `/home/shangguanrz/run_smplestx.sh` | 调 `add/tools/SMPLest-X` 的 `inference.py`，对 pA/pB 做 SMPL-X 拟合（不 `--retarget_cam`，保持导出相机与照片一致），回收 `*_params.pt` |
+| `run_stage1.sh` | `/home/shangguanrz/run_stage1.sh` | 16-test 第一阶段：分别用 deepgen / qwen21 两套 conda 环境跑 `run_baseline_16test.py`（deepgen_base、qwen_base）到 `experiments/16-test/stage1_baselines` |
+| `run_stage2_both.sh` | `/home/shangguanrz/run_stage2_both.sh` | 16-test 第二阶段：在 `--refs both` 变体上跑 DeepGen/Qwen adapter，隔离 adapter 净贡献，输出到 `stage2_adapters` |
+| `watch_and_run.sh` | `/home/shangguanrz/watch_and_run.sh` | 等待指定 eval 进程退出后，自动 nohup 启动 `run_baseline_16test.py` 的 stage1 基线 |
 
-## 五、导航
+这 4 个脚本对应的是 **`workflow/` 两阶段基座流水线**（A 保外观、B 供动作，SMPLest-X→DWPose 骨架，Qwen-2.1 基座生成）在宿主机器上的统一运行入口，不属于带 adapter/LoRA 的训练线。它们指向项目外的宿主路径，**整理时未复制源码，仅保留链接**。
 
-- 根目录总览：[`目录总览.md`](../../目录总览.md)
-- 根 README：[README.md](../../README.md)
+## 与上下层的关系
+
+- **上游输入**：`scripts/train/`（训练逻辑）、`scripts/eval/`（评测逻辑）、`scripts/data/`（补数据）、`models/`、`configs/asset_registry.json`（资产路径）。
+- **产出物**：`experiments/<run>/`（checkpoint、采样图、日志）、`results/`、`logs/`；部分运行脚本调用的评测/收尾结果再喂给 `scripts/reports/`。
+- **下游消费者**：`scripts/audit/` 的 `verify_qwen21_full_runtime.py`、`verify_qwen21_face_single_sample.py` 等验收这些运行的可复现性；`scripts/reports/` 消费其产物。
+- 相关索引：父级 [`../README.md`](../README.md)；训练线细节见 [`../train/README.md`](../train/README.md)；workflow 两阶段基座见仓库 `workflow/`。
+
+## 注意与坑
+
+- `home/` 下是**项目外宿主脚本的软链接**，不在仓库内维护；改这些运行逻辑要去 `/home/shangguanrz/` 改原文件，`scripts/run/home/` 只是入口映射。
+- `run_*` 多数为有副作用入口（写 `experiments/`、占 GPU），跑前确认目标 run 目录与 GPU 状态；`run_v6_comparative_3000.sh` 等 `.sh` 已写死各自 conda 环境路径。
+- `run_qwen21_face_single_sample.py` 与 `scripts/audit/probe_qwen21_face_single_sample.py` 通过共享常量耦合，改动输出格式需两边同步。

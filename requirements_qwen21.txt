@@ -1,0 +1,16 @@
+# Verified with Python 3.12.14, PyTorch 2.8.0+cu128 and an RTX 6000D.
+--extra-index-url https://download.pytorch.org/whl/cu128
+torch==2.8.0+cu128
+torchvision==0.23.0+cu128
+diffusers @ git+https://github.com/huggingface/diffusers.git@80c7ed262aeffbeb43ef13ae04baeb9b84515a69
+transformers==5.17.0
+huggingface_hub==1.32.0
+tokenizers==0.23.2
+accelerate==1.10.1
+safetensors==0.8.0
+numpy==2.1.2
+Pillow==11.3.0
+scikit-image==0.25.2
+onnxruntime-gpu==1.30.0
+insightface==2.0
+opencv-python-headless==4.12.0.88

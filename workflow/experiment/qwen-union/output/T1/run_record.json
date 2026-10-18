@@ -1,0 +1,39 @@
+{
+  "arm": "T1",
+  "status": "completed",
+  "description": "Control Only + B 原生布局",
+  "mode": "control_only",
+  "layout": "native",
+  "parameters": {
+    "steps": 40,
+    "seed": 42,
+    "true_cfg_scale": 1.0,
+    "control_context_scale": 1.0,
+    "use_kv_cache": false,
+    "canvas_hw": [
+      928,
+      640
+    ]
+  },
+  "inputs": {
+    "prompt_sha256": "47a60b3f9e620c8cdde6cd89f00ea6b315228fd13072ff97bad110dd24db9da7",
+    "pose_path": "/home/shangguanrz/project/pic-edit/workflow/experiment/qwen-union/data/prepared_controls/pose_native.png",
+    "pose_sha256": "8330f821fbd3ac3657ff2015269ff0b0545952fe978cfeb9b3db755badb169f1",
+    "mask_path": null,
+    "mask_sha256": null,
+    "inpaint_source": null,
+    "inpaint_sha256": null
+  },
+  "output": {
+    "path": "/home/shangguanrz/project/pic-edit/workflow/experiment/qwen-union/output/T1/final_image.png",
+    "sha256": "9ee10456f3088ee8180ee0ef38ce5f3cb9cf0b393f4ce0a5a7130e49cde1eae5",
+    "size_wh": [
+      640,
+      928
+    ]
+  },
+  "performance": {
+    "generation_seconds": 114.09,
+    "peak_gpu_vram_gib": 3.74
+  }
+}

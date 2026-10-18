@@ -1,0 +1,18 @@
+{
+  "pid": 4168511,
+  "command": [
+    "/home/shangguanrz/nihaochen/envs/qwen21/bin/python",
+    "-u",
+    "scripts/precompute/prepare_hi4d_dual_prompt_pilot.py",
+    "--root",
+    "/home/shangguanrz/project/pic-edit",
+    "--output",
+    "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/data",
+    "--device",
+    "cuda",
+    "--fit-steps",
+    "200"
+  ],
+  "started": 1791888705.7910945,
+  "log": "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/data_prepare.log"
+}

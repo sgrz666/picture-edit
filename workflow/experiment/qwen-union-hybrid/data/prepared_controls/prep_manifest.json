@@ -1,0 +1,55 @@
+{
+  "sample_id": "hard_05",
+  "canvas_size": [
+    640,
+    928
+  ],
+  "source_assets": {
+    "A_reference": {
+      "path": "/home/shangguanrz/project/pic-edit/workflow/runs/test/hard_05/inputs/A_reference.png",
+      "sha256": "deeef9d0447f718f7402a7d1af48228bde55a15eb90919a8cab1d9805e6d9440"
+    },
+    "B_rgb": {
+      "path": "/home/shangguanrz/project/pic-edit/workflow/runs/test/hard_05/inputs/B_rgb.png",
+      "sha256": "2db6befd3bb63013cd233bb3820f93b0cfbae32b8c09b58c26941f66b5c321c6"
+    },
+    "B_smplx": {
+      "path": "/home/shangguanrz/project/pic-edit/workflow/runs/test/hard_05_torso/geometry/B_smplx.pt",
+      "sha256": "4f22f3dc65a15751198662f614a7fccaf4710165cd91d66880bd3038a419943a"
+    },
+    "B_camera": {
+      "path": "/home/shangguanrz/project/pic-edit/workflow/runs/test/hard_05_torso/geometry/B_camera.json",
+      "sha256": "57fa43ad59a6bdbc2052208c51ba96d013a4a2e78de0ad40fd0a829bbe93b3a8"
+    }
+  },
+  "prompt": {
+    "path": "/home/shangguanrz/project/pic-edit/workflow/experiment/qwen-union-hybrid/input/prompt_pe_native.txt",
+    "sha256": "13d24902a1f5dc6bf471a6ba2c24a3417f773438689c0245945014e916231aab",
+    "text": "Edit the single person in <image1> into the desired pose. <image1> supplies all identity, hairstyle, face, outfit, accessories and scene appearance. <image2> is only a colored skeletal pose guide; use its joint positions, never its line colors as appearance. Do not add the basketball or any other target-only object. Preserve objects already in the source. On <image1> as the canvas, transfer only the pose, head orientation, hand configuration, and backward-glancing facial expression into the woman, using <image2> as the scaled and positioned body-joint guide for the visible joint arrangement. Re-pose the woman to stand in a three-quarters back view with the torso rotated so her back faces the viewer, head turned over the shoulder to gaze directly at the camera with the calm neutral expression of the target pose, both arms bent at the elbows with empty hands placed in front of the waist, the hand on the viewer's left held away from the body at waist height and the hand on the viewer's right resting near the hip, legs standing with feet apart and one foot angled forward, matching the skeleton joint positions in <image2> without rendering any skeleton lines and colors. Keep the transferred hands empty because the woman in <image1> holds no objects. Follow the skeleton guide for head direction and hands, and invent no hidden anatomy. Let the teal strapless corset top with white fur trim, the white flared skirt, the red thigh-high socks, the white knit leg warmer, and the black boots form natural pose-dependent folds and shadows consistent with the new pose and the preserved lighting direction. Preserve completely unchanged the woman's facial identity, long blonde hair with blue-green streaks, glasses, wristwatch, garter straps, outfit design, colors, materials, shoes, and the entire Christmas-tree lot scene with evergreen trees and pine-needle ground, framing, and photographic illumination style of <image1>. Do not introduce any element belonging to the target photograph, including objects, garments, jewelry, background, lighting, and do not change the canvas setting, do not apply a new style. Preserve the source person and their original clothing and setting. Render a natural photograph without skeleton lines, diagrams or pose-guide colors."
+  },
+  "controls": {
+    "pose": {
+      "path": "/home/shangguanrz/project/pic-edit/workflow/experiment/qwen-union-hybrid/data/prepared_controls/pose_source_torso.png",
+      "sha256": "77ee8fad230d421462009d0eea41facc71db518c00a10fef71e1e0db79fc6aa9",
+      "keypoints_npz": "/home/shangguanrz/project/pic-edit/workflow/experiment/qwen-union-hybrid/data/prepared_controls/keypoints_source_torso.npz",
+      "keypoints_sha256": "4546e541544c7604e1a008593ae22f8518bee4c8dac4fb572eb56b13ae84e7d9",
+      "framing": "source_torso",
+      "scale": 0.9772840526910451,
+      "offset_xy": [
+        -198.16195463168816,
+        -290.96382878807253
+      ]
+    },
+    "depth": {
+      "path": "/home/shangguanrz/project/pic-edit/workflow/experiment/qwen-union-hybrid/data/prepared_controls/depth_source_torso.png",
+      "sha256": "111c3abc68926252ffb8815ceb499703633fa489f47e2e46437d20e8641883fe",
+      "type": "smplx_mesh_projected",
+      "num_vertices": 10475,
+      "scale": 0.9772840526910451,
+      "offset_xy": [
+        -198.16195463168816,
+        -290.96382878807253
+      ]
+    }
+  }
+}

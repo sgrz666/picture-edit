@@ -1,34 +1,22 @@
-# scripts/weights/ —— 目录层级与功能说明
+# scripts/weights/ —— 权重继承与转换
 
-> 本文件由 `scripts/gen_folder_docs.py` 依据目录实际内容自动生成（生成时间：2026-10-11 16:23）；如需补充人工说明，请写在本目录 `README.md` 中（生成器不会覆盖 README）。
+本目录是系统的「权重初始化 / 转换」层，专门处理可训练 controller 的**初始化 checkpoint 构造**，而不涉及训练本身。它在 `scripts/audit/`（权重溯源、白名单审计）与 `scripts/train/`（真正训练）之间补齐一环：把经过审计的权重来源按白名单组装成一个干净的初始化 checkpoint，供后续训练入口加载。父级 [`../README.md`](../README.md) 把 `weights/` 定位为「权重继承和转换」。
 
-- **路径**：`scripts/weights`　- **层级**：第 3 级　- **上级**：[../目录说明.md](scripts)
+## 里面有什么
 
-## 一、目录定位
+| 文件 | 一句话职责 |
+|---|---|
+| `inherit_qwen21_full_weights.py` | 从**审计过的白名单**创建一个 full-controller 的初始化 checkpoint。脚本自身只读取被批准的权重来源并把它们组装成初始化权重，不做训练、不修改源权重 |
 
-权重登记、校验与迁移脚本目录。
+## 与上下层的关系
 
-- **本级内容**：文件 1 个，9.8 KB
-- **子树规模**：文件 1 个，逻辑体积 9.8 KB
+- **上游输入**：`scripts/audit/audit_qwen21_weight_compatibility.py` 与 `inventory_qwen21_full_weights.py` 产出权重溯源与逐张量白名单；`models/`（Qwen-Image-2.1、DeepGen）提供基础张量。
+- **产出物**：一个 full-controller 初始化 `.pt`（或等价 checkpoint），被 `scripts/train/train_iper_qwen21_full.py` 等完整 controller 训练入口作为起点加载。
+- **下游验收**：`scripts/audit/check_qwen21_full_preservation.py`、`verify_qwen21_full_resume.py` 等会核对这个初始化 checkpoint 的来源与可复现性；其权重审计证据由 `scripts/reports/write_qwen21_weight_audit_report.py`、`write_qwen21_inheritance_report.py` 写成报告。
+- 相关索引：父级 [`../README.md`](../README.md)；权重/资产路径登记在 [`../../configs/asset_registry.json`](../../configs/asset_registry.json)。
 
-## 二、层级目录
+## 注意与坑
 
-本目录为叶子目录，不含子目录。
-
-## 三、文件清单
-
-共 **1** 个文件（不含隐藏文件与自动生成的说明文件）。类型分布：Python 源码×1
-
-| 文件 | 类型 | 大小 | 内容摘要 |
-|---|---|---|---|
-| `inherit_qwen21_full_weights.py` | Python 源码 | 9.8 KB | 模块 docstring：Create a full-controller initialization checkpoint from an audited whitelist.；顶层定义 3 个（`verify_state`, `validate_policy`, `main`） |
-
-## 四、构成画像
-
-- **直属类型分布**：Python 源码×1
-- **子树类型构成**：Python 源码×1
-
-## 五、导航
-
-- 根目录总览：[`目录总览.md`](../../目录总览.md)
-- 根 README：[README.md](../../README.md)
+- 本目录只有 1 个脚本，职责很窄：**只做初始化权重的「继承/组装」，不训练、不重写源权重**。改白名单前应先跑对应审计脚本确认来源合法。
+- 生成的初始化 checkpoint 是训练的**起点**而非训练结果；它与 `scripts/train/` 产出的真正训练 checkpoint 要区分开，避免把「继承初始化」误读成「已训练权重」。
+- 该脚本的依赖与 `scripts/audit/` 的权重审计强耦合——白名单/来源一旦变动，需重新审计后再生成初始化权重。

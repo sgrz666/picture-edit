@@ -1,0 +1,1068 @@
+{
+  "configuration": {
+    "dataset_sha256": "b3a71bee31f18d868fcc0ee982b3c7f55e001bd10509cd0312c5e32983f5ce94",
+    "split_manifest": {
+      "path": "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/split.json",
+      "sha256": "b744ec1103e9086135656b7b1e716a17b8c13e755b740b86acf55e18c4c6c238"
+    },
+    "selection_lock": {
+      "path": "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/selection_lock.json",
+      "sha256": "70576c43761876ba7b794fc4e5c2fb5d1a85639b2efd255a8f0ee863fe967910",
+      "selected_rows": 6,
+      "selection_locked_before_training": true,
+      "locked_test": {
+        "pair": "pair00",
+        "source_action": "taichi00",
+        "source_frame": 41,
+        "target_action": "hug00",
+        "target_frame": 108,
+        "camera": 4
+      }
+    },
+    "sample_id": "pair00_taichi00_000041_to_hug00_000108_cam4",
+    "pair_holdout": {
+      "train": [
+        "pair12",
+        "pair14"
+      ],
+      "val": [
+        "pair22"
+      ],
+      "test": [
+        "pair00"
+      ]
+    },
+    "identity_scope": "pair holdout; global cross-pair actor IDs were not proven",
+    "generation_manifest_sha256": {
+      "short": "6e21d788364ab0faf36a81b9c7faaad88acc42e28af63b81dfd25f639042c83e",
+      "structured": "672e57e279a1d4d2c0258a252eff905d83c4922006281e5bf242aa649ff07166"
+    },
+    "source_rgb_sha256": "73fc368bb83e835ae04584b8eef10f5441a36872713a22356b39330e2ebae112",
+    "source_mask_sha256": [
+      "dbf1becff27aef4660a00507b47b650365b0e0244d7bac45535580fce9e9fd4d",
+      "e158f0a272b83e65a553f9aaa3697fd2a643499ff2e1b2bd221b10bc5587b783"
+    ],
+    "source_features_sha256": "63c45ef94d9584beb7e56f90cc374075d8e7886f7fa023febd3f898edfeaed06",
+    "person_uids": [
+      "pair00_actor0",
+      "pair00_actor1"
+    ],
+    "geometry_sha256": "6947ec01962ca2e64567d14fadeb863dcf2b93e105027029b183570f89f83a39",
+    "geometry_sidecar_sha256": "52aa932027f5ddeb14db353f4a6a1bf5c0f0d77fe46658dfd7edd8206e17346b",
+    "checkpoints": {
+      "short": {
+        "path": "/home/shangguanrz/project/pic-edit/experiments/4.two man /qwen21_dual_prompt_pilot/20261013_v1/short/checkpoint_best.pt",
+        "sha256": "7aa609d910a655f5b73622f69a0cd32dfa9d5ca8b7e72225c81c109decd8bab7",
+        "step": 50,
+        "best_validation": 0.11233979339400928,
+        "completion_sha256": "a3b1df9614aa1f479849be73ac897b5e714355d9676782eca2395fde719a65e0",
+        "root_completion_sha256": "d5483f9575c5ed5e751ad8dffebf72dfa2a8099748b0d45b2f2c03404cc6593d"
+      },
+      "structured": {
+        "path": "/home/shangguanrz/project/pic-edit/experiments/4.two man /qwen21_dual_prompt_pilot/20261013_v1/structured/checkpoint_best.pt",
+        "sha256": "3de39e96942c1474e2418fbfafa2b18e3b36498df90a305360ef6e6ff187aa36",
+        "step": 50,
+        "best_validation": 0.11246329670151074,
+        "completion_sha256": "6e78ed8a1518cb3924423ce32930dd6506901b46b9f510cd94464116e7d0a7bd",
+        "root_completion_sha256": "d5483f9575c5ed5e751ad8dffebf72dfa2a8099748b0d45b2f2c03404cc6593d"
+      }
+    },
+    "model_id": "/data/shangguanrz/pic-edit-models/Qwen-Image-2.1",
+    "actual_backbone_sha256": "4b40da9b51ddcb44bc4cae009242f7f29936883bbd9fd05b16da789519848d5e",
+    "precision_policy": {
+      "name": "qwen21_bf16_full_precision_reduction_v1",
+      "allow_bf16_reduced_precision_reduction": false
+    },
+    "runtime_versions": {
+      "torch": "2.8.0",
+      "torchvision": "0.23.0",
+      "diffusers": "0.41.0.dev0",
+      "transformers": "5.17.0",
+      "numpy": "2.1.2",
+      "scipy": "1.16.2",
+      "pillow": "11.3.0"
+    },
+    "native_code_sha256": {
+      "pipeline": "6985b2f1f25e8dd09ef85c867ebcad184b981f10c0b4f80757ca9cc135b8fa5e",
+      "transformer": "0eb0555e21ca93195e1fe9389113cafbf0e8822f6454c3001cebb3d21521ebd7",
+      "vae": "afb341db5e9d081e568ae4703119d1141d124aaf2fa9c061b3d4eb80ce73c15b",
+      "text_encoder": "e96511fa034bd734fa06639611bc6cbdf1da12d02104785a9bc265baa764af8a"
+    },
+    "verified_training_code_sha256": {
+      "scripts/precompute/precompute_hi4d_smplx_controls.py": "d2dbdc94b7c1fcdd3db85ef2b26a555ed4c4c5cc7708d2be07027891eb54a7dc",
+      "scripts/train/train_qwen21_dual_v8_pilot.py": "6af6180fa4c782e3afac501d65f1a8d2f5818496568dccd61f346db79d4cd881",
+      "src/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "src/data/__init__.py": "80dbd8913da57b413381469ebdc558699a920f61d3ac7a6176499cfbf22f4331",
+      "src/data/hi4d_smplx_dataset.py": "f8e7a0d19eafbed69806121848494fb5a3dcfce12b4d7830e679012b14762091",
+      "src/pose_control/__init__.py": "bc83631dbb119e019d1f67a66231da3fc5a095fda3352d6956327fafa42c19fc",
+      "src/pose_control/qwen21_full/__init__.py": "310ac0f0db6f4c871162c17482b0e1f4c293a50f51bc331598617a81361e60fa",
+      "src/pose_control/qwen21_full/checkpoint.py": "42c7517eab3eb64b52b5e2622e2bc1a806b2c946215f4a61a2974432c106a2e3",
+      "src/pose_control/qwen21_full/condition_bridge.py": "81b7eed16f9892f58657571a44bd3d0e38a1bce7821725692cbbee92f9f5c2fd",
+      "src/pose_control/qwen21_full/condition_injector.py": "f491702332c55f57cfbd67819ebd4da30dec057dae0fc7f685db0ac240895b93",
+      "src/pose_control/qwen21_full/conditions.py": "90bf30b06b6d7e3cd3bb3109706ee366f02c5e8d4991051308881bc6f9a9c5d9",
+      "src/pose_control/qwen21_full/control_core.py": "e5e551e9ab8696f1d547b9b6a111a5b690a9942913b51cc0eb48a0ed011420c9",
+      "src/pose_control/qwen21_full/controlled_pipeline.py": "d7c9afcea9c1b443b8c23a679287d8469a324090688d730d397c96e29f6a9cbc",
+      "src/pose_control/qwen21_full/data_runtime.py": "423d41e68029e8163ba8b647750365d8032bd89535a97851202a695b367316de",
+      "src/pose_control/qwen21_full/deepgen_adapter.py": "b63ad72639673ea6949ccb32c5831ca22b614a13952196e3ee6d5c904543544d",
+      "src/pose_control/qwen21_full/detail/__init__.py": "c21e3db511029086297287ef8b0897176878509ec66c1eebd3ba95c96c140c94",
+      "src/pose_control/qwen21_full/detail/binder.py": "da4e8132a02afaa1f3d880a07f661a057cbee149c4f82508dd77a3fa9415b8b2",
+      "src/pose_control/qwen21_full/detail/conditions.py": "55de19e7e2cc5afb8a3c610b7503da7f64d718e137e36324d46096f9f5def15a",
+      "src/pose_control/qwen21_full/detail/encoders.py": "6b68787bb104579ca323f76157d8543f8aef91798c30f6c4bb98e52e350c0629",
+      "src/pose_control/qwen21_full/detail/hand.py": "5783a338542d8e5e7dca55c7ff39e9708309e222335863150c5e8461fac93f27",
+      "src/pose_control/qwen21_full/detail/preparer.py": "d42a29bb4d342f92d9d8f746c57836c20caf4a68ea34d152dbf901447ebe0bd0",
+      "src/pose_control/qwen21_full/dual/__init__.py": "15a2b287737bfd25d18beac71a1da9e199a7bd06a61de5114550b92c4b36a16e",
+      "src/pose_control/qwen21_full/dual/api.py": "66bd4223be08aba9bca2b76b257128d4c540da2228af6716722b41c86729f606",
+      "src/pose_control/qwen21_full/dual/appearance.py": "c32c2557e36b18977a368a85ea14a23d91b36354bf5b03e853a23a3808bf1fa5",
+      "src/pose_control/qwen21_full/dual/checkpoint.py": "eaf33c75b3182ea615df7816654a3bf9c5be3185c56dfa1941750d7dc3c342cb",
+      "src/pose_control/qwen21_full/dual/conditions.py": "9fbb1df7e793265e0e27cc1ad87e82a5ed843734488a95df4d10ee785347c71c",
+      "src/pose_control/qwen21_full/dual/context.py": "7a87397cf404f5d4e0bba6c79ea036a14187e20711e641e0c95b6e404aceb779",
+      "src/pose_control/qwen21_full/dual/controller.py": "d329b0181c4fc03f10652dbd4cf4bec4eb4d52a757893b843e25a8faa65eb1a7",
+      "src/pose_control/qwen21_full/dual/diagnostics.py": "c039239b3d5053bca7cfa8da433e5cbe0643502001be6d7b3ecbfed4a05876e5",
+      "src/pose_control/qwen21_full/dual/experiment.py": "3f2270a563085abb12d1ea7e099e8909c2aab1777f70e4a33a6162d6c6bf82cc",
+      "src/pose_control/qwen21_full/dual/geometry.py": "7440afdd075d673e1ea0e0b530d8d1b8efd360edb10e87cef504692145bdb6d9",
+      "src/pose_control/qwen21_full/dual/precision.py": "14dc1a16686395d4fc0d95d20b321654bd5a797d57a9aecda87b0e9d1469275d",
+      "src/pose_control/qwen21_full/dual/prompt_pilot.py": "22bcf9fa38312c1f8deff04967b2b8c8444d2d740eb05701ff23b4799c852271",
+      "src/pose_control/qwen21_full/dual/reasoner.py": "8110e4f5752bf9d2a60ef5bc2c1fbfee553c9907fb779af11fe9a882b80bbee0",
+      "src/pose_control/qwen21_full/dual/routing.py": "73658d4d748e22c5f8e480fd10c53f159835eb6cc1e0115d990084d22bc296d4",
+      "src/pose_control/qwen21_full/dual/runtime.py": "accd1666644358002a9cd1f8ca7a51f26fba7149f3fff92241b64778b01e3651",
+      "src/pose_control/qwen21_full/dual/schema.py": "d112def3de2e99860d862ec1b66d904c7581be4b6f5cd3015b35f5e61cead6ad",
+      "src/pose_control/qwen21_full/execution.py": "ad9d8b46a467d57865f019b60a08870fb3d2eaa266384661b0bebfb945bd5ecb",
+      "src/pose_control/qwen21_full/experts.py": "50e0444d19441448ce0701df4800b1d67c5ca98c5953dfcf4587611b4e77c3d6",
+      "src/pose_control/qwen21_full/face/__init__.py": "bfc1ef7085a446646d667c5459b10647ebbdcc40c57caca80bf100936381cafe",
+      "src/pose_control/qwen21_full/face/adapter.py": "0b9b66c396de155e2bc0d25ca5d885e2e3aa2296a8e3e547e2c69144ee98dc52",
+      "src/pose_control/qwen21_full/face/conditions.py": "b4b338b7ceec954c37178cdf05f01b0157c51c6a9ece5f8938b93786a7fee4c0",
+      "src/pose_control/qwen21_full/face/content_encoder.py": "2271eecbd7eb88cfce8ad805d61aaf2f950292a32ad135a9e1fa447ca34548b7",
+      "src/pose_control/qwen21_full/face/geometry.py": "787fd100eb74e82e747e45a6a2bb38c04069e170bb893f07adc3cc63e0a791f6",
+      "src/pose_control/qwen21_full/face/iper_dataset.py": "033910faa42352926d0eab1cbad0d09b8c3da5c2dcc41609b5a4edf584efd94a",
+      "src/pose_control/qwen21_full/face/preparer.py": "ae3b218f88a98c5d4efb6e69a8e11f5f8e79efc1f8ae63e3f3118d044b186c93",
+      "src/pose_control/qwen21_full/face/resampler.py": "d149af3f79d1466cefba7e084fbaf88fc6bc08813848de34ff39e4a8267bc576",
+      "src/pose_control/qwen21_full/face/spatial.py": "30c7072c4fe66b234bced81e33af3ed2a52b824511a15d0273ce81c3f4938781",
+      "src/pose_control/qwen21_full/face_coordinates.py": "cb9dc323ee1a45b09534ec78f696eefac9fdf32630c8879f0ca76495f6525b25",
+      "src/pose_control/qwen21_full/face_loss_alignment.py": "178a4f4786c27eb3ea6144a594763393797d274cb1fcc806eebf300f32d2bdbe",
+      "src/pose_control/qwen21_full/face_supervision.py": "7a6e9b559a84cb643064e534f7e627ec0244947393913b522b4ab98603920b32",
+      "src/pose_control/qwen21_full/frozen_bfs_lora.py": "d364338e603bf257883da51dee1d5bcb4cc8baefaad4b029541bb7b446bc0c1a",
+      "src/pose_control/qwen21_full/geometry_encoder.py": "47c073c05d467d7f7c70d5b28e4929c3730e518fa6fe69d20453f29e474ea198",
+      "src/pose_control/qwen21_full/hand/__init__.py": "528230c4db55811bbd08afc45fb4c3bb93174f04321154738f55ef89f30723d7",
+      "src/pose_control/qwen21_full/hand/adapter.py": "e4a3acc84321576739bd7150ad37b98b03034c169f54c33cfb5424df4be1cbbd",
+      "src/pose_control/qwen21_full/hand/conditions.py": "015ab92c7bdfff90f6cd55f27ee0b0cbca53c71b46f799894aee0d777ec5b6bd",
+      "src/pose_control/qwen21_full/hand/geometry.py": "a7f4192bc267cb0772ffe1b07c9feba3e215d4d3cb835f27dbb60bf826c34179",
+      "src/pose_control/qwen21_full/hand/preparer.py": "7c0947a7469c48572e8b08d83eefc6028337d20e7039804dd34f09749b25ce1d",
+      "src/pose_control/qwen21_full/hand/quality.py": "08b460c83740c199c768a4951a973c5505ad72f0d9c18c204f643b2abf2262cf",
+      "src/pose_control/qwen21_full/hand/refiner_export.py": "204a25859dc8e522e756cf5e4dcfe6e13c47f0679a0f967e0756074fbaec127d",
+      "src/pose_control/qwen21_full/hand/vton_layers.py": "316e4fb836b64eba23dcb24d233369dbca94cb72cb640121188ec0ee55a6c3d1",
+      "src/pose_control/qwen21_full/interface/__init__.py": "d67dc02f7f30605bb7b7d4343f90260bf5cf22224003d9d6e8e123b8a72b1a4f",
+      "src/pose_control/qwen21_full/interface/deepgen_interface.py": "1c2c73755b73c8800cf4097ddefc3a520d7ebe0f5d801c8f64d0e64f202e2475",
+      "src/pose_control/qwen21_full/interface/outputs.py": "75b1d9f1b644973c1ee16dafba71c7afc5e324c0ec5e8707cb6478dc059ce0aa",
+      "src/pose_control/qwen21_full/interface/strength.py": "74f3c3fca143b685666814e04e4598106294d71d9dbfa4a4d93679a53ba84d97",
+      "src/pose_control/qwen21_full/joint_training.py": "17f063c77e6e651e2ad6b8396615fb3f4940f8f3c7aa480a6b2a535e8ac36d4b",
+      "src/pose_control/qwen21_full/qwen_adapter.py": "2c616eb4abc0ca75f14dd9fbf343aa1bbf519c536f8bded44dd22f2aeef4e400",
+      "src/pose_control/qwen21_full/qwen_runtime.py": "77a1e3655e9042aabb81cc04bca7484c6f0956663b19f4d447ba5a1c3b419931",
+      "src/pose_control/qwen21_full/reasoning/__init__.py": "df319de41594e018676be54a28ca6990988604afc183f0eb831b44f7db7afb43",
+      "src/pose_control/qwen21_full/reasoning/blocks.py": "84a2c3f9e6f8d8388f3066a4c9a221c1516abba2d7dc521c22a3214b614dbad5",
+      "src/pose_control/qwen21_full/reasoning/config.py": "9b8134b3ee735c0cc9f2331f439de78089decda300bdaa62825c1ffcbfce6169",
+      "src/pose_control/qwen21_full/reasoning/contact.py": "a1d91617cc39ea4cbf3e9ee041aa626bcbc5a73e964027a501520128e5a0113c",
+      "src/pose_control/qwen21_full/reasoning/cross_person.py": "46f390c93fe213a00dbbc633f6b180156e92b94f37b3e9fc9c4ed8cbdc533b96",
+      "src/pose_control/qwen21_full/reasoning/fusion.py": "facc75905b80ff974de9f91a7ba04e72def93155ccb5a56a170db9319182e455",
+      "src/pose_control/qwen21_full/reasoning/person_geometry.py": "175f64b6ba08e03f252e38030dc7b5b4a6aa4b4d0b5af9dad994cd168536f54e",
+      "src/pose_control/qwen21_full/reasoning/reasoner.py": "a9eccf162b5eb0617478db88a9c4c071315dea7b84cbea310f0f5bbf519810df",
+      "src/pose_control/qwen21_full/reasoning/state.py": "cd7e60ea37946d1c6dcf8639cd5f983a0a09a050a3450595ac65a8a71b681e67",
+      "src/pose_control/qwen21_full/token_encoders.py": "fd609c7fe1f55ad1fd54385fd524d9c00ca9c2adc692749152e007c6d4327f7e",
+      "scripts/train/train_qwen21_dual_prompt_pilot.py": "90b3565f1779da99b239ec064e32188a5db8105170e1b606e3d334427a93f95d",
+      "src/data/hi4d_dual_prompt_pilot.py": "541812bb47a4f93efd2ef856a7cea01b87f0b49bc3591e42a5ef94d266e56b6e",
+      "scripts/precompute/prepare_hi4d_dual_prompt_pilot.py": "2e43917b3f6fa4a84ed0127302fe95b686989c97fd142d6901e157c3789690c9"
+    },
+    "evaluation_code_sha256": {
+      "scripts/eval/eval_qwen21_dual_prompt_pilot.py": "078db5942d5261a020e7d6907b52f1b0ff39d39725d1ca8c5cf34fd593f66de3",
+      "scripts/eval/eval_qwen21_dual_v8.py": "afbe3d06db4acd72c4766209880943892caaf5930e27b33f0754073a7a20ee44",
+      "scripts/eval/multihmr_rgb_worker.py": "46efeed11390d17df8e13c6af45f9f149c8b85ee7ea49fd580f348ead3f4c464",
+      "src/evaluation/dwpose_onnx/__init__.py": "f594c6f2ef9aa3b7e0a2d270f85e6bcae399f627fe65e0731478193811ba6d5b",
+      "src/evaluation/dwpose_onnx/onnxdet.py": "4c82a928ced32883b9a6acf89a2ce90ce9a266ab98c9e01231eb0f8d4a52751d",
+      "src/evaluation/dwpose_onnx/onnxpose.py": "16fb69ab54f5e1ce8a5ad186e92f357da0162fc2ca2eeec4ccf1db72949291a2",
+      "src/evaluation/joint_pilot_metrics.py": "e4005d06d61d729900c530b8c473d594c5088fcc1bdf6823355161af2321559c",
+      "src/evaluation/qwen21_dual_prompt_pilot.py": "aad6732858743ba23ee7ebbee33de170e838b44de5c2696f0bde876f2db363b4",
+      "src/evaluation/qwen21_dual_v8_metrics.py": "87df54ae2913a346fc099fa3ad8463a040d9eed119909e6fd44e256bc90cd1a8"
+    },
+    "text_provenance": {
+      "short": "action label only; no target geometry descriptions",
+      "structured": "source actor anchors, action label and reliable external target geometry descriptions; no target RGB"
+    },
+    "key": "native_structured_seed42",
+    "method": "native",
+    "prompt_kind": "structured",
+    "prompt": "A is the person on the right in the source image. B is the person on the left in the source image. Make the two existing people hug. A and B face toward one another. Keep A and B close together. A keeps the left hand at shoulder level and the right hand near waist level. A keeps the left elbow bent. A keeps the right elbow bent. A brings an arm around the other person's upper body. B keeps the left hand at shoulder level and the right hand near waist level. B bends the left elbow tightly. B keeps the right elbow bent. B brings an arm around the other person's upper body. Preserve each person's face, hair, clothing and body identity, the background, and the original camera view.",
+    "seed": 42,
+    "explicit_target_geometry_control": false,
+    "prompt_geometry_descriptions": true,
+    "prompt_geometry_provenance": "reliable_external_target_geometry",
+    "checkpoint": null,
+    "steps": 40,
+    "cfg": 1.0,
+    "use_kv_cache": true
+  },
+  "configuration_sha256": "cc57a78e116c4b20ef88813bdfbdefe0656922580e87450e726e7aa5fc1b8524",
+  "output": "/home/shangguanrz/project/pic-edit/experiments/4.two man /qwen21_dual_prompt_pilot/20261013_v1/test_pair00_v1/native_structured_seed42.png",
+  "output_sha256": "a3ca64bb2a60dcb877a717e8a5f72eb5faea27d7e90d2972fee91ea562cdb3a1",
+  "explicit_target_geometry_control": false,
+  "prompt_geometry_descriptions": true,
+  "prompt_geometry_provenance": "reliable_external_target_geometry",
+  "elapsed_seconds": 7.678574323654175,
+  "actual_gradient_state": {
+    "key": "native_structured_seed42",
+    "grad_enabled": false,
+    "inference_mode": true
+  },
+  "generation_api_target_rgb_argument": false,
+  "diagnostics": null,
+  "quality": {
+    "detected_people": 1,
+    "third_people": 0,
+    "assignment": {
+      "indices": [
+        -1,
+        0
+      ],
+      "costs": [
+        null,
+        0.16769672552164838
+      ],
+      "unassigned_detection_indices": [],
+      "assignment_basis": "external_target_geometry_bbox_and_pose_without_identity"
+    },
+    "detections": [
+      {
+        "box_at_512": [
+          201.05770874023438,
+          121.74671936035156,
+          296.15997314453125,
+          401.4752502441406
+        ],
+        "wholebody134_at_512": [
+          [
+            242.2348184287548,
+            145.05743026733398
+          ],
+          [
+            239.9583818167448,
+            174.651106223464
+          ],
+          [
+            215.37286640703678,
+            175.106393545866
+          ],
+          [
+            234.4949339479208,
+            219.26926381886005
+          ],
+          [
+            275.47079296410084,
+            216.99282720685005
+          ],
+          [
+            264.5438972264528,
+            174.195818901062
+          ],
+          [
+            270.00734509527683,
+            214.71639059484005
+          ],
+          [
+            261.8121732920408,
+            181.48041605949402
+          ],
+          [
+            224.0233255326748,
+            256.1475369334221
+          ],
+          [
+            229.9420607239008,
+            318.52190010249615
+          ],
+          [
+            222.6574635654688,
+            378.1645393371582
+          ],
+          [
+            241.7795311063528,
+            255.2369622886181
+          ],
+          [
+            238.5925198495388,
+            316.24546349048615
+          ],
+          [
+            233.5843593031168,
+            367.2376435995102
+          ],
+          [
+            235.4055085927248,
+            140.04926972091198
+          ],
+          [
+            242.2348184287548,
+            140.04926972091198
+          ],
+          [
+            219.92573963105679,
+            145.05743026733398
+          ],
+          [
+            267.73090848326683,
+            145.96800491213799
+          ],
+          [
+            263.6333225816488,
+            375.4328154027462
+          ],
+          [
+            264.9991845488548,
+            371.7905168235302
+          ],
+          [
+            234.4949339479208,
+            372.7010914683342
+          ],
+          [
+            249.9747029095888,
+            392.2784463316202
+          ],
+          [
+            240.8689564615488,
+            393.1890209764242
+          ],
+          [
+            219.01516498625278,
+            385.4491364955902
+          ],
+          [
+            221.7468889206648,
+            140.95984436571598
+          ],
+          [
+            222.2021762430668,
+            144.14685562252998
+          ],
+          [
+            222.6574635654688,
+            146.878579556942
+          ],
+          [
+            223.5680382102728,
+            150.520878136158
+          ],
+          [
+            224.9339001774788,
+            152.797314748168
+          ],
+          [
+            227.6656241118908,
+            155.52903868258
+          ],
+          [
+            229.9420607239008,
+            157.350187972188
+          ],
+          [
+            233.1290719807148,
+            159.171337261796
+          ],
+          [
+            236.3160832375288,
+            160.0819119066
+          ],
+          [
+            239.0478071719408,
+            160.0819119066
+          ],
+          [
+            241.3242437839508,
+            157.80547529459
+          ],
+          [
+            242.2348184287548,
+            155.52903868258
+          ],
+          [
+            242.6901057511568,
+            151.886740103364
+          ],
+          [
+            242.6901057511568,
+            148.69972884655
+          ],
+          [
+            242.6901057511568,
+            145.51271758973598
+          ],
+          [
+            242.2348184287548,
+            142.32570633292198
+          ],
+          [
+            241.7795311063528,
+            139.59398239850998
+          ],
+          [
+            231.3079226911068,
+            137.77283310890198
+          ],
+          [
+            232.6737846583128,
+            136.86225846409798
+          ],
+          [
+            234.4949339479208,
+            136.86225846409798
+          ],
+          [
+            235.8607959151268,
+            136.86225846409798
+          ],
+          [
+            237.6819452047348,
+            137.31754578649998
+          ],
+          [
+            239.9583818167448,
+            137.77283310890198
+          ],
+          [
+            240.8689564615488,
+            137.77283310890198
+          ],
+          [
+            241.3242437839508,
+            137.77283310890198
+          ],
+          [
+            241.3242437839508,
+            137.77283310890198
+          ],
+          [
+            241.7795311063528,
+            138.22812043130398
+          ],
+          [
+            239.9583818167448,
+            140.04926972091198
+          ],
+          [
+            241.3242437839508,
+            141.87041901051998
+          ],
+          [
+            242.2348184287548,
+            143.69156830012798
+          ],
+          [
+            242.6901057511568,
+            145.05743026733398
+          ],
+          [
+            238.5925198495388,
+            147.333866879344
+          ],
+          [
+            239.9583818167448,
+            147.789154201746
+          ],
+          [
+            241.3242437839508,
+            147.789154201746
+          ],
+          [
+            242.2348184287548,
+            147.333866879344
+          ],
+          [
+            243.6006803959608,
+            146.878579556942
+          ],
+          [
+            233.1290719807148,
+            140.50455704331398
+          ],
+          [
+            234.4949339479208,
+            140.04926972091198
+          ],
+          [
+            235.8607959151268,
+            139.59398239850998
+          ],
+          [
+            236.7713705599308,
+            140.50455704331398
+          ],
+          [
+            235.4055085927248,
+            140.95984436571598
+          ],
+          [
+            234.0396466255188,
+            140.95984436571598
+          ],
+          [
+            240.8689564615488,
+            140.50455704331398
+          ],
+          [
+            241.3242437839508,
+            140.04926972091198
+          ],
+          [
+            241.3242437839508,
+            140.04926972091198
+          ],
+          [
+            241.7795311063528,
+            140.50455704331398
+          ],
+          [
+            241.3242437839508,
+            140.50455704331398
+          ],
+          [
+            241.3242437839508,
+            140.50455704331398
+          ],
+          [
+            236.3160832375288,
+            151.886740103364
+          ],
+          [
+            238.5925198495388,
+            150.97616545856
+          ],
+          [
+            240.8689564615488,
+            150.520878136158
+          ],
+          [
+            241.3242437839508,
+            150.520878136158
+          ],
+          [
+            241.7795311063528,
+            150.520878136158
+          ],
+          [
+            242.2348184287548,
+            151.431452780962
+          ],
+          [
+            241.7795311063528,
+            152.342027425766
+          ],
+          [
+            241.7795311063528,
+            152.797314748168
+          ],
+          [
+            241.3242437839508,
+            153.25260207057
+          ],
+          [
+            240.8689564615488,
+            153.707889392972
+          ],
+          [
+            239.0478071719408,
+            153.25260207057
+          ],
+          [
+            237.6819452047348,
+            152.797314748168
+          ],
+          [
+            236.7713705599308,
+            151.886740103364
+          ],
+          [
+            239.0478071719408,
+            151.431452780962
+          ],
+          [
+            240.8689564615488,
+            151.431452780962
+          ],
+          [
+            241.3242437839508,
+            151.886740103364
+          ],
+          [
+            241.7795311063528,
+            152.342027425766
+          ],
+          [
+            241.3242437839508,
+            152.342027425766
+          ],
+          [
+            240.8689564615488,
+            152.342027425766
+          ],
+          [
+            238.5925198495388,
+            152.342027425766
+          ],
+          [
+            260.4463113248348,
+            180.56984141469002
+          ],
+          [
+            254.98286345601082,
+            178.74869212508202
+          ],
+          [
+            253.16171416640282,
+            174.195818901062
+          ],
+          [
+            270.00734509527683,
+            172.829956933856
+          ],
+          [
+            272.28378170728683,
+            171.46409496665
+          ],
+          [
+            271.82849438488483,
+            172.829956933856
+          ],
+          [
+            272.28378170728683,
+            171.008807644248
+          ],
+          [
+            272.73906902968884,
+            170.098232999444
+          ],
+          [
+            272.73906902968884,
+            169.642945677042
+          ],
+          [
+            272.28378170728683,
+            174.195818901062
+          ],
+          [
+            280.02366618812084,
+            172.374669611454
+          ],
+          [
+            279.56837886571884,
+            171.008807644248
+          ],
+          [
+            278.65780422091484,
+            170.098232999444
+          ],
+          [
+            272.28378170728683,
+            175.561680868268
+          ],
+          [
+            280.47895351052284,
+            173.74053157866
+          ],
+          [
+            280.02366618812084,
+            171.919382289052
+          ],
+          [
+            279.11309154331684,
+            171.46409496665
+          ],
+          [
+            272.28378170728683,
+            176.92754283547401
+          ],
+          [
+            279.56837886571884,
+            176.472255513072
+          ],
+          [
+            280.02366618812084,
+            176.472255513072
+          ],
+          [
+            279.11309154331684,
+            176.472255513072
+          ],
+          [
+            275.92608028650284,
+            215.62696523964405
+          ],
+          [
+            275.92608028650284,
+            210.16351737082005
+          ],
+          [
+            276.83665493130684,
+            206.52121879160404
+          ],
+          [
+            278.20251689851284,
+            205.61064414680004
+          ],
+          [
+            281.38952815532684,
+            204.24478217959404
+          ],
+          [
+            281.84481547772884,
+            206.52121879160404
+          ],
+          [
+            283.21067744493484,
+            208.79765540361404
+          ],
+          [
+            283.66596476733685,
+            205.61064414680004
+          ],
+          [
+            283.66596476733685,
+            204.70006950199604
+          ],
+          [
+            282.30010280013084,
+            210.16351737082005
+          ],
+          [
+            284.57653941214085,
+            210.61880469322205
+          ],
+          [
+            284.12125208973885,
+            208.34236808121204
+          ],
+          [
+            284.12125208973885,
+            205.15535682439804
+          ],
+          [
+            282.75539012253284,
+            212.43995398283005
+          ],
+          [
+            285.03182673454285,
+            211.98466666042805
+          ],
+          [
+            285.03182673454285,
+            211.07409201562405
+          ],
+          [
+            285.03182673454285,
+            210.16351737082005
+          ],
+          [
+            283.21067744493484,
+            215.17167791724205
+          ],
+          [
+            284.57653941214085,
+            212.89524130523205
+          ],
+          [
+            284.57653941214085,
+            212.43995398283005
+          ],
+          [
+            285.03182673454285,
+            212.43995398283005
+          ]
+        ],
+        "wholebody134_scores": [
+          0.6080663204193115,
+          0.0,
+          0.5357509851455688,
+          0.49812203645706177,
+          0.420129656791687,
+          0.2433917373418808,
+          0.28574058413505554,
+          0.28153109550476074,
+          0.5474199056625366,
+          0.6567034125328064,
+          0.5493889451026917,
+          0.3466950058937073,
+          0.37171050906181335,
+          0.3916109800338745,
+          0.6211866140365601,
+          0.5266903042793274,
+          0.5976434946060181,
+          0.2999148368835449,
+          0.3578556180000305,
+          0.3197585642337799,
+          0.361148864030838,
+          0.5577298998832703,
+          0.5157552361488342,
+          0.5077152848243713,
+          0.6994750499725342,
+          0.7315300703048706,
+          0.7342889308929443,
+          0.7491305470466614,
+          0.7385146021842957,
+          0.6973778605461121,
+          0.7312600612640381,
+          0.7309358716011047,
+          0.7568766474723816,
+          0.7442741394042969,
+          0.7101807594299316,
+          0.7029537558555603,
+          0.6758884787559509,
+          0.6765116453170776,
+          0.6600198149681091,
+          0.665555477142334,
+          0.6335973143577576,
+          0.7690223455429077,
+          0.7812590599060059,
+          0.7873749732971191,
+          0.7910871505737305,
+          0.7794215083122253,
+          0.752867579460144,
+          0.7261717319488525,
+          0.6990289688110352,
+          0.6852084994316101,
+          0.6643162965774536,
+          0.8157365322113037,
+          0.8277669548988342,
+          0.7971027493476868,
+          0.8021220564842224,
+          0.7670020461082458,
+          0.795883297920227,
+          0.8049243688583374,
+          0.802392840385437,
+          0.810674786567688,
+          0.7777004241943359,
+          0.795123279094696,
+          0.8200126886367798,
+          0.8095875382423401,
+          0.8087802529335022,
+          0.7812728881835938,
+          0.7807915210723877,
+          0.7454981803894043,
+          0.726016640663147,
+          0.6960504055023193,
+          0.733537495136261,
+          0.7561737895011902,
+          0.7720412015914917,
+          0.7731941342353821,
+          0.7811755537986755,
+          0.7913544774055481,
+          0.7867774963378906,
+          0.8038522005081177,
+          0.7598190307617188,
+          0.7751447558403015,
+          0.7868165373802185,
+          0.7965880632400513,
+          0.7928865551948547,
+          0.8064391613006592,
+          0.7741097211837769,
+          0.7866058945655823,
+          0.782576858997345,
+          0.7711994051933289,
+          0.7651656270027161,
+          0.7736102938652039,
+          0.7897016406059265,
+          0.7839011549949646,
+          0.32105550169944763,
+          0.31510215997695923,
+          0.31312745809555054,
+          0.3385566771030426,
+          0.3325348198413849,
+          0.27519264817237854,
+          0.2667413055896759,
+          0.282632440328598,
+          0.31114840507507324,
+          0.25721004605293274,
+          0.271416038274765,
+          0.2871820032596588,
+          0.289285272359848,
+          0.2525358498096466,
+          0.2703949511051178,
+          0.28814026713371277,
+          0.2812125086784363,
+          0.2563829720020294,
+          0.27401167154312134,
+          0.2779901623725891,
+          0.27621567249298096,
+          0.4128478765487671,
+          0.425800621509552,
+          0.3882799446582794,
+          0.36360135674476624,
+          0.3492000699043274,
+          0.36829566955566406,
+          0.39921116828918457,
+          0.38653242588043213,
+          0.37437647581100464,
+          0.3764945864677429,
+          0.3767267167568207,
+          0.3854479193687439,
+          0.3820270895957947,
+          0.3865838348865509,
+          0.3713655471801758,
+          0.3803074061870575,
+          0.3850546181201935,
+          0.39309626817703247,
+          0.38670215010643005,
+          0.38612860441207886,
+          0.37111926078796387
+        ]
+      }
+    ],
+    "people": [
+      {
+        "person_uid": "pair00_actor0",
+        "actor_slot": "A",
+        "detection_index": -1,
+        "body": {
+          "eligible_joints": 23,
+          "detected_joints": 0,
+          "confidence_threshold": 0.3,
+          "normalization": "512_canvas_diagonal",
+          "failure": "person_not_detected",
+          "nme_diagonal": null,
+          "pck_002": null,
+          "pck_005": null,
+          "pck_002_hits": 0,
+          "pck_005_hits": 0
+        },
+        "wholebody": {
+          "eligible_joints": 115,
+          "detected_joints": 0,
+          "confidence_threshold": 0.3,
+          "normalization": "512_canvas_diagonal",
+          "failure": "person_not_detected",
+          "nme_diagonal": null,
+          "pck_002": null,
+          "pck_005": null,
+          "pck_002_hits": 0,
+          "pck_005_hits": 0
+        }
+      },
+      {
+        "person_uid": "pair00_actor1",
+        "actor_slot": "B",
+        "detection_index": 0,
+        "body": {
+          "eligible_joints": 22,
+          "detected_joints": 19,
+          "confidence_threshold": 0.3,
+          "normalization": "512_canvas_diagonal",
+          "failure": null,
+          "nme_diagonal": 0.03441098325495206,
+          "pck_002": 0.09090909090909091,
+          "pck_005": 0.7272727272727273,
+          "pck_002_hits": 2,
+          "pck_005_hits": 16,
+          "joint_recall": 0.8636363636363636
+        },
+        "wholebody": {
+          "eligible_joints": 132,
+          "detected_joints": 114,
+          "confidence_threshold": 0.3,
+          "normalization": "512_canvas_diagonal",
+          "failure": null,
+          "nme_diagonal": 0.048856363671186946,
+          "pck_002": 0.015151515151515152,
+          "pck_005": 0.42424242424242425,
+          "pck_002_hits": 2,
+          "pck_005_hits": 56,
+          "joint_recall": 0.8636363636363636
+        }
+      }
+    ],
+    "appearance": {
+      "metric_kind": "clothing_proxy_dinov2",
+      "similarity_matrix_source_by_geometry_assigned_actor": [
+        [
+          null,
+          0.6584050059318542
+        ],
+        [
+          null,
+          0.6731693744659424
+        ]
+      ],
+      "actor_similarity": [
+        null,
+        0.6731693744659424
+      ],
+      "original_correspondence_mean": null,
+      "swapped_correspondence_mean": null,
+      "margin_original_minus_swapped": null,
+      "swap_detected": null,
+      "failure": "missing_source_or_generated_embedding",
+      "assignment_changed_by_identity": false
+    },
+    "face_identity": {
+      "metric_kind": "arcface_face_identity",
+      "similarity_matrix_source_by_geometry_assigned_actor": [
+        [
+          null,
+          0.006785451900213957
+        ],
+        [
+          null,
+          0.29291054606437683
+        ]
+      ],
+      "actor_similarity": [
+        null,
+        0.29291054606437683
+      ],
+      "original_correspondence_mean": null,
+      "swapped_correspondence_mean": null,
+      "margin_original_minus_swapped": null,
+      "swap_detected": null,
+      "failure": "missing_source_or_generated_embedding",
+      "assignment_changed_by_identity": false
+    },
+    "background": {
+      "mae_rgb_0_1": 0.02187575213611126,
+      "pixel_denominator": 144357,
+      "dilation_rgb_pixels": 8,
+      "target_gt_masks_used_only_by_evaluator": true,
+      "failure": null,
+      "rgb_reference": "evaluator_target_rgb_opened_after_all_generation",
+      "canvas_provenance": "source_native_size_and_recorded_affine; letterbox_padding_excluded"
+    },
+    "source_background_preservation": {
+      "mae_rgb_0_1": 0.019691957160830498,
+      "pixel_denominator": 144357,
+      "dilation_rgb_pixels": 8,
+      "target_gt_masks_used_only_by_evaluator": true,
+      "failure": null
+    },
+    "generated_appearance_mask_provenance": "generated_rgb_dwpose_boxes_partitioned_by_detected_body_joints_proxy",
+    "source_dino_failures": [
+      null,
+      null
+    ],
+    "generated_dino_failures": [
+      "ValueError: insufficient_generated_or_source_person_pixels",
+      null
+    ],
+    "source_face_failures": [
+      null,
+      null
+    ],
+    "generated_face_failures": [
+      "ValueError: insufficient_generated_or_source_person_pixels",
+      null
+    ],
+    "metric_model_failures": {},
+    "failures": {},
+    "mesh": {
+      "failure": "pending_generated_rgb_reconstruction",
+      "part_pair_distances": null,
+      "expected_contact_pairs": 8
+    },
+    "occlusion": {
+      "failure": "pending_generated_rgb_reconstruction"
+    }
+  },
+  "evaluation_target_sha256": "eda51b20053fcea4245488d8de89c904785111103f4674be28c7b256105065c6"
+}

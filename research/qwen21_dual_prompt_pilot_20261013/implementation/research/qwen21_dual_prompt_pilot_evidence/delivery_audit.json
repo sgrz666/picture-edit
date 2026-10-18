@@ -1,0 +1,25 @@
+{
+  "status": "pass",
+  "observed_utc": "2026-10-13T17:02:11.003173+00:00",
+  "train_rows": 4,
+  "validation_rows": 1,
+  "test_rows": 1,
+  "optimizer_steps_per_branch": 300,
+  "best_steps": {
+    "short": 50,
+    "structured": 50
+  },
+  "generated_outputs": 12,
+  "all_output_record_and_png_sha256_verified": true,
+  "checkpoint_selection_training_test_crossmatch": true,
+  "inference_guard_all_checks_passed": true,
+  "target_supervision_opened_after_generation": true,
+  "native_forward_samples": 480,
+  "manual_inspection": "all12 comparison board plus native_short42,dual_short44,dual_structured42 original512 images",
+  "gt_detector_detected_people": 1,
+  "run_sha256": "14462f074ebb596a4d9a112385f5bbcf11a350e2015c75cd9ab96158764a32c4",
+  "report_sha256": "415cad3ccb8b04ba9df681216f86ad8aca0cd67723b185b1a27ab1920e964119",
+  "manual_sha256": "e5e8aef6a59f5eaf075a2a859eb030d91c2c24540076d9c3b2d367fbe7f837ae",
+  "delivery_review": "one background denominator wording corrected; other factual and command checks passed",
+  "review_correction_verified_utc": "2026-10-13T17:03:27.764180+00:00"
+}

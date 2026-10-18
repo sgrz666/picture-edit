@@ -1,0 +1,25 @@
+{
+  "target_rgb": "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/final_assets_v4_2/targets/pair14/hug14/cam4/000062/rgb.jpg",
+  "target_masks": [
+    "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/final_assets_v4_2/targets/pair14/hug14/cam4/000062/gt_mask_A.png",
+    "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/final_assets_v4_2/targets/pair14/hug14/cam4/000062/gt_mask_B.png"
+  ],
+  "pair": "pair14",
+  "source_frame": 32,
+  "target_frame": 62,
+  "action": "hug14",
+  "camera": 4,
+  "schema_version": "dual_supervision_v1",
+  "person_uids": [
+    "pair14_actor0",
+    "pair14_actor1"
+  ],
+  "target_geometry": "/home/shangguanrz/project/pic-edit/research/qwen21_dual_upgrade_20261011/pilot_controls_v3/hug14_000062_cam4_geometry.npz",
+  "target_rgb_sha256": "3bd92e30ce14646ed8bfe0080c64415bd05a97683dae82220219159029a85933",
+  "target_mask_sha256": [
+    "7f0637f19a3da9cb4e3f93b9e432bbae194b5b77eea243fd38402c9eb729f1e8",
+    "32970f1adf9d6a7068b36cde0e20ad3ae08ad07196997bd0e64be9793def80d2"
+  ],
+  "target_geometry_sha256": "07a6149c4fa8a2cdb93cd1912f7a9969f896807e410f80a5922e26514328a1da",
+  "target_geometry_sidecar_sha256": "38f6acdbc63787d0c9ac3edeb8180019fed1b77208bc55ad0d32d0af9d7ba378"
+}

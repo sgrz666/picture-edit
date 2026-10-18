@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "as_of": "2026-10-03",
+  "project_root": "/home/shangguanrz/project/pic-edit",
+  "purpose": "人工可读路径登记；不覆盖现有训练配置与默认值。实体切换状态以 archive/cleanup_20261003/assets.json 为准。",
+  "models": {
+    "deepgen": {"entry": "models/DeepGen-1.0-diffusers", "protected_runtime": "models/DeepGen-1.0-diffusers/deepgen_pipeline.py"},
+    "qwen21": {"entry": "models/Qwen-Image-2.1", "storage": "/data/shangguanrz/pic-edit-models/Qwen-Image-2.1"},
+    "legacy_qwen_edit_20b": {"entry": "models/Qwen-Image-Edit-20B", "compatibility": "model-qwen-edit", "storage": "/data/shangguanrz/pic-edit-archive/cleanup_20261003/models/Qwen-Image-Edit-20B"}
+  },
+  "cold_runs": {
+    "review_20260908_v2": {"entry": "experiments/review_20260908_v2", "storage": "/data/shangguanrz/pic-edit-archive/cleanup_20261003/experiments/review_20260908_v2"},
+    "iper_v6_comparative_3000": {"entry": "experiments/iper_v6_comparative_3000", "storage": "/data/shangguanrz/pic-edit-archive/cleanup_20261003/experiments/iper_v6_comparative_3000"}
+  },
+  "caches": {
+    "hi4d_qwen21": {"entry": "caches/qwen21_hi4d_controls", "compatibility": "/home/shangguanrz/nihaochen/qwen21_hi4d_controls", "storage": "/data/shangguanrz/pic-edit-caches/qwen21_hi4d_controls"},
+    "iper_v6_shared": {"entry": "experiments/iper_adapter_finetune_v1/condition_cache", "policy": "保持原位；训练/评测默认依赖"},
+    "iper_qwen21": {"entry": "/home/shangguanrz/nihaochen/qwen21_iper_cache", "policy": "保持原位；与分辨率、模型、prompt 版本绑定"}
+  },
+  "raw_3dpw_archive": "/data/shangguanrz/pic-edit-archive/cleanup_20261003/raw/3dpw",
+  "reports_qwen21": "/home/shangguanrz/nihaochen/docs",
+  "environments": {
+    "qwen21_python": "/home/shangguanrz/nihaochen/envs/qwen21/bin/python",
+    "deepgen_python": "/home/shangguanrz/miniconda3/envs/deepgen/bin/python",
+    "data_engine_envs": "add/envs",
+    "policy": "各环境保留，版本不同，未裁撤或合并"
+  },
+  "protected_runs": ["/home/shangguanrz/nihaochen/qwen21_full", "/home/shangguanrz/nihaochen/tiktok_qwen21_full_20261003"],
+  "protected_data": ["datasets", "add/outputs", "add/data", "add/datasets/HumanVid"]
+}

@@ -1,55 +1,49 @@
-# scripts/audit/ —— 目录层级与功能说明
+# scripts/audit/ —— 审计与验证工具集
 
-> 本文件由 `scripts/gen_folder_docs.py` 依据目录实际内容自动生成（生成时间：2026-10-11 16:23）；如需补充人工说明，请写在本目录 `README.md` 中（生成器不会覆盖 README）。
+本目录集中存放「只读检查 / 结构冒烟 / 验收」类脚本，是人物图像姿态编辑系统的事实核查层。它们不训练、不生成最终产物、不修改源权重，只在既有产物、缓存、权重与目录组织上做断言与比对，用来证明训练线（DeepGen V6 / Qwen21 各分支）在架构保全、权重溯源、数据质量与条件契约上没有悄悄退化。所有脚本一律把项目根插入 `sys.path`（`parents[2]`），因此从项目外也能以分类实体身份运行；多数的 docstring 明确标注了「CPU-only / 不写权重 / 不改控制模块」等约束。
 
-- **路径**：`scripts/audit`　- **层级**：第 3 级　- **上级**：[../目录说明.md](scripts)
+## 里面有什么
 
-## 一、目录定位
+### 审计类（权重兼容、prompt 泄漏、架构保全、数据质量）
 
-工程规范、权重结构与环境依赖审计脚本目录。
+| 文件 | 一句话职责 |
+|---|---|
+| `audit_qwen21_weight_compatibility.py` | CPU-only 权重溯源、语义映射与内存内模块审计；从不构造 Qwen 基模型或保存 adapter 张量，源 checkpoint 只读 |
+| `inventory_qwen21_full_weights.py` | CPU-only 逐张量溯源「保留的 V6/Qwen 初始模型」，描述初始化来源而非声称已训练 |
+| `check_qwen21_full_preservation.py` | 对未改动的 V6 拷贝及其遗留架构测试做 CPU 验收，仅在生产实验验收目录下写生成副本 |
+| `check_qwen21_native_value_prediction.py` | 固定 native-value 审计下的真实 Qwen 预测对齐（不采样整图、不编码 B 的 RGB 为 latent） |
+| `audit_qwen21_face_alignment.py` | CPU-only 对已生成单样例图的裁切/对齐审计，不合成、不训练、不加载 adapter 权重 |
+| `audit_hi4d_qwen21_prompt_leak.py` | 在单个 Hi4D source 上检查 target-RGB 隔离与 target-geometry 敏感性，防 prompt 泄漏 |
+| `probe_qwen21_face_single_sample.py` | 训练后固定噪声、区域误差与单步重建诊断（依赖 `scripts/run/run_qwen21_face_single_sample.py` 的输出） |
+| `audit_tiktok_v3_blur_sample.py` | TikTok V3 模糊样本审计 |
+| `audit_tiktok_v3_final_pairs.py` | TikTok V3 终审 pair 数据质量审计（基于 `datasets/TikTokDataset/TikTok_v3/manifests/pairs`） |
+| `audit_tiktok_v3_pose_redundancy.py` | TikTok V3 姿态冗余审计 |
+| `audit_tiktok_v3_strict_final.py` | TikTok V3 strict 终审审计 |
+| `audit_tiktok_v3_visual_quality_v2.py` | TikTok V3 画质审计 v2（CSV/统计汇总） |
+| `audit_tiktok_v3_visual_quality_v3.py` | TikTok V3 画质审计 v3（更完整的画质指标） |
 
-- **本级内容**：文件 22 个，296.1 KB
-- **子树规模**：文件 22 个，逻辑体积 296.1 KB
+### 冒烟 / 验证类（结构正确性与运行时验收）
 
-## 二、层级目录
+| 文件 | 一句话职责 |
+|---|---|
+| `smoke_adapter_v6.py` | 真实 DeepGen 结构冒烟：用合成条件走 ConditionBundle 边界，零初始化 head 必须不改变冻结的 DeepGen 结果 |
+| `smoke_adapter_reasoner.py` | 独立 V6.2 Adapter reasoner 的 GPU/CPU 结构冒烟（合成已准备好的 SMPL-X 条件，不训练、不估体） |
+| `smoke_deepgen_control_interface.py` | V6.3 动态控制接口的 DeepGen 冒烟（合成条件、本地权重，不训练、不存 checkpoint） |
+| `verify_qwen21_full_resume.py` | 诊断单步 CUDA checkpoint 可复现性：每次重载同一 checkpoint 并还原全部 RNG 状态，不延长训练、不覆盖既有 checkpoint |
+| `verify_qwen21_full_runtime.py` | 完整 Qwen controller 的有界 GPU 验收：仅做 velocity 预测与每分支一次 backward，从不更新权重 |
+| `verify_qwen21_face_single_sample.py` | 真实 Face loss 梯度与 source/geometry 边界检查；不更新 optimizer |
+| `verify_qwen21_face_repair.py` | 检查已修复的 Face 候选，不更新权重、不生成图像 |
+| `verify_qwen21_condition_combinations.py` | 基于产物的 native-only 补充实验验收（复用 `scripts/eval/qwen21_condition_combinations.py` 引用与协议） |
+| `verify_project_organization.py` | **目录组织验收工具**：只读校验 2026-10-03 整理日志（`organization.json`/`before/`），核对结构、软链接、小文件哈希与资产存在性；`--full-assets` 另读七项资产并比对内容哈希，`--strict-source-baseline` 才要求源码与历史基线完全一致 |
 
-本目录为叶子目录，不含子目录。
+## 与上下层的关系
 
-## 三、文件清单
+- **上游**：`src/pose_control/`（V6 / qwen21 / qwen21_full 的控制实现）、`src/adapter/`（PoseConditionAdapter）、`models/`（DeepGen-1.0-diffusers、Qwen-Image-2.1）、`experiments/<run>/`（训练/评测产物）、`datasets/`（TikTok_v3、iPER）。
+- **下游消费者**：`scripts/reports/` 的 `write_qwen21_weight_audit_report.py`、`write_qwen21_inheritance_report.py` 等会把这里的审计证据写入 Word 报告；`verify_project_organization.py` 的输出是整理交付的闸门。
+- 相关索引：父级分类说明见 [`../README.md`](../README.md)；权重溯源脚本与 `scripts/weights/inherit_qwen21_full_weights.py` 同源；评测对照口径由 [`../eval/README.md`](../eval/README.md) 定义。
 
-共 **22** 个文件（不含隐藏文件与自动生成的说明文件）。类型分布：Python 源码×22
+## 注意与坑
 
-| 文件 | 类型 | 大小 | 内容摘要 |
-|---|---|---|---|
-| `audit_hi4d_qwen21_prompt_leak.py` | Python 源码 | 7.2 KB | 模块 docstring：Check target-RGB isolation and target-geometry sensitivity on one Hi4D source.；顶层定义 3 个（`args`, `control_differences`, `main`） |
-| `audit_qwen21_face_alignment.py` | Python 源码 | 16.5 KB | 模块 docstring：CPU-only crop/alignment audit on existing single-case generated images. This does not synt；顶层定义 9 个（`sha`, `read_json`, `rgb`, `image_tensor`…） |
-| `audit_qwen21_weight_compatibility.py` | Python 源码 | 21.7 KB | 模块 docstring：CPU-only weight provenance, semantic mapping and in-memory module audit. Never constructs ；顶层定义 12 个（`write_json`, `file_sha`, `tensor_sha`, `state_hashes`…） |
-| `audit_tiktok_v3_blur_sample.py` | Python 源码 | 7.7 KB | 顶层定义 7 个（`read_jsonl`, `read_gray`, `load_binary_mask`, `sharpness_scores`…） |
-| `audit_tiktok_v3_final_pairs.py` | Python 源码 | 5.2 KB | 顶层定义 2 个（`read_jsonl`, `main`） |
-| `audit_tiktok_v3_pose_redundancy.py` | Python 源码 | 21.4 KB | 顶层定义 11 个（`read_jsonl`, `write_jsonl`, `load_pose_descriptor`, `pose_distance`…） |
-| `audit_tiktok_v3_strict_final.py` | Python 源码 | 10.1 KB | 顶层定义 5 个（`read_jsonl`, `resize_h`, `fit_width`, `make_panel`…） |
-| `audit_tiktok_v3_visual_quality_v2.py` | Python 源码 | 33.1 KB | 顶层定义 11 个（`read_jsonl`, `read_bgr`, `read_mask`, `edge_sharpness`…） |
-| `audit_tiktok_v3_visual_quality_v3.py` | Python 源码 | 50.4 KB | 顶层定义 7 个（`read_jsonl`, `read_bgr`, `read_binary_mask`, `edge_sharpness`…） |
-| `check_qwen21_full_preservation.py` | Python 源码 | 5.9 KB | 模块 docstring：CPU acceptance for the unchanged V6 copy and its legacy architecture tests. Writes generat；顶层定义 2 个（`Results`, `main`） |
-| `check_qwen21_native_value_prediction.py` | Python 源码 | 13.9 KB | 模块 docstring：Direct real-Qwen prediction parity for the fixed native-value audit. This does not train, ；顶层定义 7 个（`arguments`, `tensor_tree`, `compare_body_conditions`, `invalidate_face_only`…） |
-| `inventory_qwen21_full_weights.py` | Python 源码 | 9.0 KB | 模块 docstring：CPU-only, per-tensor provenance of the preserved V6/Qwen initial model. This describes ini；顶层定义 3 个（`sha256_file`, `short_descriptor`, `main`） |
-| `probe_qwen21_face_single_sample.py` | Python 源码 | 3.4 KB | 模块 docstring：Post-training fixed-noise, regional-error, and one-step reconstruction diagnosis.；顶层定义 1 个（`main`） |
-| `smoke_adapter_reasoner.py` | Python 源码 | 8.6 KB | 模块 docstring：GPU/CPU structural smoke for the standalone V6.2 Adapter reasoner. This uses synthetic, al；顶层定义 7 个（`parse_args`, `default_report_name`, `_person_maps`, `make_bundle`…） |
-| `smoke_adapter_v6.py` | Python 源码 | 10.7 KB | 模块 docstring：Real DeepGen structural smoke test for Unified SMPL-X Adapter V6. Synthetic prepared condi；顶层定义 7 个（`parse_args`, `default_report_name`, `load_deepgen_transformer`, `_person_maps`…） |
-| `smoke_deepgen_control_interface.py` | Python 源码 | 7.1 KB | 模块 docstring：Real DeepGen smoke for the V6.3 dynamic control interface. The script uses synthetic prepa；顶层定义 2 个（`parse_args`, `main`） |
-| `verify_project_organization.py` | Python 源码 | 14.7 KB | 模块 docstring：Read-only validation of the 2026-10-03 project organization journals.；顶层定义 2 个（`digest`, `main`） |
-| `verify_qwen21_condition_combinations.py` | Python 源码 | 5.3 KB | 模块 docstring：Artifact-based acceptance of the native-only supplementary experiment.；顶层定义 2 个（`sha`, `main`） |
-| `verify_qwen21_face_repair.py` | Python 源码 | 2.6 KB | 模块 docstring：Check repaired Face candidates without updating weights or generating images.；顶层定义 1 个（`main`） |
-| `verify_qwen21_face_single_sample.py` | Python 源码 | 5.6 KB | 模块 docstring：Real Face loss gradient and source/geometry boundaries; no optimizer update.；顶层定义 1 个（`main`） |
-| `verify_qwen21_full_resume.py` | Python 源码 | 13.1 KB | 模块 docstring：Diagnose one-step CUDA checkpoint reproducibility without extending training. Reloads the ；顶层定义 6 个（`restore_rng`, `deterministic_reference`, `snapshot`, `digest`…） |
-| `verify_qwen21_full_runtime.py` | Python 源码 | 22.9 KB | 模块 docstring：Bounded GPU acceptance for the full Qwen controller; never updates weights. Run only after；顶层定义 9 个（`arguments`, `cpu_checkpoint_comparison`, `tensor_leaves`, `compare_prepared`…） |
-
-## 四、构成画像
-
-- **直属类型分布**：Python 源码×22
-- **子树类型构成**：Python 源码×22
-
-## 五、导航
-
-- 根目录总览：[`目录总览.md`](../../目录总览.md)
-- 根 README：[README.md](../../README.md)
+- 这些脚本绝大多数**只做断言、不修数据**；`verify_project_organization.py` 默认只校验结构/链接/小文件哈希/资产是否存在，不要误以为它已核对过大文件内容——需加 `--full-assets`。
+- `probe_qwen21_face_single_sample.py` 依赖 `scripts/run/run_qwen21_face_single_sample.py` 里定义的输出常量（`OUT`），两者需同步。
+- 多数审计脚本的 docstring 都白纸黑字写了「不训练 / 不保存权重 / 不下载 checkpoint」，跑之前不要臆测它们会改动任何东西。

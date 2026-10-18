@@ -1,56 +1,66 @@
-# scripts/data/ —— 目录层级与功能说明
+# scripts/data/ —— 数据构建、过滤、划分与预计算
 
-> 本文件由 `scripts/gen_folder_docs.py` 依据目录实际内容自动生成（生成时间：2026-10-11 16:23）；如需补充人工说明，请写在本目录 `README.md` 中（生成器不会覆盖 README）。
+本目录是人物图像姿态编辑系统的数据准备中枢，负责把原始视频/图像数据集（iPER、TikTok_v3、3DPW、Hi4D）转换成训练与评测所需的配对、条件图与控制特征缓存。它位于 `src/` 上游模块与 `scripts/train/`、`scripts/eval/` 下游之间：读 `datasets/`、`data/` 中的原始资产，产出 `datasets/<name>/manifests/` 下的 JSONL/JSON 清单与 `TikTok_3d_assets_native/`、`experiments/<run>/condition_cache/` 等特征缓存，供训练加载器与评测脚本消费。本目录还有若干指向 `scripts/` 根下同名脚本的**相对软链接**（如 `build_tiktok_v6_conditions.py`），从分类入口执行时 `Path(__file__).resolve()` 会落回原文件，不改变源码身份。
 
-- **路径**：`scripts/data`　- **层级**：第 3 级　- **上级**：[../目录说明.md](scripts)
+## 里面有什么
 
-## 一、目录定位
+### TikTok V3 候选池 / 配对 / 条件构造
 
-数据划分、清洗与 SMPL-X 条件离线预计算脚本目录。
+| 文件 | 一句话职责 |
+|---|---|
+| `build_tiktok_v3_candidate_pool.py` | TikTok V3 正式候选池构造：官方序列 → 序列筛选 → 人体区域运动估计 → 自适应时序采样 → 局部最清晰帧选择 |
+| `build_tiktok_v3_condition_inventory.py` | 第 6 步：既有条件（RGB、几何等）对齐/复用/补全清单 |
+| `build_tiktok_v3_pairs.py` | 构造 TikTok V3 训练/评测 pair |
+| `build_tiktok_v3_pairs_strict.py` | 构造严格版（strict）pair，约束更紧 |
+| `build_tiktok_v3_strict_visual_pool.py` | strict 可视池构建 |
+| `build_tiktok_v3_usable_pool.py` | 可用池统计与筛选 |
+| `build_tiktok_v6_conditions.py` | *(软链接→../build_tiktok_v6_conditions.py)* 为 TikTok 生成 V6.3 Native Adapter 条件：14 类 part map（nvdiffrast 渲染）、SMPL-X 全局 26D 参数 + 25 关键点 |
+| `run_tiktok_v3_dwpose.py` | 跑 TikTok V3 的 DWPose 骨架估计 |
+| `sample_tiktok_v3_dwpose_qc.py` | DWPose 结果抽样质检 |
+| `sample_tiktok_v3_geometry_rejects.py` | 几何拒绝样本抽样 |
+| `split_tiktok_v3_groupwise.py` | TikTok V3 按组划分（保持 appearance 无重叠） |
+| `fill_tiktok_v3_missing_geometry.py` | 补全缺失几何（对应 `scripts/run/run_tiktok_v3_fill_missing_geometry_bg.sh`） |
+| `finalize_tiktok_v3_visual_quality_v1.py` | TikTok V3 画质终稿汇总 |
 
-- **本级内容**：文件 23 个，280.7 KB
-- **子树规模**：文件 23 个，逻辑体积 280.7 KB
+### iPER / 面部 / 手部特征预计算
 
-## 二、层级目录
+| 文件 | 一句话职责 |
+|---|---|
+| `precompute_iper_face_features_v65.py` | 预计算 V6.5 iPER 人脸 identity/appearance/geometry 特征（ArcFace/DINO 须本地存在，不下载） |
+| `precompute_iper_hand_features_v66.py` | 从既有 iPER V6 detail 裁切缓存 source-hand 的 DINO patch（ViTPose/HaMeR 输出被视为离线张量） |
+| `precompute_qwen21_face_features.py` | 缓存 Qwen21 Face 训练用的 source-only 人脸 identity/texture 与 target geometry |
+| `precompute_tiktok_face_features_v65.py` | *(软链接→../precompute_tiktok_face_features_v65.py)* 预计算 V6.5 TikTok 人脸特征（输出 `v65_face_features.pt`） |
+| `split_iper_train_val.py` | 把官方 iPER 79 个训练 appearance 拆成 dev-train(69)/dev-val(10)，20 个官方 test appearance 完全不动，保证无 appearance 重叠 |
+| `create_debug_samples.py` | 生成调试用样本 |
 
-本目录为叶子目录，不含子目录。
+### Qwen21 / 通用数据准备
 
-## 三、文件清单
+| 文件 | 一句话职责 |
+|---|---|
+| `prepare_qwen21_face_multisample.py` | 冻结 CPU 审计过的 iPER Body128/Face64/val12 实验（不加载 DINO 或生成模型） |
+| `prepare_qwen21_face_split.py` | 修正 Face 训练的 appearance split 并抽取 source-only 人脸裁切 |
+| `prepare_qwen21_full_data.py` | 为完整 Qwen adapter 准备固定的小型真实数据验收集（仅 A 帧进 ArcFace/DINO，B 只贡献 SMPL-X 几何） |
+| `prepare_qwen21_joint_pilot.py` | 锁定既有合格 pair 的平衡子集（仅 CPU/数据操作） |
+| `prepare_tiktok_qwen21_face.py` | *(软链接→../prepare_tiktok_qwen21_face.py)* 为 Qwen TikTok 训练准备 source-only ArcFace/DINO 缓存 |
+| `prepare_tiktok_qwen21_training.py` | *(软链接→../prepare_tiktok_qwen21_training.py)* 审计 strict TikTok 划分并写出独立的可训练 manifest |
+| `convert_face_supervision_to_native.py` | 把既有 `face_supervision.json`（letterbox/resize）转换为 `native_pad_v1` |
 
-共 **23** 个文件（不含隐藏文件与自动生成的说明文件）。类型分布：Python 源码×23
+### 控制 / 手部输入自检
 
-| 文件 | 类型 | 大小 | 内容摘要 |
-|---|---|---|---|
-| `build_tiktok_v3_candidate_pool.py` | Python 源码 | 25.3 KB | 模块 docstring：TikTok V3 formal candidate-pool construction. Pipeline: official sequence -> sequence scre；顶层定义 11 个（`read_jsonl`, `write_jsonl`, `frame_number`, `find_mask`…） |
-| `build_tiktok_v3_condition_inventory.py` | Python 源码 | 16.3 KB | 模块 docstring：TikTok V3 - Step 6 Existing condition alignment / reuse / completion inventory. Input: Tik；顶层定义 7 个（`read_jsonl`, `find_by_stem`, `parse_frame_map_obj`, `load_sequence_smplestx`…） |
-| `build_tiktok_v3_pairs.py` | Python 源码 | 17.4 KB | 顶层定义 8 个（`read_jsonl`, `load_dwpose`, `pose_descriptor`, `pose_distance`…） |
-| `build_tiktok_v3_pairs_strict.py` | Python 源码 | 17.4 KB | 顶层定义 8 个（`read_jsonl`, `load_dwpose`, `pose_descriptor`, `pose_distance`…） |
-| `build_tiktok_v3_strict_visual_pool.py` | Python 源码 | 6.4 KB | 顶层定义 3 个（`read_jsonl`, `as_bool`, `main`） |
-| `build_tiktok_v3_usable_pool.py` | Python 源码 | 5.9 KB | 顶层定义 1 个（`read_jsonl`） |
-| `convert_face_supervision_to_native.py` | Python 源码 | 4.3 KB | 模块 docstring：Convert an existing face_supervision.json (letterbox or resize) to native_pad_v1.；顶层定义 2 个（`convert`, `main`） |
-| `create_debug_samples.py` | Python 源码 | 6.8 KB | 顶层定义 1 个（`generate_debug_dataset`） |
-| `fill_tiktok_v3_missing_geometry.py` | Python 源码 | 4.5 KB | 顶层定义 3 个（`load_jsonl`, `write_json`, `main`） |
-| `finalize_tiktok_v3_visual_quality_v1.py` | Python 源码 | 10.9 KB | 顶层定义 4 个（`as_float`, `as_bool`, `write_jsonl`, `main`） |
-| `inspect_hand_inputs.py` | Python 源码 | 3.0 KB | 顶层定义 2 个（`custom_parameter_groups`, `main`） |
-| `precompute_iper_face_features_v65.py` | Python 源码 | 23.9 KB | 模块 docstring：Precompute V6.5 iPER face identity, appearance, and geometry features. This module deliber；顶层定义 10 个（`FaceFeatureExtractor`, `_as_float_tensor`, `_frame_vector`, `project_smplx_face72_to_rgb_normalized`…） |
-| `precompute_iper_hand_features_v66.py` | Python 源码 | 8.1 KB | 模块 docstring：Cache source-hand DINO patches from existing iPER V6 detail crops. ViTPose/HaMeR outputs a；顶层定义 3 个（`OnDemandHandDINO`, `build_cache`, `main`） |
-| `precompute_qwen21_face_features.py` | Python 源码 | 11.6 KB | 模块 docstring：Cache source-only face identity/texture and target geometry for Qwen21 Face training.；顶层定义 6 个（`options`, `detect`, `crop`, `read_pairs`…） |
-| `prepare_qwen21_face_multisample.py` | Python 源码 | 51.2 KB | 模块 docstring：Freeze the CPU-audited iPER Body128 / Face64 / validation12 experiment. This entrypoint do；顶层定义 7 个（`sha`, `json_scalar`, `atomic_json`, `write_rows`…） |
-| `prepare_qwen21_face_split.py` | Python 源码 | 7.1 KB | 模块 docstring：Fix the face-training appearance split and extract source-only face crops.；顶层定义 6 个（`parse_args`, `read_jsonl`, `write_jsonl`, `detect`…） |
-| `prepare_qwen21_full_data.py` | Python 源码 | 22.5 KB | 模块 docstring：Prepare a fixed, small real-data acceptance set for the full Qwen adapter. This is an engi；顶层定义 4 个（`write_jsonl`, `file_sha256`, `parse_args`, `main`） |
-| `prepare_qwen21_joint_pilot.py` | Python 源码 | 6.4 KB | 模块 docstring：Lock a balanced subset of existing qualified pairs; CPU/data only.；顶层定义 3 个（`read_rows`, `write_rows`, `main`） |
-| `run_tiktok_v3_dwpose.py` | Python 源码 | 11.2 KB | 顶层定义 8 个（`ensure_dir`, `load_rows`, `read_rgb`, `select_person`…） |
-| `sample_tiktok_v3_dwpose_qc.py` | Python 源码 | 2.7 KB | 依赖/导入：pathlib, sys, json, random |
-| `sample_tiktok_v3_geometry_rejects.py` | Python 源码 | 4.4 KB | 依赖/导入：pathlib, sys, json, random |
-| `split_iper_train_val.py` | Python 源码 | 4.2 KB | 模块 docstring：Split official iPER 79 training appearances into dev-train (69) and dev-val (10). Ensures:；顶层定义 1 个（`split_iper_train_val`） |
-| `split_tiktok_v3_groupwise.py` | Python 源码 | 9.1 KB | 顶层定义 2 个（`read_jsonl`, `evaluate`） |
+| 文件 | 一句话职责 |
+|---|---|
+| `test_control_signals.py` | 用合成 SMPL-X 人体验证 `src/controls/generator` 的相机与控制信号生成 |
+| `inspect_hand_inputs.py` | 检查 Qwen21 full 执行的手部输入前缀（`BODY_PREFIXES`/`FACE_ONLY_PREFIXES`/`HAND_ONLY_PREFIXES`） |
 
-## 四、构成画像
+## 与上下层的关系
 
-- **直属类型分布**：Python 源码×23
-- **子树类型构成**：Python 源码×23
+- **上游输入**：`datasets/`（TikTokDataset/TikTok_v3、iPER、3DPW）、`data/`、`add/tools/SMPLest-X` 与 `add/tools/` 下的离线体估工具、`src/controls/`（ControlSignalGenerator）。
+- **产出物**：`datasets/<name>/manifests/`（pairs、candidate_pool、condition_inventory 等 JSONL/JSON）、`TikTok_3d_assets_native/<seq>/`（part_512、v6_conditions.pt、v65_face_features.pt）、`experiments/<run>/condition_cache/`。
+- **下游消费者**：`scripts/train/`（各训练入口读这些 manifest/缓存）、`scripts/eval/`（评测加载同一份 pair 与条件）、`configs/asset_registry.json`（登记这些缓存的资产路径）。
+- 相关索引：父级 [`../README.md`](../README.md)；特征契约由 [`../../tests/README.md`](../../tests/README.md) 的 `test_tiktok_data_contract.py`、`test_iper_v6_data_integrity.py` 等回归测试守护。
 
-## 五、导航
+## 注意与坑
 
-- 根目录总览：[`目录总览.md`](../../目录总览.md)
-- 根 README：[README.md](../../README.md)
+- 本目录有 4 个**相对软链接**（`build_tiktok_v6_conditions.py`、`precompute_tiktok_face_features_v65.py`、`prepare_tiktok_qwen21_face.py`、`prepare_tiktok_qwen21_training.py`），它们指向 `scripts/` 根下的同名文件；不要按文件名重复维护两份，改原文件即可。
+- iPER 的官方划分约束（train 79 / test 20，appearance 无重叠）由 `split_iper_train_val.py` 强制保证，改划分逻辑时必须维持 test appearance 完全不动。
+- 多数特征预计算脚本要求 ArcFace/DINO 等重模型**已存在于本地**，脚本本身不下载权重。

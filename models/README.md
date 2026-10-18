@@ -71,3 +71,20 @@ pipe.to("cuda")
 ```
 
 下载完成后可检查各分片大小是否与上文目录结构一致，并尝试用上面的加载代码实例化 pipeline，以确认权重完整、无损坏。
+
+---
+
+## 其他模型子目录
+
+除 DeepGen-1.0-diffusers 外，`models/` 下还有六项辅助权重，各有独立说明（两个 Qwen 权重目录保留上游官方模型卡为 `README.md`，项目侧说明以 `README.pic-edit.md` 承载）：
+
+| 子目录 | 内容 | 在项目中的角色 |
+|---|---|---|
+| [`antelopev2/`](antelopev2/README.md) | InsightFace 检测/关键点/ArcFace onnx + DINOv2-giant | 人脸检测与身份特征提取（Face ID、身份评测） |
+| [`DWPose/`](DWPose/README.md) | DWPose ONNX（dw-ll_ucoco_384 + yolox_l） | 全身 134 关键点估计，骨架条件的来源 |
+| [`Qwen-Image-2.1/`](Qwen-Image-2.1/README.pic-edit.md) | Qwen 2.1 7B 单流 DiT 基座，软链 → `/data/shangguanrz/pic-edit-models/Qwen-Image-2.1` | Qwen 迁移线的生成基座（body/face/dual/full 适配器均挂在它上面） |
+| [`Qwen-Image-Edit-20B/`](Qwen-Image-Edit-20B/README.pic-edit.md) | Qwen-Image-Edit-20B，软链经 `model-qwen-edit` → `pic-edit-archive/cleanup_20261003/models/` | 历史/备用权重：`src/` 与 `workflow/` 均无代码引用，作为基线对照留存，注意其位于归档盘、存在被清理的风险 |
+| [`smpl/`](smpl/README.md) | SMPL / SMPL-X 官方拓扑模型文件 | 三维人体参数模型（适配器条件编码的人体先验） |
+| [`face_eval/`](face_eval/README.md) | 面部评测专用权重（身份/关键点/LPIPS/感知编码器） | 面部保持与画质量化评测 |
+
+两项 Qwen 权重都不在 Git 内，实体位于数据盘；换机器时只需重建软链，不要移动上游模型卡。

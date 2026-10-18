@@ -1,0 +1,144 @@
+{
+  "tools": {
+    "multihmr_code": {
+      "path": "/home/shangguanrz/project/pic-edit/add/tools/multi-hmr/demo_smplx_only.py",
+      "exists": true,
+      "bytes": 17022,
+      "sha256": "b41b00212e1fb381cded8aa9bfec18c65584f13acc017ddfd431dc323e6500c1"
+    },
+    "multihmr_weights": {
+      "path": "/home/shangguanrz/project/pic-edit/add/tools/multi-hmr/models/multiHMR/multiHMR_896_L.pt",
+      "exists": true,
+      "bytes": 1286462544
+    },
+    "smplestx_weights": {
+      "path": "/home/shangguanrz/project/pic-edit/add/tools/SMPLest-X/pretrained_models/smplest_x_h/smplest_x_h.pth.tar",
+      "exists": true,
+      "bytes": 8246417153
+    },
+    "neutral_smplx": {
+      "path": "/home/shangguanrz/project/pic-edit/add/tools/SMPLest-X/human_models/human_model_files/smplx/SMPLX_NEUTRAL.npz",
+      "exists": true,
+      "bytes": 108752058,
+      "sha256": "376021446ddc86e99acacd795182bbef903e61d33b76b9d8b359c2b0865bd992"
+    },
+    "male_smplx": {
+      "path": "/home/shangguanrz/project/pic-edit/add/tools/SMPLest-X/human_models/human_model_files/smplx/SMPLX_MALE.npz",
+      "exists": true,
+      "bytes": 108753445
+    },
+    "female_smplx": {
+      "path": "/home/shangguanrz/project/pic-edit/add/tools/SMPLest-X/human_models/human_model_files/smplx/SMPLX_FEMALE.npz",
+      "exists": true,
+      "bytes": 108794146
+    },
+    "dwpose_code": {
+      "path": "/home/shangguanrz/project/pic-edit/add/tools/dwpose_mimicmotion_official/dwpose/wholebody.py",
+      "exists": true,
+      "bytes": 1942,
+      "sha256": "d61aabff096a2008c8c6a857438058fcbfad009bb19e69a7a3aedfc551fab5d7"
+    },
+    "dwpose_weights": {
+      "path": "/home/shangguanrz/project/pic-edit/add/tools/dwpose_mimicmotion_official/models/dw-ll_ucoco_384.onnx",
+      "exists": true,
+      "bytes": 134399116,
+      "sha256": "724f4ff2439ed61afb86fb8a1951ec39c6220682803b4a8bd4f598cd913b1843"
+    }
+  },
+  "npz_header_counts": {
+    "datasets/Hi4D_pilot_v1": 14267,
+    "experiments": 2,
+    "research": 0,
+    "caches": 0
+  },
+  "existing_smplx_or_3d_wholebody_candidates": [],
+  "conversion_asset_matches": [],
+  "smpl_schema": {
+    "path": "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/raw/pair14/hug14/smpl/000062.npz",
+    "fields": {
+      "betas": [
+        2,
+        10
+      ],
+      "global_orient": [
+        2,
+        3
+      ],
+      "body_pose": [
+        2,
+        69
+      ],
+      "transl": [
+        2,
+        3
+      ],
+      "verts": [
+        2,
+        6890,
+        3
+      ],
+      "joints_3d": [
+        2,
+        24,
+        3
+      ],
+      "contact": [
+        2,
+        6890
+      ]
+    }
+  },
+  "existing_dwpose_schema": [
+    {
+      "path": "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/final_assets_v4_2/targets/pair14/hug14/cam4/000062/dwpose_A.npz",
+      "fields": {
+        "xy_native": [
+          134,
+          2
+        ],
+        "xy_normalized": [
+          134,
+          2
+        ],
+        "scores": [
+          134
+        ],
+        "width": [],
+        "height": [],
+        "generator": []
+      },
+      "generator": "Hi4D_mask_bbox_DWPose_official"
+    },
+    {
+      "path": "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/final_assets_v4_2/targets/pair14/hug14/cam4/000062/dwpose_B.npz",
+      "fields": {
+        "xy_native": [
+          134,
+          2
+        ],
+        "xy_normalized": [
+          134,
+          2
+        ],
+        "scores": [
+          134
+        ],
+        "width": [],
+        "height": [],
+        "generator": []
+      },
+      "generator": "Hi4D_mask_bbox_DWPose_official"
+    }
+  ],
+  "existing_dwpose_body_alignment_error_px": [
+    76.67713772661301,
+    47.184216811515554
+  ],
+  "existing_dwpose_A_B_body_mean_distance_px": 21.414905548095703,
+  "notes": [
+    "Scope is specified directories; it is not a claim about every disk or unopened compressed file",
+    "Existing DWPose stores 2D xy and scores; SMPL joints_3d is only a 24-joint body skeleton",
+    "The current pilot output is excluded from existing-asset searches",
+    "Large A/B reprojection error flags a possible binding or occlusion issue; this alone is not proof of mislabeled identity"
+  ]
+}

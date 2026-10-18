@@ -1,0 +1,60 @@
+{
+  "status": "interrupted_not_complete",
+  "observed_unix": 1791899354.000309,
+  "ssh_session": 27083,
+  "ssh_exit_code": 1,
+  "ssh_error": "client_loop: send disconnect: Connection reset",
+  "last_logged_structured_step": 201,
+  "last_saved_structured_optimizer_step": 200,
+  "short_saved_optimizer_step": 300,
+  "training_pid_alive": false,
+  "precise_training_exit_signal": "not_captured",
+  "test_started": false,
+  "files": {
+    "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/training.log": {
+      "sha256": "fe0b343152f1214f0286d60591b9907212bb34d015f30bc8af221acefcf05ff1",
+      "bytes": 24228,
+      "mtime": 1791894934.9255233
+    },
+    "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/training_process.json": {
+      "sha256": "503311a6a6b35ca0119e3341a0881c2a77f5c80181e4b8c337ad79d5c2be3720",
+      "bytes": 760,
+      "mtime": 1791889721.9646971
+    },
+    "/home/shangguanrz/project/pic-edit/experiments/4.two man /qwen21_dual_prompt_pilot/20261013_v1/short/train_metrics.jsonl": {
+      "sha256": "ed579193fe7b39259ffe195a3eaf03eee1769fd6682d515bb1de8cd1eff5f57c",
+      "bytes": 7300619,
+      "mtime": 1791892636.1376011
+    },
+    "/home/shangguanrz/project/pic-edit/experiments/4.two man /qwen21_dual_prompt_pilot/20261013_v1/structured/train_metrics.jsonl": {
+      "sha256": "97ea3aaf7c65e1af5c9d37ea7eebca35235c1c4942a2b11171b0ee17ded52239",
+      "bytes": 4927390,
+      "mtime": 1791894943.9714482
+    },
+    "/home/shangguanrz/project/pic-edit/experiments/4.two man /qwen21_dual_prompt_pilot/20261013_v1/short/checkpoint_best.pt": {
+      "sha256": "7aa609d910a655f5b73622f69a0cd32dfa9d5ca8b7e72225c81c109decd8bab7",
+      "bytes": 567978585,
+      "mtime": 1791890239.911676
+    },
+    "/home/shangguanrz/project/pic-edit/experiments/4.two man /qwen21_dual_prompt_pilot/20261013_v1/short/checkpoint_last.pt": {
+      "sha256": "6f48b3c3db3910190a48e7ab4e86e3df28a582595b19c5d6945753be46c7168b",
+      "bytes": 567978585,
+      "mtime": 1791892635.5475829
+    },
+    "/home/shangguanrz/project/pic-edit/experiments/4.two man /qwen21_dual_prompt_pilot/20261013_v1/structured/checkpoint_best.pt": {
+      "sha256": "7cef97717176455a8030084cf59bb2bdcde4a64c95e1cf652b80e7e3133bd703",
+      "bytes": 567980825,
+      "mtime": 1791893157.6725886
+    },
+    "/home/shangguanrz/project/pic-edit/experiments/4.two man /qwen21_dual_prompt_pilot/20261013_v1/structured/checkpoint_last.pt": {
+      "sha256": "d8f3b2bea9010187020548c981c855ef21d8076df9de0ffafa92c82333947814",
+      "bytes": 567980825,
+      "mtime": 1791894925.3526044
+    }
+  },
+  "last_archived_structured_metrics_step": 202,
+  "discarded_uncheckpointed_steps": [
+    201,
+    202
+  ]
+}

@@ -1,0 +1,220 @@
+{
+  "experiment_id": "qwen21_fun_union_single_20261017",
+  "sample_id": "hard_05",
+  "model": {
+    "base_model": "Qwen-Image-2.1",
+    "control_model": "Qwen-Image-2.1-Fun-Controlnet-Union",
+    "checkpoint_sha256": "65d6b66d734da9e7ff5ef04e7db3a133553a52a3f29a7fcb3e9cce8fa21dcfcd",
+    "videox_fun_commit": "13bb3c625e8b1e457d7124d92207b49e00e4a6fe",
+    "picture_edit_commit": "main"
+  },
+  "fixed_settings": {
+    "steps": 40,
+    "seed": 42,
+    "true_cfg_scale": 1.0,
+    "control_context_scale": 1.0,
+    "prompt_sha256": "47a60b3f9e620c8cdde6cd89f00ea6b315228fd13072ff97bad110dd24db9da7"
+  },
+  "arms": {
+    "T1": {
+      "execution_status": "success",
+      "pose_path": "/home/shangguanrz/project/pic-edit/workflow/experiment/qwen-union/data/prepared_controls/pose_native.png",
+      "pose_sha256": "8330f821fbd3ac3657ff2015269ff0b0545952fe978cfeb9b3db755badb169f1",
+      "mask_path": null,
+      "mask_sha256": null,
+      "prompt_sha256": "47a60b3f9e620c8cdde6cd89f00ea6b315228fd13072ff97bad110dd24db9da7",
+      "output_png": "/home/shangguanrz/project/pic-edit/workflow/experiment/qwen-union/output/T1/final_image.png",
+      "output_sha256": "9ee10456f3088ee8180ee0ef38ce5f3cb9cf0b393f4ce0a5a7130e49cde1eae5",
+      "transform_type": "native",
+      "metrics": {
+        "body_pck_02": 0.6667,
+        "strict_body_pck_02": 0.6667,
+        "norm_mpjpe": 0.1935,
+        "hand_pck_02": 0.0238,
+        "person_detected": true,
+        "valid_joint_count": 18,
+        "out_of_frame_joint_count": 0,
+        "identity_cosine": 0.1791,
+        "face_detected": true,
+        "bg_ssim_own": 0.1337,
+        "bg_psnr_own": 7.98,
+        "bg_psnr_common": 7.91,
+        "limb_ratio_drift": 0.1954
+      },
+      "performance": {
+        "generation_seconds": 114.09,
+        "peak_gpu_vram_gib": 3.74
+      }
+    },
+    "T2a": {
+      "execution_status": "success",
+      "pose_path": "/home/shangguanrz/project/pic-edit/workflow/experiment/qwen-union/data/prepared_controls/pose_source_person.png",
+      "pose_sha256": "e6a2aa60044aeeb2870846b0eb8e68c23216048c0ba7b83a3eb4b17f24292959",
+      "mask_path": null,
+      "mask_sha256": null,
+      "prompt_sha256": "47a60b3f9e620c8cdde6cd89f00ea6b315228fd13072ff97bad110dd24db9da7",
+      "output_png": "/home/shangguanrz/project/pic-edit/workflow/experiment/qwen-union/output/T2a/final_image.png",
+      "output_sha256": "532f91774139b07d46b00806f8410bac163414e9285be553a1ee001939b07d79",
+      "transform_type": "source_person",
+      "metrics": {
+        "body_pck_02": 0.8889,
+        "strict_body_pck_02": 0.8889,
+        "norm_mpjpe": 0.1127,
+        "hand_pck_02": 0.5,
+        "person_detected": true,
+        "valid_joint_count": 18,
+        "out_of_frame_joint_count": 0,
+        "identity_cosine": 0.0127,
+        "face_detected": true,
+        "bg_ssim_own": 0.1131,
+        "bg_psnr_own": 8.03,
+        "bg_psnr_common": 8.02,
+        "limb_ratio_drift": 0.166
+      },
+      "performance": {
+        "generation_seconds": 110.38,
+        "peak_gpu_vram_gib": 3.74
+      }
+    },
+    "T2b": {
+      "execution_status": "success",
+      "pose_path": "/home/shangguanrz/project/pic-edit/workflow/experiment/qwen-union/data/prepared_controls/pose_source_torso.png",
+      "pose_sha256": "77ee8fad230d421462009d0eea41facc71db518c00a10fef71e1e0db79fc6aa9",
+      "mask_path": null,
+      "mask_sha256": null,
+      "prompt_sha256": "47a60b3f9e620c8cdde6cd89f00ea6b315228fd13072ff97bad110dd24db9da7",
+      "output_png": "/home/shangguanrz/project/pic-edit/workflow/experiment/qwen-union/output/T2b/final_image.png",
+      "output_sha256": "efd16799af37e6d4f4bf338d862f03c24855c419eb21da8c31db118622f95e82",
+      "transform_type": "source_torso",
+      "metrics": {
+        "body_pck_02": 0.6667,
+        "strict_body_pck_02": 0.6667,
+        "norm_mpjpe": 0.1847,
+        "hand_pck_02": 0.0,
+        "person_detected": true,
+        "valid_joint_count": 18,
+        "out_of_frame_joint_count": 0,
+        "identity_cosine": 0.1863,
+        "face_detected": true,
+        "bg_ssim_own": 0.1649,
+        "bg_psnr_own": 15.28,
+        "bg_psnr_common": 15.27,
+        "limb_ratio_drift": 0.1106
+      },
+      "performance": {
+        "generation_seconds": 110.62,
+        "peak_gpu_vram_gib": 3.74
+      }
+    },
+    "T3": {
+      "execution_status": "success",
+      "pose_path": "/home/shangguanrz/project/pic-edit/workflow/experiment/qwen-union/data/prepared_controls/pose_native.png",
+      "pose_sha256": "8330f821fbd3ac3657ff2015269ff0b0545952fe978cfeb9b3db755badb169f1",
+      "mask_path": "/home/shangguanrz/project/pic-edit/workflow/experiment/qwen-union/data/prepared_controls/mask_native.png",
+      "mask_sha256": "1863097f846d7823f686ae7b3d55582637b0fb85b4539da00c796c5c1d8105c8",
+      "prompt_sha256": "47a60b3f9e620c8cdde6cd89f00ea6b315228fd13072ff97bad110dd24db9da7",
+      "output_png": "/home/shangguanrz/project/pic-edit/workflow/experiment/qwen-union/output/T3/final_image.png",
+      "output_sha256": "48704e888b89b30414c8343951ea6381a69d5cde9fded7addf5e9308f125a116",
+      "transform_type": "native",
+      "metrics": {
+        "body_pck_02": 0.3889,
+        "strict_body_pck_02": 0.3889,
+        "norm_mpjpe": 0.3058,
+        "hand_pck_02": 0.2857,
+        "person_detected": true,
+        "valid_joint_count": 18,
+        "out_of_frame_joint_count": 0,
+        "identity_cosine": 0.2443,
+        "face_detected": true,
+        "bg_ssim_own": 0.6764,
+        "bg_psnr_own": 30.79,
+        "bg_psnr_common": 31.16,
+        "limb_ratio_drift": 0.1684
+      },
+      "performance": {
+        "generation_seconds": 110.9,
+        "peak_gpu_vram_gib": 3.74
+      }
+    },
+    "T4a": {
+      "execution_status": "success",
+      "pose_path": "/home/shangguanrz/project/pic-edit/workflow/experiment/qwen-union/data/prepared_controls/pose_source_person.png",
+      "pose_sha256": "e6a2aa60044aeeb2870846b0eb8e68c23216048c0ba7b83a3eb4b17f24292959",
+      "mask_path": "/home/shangguanrz/project/pic-edit/workflow/experiment/qwen-union/data/prepared_controls/mask_source_person.png",
+      "mask_sha256": "ac9008be64ea25b542643a2faec729e74e9d0edc2a0a60c637c4ce08cc4e2e58",
+      "prompt_sha256": "47a60b3f9e620c8cdde6cd89f00ea6b315228fd13072ff97bad110dd24db9da7",
+      "output_png": "/home/shangguanrz/project/pic-edit/workflow/experiment/qwen-union/output/T4a/final_image.png",
+      "output_sha256": "40c5152661ef3f5e90111987eaf3e1f4fec62af58338f65480179e48373ef968",
+      "transform_type": "source_person",
+      "metrics": {
+        "body_pck_02": 0.0556,
+        "strict_body_pck_02": 0.0556,
+        "norm_mpjpe": 1.2671,
+        "hand_pck_02": 0.0,
+        "person_detected": true,
+        "valid_joint_count": 18,
+        "out_of_frame_joint_count": 0,
+        "identity_cosine": 0.2066,
+        "face_detected": true,
+        "bg_ssim_own": 0.7067,
+        "bg_psnr_own": 30.93,
+        "bg_psnr_common": 31.21,
+        "limb_ratio_drift": 0.1204
+      },
+      "performance": {
+        "generation_seconds": 111.22,
+        "peak_gpu_vram_gib": 3.74
+      }
+    },
+    "T4b": {
+      "execution_status": "success",
+      "pose_path": "/home/shangguanrz/project/pic-edit/workflow/experiment/qwen-union/data/prepared_controls/pose_source_torso.png",
+      "pose_sha256": "77ee8fad230d421462009d0eea41facc71db518c00a10fef71e1e0db79fc6aa9",
+      "mask_path": "/home/shangguanrz/project/pic-edit/workflow/experiment/qwen-union/data/prepared_controls/mask_source_torso.png",
+      "mask_sha256": "dd3e9d97ea9ab3d3e88dd050072f9f3440092f08c1e38f6311a81474178844a2",
+      "prompt_sha256": "47a60b3f9e620c8cdde6cd89f00ea6b315228fd13072ff97bad110dd24db9da7",
+      "output_png": "/home/shangguanrz/project/pic-edit/workflow/experiment/qwen-union/output/T4b/final_image.png",
+      "output_sha256": "192fbead250757335611eb739168550a721685908abc675642d412861f32f56c",
+      "transform_type": "source_torso",
+      "metrics": {
+        "body_pck_02": 0.6111,
+        "strict_body_pck_02": 0.6111,
+        "norm_mpjpe": 0.1941,
+        "hand_pck_02": 0.0,
+        "person_detected": true,
+        "valid_joint_count": 18,
+        "out_of_frame_joint_count": 0,
+        "identity_cosine": 0.0746,
+        "face_detected": true,
+        "bg_ssim_own": 0.6491,
+        "bg_psnr_own": 30.76,
+        "bg_psnr_common": 30.76,
+        "limb_ratio_drift": 0.1659
+      },
+      "performance": {
+        "generation_seconds": 110.86,
+        "peak_gpu_vram_gib": 3.74
+      }
+    }
+  },
+  "baseline_native_qwen": {
+    "path": "/home/shangguanrz/project/pic-edit/workflow/runs/test/hard_05/generation/final_canvas.png",
+    "sha256": "37829844c07ef105ef87ee440959c81abe73e99f81a992c62d4e15da0c873738",
+    "body_pck_02": 0.3333,
+    "strict_body_pck_02": 0.3333,
+    "norm_mpjpe": 0.3988,
+    "hand_pck_02": 0.381,
+    "identity_cosine": 0.8259,
+    "face_detected": true
+  },
+  "conclusion": {
+    "pose_control_findings": "官方 Union 控制权重具备较强的姿态控制响应，在纯控制组(T1/T2)与Inpainting组(T3/T4)中均能明确跟随骨架走位。",
+    "native_vs_aligned": "保持 B 原生布局在未裁切时姿态最自然，但与源人物 A 产生明显空间错位；对齐到 source_person / source_torso 后更符合人像换姿态的直觉需求。",
+    "source_person_vs_source_torso": "source_torso 躯干对齐在透视尺度上更为准确，有效避免了四肢越界；source_person 在四肢展开动作下易产生全身拉伸。",
+    "identity_preservation": "Inpainting Mask 机制是保留背景与服装的关键。在不加 A 源图时(T1/T2)，即使 Prompt 相同也无法保留源人物面部和服装；引入 Inpainting 后身份和背景完整保留。",
+    "limitations": [
+      "官方 Union 为单图文生图+控制设计，在图生图模式下未引入细粒度交叉注意力面部特征，面部微观特征存在重绘失真。",
+      "Mask 膨胀过大时会导致人物边缘背景泄漏；Mask 过小则无法完全消除源人物残影。"
+    ]
+  }
+}

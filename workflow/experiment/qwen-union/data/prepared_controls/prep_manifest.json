@@ -1,0 +1,150 @@
+{
+  "sample_id": "hard_05",
+  "canvas_size": [
+    640,
+    928
+  ],
+  "source_preprocess": {
+    "original_size": [
+      896,
+      1280
+    ],
+    "canvas_size": [
+      640,
+      928
+    ],
+    "resized_size": [
+      640,
+      914
+    ],
+    "scale_xy": [
+      0.7142857142857143,
+      0.7140625
+    ],
+    "offset_xy": [
+      0,
+      7
+    ],
+    "content_box": [
+      0,
+      7,
+      640,
+      921
+    ]
+  },
+  "source_assets": {
+    "A_reference": {
+      "path": "/home/shangguanrz/project/pic-edit/workflow/runs/test/hard_05/inputs/A_reference.png",
+      "sha256": "deeef9d0447f718f7402a7d1af48228bde55a15eb90919a8cab1d9805e6d9440"
+    },
+    "B_rgb": {
+      "path": "/home/shangguanrz/project/pic-edit/workflow/runs/test/hard_05/inputs/B_rgb.png",
+      "sha256": "2db6befd3bb63013cd233bb3820f93b0cfbae32b8c09b58c26941f66b5c321c6"
+    },
+    "generation_prompt": {
+      "path": "/home/shangguanrz/project/pic-edit/workflow/runs/test/hard_05/prompt/generation_prompt.txt",
+      "sha256": "cc96ff1e47418ce397ab4ad2d0d36983b2886b7c0c5ea7ce0a887a0a69851858"
+    }
+  },
+  "frozen_prompt": {
+    "path": "/home/shangguanrz/project/pic-edit/workflow/experiment/qwen-union/input/prompt_pe_union.txt",
+    "sha256": "47a60b3f9e620c8cdde6cd89f00ea6b315228fd13072ff97bad110dd24db9da7",
+    "text": "Edit the single person in the source image into the desired pose. the source image supplies all identity, hairstyle, face, outfit, accessories and scene appearance. the pose guide is only a colored skeletal pose guide; use its joint positions, never its line colors as appearance. Do not add the basketball or any other target-only object. Preserve objects already in the source. On the source image as the canvas, transfer only the pose, head orientation, hand configuration, and backward-glancing facial expression into the woman, using the pose guide as the scaled and positioned body-joint guide for the visible joint arrangement. Re-pose the woman to stand in a three-quarters back view with the torso rotated so her back faces the viewer, head turned over the shoulder to gaze directly at the camera with the calm neutral expression of the target pose, both arms bent at the elbows with empty hands placed in front of the waist, the hand on the viewer's left held away from the body at waist height and the hand on the viewer's right resting near the hip, legs standing with feet apart and one foot angled forward, matching the skeleton joint positions in the pose guide without rendering any skeleton lines and colors. Keep the transferred hands empty because the woman in the source image holds no objects. Follow the skeleton guide for head direction and hands, and invent no hidden anatomy. Let the teal strapless corset top with white fur trim, the white flared skirt, the red thigh-high socks, the white knit leg warmer, and the black boots form natural pose-dependent folds and shadows consistent with the new pose and the preserved lighting direction. Preserve completely unchanged the woman's facial identity, long blonde hair with blue-green streaks, glasses, wristwatch, garter straps, outfit design, colors, materials, shoes, and the entire Christmas-tree lot scene with evergreen trees and pine-needle ground, framing, and photographic illumination style of the source image. Do not introduce any element belonging to the target photograph, including objects, garments, jewelry, background, lighting, and do not change the canvas setting, do not apply a new style. Preserve the source person and their original clothing and setting. Render a natural photograph without skeleton lines, diagrams or pose-guide colors."
+  },
+  "mask_A_person": {
+    "path": "/home/shangguanrz/project/pic-edit/workflow/experiment/qwen-union/data/prepared_controls/mask_A_person.png",
+    "sha256": "dbc91e9b80120e71ee2a2c49b07bbeb01f67908604636329529c5ec4a0ad919d",
+    "coverage_ratio": 0.2171740301724138
+  },
+  "layouts": {
+    "native": {
+      "pose_png": "/home/shangguanrz/project/pic-edit/workflow/experiment/qwen-union/data/prepared_controls/pose_native.png",
+      "pose_sha256": "8330f821fbd3ac3657ff2015269ff0b0545952fe978cfeb9b3db755badb169f1",
+      "keypoints_npz": "/home/shangguanrz/project/pic-edit/workflow/experiment/qwen-union/data/prepared_controls/keypoints_native.npz",
+      "keypoints_sha256": "0fe0abadc59356fcc9816c7cffd581623898c295840ee0eee8e9477616514577",
+      "joints_requested": 134,
+      "joints_in_frame": 134,
+      "out_of_frame_ratio": 0.0,
+      "transform": {
+        "framing": "native",
+        "scale": 0.6611570247933884,
+        "offset_xy": [
+          0.0,
+          40.85950413223139
+        ],
+        "w_b": 968,
+        "h_b": 1280,
+        "canvas_wh": [
+          640,
+          928
+        ]
+      }
+    },
+    "source_person": {
+      "pose_png": "/home/shangguanrz/project/pic-edit/workflow/experiment/qwen-union/data/prepared_controls/pose_source_person.png",
+      "pose_sha256": "e6a2aa60044aeeb2870846b0eb8e68c23216048c0ba7b83a3eb4b17f24292959",
+      "keypoints_npz": "/home/shangguanrz/project/pic-edit/workflow/experiment/qwen-union/data/prepared_controls/keypoints_source_person.npz",
+      "keypoints_sha256": "2d64a8637219a19d7f768a2c9eb1196df9bac07ff31825388af88d06a1e650d9",
+      "joints_requested": 134,
+      "joints_in_frame": 134,
+      "out_of_frame_ratio": 0.0,
+      "transform": {
+        "scale": 0.40951370520263985,
+        "offset_xy": [
+          69.08835190278762,
+          181.21224095434167
+        ],
+        "framing": "source_person",
+        "B_torso_px": null,
+        "A_box_height_px": 738.1582740783692,
+        "A_torso_px": null,
+        "torso_reference": "not_applicable"
+      }
+    },
+    "source_torso": {
+      "pose_png": "/home/shangguanrz/project/pic-edit/workflow/experiment/qwen-union/data/prepared_controls/pose_source_torso.png",
+      "pose_sha256": "77ee8fad230d421462009d0eea41facc71db518c00a10fef71e1e0db79fc6aa9",
+      "keypoints_npz": "/home/shangguanrz/project/pic-edit/workflow/experiment/qwen-union/data/prepared_controls/keypoints_source_torso.npz",
+      "keypoints_sha256": "17a93833b239e6f5f3969dfa7f8a3fe438166ac26c6506e1857962f59f49b24d",
+      "joints_requested": 134,
+      "joints_in_frame": 134,
+      "out_of_frame_ratio": 0.0,
+      "transform": {
+        "scale": 0.9772840526910451,
+        "offset_xy": [
+          -198.16195463168816,
+          -290.96382878807253
+        ],
+        "framing": "source_torso",
+        "B_torso_px": 234.1479576323708,
+        "A_box_height_px": 738.1582740783692
+      }
+    }
+  },
+  "masks": {
+    "native": {
+      "mask_png": "/home/shangguanrz/project/pic-edit/workflow/experiment/qwen-union/data/prepared_controls/mask_native.png",
+      "mask_sha256": "1863097f846d7823f686ae7b3d55582637b0fb85b4539da00c796c5c1d8105c8",
+      "target_region_png": "/home/shangguanrz/project/pic-edit/workflow/experiment/qwen-union/data/prepared_controls/target_region_native.png",
+      "dilation_radius": 12,
+      "torso_length": 154.80856702966668,
+      "mask_coverage_ratio": 0.3009597252155172
+    },
+    "source_person": {
+      "mask_png": "/home/shangguanrz/project/pic-edit/workflow/experiment/qwen-union/data/prepared_controls/mask_source_person.png",
+      "mask_sha256": "ac9008be64ea25b542643a2faec729e74e9d0edc2a0a60c637c4ce08cc4e2e58",
+      "target_region_png": "/home/shangguanrz/project/pic-edit/workflow/experiment/qwen-union/data/prepared_controls/target_region_source_person.png",
+      "dilation_radius": 12,
+      "torso_length": 95.88679769566288,
+      "mask_coverage_ratio": 0.27041352370689653
+    },
+    "source_torso": {
+      "mask_png": "/home/shangguanrz/project/pic-edit/workflow/experiment/qwen-union/data/prepared_controls/mask_source_torso.png",
+      "mask_sha256": "dd3e9d97ea9ab3d3e88dd050072f9f3440092f08c1e38f6311a81474178844a2",
+      "target_region_png": "/home/shangguanrz/project/pic-edit/workflow/experiment/qwen-union/data/prepared_controls/target_region_source_torso.png",
+      "dilation_radius": 18,
+      "torso_length": 228.82906496429442,
+      "mask_coverage_ratio": 0.34754512392241377
+    }
+  }
+}

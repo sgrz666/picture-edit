@@ -1,63 +1,74 @@
-# scripts/reports/ —— 目录层级与功能说明
+# scripts/reports/ —— Word 报告、图表与面板生成
 
-> 本文件由 `scripts/gen_folder_docs.py` 依据目录实际内容自动生成（生成时间：2026-10-11 16:23）；如需补充人工说明，请写在本目录 `README.md` 中（生成器不会覆盖 README）。
+本目录是系统的「成果物化」层：把 `experiments/`、`scripts/eval/` 与 `scripts/audit/` 产出的数值、日志与已保存图像，沉淀为可汇报的 Word 文档、可视化图表与对照面板。它位于流水线末端，几乎全部是**只读消费**既有产物（docstring 普遍标注「不生成图像、不跑推理、不更新权重」），因此可在把评测树拷到本地后离线运行。多数 Word 报告用 `python-docx` 内嵌图像，并偏好从预提交的固定选择中挑图（而非按结果质量排序），以保证汇报客观。
 
-- **路径**：`scripts/reports`　- **层级**：第 3 级　- **上级**：[../目录说明.md](scripts)
+## 里面有什么
 
-## 一、目录定位
+### 架构 / 实验简报（Word）
 
-实验报告汇总、图表美化与对比面板合成脚本目录。
+| 文件 | 一句话职责 |
+|---|---|
+| `build_architecture_docx.py` | 生成《人物图像姿态编辑系统架构设计与核心技术方案》Word：背景、DeepGen 1.0 架构、SCB 连接器、接触感知适配器、SMPL-X 控制注入、双人交互、训练损失与实测对比 |
+| `build_brief_architecture_docx.py` | 科研同步版精简架构与进展简报（月报/双周同步用） |
+| `build_latest_experiment_report_docx.py` | 生成《DeepGen 1.0 最新实验结果与显存分析简报》Word（多图内嵌） |
+| `build_20b_memory_docx.py` | 生成《Qwen-Image-Edit 20B 显存预算与单卡可行性分析》简报 |
 
-- **本级内容**：文件 30 个，514.3 KB
-- **子树规模**：文件 30 个，逻辑体积 514.3 KB
+### Qwen21 各线报告（Word / 面板）
 
-## 二、层级目录
+| 文件 | 一句话职责 |
+|---|---|
+| `build_qwen21_bfs_rgb_report.py` | 固定 1024 A-RGB + B-RGB BFS 对照的简明 Word 报告 |
+| `build_qwen21_bfs_skeleton_report.py` | 固定三臂 BFS 审计的短报告（内嵌图） |
+| `build_qwen21_combination_report.py` | 带锁定 native 组合网格的 value 审计 Word 修订版 |
+| `build_qwen21_face_panels.py` | 给固定 Qwen21 Face 评测做全图 + 人脸细节配对面板 |
+| `build_qwen21_joint_pilot_report.py` | joint BFS pilot 的可移植、已保存图像阶段/变体报告（无需 GPU/检测器） |
+| `build_qwen21_joint_pilot_review_sheets.py` | 把 12 个锁定监测样例渲染成四案 baseline/candidate 对照表 |
+| `build_qwen21_native_value_report.py` | 从锁定 Qwen native/control 审计构建可读 Word 报告（全图 + 实测人脸行） |
+| `build_hi4d_native_binding_report.py` | 固定 native Hi4D 绑定实验的内嵌图 Word 报告 |
+| `write_qwen21_face_repair_report.py` | 从已保存证据写 Face 修复报告（不执行模型） |
+| `write_qwen21_face_report.py` | 从固定 Face val/test 输出写紧凑、图像丰富的 Word 报告 |
+| `write_qwen21_face_single_sample_report.py` | 内嵌全像素面板、显式标注训练数据归属的 Word 报告 |
+| `write_qwen21_full_report.py` | 构建 Word 验收报告与全分辨率双行对照 PNG；`--require-complete` 为交付闸门 |
+| `write_qwen21_inheritance_report.py` | 内嵌实测表与原像素对照面板的权重继承 Word 报告 |
+| `write_qwen21_weight_audit_report.py` | 追加溯源/语义证据并写独立权重审计 Word 报告 |
 
-本目录为叶子目录，不含子目录。
+### Hi4D 双人深度 / 骨架对比报告（Word，10-12 ~ 10-13 新增）
 
-## 三、文件清单
+| 文件 | 一句话职责 |
+|---|---|
+| `build_hi4d_separate_depth_bilingual_report.py` | 内嵌式 Word 报告：Hi4D 双人「骨架与深度」**中英文提示词对比**，含精确像素输出面板与目标骨架叠加；消费 `eval_hi4d_separate_depth_bilingual` 与 `score_hi4d_separate_depth_bilingual` 的结果（输出《Hi4D双人骨架与深度_中英文提示词对比_20261012.docx》） |
+| `build_hi4d_depth_combinations_report.py` | 内嵌式 Word 报告：Hi4D 双人 5 种锁定 native 深度输入组合（skeleton / skeleton_joint_depth / joint_depth / separate_depth / joint_separate_depth）对比，含精确像素面板与骨架叠加；消费 `eval_hi4d_depth_combinations` 与 `score_hi4d_depth_combinations` 的结果（输出《Hi4D双人_深度输入组合对比_20261013.docx》） |
 
-共 **30** 个文件（不含隐藏文件与自动生成的说明文件）。类型分布：Python 源码×30
+### 图表 / 数据集可视化
 
-| 文件 | 类型 | 大小 | 内容摘要 |
-|---|---|---|---|
-| `build_20b_memory_docx.py` | Python 源码 | 17.2 KB | 模块 docstring：生成《Qwen-Image-Edit 20B 显存占用预算与单卡可行性分析简报》Word文档 专门分析 20B 模型静态权重、各分辨率与模式下的显存占用区间、单卡 84GB 可行性；顶层定义 10 个（`set_run_font`, `set_cell_background`, `set_cell_margins`, `set_table_borders`…） |
-| `build_architecture_docx.py` | Python 源码 | 41.8 KB | 模块 docstring：生成《人物图像姿态编辑系统架构设计与核心技术方案》Word文档 涵盖：项目背景、5B DeepGen 1.0 模型架构、多模态连接器 SCB、 接触感知几何适配器 (Contact；顶层定义 13 个（`set_run_font`, `set_cell_background`, `set_cell_margins`, `set_table_borders`…） |
-| `build_brief_architecture_docx.py` | Python 源码 | 19.1 KB | 模块 docstring：生成《人物图像姿态编辑项目技术架构与进展简报（科研同步版）》Word文档 专为课题组项目汇报、月报、双周同步设计： 内容精炼、结构直观、图文并茂，涵盖模型选型、系统架构、Adapt；顶层定义 12 个（`set_run_font`, `set_cell_background`, `set_cell_margins`, `set_table_borders`…） |
-| `build_hi4d_native_binding_report.py` | Python 源码 | 14.1 KB | 模块 docstring：Embedded-image Word report for the fixed native Hi4D binding experiment.；顶层定义 6 个（`crop`, `panel`, `configure`, `table`…） |
-| `build_iper1024_comparison_panels.py` | Python 源码 | 4.1 KB | 模块 docstring：Make readable iPER comparison sheets with face crops from saved RGB outputs.；顶层定义 4 个（`arguments`, `face_crop`, `draw_sheet`, `main`） |
-| `build_latest_experiment_report_docx.py` | Python 源码 | 22.3 KB | 模块 docstring：生成《DeepGen 1.0 图像姿态编辑最新实验结果与显存分析简报》Word文档 基于 120 次实测运行、60 个画质复核、显存全矩阵采样与 100 次更新稳定性测试。 多图呈；顶层定义 12 个（`set_run_font`, `set_cell_background`, `set_cell_margins`, `set_table_borders`…） |
-| `build_qwen21_bfs_rgb_report.py` | Python 源码 | 9.0 KB | 模块 docstring：Concise Word report for the fixed 1024 A-RGB + B-RGB BFS comparison.；顶层定义 1 个（`main`） |
-| `build_qwen21_bfs_skeleton_report.py` | Python 源码 | 9.0 KB | 模块 docstring：Short, embedded-image Word report for the fixed three-arm BFS audit.；顶层定义 3 个（`value`, `table`, `main`） |
-| `build_qwen21_combination_report.py` | Python 源码 | 17.1 KB | 模块 docstring：Revision of the Word value audit with the locked native combination grid.；顶层定义 7 个（`quality_table`, `shared_nodes`, `increment_table`, `factor_table`…） |
-| `build_qwen21_face_panels.py` | Python 源码 | 3.9 KB | 模块 docstring：Create paired full-image and face-detail panels for a fixed Qwen21 Face evaluation.；顶层定义 4 个（`arguments`, `image_for`, `portrait`, `main`） |
-| `build_qwen21_joint_pilot_report.py` | Python 源码 | 25.9 KB | 模块 docstring：Build portable, saved-image stage/variant reports for the joint BFS pilot. No GPU, detecto；顶层定义 7 个（`artifact_path`, `link`, `open_image`, `discover_runs`…） |
-| `build_qwen21_joint_pilot_review_sheets.py` | Python 源码 | 3.6 KB | 模块 docstring：Render all twelve locked monitor cases in four-case baseline/candidate sheets.；顶层定义 1 个（`main`） |
-| `build_qwen21_native_value_report.py` | Python 源码 | 28.7 KB | 模块 docstring：Build a readable Word report from the locked Qwen native/control audit. Images are embedde；顶层定义 8 个（`font`, `para`, `number`, `summary_value`…） |
-| `plot_vram_requirement_dashboard.py` | Python 源码 | 8.8 KB | 模块 docstring：生成《DeepGen 1.0 姿态编辑实验显存需求全景看板》高清可视化图表 包含： 1. 训练模式显存实测与消费级/专业级显卡承载线 (16G/24G/48G/84G) 2. 全生 |
-| `render_3dpw_60_pairs_report_style_v1.py` | Python 源码 | 9.9 KB | 模块 docstring：Render already-selected 3DPW 60 showcase pairs in report style. Layout: SOURCE RGB / TARGE；顶层定义 7 个（`load_rgb`, `load_depth`, `dwpose_black_background`, `normal_black_background`…） |
-| `summarize_qwen21_face_groups.py` | Python 源码 | 6.8 KB | 模块 docstring：Paired Face variant comparisons on common visible faces and pose groups.；顶层定义 4 个（`arguments`, `mean`, `paired`, `main`） |
-| `summarize_qwen21_joint_pilot.py` | Python 源码 | 26.9 KB | 模块 docstring：Summarize the actual joint-pilot logs and saved-image scores on locked cohorts. Full36 ini；顶层定义 10 个（`error`, `read_json`, `read_jsonl`, `finite`…） |
-| `test_qwen21_joint_pilot_visuals.py` | Python 源码 | 14.9 KB | 模块 docstring：CPU contract tests using saved real RGB images; no pipeline simulation.；顶层定义 18 个（`module`, `portrait`, `test_index_selection_preserves_requested_order`, `test_bad_selection_rejected_without_substitution`…） |
-| `visualize_3dpw_20_pairs_assets.py` | Python 源码 | 14.7 KB | 模块 docstring：Visualize 20 representative pairs from 3DPW single-person dataset. Each pair is saved as o；顶层定义 6 个（`load_rgb`, `load_gray`, `load_depth`, `depth_for_display`…） |
-| `visualize_3dpw_20_pairs_assets_diverse.py` | Python 源码 | 13.8 KB | 顶层定义 5 个（`load_rgb`, `load_gray`, `load_depth`, `depth_vis`…） |
-| `visualize_3dpw_60_pairs_diverse_dinov2_v2.py` | Python 源码 | 40.8 KB | 模块 docstring：3DPW 60-pair diverse visualization set v2 Goal ---- Build a visually diverse 60-pair showc；顶层定义 3 个（`sequence_family`, `load_dinov2`, `RGBFrameDataset`） |
-| `visualize_3dpw_60_pairs_large_pose.py` | Python 源码 | 16.6 KB | 模块 docstring：3DPW final dataset visualization Selection: - all 30 final sequences - exactly 2 pairs per；顶层定义 6 个（`choose_two`, `load_rgb`, `load_gray`, `load_depth`…） |
-| `visualize_tiktok_v3_final_global_blur.py` | Python 源码 | 6.2 KB | 顶层定义 8 个（`read_jsonl`, `read_bgr`, `build_index`, `resize_h`…） |
-| `write_iper1024_result.py` | Python 源码 | 6.5 KB | 模块 docstring：Summarize paired 512/1024 Qwen21 iPER results without mixing pixel scales.；顶层定义 3 个（`arguments`, `table`, `main`） |
-| `write_qwen21_face_repair_report.py` | Python 源码 | 27.3 KB | 模块 docstring：Write the bounded Face repair report from saved evidence; no model execution.；顶层定义 11 个（`read`, `finite`, `number`, `by_step`…） |
-| `write_qwen21_face_report.py` | Python 源码 | 13.7 KB | 模块 docstring：Write a compact, image-rich Word report from fixed Face validation/test outputs.；顶层定义 5 个（`arguments`, `metric`, `wrap_panel`, `add_table`…） |
-| `write_qwen21_face_single_sample_report.py` | Python 源码 | 14.3 KB | 模块 docstring：Word report with embedded full-pixel panels and explicit training-data labels.；顶层定义 5 个（`read`, `number`, `panel`, `metric_table`…） |
-| `write_qwen21_full_report.py` | Python 源码 | 40.2 KB | 模块 docstring：Build a Word acceptance report and full-resolution two-row comparison PNGs. Reads recorded；顶层定义 12 个（`arguments`, `read_json`, `read_jsonl`, `finite`…） |
-| `write_qwen21_inheritance_report.py` | Python 源码 | 19.8 KB | 模块 docstring：Embed measured tables and original-pixel comparison panels in a Word report.；顶层定义 3 个（`make_panel`, `comparison_table`, `main`） |
-| `write_qwen21_weight_audit_report.py` | Python 源码 | 17.4 KB | 模块 docstring：Add provenance/semantic evidence and write the standalone Word audit report.；顶层定义 3 个（`table`, `supplemental_evidence`, `main`） |
+| 文件 | 一句话职责 |
+|---|---|
+| `plot_vram_requirement_dashboard.py` | 生成《DeepGen 1.0 显存需求全景看板》高清图（训练/推理/缓存三阶段、优化瀑布、5B vs 20B） |
+| `visualize_3dpw_20_pairs_assets.py` | 3DPW 单人 20 对代表样本 montage（RGB/DWPose/Mask/Depth/Normal） |
+| `visualize_3dpw_20_pairs_assets_diverse.py` | 3DPW 20 对资产多样可视化 |
+| `visualize_3dpw_60_pairs_diverse_dinov2_v2.py` | 3DPW 60 对多样展示集 v2（不改官方/最终训练 manifest） |
+| `visualize_3dpw_60_pairs_large_pose.py` | 3DPW 最终可视化：30 序列 × 2 对 = 60 对 |
+| `render_3dpw_60_pairs_report_style_v1.py` | 3DPW 60 展示对按报告样式渲染（SOURCE/TARGET RGB/DWPose/Normal/Depth） |
+| `visualize_tiktok_v3_final_global_blur.py` | TikTok V3 终稿全局模糊可视化 |
+| `build_iper1024_comparison_panels.py` | 从已保存 RGB 输出做带人脸裁切的可读 iPER 对照表 |
 
-## 四、构成画像
+### 汇总 / 合同测试
 
-- **直属类型分布**：Python 源码×30
-- **子树类型构成**：Python 源码×30
+| 文件 | 一句话职责 |
+|---|---|
+| `summarize_qwen21_face_groups.py` | 在常见可见人脸与姿态组上做配对 Face 变体对照 |
+| `summarize_qwen21_joint_pilot.py` | 汇总 joint-pilot 真实日志与已保存图像分数（Full36 与 fixed12 分开，配对估计用交集） |
+| `test_qwen21_joint_pilot_visuals.py` | 用已保存真实 RGB 图像的 CPU 合同测试（不模拟 pipeline） |
+| `write_iper1024_result.py` | 在不混像素尺度下汇总配对的 512/1024 Qwen21 iPER 结果 |
 
-## 五、导航
+## 与上下层的关系
 
-- 根目录总览：[`目录总览.md`](../../目录总览.md)
-- 根 README：[README.md](../../README.md)
+- **上游输入**：`experiments/<run>/`（训练/采样产物）、`scripts/eval/` 的结果 JSON/CSV 与对照图、`scripts/audit/` 的审计证据（如 `write_qwen21_weight_audit_report.py` 直接消费权重审计）。
+- **产出物**：`reports/` 相关目录与 `results/` 下的 `.docx`、面板 PNG、看板图；少量脚本（如 `visualize_3dpw_*`）也服务于 `datasets/` 展示。
+- 相关索引：父级 [`../README.md`](../README.md)；评测契约见 [`../eval/README.md`](../eval/README.md)，资产路径登记在 [`../../configs/asset_registry.json`](../../configs/asset_registry.json)。
+
+## 注意与坑
+
+- 本目录脚本普遍**只读产物、不重跑模型**；但 `build_*` 系列若依赖 `scripts/eval/` 尚未生成的对照图，需先跑对应 `eval_*`。
+- 多个报告脚本强调「图从预提交选择中挑、不按质量排序」，改动选图逻辑会破坏汇报的客观性，需谨慎。
+- `write_qwen21_full_report.py` 的 `--require-complete` 是最终交付闸门，中间报告可无它先出。

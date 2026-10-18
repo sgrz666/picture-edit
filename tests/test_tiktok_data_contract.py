@@ -520,3 +520,119 @@ def test_smoke_test_runner_dry_run(tmp_path: Path) -> None:
     assert len(report["steps"]) == 2
     assert (tmp_path / "out" / "preview_smoke.png").is_file()
     assert (tmp_path / "out" / "smoke_report.json").is_file()
+
+
+def test_tiktok_v3_pose_dataset_and_crop_alignment(tmp_path: Path) -> None:
+    from src.data.tiktok_dataset import (
+        TikTokV3PoseDataset,
+        is_tiktok_v3_manifest,
+        load_pose_dataset,
+        transform_box_for_crop,
+        transform_keypoints_for_crop,
+    )
+
+    seq_id = "00001"
+    raw_root = tmp_path / "raw"
+    assets_root = tmp_path / "assets"
+    dwpose_root = tmp_path / "dwpose_v1"
+    seq_raw = raw_root / seq_id
+    seq_assets = assets_root / seq_id
+    seq_dwpose = dwpose_root / seq_id
+
+    (seq_raw / "images").mkdir(parents=True)
+    (seq_raw / "masks").mkdir(parents=True)
+    (seq_assets / "normal").mkdir(parents=True)
+    (seq_assets / "depth_vis").mkdir(parents=True)
+    (seq_assets / "part_512").mkdir(parents=True)
+    (seq_dwpose / "dwpose").mkdir(parents=True)
+
+    dummy_img = Image.new("RGB", (604, 1080), color=(128, 128, 128))
+    dummy_mask = Image.new("L", (604, 1080), color=255)
+    dummy_part = Image.new("L", (512, 512), color=5)
+
+    for stem in ["0014", "0074"]:
+        dummy_img.save(seq_raw / "images" / f"{stem}.png")
+        dummy_mask.save(seq_raw / "masks" / f"{stem}.png")
+        dummy_img.save(seq_assets / "normal" / f"{stem}.png")
+        dummy_mask.save(seq_assets / "depth_vis" / f"{stem}.png")
+        dummy_part.save(seq_assets / "part_512" / f"{stem}.png")
+        dummy_img.save(seq_dwpose / "dwpose" / f"{stem}.png")
+
+    kps = torch.zeros(2, 25, 3, dtype=torch.float32)
+    # Keypoint 0 inside the square_crop window (y in [100/1080, 704/1080])
+    kps[:, 0] = torch.tensor([0.5, 402.0 / 1080.0, 1.0])
+    # Keypoint 14 outside the square_crop window (y = 0.95 > 704/1080)
+    kps[:, 14] = torch.tensor([0.5, 0.95, 1.0])
+    v6_bundle = {
+        "smplx_global": torch.randn(2, 26),
+        "kps_25_coords": kps,
+        "stems": ["0014", "0074"],
+        "stem_to_idx": {"0014": 0, "0074": 1},
+    }
+    torch.save(v6_bundle, seq_assets / "v6_conditions.pt")
+
+    manifest_path = tmp_path / "train_pairs.jsonl"
+    row = {
+        "pair_id": "00001:0014->0074",
+        "split": "train",
+        "sequence_id": seq_id,
+        "source_stem": "0014",
+        "target_stem": "0074",
+        "source_rgb": str(seq_raw / "images" / "0014.png"),
+        "target_rgb": str(seq_raw / "images" / "0074.png"),
+        "target_person_mask": str(seq_raw / "masks" / "0074.png"),
+        "target_normal": str(seq_assets / "normal" / "0074.png"),
+        "target_depth_vis": str(seq_assets / "depth_vis" / "0074.png"),
+        "target_dwpose": str(seq_dwpose / "dwpose" / "0074.png"),
+    }
+    manifest_path.write_text(json.dumps(row) + "\n", encoding="utf-8")
+
+    assert is_tiktok_v3_manifest(manifest_path) is True
+    ds = load_pose_dataset(
+        manifest_path,
+        dataset_type="auto",
+        tiktok_raw_root=raw_root,
+        tiktok_assets_root=assets_root,
+        resolution=512,
+        align_mode="square_crop",
+    )
+    assert isinstance(ds, TikTokV3PoseDataset)
+    assert len(ds) == 1
+    sample = ds[0]
+    assert sample["src_image"].shape == (3, 512, 512)
+    assert sample["tgt_image"].shape == (3, 512, 512)
+    assert sample["normal"].shape == (3, 512, 512)
+    assert sample["part_onehot"].shape == (14, 512, 512)
+    assert sample["pose_heatmap"].shape == (25, 512, 512)
+    assert sample["smplx_global"].shape == (26,)
+    assert sample["human_mask"].shape == (1, 512, 512)
+    assert sample["appearance"] == "00001"
+    assert sample["source_stem"] == "0014"
+    assert sample["target_stem"] == "0074"
+    # Keypoint 0 should be centered at y=0.5 in the cropped heatmap, while keypoint 14 is outside crop -> zero heatmap
+    assert float(sample["pose_heatmap"][0, 256, 256]) > 0.95
+    assert float(sample["pose_heatmap"][14].max()) == 0.0
+    # Part value 5 maps to channel index 4
+    assert float(sample["part_onehot"][4].mean()) == 1.0
+
+    # Verify face box crop transformation
+    norm_crop = ds.samples[0]["norm_crop"]
+    transformed_box = transform_box_for_crop(torch.tensor([0.4, 300.0 / 1080.0, 0.6, 500.0 / 1080.0]), norm_crop)
+    assert torch.allclose(transformed_box[0], torch.tensor(0.4))
+    assert torch.allclose(transformed_box[1], torch.tensor(200.0 / 604.0), atol=1e-4)
+    assert torch.allclose(transformed_box[3], torch.tensor(400.0 / 604.0), atol=1e-4)
+
+    # Verify resize mode keeps norm_crop as (0, 0, 1, 1)
+    ds_resize = load_pose_dataset(
+        manifest_path,
+        dataset_type="tiktok_v3",
+        tiktok_raw_root=raw_root,
+        tiktok_assets_root=assets_root,
+        resolution=512,
+        align_mode="resize",
+    )
+    assert ds_resize.samples[0]["norm_crop"] == (0.0, 0.0, 1.0, 1.0)
+    sample_resize = ds_resize[0]
+    assert float(sample_resize["pose_heatmap"][14].max()) > 0.9
+
+

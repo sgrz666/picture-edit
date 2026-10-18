@@ -1,0 +1,25 @@
+{
+ "run": "/data/shangguanrz/pic-edit-experiments/qwen21_union_migration_v1/runs/matrix_20261015T134829",
+ "steps": 40,
+ "seeds": [
+  42,
+  43
+ ],
+ "configs": [
+  "native",
+  "union_s0",
+  "union_s05",
+  "union_s10"
+ ],
+ "expected_images": 48,
+ "produced_this_invocation": 17,
+ "produced_total": 48,
+ "skipped_already_done": 19,
+ "min_free_gib": 8.0,
+ "videox_commit": "13bb3c625e8b1e457d7124d92207b49e00e4a6fe",
+ "kv_cache": false,
+ "cfg": 1.0,
+ "dtype": "bfloat16",
+ "gpu_waits": [],
+ "complete": true
+}

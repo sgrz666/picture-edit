@@ -1,0 +1,355 @@
+{
+  "audit_date": "2026-10-08",
+  "repo": "/home/shangguanrz/project/pic-edit",
+  "baseline": "/home/shangguanrz/nihaochen/qwen21_full/tiktok_body_fullpass_20261004",
+  "method": "Two actual dataset items and real Body prepare() with a CPU capture adapter; no DiT forward/backward.",
+  "code_sha256": {
+    "scripts/build_tiktok_v6_conditions.py": "9bf620824d1d24704ceea225eb35b8f0bdfddc73e5a62e3bfecdf955f7d3c1f9",
+    "src/data/tiktok_dataset.py": "4d7fe591bd683f35bce73026a467bcbf3966d12a291798ff6bf59bdfa6046680",
+    "src/pose_control/qwen21_full/data_runtime.py": "027871170917fd21ddd4cc94691ac161dde27923c4885ea8e015c4cb5fd70440",
+    "src/pose_control/qwen21_full/execution.py": "823fe9084362c189dfecb3a5cceb5025b6f10c769b0f5a405e087a5c2e3cb842",
+    "src/pose_control/qwen21_full/token_encoders.py": "fd609c7fe1f55ad1fd54385fd524d9c00ca9c2adc692749152e007c6d4327f7e",
+    "src/pose_control/qwen21_full/detail/hand.py": "5783a338542d8e5e7dca55c7ff39e9708309e222335863150c5e8461fac93f27"
+  },
+  "global_schema": {
+    "betas": [
+      0,
+      10
+    ],
+    "root_rotation_6d": [
+      10,
+      16
+    ],
+    "translation": [
+      16,
+      19
+    ],
+    "camera": [
+      19,
+      26
+    ]
+  },
+  "samples": [
+    {
+      "manifest": "/home/shangguanrz/nihaochen/qwen21_full/tiktok_body_fullpass_20261004/data/train_pairs.jsonl",
+      "manifest_sha256": "571b6af1bc9086b1cbd169ef1690dc695626f478e471297ae6b41bf13d9c58ac",
+      "dataset_index": 96,
+      "pair_id": "train_0000097",
+      "sequence_id": "00006",
+      "target_stem": "0395",
+      "target_frame_index": 394,
+      "raw_parameters": {
+        "body_pose": {
+          "all_frames_shape": [
+            402,
+            63
+          ],
+          "target_shape": [
+            63
+          ],
+          "finite": true,
+          "target_abs_sum": 11.186707496643066
+        },
+        "jaw_pose": {
+          "all_frames_shape": [
+            402,
+            3
+          ],
+          "target_shape": [
+            3
+          ],
+          "finite": true,
+          "target_abs_sum": 0.019000092521309853
+        },
+        "expression": {
+          "all_frames_shape": [
+            402,
+            10
+          ],
+          "target_shape": [
+            10
+          ],
+          "finite": true,
+          "target_abs_sum": 3.497039318084717
+        },
+        "left_hand_pose": {
+          "all_frames_shape": [
+            402,
+            45
+          ],
+          "target_shape": [
+            45
+          ],
+          "finite": true,
+          "target_abs_sum": 4.470304489135742
+        },
+        "right_hand_pose": {
+          "all_frames_shape": [
+            402,
+            45
+          ],
+          "target_shape": [
+            45
+          ],
+          "finite": true,
+          "target_abs_sum": 4.636337757110596
+        }
+      },
+      "dataset_keys": [
+        "alignment_meta",
+        "appearance",
+        "control_map",
+        "depth",
+        "human_mask",
+        "normal",
+        "pair_metadata",
+        "part_onehot",
+        "pose_heatmap",
+        "smplx_global",
+        "source_stem",
+        "src_image",
+        "target_stem",
+        "task_id",
+        "tgt_image",
+        "valid_image_mask"
+      ],
+      "tensor_shapes": {
+        "src_image": [
+          3,
+          512,
+          512
+        ],
+        "tgt_image": [
+          3,
+          512,
+          512
+        ],
+        "control_map": [
+          8,
+          512,
+          512
+        ],
+        "normal": [
+          3,
+          512,
+          512
+        ],
+        "depth": [
+          1,
+          512,
+          512
+        ],
+        "part_onehot": [
+          14,
+          512,
+          512
+        ],
+        "pose_heatmap": [
+          25,
+          512,
+          512
+        ],
+        "smplx_global": [
+          26
+        ],
+        "human_mask": [
+          1,
+          512,
+          512
+        ],
+        "valid_image_mask": [
+          1,
+          512,
+          512
+        ],
+        "task_id": []
+      },
+      "explicit_parameter_presence": {
+        "body_pose": false,
+        "jaw_pose": false,
+        "expression": false,
+        "left_hand_pose": false,
+        "right_hand_pose": false,
+        "face_condition": false,
+        "hand_condition": false,
+        "detail_condition": false,
+        "smplx_detail": false
+      },
+      "prepare_argument_keys": [
+        "condition_bundle",
+        "source_latent",
+        "target_token_hw"
+      ],
+      "geometry_argument_keys": [
+        "human_mask_a",
+        "normal_a",
+        "part_onehot_a",
+        "pose_heatmap_a",
+        "smplx_global_a",
+        "task_id"
+      ],
+      "translation_repeated_in_camera": true
+    },
+    {
+      "manifest": "/home/shangguanrz/nihaochen/qwen21_full/tiktok_body_fullpass_20261004/data/val24_pairs.jsonl",
+      "manifest_sha256": "cece883b96dbbc9270fd77d4bb1e973470f52f941af85c2a0746947f5d91e10a",
+      "dataset_index": 0,
+      "pair_id": "val_0000032",
+      "sequence_id": "00127",
+      "target_stem": "0127",
+      "target_frame_index": 126,
+      "raw_parameters": {
+        "body_pose": {
+          "all_frames_shape": [
+            131,
+            63
+          ],
+          "target_shape": [
+            63
+          ],
+          "finite": true,
+          "target_abs_sum": 12.289536476135254
+        },
+        "jaw_pose": {
+          "all_frames_shape": [
+            131,
+            3
+          ],
+          "target_shape": [
+            3
+          ],
+          "finite": true,
+          "target_abs_sum": 0.15127664804458618
+        },
+        "expression": {
+          "all_frames_shape": [
+            131,
+            10
+          ],
+          "target_shape": [
+            10
+          ],
+          "finite": true,
+          "target_abs_sum": 4.951870918273926
+        },
+        "left_hand_pose": {
+          "all_frames_shape": [
+            131,
+            45
+          ],
+          "target_shape": [
+            45
+          ],
+          "finite": true,
+          "target_abs_sum": 4.631358623504639
+        },
+        "right_hand_pose": {
+          "all_frames_shape": [
+            131,
+            45
+          ],
+          "target_shape": [
+            45
+          ],
+          "finite": true,
+          "target_abs_sum": 4.74783992767334
+        }
+      },
+      "dataset_keys": [
+        "alignment_meta",
+        "appearance",
+        "control_map",
+        "depth",
+        "human_mask",
+        "normal",
+        "pair_metadata",
+        "part_onehot",
+        "pose_heatmap",
+        "smplx_global",
+        "source_stem",
+        "src_image",
+        "target_stem",
+        "task_id",
+        "tgt_image",
+        "valid_image_mask"
+      ],
+      "tensor_shapes": {
+        "src_image": [
+          3,
+          512,
+          512
+        ],
+        "tgt_image": [
+          3,
+          512,
+          512
+        ],
+        "control_map": [
+          8,
+          512,
+          512
+        ],
+        "normal": [
+          3,
+          512,
+          512
+        ],
+        "depth": [
+          1,
+          512,
+          512
+        ],
+        "part_onehot": [
+          14,
+          512,
+          512
+        ],
+        "pose_heatmap": [
+          25,
+          512,
+          512
+        ],
+        "smplx_global": [
+          26
+        ],
+        "human_mask": [
+          1,
+          512,
+          512
+        ],
+        "valid_image_mask": [
+          1,
+          512,
+          512
+        ],
+        "task_id": []
+      },
+      "explicit_parameter_presence": {
+        "body_pose": false,
+        "jaw_pose": false,
+        "expression": false,
+        "left_hand_pose": false,
+        "right_hand_pose": false,
+        "face_condition": false,
+        "hand_condition": false,
+        "detail_condition": false,
+        "smplx_detail": false
+      },
+      "prepare_argument_keys": [
+        "condition_bundle",
+        "source_latent",
+        "target_token_hw"
+      ],
+      "geometry_argument_keys": [
+        "human_mask_a",
+        "normal_a",
+        "part_onehot_a",
+        "pose_heatmap_a",
+        "smplx_global_a",
+        "task_id"
+      ],
+      "translation_repeated_in_camera": true
+    }
+  ],
+  "passed": true
+}

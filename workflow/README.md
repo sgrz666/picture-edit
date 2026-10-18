@@ -8,6 +8,8 @@
 
 审查记录与整改对应关系见 [`docs/workflow审查与整改_20261012.md`](../docs/workflow审查与整改_20261012.md)。
 
+协作智能体在本目录的协作纪律（「标准六图面板」硬性收尾、跑批与共享 GPU、产物/缓存/评测约定）见 [`AGENTS.md`](AGENTS.md)。
+
 ## 运行
 
 ```bash
@@ -101,6 +103,8 @@ PE 的产物 `prompt/pe_compiled_prompt.txt` 只读。生成阶段实际读的�
 
 每个阶段的 `run.log` 保留推理日志；`stage.json` 记录请求指纹与产物哈希。`latest_run.json` 指向最近一次执行，多个 run 并存时它只反映最后一个，横向比较请用 `report.py`。仅完成几何或 PE 时状态为 `partial`，全部生成完成后为 `complete`，失败时为 `failed` 并保留错误；进程被杀而没写失败状态的，`report.py` 会标成 `abandoned`。
 
+离线实验脚本 `lowlatency_probe.py` / `check_case.py`（llama.cpp 低延迟探测，见「低延迟探测（llama.cpp / GGUF）」一节）只往调用方给的 `--out` 实验目录写产物，不会在 `runs/` 下留 run、也不碰历史产物。
+
 ## 评测
 
 ```bash
@@ -124,6 +128,19 @@ $QWENPY report.py                         # 全部 run 的索引、状态、逐�
 逐轴不合格率、Fleiss κ。用法与坑见 [`human_eval/README.md`](human_eval/README.md)。
 合同的参照臂（不给任何姿态条件的纯 Qwen-Edit）尚未实现——它要改 `run.py`（在缓存指纹 `INPUTS_CODE` 里），
 排在批量收尾的同一个窗口。
+
+## 低延迟探测（llama.cpp / GGUF）
+
+2026-10-16 新增的离线实验线，用 llama.cpp 在 tiktok runs 上跑 PE 式提示词重写，和 HF 全精度 PE 基线做**同输入三方对比**：HF PE / GGUF PE / GGUF 4B。两个脚本都不碰生产代码与历史 run，只往调用方给的 `--out` 实验目录写产物。
+
+- `lowlatency_probe.py`：起一个 llama.cpp server（`--server` 二进制 + `--model` GGUF 权重 + `--mmproj` 投影权重，`-ngl 99 -c 32768 -fa on`，默认 `--port 18777`，可选 `--mtp` 开 draft-mtp 投机解码：`--spec-type draft-mtp --spec-draft-n-max 2`），对 `workflow/runs/tiktok` 下所有 `tt_*` run 发请求（可用 `--runs` 限定、用 `--tag` 打标签）。两个 arm：
+  - `--mode pe`：**质量臂**。直接喂官方 PE-I2I 契约——各 run `prompt/effective_system_prompt.txt` 的 system + `pe_result.json` 的 instruction，回答按官方三段式 JSON 解析校验，再用 `pose_transfer.prompts.compile_prompt(rewritten_prompt, 'source_only')` 编译；解析/角色校验不过则按 pe_worker 的方式重试（默认 `--attempts 1`）。
+  - `--mode describe`：**4B arm**。模型未经 PE 训练，不要求它出 PE 契约，只给一段短 system（`DESCRIBE_SYSTEM`）和短 ask（`DESCRIBE_ASK`，要求 90 词内描述目标身体的腿/双臂(viewer-left/right)/头/表情/手持），返回简短动作描述；身份/服装/背景保留条款由脚本用 `PREAMBLE`/`SUFFIX`（镜像 `compile_prompt` 的前缀与后缀契约）补上，拼成 `PREAMBLE + "Apply this pose: " + desc + SUFFIX` 再落盘。
+  - 两臂都从各 run 的 `prompt/pe_result.json` 读出 HF 基线 `output_tokens` / `seconds` / `seed`，记进每条 record，保证三方在**完全相同输入**上比。
+  - 输出（`--out` 根下）：`records/<run>.json`（逐 case 的 tokens/seconds/tok_per_s、状态、HF 基线）、`raw/<run>_attemptN.txt`（原始回答）、`prompts/<run>.txt`（编译后提示词）、`summary.json`（schema `lowlatency_pe_probe_v1`：均值、相对 HF 的 `speedup_vs_hf`；`describe` 模式还带 `content_check_pass` 的 arm/head/legs/left_right 命中统计）。
+- `check_case.py`：冒烟入口。对 tiktok 各 run 调 `lowlatency_probe.load_case()` 校验输入能否正常读出，打印前 3 个 run 的图像数、HF 基线 tokens/seconds/seed、instruction 与 system 字数等诊断；其文件 docstring 还写到「再跑单 case 的 4B arm」，但当前代码体只做了 load_case 冒烟部分（待补充）。
+
+注意：这条线和「评测」「实况」里的全精度 HF PE 基线不是一回事——它是把 PE 式重写搬到 GGUF 上的延迟/质量探针，产物落在调用方指定的实验目录，不会进 `runs/`、也不会改写任何历史 run。
 
 ## 测试
 

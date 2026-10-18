@@ -1,0 +1,184 @@
+{
+  "short": "Make the two existing people hug. Preserve each person's face, hair, clothing and body identity, the background, and the original camera view.",
+  "structured": "A is the person on the left in the source image. B is the person on the right in the source image. Make the two existing people hug. A and B face toward one another. Keep A and B close together. A keeps the hands at chest level. A keeps the left elbow bent. A keeps the right elbow bent. A brings an arm around the other person's upper body. B keeps the hands at shoulder level. B bends the left elbow tightly. B bends the right elbow tightly. B brings an arm around the other person's upper body. Preserve each person's face, hair, clothing and body identity, the background, and the original camera view.",
+  "provenance": {
+    "template_version": "source_geometry_action_v1",
+    "action_label": "hug22",
+    "person_uids": [
+      "pair22_actor0",
+      "pair22_actor1"
+    ],
+    "source_anchors": [
+      {
+        "uid": "pair22_actor0",
+        "slot": "A",
+        "centroid_xy": [
+          0.4891153441337923,
+          0.46845833963295497
+        ],
+        "anchor_provenance": "source_mask_centroid"
+      },
+      {
+        "uid": "pair22_actor1",
+        "slot": "B",
+        "centroid_xy": [
+          0.6007846009497549,
+          0.48284632863562094
+        ],
+        "anchor_provenance": "source_mask_centroid"
+      }
+    ],
+    "geometry_sha256": "b25ed41d874e7f377eaf1fa63f6864ef030927ba77aed87d8b6de88860ad4957",
+    "confidence_threshold": 0.6,
+    "used": [
+      {
+        "feature": "root_relation",
+        "confidence": 0.8144418597221375,
+        "horizontal_distance_m": 0.21524296700954437,
+        "facing_cosines": [
+          0.9970704049393585,
+          0.9914366610137342
+        ],
+        "threshold": 0.6
+      },
+      {
+        "feature": "A_left_wrist_height",
+        "joint_indices": [
+          0,
+          15,
+          16,
+          17,
+          20
+        ],
+        "wrist_height_m": 1.4756267070770264,
+        "waist_height_m": 1.3107212781906128,
+        "shoulder_height_m": 1.7541563510894775,
+        "head_height_m": 1.921653389930725,
+        "confidence": 0.7595908045768738,
+        "threshold": 0.6
+      },
+      {
+        "feature": "A_right_wrist_height",
+        "joint_indices": [
+          0,
+          15,
+          16,
+          17,
+          21
+        ],
+        "wrist_height_m": 1.6376267671585083,
+        "waist_height_m": 1.3107212781906128,
+        "shoulder_height_m": 1.7541563510894775,
+        "head_height_m": 1.921653389930725,
+        "confidence": 0.7595908045768738,
+        "threshold": 0.6
+      },
+      {
+        "feature": "A_left_elbow",
+        "joint_indices": [
+          16,
+          18,
+          20
+        ],
+        "angle_deg": 100.33431243896484,
+        "thresholds_deg": [
+          80,
+          135
+        ],
+        "confidence": 0.8336560130119324
+      },
+      {
+        "feature": "A_right_elbow",
+        "joint_indices": [
+          17,
+          19,
+          21
+        ],
+        "angle_deg": 81.64908599853516,
+        "thresholds_deg": [
+          80,
+          135
+        ],
+        "confidence": 0.79358971118927
+      },
+      {
+        "feature": "A_arm_to_partner_torso",
+        "wrist_joint": 20,
+        "wrist_to_torso_m": 0.17684686183929443,
+        "threshold_m": 0.45,
+        "confidence": 0.7181957364082336
+      },
+      {
+        "feature": "B_left_wrist_height",
+        "joint_indices": [
+          0,
+          15,
+          16,
+          17,
+          20
+        ],
+        "wrist_height_m": 1.7352139949798584,
+        "waist_height_m": 1.229753851890564,
+        "shoulder_height_m": 1.6954915523529053,
+        "head_height_m": 1.7981297969818115,
+        "confidence": 0.7173431515693665,
+        "threshold": 0.6
+      },
+      {
+        "feature": "B_right_wrist_height",
+        "joint_indices": [
+          0,
+          15,
+          16,
+          17,
+          21
+        ],
+        "wrist_height_m": 1.7305870056152344,
+        "waist_height_m": 1.229753851890564,
+        "shoulder_height_m": 1.6954915523529053,
+        "head_height_m": 1.7981297969818115,
+        "confidence": 0.7173431515693665,
+        "threshold": 0.6
+      },
+      {
+        "feature": "B_left_elbow",
+        "joint_indices": [
+          16,
+          18,
+          20
+        ],
+        "angle_deg": 62.57396697998047,
+        "thresholds_deg": [
+          80,
+          135
+        ],
+        "confidence": 0.7915741205215454
+      },
+      {
+        "feature": "B_right_elbow",
+        "joint_indices": [
+          17,
+          19,
+          21
+        ],
+        "angle_deg": 78.84227752685547,
+        "thresholds_deg": [
+          80,
+          135
+        ],
+        "confidence": 0.7992936372756958
+      },
+      {
+        "feature": "B_arm_to_partner_torso",
+        "wrist_joint": 20,
+        "wrist_to_torso_m": 0.21286267042160034,
+        "threshold_m": 0.45,
+        "confidence": 0.7367345094680786
+      }
+    ],
+    "omitted": [
+      "finger_articulation: unobserved/model prior"
+    ],
+    "inputs": "source mask anchors + action label + external geometry only"
+  }
+}

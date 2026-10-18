@@ -1,0 +1,15 @@
+{
+  "source_rgb": "/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/final_assets_v4_2/sources/pair14/cam4/talk14/000032/rgb.jpg",
+  "source_sha256": "d16fc287147433db12130a5a3dbe0b60af49edb66346bbf81331aae769813c98",
+  "source_mask_sha256": [
+    "2e678f78f9c7e5c55dcc9e4d87f13d5b17421a806d7facd1ad661262c6f5c694",
+    "6884cf9006441c06c171fbbe2ce2ba9368143de5e304fbc1f03931618db76cf0"
+  ],
+  "source_features_sha256": "d1af1ab2b0e2d31eb9c642d9b8d6b7011b7f3285f04d4fd72a3650eac33ef3c8",
+  "vae_path": "/home/shangguanrz/project/pic-edit/models/Qwen-Image-2.1/vae",
+  "dino_path": "/data/shangguanrz/pic-edit-experiments/pei2i_body_face_8arm_20261009/code/models/dinov2-giant",
+  "dino_whole_crop_size": 224,
+  "dino_min_patch_coverage": 0.5,
+  "dino_sha256": "917d3c470db999d32a312f8542149be91c7cbac61ee8fb4b67ae3d82b79ce21f",
+  "vae_config_sha256": "9785d527b278cb8b210e9f48a8028d92a4190968ce7e24c8fc85d9d1b82f6ba2"
+}

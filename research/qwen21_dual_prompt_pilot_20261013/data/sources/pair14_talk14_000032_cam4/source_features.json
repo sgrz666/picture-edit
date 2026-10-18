@@ -1,0 +1,35 @@
+{
+  "metadata": {
+    "schema_version": "source_v1",
+    "crop_version": "exclusive_square_letterbox512_margin1p2_gray128_v1",
+    "encoder_version": "qwen21_rgba_vae_dinov2_g_whole224_v1",
+    "source_rgb_sha256": "a5274f2fda4fcf6b4d09f6b34668e056721f73c3f59567bf132ec96df4963a06",
+    "source_mask_sha256": [
+      "0e86dadef99c6eb5475bb89c2cf97bc00943b551b96244071c8c1bff23768109",
+      "c33d807f114507ae4b86f977ab8eda7ea04e1608f7aaeafade90aacc156a2552"
+    ],
+    "person_uids": [
+      "pair14_actor0",
+      "pair14_actor1"
+    ],
+    "encoder_provenance": {
+      "dino_path": "/data/shangguanrz/pic-edit-experiments/pei2i_body_face_8arm_20261009/code/models/dinov2-giant",
+      "vae_path": "/home/shangguanrz/project/pic-edit/models/Qwen-Image-2.1/vae",
+      "dino_sha256": "917d3c470db999d32a312f8542149be91c7cbac61ee8fb4b67ae3d82b79ce21f",
+      "vae_config_sha256": "9785d527b278cb8b210e9f48a8028d92a4190968ce7e24c8fc85d9d1b82f6ba2",
+      "dino_whole_crop_size": 224,
+      "dino_min_patch_coverage": 0.5,
+      "vae_weights_sha256": null,
+      "vae_weight_hash_provenance": "not_recorded_by_legacy_cache; original VAE config SHA256 verified"
+    },
+    "reused_from_features": "/home/shangguanrz/project/pic-edit/research/qwen21_dual_upgrade_20261011/pilot_controls_v2/source_features.pt",
+    "reused_from_features_sha256": "142888cb7e22b15ffdba1b28844b9739c16cd7219d4d46ecd7da5f3da4fad440",
+    "reuse_verification": "raw RGB/mask SHA match and exact letterboxed person crop pixels"
+  },
+  "source_rgb": "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/data/assets/sources/pair14/cam4/talk14/000032/rgb.png",
+  "source_masks": [
+    "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/data/assets/sources/pair14/cam4/talk14/000032/mask_A.png",
+    "/home/shangguanrz/project/pic-edit/research/qwen21_dual_prompt_pilot_20261013/data/assets/sources/pair14/cam4/talk14/000032/mask_B.png"
+  ],
+  "source_features_sha256": "7d0b3eaaf75a310f581ee7c5cf7744942a4b2464dd934c008528a2908cdf9ee8"
+}

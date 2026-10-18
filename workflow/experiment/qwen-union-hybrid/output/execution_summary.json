@@ -1,0 +1,86 @@
+{
+  "H0": {
+    "arm": "H0",
+    "status": "completed",
+    "output": {
+      "path": "/home/shangguanrz/project/pic-edit/workflow/experiment/qwen-union-hybrid/output/H0/final_image.png",
+      "sha256": "9068e40fb4a19df40e17948b3be0df95db42c9231278f3fb069db7aa774beb23",
+      "size_wh": [
+        640,
+        928
+      ]
+    },
+    "performance": {
+      "arm": "H0",
+      "steps": 40,
+      "seed": 42,
+      "alpha": null,
+      "beta": null,
+      "generation_seconds": 158.18,
+      "peak_vram_gib": 20.31
+    }
+  },
+  "H1": {
+    "arm": "H1",
+    "status": "completed",
+    "output": {
+      "path": "/home/shangguanrz/project/pic-edit/workflow/experiment/qwen-union-hybrid/output/H1/final_image.png",
+      "sha256": "f9f16f370b9520dac83a86f750316f976d94e00f101257ba274e0152ed0d4224",
+      "size_wh": [
+        640,
+        928
+      ]
+    },
+    "performance": {
+      "arm": "H1",
+      "steps": 40,
+      "seed": 42,
+      "alpha": null,
+      "beta": null,
+      "generation_seconds": 155.18,
+      "peak_vram_gib": 20.31
+    }
+  },
+  "H2": {
+    "arm": "H2",
+    "status": "completed",
+    "output": {
+      "path": "/home/shangguanrz/project/pic-edit/workflow/experiment/qwen-union-hybrid/output/H2/final_image.png",
+      "sha256": "6f942dfb49d2e4fb1f7868966fd473fd90e96d312cf5c5cfba9b189dbaf88f91",
+      "size_wh": [
+        640,
+        928
+      ]
+    },
+    "performance": {
+      "arm": "H2",
+      "steps": 40,
+      "seed": 42,
+      "alpha": null,
+      "beta": null,
+      "generation_seconds": 152.04,
+      "peak_vram_gib": 20.31
+    }
+  },
+  "H3": {
+    "arm": "H3",
+    "status": "completed",
+    "output": {
+      "path": "/home/shangguanrz/project/pic-edit/workflow/experiment/qwen-union-hybrid/output/H3/final_image.png",
+      "sha256": "21b8638f33f6d614ce90a082fb7137fd6ee9033aed464ea4218c415502ceb4dc",
+      "size_wh": [
+        640,
+        928
+      ]
+    },
+    "performance": {
+      "arm": "H3",
+      "steps": 40,
+      "seed": 42,
+      "alpha": 1.0,
+      "beta": 1.0,
+      "generation_seconds": 189.07,
+      "peak_vram_gib": 20.31
+    }
+  }
+}

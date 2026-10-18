@@ -1,0 +1,92 @@
+{
+  "status": "verified_actual_completion",
+  "observed_unix": 1791909488.8837373,
+  "branches": {
+    "short": {
+      "completed": 300,
+      "best_step": 50,
+      "best_validation": 0.11233979339400928,
+      "validation": [
+        {
+          "step": 50,
+          "loss": 0.11233979339400928
+        },
+        {
+          "step": 100,
+          "loss": 0.11447510123252869
+        },
+        {
+          "step": 150,
+          "loss": 0.11752270658810933
+        },
+        {
+          "step": 200,
+          "loss": 0.1232615460952123
+        },
+        {
+          "step": 250,
+          "loss": 0.12421497205893199
+        },
+        {
+          "step": 300,
+          "loss": 0.13114213198423386
+        }
+      ],
+      "checkpoint_best_sha256": "7aa609d910a655f5b73622f69a0cd32dfa9d5ca8b7e72225c81c109decd8bab7",
+      "checkpoint_last_sha256": "6f48b3c3db3910190a48e7ab4e86e3df28a582595b19c5d6945753be46c7168b",
+      "execution": "retained_original_short_steps1_to300"
+    },
+    "structured": {
+      "completed": 300,
+      "best_step": 50,
+      "best_validation": 0.11246329670151074,
+      "validation": [
+        {
+          "step": 50,
+          "loss": 0.11246329670151074
+        },
+        {
+          "step": 100,
+          "loss": 0.11488249277075131
+        },
+        {
+          "step": 150,
+          "loss": 0.11763581385215123
+        },
+        {
+          "step": 200,
+          "loss": 0.12164597709973653
+        },
+        {
+          "step": 250,
+          "loss": 0.12602212528387705
+        },
+        {
+          "step": 300,
+          "loss": 0.13051034013430277
+        }
+      ],
+      "checkpoint_best_sha256": "3de39e96942c1474e2418fbfafa2b18e3b36498df90a305360ef6e6ff187aa36",
+      "checkpoint_last_sha256": "e7231a3b385dcc949b2b5135ee1af8d40abbf86115135cd168990d17ab0fc235",
+      "execution": "fresh_structured_steps1_to300"
+    }
+  },
+  "root_completion_sha256": "d5483f9575c5ed5e751ad8dffebf72dfa2a8099748b0d45b2f2c03404cc6593d",
+  "initial_adapter_sha256": "afd20ae9c480c8b4ed83e19c8bdad40632bef9e99ee30ab815e36a1b82c2ce90",
+  "native_sha256": "4b40da9b51ddcb44bc4cae009242f7f29936883bbd9fd05b16da789519848d5e",
+  "native_integrity_scope": {
+    "original_process": {
+      "initial_memory_sha256": "4b40da9b51ddcb44bc4cae009242f7f29936883bbd9fd05b16da789519848d5e",
+      "final_memory_sha256": null,
+      "final_memory_hash_observed": false,
+      "reason": "Original short300 completed before SSH interruption; its final native memory SHA was not observed."
+    },
+    "recovery_process": {
+      "sha256_before": "4b40da9b51ddcb44bc4cae009242f7f29936883bbd9fd05b16da789519848d5e",
+      "sha256_after": "4b40da9b51ddcb44bc4cae009242f7f29936883bbd9fd05b16da789519848d5e",
+      "unchanged": true,
+      "scope": "Actual newly loaded native process for fresh structured steps1..300; before/after SHA observed."
+    }
+  },
+  "test_data_read": false
+}
