@@ -39,9 +39,9 @@ B=/data/shangguanrz/pic-edit-experiments/qwen21_union_dataset_adaptation_v1
 
 ## 当前证据
 
-截至2026-10-18，冻结Task6的fullPro、Union pipeline与真实Reference循环回归共327项通过、9项外部条件跳过；独立spec与quality均批准。完整发布模型训练的zero/prefix/梯度/精确续跑门禁、真实单人/双人CFG4 coarse与768精修及其训练缓存均已通过。200步与消融尚未完成，没有效果提升结论。
+截至2026-10-18，V4完整Pro与旧Union回归共516项通过、9项外部条件跳过（75.29s）；各任务spec/quality及最终整体审查均批准。完整发布模型训练的zero/prefix/梯度/精确续跑门禁、真实单人/双人CFG4 coarse与768精修及其训练缓存均已通过。200步与消融尚未完成，没有效果提升结论。
 
-最新`conditions_task6_20261018T130005`六例提取与缓存读回6/6通过（64.28s）。4条单人bank为 `[1,1,1024,1600]`，两条双人bank已由早期body-only的256tokens扩为 `[1,2,1024,1600]`，加入source动作自身SMPL/camera投影的head/左右手bounds。Hi4D四个人物有效token分别569/387/473/595。FaceID仍仅两条TikTok有效（2/8）；bounds不等于脸部或手指关键点，也不证明遮挡部位可见。旧Hi4D normal/像素part仍invalid；新的current-geometry路径才使用有明确CV basis和部位codec的重渲染。DINO在Torch CUDA运行，ONNX FaceID回退CPU，环境未修改。
+Task6的`conditions_task6_20261018T130005`六例提取与缓存读回6/6通过（64.28s）。4条单人bank为 `[1,1,1024,1600]`，两条双人bank已由早期body-only的256tokens扩为 `[1,2,1024,1600]`，加入source动作自身SMPL/camera投影的head/左右手bounds。Hi4D四个人物有效token分别569/387/473/595。FaceID仍仅两条TikTok有效（2/8）；bounds不等于脸部或手指关键点，也不证明遮挡部位可见。旧Hi4D normal/像素part仍invalid；新的current-geometry路径才使用有明确CV basis和部位codec的重渲染。DINO在Torch CUDA运行，ONNX FaceID回退CPU，环境未修改。
 
 Hi4D 两例标记male，几何后端已接入原始male模型的受限literal NumPy兼容读取；两例target mesh误差均≤2.39e-7m。neutral与male的14类顶点标签有11/6890处差异，正式准备使用male标签，初始neutral审计保留。新增matched mixed backend也已验证四条val，仍不代表全1536例几何已经处理。
 
@@ -86,9 +86,77 @@ G="$P/runs/inference_geometry_20261018T130005"
 
 `data/val12_conditions_20261018.jsonl`与`val12_supervision_20261018.jsonl`预登记iPER/TikTok/Hi4D各4例；中文`val12_preregistration_20261018.json`保存原manifest SHA、选样规则、source/geometry覆盖与96图预算。四个arm各使用25次更新的独立checkpoint，full4取主200次更新run的step25；同一checkpoint的关分支只算diagnostic。当前0/96张val图，未访问test。val Hi4D实际全为male+female；matched mixed runtime已通过spec/quality及真实四例，male/female分别使用自己的权重与14类标签。
 
-`scripts/audit_mixed_geometry.py`分`cpu / geometry / handoff`三阶段。`code_task7a_20261018T140821`中的四例CPU审计通过（15.72s），8个source/driver状态的mesh/joints最大误差2.38419e-7m，人物置换逐位一致；`mixed_geometry_20261018T140821`的8个worker通过（44.52s），`mixed_handoff_20261018T140821`在Qwen环境4/4通过（7.03s）且不导入smplx。handoff只验证真实几何与路由，临时source张量没有缓存、训练或采样；val的DINO/native编码仍待后续cache入口完成。
+`scripts/audit_mixed_geometry.py`分`cpu / geometry / handoff`三阶段。`code_task7a_20261018T140821`中的四例CPU审计通过（15.72s），8个source/driver状态的mesh/joints最大误差2.38419e-7m，人物置换逐位一致；`mixed_geometry_20261018T140821`的8个worker通过（44.52s），`mixed_handoff_20261018T140821`在Qwen环境4/4通过（7.03s）且不导入smplx。handoff只验证真实几何与路由，临时source张量没有缓存、训练或采样；后续val外观编码证据另列如下。
+
+Task7改用与mixed实现匹配的`train_geometry_20261018T142046/source_geometry_index.json`重建六例source bundle（14.35s），`conditions_pilot1600_20261018T142046`提取并校验六例1600维source缓存（58.42s）。`val_geometry_20261018T142046`准备12例当前几何（11.21s）；`val_conditions1600_sync_20261018T143039`实际编码、seal与读回12/12（310.24s），没有读取GT RGB或生成图，峰值allocated/reserved为6,518,726,656/7,132,413,952bytes。该次明确使用同步推理offload；先前常驻编码因实际free不足40GiB预算在加载前拒绝，失败run保留。
+
+冻结`code_task7b_20261018T153556`经SCP、归档SHA与compileall验证；`cli_audit_legacy_20261018T153556`六例通过（68.39s），`cli_audit_val12_20261018T153556`十二例通过（90.00s）。共享入口实际核对原B producer、原始资产、source extractor字节与当前几何重建的typed pack；这些是数据接线审计，未训练或采样。
 
 卡上资源释放后，`resident_resume_20261018T134310`另验证了原生常驻GPU训练：完整发布模型4continuous=2+2零容差通过，frozen/prefix与各分支梯度通过，571.69s。峰值分配29,799,127,552bytes、含缓存30,987,517,952bytes；复跑用`code_resident_20261018T134310`中的`audit_training.py --updates 4 --exact-resume --memory-mode resident`，其余feature/source-index参数与新六例门禁一致。后续200/25步pilot选择resident，原`frozen_linear_cpu`作为明确可选模式保留。
+
+V4运行代码固定为`/data/shangguanrz/pic-edit-experiments/qwen21_pro_adapter_v1/code_task7b_20261018T161055/`，归档SHA=`bcfb00dd595fadd6e1fab9e845fedef510464f2552f2f3e5475d4fe1240f757e`，46个实际运行依赖的代码签名=`1be3083d0447b44b55e393586404190a98ccbac9fcca52daa4989fcf2bb2f05e`。`pilot_main200_v4_20261018T161055`已以resident/32GiB新run启动，启动PID1027095，`nohup`后台进程的PPID=1；不能把启动PID当作完成证据，当前状态须核对进程、updates和gate。旧`pilot_main200_20261018T155558`因最终门禁代码修复，在11次更新边界STOP并保存为`incomplete / passed=false`，不改标、不与V4续接。
+
+共享CLI的`cli_smoke_exact_20261018T154445`在V2冻结代码中通过完整发布模型4continuous=2+2：zero/frozen/prefix及五分支梯度均通过，峰值allocated/reserved为29,802,322,432/30,737,956,864bytes。fixed18初始global为0.15983019976152313，旧B为0.15983019976157611；regional总loss单列。该run只有4步，质量字段`passed=false`，工程字段`engineering_passed=true`。后续V3/V4修复监督/设备协议、正式选模与文件名冲突，模型/优化器算术核心未改；V4使用自己的新名称与完整200步。
+
+V3的真实CLI `cli_prepare_valpair_20261018T155558`执行5个body worker（38.31s）：一份双人source bundle、两份driver_exact和两份明确unpaired的source_shape。CUDA可见、device_count=1的服务器还通过真实TinyPro CPU checkpoint→CUDA execution metadata拒绝测试（1passed，2.15s）；该测试验证状态修改前拒绝，不声称执行了跨设备训练kernel。
+
+## Task7共享CLI与复跑方法
+
+共享逻辑为 `src/pose_control/qwen21_pro/{runner,dataflow,gates,ablations}.py`；仓级 `scripts/train/qwen21_pro.py`、`scripts/run/qwen21_pro.py` 和本实验 `scripts/run.py` 使用同一套参数。所有写命令必须给新 `--name`，产物位于 `--output-root/runs/<name>`；已有目录报错。`run.json` 保存绝对输入路径、实际import代码根目录、参数、种子及源码SHA，小型源码副本写入 `code_snapshot/`。签名覆盖Pro/Union包、数据与几何直接依赖和三个入口；记录代码根路径但不将路径混进源码签名，允许相同字节从冻结快照部署到ROOT。下面命令在冻结代码根目录执行，Python使用旧B的现有环境。
+
+```bash
+P=/data/shangguanrz/pic-edit-experiments/qwen21_pro_adapter_v1
+B=/data/shangguanrz/pic-edit-experiments/qwen21_union_dataset_adaptation_v1
+ROOT=/home/shangguanrz/project/pic-edit
+PY="$B/env/bin/python"
+F="$P/runs/conditions_pilot1600_20261018T142046"
+S="$P/runs/train_geometry_20261018T142046/source_geometry_index.json"
+PARTS="$P/data/smpl_male_v6_parts_20261018.npz"
+COMMON=(--output-root "$P" --legacy-workspace "$B" --project-root "$ROOT"
+        --feature-run "$F" --source-geometry-index "$S" --contact-vertex-parts "$PARTS"
+        --memory-mode resident --memory-budget-gib 32)
+"$PY" scripts/run/qwen21_pro.py status --output-root "$P"
+"$PY" scripts/train/qwen21_pro.py smoke --name cli_smoke_20261018_v1 "${COMMON[@]}" --exact-resume
+"$PY" scripts/train/qwen21_pro.py overfit --name pilot_main_20261018_v1 "${COMMON[@]}"
+```
+
+`smoke`默认2次更新、每次accum3，覆盖六例；`--exact-resume`为4次连续更新与2+2恢复的逐值比较。`overfit`固定200次更新、accum1、warmup32、seed3407、sampler20261015、AdamW 1e-4与clip1；默认effect1600、4融合位置、controlLoRA关闭，完整16个官方控制块和发布权重冻结。`frozen_linear_cpu`可显式选择，训练不安装推理offload hook。默认显存预算在启动时取 `min(.9*total, free−1GiB)` 并固定记录；显式32GiB要求启动空闲至少33GiB。超过预算会失败，不更改精度、分辨率或内存模式。
+
+`fixed_eval_000000.json`、step25、step200分别保存固定18评测：六例各自新建CUDA Generator(seed43)，BF16噪声，1000步schedule中的250/500/750位置。门禁取 `losses.global` 的内容区MSE，区域加权总loss另列；完整200步、global下降至少20%并同时通过完整工程门禁才通过。CPU结果永不记作GPU通过。`microsteps.jsonl`、`updates.jsonl`记录loss/区域覆盖、梯度和资源；`observed_active_parameters`是曾有非零梯度的参数张量所覆盖的元素数，并非逐元素非零梯度计数。检查点为step0、每25步和最终边界。向run目录新建`STOP`文件会在更新边界保存并以`incomplete`结束。恢复用新name加 `--resume <旧checkpoint目录>`，严格校验完整Pro状态、数据/代码/配置/轨迹、实际训练设备/精度/噪声后端、optimizer/LR、cursor与RNG；旧日志和检查点不覆写。
+
+正式选模还要求`gate.final_checkpoint`与实际final200的路径、cursor/accum1、metadata、manifest和state SHA全部一致；同一通过run的step0或step25仍须显式`--engineering-probe`，不能借父目录门禁冒充最终模型。精修的current manifest须与cache绑定路径/资产一致；GT监督读取前会验证driver/requested/solved与实际geometry.pt状态完全一致，不能只改`paired_supervision`布尔值给source_shape配旧GT。
+
+```bash
+for arm in no_dense no_appearance no_contact full8; do
+  "$PY" scripts/train/qwen21_pro.py ablate --name "pilot_${arm}_20261018_v1" "${COMMON[@]}" --arm "$arm"
+done
+```
+
+消融各自重训25次更新，使用相同共享张量初始化、样本/噪声/时间顺序、优化器和区域监督。full4取主run的`checkpoint_000025`；full8融合位置为0/2/4/6/8/10/12/14，额外head初始化为0。`no_dense`只屏蔽TASK normal/depth/像素part，`no_appearance`只屏蔽TASK source bank与FaceID，`no_contact`只屏蔽TASK显式relations与dense contact；原生reference保留。屏蔽发生在Adapter前向的局部副本，sealed cache不变；arm写入不可变extra_state，wrong-arm断点会拒绝。
+
+准备与缓存可单独复跑。`prepare --geometry-python <现有SMPL环境python> --geometry-mode all`实际运行独立JSON worker，输出source/current/retarget索引；Hi4D分别使用自己source action和driver action的raw参数、camera与gender metadata。单人source ROI走真实source keypoints，Hi4D走source-only mesh bundle。`current`为driver_exact、`retarget`为source_shape并标记unpaired；后者不能编码原GT监督。`--canvas-hw H W`可显式选择32倍数尺寸，typed grid从实际canvas推导。新缓存用 `cache --kind current --current-geometry-index ... --source-geometry-index ... --conditions ...`，实际执行VLM/VAE与source1600提取并seal；加`--encode-supervision --supervision ...`才单独编码GT。`cache --kind legacy`只读验证旧B producer事件并建立Pro raw/typed缓存。`audit --kind legacy|current`复核缓存绑定，永不代表训练质量通过。
+
+val12已编码的 `runs/val_conditions1600_sync_20261018T143039` 可以直接作为`--cache-run`，无需再次编码。入口只读适配其标准`native`缓存，检查producer实际权重/配置/runtime/code字段、明确的`conditioning_offload`来源、raw source、source bundle与当前geometry重建pack的SHA，不改原report或缓存。该缓存仅有CFG1所需正prompt；CFG4需另建包含负prompt的新缓存。下面先运行预登记单/双人两个样本，实际生成数由新run报告记录。
+
+```bash
+V="$P/runs/val_conditions1600_sync_20261018T143039"
+VG="$P/runs/val_geometry_20261018T142046"
+VAL=experiments/qwen21_pro_adapter_v1/data/val12_conditions_20261018.jsonl
+CKPT="$P/runs/pilot_main_20261018_v1/checkpoint_000025"
+"$PY" scripts/run/qwen21_pro.py infer --name val_pair_20261018_v1 \
+  --output-root "$P" --project-root "$ROOT" --conditions "$VAL" --kind current --cache-run "$V" \
+  --checkpoint "$CKPT" --arm full4 --steps 40 --seed 43 --true-cfg-scale 1 \
+  --sample-id iper_val_e36352d6b4b72ae362cb1ce3 --sample-id hi4d_val_1cdfa27cfed29647a42be809 \
+  --memory-budget-gib 32 --offload sync_group_offload --engineering-probe
+```
+
+`infer`实际使用`sample_cached`，保存SamplingResult audit与绑定真实checkpoint/source/current geometry的coarse artifact。验证96图的复跑单位为四个arm（full4/no_dense/no_appearance/no_contact）×seeds42/43×12例，均40步、CFG1；分别传对应25步checkpoint、arm和seed并去掉`--sample-id`过滤即可，每个组合换新name。full8是额外25步结构消融，不包含在预登记96图里；需新建full8配置缓存，不能改sealed full4 pack。
+
+`refine`要求单个`--sample-id`、对应`--coarse <coarse.json>`、`--current-geometry-index`和source index，实际构建768 source crop、ROI VAE/DINO bank、local task、immutable request并运行精修。face显式给`--roi-kind face --roi-person <稳定ID>`；paired-hands给`--roi-kind paired_hands`与两次`--hand-endpoint <稳定ID>:<4或7>`，端点必须来自当前几何真实hand–hand relation。旧低分辨率source mask按完整FoV nearest另存native mask，绑定原mask字节，不改datasets。ROI不可用时报告fallback原因并返回原coarse路径，不算精修完成；有效ROI运行后报告mask外逐位一致。原始reference精修用`cached=False`与KVoff。未通过主200门禁的checkpoint必须显式标记`--engineering-probe`；该标签不构成质量通过。
+
+本入口当前只执行受控六例训练；`smoke --kind current --cache-run ...`可验证另行编码的六例driver_exact训练缓存。正式1536例训练入口、完整val96的汇总评测、正式128×4×2=1024测试门禁仍待后续实现；`test`记录会被拒绝。本轮本地验证仅CPU，真实smoke、200步、各25步、val单/双人及其结果由后续独立运行登记。
+
+本地回归可运行 `python -m pytest -q tests/test_qwen21_pro_runner.py tests/test_qwen21_pro_gates.py tests/test_qwen21_pro_ablations.py`。它覆盖路径独占/status只读、初始化/arm绑定、sealed条件不变、固定18指标、STOP、真实小Torch的4=2+2恢复、变尺寸coarse与768精修API路由、显存预算和native缓存适配；CPU测试不冒充完整模型GPU验收。
 
 ## 与其他实验的关系
 

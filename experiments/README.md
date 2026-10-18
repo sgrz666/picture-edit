@@ -11,7 +11,7 @@
 
 ## 一、 实验全景分类索引 (Experiment Classification Matrix)
 
-根据模型基座、任务目标与技术演进脉络，本目录下的 34 个实验划分为 **7 大核心实验族**：
+根据模型基座、任务目标与技术演进脉络，实验划分为 **7 大核心实验族**：
 
 | 实验族 | 包含实验目录 | 核心基座与架构 | 核心关注点与科学问题 | 关键里程碑结论 |
 | :--- | :--- | :--- | :--- | :--- |
@@ -215,6 +215,10 @@
 
 #### 6.4 `qwen_edit_results/`
 * Qwen-Image-Edit 原生指令编辑输出对照样本。
+
+#### 6.5 [`qwen21_pro_adapter_v1/`](qwen21_pro_adapter_v1/README.md)
+* 继承官方Union的16个控制块，在4个位置接入人物几何、source bank与接触端点；同时覆盖iPER/TikTok单人与Hi4D双人，另提供768局部脸/双手精修。
+* 完整发布模型的零等价、冻结参数、因果prefix及4=2+2精确续跑已通过；新六例source缓存和12例val当前条件已读回验证，mixed Hi4D按人物匹配male/female模型与部位标签。200步训练和25步重训消融仍在实施，尚无质量收益结论。数据、权重与运行产物位于服务器`/data/shangguanrz/pic-edit-experiments/qwen21_pro_adapter_v1/`。
 
 ---
 

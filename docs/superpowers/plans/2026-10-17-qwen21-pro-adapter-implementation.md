@@ -165,9 +165,11 @@ Task7a证据：spec+quality均批准；完整Pro+旧Union455passed/9expectedskip
 - Modify: `union-adapter/pro-adapter/README.md`
 - Test: `tests/test_qwen21_pro_runner.py`
 
-- [ ] CLI提供prepare/cache/audit/smoke/train/infer/refine/status；所有写产物命令要求新name，拒绝覆盖；绝对路径与版本打印到run.json，保存小型source快照，权重/图片不进Git。
-- [ ] 新workspace`/data/shangguanrz/pic-edit-experiments/qwen21_pro_adapter_v1`，独立代码快照与现有B环境，只增代码不改torch/diffusers。向远端发送脚本一律scp，编译/AST校验；检查Git日志和GPU实际可用内存。
-- [ ] GPU smoke逐项保存：180权重不变、zero-pro等价、task prefix差分、头/上游梯度、单/双人、checkpoint恢复、两步coarse/ROI产物与SHA。任一失败先修再继续，失败不改为通过。
+Task7数据准备补充（2026-10-18）：`code_valprep_20261018T142046`归档SHA=`98748069e35836157ab8d5bf4a131526953cb757fde6adab9f2dbc94a474f9d9`，当前六例source geometry准备通过（14.35s），`conditions_pilot1600_20261018T142046`六例source提取/绑定读回通过（58.42s）。`val_geometry_20261018T142046`登记12例当前几何与4份mixed source bundle，12/12通过（11.21s）。编码首次常驻模式因实际free不足40GiB预算在加载前拒绝，失败run保留；随后明确选择`sync_group_offload`的新run `val_conditions1600_sync_20261018T143039`完成12/12（310.24s），峰值allocated/reserved=6,518,726,656/7,132,413,952bytes。归档SHA=`45ef69d440297e29983557c906fe11157e2fbbf4f0dfd23b0d9b182fc0d7d17d`；未读GT RGB、未生成图、未训练。该验证集编码模式与后续resident训练协议分别记录，不作为训练内存或效果结论。
+
+- [x] CLI提供prepare/cache/audit/smoke/train/infer/refine/status；所有写产物命令要求新name，拒绝覆盖；绝对路径与版本打印到run.json，保存小型source快照，权重/图片不进Git。
+- [x] 新workspace`/data/shangguanrz/pic-edit-experiments/qwen21_pro_adapter_v1`，独立代码快照与现有B环境，只增代码不改torch/diffusers。向远端发送脚本一律scp，编译/AST校验；检查Git日志和GPU实际可用内存。
+- [x] GPU smoke逐项保存：180权重不变、zero-pro等价、task prefix差分、头/上游梯度、单/双人、checkpoint恢复、两步coarse/ROI产物与SHA。任一失败先修再继续，失败不改为通过。
 - [ ] 跑overfit6新200updates及固定18位置/step0&200图；结果另名、不能续旧B假装新方案。通过后具备按锁定数据扩大训练与val96图的入口；若长期训练仍运行，最终如实报告进程与完成范围，不宣称效果。
 - [ ] 对齐旧B的overfit预算：200updates、accumulation=1、train_seed3407、sampler_seed20261015、AdamW lr1e-4/warmup32、循环同六例顺序；正式512的accumulation=3另登记。固定18位置仍每样本重置noise_seed43、timestep index250/500/750；门槛用同定义global content flow MSE下降≥20%，新regional总loss另列，不能混比或更改旧17.7868%失败。
 - [ ] 小规模消融实际执行：锁定同seed/noise/timestep的有/无geometry、person bank、contact分支比较，分别报告六例loss与有效模态覆盖；训练拓扑4/8位置要用各自新checkpoint与相同预算，不能拿关层推理替代重训对比。val12×4arm×2seed=96图的40steps协议与可复现入口登记；先执行单/双人pilot并报告实跑数量，完整96图与正式1024图未跑完时保留待完成状态，不冒称质量验证通过。
@@ -175,11 +177,13 @@ Task7a证据：spec+quality均批准；完整Pro+旧Union455passed/9expectedskip
 
 Run local: `$paths=(Get-ChildItem tests -File -Filter 'test_qwen21_pro_*.py').FullName; python -m pytest $paths -q`（PowerShell）；服务器`python -m pytest tests/test_qwen21_pro_*.py -q`。
 
+Task7b实施记录：初版真实CLI audit6/val12通过（68.39s/90.00s）。spec发现精修可替换control文件，quality发现source_shape伪配对和跨CPU/CUDA恢复漂移，整体审查发现分支梯度未纳正式passed、父gate未绑定最终checkpoint及同人双手mask冲突，均经真实red→green修复。最终V4 spec/quality/整体批准，父线程完整Pro+旧Union516passed/9skip（75.29s）。`code_task7b_20261018T161055`95文件归档SHA=`bcfb00dd595fadd6e1fab9e845fedef510464f2552f2f3e5475d4fe1240f757e`，46相关文件codeSig=`1be3083d0447b44b55e393586404190a98ccbac9fcca52daa4989fcf2bb2f05e`；SCP/compileall通过。V2完整模型`cli_smoke_exact_20261018T154445`工程通过4=2+2/five gradients/frozen/prefix/zero，reserved30,737,956,864bytes；后续只修消费者/协议与门禁，不改模型算术。V3 CLI prepare真实5worker通过38.31s，CUDA可见主机CPU-save→CUDAmetadata拒绝1pass2.15s。V3主run在11步STOP后为incomplete/false；V4主`pilot_main200_v4_20261018T161055`已启动PID1027095/PPID1、resident32GiB，200步结果与消融尚待完成，不能当作效果成功。
+
 ## Task 8: 审查、部署与交付
 
 Task7提前工程证据：`code_fullgate_20261018T121250`由冻结Task5/FoV代码快照派生并加入独立`audit_training.py`（53文件，归档SHA=`5274e710aa889b0a59aa4b86bcf56b717874ec226b7d5803266910f5fffa7710`），SCP/compileall通过。`runs/fullgate_20261018T121250/gate.json`通过完整发布模型真实六例两次平衡更新（346.44s）；180tensor恢复、zero逐值等价、训练后prefix及frozen SHA不变，head/geometry/contact/appearance/identity上游梯度均非零。peak allocated/reserved=8,111,991,296/9,202,302,976bytes，初始free=42,869,784,576bytes；362个frozen Linear共21,781,176,320bytes CPU BF16，task与optimizer GPU FP32。更强的`full_resume_20261018T122119`在独立53文件快照（归档SHA=`ded69a06223a112f9e7b9bb4da3d6f10e71f7b9c0a6b17b348c6bea6428114e0`）中通过完整发布模型4continuous=2+2精确续跑（651.04s），task/AdamW/LR/RNG与noise/timestep/loss轨迹均零容差，参数对象不变，frozen/prefix再次通过；peak allocated/reserved=8,118,249,984/9,307,160,576bytes。coarse/ROI图和200步/消融仍未完成。
 
-- [ ] 每任务先spec再quality review，修复所有会造成错配、梯度截断、缓存污染、旧权重覆盖的问题；最终整体再审查一次。
+- [x] 每任务先spec再quality review，修复所有会造成错配、梯度截断、缓存污染、旧权重覆盖的问题；最终整体再审查一次。
 - [ ] 旧Union回归、全Pro测试、服务器语法与真实GPU证据通过；检查未删移媒体、未改环境、未覆盖旧run、无大文件入Git。
 - [ ] 更新README明确训练阶段、实际测试、使用命令与局限；保留源架构报告为设计历史，另记录实施偏差/证据。
 - [ ] 提交隔离分支；把实际共享代码与pro-adapter使用入口部署到远端，明确运行import来源。交付时说明完成了哪些能力、怎样测试/使用、哪些训练/质量结论尚未获得，不为普通可逆步骤重复确认。
