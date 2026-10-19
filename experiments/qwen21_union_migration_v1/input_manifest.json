@@ -1,0 +1,412 @@
+{
+ "samples": [
+  {
+   "sample": "hard_02",
+   "kind": "single",
+   "run_dir": "/home/shangguanrz/project/pic-edit/workflow/runs/scale_anchor_20261013/hard_02",
+   "files": {
+    "source": {
+     "path": "/home/shangguanrz/project/pic-edit/experiments/2.qwen-test/qwen21_union_migration_v1/input/single/hard_02/source.png",
+     "origin": "/home/shangguanrz/project/pic-edit/workflow/runs/scale_anchor_20261013/hard_02/inputs/A_reference.png",
+     "wh": [
+      640,
+      928
+     ],
+     "sha256": "8708b8159be270edf4b2155ebd8b222f9363c855441d2157e11ee53845d848c8",
+     "aligned32": true
+    },
+    "control": {
+     "path": "/home/shangguanrz/project/pic-edit/experiments/2.qwen-test/qwen21_union_migration_v1/input/single/hard_02/control.png",
+     "origin": "/home/shangguanrz/project/pic-edit/workflow/runs/scale_anchor_20261013/hard_02/geometry/B_3d_dwpose.png",
+     "wh": [
+      640,
+      928
+     ],
+     "sha256": "1c3ed8927de4dcc4de416638a8b0ddeb3d37fba8be6278fc75fba568f621d112",
+     "aligned32": true
+    },
+    "pose_reference": {
+     "path": "/home/shangguanrz/project/pic-edit/experiments/2.qwen-test/qwen21_union_migration_v1/input/single/hard_02/pose_reference.png",
+     "origin": "/home/shangguanrz/project/pic-edit/workflow/runs/scale_anchor_20261013/hard_02/geometry/B_3d_dwpose.png",
+     "wh": [
+      640,
+      928
+     ],
+     "sha256": "1c3ed8927de4dcc4de416638a8b0ddeb3d37fba8be6278fc75fba568f621d112",
+     "aligned32": true
+    }
+   },
+   "generation_inputs": [],
+   "eval_only": [
+    {
+     "role": "requested_keypoints",
+     "path": "/home/shangguanrz/project/pic-edit/experiments/2.qwen-test/qwen21_union_migration_v1/input/single/hard_02/requested_keypoints.npz",
+     "origin": "/home/shangguanrz/project/pic-edit/workflow/runs/scale_anchor_20261013/hard_02/geometry/B_keypoints.npz",
+     "sha256": "e194c4fb3217f34652c3dc561a03ff4c2f3066ca9bdbef8ba3b4926426461231"
+    }
+   ],
+   "prompt": "Edit the single person in <image1> into the desired pose. <image1> supplies all identity, hairstyle, face, outfit, accessories and scene appearance. <image2> is only a colored skeletal pose guide; use its joint positions, never its line colors as appearance. Do not add the basketball or any other target-only object. Preserve objects already in the source. On <image1> (canvas), transfer only the body pose, head orientation, and hand configuration onto the woman using the skeleton guide <image2> as the joint-arrangement reference, keeping her identity and the entire source scene intact. Reconfigure her body to the arrangement of <image2>: upright standing posture with legs apart and weight evenly distributed, both arms bent at the elbows with forearms crossing in front of the chest, each hand turned inward and resting near the opposite upper arm at chest height, head facing the viewer directly with a composed neutral expression and closed mouth. Keep the microphone gripped in her raised hand exactly as in <image1>, held at mouth height with the same finger grip and upward orientation while the other arm crosses the torso toward the opposite side. Preserve from <image1> without any change: her facial identity, long black wavy hairstyle, jeweled crown, earrings, black long-sleeved dress, the white sash across her torso bearing the black uppercase text \"MISSISSIPPI\", the microphone, the indoor stage setting with white draped curtains, the warm chandelier bokeh at the top of the frame, and the overall warm illumination. Let the black dress form natural cloth folds and tension consistent with the crossed-arm posture, with pose-dependent shadows and highlights updated to match the existing frontal stage lighting direction. Do not render the colored skeleton lines or joint markers of <image2>, and do not introduce any element absent from <image1>. Preserve the source person and their original clothing and setting. Render a natural photograph without skeleton lines, diagrams or pose-guide colors.",
+   "prompt_origin": "/home/shangguanrz/project/pic-edit/workflow/runs/scale_anchor_20261013/hard_02/prompt/generation_prompt.txt",
+   "prompt_sha256": "20e53c46f31a16f79d01f22abaecf21498a9209f4aafc117a5a7e9a662148c68",
+   "generator_inputs": [
+    "source",
+    "pose_reference"
+   ],
+   "control_input": "control"
+  },
+  {
+   "sample": "hard_05_torso",
+   "kind": "single",
+   "run_dir": "/home/shangguanrz/project/pic-edit/workflow/runs/test/hard_05_torso",
+   "files": {
+    "source": {
+     "path": "/home/shangguanrz/project/pic-edit/experiments/2.qwen-test/qwen21_union_migration_v1/input/single/hard_05_torso/source.png",
+     "origin": "/home/shangguanrz/project/pic-edit/workflow/runs/test/hard_05_torso/inputs/A_reference.png",
+     "wh": [
+      640,
+      928
+     ],
+     "sha256": "deeef9d0447f718f7402a7d1af48228bde55a15eb90919a8cab1d9805e6d9440",
+     "aligned32": true
+    },
+    "control": {
+     "path": "/home/shangguanrz/project/pic-edit/experiments/2.qwen-test/qwen21_union_migration_v1/input/single/hard_05_torso/control.png",
+     "origin": "/home/shangguanrz/project/pic-edit/workflow/runs/test/hard_05_torso/geometry/B_3d_dwpose.png",
+     "wh": [
+      640,
+      928
+     ],
+     "sha256": "77ee8fad230d421462009d0eea41facc71db518c00a10fef71e1e0db79fc6aa9",
+     "aligned32": true
+    },
+    "pose_reference": {
+     "path": "/home/shangguanrz/project/pic-edit/experiments/2.qwen-test/qwen21_union_migration_v1/input/single/hard_05_torso/pose_reference.png",
+     "origin": "/home/shangguanrz/project/pic-edit/workflow/runs/test/hard_05_torso/geometry/B_3d_dwpose.png",
+     "wh": [
+      640,
+      928
+     ],
+     "sha256": "77ee8fad230d421462009d0eea41facc71db518c00a10fef71e1e0db79fc6aa9",
+     "aligned32": true
+    }
+   },
+   "generation_inputs": [],
+   "eval_only": [
+    {
+     "role": "target_rgb",
+     "path": "/home/shangguanrz/project/pic-edit/experiments/2.qwen-test/qwen21_union_migration_v1/input/single/hard_05_torso/target_rgb_eval_only.png",
+     "origin": "/home/shangguanrz/project/pic-edit/workflow/runs/test/hard_05_torso/inputs/B_rgb.png",
+     "wh": [
+      968,
+      1280
+     ],
+     "sha256": "2db6befd3bb63013cd233bb3820f93b0cfbae32b8c09b58c26941f66b5c321c6",
+     "note": "仅供评估，不进入生成器"
+    },
+    {
+     "role": "requested_keypoints",
+     "path": "/home/shangguanrz/project/pic-edit/experiments/2.qwen-test/qwen21_union_migration_v1/input/single/hard_05_torso/requested_keypoints.npz",
+     "origin": "/home/shangguanrz/project/pic-edit/workflow/runs/test/hard_05_torso/geometry/B_keypoints.npz",
+     "sha256": "4546e541544c7604e1a008593ae22f8518bee4c8dac4fb572eb56b13ae84e7d9"
+    }
+   ],
+   "prompt": "Edit the single person in <image1> into the desired pose. <image1> supplies all identity, hairstyle, face, outfit, accessories and scene appearance. <image2> is only a colored skeletal pose guide; use its joint positions, never its line colors as appearance. Do not add the basketball or any other target-only object. Preserve objects already in the source. On <image1> (canvas), re-pose the woman standing between the fir trees to exactly match the body joint arrangement of the DWPose skeleton in <image2>, transferring only the pose while preserving all appearance attributes from <image1>. Reconfigure the body so the legs stand apart with the feet angled outward toward the frame edges, the torso upright with a gentle side tilt, both elbows bent outward, the viewer-left hand raised to hip level with the fingers spread open and empty, the viewer-right hand placed at waist level with the fingers spread open and empty, and the head turned toward the viewer's left in an over-the-shoulder three-quarter view with a calm composed gaze. Use <image2> solely as a joint-position guide and do not render any skeleton lines, joint dots, colored bone segments in the output. Retain the woman's facial identity, makeup, vampire fangs, long blonde hair with blue-green streaks, teal strapless corset top with white fur trim, white flared skirt, garter straps, red thigh-high socks, white knitted leg warmer on the viewer-right leg, black boots, all accessories exactly as in <image1>. Keep the Christmas-tree lot background, the soil ground, the soft overcast daylight, the camera framing of <image1> unchanged. Regenerate the clothing folds, skirt flare, body shadows to respond naturally to the new pose while preserving the original photographic rendering style, color grading, illumination of <image1>. Do not introduce any new object, prop, person that does not already exist in <image1>. Preserve the source person and their original clothing and setting. Render a natural photograph without skeleton lines, diagrams or pose-guide colors.",
+   "prompt_origin": "/home/shangguanrz/project/pic-edit/workflow/runs/test/hard_05_torso/prompt/generation_prompt.txt",
+   "prompt_sha256": "34a65af143afb3b264a74fe30b89efd8924a91e4f46287b513f7c1be7334e3a1",
+   "generator_inputs": [
+    "source",
+    "pose_reference"
+   ],
+   "control_input": "control"
+  },
+  {
+   "sample": "medium_02",
+   "kind": "single",
+   "run_dir": "/home/shangguanrz/project/pic-edit/workflow/runs/scale_anchor_20261013/medium_02",
+   "files": {
+    "source": {
+     "path": "/home/shangguanrz/project/pic-edit/experiments/2.qwen-test/qwen21_union_migration_v1/input/single/medium_02/source.png",
+     "origin": "/home/shangguanrz/project/pic-edit/workflow/runs/scale_anchor_20261013/medium_02/inputs/A_reference.png",
+     "wh": [
+      640,
+      928
+     ],
+     "sha256": "c2be2d59d2d6521ceabb075ef983c6b35d8ed5b68eaab2a68100c962aeec196e",
+     "aligned32": true
+    },
+    "control": {
+     "path": "/home/shangguanrz/project/pic-edit/experiments/2.qwen-test/qwen21_union_migration_v1/input/single/medium_02/control.png",
+     "origin": "/home/shangguanrz/project/pic-edit/workflow/runs/scale_anchor_20261013/medium_02/geometry/B_3d_dwpose.png",
+     "wh": [
+      640,
+      928
+     ],
+     "sha256": "4b46fdf0522118bcc39e2e8daaa639028dca4bcc504e871dd299cc59e006b232",
+     "aligned32": true
+    },
+    "pose_reference": {
+     "path": "/home/shangguanrz/project/pic-edit/experiments/2.qwen-test/qwen21_union_migration_v1/input/single/medium_02/pose_reference.png",
+     "origin": "/home/shangguanrz/project/pic-edit/workflow/runs/scale_anchor_20261013/medium_02/geometry/B_3d_dwpose.png",
+     "wh": [
+      640,
+      928
+     ],
+     "sha256": "4b46fdf0522118bcc39e2e8daaa639028dca4bcc504e871dd299cc59e006b232",
+     "aligned32": true
+    }
+   },
+   "generation_inputs": [],
+   "eval_only": [
+    {
+     "role": "requested_keypoints",
+     "path": "/home/shangguanrz/project/pic-edit/experiments/2.qwen-test/qwen21_union_migration_v1/input/single/medium_02/requested_keypoints.npz",
+     "origin": "/home/shangguanrz/project/pic-edit/workflow/runs/scale_anchor_20261013/medium_02/geometry/B_keypoints.npz",
+     "sha256": "2cd39566dd2004dc83bb54c63f9257f47959b44666d04dc3276db832f2babb15"
+    }
+   ],
+   "prompt": "Edit the single person in <image1> into the desired pose. <image1> supplies all identity, hairstyle, face, outfit, accessories and scene appearance. <image2> is only a colored skeletal pose guide; use its joint positions, never its line colors as appearance. Do not add the basketball or any other target-only object. Preserve objects already in the source. On <image1> (canvas), re-pose the standing woman so that her visible body configuration exactly matches the pose in the target photograph and the skeleton in <image2>, transferring pose only. Set her arrangement as follows: legs crossed at the shins, head upright and turned to face the camera directly with a warm open smile, viewer-left arm extended downward and angled outward with the hand resting relaxed on the front of the dress at thigh level with fingers extended downward, viewer-right arm bent at the elbow with the hand placed on the hip. Match all joint angles, limb directions, head direction and hand placement to the skeleton in <image2>, using it only as a joint-arrangement guide on its black background without rendering any skeleton lines, dots, colors, and using the target photograph for head direction and hand placement when the skeleton estimate is inaccurate. Keep both hands empty with no held object. Preserve from <image1> the woman's facial identity, smile, curly auburn hairstyle, makeup, dangling earrings, blue manicured nails, the pink sheer high-neck dress with red sequin swirl embroidery, and the gray fur stole; re-drape the fur stole over her arms according to the new pose with gravity-consistent folds, and update shadows and cloth folds only where the new pose alters the body, while keeping the original photographic style, frontal flash lighting, color temperature, exposure, framing and the white press backdrop unchanged. Never copy any identity, hair, clothing, jewelry, colors, background, objects from the target photograph, and the basketball must not appear; do not introduce any new object or prop. Keep every logo and text element on the backdrop pixel-unchanged: top-left black logo with orange \"M\" emblem and small white text \"MVC Management Productions\", top-center black banner with white uppercase line one \"SOFTSHEEN CARSON\" and line two \"LABORATORIES\", top-right black logo with orange \"M\" emblem and small white text \"MVC Management Productions\", upper-left and upper-right gray logos with small text \"BEAUTY CAREER INSTITUTE\", large gold serif letters \"EMERG\" cropped at the left and right edges, left and right dark gray text \"Beautiful Planning\" above \"MARKETING & PR\" beside green logos, lower black logos with small white text \"MVC Management Productions\", lower-left gray logo with small text \"BEAUTY CAREER INSTITUTE\", lower-right dark gray text \"Beautiful Planning\" above \"MARKETING & PR\", and the partially visible white text \"APO\" at bottom center. Preserve the source person and their original clothing and setting. Render a natural photograph without skeleton lines, diagrams or pose-guide colors.",
+   "prompt_origin": "/home/shangguanrz/project/pic-edit/workflow/runs/scale_anchor_20261013/medium_02/prompt/generation_prompt.txt",
+   "prompt_sha256": "9351680d3fe62266368c75f976c4f729f379f3ff913c8d08d86f40aa6acf911a",
+   "generator_inputs": [
+    "source",
+    "pose_reference"
+   ],
+   "control_input": "control"
+  },
+  {
+   "sample": "hug_pair00_084",
+   "kind": "dual",
+   "run_dir": "/home/shangguanrz/project/pic-edit/workflow-multiple/runs/hug_pair00_084_c4_r000",
+   "files": {
+    "source_A": {
+     "path": "/home/shangguanrz/project/pic-edit/experiments/2.qwen-test/qwen21_union_migration_v1/input/dual/hug_pair00_084/source_A.png",
+     "origin": "/home/shangguanrz/project/pic-edit/workflow-multiple/runs/hug_pair00_084_c4_r000/inputs/A_reference.png",
+     "wh": [
+      672,
+      896
+     ],
+     "sha256": "c3cf426d3e9e182eb52aa814c21a15b714efec736db4ddec7437c88d2db2dd25",
+     "aligned32": true
+    },
+    "source_B": {
+     "path": "/home/shangguanrz/project/pic-edit/experiments/2.qwen-test/qwen21_union_migration_v1/input/dual/hug_pair00_084/source_B.png",
+     "origin": "/home/shangguanrz/project/pic-edit/workflow-multiple/runs/hug_pair00_084_c4_r000/inputs/B_reference.png",
+     "wh": [
+      672,
+      896
+     ],
+     "sha256": "422861584d0aba02de72b5f3c0397a7a382af6d626273fcdfab918698fb3d7af",
+     "aligned32": true
+    },
+    "control": {
+     "path": "/home/shangguanrz/project/pic-edit/experiments/2.qwen-test/qwen21_union_migration_v1/input/dual/hug_pair00_084/control.png",
+     "origin": "/home/shangguanrz/project/pic-edit/workflow-multiple/runs/hug_pair00_084_c4_r000/geometry/skeleton_both.png",
+     "wh": [
+      672,
+      896
+     ],
+     "sha256": "55b7154844e16a3a47615ce726a01769883cd553f4291cd35d36611025fd983b",
+     "aligned32": true
+    },
+    "skeleton_both": {
+     "path": "/home/shangguanrz/project/pic-edit/experiments/2.qwen-test/qwen21_union_migration_v1/input/dual/hug_pair00_084/skeleton_both.png",
+     "origin": "/home/shangguanrz/project/pic-edit/workflow-multiple/runs/hug_pair00_084_c4_r000/geometry/skeleton_both.png",
+     "wh": [
+      672,
+      896
+     ],
+     "sha256": "55b7154844e16a3a47615ce726a01769883cd553f4291cd35d36611025fd983b",
+     "aligned32": true
+    },
+    "pose_reference_0": {
+     "path": "/home/shangguanrz/project/pic-edit/experiments/2.qwen-test/qwen21_union_migration_v1/input/dual/hug_pair00_084/pose_reference_0.png",
+     "origin": "/home/shangguanrz/project/pic-edit/workflow-multiple/runs/hug_pair00_084_c4_r000/geometry/skeleton_1.png",
+     "wh": [
+      672,
+      896
+     ],
+     "sha256": "1f414ba7a116d1d44c73c5ebfed7ecff576d09caded9f779e92800902f12443d",
+     "aligned32": true
+    }
+   },
+   "generation_inputs": [],
+   "eval_only": [
+    {
+     "role": "requested_keypoints",
+     "path": "/home/shangguanrz/project/pic-edit/experiments/2.qwen-test/qwen21_union_migration_v1/input/dual/hug_pair00_084/requested_keypoints.npz",
+     "origin": "/home/shangguanrz/project/pic-edit/workflow-multiple/runs/hug_pair00_084_c4_r000/geometry/dual_keypoints.npz",
+     "sha256": "160c78053f5e189655cc366c5cbe3c4e08461b838b9b8da9e034d255047ccd8b"
+    }
+   ],
+   "prompt": "Edit exactly the two people in <image1> into the requested interaction. <image1> supplies all identity, hairstyle, face, body proportions, outfit, accessories and scene appearance for both of them. <image2> is the target photograph and is shown for the interaction only; copy no appearance from it. The remaining images are colored skeletal pose guides, one per person: use their joint positions, never their line colours as appearance. Do not add a third person or any target-only object. Preserve objects already in the source. On <image1> (canvas), re-pose the two standing people into the mutual embrace shown in <image2>, transferring only the body action, pair arrangement, relative distance, contact, leaning, head orientation and facial expression from <image2>, while preserving every identity and appearance attribute from <image1>. The man currently standing on the viewer-left, with short black hair, light grey T-shirt with a small orange chest logo, cream trousers, red-and-white striped socks and checkered sneakers, turns his body toward the woman, leans his torso against hers, wraps his arms around the woman's back with his viewer-right arm crossing her midsection and his viewer-left arm resting on her far shoulder, tilts his head toward her face and smiles. The woman currently standing on the viewer-right, with a black hair bun secured by a clip, blue-and-white horizontal striped T-shirt, black trousers and white sneakers, turns toward the man, leans into his chest, wraps her viewer-left arm across his upper back with her hand resting on his far shoulder, extends her viewer-right arm to the side with fingers spread, and smiles with her head close to his. Keep the close face-to-face distance and standing height difference observed in <image2>. Match each person's joint angles, limb directions and head direction to the corresponding skeletal guide: the man's joints follow <image3> and the woman's joints follow <image4>, using <image2> to clarify hand placement and head direction where the guides are ambiguous. Treat <image3> and <image4> purely as joint-arrangement references; their black backgrounds and line colours carry no scene meaning, and never draw skeleton lines in the output. Never copy any identity, hair, clothing, jewellery, colour, background element, held object from <image2>. Preserve from <image1> both facial identities, hairstyles, body proportions, the exact garment designs, colours and fabrics, all accessories and shoes, the green cyclorama backdrop, the metal support truss, the wall-mounted light panels, the green floor and the overall illumination; allow natural cloth folds and pose-dependent shadows consistent with the existing light sources, and maintain the original photographic style. Keep exactly two people in the output, one per source person, adding no one, removing no one, merging no one, and introduce no new objects into the scene. Preserve both source people, their clothing and the original setting. Render a natural photograph without skeleton lines, diagrams or pose-guide colors.",
+   "prompt_origin": "/home/shangguanrz/project/pic-edit/workflow-multiple/runs/hug_pair00_084_c4_r000/prompt/generation_prompt.txt",
+   "prompt_sha256": "2ef1410d1f74a98e51cd44c372ff8d9317195e06e1557c6f151fc6b42e851843",
+   "generator_inputs": [
+    "source_A",
+    "source_B",
+    "pose_reference_0"
+   ],
+   "control_input": "control"
+  },
+  {
+   "sample": "dance_pair02_120",
+   "kind": "dual",
+   "run_dir": "/home/shangguanrz/project/pic-edit/workflow-multiple/runs/dance_pair02_120_c4_r459.skeleton_only.b_canvas",
+   "files": {
+    "source_A": {
+     "path": "/home/shangguanrz/project/pic-edit/experiments/2.qwen-test/qwen21_union_migration_v1/input/dual/dance_pair02_120/source_A.png",
+     "origin": "/home/shangguanrz/project/pic-edit/workflow-multiple/runs/dance_pair02_120_c4_r459.skeleton_only.b_canvas/inputs/A_reference.png",
+     "wh": [
+      672,
+      896
+     ],
+     "sha256": "ba68459f3a0609ba0f634ad89979947f2f0c813c7b8425b4f4bbe0c471beaa74",
+     "aligned32": true
+    },
+    "source_B": {
+     "path": "/home/shangguanrz/project/pic-edit/experiments/2.qwen-test/qwen21_union_migration_v1/input/dual/dance_pair02_120/source_B.png",
+     "origin": "/home/shangguanrz/project/pic-edit/workflow-multiple/runs/dance_pair02_120_c4_r459.skeleton_only.b_canvas/inputs/B_reference.png",
+     "wh": [
+      672,
+      896
+     ],
+     "sha256": "12a1e4af14d2e1f1447cd77c28c849ab53e539ce9c70d5807df7ac35dac6ac38",
+     "aligned32": true
+    },
+    "control": {
+     "path": "/home/shangguanrz/project/pic-edit/experiments/2.qwen-test/qwen21_union_migration_v1/input/dual/dance_pair02_120/control.png",
+     "origin": "/home/shangguanrz/project/pic-edit/workflow-multiple/runs/dance_pair02_120_c4_r459.skeleton_only.b_canvas/geometry/skeleton_both.png",
+     "wh": [
+      672,
+      896
+     ],
+     "sha256": "0c76d7bdae5925f90fe161fdea6388fb321fd2ab05813e7d04de8058bb7ab66b",
+     "aligned32": true
+    },
+    "skeleton_both": {
+     "path": "/home/shangguanrz/project/pic-edit/experiments/2.qwen-test/qwen21_union_migration_v1/input/dual/dance_pair02_120/skeleton_both.png",
+     "origin": "/home/shangguanrz/project/pic-edit/workflow-multiple/runs/dance_pair02_120_c4_r459.skeleton_only.b_canvas/geometry/skeleton_both.png",
+     "wh": [
+      672,
+      896
+     ],
+     "sha256": "0c76d7bdae5925f90fe161fdea6388fb321fd2ab05813e7d04de8058bb7ab66b",
+     "aligned32": true
+    },
+    "pose_reference_0": {
+     "path": "/home/shangguanrz/project/pic-edit/experiments/2.qwen-test/qwen21_union_migration_v1/input/dual/dance_pair02_120/pose_reference_0.png",
+     "origin": "/home/shangguanrz/project/pic-edit/workflow-multiple/runs/dance_pair02_120_c4_r459.skeleton_only.b_canvas/geometry/skeleton_1.png",
+     "wh": [
+      672,
+      896
+     ],
+     "sha256": "aff3cd95847989b20ad82663f48faa241557379b70c15759f4c0ac6071adb569",
+     "aligned32": true
+    }
+   },
+   "generation_inputs": [],
+   "eval_only": [
+    {
+     "role": "requested_keypoints",
+     "path": "/home/shangguanrz/project/pic-edit/experiments/2.qwen-test/qwen21_union_migration_v1/input/dual/dance_pair02_120/requested_keypoints.npz",
+     "origin": "/home/shangguanrz/project/pic-edit/workflow-multiple/runs/dance_pair02_120_c4_r459.skeleton_only.b_canvas/geometry/dual_keypoints.npz",
+     "sha256": "b6f55b734343bec622fe997e8adbfeb37a688e1de95af585204bfe705636ae56"
+    }
+   ],
+   "prompt": "Edit exactly the two people in <image1> into the requested interaction. <image1> supplies all identity, hairstyle, face, body proportions, outfit, accessories and scene appearance for both of them. <image2> and <image3> are colored skeletal pose guides, one per person: use their joint positions, never their line colours as appearance. Do not add a third person or any target-only object. Preserve objects already in the source. On <image1> as the canvas, re-pose the two women into the close mutual embrace defined by the two skeletal guides, using <image2> for the woman on the viewer's left in the white T-shirt and <image3> for the woman on the viewer's right in the taupe top, transferring only the body action, interpersonal arrangement, relative distance, height, contact points, head orientation and facial expression from those guides while preserving every other attribute from <image1>. Position the two women at the same close proximity as the target pair: bodies nearly touching, facing each other in profile, heads at the same height with faces turned toward each other. The woman on the viewer's left follows <image2>: she extends one arm horizontally toward the viewer's right with an open hand and spread fingers wrapping around her partner's back, keeps her other arm bent at her side, and shifts her weight onto one leg with the other foot angled outward. The woman on the viewer's right follows <image3>: she wraps one arm around her partner's upper back with the gripping hand appearing as a detached hand mass on the viewer's left side of her partner's torso in the 2D projection, rests her other hand on her partner's waist, and stands with her legs close together, one knee bent and feet offset on the same ground plane. Render the embrace exactly as the two skeletons indicate, with leaning torsos, pressed hips, hands gripping the opposite person's back and waist, and faces in profile close together, matching the relative distance and height of the target pair. Preserve from <image1> both women's facial identity, skin tone, low bun hairstyle, the left woman's white T-shirt, grey trousers and light grey sneakers, the right woman's taupe ribbed top, black trousers and dark blue sneakers, and the entire green-screen studio environment including the green backdrop cloth, metal support trusses, ceiling-mounted panels and lit square softboxes. Only the pose, limb positions, body arrangement and contact relationships change. Update cloth folds, fabric tension and body shadows to respond naturally to the new embrace, and cast consistent soft contact shadows on the green floor beneath both women under the existing studio lighting. Keep exactly two people; do not add anyone, do not remove anyone, do not merge the two people, do not introduce any new objects, do not render skeleton lines, joint dots, guide colours. Maintain the original photographic style, camera angle, framing and overall illumination of <image1>. Preserve both source people, their clothing and the original setting. Render a natural photograph without skeleton lines, diagrams or pose-guide colors.",
+   "prompt_origin": "/home/shangguanrz/project/pic-edit/workflow-multiple/runs/dance_pair02_120_c4_r459.skeleton_only.b_canvas/prompt/generation_prompt.txt",
+   "prompt_sha256": "a475c320220b152cec946c19bcbd4a61f4b1afb5d1829cfbe0c294e499531d4a",
+   "generator_inputs": [
+    "source_A",
+    "source_B",
+    "pose_reference_0"
+   ],
+   "control_input": "control"
+  },
+  {
+   "sample": "cross_backhug_pair02_037",
+   "kind": "dual",
+   "run_dir": "/home/shangguanrz/project/pic-edit/workflow-multiple/runs/cross_backhug_pair02_037_r545_from_pair00.skeleton_only.b_canvas",
+   "files": {
+    "source_A": {
+     "path": "/home/shangguanrz/project/pic-edit/experiments/2.qwen-test/qwen21_union_migration_v1/input/dual/cross_backhug_pair02_037/source_A.png",
+     "origin": "/home/shangguanrz/project/pic-edit/workflow-multiple/runs/cross_backhug_pair02_037_r545_from_pair00.skeleton_only.b_canvas/inputs/A_reference.png",
+     "wh": [
+      672,
+      896
+     ],
+     "sha256": "3b67455e22bf3712d4916ae93b4a14f536a6889731416e61e729c6afaed5e4a3",
+     "aligned32": true
+    },
+    "source_B": {
+     "path": "/home/shangguanrz/project/pic-edit/experiments/2.qwen-test/qwen21_union_migration_v1/input/dual/cross_backhug_pair02_037/source_B.png",
+     "origin": "/home/shangguanrz/project/pic-edit/workflow-multiple/runs/cross_backhug_pair02_037_r545_from_pair00.skeleton_only.b_canvas/inputs/B_reference.png",
+     "wh": [
+      672,
+      896
+     ],
+     "sha256": "9b9fdc6a8e92aefeaf22618c16c68da5168a12c6a660416f8fb7fdaa61d0da60",
+     "aligned32": true
+    },
+    "control": {
+     "path": "/home/shangguanrz/project/pic-edit/experiments/2.qwen-test/qwen21_union_migration_v1/input/dual/cross_backhug_pair02_037/control.png",
+     "origin": "/home/shangguanrz/project/pic-edit/workflow-multiple/runs/cross_backhug_pair02_037_r545_from_pair00.skeleton_only.b_canvas/geometry/skeleton_both.png",
+     "wh": [
+      672,
+      896
+     ],
+     "sha256": "77fde1d91ba017478c2acd417bbaa9fe8e940eb58996731a975f6dd2e5446f24",
+     "aligned32": true
+    },
+    "skeleton_both": {
+     "path": "/home/shangguanrz/project/pic-edit/experiments/2.qwen-test/qwen21_union_migration_v1/input/dual/cross_backhug_pair02_037/skeleton_both.png",
+     "origin": "/home/shangguanrz/project/pic-edit/workflow-multiple/runs/cross_backhug_pair02_037_r545_from_pair00.skeleton_only.b_canvas/geometry/skeleton_both.png",
+     "wh": [
+      672,
+      896
+     ],
+     "sha256": "77fde1d91ba017478c2acd417bbaa9fe8e940eb58996731a975f6dd2e5446f24",
+     "aligned32": true
+    },
+    "pose_reference_0": {
+     "path": "/home/shangguanrz/project/pic-edit/experiments/2.qwen-test/qwen21_union_migration_v1/input/dual/cross_backhug_pair02_037/pose_reference_0.png",
+     "origin": "/home/shangguanrz/project/pic-edit/workflow-multiple/runs/cross_backhug_pair02_037_r545_from_pair00.skeleton_only.b_canvas/geometry/skeleton_1.png",
+     "wh": [
+      672,
+      896
+     ],
+     "sha256": "fd2e3df1f3e204850b621eaf640f982d0e66765ef7657b5774b1ae2cd077c9c9",
+     "aligned32": true
+    }
+   },
+   "generation_inputs": [],
+   "eval_only": [
+    {
+     "role": "requested_keypoints",
+     "path": "/home/shangguanrz/project/pic-edit/experiments/2.qwen-test/qwen21_union_migration_v1/input/dual/cross_backhug_pair02_037/requested_keypoints.npz",
+     "origin": "/home/shangguanrz/project/pic-edit/workflow-multiple/runs/cross_backhug_pair02_037_r545_from_pair00.skeleton_only.b_canvas/geometry/dual_keypoints.npz",
+     "sha256": "0aa603c27157b906d13ce12e8fd2ffb859a3449585a3b5f96bb7c6fbce3b1d05"
+    }
+   ],
+   "prompt": "Edit exactly the two people in <image1> into the requested interaction. <image1> supplies all identity, hairstyle, face, body proportions, outfit, accessories and scene appearance for both of them. <image2> and <image3> are colored skeletal pose guides, one per person: use their joint positions, never their line colours as appearance. Do not add a third person or any target-only object. Preserve objects already in the source. On <image1>, re-pose the existing two people into the close two-person interaction of the reference photograph while preserving all source appearance: keep the man's facial identity, short black hair, light gray T-shirt, cream trousers, checkered socks, gray sneakers, keep the woman's facial identity, dark bun hairstyle, blue-and-white striped T-shirt, black trousers, white-and-navy sneakers, and keep the green-screen studio background with its metal trusses, wall panel lights, floor and overall photographic style and overhead studio illumination exactly as in <image1>. Position the man in the front place facing the camera with both arms extended outward to the sides at chest height with open hands and spread fingers, his head facing the camera with a neutral expression. Position the woman directly behind the man in a hug-from-behind configuration: her back presses against the man's back with zero gap along their shared body axis, her two arms wrap horizontally around the man's chest from behind with the hands meeting at the front of his torso, her head sits beside the man's head on the viewer's right at the same height with her face turned toward the camera with a neutral expression. The standing stance, leg angles and foot placement of the front person follow the skeleton in <image2>, and the standing stance, leg angles and foot placement of the back person follow the skeleton in <image3>; the skeleton lines, dots and their colors are rendered neither in the output nor as scene content. The relative height between the two people matches the reference arrangement, the woman's crown at the man's shoulder height. Keep natural cloth folds and pose-dependent shadows on the bodies consistent with the existing lighting direction of <image1>. Keep exactly two people in the output; do not add anyone, do not remove anyone, do not merge anyone; do not introduce held objects, new background elements, replacement objects; do not copy hair, clothing, jewellery, background elements from the reference photograph beyond the described actions, arrangement and contact points. Preserve both source people, their clothing and the original setting. Render a natural photograph without skeleton lines, diagrams or pose-guide colors.",
+   "prompt_origin": "/home/shangguanrz/project/pic-edit/workflow-multiple/runs/cross_backhug_pair02_037_r545_from_pair00.skeleton_only.b_canvas/prompt/generation_prompt.txt",
+   "prompt_sha256": "b8a8ac6b1a96a1b1aed4fd27b87ae15541267d809f694061c54797ecadc4bf59",
+   "generator_inputs": [
+    "source_A",
+    "source_B",
+    "pose_reference_0"
+   ],
+   "control_input": "control"
+  }
+ ],
+ "missing": [],
+ "counts": {
+  "single": 3,
+  "dual": 3
+ },
+ "policy": {
+  "geometry_reestimated": false,
+  "prompt_rewritten": false,
+  "target_rgb_in_generator": false
+ }
+}

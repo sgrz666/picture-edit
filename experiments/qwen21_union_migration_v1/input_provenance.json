@@ -1,0 +1,320 @@
+{
+ "hug_pair00_084": {
+  "pair_kind": "same_identity",
+  "framing": "b_canvas",
+  "canvas": [
+   672,
+   896
+  ],
+  "content_box_A": [
+   7,
+   0,
+   665,
+   896
+  ],
+  "source_A": "/home/shangguanrz/project/pic-edit/experiments/2.qwen-test/qwen21_union_migration_v1/input/dual/hug_pair00_084/source_A.png",
+  "source_A_sha256": "c3cf426d3e9e182eb52aa814c21a15b714efec736db4ddec7437c88d2db2dd25",
+  "copied": {
+   "dual_geometry.json": {
+    "path": "/home/shangguanrz/project/pic-edit/experiments/2.qwen-test/qwen21_union_migration_v1/input/dual/hug_pair00_084/provenance/dual_geometry.json",
+    "origin": "/home/shangguanrz/project/pic-edit/workflow-multiple/runs/hug_pair00_084_c4_r000/geometry/dual_geometry.json",
+    "sha256": "cdbba78081270c51dca8b16fbc5e0adeb8ce145e43b8438bd7575b811ed3bf48"
+   },
+   "source_preprocess.json": {
+    "path": "/home/shangguanrz/project/pic-edit/experiments/2.qwen-test/qwen21_union_migration_v1/input/dual/hug_pair00_084/provenance/source_preprocess.json",
+    "origin": "/home/shangguanrz/project/pic-edit/workflow-multiple/runs/hug_pair00_084_c4_r000/inputs/source_preprocess.json",
+    "sha256": "5d5fc85904c3330f1f5503bf91b3479de9d25ea2b7b7497b8f9428eb1e9ab686"
+   },
+   "pair.json": {
+    "path": "/home/shangguanrz/project/pic-edit/experiments/2.qwen-test/qwen21_union_migration_v1/input/dual/hug_pair00_084/provenance/pair.json",
+    "origin": "/home/shangguanrz/project/pic-edit/workflow-multiple/pairs/hug_pair00_084_c4_r000/pair.json",
+    "sha256": "8f637bf189438b4d00902d75ca9e32ea5569951834b37d15c6d01591a7595458"
+   }
+  },
+  "persons": [
+   {
+    "canvas_slot_index": 0,
+    "slot": 1,
+    "hi4d_side": "B",
+    "bbox_A_native": [
+     161.0,
+     321.0,
+     365.0,
+     966.0
+    ],
+    "transform_A": {
+     "scale_xy": [
+      0.7,
+      0.7
+     ],
+     "offset_xy": [
+      7,
+      0
+     ]
+    },
+    "bbox_A_canvas": [
+     119.7,
+     224.7,
+     262.5,
+     676.2
+    ],
+    "identity_crop": {
+     "path": "/home/shangguanrz/project/pic-edit/experiments/2.qwen-test/qwen21_union_migration_v1/input/dual/hug_pair00_084/provenance/identity_slot1_sideB.png",
+     "wh": [
+      150,
+      471
+     ],
+     "sha256": "34d6b785e1290fc5db07e347f7e544136e941dc9a5bfe364fb0d6803c14382a3"
+    }
+   },
+   {
+    "canvas_slot_index": 1,
+    "slot": 2,
+    "hi4d_side": "A",
+    "bbox_A_native": [
+     654.0,
+     329.0,
+     807.0,
+     1015.0
+    ],
+    "transform_A": {
+     "scale_xy": [
+      0.7,
+      0.7
+     ],
+     "offset_xy": [
+      7,
+      0
+     ]
+    },
+    "bbox_A_canvas": [
+     464.8,
+     230.3,
+     571.9,
+     710.5
+    ],
+    "identity_crop": {
+     "path": "/home/shangguanrz/project/pic-edit/experiments/2.qwen-test/qwen21_union_migration_v1/input/dual/hug_pair00_084/provenance/identity_slot2_sideA.png",
+     "wh": [
+      113,
+      501
+     ],
+     "sha256": "4d07b31083e6f81f2b012d24f1518cb2f0f924f5d56bb714ebd5c91cead729f3"
+    }
+   }
+  ],
+  "note": "same_identity 指 A/B 两张照片是同一组人，不是两个人彼此相同；槽位顺序与 npz 的 canvas_points / hi4d_sides 一致"
+ },
+ "dance_pair02_120": {
+  "pair_kind": "same_identity",
+  "framing": "b_canvas",
+  "canvas": [
+   672,
+   896
+  ],
+  "content_box_A": [
+   7,
+   0,
+   665,
+   896
+  ],
+  "source_A": "/home/shangguanrz/project/pic-edit/experiments/2.qwen-test/qwen21_union_migration_v1/input/dual/dance_pair02_120/source_A.png",
+  "source_A_sha256": "ba68459f3a0609ba0f634ad89979947f2f0c813c7b8425b4f4bbe0c471beaa74",
+  "copied": {
+   "dual_geometry.json": {
+    "path": "/home/shangguanrz/project/pic-edit/experiments/2.qwen-test/qwen21_union_migration_v1/input/dual/dance_pair02_120/provenance/dual_geometry.json",
+    "origin": "/home/shangguanrz/project/pic-edit/workflow-multiple/runs/dance_pair02_120_c4_r459.skeleton_only.b_canvas/geometry/dual_geometry.json",
+    "sha256": "72eb5e20dd938ca306caaaf3dc563a48431c07c132a37840a07e9f8aad1ac6c4"
+   },
+   "source_preprocess.json": {
+    "path": "/home/shangguanrz/project/pic-edit/experiments/2.qwen-test/qwen21_union_migration_v1/input/dual/dance_pair02_120/provenance/source_preprocess.json",
+    "origin": "/home/shangguanrz/project/pic-edit/workflow-multiple/runs/dance_pair02_120_c4_r459.skeleton_only.b_canvas/inputs/source_preprocess.json",
+    "sha256": "5d5fc85904c3330f1f5503bf91b3479de9d25ea2b7b7497b8f9428eb1e9ab686"
+   },
+   "pair.json": {
+    "path": "/home/shangguanrz/project/pic-edit/experiments/2.qwen-test/qwen21_union_migration_v1/input/dual/dance_pair02_120/provenance/pair.json",
+    "origin": "/home/shangguanrz/project/pic-edit/workflow-multiple/pairs/dance_pair02_120_c4_r459/pair.json",
+    "sha256": "41f2cb3ab195926bf0f346a0d546f0adaedf0293b07f408485113a1d24fb25c5"
+   }
+  },
+  "persons": [
+   {
+    "canvas_slot_index": 0,
+    "slot": 1,
+    "hi4d_side": "A",
+    "bbox_A_native": [
+     326.0,
+     327.0,
+     561.0,
+     1025.0
+    ],
+    "transform_A": {
+     "scale_xy": [
+      0.7,
+      0.7
+     ],
+     "offset_xy": [
+      7,
+      0
+     ]
+    },
+    "bbox_A_canvas": [
+     235.2,
+     228.9,
+     399.7,
+     717.5
+    ],
+    "identity_crop": {
+     "path": "/home/shangguanrz/project/pic-edit/experiments/2.qwen-test/qwen21_union_migration_v1/input/dual/dance_pair02_120/provenance/identity_slot1_sideA.png",
+     "wh": [
+      172,
+      509
+     ],
+     "sha256": "2b157b4978288529d8f506fffad1c3e8e3794918610471aac5d6c6f754eafd11"
+    }
+   },
+   {
+    "canvas_slot_index": 1,
+    "slot": 2,
+    "hi4d_side": "B",
+    "bbox_A_native": [
+     556.0,
+     308.0,
+     724.0,
+     982.0
+    ],
+    "transform_A": {
+     "scale_xy": [
+      0.7,
+      0.7
+     ],
+     "offset_xy": [
+      7,
+      0
+     ]
+    },
+    "bbox_A_canvas": [
+     396.2,
+     215.6,
+     513.8,
+     687.4
+    ],
+    "identity_crop": {
+     "path": "/home/shangguanrz/project/pic-edit/experiments/2.qwen-test/qwen21_union_migration_v1/input/dual/dance_pair02_120/provenance/identity_slot2_sideB.png",
+     "wh": [
+      124,
+      491
+     ],
+     "sha256": "91da2be6ddce1ccec613116436f0bff6d7bc62934da7006612c617d4887a5b17"
+    }
+   }
+  ],
+  "note": "same_identity 指 A/B 两张照片是同一组人，不是两个人彼此相同；槽位顺序与 npz 的 canvas_points / hi4d_sides 一致"
+ },
+ "cross_backhug_pair02_037": {
+  "pair_kind": "cross_pair",
+  "framing": "b_canvas",
+  "canvas": [
+   672,
+   896
+  ],
+  "content_box_A": [
+   7,
+   0,
+   665,
+   896
+  ],
+  "source_A": "/home/shangguanrz/project/pic-edit/experiments/2.qwen-test/qwen21_union_migration_v1/input/dual/cross_backhug_pair02_037/source_A.png",
+  "source_A_sha256": "3b67455e22bf3712d4916ae93b4a14f536a6889731416e61e729c6afaed5e4a3",
+  "copied": {
+   "dual_geometry.json": {
+    "path": "/home/shangguanrz/project/pic-edit/experiments/2.qwen-test/qwen21_union_migration_v1/input/dual/cross_backhug_pair02_037/provenance/dual_geometry.json",
+    "origin": "/home/shangguanrz/project/pic-edit/workflow-multiple/runs/cross_backhug_pair02_037_r545_from_pair00.skeleton_only.b_canvas/geometry/dual_geometry.json",
+    "sha256": "745dfa30b3d14d7ae76ee8dbcb6d557a0dc278d0d208991717ac49e97a157543"
+   },
+   "source_preprocess.json": {
+    "path": "/home/shangguanrz/project/pic-edit/experiments/2.qwen-test/qwen21_union_migration_v1/input/dual/cross_backhug_pair02_037/provenance/source_preprocess.json",
+    "origin": "/home/shangguanrz/project/pic-edit/workflow-multiple/runs/cross_backhug_pair02_037_r545_from_pair00.skeleton_only.b_canvas/inputs/source_preprocess.json",
+    "sha256": "5d5fc85904c3330f1f5503bf91b3479de9d25ea2b7b7497b8f9428eb1e9ab686"
+   },
+   "pair.json": {
+    "path": "/home/shangguanrz/project/pic-edit/experiments/2.qwen-test/qwen21_union_migration_v1/input/dual/cross_backhug_pair02_037/provenance/pair.json",
+    "origin": "/home/shangguanrz/project/pic-edit/workflow-multiple/pairs_cross/cross_backhug_pair02_037_r545_from_pair00/pair.json",
+    "sha256": "debc75e06ace1a1dd45c0c9cc6d293a59bdba06f78d0c13ebf5551d706f7417f"
+   }
+  },
+  "persons": [
+   {
+    "canvas_slot_index": 0,
+    "slot": 1,
+    "hi4d_side": "B",
+    "bbox_A_native": [
+     202.0,
+     323.0,
+     493.0,
+     966.0
+    ],
+    "transform_A": {
+     "scale_xy": [
+      0.7,
+      0.7
+     ],
+     "offset_xy": [
+      7,
+      0
+     ]
+    },
+    "bbox_A_canvas": [
+     148.4,
+     226.1,
+     352.1,
+     676.2
+    ],
+    "identity_crop": {
+     "path": "/home/shangguanrz/project/pic-edit/experiments/2.qwen-test/qwen21_union_migration_v1/input/dual/cross_backhug_pair02_037/provenance/identity_slot1_sideB.png",
+     "wh": [
+      213,
+      469
+     ],
+     "sha256": "b07874be1735f40b8dc8c8d776074be5eaad0ac23467dc2b70bd8a7f4395a21f"
+    }
+   },
+   {
+    "canvas_slot_index": 1,
+    "slot": 2,
+    "hi4d_side": "A",
+    "bbox_A_native": [
+     614.0,
+     340.0,
+     805.0,
+     1015.0
+    ],
+    "transform_A": {
+     "scale_xy": [
+      0.7,
+      0.7
+     ],
+     "offset_xy": [
+      7,
+      0
+     ]
+    },
+    "bbox_A_canvas": [
+     436.8,
+     238.0,
+     570.5,
+     710.5
+    ],
+    "identity_crop": {
+     "path": "/home/shangguanrz/project/pic-edit/experiments/2.qwen-test/qwen21_union_migration_v1/input/dual/cross_backhug_pair02_037/provenance/identity_slot2_sideA.png",
+     "wh": [
+      140,
+      492
+     ],
+     "sha256": "060f215f01e3afbbe4c5f39eae679e3fea455ac7923df1862dba0270bfb8667e"
+    }
+   }
+  ],
+  "note": "same_identity 指 A/B 两张照片是同一组人，不是两个人彼此相同；槽位顺序与 npz 的 canvas_points / hi4d_sides 一致"
+ }
+}

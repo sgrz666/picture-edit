@@ -1,0 +1,62 @@
+{
+  "schema": "dual_geometry_v1",
+  "pair": "dance_pair02_120_c4_r459",
+  "kind": "same_identity",
+  "pair_dir": "/home/shangguanrz/project/pic-edit/workflow-multiple/pairs/dance_pair02_120_c4_r459",
+  "framing": "b_canvas",
+  "keypoints_source": "dwpose",
+  "resolution": 768,
+  "canvas": [
+    672,
+    896
+  ],
+  "score_threshold": 0.5,
+  "transform": {
+    "framing": "b_canvas",
+    "keypoints_source": "dwpose",
+    "b_letterbox_scale": 0.7,
+    "b_letterbox_offset": [
+      7.0,
+      0.0
+    ],
+    "b_pair_canvas": {
+      "extent_px": 471.7958984375,
+      "centre_xy": [
+        421.7877604166665,
+        317.1019856770833
+      ],
+      "persons_measured": 2
+    }
+  },
+  "persons": [
+    {
+      "slot": 1,
+      "hi4d_side": "A",
+      "source": "dwpose",
+      "keypoints_file": "B_person_1_keypoints.npz",
+      "keypoints_sha256": "7897dc0df111ad774fddea3f2bba21b979664846dca1287aef80b36c2113979f",
+      "valid_native": 105,
+      "min_score": 0.2729294002056122,
+      "max_score": 1.0,
+      "valid_canvas": 105
+    },
+    {
+      "slot": 2,
+      "hi4d_side": "B",
+      "source": "dwpose",
+      "keypoints_file": "B_person_2_keypoints.npz",
+      "keypoints_sha256": "0f5c5c8befa015bc22b587920ae5a6796682489c62ec2114f4020c568023e579",
+      "valid_native": 105,
+      "min_score": 0.2366250604391098,
+      "max_score": 1.0,
+      "valid_canvas": 105
+    }
+  ],
+  "inputs": {
+    "A_sha256": "4a40cfcf57ff3d1727cfe94753b5e0735ed31607d96d54719e16754094906dd1",
+    "B_sha256": "8d77e7a9291ec45bdea35b26fc5423b9b5aef806cf0ecbec3a9a7bc1429f40db",
+    "pair_json_sha256": "41f2cb3ab195926bf0f346a0d546f0adaedf0293b07f408485113a1d24fb25c5"
+  },
+  "seconds": 1.763499892957043,
+  "limits": "Guides carry landmark positions only; joint colours carry no meaning. Points under the score threshold are absent rather than guessed, so an occluded person can legitimately show a partial skeleton, and the combined image stacks the two bodies without drawing any link between them."
+}

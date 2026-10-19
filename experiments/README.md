@@ -65,7 +65,7 @@
 
 **分组 6 · `6.qwen-controlnet union/`**
 - `models/` —— 统一软链接区（Qwen 2.1 7B 基座与 ControlNet Union 7.1G 权重，零物理拷贝）
-- `qwen21_union_migration_v1/` —— 官方 Union 控制网直接迁移验证与小样本评估（原位于 2.qwen-test，已归位）
+- `qwen21_union_migration_v1/` —— 官方 Union 控制网直接迁移验证与小样本评估（原位于 2.qwen-test，已归位）。三关全过；48 张矩阵里接入版 scale 0 与现工作流逐字节相同（24/24 配对），单人严格 PCK@0.2 0.750→0.964 但 scale 1.0 身份分 0.916→0.585 且骨架线漏进画面、双人检出人数并成 1 人 → 判定「需要进一步输入适配」。注：GitHub 仓库内实际落盘路径是平铺的 `experiments/qwen21_union_migration_v1/`，分组目录结构只在服务器侧生效
 - `qwen21_union_dataset_adaptation_v1/` —— 多数据集（iPER/TikTok/Hi4D）LoRA 联合适配训练实验（代码仓内管理，数据与产物软链落盘）
 
 ## 关键资产路径（不可随意删除）
