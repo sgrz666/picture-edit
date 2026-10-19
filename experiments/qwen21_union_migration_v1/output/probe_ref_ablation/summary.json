@@ -1,0 +1,37 @@
+{
+ "run": "/data/shangguanrz/pic-edit-experiments/qwen21_union_migration_v1/runs/probe_skeleton_ref_ablation_20261019T222727",
+ "sample": "hard_02",
+ "steps": 40,
+ "videox_commit": "13bb3c625e8b1e457d7124d92207b49e00e4a6fe",
+ "changed_variable": "reference_images 去掉骨架参考图，其余与矩阵一致",
+ "records": [
+  {
+   "tag": "norefs_ctrl10",
+   "scale": 1.0,
+   "seed": 42,
+   "out": "/data/shangguanrz/pic-edit-experiments/qwen21_union_migration_v1/runs/probe_skeleton_ref_ablation_20261019T222727/single__hard_02__norefs_ctrl10__seed42.png",
+   "n_refs": 1,
+   "canvas_hw": [
+    928,
+    640
+   ],
+   "seconds": 182.2,
+   "peak_GiB": 3.75,
+   "free_GiB_at_start": 18.53
+  },
+  {
+   "tag": "norefs_ctrl00",
+   "scale": 0.0,
+   "seed": 42,
+   "out": "/data/shangguanrz/pic-edit-experiments/qwen21_union_migration_v1/runs/probe_skeleton_ref_ablation_20261019T222727/single__hard_02__norefs_ctrl00__seed42.png",
+   "n_refs": 1,
+   "canvas_hw": [
+    928,
+    640
+   ],
+   "seconds": 176.0,
+   "peak_GiB": 3.75,
+   "free_GiB_at_start": 6.37
+  }
+ ]
+}
