@@ -7,6 +7,7 @@
 | 文件 | 主题 | 日期 |
 |---|---|---|
 | [2026-10-22-full-native-geometry-step1.md](2026-10-22-full-native-geometry-step1.md) | Full方案C第一步：原生512维几何出口、严格权重继承与CPU对照；单智能体顺序执行 | 10-22 |
+| [2026-10-22-full-native-body-step2.md](2026-10-22-full-native-body-step2.md) | Full方案C第二步：Qwen主干实时反馈、条件绑定、重算和有界运行验证 | 10-22 |
 | `2026-09-12-champ-deepgen-single-sample.md` | CHAMP–DeepGen 单样本集成实施计划：把 CHAMP 控制条件接到 DeepGen PoseAdapter 的单样本跑通路径 | 9-12 |
 | `2026-09-12-deepgen-no-control-ablation.md` | DeepGen 无动作约束消融实验实施计划：剥离姿态控制检验基座能力下限 | 9-12 |
 | `2026-09-15-adapter-reasoning-v1.md` | Adapter 内部推理 V1 实现记录（短文，仅 730 B） | 9-15 |

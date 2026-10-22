@@ -1,6 +1,6 @@
 # 原生512维几何前端：方案C第一步
 
-本模块把现有Full的几何编码和推理独立取出。输出是高低分辨率融合后的geometry/interaction token，默认 `[B,N,512]`；尚未接入新的Qwen主干反馈模块，也不意味着生成效果已经改善。
+本模块把现有Full的几何编码和推理独立取出。输出是高低分辨率融合后的geometry/interaction token，默认 `[B,N,512]`；主干反馈接入另见 [NATIVE_BODY.md](NATIVE_BODY.md)，本模块本身不生成残差。
 
 ## 保留的内容
 
@@ -51,4 +51,4 @@ python scripts/audit/audit_qwen21_native_geometry.py --checkpoint /path/to/exist
 
 服务器现有默认Body checkpoint为 `/home/shangguanrz/nihaochen/qwen21_full/body_512_100/checkpoint_last.pt`。审计不加载Qwen/VAE、不用GPU、不修改checkpoint；使用确定性的合成条件核验已训练前端的数值继承，不评测真实图像质量。`--output`可将JSON写到一个**尚不存在**的文件，其父目录必须已存在；已有输出拒绝覆盖。
 
-后续工作是把这些token接到Qwen当前层hidden的4096→512→4096模块。Depth及控制层数消融保持独立，现有Full训练/推理默认入口保持原样。
+这些token的显式主干接入见 [NATIVE_BODY.md](NATIVE_BODY.md)。Depth及控制层数消融保持独立，现有Full训练/推理默认入口保持原样。
