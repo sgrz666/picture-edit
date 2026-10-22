@@ -4,6 +4,8 @@
 
 ## 里面有什么
 
+- `audit_qwen21_native_geometry.py` —— CPU-only读取已有Full checkpoint，核对新512维前端与旧encoder/reasoner/bridge数值一致；不构造Qwen/SD3主干，不写权重，JSON输出使用独占新文件。
+
 ### 审计类（权重兼容、prompt 泄漏、架构保全、数据质量）
 
 | 文件 | 一句话职责 |

@@ -18,6 +18,8 @@
 ### 2. Qwen21 控制契约（迁移线）
 守护 Qwen-Image-2.1 上 Body/Face/Full controller 的 token 边界、双人与推理隔离。
 
+- `test_qwen21_native_geometry.py` —— Full方案C第一步：原生几何特征与旧projection前输出一致、独立权重继承、梯度、网格拒绝与CPU实权重审计工具。
+
 - `test_qwen21_control_contract.py` —— 控制钩子只能改 target token、保留 prefix
 - `test_qwen21_dual_control.py` —— 双控必须绑定两个 source 人且不改 native prefix
 - `test_qwen21_dual_inference_boundary.py` —— target 像素/评测 mask 不得进入生成输入
