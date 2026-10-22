@@ -4,6 +4,10 @@
 
 ## 里面有什么
 
+- `audit_qwen21_native_geometry.py` —— CPU-only读取已有Full checkpoint，核对新512维前端与旧encoder/reasoner/bridge数值一致；不构造Qwen/SD3主干，不写权重，JSON输出使用独占新文件。
+- `audit_qwen21_native_body.py` —— CPU真实32层小型Qwen结构核验，检查新Body零输出、prefix、条件与checkpoint梯度；可显式读取Full前端权重。
+- `verify_qwen21_native_body_runtime.py` —— 有界CUDA核验：现有7B基座、已训练Full前端、生产维度新Body的前向/反向；不采样图片、不更新优化器或写权重。
+
 ### 审计类（权重兼容、prompt 泄漏、架构保全、数据质量）
 
 | 文件 | 一句话职责 |

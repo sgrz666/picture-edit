@@ -4,6 +4,9 @@
 
 ## 里面有什么
 
+- `native_geometry.py` —— 方案C的独立原生几何前端：从已有Full继承编码器/reasoner及高低尺度融合，输出默认512维token；不含旧SD3控制核或Union，尚未替换主干控制。使用与验证见 [NATIVE_GEOMETRY.md](NATIVE_GEOMETRY.md)。
+- `native_body.py` / `native_integration.py` —— 方案C第二步：主干当层hidden驱动的512维控制分支、target-only写入及checkpoint安全的pipeline条件绑定；显式启用，原默认入口仍走旧Full。见 [NATIVE_BODY.md](NATIVE_BODY.md)。
+
 与 `v6/` 同名的迁移文件（逐文件对应，见 [v6/README.md](../v6/README.md)），外加 qwen21_full 独有件：
 
 - `qwen_adapter.py` —— `Qwen21FullAdapter` / `Qwen21FullControlContext`：`BRANCH_NAMES=("geometry","interaction","detail","face","hand")`，`LAYER_GROUPS` 把 32 层均分为 6 组注入；`validate_face_group_gains` 为运行时消融增益（非可训练参数）。
