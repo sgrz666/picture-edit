@@ -140,9 +140,14 @@ class Qwen21NativeBody(nn.Module):
             raise ValueError("sigma must be finite [B] in [0,1]")
         if type(strength) not in (int, float) or not math.isfinite(strength) or strength < 0:
             raise ValueError("strength must be a finite nonnegative scalar")
-        if valid_mask is not None and (not isinstance(valid_mask, torch.Tensor)
-                or valid_mask.dtype != torch.bool or valid_mask.shape != (b, n)):
-            raise ValueError("valid_mask must be bool [B,N] over the target canvas")
+        if valid_mask is not None:
+            # Match the server's canvas interface: retain partial boundary-token coverage.
+            if (not isinstance(valid_mask, torch.Tensor) or valid_mask.shape != (b, n)
+                    or not (valid_mask.dtype == torch.bool or valid_mask.is_floating_point())
+                    or (valid_mask.is_floating_point() and (
+                        not bool(torch.isfinite(valid_mask).all())
+                        or bool((valid_mask < 0).any()) or bool((valid_mask > 1).any())))):
+                raise ValueError("valid_mask must be bool or 0..1 area coverage [B,N] over the target canvas")
         target_mask = target_mask.to(hidden.device)
         with torch.autocast(device_type=hidden.device.type, enabled=False):
             query = self.query_projection(self.query_norm(hidden[:, target_mask].float()))

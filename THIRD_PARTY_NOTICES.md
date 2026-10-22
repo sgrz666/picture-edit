@@ -14,6 +14,15 @@ PeopleComposer, BUDDI/Hi4D and closely-interactive human generation work.
 
 ## Bundled source adaptation
 
+`third_party/champ_guidance/spatial_attention.py` additionally adapts CHAMP's
+`models/transformer_3d.py` and the active spatial path of
+`TemporalBasicTransformerBlock` in `models/attention.py` at the same pinned commit.
+It retains the spatial normalization, projections, self-attention, GEGLU and
+residual structure and parameter names; it uses PyTorch SDPA, accepts an optional
+valid-key mask, and omits temporal/cross attention and unused modules. The Native
+Depth branch can explicitly import the official encoder's active CNN/attention
+weights. No pretrained weight is bundled; the upstream MIT license is retained.
+
 `third_party/champ_guidance/` is a single-frame adaptation of CHAMP's
 `models/guidance_encoder.py` from commit
 `4d0cad2ca23990a26a0c2f69d4ecb1b55f5df140`:

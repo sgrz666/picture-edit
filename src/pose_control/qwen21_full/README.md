@@ -4,6 +4,8 @@
 
 ## 里面有什么
 
+- `depth_condition.py` / `native_depth.py` / `native_depth_runtime.py` —— 方案C第三步：显式Depth来源与valid、CHAMP有效CNN/空间attention初始化、512维残差融合、pair绑定与新checkpoint重建。训练和验证见 [NATIVE_DEPTH.md](NATIVE_DEPTH.md)。
+
 - `native_geometry.py` —— 方案C的独立原生几何前端：从已有Full继承编码器/reasoner及高低尺度融合，输出默认512维token；不含旧SD3控制核或Union，尚未替换主干控制。使用与验证见 [NATIVE_GEOMETRY.md](NATIVE_GEOMETRY.md)。
 - `native_body.py` / `native_integration.py` —— 方案C第二步：主干当层hidden驱动的512维控制分支、target-only写入及checkpoint安全的pipeline条件绑定；显式启用，原默认入口仍走旧Full。见 [NATIVE_BODY.md](NATIVE_BODY.md)。
 

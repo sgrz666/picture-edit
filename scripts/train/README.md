@@ -4,6 +4,8 @@
 
 ## 里面有什么
 
+- `train_qwen21_native_depth.py`：真实Native Geometry/Body与可选CHAMP式Depth的独立入口。显式off/relative_png/camera_z、pair/canvas预检、冻结原geometry/基座、新架构checkpoint；使用服务器现有canonical canvas loader。详见 `src/pose_control/qwen21_full/NATIVE_DEPTH.md`。
+
 ### DeepGen V6 / Native 训练
 
 | 文件 | 训练什么 | 数据 | 权重落盘 |

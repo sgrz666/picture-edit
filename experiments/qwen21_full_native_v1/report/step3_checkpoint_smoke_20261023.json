@@ -1,0 +1,60 @@
+{
+  "checkpoint": "/data/shangguanrz/pic-edit-experiments/qwen21_full_native_v1/depth_step3_20261023_v1/training_smoke_v1/checkpoint_last.pt",
+  "bytes": 529641677,
+  "weights_only_load": true,
+  "rebuild_without_full_checkpoint": true,
+  "architecture": "qwen21_native_depth_runtime_v1",
+  "steps": 3,
+  "distinct_training_pairs": 1,
+  "target_token_hw": [
+    22,
+    12
+  ],
+  "metrics": [
+    {
+      "step": 1,
+      "pair_index": 0,
+      "pair_id": "train_0000001",
+      "loss": 0.16601544618606567,
+      "grad_norm": 0.35360875725746155,
+      "depth_head_grad": 0.0,
+      "depth_conv_grad": 0.0,
+      "target_token_hw": [
+        22,
+        12
+      ],
+      "elapsed_seconds": 1.0048284120857716
+    },
+    {
+      "step": 2,
+      "pair_index": 0,
+      "pair_id": "train_0000001",
+      "loss": 0.5147242546081543,
+      "grad_norm": 0.39790016412734985,
+      "depth_head_grad": 0.18521131575107574,
+      "depth_conv_grad": 0.0,
+      "target_token_hw": [
+        22,
+        12
+      ],
+      "elapsed_seconds": 1.722928882110864
+    },
+    {
+      "step": 3,
+      "pair_index": 0,
+      "pair_id": "train_0000001",
+      "loss": 0.1715771108865738,
+      "grad_norm": 0.7279569506645203,
+      "depth_head_grad": 0.05127273127436638,
+      "depth_conv_grad": 3.3156587164739904e-07,
+      "target_token_hw": [
+        22,
+        12
+      ],
+      "elapsed_seconds": 2.4184370669536293
+    }
+  ],
+  "depth_projection_max_abs": 0.00016037402383517474,
+  "full_checkpoint_sha256": "6aa320cf7e718f824c047594ad8ad04e44385c3249328406e79a75baf5d28b2d",
+  "quality_claim": false
+}

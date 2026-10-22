@@ -1,0 +1,157 @@
+{
+  "checked_pairs": 2,
+  "total_pairs": 2,
+  "depth_kind": "relative_png",
+  "pairs": [
+    {
+      "pair_id": "train_0000001",
+      "target_token_hw": [
+        44,
+        24
+      ],
+      "target_canvas": {
+        "version": "canvas_v2",
+        "policy": "aspect_preserving",
+        "stride": 16,
+        "original_hw": [
+          1080,
+          604
+        ],
+        "resized_hw": [
+          685,
+          383
+        ],
+        "canvas_hw": [
+          704,
+          384
+        ],
+        "offset_xy": [
+          0,
+          9
+        ],
+        "valid_rect": [
+          0,
+          9,
+          383,
+          694
+        ],
+        "token_hw": [
+          44,
+          24
+        ]
+      },
+      "depth": {
+        "pair_id": "train_0000001",
+        "target_stem": "0004",
+        "kind": "relative_png",
+        "polarity": "near_one",
+        "depth_path": "/home/shangguanrz/project/pic-edit/datasets/TikTokDataset/TikTok_3d_assets_native/00001/depth_vis/0004.png",
+        "valid_path": "/home/shangguanrz/project/pic-edit/datasets/TikTokDataset/TikTok_3d_assets_native/00001/smplx_mask/0004.png",
+        "camera_id": "tiktok_smplestx:00001:0004",
+        "units": "unknown",
+        "scale_status": "unknown",
+        "source_id": "train_0000001",
+        "canvas_id": "3cf82829ea0720fb2059f9046b8829884104fdd8056294ad26fa0467656908c4",
+        "source_sha256": "c35dbccb77d699c94bb955e0edfb4a14e5a6440498e8ac0a9b1c455079e6af29",
+        "valid_sha256": "896339588ef4d8f8681125b841d03ed226cecc733da8e5233fb009d03ffa6e21",
+        "canvas": {
+          "original_hw": [
+            1080,
+            604
+          ],
+          "resized_hw": [
+            685,
+            383
+          ],
+          "canvas_hw": [
+            704,
+            384
+          ],
+          "offset_xy": [
+            0,
+            9
+          ]
+        },
+        "schema": "qwen21_native_depth_condition_v1",
+        "input_polarity": "near_one",
+        "normalization_scope": "scene",
+        "metric": false
+      }
+    },
+    {
+      "pair_id": "train_0000002",
+      "target_token_hw": [
+        44,
+        24
+      ],
+      "target_canvas": {
+        "version": "canvas_v2",
+        "policy": "aspect_preserving",
+        "stride": 16,
+        "original_hw": [
+          1080,
+          604
+        ],
+        "resized_hw": [
+          685,
+          383
+        ],
+        "canvas_hw": [
+          704,
+          384
+        ],
+        "offset_xy": [
+          0,
+          9
+        ],
+        "valid_rect": [
+          0,
+          9,
+          383,
+          694
+        ],
+        "token_hw": [
+          44,
+          24
+        ]
+      },
+      "depth": {
+        "pair_id": "train_0000002",
+        "target_stem": "0004",
+        "kind": "relative_png",
+        "polarity": "near_one",
+        "depth_path": "/home/shangguanrz/project/pic-edit/datasets/TikTokDataset/TikTok_3d_assets_native/00001/depth_vis/0004.png",
+        "valid_path": "/home/shangguanrz/project/pic-edit/datasets/TikTokDataset/TikTok_3d_assets_native/00001/smplx_mask/0004.png",
+        "camera_id": "tiktok_smplestx:00001:0004",
+        "units": "unknown",
+        "scale_status": "unknown",
+        "source_id": "train_0000002",
+        "canvas_id": "3cf82829ea0720fb2059f9046b8829884104fdd8056294ad26fa0467656908c4",
+        "source_sha256": "c35dbccb77d699c94bb955e0edfb4a14e5a6440498e8ac0a9b1c455079e6af29",
+        "valid_sha256": "896339588ef4d8f8681125b841d03ed226cecc733da8e5233fb009d03ffa6e21",
+        "canvas": {
+          "original_hw": [
+            1080,
+            604
+          ],
+          "resized_hw": [
+            685,
+            383
+          ],
+          "canvas_hw": [
+            704,
+            384
+          ],
+          "offset_xy": [
+            0,
+            9
+          ]
+        },
+        "schema": "qwen21_native_depth_condition_v1",
+        "input_polarity": "near_one",
+        "normalization_scope": "scene",
+        "metric": false
+      }
+    }
+  ]
+}

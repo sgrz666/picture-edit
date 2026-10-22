@@ -1,0 +1,28 @@
+{
+  "local_pytest": {
+    "passed": 109,
+    "python": "3.13.13 (tags/v3.13.13:01104ce, Apr  7 2026, 19:25:48) [MSC v.1944 64 bit (AMD64)]",
+    "torch": "2.12.0",
+    "command": "python -m pytest tests/test_qwen21_depth_condition.py tests/test_qwen21_native_depth.py tests/test_qwen21_native_depth_runtime.py tests/test_qwen21_native_geometry.py tests/test_qwen21_native_body.py tests/test_qwen21_native_resolution.py -q"
+  },
+  "server_pytest": {
+    "passed": 116,
+    "torch": "2.8.0+cu128",
+    "additional_test": "tests/test_qwen21_canvas_coverage.py",
+    "warnings": [
+      "SWIG module metadata deprecations",
+      "NVML unavailable; CUDA runtime audit passed"
+    ]
+  },
+  "local_matches_deployed_sources": true,
+  "source_sha256": {
+    "src/pose_control/qwen21_full/depth_condition.py": "740cc0431e868b79ca9d72dea65fa637f773639fbe8667dccf69902039281454",
+    "src/pose_control/qwen21_full/native_depth.py": "e483214ca0c95f9953a329f79043e7a02af8211b0ebf91450efb2c7a67109228",
+    "src/pose_control/qwen21_full/native_depth_runtime.py": "460d0e1ec4801577da3726607610bf01238caaa6d4ef6236052abf9456f7bfec",
+    "third_party/champ_guidance/spatial_attention.py": "49356865add621888d4a8154f9804c8e1756a89081f37704956bb383c432b5ed",
+    "scripts/train/train_qwen21_native_depth.py": "06005bdace7f6f15cd6fb69545dfe0b715e2d190e2d8cc72c7a8ff3bd2a12072",
+    "scripts/audit/audit_qwen21_native_depth.py": "0d0089627864eb06da9c9a4fa842142cff362cc5e10876057559149d02495dce",
+    "scripts/audit/verify_qwen21_native_depth_runtime.py": "eeec6c93d5decac9973d263693f1d7f262ee3fb39a725c230515fb735a30e8b7"
+  },
+  "quality_validated": false
+}

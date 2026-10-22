@@ -77,9 +77,13 @@ def _prepare_execution(model, values, features, enabled, valid_mask, strength):
         geometry = model.native_body.prepare_geometry(features)
         if geometry.tokens.device != hidden.device:
             raise ValueError("Prepared geometry and Qwen inputs must share a device")
-    if valid_mask is not None and (not isinstance(valid_mask, torch.Tensor)
-            or valid_mask.dtype != torch.bool or valid_mask.shape != (1, lengths[-1])):
-        raise ValueError("native_valid_mask must be bool [1,N_target]")
+    if valid_mask is not None:
+        if (not isinstance(valid_mask, torch.Tensor) or valid_mask.shape != (1, lengths[-1])
+                or not (valid_mask.dtype == torch.bool or valid_mask.is_floating_point())
+                or (valid_mask.is_floating_point() and (
+                    not bool(torch.isfinite(valid_mask).all())
+                    or bool((valid_mask < 0).any()) or bool((valid_mask > 1).any())))):
+            raise ValueError("native_valid_mask must be bool or 0..1 area coverage [1,N_target]")
     if type(strength) not in (int, float) or not math.isfinite(strength) or strength < 0:
         raise ValueError("native_strength must be finite and nonnegative")
     return _Execution(enabled, target_mask.to(hidden.device), sigma.clone(), geometry,

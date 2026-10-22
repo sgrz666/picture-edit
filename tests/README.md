@@ -4,6 +4,8 @@
 
 ## 分组一览
 
+- `test_qwen21_depth_condition.py` / `test_qwen21_native_depth.py` / `test_qwen21_native_depth_runtime.py`：Depth方向/valid/canvas、CHAMP权重、512残差、pair绑定、checkpoint重建与原生32层Qwen反向。
+
 ### 1. V6 架构契约与适配器（DeepGen 线）
 守护 Unified SMPL-X Adapter V6 的架构边界、条件注入与零初始化不变量。
 

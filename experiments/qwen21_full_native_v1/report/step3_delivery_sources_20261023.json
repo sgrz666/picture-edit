@@ -1,0 +1,92 @@
+{
+  "timestamp_utc": "20261022T174927Z",
+  "head": "51f7c3611b25395cb0a01fd158b048a59bc62ef1",
+  "source_archive": "/data/shangguanrz/pic-edit-experiments/qwen21_full_native_v1/depth_step3_20261023_v1/source/runtime_and_canvas_20261022T174927Z.tar.gz",
+  "archive_sha256": "425c23f268ccade7b6e7d6a8b46e1ee5613ae409b52899b96f0f11486c2ab8e0",
+  "source_sha256": {
+    "THIRD_PARTY_NOTICES.md": "e6a5338e4325bc769269ec9060f8702e0d280c328c1f11cce00e0cf0bf14f5ff",
+    "scripts/audit/README.md": "deb6f964998e2f8558725bc712066bcbf43d3e0a75642ed30e0ef5da532286fc",
+    "scripts/audit/audit_qwen21_native_depth.py": "0d0089627864eb06da9c9a4fa842142cff362cc5e10876057559149d02495dce",
+    "scripts/audit/audit_qwen21_weight_compatibility.py": "5922481b718112d89423bee082c78e84875eebdce591e581f78d2d2a82dccd00",
+    "scripts/audit/probe_qwen21_face_single_sample.py": "07eea18f28178597d076b61020f74fd660ac1956559be65f3d82544279b4500c",
+    "scripts/audit/verify_qwen21_face_repair.py": "d4a2e563333733b18ac9177e515dfbf37c46be55e1ca99d745d7fcbbdb1880bb",
+    "scripts/audit/verify_qwen21_native_depth_runtime.py": "eeec6c93d5decac9973d263693f1d7f262ee3fb39a725c230515fb735a30e8b7",
+    "scripts/eval/eval_iper_qwen21_full.py": "32e766d6ffb4000e2a636ea2052f8d57c52acf649cf61716c576f7383c5c7628",
+    "scripts/run/run_qwen21_weight_inheritance.py": "0af51635aa74b841c349e49b7ff09eced55b014b76a70c65811fd82cdfbafb8f",
+    "scripts/train/README.md": "64aa2bd7709601e040a586c39b01ad8801c0ed239aa793e6c74c5fcf603838d6",
+    "scripts/train/train_iper_qwen21_body.py": "eb412ac92cc2b538b9aaa5520f7b99b9fb2d7e8e894e8454ecc3d5ff3227fc35",
+    "scripts/train/train_iper_qwen21_face.py": "8bcaf6ab409f826fd117811637d66079c244514e5f324b99b10b6d26ed64d7e0",
+    "scripts/train/train_iper_qwen21_full.py": "075ba0f706139904732cc0434f53a8d732d186ac5bfc87569022dcfafc613485",
+    "scripts/train/train_qwen21_joint_pilot.py": "f150885449bbb7a1b09bc22dcd952dd695a20a7cf1396dda4c0a51fc50b07f87",
+    "scripts/train/train_qwen21_native_depth.py": "06005bdace7f6f15cd6fb69545dfe0b715e2d190e2d8cc72c7a8ff3bd2a12072",
+    "scripts/train/train_qwen21_native_full.py": "a604a7acc3b478b53d55173103205081564131672a63545b5590537e24129b0e",
+    "src/data/README.md": "c18f647b873c5d868dc597389c1d05468def5484b9a6566dfd3360c6a9fb7032",
+    "src/data/__init__.py": "e3b67b2f175494639ae72c45cc548a010751cf786b5b9cfcf6e4de8f194dfea1",
+    "src/data/canvas_contract.py": "b2eb5f923dc8a4ecefed8ad5c39ed148c31fc970b277d5fd1070f5cb62bd12b1",
+    "src/data/geometry_pair_dataset_v2.py": "f215448708b5d2175a87b8f9f8cb193f9dd1f99acb71e0676e5112933aa71614",
+    "src/data/hi4d_qwen21_dataset.py": "9686eb8f4989c3d9b1d1b2eaca59d0ce90f5cbe66e0282b99cec28e2ca57950c",
+    "src/data/iper_dataset.py": "c59d20ac5af63c4d20ca077e0ce59bd8523de9f096bc24b4f4500774b35b9259",
+    "src/data/tiktok_dataset.py": "0692d14d78c3836ec3ae7321bfbd7f22cd6e3afec28904a82bb16d4fb86402f6",
+    "src/pose_control/qwen21_full/NATIVE_DEPTH.md": "cc305474465466b4fd54a43ae53dbac40190aab75dc6aa8fd14c3f5c328c47e8",
+    "src/pose_control/qwen21_full/README.md": "a4025163def7c4883623811461babdc2704c3ef5c5296f2770edfb9e479223f1",
+    "src/pose_control/qwen21_full/canvas_provenance.py": "be7b15135f8733acd05eff9f044908282f2896ac74c33540964e56046f5029c2",
+    "src/pose_control/qwen21_full/data_runtime.py": "42be485e33826653ee93a81d158403140dcab373912ed133c73e7e3375bec155",
+    "src/pose_control/qwen21_full/depth_condition.py": "740cc0431e868b79ca9d72dea65fa637f773639fbe8667dccf69902039281454",
+    "src/pose_control/qwen21_full/execution.py": "24a8bce108ad5412010b321a46fbdcdfc7538f509f5b7d051f352abffaa7b82f",
+    "src/pose_control/qwen21_full/face_coordinates.py": "fb2abb180f2466a123e45af15edd5baefb686d08ffb034efced41e2c4594f9f6",
+    "src/pose_control/qwen21_full/native_body.py": "dc0d35ac18bfecae314b9a55e6c93e0d4c94999d7e828882d6f0302559d870d1",
+    "src/pose_control/qwen21_full/native_depth.py": "e483214ca0c95f9953a329f79043e7a02af8211b0ebf91450efb2c7a67109228",
+    "src/pose_control/qwen21_full/native_depth_runtime.py": "460d0e1ec4801577da3726607610bf01238caaa6d4ef6236052abf9456f7bfec",
+    "src/pose_control/qwen21_full/native_geometry.py": "036fe9f739d656122321872aca93d4d46833f3140d2c37f9acdcb951993a55c2",
+    "src/pose_control/qwen21_full/native_integration.py": "c0175fbc08ab9540cdf9dfb264866985bfb16751d1a050e6f27a32e5562578a9",
+    "src/pose_control/qwen21_full/padding_attention.py": "614d20141fdbaab3564b62d0f9f6ec809bbd7160d11c6a9bf1d17b848d8696ec",
+    "src/pose_control/qwen21_full/qwen_runtime.py": "7a3b4dace0993c3ca417d6e9ed62d34e0c6ee4a347a7799407733ab7b5e41a34",
+    "tests/README.md": "43dcef3eddcfe87a23bd4da6f2536c881d22126a488e8b5331680823aaaa2157",
+    "tests/test_canvas_contract.py": "89049edd9f3868c9a1032f6944077e0c5fadb578ea974e6e04edca06c9d62f2a",
+    "tests/test_geometry_pair_dataset_v2.py": "a3f9df5cdecef1f238e48b160cf064636220b96bcf8c16f745d35ae6b14ee385",
+    "tests/test_hi4d_canvas_record.py": "e57ced0f94b43190a11c555b411aba1ab0f55a27e21cb9e4a6b7f57c9a8d6568",
+    "tests/test_qwen21_canvas_coverage.py": "7a6bc8132e5952085671c680ee8977c3db022efb40cc38aca41c13cee5de211f",
+    "tests/test_qwen21_depth_condition.py": "f2fe4f57fb63951e71e21a2b1a4fa18d62484bb6e82ced655325624aea12a942",
+    "tests/test_qwen21_native_depth.py": "c216079aa881fc4fc29d4a9bf7fc8c2809898ef5e0319de2aef52158d99ffb90",
+    "tests/test_qwen21_native_depth_runtime.py": "b955a7cc741936276849adebcb281f7ceee458d3ed718cec6fd6c269ce0bd5ad",
+    "tests/test_qwen21_padding_attention.py": "e5b5060638c6b08306149e236eb0a130c415844b5933c008810943e29e120ad4",
+    "tests/test_tiktok_data_contract.py": "527252abd1486b0e57044f935a4768b7621ddf0e52ec3fdbe2c02c6e5226dd3d",
+    "tests/test_tiktok_qwen21_full_chain.py": "839f1717f2acc3b0f42af0927fbb35d3e8965032e7faad2309a1abb879c75c22",
+    "third_party/champ_guidance/LICENSE": "2d6fbc322496915068f8b764e5282f080fe09858383f987ca8024add6b919ab1",
+    "third_party/champ_guidance/README.md": "f35867c61a3a04e883ff578fcbb5e20e60fe730a44a43f8604993936fc2876b2",
+    "third_party/champ_guidance/spatial_attention.py": "49356865add621888d4a8154f9804c8e1756a89081f37704956bb383c432b5ed"
+  },
+  "documentation_changes": [
+    {
+      "path": "src/pose_control/qwen21_full/README.md",
+      "before_sha256": "62d9ca58abe95738c795d4ad25dcd3af05b1c6e6d4a11c8cd225b398010c740c",
+      "after_sha256": "a4025163def7c4883623811461babdc2704c3ef5c5296f2770edfb9e479223f1"
+    },
+    {
+      "path": "scripts/train/README.md",
+      "before_sha256": "af93dc4385d043c49a0f4dcb58ac6a28e08f5a09841f424d1d9ab9b2c935455b",
+      "after_sha256": "64aa2bd7709601e040a586c39b01ad8801c0ed239aa793e6c74c5fcf603838d6"
+    },
+    {
+      "path": "scripts/audit/README.md",
+      "before_sha256": "34221ef527923eda0f9997a7cab2ab962d0d131dce2246d25474aefae17a3b6d",
+      "after_sha256": "deb6f964998e2f8558725bc712066bcbf43d3e0a75642ed30e0ef5da532286fc"
+    },
+    {
+      "path": "tests/README.md",
+      "before_sha256": "e7e52c5291949757c9a63448dba204de671116a91c74397a796dc70e3a2eba25",
+      "after_sha256": "43dcef3eddcfe87a23bd4da6f2536c881d22126a488e8b5331680823aaaa2157"
+    },
+    {
+      "path": "third_party/champ_guidance/README.md",
+      "before_sha256": "56183f112828ee0cf7110c89fbc8b36771505ed14c49c5f279c8e15647afc112",
+      "after_sha256": "f35867c61a3a04e883ff578fcbb5e20e60fe730a44a43f8604993936fc2876b2"
+    },
+    {
+      "path": "THIRD_PARTY_NOTICES.md",
+      "before_sha256": "c0681d7a04bf660b3bf1c5851563be424a2c58939ed244732a67dc0e866232ac",
+      "after_sha256": "e6a5338e4325bc769269ec9060f8702e0d280c328c1f11cce00e0cf0bf14f5ff"
+    }
+  ],
+  "scope": "Text source only, including current uncommitted canvas prerequisites; no media/model/cache moved or included"
+}
