@@ -1,0 +1,203 @@
+{
+  "schema": "qwen21_adapter_selection_audit_v1",
+  "observed_date": "2026-10-20",
+  "union": {
+    "parameter_count": 3775479808,
+    "tensor_count": 180,
+    "bf16_weight_bytes": 7550959616,
+    "bf16_weight_GiB": 7.032379150390625
+  },
+  "pro": {
+    "trainable_parameters": 14646784,
+    "fixed_positions": 18,
+    "training_pairs": 6,
+    "people": 8,
+    "valid_face_id_people": 2,
+    "control_lora_targets": [],
+    "metrics": {
+      "global": {
+        "initial": 0.15983019976152313,
+        "final": 0.15076623318923843,
+        "relative_drop": 0.05670997462187193
+      },
+      "face": {
+        "initial": 0.24680854711267683,
+        "final": 0.16817687162094647,
+        "relative_drop": 0.3185938105126976
+      },
+      "contact": {
+        "initial": 0.04645849350425932,
+        "final": 0.016554104371203318,
+        "relative_drop": 0.643679699392628
+      },
+      "hand": {
+        "initial": 0.26094166686137515,
+        "final": 0.18413034743732876,
+        "relative_drop": 0.2943620325107078
+      },
+      "body": {
+        "initial": 0.2340583180387815,
+        "final": 0.19718356968628037,
+        "relative_drop": 0.15754513089507585
+      },
+      "regional_total": {
+        "initial": 0.9480972157584296,
+        "final": 0.7168111254771551,
+        "relative_drop": 0.243947652663717
+      }
+    },
+    "engineering_passed": true,
+    "quality_passed": false,
+    "full_sampling_quality_images_at_20261018_report": 0
+  },
+  "light_body_50_pairs_NOT_full": {
+    "qwen21_off": {
+      "identity_cosine": {
+        "mean": 0.8186558941577343,
+        "count": 47
+      },
+      "identity_detected": {
+        "mean": 0.94,
+        "count": 50
+      },
+      "pose_pck_002": {
+        "mean": 0.2031372549019608,
+        "count": 50
+      },
+      "psnr": {
+        "mean": 17.53470428191949,
+        "count": 50
+      }
+    },
+    "qwen21_on": {
+      "identity_cosine": {
+        "mean": 0.35104678040172194,
+        "count": 47
+      },
+      "identity_detected": {
+        "mean": 0.94,
+        "count": 50
+      },
+      "pose_pck_002": {
+        "mean": 0.9800000000000001,
+        "count": 50
+      },
+      "psnr": {
+        "mean": 25.863256641638074,
+        "count": 50
+      }
+    }
+  },
+  "bfs_common_24": {
+    "body": {
+      "identity_A_mean": 0.3590948550651471,
+      "identity_A_n": 24,
+      "eligible_pose_pck_002_mean": 0.9898897058823529
+    },
+    "nolora": {
+      "identity_A_mean": 0.5209582786386212,
+      "identity_A_n": 24,
+      "eligible_pose_pck_002_mean": 0.9497549019607844
+    },
+    "bfs": {
+      "identity_A_mean": 0.44219619408249855,
+      "identity_A_n": 24,
+      "eligible_pose_pck_002_mean": 0.9629289215686274
+    },
+    "alternative": {
+      "identity_A_mean": 0.4527437298869093,
+      "identity_A_n": 24,
+      "eligible_pose_pck_002_mean": 0.9678308823529411
+    }
+  },
+  "light_body_face_reference_ablation_separate_512_test_and_1024_val": {
+    "512": {
+      "body": {
+        "identity_cosine": {
+          "mean": 0.39530293544133505,
+          "n": 30
+        },
+        "pose_pck_002": {
+          "mean": 0.9764705882352942,
+          "n": 30
+        }
+      },
+      "body_crop_role": {
+        "identity_cosine": {
+          "mean": 0.471869695186615,
+          "n": 30
+        },
+        "pose_pck_002": {
+          "mean": 0.9784313725490196,
+          "n": 30
+        }
+      },
+      "body_face": {
+        "identity_cosine": {
+          "mean": 0.41418373882770537,
+          "n": 30
+        },
+        "pose_pck_002": {
+          "mean": 0.9745098039215686,
+          "n": 30
+        }
+      },
+      "body_face_crop": {
+        "identity_cosine": {
+          "mean": 0.4802065884073575,
+          "n": 30
+        },
+        "pose_pck_002": {
+          "mean": 0.9803921568627452,
+          "n": 30
+        }
+      }
+    },
+    "1024": {
+      "body": {
+        "identity_cosine": {
+          "mean": 0.6600272059440613,
+          "n": 21
+        },
+        "pose_pck_002": {
+          "mean": 0.9971988795518207,
+          "n": 21
+        }
+      },
+      "body_face": {
+        "identity_cosine": {
+          "mean": 0.6661101707390377,
+          "n": 21
+        },
+        "pose_pck_002": {
+          "mean": 0.9971988795518207,
+          "n": 21
+        }
+      },
+      "body_face_crop": {
+        "identity_cosine": {
+          "mean": 0.7048559245609102,
+          "n": 21
+        },
+        "pose_pck_002": {
+          "mean": 0.9943977591036415,
+          "n": 21
+        }
+      }
+    }
+  },
+  "interpretation": "flow MSE、ArcFace、DINO 与不同归一化的 PCK 不跨口径排名。",
+  "current_module_counts": {
+    "observed_date": "2026-10-20",
+    "full_unique_parameters": 373099568,
+    "full_buffers": 226492428,
+    "full_state_tensor_elements": 599591996,
+    "pro_unique_parameters_source_dim1600": 14646784,
+    "method": "Current source constructors on torch meta; only value-dependent Qwen21FullAdapter.reset_output_bridges skipped. No weights loaded, no GPU used.",
+    "full_configuration": {
+      "enable_face_adapter": true,
+      "enable_hand_adapter": true
+    },
+    "torch_version": "2.12.0+cpu"
+  }
+}

@@ -1,0 +1,49 @@
+{
+  "schema": "full_native_geometry_research_v1",
+  "observed_date": "2026-10-22",
+  "timezone": "Asia/Shanghai",
+  "scope": "research_only",
+  "subagents_used": false,
+  "remote": {
+    "host": "sg",
+    "root": "/home/shangguanrz/project/pic-edit",
+    "head": "2ebd026b8568737d2f0e13c4ebea6a0634c54fff",
+    "status_before": "clean",
+    "status_after_reading": "clean",
+    "files_modified": false
+  },
+  "local_head": "0c6b9baf1a9e54c2a89cff1dfcc339efef33c3d1",
+  "source_sha256": [
+    {"path": "src/pose_control/qwen21_full/geometry_encoder.py", "remote": "47c073c05d467d7f7c70d5b28e4929c3730e518fa6fe69d20453f29e474ea198", "local_matches": true},
+    {"path": "src/pose_control/qwen21_full/condition_bridge.py", "remote": "81b7eed16f9892f58657571a44bd3d0e38a1bce7821725692cbbee92f9f5c2fd", "local_matches": true},
+    {"path": "src/pose_control/qwen21_full/reasoning/person_geometry.py", "remote": "175f64b6ba08e03f252e38030dc7b5b4a6aa4b4d0b5af9dad994cd168536f54e", "local_matches": true},
+    {"path": "src/data/iper_dataset.py", "remote": "1fa8ae106cbaad919a802639bbe8a91c26824d7896cd5af2fa70c96e00d8f274", "local": "c29dcaa85d694221e26f5aa9bdaf4db8510acd0cc0181b145f7d9a9d9cb95c71", "local_matches": false},
+    {"path": "src/data/tiktok_dataset.py", "remote": "cea712ec04c1516c474310a9f4b75c846db5d30d1648563842130fc7d22b73df", "local_matches": true},
+    {"path": "src/controls/generator.py", "remote": "6c8dfdbe72a39fafae66d2ad590cb4ac792ca5e06a21e1945d06335ffa571da0", "local_matches": true}
+  ],
+  "existing_default_checkpoints_confirmed_by_stat_only": [
+    {"path": "/home/shangguanrz/nihaochen/qwen21_full/body_512_100/checkpoint_last.pt", "bytes": 4009974391},
+    {"path": "/home/shangguanrz/nihaochen/qwen21_full/face_512_100/checkpoint_last.pt", "bytes": 2793000102}
+  ],
+  "proposal_arithmetic": {"shared_down": [4096, 512], "up_count": 6, "up_shape": [512, 4096], "projection_weight_elements_only": 14680064},
+  "sources": [
+    "https://github.com/QwenLM/Qwen-Image-2.1",
+    "https://arxiv.org/abs/2302.08453",
+    "https://vislearn.github.io/ControlNet-XS/",
+    "https://arxiv.org/html/2408.06070v3",
+    "https://arxiv.org/html/2403.14781v2",
+    "https://arxiv.org/html/2404.09967v2",
+    "https://openaccess.thecvf.com/content/ICCV2025/html/Tan_OminiControl_Minimal_and_Universal_Control_for_Diffusion_Transformer_ICCV_2025_paper.html",
+    "https://arxiv.org/html/2404.15506v4",
+    "https://arxiv.org/html/2403.12013v1",
+    "https://arxiv.org/abs/2404.07987"
+  ],
+  "limitations": [
+    "No new model instantiation, training, GPU inference or model tests.",
+    "Existing checkpoint contents were not loaded or rehashed.",
+    "Depth representation inconsistency is established in code paths; actual direction and producer of each dataset asset remain to be audited before implementation.",
+    "Five matching hashes do not establish whole repository parity.",
+    "HumanSD CVF page fetch returned 403 and was not used as detailed methodological evidence.",
+    "All native geometry modules, budgets and experiment arms in the report are proposals, not implemented features."
+  ]
+}

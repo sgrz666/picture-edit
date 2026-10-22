@@ -1,0 +1,356 @@
+{
+  "schema": "qwen21_adapter_selection_manifest_v1",
+  "collected_at": "2026-10-20T00:34:41.248909+08:00",
+  "local_head": "292490bc502aebf4248c65e17cb649a10c090fd2",
+  "remote_head_observed": "2ebd026b8568737d2f0e13c4ebea6a0634c54fff",
+  "official_source_commit": "13bb3c625e8b1e457d7124d92207b49e00e4a6fe",
+  "key_local_remote_source_hashes_equal": [
+    "src/pose_control/qwen21_pro/adapter.py",
+    "src/pose_control/qwen21_pro/integration.py",
+    "src/pose_control/qwen21_pro/contracts.py",
+    "src/pose_control/qwen21_full/qwen_adapter.py",
+    "src/pose_control/qwen21_full/control_core.py"
+  ],
+  "remote_origins": {
+    "evidence/fixed_eval_000000.json": "sg:/data/shangguanrz/pic-edit-experiments/qwen21_pro_adapter_v1/runs/pilot_main200_v4_20261018T161055/fixed_eval_000000.json",
+    "evidence/fixed_eval_000200.json": "sg:/data/shangguanrz/pic-edit-experiments/qwen21_pro_adapter_v1/runs/pilot_main200_v4_20261018T161055/fixed_eval_000200.json",
+    "evidence/gate.json": "sg:/data/shangguanrz/pic-edit-experiments/qwen21_pro_adapter_v1/runs/pilot_main200_v4_20261018T161055/gate.json",
+    "evidence/training_protocol.json": "sg:/data/shangguanrz/pic-edit-experiments/qwen21_pro_adapter_v1/runs/pilot_main200_v4_20261018T161055/training_protocol.json",
+    "evidence/report.json": "sg:/data/shangguanrz/pic-edit-experiments/qwen21_pro_adapter_v1/runs/pilot_main200_v4_20261018T161055/report.json",
+    "evidence/initialization.json": "sg:/data/shangguanrz/pic-edit-experiments/qwen21_pro_adapter_v1/runs/pilot_main200_v4_20261018T161055/initialization.json",
+    "evidence/pro_val_iper_sampling.json": "sg:/data/shangguanrz/pic-edit-experiments/qwen21_pro_adapter_v1/runs/valpair_main200_20261020T001400/iper_val_e36352d6b4b72ae362cb1ce3/sampling.json",
+    "evidence/pro_val_iper_coarse.png": "sg:/data/shangguanrz/pic-edit-experiments/qwen21_pro_adapter_v1/runs/valpair_main200_20261020T001400/iper_val_e36352d6b4b72ae362cb1ce3/coarse/coarse.png",
+    "evidence/pro_val_iper_source.png": "sg:/data/shangguanrz/pic-edit-experiments/qwen21_union_dataset_adaptation_v1/data/assets/iper_val_e36352d6b4b72ae362cb1ce3/source.png",
+    "evidence/pro_results_20261018.json": "sg:/home/shangguanrz/project/pic-edit/experiments/6.qwen-controlnet union/qwen21_pro_adapter_v1/report/results_20261018.json",
+    "evidence/pro_prior_verification.json": "sg:/home/shangguanrz/project/pic-edit/experiments/6.qwen-controlnet union/qwen21_pro_adapter_v1/report/evidence/verification.json",
+    "evidence/pro_valpair_started_20261020.json": "sg:/data/shangguanrz/pic-edit-experiments/qwen21_pro_adapter_v1/runs/valpair_main200_20261020T001400/run.json",
+    "evidence/face_four_arm_512.json": "sg:/home/shangguanrz/nihaochen/qwen21_face/test_four_arm_metrics/summary.json",
+    "evidence/face_val_1024.json": "sg:/home/shangguanrz/nihaochen/iper1024/face_val50_best_loss_metrics/summary.json",
+    "source/deepgen_transformer_config.json": "sg:/home/shangguanrz/project/pic-edit/models/DeepGen-1.0-diffusers/transformer/config.json",
+    "evidence/single__hard_02__norefs_ctrl10__seed42.png": "sg:/data/shangguanrz/pic-edit-experiments/qwen21_union_migration_v1/runs/probe_skeleton_ref_ablation_20261019T222727/single__hard_02__norefs_ctrl10__seed42.png",
+    "evidence/single__hard_02__norefs_ctrl00__seed42.png": "sg:/data/shangguanrz/pic-edit-experiments/qwen21_union_migration_v1/runs/probe_skeleton_ref_ablation_20261019T222727/single__hard_02__norefs_ctrl00__seed42.png"
+  },
+  "official_source_snapshot_origin": "research/union_adapter_architecture_20261017/source_snapshot/official",
+  "web_sources_checked_20261020": [
+    "https://huggingface.co/Qwen/Qwen-Image-2.1",
+    "https://github.com/QwenLM/Qwen-Image-2.1",
+    "https://huggingface.co/alibaba-pai/Qwen-Image-2.1-Fun-Controlnet-Union",
+    "https://github.com/aigc-apps/VideoX-Fun/blob/main/videox_fun/models/qwenimage21_transformer2d_control.py",
+    "https://arxiv.org/abs/2401.07519",
+    "https://arxiv.org/abs/2404.16022",
+    "https://arxiv.org/abs/2506.21416"
+  ],
+  "limitations": [
+    "No new model training or GPU inference in this study.",
+    "First 40-step iPER validation image appeared during the study; no matched baseline/quality report, dual inference pending.",
+    "5 matching source hashes do not establish whole repository parity.",
+    "Manifest excludes itself; external repository references must remain at these bytes."
+  ],
+  "files": [
+    {
+      "path": "experiments/bfs_body_face_joint_pilot_20261008/report/summary.md",
+      "bytes": 2971,
+      "sha256": "ebb3c6d6ccc352ac2c50d6c0fa1d626d9b97b0405947b1607b4a07d219c7de39"
+    },
+    {
+      "path": "experiments/bfs_compare_30_20261004/results.json",
+      "bytes": 25785,
+      "sha256": "4c7d75b9f40eadb8d2be6c38120075cc406b558d181d4def293643b61b0a4137"
+    },
+    {
+      "path": "experiments/qwen21_union_migration_v1/output/probe_ref_ablation/summary.json",
+      "bytes": 1062,
+      "sha256": "15ecae3a190dc47a3fa4d6f031b4242fb7d86338217e3617c055599271f65b7a"
+    },
+    {
+      "path": "experiments/qwen21_union_migration_v1/output/review/single__hard_02__union_s05__seed42.png",
+      "bytes": 958425,
+      "sha256": "708359503f97c32d8fa578860614fd3688d1b5ddf258189a6dcbd44f350b9248"
+    },
+    {
+      "path": "experiments/qwen21_union_migration_v1/output/review/single__hard_02__union_s10__seed42.png",
+      "bytes": 915997,
+      "sha256": "85ab159efd6ee0e337920a5994a84ea2178edec24b8ebefeecaec74482fda8be"
+    },
+    {
+      "path": "experiments/qwen21_union_migration_v1/output/review/source.png",
+      "bytes": 840940,
+      "sha256": "8708b8159be270edf4b2155ebd8b222f9363c855441d2157e11ee53845d848c8"
+    },
+    {
+      "path": "experiments/qwen21_union_migration_v1/output/summary.json",
+      "bytes": 505,
+      "sha256": "430167dcb5d2cf000a52fb2ef515872af20e94040888adbdd5ccf5abacbc30d0"
+    },
+    {
+      "path": "experiments/qwen21_union_migration_v1/report/METRICS.md",
+      "bytes": 11343,
+      "sha256": "ed57db94d58b19e225f12c932ec47d4ffbb718bf9472ad9b526f380495f07957"
+    },
+    {
+      "path": "experiments/qwen21_union_migration_v1/scripts/08_evaluate.py",
+      "bytes": 18934,
+      "sha256": "091d8be426bd62874d81159ad213d6943ce498cf4d0454d54e05c3d490ae9e69"
+    },
+    {
+      "path": "experiments/qwen21_union_migration_v1/scripts/21_probe_ref_ablation.py",
+      "bytes": 4336,
+      "sha256": "9e68c23e2ae735680fcb5882b5678709f998cd1ea40dd563d0da56f717b6c437"
+    },
+    {
+      "path": "experiments/qwen21_union_migration_v1/scripts/reference_union_pipeline.py",
+      "bytes": 15971,
+      "sha256": "fbcc0368d2493e4b09bcf1c4658b9481ad6867e0c6636b771b2421b32d2bb6e7"
+    },
+    {
+      "path": "research/adapter_value_diagnosis_20261011/evidence/audit_evidence.json",
+      "bytes": 104366,
+      "sha256": "7b49166687f3f1b74f2532a4e9cacbdb8fbee8dcda7c7d472522e58a3fa8f957"
+    },
+    {
+      "path": "research/adapter_value_diagnosis_20261011/evidence/checkpoint_parameter_counts.json",
+      "bytes": 614,
+      "sha256": "62539c080c9d88d6385888d4408c561ee0c857e2a2230be5e1e03f03632405e6"
+    },
+    {
+      "path": "research/adapter_value_diagnosis_20261011/evidence/fresh_parity_512.json",
+      "bytes": 8362,
+      "sha256": "53dc7ae2f2dc6e00e9ac77b535abf444e98f2be9688aac55b79cfd14ce67b922"
+    },
+    {
+      "path": "research/qwen21_adapter_selection_20261020/evidence/calculated.json",
+      "bytes": 5347,
+      "sha256": "5d864318947586abc919bd20ba39622c8262feaed10ae44d030be7ee0249e996"
+    },
+    {
+      "path": "research/qwen21_adapter_selection_20261020/evidence/face_four_arm_512.json",
+      "bytes": 16472,
+      "sha256": "4b18926973845840cf4a3d0236d3ec6f20fe2cff5e958e0f87c438b582c36422"
+    },
+    {
+      "path": "research/qwen21_adapter_selection_20261020/evidence/face_val_1024.json",
+      "bytes": 12395,
+      "sha256": "113cf40507838de35b4108905217b9a641e57dda917a153f18e9ffd03258be4a"
+    },
+    {
+      "path": "research/qwen21_adapter_selection_20261020/evidence/fixed_eval_000000.json",
+      "bytes": 11077,
+      "sha256": "03ba5af6ac43b31db6fa54093d86f05c8cc17adec403a943704f10e56150097c"
+    },
+    {
+      "path": "research/qwen21_adapter_selection_20261020/evidence/fixed_eval_000200.json",
+      "bytes": 11087,
+      "sha256": "8a76782389b0a9046f433ffe64cc77bba31f59cdf9de312e2df6fa9f1a0b4769"
+    },
+    {
+      "path": "research/qwen21_adapter_selection_20261020/evidence/gate.json",
+      "bytes": 9495,
+      "sha256": "637d9a400cc96b4a8461e8551e578741d3d5a4ab089fad8239afc02f8841133d"
+    },
+    {
+      "path": "research/qwen21_adapter_selection_20261020/evidence/initialization.json",
+      "bytes": 8821,
+      "sha256": "ff27e2f9e2f1fdb08efc5e7cfccbcf25dd7722186290b596ab02f9b417b5b162"
+    },
+    {
+      "path": "research/qwen21_adapter_selection_20261020/evidence/parameter_counts.json",
+      "bytes": 475,
+      "sha256": "0fc952edbf0fe74ab992c91860127bfa48401eb6e71eac1b2fc40ee1f3d47497"
+    },
+    {
+      "path": "research/qwen21_adapter_selection_20261020/evidence/pro_prior_verification.json",
+      "bytes": 3313,
+      "sha256": "dfd826f804c03b70a0c5619d29245ecb0a10c239834cbdb90324501d7c8edb2b"
+    },
+    {
+      "path": "research/qwen21_adapter_selection_20261020/evidence/pro_results_20261018.json",
+      "bytes": 8654,
+      "sha256": "f88c1062dd4e765b19292e33e8023adb651c1e5f85543e9e97e1943f5c3fc7b0"
+    },
+    {
+      "path": "research/qwen21_adapter_selection_20261020/evidence/pro_val_iper_coarse.png",
+      "bytes": 238527,
+      "sha256": "6e50e46720e7fce0373f79d48dcd6f5100a85d3154bb8139142c71237e27207e"
+    },
+    {
+      "path": "research/qwen21_adapter_selection_20261020/evidence/pro_val_iper_sampling.json",
+      "bytes": 29502,
+      "sha256": "3b6735559c19d6a28ad888d5480ea41fcb448e13b644e3998fe8dcbd5448a7a5"
+    },
+    {
+      "path": "research/qwen21_adapter_selection_20261020/evidence/pro_val_iper_source.png",
+      "bytes": 175381,
+      "sha256": "aa62882da0d4928672a61ef580f876815de5ee80d478809a826be72f0ed99d84"
+    },
+    {
+      "path": "research/qwen21_adapter_selection_20261020/evidence/pro_valpair_started_20261020.json",
+      "bytes": 9528,
+      "sha256": "d79fda83782c6d4cdc530838174ad09bd3cb180b14ae26a1a70e233bbc510f47"
+    },
+    {
+      "path": "research/qwen21_adapter_selection_20261020/evidence/remote_status_20261020.txt",
+      "bytes": 1538,
+      "sha256": "2cd6fffdd80708c10b0bff7fa6a6d61931de42cbf6b75fc2f45634520eb8525a"
+    },
+    {
+      "path": "research/qwen21_adapter_selection_20261020/evidence/report.json",
+      "bytes": 9551,
+      "sha256": "49141e6e5e31bf27a30b18279d46ff01b073f8f7780b237b668d07150930c7c7"
+    },
+    {
+      "path": "research/qwen21_adapter_selection_20261020/evidence/single__hard_02__norefs_ctrl00__seed42.png",
+      "bytes": 899832,
+      "sha256": "766e34b0c62c414ddb9d232d2c6f6b53d508ca8aa9c87b9828fc07c64ddf780e"
+    },
+    {
+      "path": "research/qwen21_adapter_selection_20261020/evidence/single__hard_02__norefs_ctrl10__seed42.png",
+      "bytes": 950759,
+      "sha256": "4a6728269191affc6de85fe2225b6fb78d879a62692e2b10ef4508305b5dfb81"
+    },
+    {
+      "path": "research/qwen21_adapter_selection_20261020/evidence/training_protocol.json",
+      "bytes": 2305,
+      "sha256": "1330fd9ddda9c849abba43ca5e56095ebe250fa68243e3770a8e585e88d8e308"
+    },
+    {
+      "path": "research/qwen21_adapter_selection_20261020/README.md",
+      "bytes": 2397,
+      "sha256": "8418acc8e997631027c04e5d4d40a12e3eaf0236a0afb3b7017dd4ad5e457729"
+    },
+    {
+      "path": "research/qwen21_adapter_selection_20261020/REPORT.zh-CN.md",
+      "bytes": 28007,
+      "sha256": "b7a26350faaa73474d26067c54ca1b2806fca56089cee50607dd28a36b3e73bd"
+    },
+    {
+      "path": "research/qwen21_adapter_selection_20261020/scripts/audit_evidence.py",
+      "bytes": 7569,
+      "sha256": "173e3d0490bb93fa09ee5811b93aa5b7413535426e16944a3ec9881e8e258eb5"
+    },
+    {
+      "path": "research/qwen21_adapter_selection_20261020/scripts/seal_manifest.py",
+      "bytes": 6812,
+      "sha256": "f9c1c778a869c2d9acb990109497ed24a4e378cb3a6da871ff5276454d4f58de"
+    },
+    {
+      "path": "research/qwen21_adapter_selection_20261020/source/deepgen_transformer_config.json",
+      "bytes": 577,
+      "sha256": "e8cc4cfae099425181236be04924979672b9f62c94b5a11d47a305f89c372300"
+    },
+    {
+      "path": "research/qwen21_adapter_selection_20261020/source/official_base_transformer.py",
+      "bytes": 54812,
+      "sha256": "7947ce82472804ae8b5643843d39dee3ccf0852768af895a3fd37a5fb700744a"
+    },
+    {
+      "path": "research/qwen21_adapter_selection_20261020/source/official_control_pipeline.py",
+      "bytes": 42671,
+      "sha256": "d1ba28286956fe57a911f101fe9668c6ff629e0df4eaf32cad1625cae737152d"
+    },
+    {
+      "path": "research/qwen21_adapter_selection_20261020/source/official_union_transformer.py",
+      "bytes": 21343,
+      "sha256": "9a59ed89ea72ab6b4900caa411b756b16d15dcdf53e52dec4610dda1e094f991"
+    },
+    {
+      "path": "research/qwen21_controlnet_transfer_20261015/source_snapshot/upstream/union_safetensors_header.json",
+      "bytes": 20280,
+      "sha256": "bcc22ee233b36a160111ff6b03b0e8cfef641fcefa9c84aa01383ef0339aa225"
+    },
+    {
+      "path": "research/union_adapter_architecture_20261017/evidence/body20k_50_summary.json",
+      "bytes": 21318,
+      "sha256": "c6f786bd493e654189d55890f7009f4f09980e9f9e76945ac0a077657069efea"
+    },
+    {
+      "path": "research/union_adapter_architecture_20261017/evidence/full_face_step0_summary.json",
+      "bytes": 710,
+      "sha256": "f9765b437c7226de06fb1bc1f86061824b0fab26884d96bd360af864566e98f3"
+    },
+    {
+      "path": "research/union_adapter_architecture_20261017/evidence/full_face_step3000_summary.json",
+      "bytes": 709,
+      "sha256": "3e15e031bfb4ce3a0963a1f224bbd5740e9d53d47647300d96eb37e3a28c1ec0"
+    },
+    {
+      "path": "research/union_adapter_architecture_20261017/evidence/overfit200_gate.json",
+      "bytes": 8748,
+      "sha256": "8531d40a99e6035608da0bc8d927ec00f56e4d8e028a2d9b8513d3d7dc083549"
+    },
+    {
+      "path": "src/pose_control/qwen21/body_adapter.py",
+      "bytes": 8904,
+      "sha256": "9e31bf4b731baaf5b0a309081e099aba121bf88bebe1afbd793d0c528ee440d3"
+    },
+    {
+      "path": "src/pose_control/qwen21_full/control_core.py",
+      "bytes": 21401,
+      "sha256": "e5e551e9ab8696f1d547b9b6a111a5b690a9942913b51cc0eb48a0ed011420c9"
+    },
+    {
+      "path": "src/pose_control/qwen21_full/deepgen_adapter.py",
+      "bytes": 25864,
+      "sha256": "b63ad72639673ea6949ccb32c5831ca22b614a13952196e3ee6d5c904543544d"
+    },
+    {
+      "path": "src/pose_control/qwen21_full/execution.py",
+      "bytes": 46068,
+      "sha256": "ad9d8b46a467d57865f019b60a08870fb3d2eaa266384661b0bebfb945bd5ecb"
+    },
+    {
+      "path": "src/pose_control/qwen21_full/joint_training.py",
+      "bytes": 16800,
+      "sha256": "dd809fad8c6cb9a9391e48bf1205cb2aaecb2573678801a1a6b89f87756e4cfd"
+    },
+    {
+      "path": "src/pose_control/qwen21_full/qwen_adapter.py",
+      "bytes": 39030,
+      "sha256": "f2b7d74db4ca63cca70158b8b9de54c07456909e51dc3ebf77481523adf7c367"
+    },
+    {
+      "path": "src/pose_control/qwen21_pro/adapter.py",
+      "bytes": 6355,
+      "sha256": "9b5802e1f9e08ff97b520b541393e6b6f02ce68a07d65f2d2e13a819b2790eba"
+    },
+    {
+      "path": "src/pose_control/qwen21_pro/banks.py",
+      "bytes": 2602,
+      "sha256": "395c5f9cecc7acd5505f70133cff5bcdad05536a6a2fe9c230c7d7d522d9700b"
+    },
+    {
+      "path": "src/pose_control/qwen21_pro/contracts.py",
+      "bytes": 16952,
+      "sha256": "f6c56bbc845d6d709b7502a326a0d9adc322c1d04983cc9c02dc129edc638a74"
+    },
+    {
+      "path": "src/pose_control/qwen21_pro/encoders.py",
+      "bytes": 3449,
+      "sha256": "ff632cdbd342519b9459eaecda7b3ecf4913dfe47f999b033b225b9abfe687bd"
+    },
+    {
+      "path": "src/pose_control/qwen21_pro/features.py",
+      "bytes": 18174,
+      "sha256": "d02a2252a80b2c6b71c5fc4484c44b159ef8b1762e280a95e5c1a830e4f3ce05"
+    },
+    {
+      "path": "src/pose_control/qwen21_pro/integration.py",
+      "bytes": 15256,
+      "sha256": "756af303a46c51f7869fe5286f6a42150c50708d6741c8e65d3d7fe5102e80fa"
+    },
+    {
+      "path": "src/pose_control/qwen21_pro/losses.py",
+      "bytes": 6929,
+      "sha256": "e91f0b86a7db247702569dada5dfd525c0fa8599675491986f9686bc12aadfd5"
+    },
+    {
+      "path": "src/pose_control/qwen21_pro/refinement.py",
+      "bytes": 46262,
+      "sha256": "30f6d3aec0c6c2e3eaa8e7807b09ce1f9889fafac6a48dc3059dda1a5564c2b3"
+    },
+    {
+      "path": "src/pose_control/qwen21_pro/training.py",
+      "bytes": 22127,
+      "sha256": "364aca1a8a03fb97675f2842d7ed55cefc21c72d775ffafc44e623fef1bceea8"
+    }
+  ]
+}

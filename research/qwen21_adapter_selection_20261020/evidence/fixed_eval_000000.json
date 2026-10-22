@@ -1,0 +1,393 @@
+{
+  "schema": "qwen21_pro_fixed18_global_v1",
+  "noise_seed": 43,
+  "noise_dtype": "torch.bfloat16",
+  "indices": [
+    250,
+    500,
+    750
+  ],
+  "schedule_steps": 1000,
+  "global_content_mse": 0.15983019976152313,
+  "regional_total": 0.9480972157584296,
+  "entries": [
+    {
+      "dataset": "iper",
+      "sample_id": "iper_train_523425c13f83a7b3bb419121",
+      "index": 250,
+      "global_content_mse": 0.10634923726320267,
+      "regional_total": 0.5723679065704346,
+      "losses": {
+        "global": 0.10634923726320267,
+        "face": 0.1691148579120636,
+        "contact": 0.0,
+        "hand": 0.1532738357782364,
+        "body": 0.1436299830675125
+      },
+      "coverage": {
+        "global": 1.0,
+        "face": 0.007795436307787895,
+        "contact": 0.0,
+        "hand": 0.0031596773769706488,
+        "body": 0.07560800015926361
+      }
+    },
+    {
+      "dataset": "iper",
+      "sample_id": "iper_train_523425c13f83a7b3bb419121",
+      "index": 500,
+      "global_content_mse": 0.12433671951293945,
+      "regional_total": 0.6701114177703857,
+      "losses": {
+        "global": 0.12433671951293945,
+        "face": 0.18529880046844482,
+        "contact": 0.0,
+        "hand": 0.18333154916763306,
+        "body": 0.1771443635225296
+      },
+      "coverage": {
+        "global": 1.0,
+        "face": 0.007795436307787895,
+        "contact": 0.0,
+        "hand": 0.0031596773769706488,
+        "body": 0.07560800015926361
+      }
+    },
+    {
+      "dataset": "iper",
+      "sample_id": "iper_train_523425c13f83a7b3bb419121",
+      "index": 750,
+      "global_content_mse": 0.21956810355186462,
+      "regional_total": 1.0905001163482666,
+      "losses": {
+        "global": 0.21956810355186462,
+        "face": 0.268248587846756,
+        "contact": 0.0,
+        "hand": 0.3230855464935303,
+        "body": 0.2795979082584381
+      },
+      "coverage": {
+        "global": 1.0,
+        "face": 0.007795436307787895,
+        "contact": 0.0,
+        "hand": 0.0031596773769706488,
+        "body": 0.07560800015926361
+      }
+    },
+    {
+      "dataset": "tiktok",
+      "sample_id": "tiktok_train_3fc780c95ed407ecda6684e6",
+      "index": 250,
+      "global_content_mse": 0.18605442345142365,
+      "regional_total": 0.8576884269714355,
+      "losses": {
+        "global": 0.18605442345142365,
+        "face": 0.1965312510728836,
+        "contact": 0.0,
+        "hand": 0.23658201098442078,
+        "body": 0.2385207712650299
+      },
+      "coverage": {
+        "global": 1.0,
+        "face": 0.0502462238073349,
+        "contact": 0.0,
+        "hand": 0.04616212472319603,
+        "body": 0.33576494455337524
+      }
+    },
+    {
+      "dataset": "tiktok",
+      "sample_id": "tiktok_train_3fc780c95ed407ecda6684e6",
+      "index": 500,
+      "global_content_mse": 0.19904059171676636,
+      "regional_total": 0.9248995780944824,
+      "losses": {
+        "global": 0.19904059171676636,
+        "face": 0.24707664549350739,
+        "contact": 0.0,
+        "hand": 0.23979389667510986,
+        "body": 0.23898844420909882
+      },
+      "coverage": {
+        "global": 1.0,
+        "face": 0.0502462238073349,
+        "contact": 0.0,
+        "hand": 0.04616212472319603,
+        "body": 0.33576494455337524
+      }
+    },
+    {
+      "dataset": "tiktok",
+      "sample_id": "tiktok_train_3fc780c95ed407ecda6684e6",
+      "index": 750,
+      "global_content_mse": 0.2786608934402466,
+      "regional_total": 1.2726778984069824,
+      "losses": {
+        "global": 0.2786608934402466,
+        "face": 0.34232574701309204,
+        "contact": 0.0,
+        "hand": 0.3111536204814911,
+        "body": 0.3405376970767975
+      },
+      "coverage": {
+        "global": 1.0,
+        "face": 0.0502462238073349,
+        "contact": 0.0,
+        "hand": 0.04616212472319603,
+        "body": 0.33576494455337524
+      }
+    },
+    {
+      "dataset": "hi4d",
+      "sample_id": "hi4d_train_78cee2e649fdf2beea5ffc7d",
+      "index": 250,
+      "global_content_mse": 0.09781624376773834,
+      "regional_total": 1.0471088886260986,
+      "losses": {
+        "global": 0.09781624376773834,
+        "face": 0.4218972623348236,
+        "contact": 0.0,
+        "hand": 0.259152889251709,
+        "body": 0.2682424783706665
+      },
+      "coverage": {
+        "global": 1.0,
+        "face": 0.005532427690923214,
+        "contact": 0.0,
+        "hand": 0.0053506758995354176,
+        "body": 0.09205593168735504
+      }
+    },
+    {
+      "dataset": "hi4d",
+      "sample_id": "hi4d_train_78cee2e649fdf2beea5ffc7d",
+      "index": 500,
+      "global_content_mse": 0.09754960238933563,
+      "regional_total": 0.8085142374038696,
+      "losses": {
+        "global": 0.09754960238933563,
+        "face": 0.28905200958251953,
+        "contact": 0.0,
+        "hand": 0.21400003135204315,
+        "body": 0.20791257917881012
+      },
+      "coverage": {
+        "global": 1.0,
+        "face": 0.005532427690923214,
+        "contact": 0.0,
+        "hand": 0.0053506758995354176,
+        "body": 0.09205593168735504
+      }
+    },
+    {
+      "dataset": "hi4d",
+      "sample_id": "hi4d_train_78cee2e649fdf2beea5ffc7d",
+      "index": 750,
+      "global_content_mse": 0.15875424444675446,
+      "regional_total": 1.064569354057312,
+      "losses": {
+        "global": 0.15875424444675446,
+        "face": 0.29899778962135315,
+        "contact": 0.0,
+        "hand": 0.33674347400665283,
+        "body": 0.270073801279068
+      },
+      "coverage": {
+        "global": 1.0,
+        "face": 0.005532427690923214,
+        "contact": 0.0,
+        "hand": 0.0053506758995354176,
+        "body": 0.09205593168735504
+      }
+    },
+    {
+      "dataset": "iper",
+      "sample_id": "iper_train_48335c55ad3d248447cf5174",
+      "index": 250,
+      "global_content_mse": 0.11246616393327713,
+      "regional_total": 0.6163773536682129,
+      "losses": {
+        "global": 0.11246616393327713,
+        "face": 0.1351364701986313,
+        "contact": 0.0,
+        "hand": 0.2277192622423172,
+        "body": 0.14105547964572906
+      },
+      "coverage": {
+        "global": 1.0,
+        "face": 0.007268836721777916,
+        "contact": 0.0,
+        "hand": 0.0032679536379873753,
+        "body": 0.05210435390472412
+      }
+    },
+    {
+      "dataset": "iper",
+      "sample_id": "iper_train_48335c55ad3d248447cf5174",
+      "index": 500,
+      "global_content_mse": 0.1451592594385147,
+      "regional_total": 0.7706051468849182,
+      "losses": {
+        "global": 0.1451592594385147,
+        "face": 0.1953742653131485,
+        "contact": 0.0,
+        "hand": 0.2551708221435547,
+        "body": 0.1749008148908615
+      },
+      "coverage": {
+        "global": 1.0,
+        "face": 0.007268836721777916,
+        "contact": 0.0,
+        "hand": 0.0032679536379873753,
+        "body": 0.05210435390472412
+      }
+    },
+    {
+      "dataset": "iper",
+      "sample_id": "iper_train_48335c55ad3d248447cf5174",
+      "index": 750,
+      "global_content_mse": 0.2575308084487915,
+      "regional_total": 1.248521089553833,
+      "losses": {
+        "global": 0.2575308084487915,
+        "face": 0.310229629278183,
+        "contact": 0.0,
+        "hand": 0.40659505128860474,
+        "body": 0.2741655707359314
+      },
+      "coverage": {
+        "global": 1.0,
+        "face": 0.007268836721777916,
+        "contact": 0.0,
+        "hand": 0.0032679536379873753,
+        "body": 0.05210435390472412
+      }
+    },
+    {
+      "dataset": "tiktok",
+      "sample_id": "tiktok_train_5e1d527f30e0032ace92e51d",
+      "index": 250,
+      "global_content_mse": 0.1729547530412674,
+      "regional_total": 0.8395084142684937,
+      "losses": {
+        "global": 0.1729547530412674,
+        "face": 0.14794711768627167,
+        "contact": 0.0,
+        "hand": 0.2737564444541931,
+        "body": 0.2448500692844391
+      },
+      "coverage": {
+        "global": 1.0,
+        "face": 0.03609292581677437,
+        "contact": 0.0,
+        "hand": 0.016603143885731697,
+        "body": 0.3344051241874695
+      }
+    },
+    {
+      "dataset": "tiktok",
+      "sample_id": "tiktok_train_5e1d527f30e0032ace92e51d",
+      "index": 500,
+      "global_content_mse": 0.17060211300849915,
+      "regional_total": 0.8658420443534851,
+      "losses": {
+        "global": 0.17060211300849915,
+        "face": 0.20441144704818726,
+        "contact": 0.0,
+        "hand": 0.2707352042198181,
+        "body": 0.22009329497814178
+      },
+      "coverage": {
+        "global": 1.0,
+        "face": 0.03609292581677437,
+        "contact": 0.0,
+        "hand": 0.016603143885731697,
+        "body": 0.3344051241874695
+      }
+    },
+    {
+      "dataset": "tiktok",
+      "sample_id": "tiktok_train_5e1d527f30e0032ace92e51d",
+      "index": 750,
+      "global_content_mse": 0.2480003982782364,
+      "regional_total": 1.2317276000976562,
+      "losses": {
+        "global": 0.2480003982782364,
+        "face": 0.33552905917167664,
+        "contact": 0.0,
+        "hand": 0.3483216166496277,
+        "body": 0.2998765707015991
+      },
+      "coverage": {
+        "global": 1.0,
+        "face": 0.03609292581677437,
+        "contact": 0.0,
+        "hand": 0.016603143885731697,
+        "body": 0.3344051241874695
+      }
+    },
+    {
+      "dataset": "hi4d",
+      "sample_id": "hi4d_train_2c5239222e57a7c10d811353",
+      "index": 250,
+      "global_content_mse": 0.07497551292181015,
+      "regional_total": 0.802017867565155,
+      "losses": {
+        "global": 0.07497551292181015,
+        "face": 0.16059306263923645,
+        "contact": 0.18558275699615479,
+        "hand": 0.16764965653419495,
+        "body": 0.2132168561220169
+      },
+      "coverage": {
+        "global": 1.0,
+        "face": 0.006275576539337635,
+        "contact": 0.0006241667433641851,
+        "hand": 0.003076402470469475,
+        "body": 0.07241352647542953
+      }
+    },
+    {
+      "dataset": "hi4d",
+      "sample_id": "hi4d_train_2c5239222e57a7c10d811353",
+      "index": 500,
+      "global_content_mse": 0.08354043960571289,
+      "regional_total": 0.9310665726661682,
+      "losses": {
+        "global": 0.08354043960571289,
+        "face": 0.20662279427051544,
+        "contact": 0.24796505272388458,
+        "hand": 0.1959315836429596,
+        "body": 0.19700674712657928
+      },
+      "coverage": {
+        "global": 1.0,
+        "face": 0.006275576539337635,
+        "contact": 0.0006241667433641851,
+        "hand": 0.003076402470469475,
+        "body": 0.07241352647542953
+      }
+    },
+    {
+      "dataset": "hi4d",
+      "sample_id": "hi4d_train_2c5239222e57a7c10d811353",
+      "index": 750,
+      "global_content_mse": 0.14358408749103546,
+      "regional_total": 1.4516459703445435,
+      "losses": {
+        "global": 0.14358408749103546,
+        "face": 0.32816705107688904,
+        "contact": 0.4027050733566284,
+        "hand": 0.2939535081386566,
+        "body": 0.2832362949848175
+      },
+      "coverage": {
+        "global": 1.0,
+        "face": 0.006275576539337635,
+        "contact": 0.0006241667433641851,
+        "hand": 0.003076402470469475,
+        "body": 0.07241352647542953
+      }
+    }
+  ]
+}

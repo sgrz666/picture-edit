@@ -8,7 +8,7 @@ cd "$(dirname "$0")/.." || exit 1
 PY=/home/shangguanrz/nihaochen/envs/qwen21/bin/python
 SPLIT=${1:?usage: run_shards.sh <split> <count>}
 COUNT=${2:?usage: run_shards.sh <split> <count>}
-ARGS=${ARGS:-}
+ARGS=${ARGS:---no-thinking}
 mkdir -p logs
 # Two launches on one card silently stack: on 2026-10-14 17:47 a wrapper that lost its
 # workers advanced to the next split and started a second pair while a new wrapper was

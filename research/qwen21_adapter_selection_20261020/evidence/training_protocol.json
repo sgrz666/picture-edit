@@ -1,0 +1,88 @@
+{
+  "metadata": {
+    "config": {
+      "hidden_dim": 4096,
+      "width": 512,
+      "heads": 8,
+      "stage_indices": [
+        0,
+        4,
+        8,
+        12
+      ],
+      "source_dim": 1600,
+      "identity_dim": 512,
+      "max_parts": 128
+    },
+    "scope": "joint",
+    "task_signature": "e3c464fe4af124eb14b67cc50dffcb12d2dd6c9e1c8b9d54b3f8b2894210d43e",
+    "source_signature": "98b5cb3bbe64ba0f7b40ee718763d3fb1c9924b9566fa43b834c774f69ca12df",
+    "cache_signature": "6e85b18cf4132f63643e19df47453336651990324fe438be77d53a5d8e6627ad",
+    "code_signature": "1be3083d0447b44b55e393586404190a98ccbac9fcca52daa4989fcf2bb2f05e",
+    "data_signature": "0bc86936da4507da83029e0a2f948e055e1d6d50e565b4878a94ce4e1f702da4",
+    "trajectory_signature": "cab5347386bfb4c76a015c906363cff34d86df24780e56ad52f88d942466f93a",
+    "memory_mode": "resident",
+    "control_lora_targets": [],
+    "arm": "full4",
+    "profile": "overfit",
+    "train_seed": 3407,
+    "sampler_seed": 20261015,
+    "warmup_updates": 32,
+    "initialization_seed": 3407,
+    "condition_kind": "legacy",
+    "training_device": "cuda",
+    "frozen_dtype": "torch.bfloat16",
+    "noise_dtype": "torch.bfloat16",
+    "precision": "cuda_torch.bfloat16_frozen_bfloat16_autocast_fp32_trainables",
+    "noise_backend": "torch.randn_cuda_torch.bfloat16_generator",
+    "selection_role": "controlled_pilot"
+  },
+  "order": [
+    [
+      "iper",
+      "iper_train_523425c13f83a7b3bb419121"
+    ],
+    [
+      "tiktok",
+      "tiktok_train_3fc780c95ed407ecda6684e6"
+    ],
+    [
+      "hi4d",
+      "hi4d_train_78cee2e649fdf2beea5ffc7d"
+    ],
+    [
+      "iper",
+      "iper_train_48335c55ad3d248447cf5174"
+    ],
+    [
+      "tiktok",
+      "tiktok_train_5e1d527f30e0032ace92e51d"
+    ],
+    [
+      "hi4d",
+      "hi4d_train_2c5239222e57a7c10d811353"
+    ]
+  ],
+  "updates": 200,
+  "accumulation_steps": 1,
+  "optimizer": {
+    "kind": "AdamW",
+    "lr": 0.0001,
+    "betas": [
+      0.9,
+      0.999
+    ],
+    "eps": 1e-08,
+    "weight_decay": 0.01
+  },
+  "gradient_clip": 1.0,
+  "native_inputs": "locked_legacy_union",
+  "memory_budget": {
+    "device": "cuda",
+    "cuda_verified": true,
+    "free_bytes": 42869784576,
+    "total_bytes": 89171099648,
+    "budget_bytes": 34359738368,
+    "budget_selection": "explicit_gib"
+  }
+}
