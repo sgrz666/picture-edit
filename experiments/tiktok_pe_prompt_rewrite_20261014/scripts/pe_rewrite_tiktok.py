@@ -57,11 +57,11 @@ from src.pose_edit.prompt_contract import (IMAGE_REFERENCE, PE_SAMPLING,
 
 SCHEMA = 'tiktok_pei2i_prompt_rewrite_v1'
 SKELETON_LABEL = 'the DWPose-style skeleton detected on the target photograph'
-ROLES = ('source_A', 'target_B', 'target_dwpose')
+ROLES = ('source_A', 'target_dwpose', 'target_B')
 ROLE_WORDS = {
     'source_A': 'the source image',
-    'target_B': 'the target pose described in this instruction',
     'target_dwpose': 'the target joint arrangement described in this instruction',
+    'target_B': 'the target pose described in this instruction',
 }
 PAIRS_ROOT = REPO_ROOT / 'datasets/TikTokDataset/TikTok_v3/manifests/pairs_strict_v1'
 # The stored body block is DWPose's 18-point order, NOT COCO-17:
@@ -72,7 +72,7 @@ LOWER_BODY = (8, 9, 10, 11, 12, 13)
 LEG_TRIPLES = {'right': (8, 9, 10), 'left': (11, 12, 13)}
 PE_MODEL = Path('/data/shangguanrz/pic-edit-models/Qwen-Image-2.1-PE-I2I')
 
-# PE writes "the joint arrangement defined by <image3>"; substituting the role word first
+# PE writes "the joint arrangement defined by <image2>"; substituting the role word first
 # would leave "the joint arrangement defined by the target joint arrangement ...". The
 # lead-in is dropped while the reference token is still literal, so matching is anchored.
 GUIDE_LEADIN = re.compile(
@@ -81,7 +81,8 @@ GUIDE_LEADIN = re.compile(
     r'pose guide|joint guide|joint map|joint arrangement|joint configuration|body configuration|'
     r'pose estimate|limb lines|skeleton limb lines)\s*(?:defined|encoded|specified|described|'
     r'shown|visible)?\s*(?:by|in|from|of|as|that shows|showing|which shows)?\s*'
-    r'(?:the|a|an|this|that)?\s*(?=<image[_\s]*3>|\bimage[_\s]*3\b)', re.I)
+    r'(?:the|a|an|this|that)?\s*(?=<image[_\s]*2>|\bimage[_\s]*2\b)', re.I)
+REF2 = re.compile(r'<image[_\s]*2>|\bimage[_\s]*2\b', re.I)
 REF3 = re.compile(r'<image[_\s]*3>|\bimage[_\s]*3\b', re.I)
 # The training consumer never receives the target photograph, so clauses that point the
 # reader at it ("transfer the pose from the target photograph") must name the described
@@ -94,30 +95,32 @@ TRAILING_GUIDE = re.compile(r'(the target joint arrangement described in this in
 SYSTEM_SUFFIX = (
     '\n\nTIKTOK POSE-TRANSFER OUTPUT REFERENCE CONTRACT. This takes precedence over '
     'the general multi-image reference rules above for the final rewritten_prompt only. '
-    'You receive three images and may refer to all three in your internal reasoning. '
+    'You receive three images and may refer to all three in your internal reasoning: '
+    '<image1> is the source photograph, <image2> is the pose skeleton, and <image3> is the target photograph. '
     'The downstream editor will receive only the source photograph and the pose skeleton. '
-    'Therefore the final rewritten_prompt MUST NOT contain <image2> or any reference to '
-    'the target photograph, even in preservation or negative object clauses. Translate '
-    'everything needed from the target photograph into explicit body, head, gaze, '
-    'expression and hand action in words. Refer only to the source as <image1> and the '
-    'skeleton as <image3>; a prompt compiler will resolve those two references for each '
-    'downstream consumer. Keep the official three-field JSON contract, wh_ratio="", '
-    'ratio_follow="<image1>". Exclude target-only props in plain words, without citing '
-    'their source image.'
+    'Therefore the final rewritten_prompt MUST NOT contain <image3> or the words "image 3" / "image3", '
+    'or any reference to the target photograph, even in preservation or negative object clauses. '
+    'Synthesize and translate everything needed from the skeleton (<image2>) and target photograph (<image3>) '
+    'into explicit body, head, gaze, expression and hand action in words. '
+    'Refer only to the source as <image1> and the skeleton as <image2>; '
+    'never cite image 3 in rewritten_prompt. '
+    'Keep the official three-field JSON contract, wh_ratio="", ratio_follow="<image1>". '
+    'Exclude target-only props in plain words, without citing their source image.'
 )
 
 INSTRUCTION = (
     'Write a precise English editing instruction for single-person pose transfer on the '
-    'TikTok dataset. <image1> is the source photograph: retain its person identity, face, '
-    'hairstyle, glasses, clothing design, colors, material, accessories, shoes, held or '
-    'worn objects and photographic scene. <image2> is the target photograph: use ONLY its '
-    'body action, head orientation, facial expression and observable hand configuration. '
-    'Never copy its identity, hair, clothes, jewelry, colors, background or objects. '
-    '<image3> is ' + SKELETON_LABEL + ', drawn in the target frame at the target position '
+    'TikTok dataset. '
+    '<image1> is the source photograph: retain its person identity, face, hairstyle, glasses, '
+    'clothing design, colors, material, accessories, shoes, held or worn objects and photographic scene. '
+    '<image2> is ' + SKELETON_LABEL + ', drawn in the target frame at the target position '
     'and scale; black regions are not a scene, and the line colors carry no appearance. '
-    'Use it for the visible joint arrangement. The target photograph may clarify head '
-    'direction and hands when the skeleton is inaccurate; do not invent invisible details '
-    'and do not request anatomy that neither reference shows. '
+    'Use it for the visible joint arrangement. '
+    '<image3> is the target photograph: use it together with the skeleton in <image2> to accurately understand '
+    'and describe the target body pose, orientation, head direction, facial expression and observable hand configuration. '
+    'Never copy identity, hair, clothes, jewelry, colors, background or objects from <image3>. '
+    'The target photograph may clarify head direction and hands when the skeleton is inaccurate; '
+    'do not invent invisible details and do not request anatomy that neither reference shows. '
     'GROUNDING ON WHAT IS ACTUALLY PHOTOGRAPHED: the detector extrapolates joints it never '
     'saw, so this skeleton can contain hips, knees, ankles or feet that lie outside the '
     'person visible in the target photograph (a bust shot cropped at the thighs still gets a '
@@ -137,16 +140,16 @@ INSTRUCTION = (
     'assign anatomical left/right labels, which can conflict with image directions. '
     'Do not enumerate the target clothes or other target appearance in negative clauses. '
     'Avoid guessing ethnicity, age, brands or hidden anatomy. '
-    'The downstream editor may receive only the source photograph and the skeleton, so '
-    'state the desired action explicitly in words. Write one detailed paragraph of '
-    'roughly 200 to 320 English words. Keep the source canvas, framing and overall '
-    'illumination, allowing only natural cloth folds and pose-dependent shadows. Do not '
-    'render skeleton lines or their colors. In rewritten_prompt refer to the source as '
-    '<image1> and the skeleton as <image3>, and never to the target photograph as '
-    '<image2>. Never name the target photograph, target photo or target frame as something '
-    'the editor can look at in rewritten_prompt: the editor sees only the source and the '
-    'skeleton, so attribute the action to this instruction or to the skeleton. Return the '
-    'official JSON contract with rewritten_prompt, wh_ratio="", ratio_follow="<image1>".'
+    'The downstream editor will receive only the source photograph (<image1>) and the skeleton (<image2>), '
+    'and cannot see <image3>. Therefore, describe the pose explicitly in words based on the skeleton and target photograph. '
+    'Write one detailed paragraph of roughly 200 to 320 English words. '
+    'Keep the source canvas, framing and overall illumination, allowing only natural cloth folds and pose-dependent shadows. '
+    'Do not render skeleton lines or their colors. '
+    'CRITICAL CONTRACT: In rewritten_prompt refer to the source as <image1> and the skeleton as <image2>. '
+    'DO NOT include "<image3>" or the words "image 3" / "image3" anywhere in rewritten_prompt. '
+    'Never name the target photograph, target photo or target frame as something the editor can look at in rewritten_prompt: '
+    'the editor sees only the source (<image1>) and the skeleton (<image2>), so attribute the action to this instruction '
+    'or to the skeleton. Return the official JSON contract with rewritten_prompt, wh_ratio="", ratio_follow="<image1>".'
 )
 
 
@@ -154,25 +157,25 @@ def compile_words(text: str) -> str:
     """Training form: image references become role words (the VLM sees only A)."""
     def replace(match):
         index = int(match.group(1) or match.group(2))
-        if index == 2:
-            raise ValueError('prompt refers to the target photograph, which is not '
+        if index == 3:
+            raise ValueError('prompt refers to image 3 (target photograph), which is not '
                 'available downstream; describe the action in words instead')
-        if index not in (1, 3):
+        if index not in (1, 2):
             raise ValueError(f'unknown image reference {index}')
         return ROLE_WORDS['source_A' if index == 1 else 'target_dwpose']
 
-    # Anchor on the literal <image3> first, then substitute the remaining references.
+    # Anchor on the literal <image2> first, then substitute the remaining references.
     cleaned = text
     while True:
         shorter = GUIDE_LEADIN.sub('', cleaned)
         if shorter == cleaned:
             break
         cleaned = shorter
-    if not REF3.search(cleaned) and REF3.search(text):
+    if not REF2.search(cleaned) and REF2.search(text):
         raise ValueError('cleaning removed the skeleton reference itself')
     cleaned = TARGET_PHOTO.sub('the described target pose', cleaned)
     compiled = IMAGE_REFERENCE.sub(replace, cleaned)
-    # "the joint arrangement of the <image3> skeleton" leaves a dangling noun behind.
+    # "the joint arrangement of the <image2> skeleton" leaves a dangling noun behind.
     compiled = TRAILING_GUIDE.sub(r'\1', compiled)
     compiled = re.sub(r'\b(\w+)\s+\1\b', r'\1', compiled, flags=re.I)
     compiled = re.sub(r'\s+([,.;:])', r'\1', ' '.join(compiled.split()))
@@ -185,16 +188,16 @@ def compile_words(text: str) -> str:
 
 
 def compile_inference(text: str) -> str:
-    """Workflow form: A stays <image1>, the skeleton becomes the downstream <image2>."""
+    """Workflow form: A is <image1>, the skeleton is <image2>."""
     def replace(match):
         index = int(match.group(1) or match.group(2))
         if index == 1:
             return '<image1>'
         if index == 2:
-            raise ValueError('prompt refers to the target photograph, which the '
-                'generator cannot see')
-        if index == 3:
             return '<image2>'
+        if index == 3:
+            raise ValueError('prompt refers to image 3 (target photograph), which the '
+                'generator cannot see')
         raise ValueError(f'unknown image reference {index}')
 
     compiled = IMAGE_REFERENCE.sub(replace, text)
@@ -264,8 +267,8 @@ def read_rows(path: Path) -> list[dict]:
 
 
 def row_inputs(row: dict) -> list[tuple[str, Path]]:
-    return [('source_A', Path(row['source_rgb'])), ('target_B', Path(row['target_rgb'])),
-            ('target_dwpose', Path(row['target_dwpose']))]
+    return [('source_A', Path(row['source_rgb'])), ('target_dwpose', Path(row['target_dwpose'])),
+            ('target_B', Path(row['target_rgb']))]
 
 
 def select_rows(rows: list[dict], limit: int, seed: int, mode: str) -> list[dict]:
@@ -344,6 +347,9 @@ def run(args) -> None:
     done = failed = 0
     for position, row in enumerate(pending, start=1):
         pair_id = row['pair_id']
+        sampling = dict(PE_SAMPLING, eos_token_id=[248044, 248046])
+        if args.no_thinking:
+            sampling['max_new_tokens'] = 2048
         record = {'schema': SCHEMA, 'pair_id': pair_id, 'split': args.split,
             'sequence_id': row['sequence_id'], 'source_stem': row['source_stem'],
             'target_stem': row['target_stem'], 'protocol': 'pei2i_ab3',
@@ -351,7 +357,7 @@ def run(args) -> None:
             'enable_thinking': not args.no_thinking, 'max_image_side': args.max_image_side,
             'mamba_ssm_dtype': args.mamba_dtype or 'config_default',
             'shard': f'{args.shard_index}/{args.shard_count}',
-            'input_roles': list(ROLES), 'sampling': PE_SAMPLING, 'model_dir': str(model_dir),
+            'input_roles': list(ROLES), 'sampling': sampling, 'model_dir': str(model_dir),
             **contract_identity}
         attempt_started = time.perf_counter()
         try:
@@ -369,14 +375,15 @@ def run(args) -> None:
             torch.cuda.reset_peak_memory_stats()
             attempts = []
             for attempt in range(2):
-                seed = args.pe_seed + attempt
+                seed = args.pe_seed + attempt * 1000 + (int(hashlib.md5(pair_id.encode()).hexdigest()[:6], 16) % 10000)
                 random.seed(seed)
                 np.random.seed(seed)
                 torch.manual_seed(seed)
                 torch.cuda.manual_seed_all(seed)
                 retry = '' if not attempts else ('\nYour previous answer was rejected: '
                     + attempts[-1]['error'] + '. Write the action in explicit words without '
-                    'any reference to image2. Keep the official JSON format.')
+                    'any reference to image 3 or the target photograph. Refer only to <image1> and <image2>. '
+                    'Keep the official JSON format.')
                 messages = [{'role': 'system', 'content': [{'type': 'text', 'text': effective_system}]},
                     {'role': 'user', 'content': [*[{'type': 'image', 'image': image} for image in images],
                         {'type': 'text', 'text': INSTRUCTION + retry}]}]
@@ -384,7 +391,7 @@ def run(args) -> None:
                     add_generation_prompt=True, enable_thinking=not args.no_thinking,
                     return_dict=True, return_tensors='pt').to('cuda')
                 with torch.inference_mode():
-                    generated = model.generate(**inputs, **PE_SAMPLING)
+                    generated = model.generate(**inputs, **sampling)
                 tokens = generated[0, inputs['input_ids'].shape[1]:]
                 raw = processor.decode(tokens, skip_special_tokens=True)
                 raw_path = raw_dir / f'{pair_id}_attempt{attempt + 1}.txt'

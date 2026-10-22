@@ -1,0 +1,7 @@
+2026-10-20T00:33:13+08:00
+2ebd026b8568737d2f0e13c4ebea6a0634c54fff
+/data/shangguanrz/pic-edit-experiments/qwen21_pro_adapter_v1/runs/valpair_main200_20261020T001400/run.json
+/data/shangguanrz/pic-edit-experiments/qwen21_pro_adapter_v1/runs/valpair_main200_20261020T001400/resources.json
+/data/shangguanrz/pic-edit-experiments/qwen21_pro_adapter_v1/runs/valpair_main200_20261020T001400/iper_val_e36352d6b4b72ae362cb1ce3/sampling.json
+/data/shangguanrz/pic-edit-experiments/qwen21_pro_adapter_v1/runs/valpair_main200_20261020T001400/backend.json
+3540106 /data/shangguanrz/pic-edit-experiments/qwen21_union_dataset_adaptation_v1/env/bin/python -u /data/shangguanrz/pic-edit-experiments/qwen21_pro_adapter_v1/code_task7b_20261018T161055/scripts/run/qwen21_pro.py infer --output-root /data/shangguanrz/pic-edit-experiments/qwen21_pro_adapter_v1 --kind current --conditions /data/shangguanrz/pic-edit-experiments/qwen21_pro_adapter_v1/code_task7b_20261018T161055/experiments/qwen21_pro_adapter_v1/data/val12_conditions_20261018.jsonl --cache-run /data/shangguanrz/pic-edit-experiments/qwen21_pro_adapter_v1/runs/val_conditions1600_sync_20261018T143039 --arm full4 --sample-id iper_val_e36352d6b4b72ae362cb1ce3 --sample-id hi4d_val_1cdfa27cfed29647a42be809 --seed 43 --steps 40 --true-cfg-scale 1 --memory-budget-gib 16 --offload sync_group_offload --engineering-probe --name valpair_main200_20261020T001400 --checkpoint /data/shangguanrz/pic-edit-experiments/qwen21_pro_adapter_v1/runs/pilot_main200_v4_20261018T161055/checkpoint_000200

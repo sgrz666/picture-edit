@@ -2,7 +2,7 @@
 
 `docs/superpowers/plans/` 收纳 pic-edit 各阶段**执行计划（plan）**：明确要做什么、按什么顺序做、对应哪份设计规格（specs）与哪段 `src/` 实现。本目录是 `docs/superpowers/` 的方法论层之一，与 `specs/`（接口契约）成对出现。
 
-## 里面有什么（8 篇，按时间）
+## 里面有什么（索引，按时间）
 
 | 文件 | 主题 | 日期 |
 |---|---|---|
@@ -14,6 +14,8 @@
 | `2026-10-03-project-organization.md` | 项目清理归类执行计划：远端脚本/HOME 工具/本地报告的分流入 `scripts/`、`archive/`、`reports/` | 10-03 |
 | `2026-10-04-bfs-expanded-comparison.md` | BFS 扩大样本对照实施计划（30 对 / 8 人 / 10 衣着组） | 10-04 |
 | `2026-10-08-bfs-body-face-joint-pilot.md` | BFS Body/Face 联合 pilot 执行计划：原生画幅下 Body+Face 联合训练与冻结底座对照 | 10-08 |
+| [2026-10-15-qwen21-union-dataset-adaptation-plan-b.md](2026-10-15-qwen21-union-dataset-adaptation-plan-b.md) | 方案 B：官方 Union＋参考图接入、三数据集小规模 LoRA 训练、joint/target-only 消融与 3DPW 域外评估；仅计划，未执行 | 10-15 |
+| [2026-10-20-qwen21-identity-retarget/README.md](2026-10-20-qwen21-identity-retarget/README.md) | 身份保持与体型解耦：总体路线、数据/评测、分阶段实验、Pro V2改造、相机/接触重定向及执行批次，共6份方案＋索引；尚未执行 | 10-20 |
 
 
 ## 与上下层的关系

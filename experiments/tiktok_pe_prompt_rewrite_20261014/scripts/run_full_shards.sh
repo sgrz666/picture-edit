@@ -12,11 +12,11 @@ cd "$(dirname "$0")/.." || exit 1
 PY=${PY:-/home/shangguanrz/nihaochen/envs/qwen21/bin/python}
 PAIRS_ROOT=${PAIRS_ROOT:-/home/shangguanrz/project/pic-edit/datasets/TikTokDataset/TikTok_v3/manifests/pairs_strict_v1}
 K=${K:-2}
-ARGS=${ARGS:-}
+ARGS=${ARGS:---no-thinking}
 MAX_PASSES=${MAX_PASSES:-40}
 
 count_complete() {
-    grep -l '"status": "complete"' "records/$1"/*.json 2>/dev/null | wc -l
+    grep -l 'status.*complete' "records/$1"/*.json 2>/dev/null | wc -l
 }
 
 # Default order puts the 1,156-pair test split first: it answers "does a detailed prompt
@@ -36,7 +36,7 @@ for split in ${SPLITS:-test val train}; do
             echo "SPLIT_INCOMPLETE $split stuck at $have/$want after $pass passes -- see logs"
             break
         fi
-        bash scripts/run_shards.sh "$split" "$K" || { echo "LAUNCH_FAILED $split"; sleep 60; continue; }
+        ARGS="$ARGS" bash scripts/run_shards.sh "$split" "$K" || { echo "LAUNCH_FAILED $split"; sleep 60; continue; }
         while :; do
             sleep 60
             ALIVE=$(pgrep -cf "[p]e_rewrite_tiktok.py run --split $split" || true)
