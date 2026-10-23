@@ -38,7 +38,13 @@ def arguments(argv=None):
     p.add_argument('--dataset-type', choices=('auto', 'iper', 'tiktok_v3'), default='auto')
     p.add_argument('--tiktok-raw-root', type=Path, default=ROOT / 'datasets/TikTokDataset/TikTok_dataset/TikTok_dataset')
     p.add_argument('--tiktok-assets-root', type=Path, default=ROOT / 'datasets/TikTokDataset/TikTok_3d_assets_native')
-    p.add_argument('--align-mode', choices=('resize','letterbox'), default='resize')
+    p.add_argument('--align-mode', choices=('resize', 'letterbox'), required=True,
+                   help="legacy canvases only. 'resize' squeezes every portrait into a square and needs "
+                        "--legacy-policy-ok; the latent cache in this entry is int-square, so native "
+                        "aspect-preserving training does not belong here")
+    p.add_argument('--legacy-policy-ok', action='store_true',
+                   help="explicitly accept --align-mode resize's square stretch when reproducing a "
+                        "historical run")
     p.add_argument('--single-pass', action='store_true', help='One permutation, no repeated training pairs')
     p.add_argument('--stop-at-utc', help='Absolute ISO-8601 training deadline; safe stop at update boundary')
     p.add_argument('--features', type=Path, default=RUN_ROOT / 'face_cache')
@@ -147,7 +153,7 @@ def main():
     torch.set_num_threads(4)
     dataset_options = dict(resolution=args.resolution, dataset_type=args.dataset_type,
                            tiktok_raw_root=args.tiktok_raw_root, tiktok_assets_root=args.tiktok_assets_root,
-                           align_mode=args.align_mode)
+                           align_mode=args.align_mode, legacy_policy_ok=args.legacy_policy_ok)
     train = QwenFullDataset(args.train_pairs, **dataset_options)
     val = QwenFullDataset(args.val_pairs, **dataset_options)
     validate_probe_indices(train, args.diagnostic_pair_indices)

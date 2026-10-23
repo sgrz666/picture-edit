@@ -19,6 +19,7 @@ import numpy as np
 import torch
 import torch.nn.functional as F
 
+from .canvas_provenance import CANVAS_SCHEMA_VERSION
 from .checkpoint import FACE_ONLY_PREFIXES, HAND_ONLY_PREFIXES
 from .data_runtime import FaceConditionStore, HandConditionStore, QwenFullDataset, build_condition_bundle, pair_metadata
 from .face.adapter import scatter_face_roi_residuals
@@ -364,21 +365,32 @@ def precompute(pipe, cache, datasets, *, should_stop=None):
         print(f'Native Qwen cache ready: {len(dataset)} pairs at {cache.resolution}', flush=True)
 
 
+def _real_token_grid(declared, canvas, side: str, *, fallback=None) -> tuple[int, int]:
+    """Read the token grid off the real rectangular canvas, never guess (grid, grid).
+
+    A square grid inferred from a single integer silently feeds a 84x48 portrait to the
+    DiT as 64x64, which is the misalignment this helper exists to prevent.
+    """
+    if declared is not None:
+        height, width = int(declared[0]), int(declared[1])
+        if height <= 0 or width <= 0:
+            raise ValueError(f"declared {side} token grid is not positive: {declared!r}")
+        return (height, width)
+    if canvas is None:
+        if fallback is not None:
+            return fallback
+        raise ValueError(f"cannot resolve the {side} token grid: no declared grid and no {side} image")
+    height, width = int(canvas.shape[-2]), int(canvas.shape[-1])
+    if height % 16 or width % 16:
+        raise ValueError(f"{side} canvas {height}x{width} is not a multiple of the 16x Qwen VAE stride")
+    return (height // 16, width // 16)
+
+
 def prepare(adapter, batch, pair, metadata, store, *, with_face, with_hand=False, hand_store=None):
     device = next(adapter.parameters()).device
-    if pair.get('target_token_hw') is not None:
-        target_token_hw = tuple(pair['target_token_hw'])
-    elif str(pair.get('resolution')) == 'native' and 'tgt_image' in batch:
-        target_token_hw = (batch['tgt_image'].shape[2] // 16, batch['tgt_image'].shape[3] // 16)
-    else:
-        grid = int(pair['resolution']) // 16
-        target_token_hw = (grid, grid)
-    if pair.get('source_token_hw') is not None:
-        source_token_hw = tuple(pair['source_token_hw'])
-    elif str(pair.get('resolution')) == 'native' and 'src_image' in batch:
-        source_token_hw = (batch['src_image'].shape[2] // 16, batch['src_image'].shape[3] // 16)
-    else:
-        source_token_hw = target_token_hw
+    target_token_hw = _real_token_grid(pair.get('target_token_hw'), batch.get('tgt_image'), 'target')
+    source_token_hw = _real_token_grid(pair.get('source_token_hw'), batch.get('src_image'), 'source',
+                                       fallback=target_token_hw)
     # Original typed condition records require one dtype across geometry/tokens.
     # Preserve those contracts by preparing in FP32; the dynamic core uses AMP.
     with torch.autocast(device.type, enabled=False):
@@ -590,11 +602,7 @@ def run_loss(pipe, adapter, cache, dataset, store, index, branch, *, seed,
     metadata = [dataset.samples[index]]
     pair = cache.pair(pipe, batch, device)
     target = pair['target_latent']
-    if pair.get('target_token_hw') is not None:
-        target_token_hw = tuple(pair['target_token_hw'])
-    else:
-        grid_dim = int(cache.resolution) // 16
-        target_token_hw = (grid_dim, grid_dim)
+    target_token_hw = _real_token_grid(pair.get('target_token_hw'), batch.get('tgt_image'), 'target')
     tokens = target_token_hw[0] * target_token_hw[1]
     generator = torch.Generator(device=device).manual_seed(seed)
     sigma = torch.rand((1,), device=device, dtype=target.dtype, generator=generator)
@@ -762,6 +770,13 @@ def save_checkpoint(path, adapter, optimizer, *, step, branch, args, sample_orde
     payload = {'architecture': ARCHITECTURE, 'model_revision': MODEL_REVISION,
                'adapter_state_dict': adapter.state_dict(), 'optimizer_state_dict': optimizer.state_dict(),
                'step': step, 'branch': branch, 'resolution': args.resolution,
+               # A checkpoint trained under the canvas contract says so; a pre-contract one stays
+               # silent and is therefore only usable as an explicit warm start.
+               'canvas_policy': getattr(args, 'canvas_policy', None),
+               'canvas_schema_version': (CANVAS_SCHEMA_VERSION
+                                         if getattr(args, 'canvas_policy', None) else None),
+               'max_pixels': getattr(args, 'max_pixels', None),
+               'pad_multiple': getattr(args, 'pad_multiple', None),
                'args': {k: str(v) if isinstance(v, Path) else v for k, v in vars(args).items()},
                'initialization': adapter.loading_report,
                'initialization_provenance': getattr(adapter, 'initialization_provenance',

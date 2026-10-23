@@ -35,6 +35,8 @@ def arguments():
     parser.add_argument('--val-pairs', type=Path, default=FACE_ROOT / 'face_val_pairs.jsonl')
     parser.add_argument('--dataset-type', choices=('auto', 'iper', 'tiktok_v3'), default='auto')
     parser.add_argument('--align-mode', choices=('square_crop', 'resize'), default='square_crop')
+    parser.add_argument('--legacy-policy-ok', action='store_true',
+                        help="allow a stretching/cropping --align-mode for a TikTok manifest reproducing a run trained that way")
     parser.add_argument('--sampled-root', type=Path, default=ROOT / 'datasets/iPER/iper_sampled_6src64tgt')
     parser.add_argument('--assets-root', type=Path, default=ROOT / 'datasets/iPER/iper_assets_512_nvdiffrast')
     parser.add_argument('--tiktok-raw-root', type=Path, default=ROOT / 'datasets/TikTokDataset/TikTok_dataset/TikTok_dataset')
@@ -236,6 +238,7 @@ def main():
         resolution=args.resolution,
         align_mode=args.align_mode,
         augment=False,
+        legacy_policy_ok=args.legacy_policy_ok,
     )
     val = load_pose_dataset(
         args.val_pairs,
@@ -247,6 +250,7 @@ def main():
         resolution=args.resolution,
         align_mode=args.align_mode,
         augment=False,
+        legacy_policy_ok=args.legacy_policy_ok,
     )
     store = FaceFeatureStore(args.features)
     usable = [index for index, meta in enumerate(train.samples) if store.usable(meta)]

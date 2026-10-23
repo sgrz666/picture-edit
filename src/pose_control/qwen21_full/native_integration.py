@@ -25,6 +25,7 @@ class _Binding:
     enabled: bool
     valid_mask: torch.Tensor | None
     strength: float
+    conv_input_gate: bool = False
 
 
 @dataclass(frozen=True)
@@ -37,7 +38,7 @@ class _Execution:
     strength: float
 
 
-def _prepare_execution(model, values, features, enabled, valid_mask, strength):
+def _prepare_execution(model, values, features, enabled, valid_mask, strength, conv_input_gate=False):
     if type(enabled) is not bool:
         raise ValueError("native_enabled must be bool")
     if values.get("kv_cache") is not None or values.get("kv_cache_mode") is not None:
@@ -71,17 +72,31 @@ def _prepare_execution(model, values, features, enabled, valid_mask, strength):
             or not bool(torch.isfinite(sigma).all()) or bool(((sigma < 0) | (sigma > 1)).any())):
         raise ValueError("timestep must be normalized sigma [1] in [0,1]")
     geometry = None
+    if valid_mask is not None:
+        # Mirrors Qwen21NativeBody.forward: bool for an all-or-nothing region, 0..1 for canvas
+        # coverage so padded boundary tokens are damped instead of injected at full strength.
+        if (not isinstance(valid_mask, torch.Tensor) or valid_mask.shape != (1, lengths[-1])
+                or not (valid_mask.dtype == torch.bool or valid_mask.is_floating_point())
+                or (valid_mask.is_floating_point() and (
+                    not bool(torch.isfinite(valid_mask).all())
+                    or bool((valid_mask < 0).any()) or bool((valid_mask > 1).any())))):
+            raise ValueError(
+                "native_valid_mask must be bool or 0..1 area coverage [1,N_target]")
+    if type(strength) not in (int, float) or not math.isfinite(strength) or strength < 0:
+        raise ValueError("native_strength must be finite and nonnegative")
     if enabled:
         if not isinstance(features, NativeGeometryFeatures) or features.target_token_hw != tuple(shapes[-1][1:]):
             raise ValueError("native_geometry must match the current target grid")
-        geometry = model.native_body.prepare_geometry(features)
+        if conv_input_gate and valid_mask is None:
+            raise ValueError("conv_input_gate needs a valid_mask: with nothing declared invalid it "
+                             "would silently gate every token")
+        # A token whose 16x16 block holds no real image area must not feed the local convolution:
+        # otherwise padding still reaches its neighbours and §8's "fully invalid tokens get zero
+        # gradient" cannot hold however the residual is damped afterwards.
+        conv_input_valid = None if not conv_input_gate else (valid_mask != 0)
+        geometry = model.native_body.prepare_geometry(features, conv_input_valid=conv_input_valid)
         if geometry.tokens.device != hidden.device:
             raise ValueError("Prepared geometry and Qwen inputs must share a device")
-    if valid_mask is not None and (not isinstance(valid_mask, torch.Tensor)
-            or valid_mask.dtype != torch.bool or valid_mask.shape != (1, lengths[-1])):
-        raise ValueError("native_valid_mask must be bool [1,N_target]")
-    if type(strength) not in (int, float) or not math.isfinite(strength) or strength < 0:
-        raise ValueError("native_strength must be finite and nonnegative")
     return _Execution(enabled, target_mask.to(hidden.device), sigma.clone(), geometry,
                       None if valid_mask is None else valid_mask.clone(), float(strength))
 
@@ -104,7 +119,8 @@ class _NativeBlockMixin:
 
 class _NativeTransformerMixin:
     def forward(self, *args, native_geometry=_UNSET, native_enabled=_UNSET,
-                native_valid_mask=_UNSET, native_strength=_UNSET, **kwargs):
+                native_valid_mask=_UNSET, native_strength=_UNSET,
+                native_conv_input_gate=_UNSET, **kwargs):
         if self._native_body_execution.get() is not None:
             raise RuntimeError("Concurrent/reentrant Native Body forward is unsupported")
         if getattr(self, "_pic_edit_qwen21_control_active", False):
@@ -118,10 +134,13 @@ class _NativeTransformerMixin:
             native_valid_mask = None if binding is None else binding.valid_mask
         if native_strength is _UNSET:
             native_strength = 1.0 if binding is None else binding.strength
+        if native_conv_input_gate is _UNSET:
+            native_conv_input_gate = False if binding is None else binding.conv_input_gate
         bound = self._native_body_signature.bind(self, *args, **kwargs)
         bound.apply_defaults()
         execution = _prepare_execution(self, bound.arguments, native_geometry,
-                                       native_enabled, native_valid_mask, native_strength)
+                                       native_enabled, native_valid_mask, native_strength,
+                                       native_conv_input_gate)
         token = self._native_body_execution.set(execution)
         checkpoint_function = getattr(self, "_gradient_checkpointing_func", None)
         checkpointing = torch.is_grad_enabled() and self.gradient_checkpointing
@@ -195,17 +214,23 @@ def install_native_body(model: nn.Module, adapter: Qwen21NativeBody) -> dict:
 
 @contextmanager
 def bind_native_body(model, features: NativeGeometryFeatures | None, *, enabled=True,
-                     valid_mask=None, strength=1.0):
+                     valid_mask=None, strength=1.0, conv_input_gate=False):
     """Supply geometry to the original pipeline's repeated transformer calls.
 
     Each call still constructs its own layout/sigma execution. Checkpoint
     recomputation owns that execution after this sampling/binding scope exits.
+
+    ``conv_input_gate`` stops fully-invalid canvas tokens from entering the local geometry
+    convolution at all. It changes what trained weights saw, so it stays off unless asked for.
     """
     if not isinstance(model, _NativeTransformerMixin):
         raise ValueError("Install Native Body before binding its geometry")
     if type(enabled) is not bool or (enabled and not isinstance(features, NativeGeometryFeatures)):
         raise ValueError("Enabled Native Body binding requires NativeGeometryFeatures")
-    token = model._native_body_binding.set(_Binding(features, enabled, valid_mask, strength))
+    if type(conv_input_gate) is not bool:
+        raise ValueError("conv_input_gate must be bool")
+    token = model._native_body_binding.set(
+        _Binding(features, enabled, valid_mask, strength, conv_input_gate))
     try:
         yield model
     finally:

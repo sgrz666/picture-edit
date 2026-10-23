@@ -37,7 +37,8 @@ def tiktok_pair(tmp_path):
 
 def test_full_qwen_reads_native_tiktok_manifest_without_iper_schema(tiktok_pair):
     path, row, raw, assets = tiktok_pair
-    dataset = QwenFullDataset(path, resolution=32, tiktok_raw_root=raw, tiktok_assets_root=assets)
+    dataset = QwenFullDataset(path, resolution=32, tiktok_raw_root=raw, tiktok_assets_root=assets,
+                              align_mode="resize", legacy_policy_ok=True)
     sample = dataset[0]
     assert sample["src_image"].mean() < 0
     assert sample["tgt_image"].mean() > 0
@@ -62,7 +63,33 @@ def test_strict_tiktok_rejects_missing_geometry_instead_of_silent_fallback(tikto
     path, _, raw, assets = tiktok_pair
     (assets / "00001" / missing).unlink()
     with pytest.raises((ValueError, FileNotFoundError), match="condition|part"):
-        TikTokV3PoseDataset(path, raw_root=raw, assets_root=assets, resolution=32, strict_conditions=True)[0]
+        TikTokV3PoseDataset(path, raw_root=raw, assets_root=assets, resolution=32,
+                            align_mode="resize", strict_conditions=True)[0]
+
+
+def test_align_mode_must_be_chosen_explicitly(tiktok_pair):
+    """No default canvas: an omitted mode used to silently mean the square stretch."""
+    path, _, raw, assets = tiktok_pair
+    with pytest.raises(ValueError, match="explicitly"):
+        QwenFullDataset(path, resolution=32, tiktok_raw_root=raw, tiktok_assets_root=assets)
+    with pytest.raises(ValueError, match="explicitly"):
+        TikTokV3PoseDataset(path, raw_root=raw, assets_root=assets, resolution=32)
+
+
+def test_full_training_refuses_the_square_stretch_unless_marked_legacy(tiktok_pair):
+    from src.pose_control.qwen21_full.data_runtime import CanvasPolicyError
+    path, _, raw, assets = tiktok_pair
+    with pytest.raises(CanvasPolicyError, match="squeezes every portrait"):
+        QwenFullDataset(path, resolution=32, tiktok_raw_root=raw, tiktok_assets_root=assets,
+                        align_mode="resize")
+    # Reproducing a historical run stays possible, but only by name.
+    legacy = QwenFullDataset(path, resolution=32, tiktok_raw_root=raw, tiktok_assets_root=assets,
+                             align_mode="resize", legacy_policy_ok=True)
+    assert legacy.canvas_policy == "resize_square"
+    native = QwenFullDataset(path, resolution=32, tiktok_raw_root=raw, tiktok_assets_root=assets,
+                             align_mode="native")
+    assert native.canvas_policy == "native_pad"
+    assert native.base.align_mode == "native"
 
 
 def test_strict_tiktok_rejects_nonfinite_global_parameters(tiktok_pair):
@@ -72,7 +99,8 @@ def test_strict_tiktok_rejects_nonfinite_global_parameters(tiktok_pair):
     cache["smplx_global"][1, 0] = float("nan")
     torch.save(cache, cache_path)
     with pytest.raises(ValueError, match="finite"):
-        TikTokV3PoseDataset(path, raw_root=raw, assets_root=assets, resolution=32, strict_conditions=True)[0]
+        TikTokV3PoseDataset(path, raw_root=raw, assets_root=assets, resolution=32,
+                            align_mode="resize", strict_conditions=True)[0]
 
 
 def test_full_tiktok_rejects_crop_until_face_coordinates_share_it(tiktok_pair):
@@ -86,7 +114,8 @@ def test_native_cache_precompute_reads_each_rgb_once_without_geometry(tiktok_pai
     from src.pose_control.qwen21_full.qwen_runtime import dataset_image_to_pil
     path, row, raw, assets = tiktok_pair
     path.write_text(json.dumps(row) + "\n" + json.dumps(row) + "\n")
-    dataset = QwenFullDataset(path, resolution=32, tiktok_raw_root=raw, tiktok_assets_root=assets)
+    dataset = QwenFullDataset(path, resolution=32, tiktok_raw_root=raw, tiktok_assets_root=assets,
+                              align_mode="resize", legacy_policy_ok=True)
     # Native-image preprocessing requires no body geometry; a missing part must
     # still block training when dataset[0] is subsequently accessed.
     (assets / "00001/part_512/0002.png").unlink()

@@ -42,7 +42,7 @@ def main():
     for run, resolution, reference_hw in cases:
         checkpoint = OUT / run / 'checkpoint_step_000300.pt'
         load_adapter_checkpoint(adapter, checkpoint)
-        data = QwenFullDataset(RUN_ROOT / 'face_single_sample/single_pair.jsonl', resolution=resolution)
+        data = QwenFullDataset(RUN_ROOT / 'face_single_sample/single_pair.jsonl', resolution=resolution, align_mode='resize', legacy_policy_ok=True)
         cache = Qwen21IPERCache(RUN_ROOT / 'native_cache', resolution=resolution)
         report = verify_gpu(pipe, adapter, cache, data, store, run,
                             face_reference_token_hw=reference_hw)

@@ -13,6 +13,7 @@ import numpy as np
 import torch
 from torch.utils.data._utils.collate import default_collate
 
+from src.data.canvas_contract import LEGACY_POLICIES, POLICY_FOR_MODE, CanvasPolicyError
 from src.data.iper_dataset import IPERPoseDataset
 from src.data.tiktok_dataset import TikTokV3PoseDataset, is_tiktok_v3_manifest
 from .conditions import AdapterIdentityCondition, ConditionBundle
@@ -65,18 +66,32 @@ class QwenFullDataset(torch.utils.data.Dataset):
     def __init__(self, pairs_jsonl: str | Path, resolution: int | tuple[int, int] | str = 512,
                  sampled_root: str | Path = SAMPLED, assets_root: str | Path = ASSETS,
                  dataset_type: str = "auto", tiktok_raw_root: str | Path = TIKTOK_RAW,
-                 tiktok_assets_root: str | Path = TIKTOK_ASSETS, align_mode: str = "resize"):
+                 tiktok_assets_root: str | Path = TIKTOK_ASSETS, align_mode: str | None = None,
+                 legacy_policy_ok: bool = False, max_pixels: int | None = None):
         self.rows = read_pairs(pairs_jsonl)
         if not self.rows:
             raise ValueError(f"Empty pair manifest: {pairs_jsonl}")
         self.dataset_type = ("tiktok_v3" if is_tiktok_v3_manifest(pairs_jsonl) else "iper") if dataset_type == "auto" else dataset_type
         self.sampled_root = Path(sampled_root)
         if self.dataset_type == "tiktok_v3":
-            if align_mode not in ("resize", "letterbox", "native"):
-                raise ValueError("Full TikTok conditioning requires resize, letterbox, or native with shared RGB/geometry coordinates")
+            if align_mode is None:
+                raise ValueError("align_mode must be given explicitly: 'native', 'aspect_preserving' "
+                                 "and 'letterbox' keep body proportions, 'resize' stretches them")
+            if align_mode not in ("resize", "letterbox", "native", "aspect_preserving"):
+                raise ValueError("Full TikTok conditioning requires resize, letterbox, native or "
+                                 "aspect_preserving with shared RGB/geometry coordinates")
+            policy = POLICY_FOR_MODE.get(align_mode, align_mode)
+            if policy in LEGACY_POLICIES and not legacy_policy_ok:
+                raise CanvasPolicyError(
+                    f"align_mode={align_mode!r} squeezes every portrait into a square and is refused by "
+                    "the Full training path; use 'native' or 'letterbox', or pass legacy_policy_ok=True "
+                    "only when reproducing a historical run")
+            self.align_mode = align_mode
+            self.canvas_policy = policy
             self.base = TikTokV3PoseDataset(pairs_jsonl, raw_root=tiktok_raw_root,
                                            assets_root=tiktok_assets_root, resolution=resolution,
-                                           align_mode=align_mode, strict_conditions=True)
+                                           align_mode=align_mode, max_pixels=max_pixels,
+                                           strict_conditions=True)
             self.rows = self.base.samples
             return
         if self.dataset_type != "iper":

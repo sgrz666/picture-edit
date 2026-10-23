@@ -21,7 +21,7 @@ from src.pose_control.qwen21_full.qwen_adapter import Qwen21FullControlContext
 @torch.no_grad()
 def main():
     torch.set_num_threads(4)
-    dataset=QwenFullDataset(OUT/'single_pair.jsonl',512);cache=Qwen21IPERCache(RUN_ROOT/'native_cache')
+    dataset=QwenFullDataset(OUT/'single_pair.jsonl',512, align_mode='resize', legacy_policy_ok=True);cache=Qwen21IPERCache(RUN_ROOT/'native_cache')
     store=FaceConditionStore(RUN_ROOT/'face_cache')
     pipe=QwenImage21Pipeline.from_pretrained(str(MODEL),dtype=torch.bfloat16)
     for module in (pipe.transformer,pipe.text_encoder,pipe.vae):module.eval().requires_grad_(False)

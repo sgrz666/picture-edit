@@ -19,6 +19,11 @@ MODEL_REVISION = "790c92633540aa0cb11d9abf19eb46d861714758"
 PROMPT = "Change the person pose to match the target pose. Preserve identity, clothing, and background."
 RESOLUTION = 512
 
+# A declared canvas policy reuses the preprocessing namespaces already on disk, so binding
+# the cache to src/data/canvas_contract.py does not invalidate existing native runs.
+CANVAS_PREPROCESSING = {"native_pad": "native_v1", "letterbox": "letterbox_v1",
+                        "aspect_preserving": "aspect_preserving_v1"}
+
 
 def dataset_image_to_pil(image: torch.Tensor) -> Image.Image:
     """Convert the dataset's normalized RGB tensor into an opaque RGB image."""
@@ -27,18 +32,36 @@ def dataset_image_to_pil(image: torch.Tensor) -> Image.Image:
 
 class Qwen21IPERCache:
     def __init__(self, root: str | Path, *, prompt: str = PROMPT, resolution: int | str = RESOLUTION,
-                 preprocessing: str = 'resize_v1') -> None:
+                 preprocessing: str = 'resize_v1', canvas_policy: str | None = None) -> None:
         if resolution not in (512, 1024, '512', '1024', 'native'):
             raise ValueError("resolution must be 512, 1024, or 'native'")
         self.root = Path(root)
         self.root.mkdir(parents=True, exist_ok=True)
         self.prompt = prompt
         self.resolution = resolution
+        self.canvas_policy = None
+        if canvas_policy is not None:
+            from src.data.canvas_contract import LEGACY_POLICIES, POLICY_FOR_MODE
+            declared = str(canvas_policy)
+            policy = POLICY_FOR_MODE.get(declared, declared)
+            if policy in LEGACY_POLICIES:
+                raise ValueError(
+                    f"canvas policy {policy!r} stretches or crops the person and cannot share the "
+                    "native latent cache; rebuild it on an aspect-preserving canvas")
+            if policy not in CANVAS_PREPROCESSING:
+                raise ValueError(f"unknown canvas policy {canvas_policy!r}")
+            self.canvas_policy = policy
+            if preprocessing == 'resize_v1':
+                preprocessing = CANVAS_PREPROCESSING[policy]
         self.preprocessing = preprocessing
         if preprocessing != 'resize_v1':
             import json
             policy = {'preprocessing': preprocessing, 'resolution': resolution,
                       'model_revision': MODEL_REVISION, 'prompt': prompt}
+            if self.canvas_policy is not None:
+                # Only canvas-declared caches carry this key, so cache directories written
+                # before the contract stay byte-compatible and resumable.
+                policy['canvas_policy'] = self.canvas_policy
             path = self.root / 'cache_policy.json'
             if path.exists() and json.loads(path.read_text()) != policy:
                 raise ValueError('Cache preprocessing policy differs; use a new cache directory')
@@ -130,16 +153,22 @@ class Qwen21IPERCache:
         targets = [self.target(pipe, dataset_image_to_pil(batch["tgt_image"][index])) for index in range(batch_size)]
         target_latent = torch.cat(targets, dim=0)
         tokens = target_latent.shape[1]
-        if self.resolution == 'native':
-            tgt_h, tgt_w = batch["tgt_image"].shape[2] // 16, batch["tgt_image"].shape[3] // 16
-            src_h, src_w = batch["src_image"].shape[2] // 16, batch["src_image"].shape[3] // 16
-            if tokens != tgt_h * tgt_w or tokens % 4:
-                raise ValueError(f"unexpected Qwen21 target token count: {tokens} (expected {tgt_h}x{tgt_w}={tgt_h * tgt_w})")
-        else:
-            res_int = int(self.resolution)
-            tgt_h = tgt_w = src_h = src_w = res_int // 16
-            if tokens != (res_int // 16) ** 2 or tokens % 4:
-                raise ValueError(f"unexpected Qwen21 target token count: {tokens}")
+        # The grid comes off the real canvas; an integer resolution may not imply a square one.
+        tgt_h, tgt_w = batch["tgt_image"].shape[-2] // 16, batch["tgt_image"].shape[-1] // 16
+        src_h, src_w = batch["src_image"].shape[-2] // 16, batch["src_image"].shape[-1] // 16
+        if batch["tgt_image"].shape[-2] % 16 or batch["tgt_image"].shape[-1] % 16:
+            raise ValueError(f"target canvas {tuple(batch['tgt_image'].shape[-2:])} is not a multiple "
+                             "of the 16x Qwen VAE stride")
+        if tokens != tgt_h * tgt_w or tokens % 4:
+            raise ValueError(f"unexpected Qwen21 target token count: {tokens} "
+                             f"(canvas grid {tgt_h}x{tgt_w}={tgt_h * tgt_w}, 4-token slots required)")
+        if self.resolution != 'native':
+            declared = int(self.resolution) // 16
+            if (tgt_h, tgt_w) != (declared, declared) or (src_h, src_w) != (declared, declared):
+                raise ValueError(
+                    f"resolution={self.resolution!r} implies a {declared}x{declared} square grid, but the "
+                    f"batch carries target {tgt_h}x{tgt_w} and source {src_h}x{src_w}; use "
+                    "resolution='native' with an aspect-preserving canvas instead of assuming a square")
         max_prompt = max(condition["prompt_embeds"].shape[1] for condition in conditions)
         prompt_embeds = torch.cat([
             F.pad(condition["prompt_embeds"], (0, 0, 0, max_prompt - condition["prompt_embeds"].shape[1]))

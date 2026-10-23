@@ -65,6 +65,9 @@ def arguments():
     parser.add_argument('--probe-indices', type=int, nargs='+', default=[0, 64, 128, 192])
     parser.add_argument('--resolution', default='512', help='512, 1024, or native')
     parser.add_argument('--align-mode', choices=('letterbox', 'resize', 'native'), default='letterbox')
+    parser.add_argument('--legacy-policy-ok', action='store_true',
+                        help="allow --align-mode resize, which squeezes every portrait into a square; "
+                             "only for reproducing runs that were trained that way")
     args = parser.parse_args()
     if bool(args.init_checkpoint) == bool(args.resume):
         parser.error('Exactly one of --init-checkpoint and --resume is required')
@@ -108,8 +111,10 @@ def main():
     torch.use_deterministic_algorithms(True, warn_only=True)
     split = validate_locked_split(args.train_pairs, args.val_pairs)
     res_arg = args.resolution if args.resolution == 'native' else int(args.resolution)
-    train = QwenFullDataset(args.train_pairs, resolution=res_arg, dataset_type='tiktok_v3', align_mode=args.align_mode)
-    validation = QwenFullDataset(args.val_pairs, resolution=res_arg, dataset_type='tiktok_v3', align_mode=args.align_mode)
+    train = QwenFullDataset(args.train_pairs, resolution=res_arg, dataset_type='tiktok_v3',
+                            align_mode=args.align_mode, legacy_policy_ok=args.legacy_policy_ok)
+    validation = QwenFullDataset(args.val_pairs, resolution=res_arg, dataset_type='tiktok_v3',
+                                 align_mode=args.align_mode, legacy_policy_ok=args.legacy_policy_ok)
     if len(train) != 256 or len(validation) != 24:
         raise ValueError('Expected exactly 256 train / 24 held-out pairs')
     if args.steps > len(train) or any(not 0 <= index < len(train) for index in args.probe_indices):

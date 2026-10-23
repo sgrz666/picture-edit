@@ -94,7 +94,8 @@ class Qwen21NativeBody(nn.Module):
         if any(parameter.dtype != torch.float32 for parameter in self.parameters()):
             raise ValueError("Native Body parameters must remain FP32; convert the backbone dtype before installation")
 
-    def prepare_geometry(self, features: NativeGeometryFeatures) -> PreparedNativeGeometry:
+    def prepare_geometry(self, features: NativeGeometryFeatures, *,
+                         conv_input_valid: torch.Tensor | None = None) -> PreparedNativeGeometry:
         self._require_fp32()
         if not isinstance(features, NativeGeometryFeatures):
             raise ValueError("Expected NativeGeometryFeatures")
@@ -111,8 +112,23 @@ class Qwen21NativeBody(nn.Module):
         if (not isinstance(valid, torch.Tensor) or valid.dtype != torch.bool
                 or valid.shape != (value.shape[0], 2) or not bool(valid[:, 0].all())):
             raise ValueError("Geometry person_valid must be bool [B,2] with person A valid")
+        if conv_input_valid is not None:
+            # The gate has to be applied after projection, not to the raw features: a norm layer
+            # turns an all-zero input row into a non-zero one (its bias still lands), so masking
+            # upstream would not stop padding tokens reaching their neighbours.
+            if (not isinstance(conv_input_valid, torch.Tensor)
+                    or conv_input_valid.shape != value.shape[:2]
+                    or not (conv_input_valid.dtype == torch.bool or conv_input_valid.is_floating_point())
+                    or (conv_input_valid.is_floating_point() and (
+                        not bool(torch.isfinite(conv_input_valid).all())
+                        or bool((conv_input_valid < 0).any()) or bool((conv_input_valid > 1).any())))):
+                raise ValueError(
+                    "conv_input_valid must be bool or finite 0..1 [B,N] matching the target grid")
         with torch.autocast(device_type=value.device.type, enabled=False):
             projected = self.geometry_projection(self.geometry_norm(value.float()))
+            if conv_input_valid is not None:
+                projected = projected * conv_input_valid.to(device=projected.device,
+                                                             dtype=projected.dtype)[..., None]
             spatial = projected.transpose(1, 2).reshape(value.shape[0], self.config.width, *grid)
             tokens = projected + self.local_geometry(spatial).flatten(2).transpose(1, 2)
         return PreparedNativeGeometry(tokens, grid)
@@ -140,9 +156,17 @@ class Qwen21NativeBody(nn.Module):
             raise ValueError("sigma must be finite [B] in [0,1]")
         if type(strength) not in (int, float) or not math.isfinite(strength) or strength < 0:
             raise ValueError("strength must be a finite nonnegative scalar")
-        if valid_mask is not None and (not isinstance(valid_mask, torch.Tensor)
-                or valid_mask.dtype != torch.bool or valid_mask.shape != (b, n)):
-            raise ValueError("valid_mask must be bool [B,N] over the target canvas")
+        if valid_mask is not None:
+            # A boundary token of a padded canvas covers only part of the real image, so a bool
+            # mask would hand it the same full residual as a fully valid token. Accept the 0..1
+            # fractional area coverage that valid_image_tokens() already computes.
+            if (not isinstance(valid_mask, torch.Tensor) or valid_mask.shape != (b, n)
+                    or not (valid_mask.dtype == torch.bool or valid_mask.is_floating_point())
+                    or (valid_mask.is_floating_point() and (
+                        not bool(torch.isfinite(valid_mask).all())
+                        or bool((valid_mask < 0).any()) or bool((valid_mask > 1).any())))):
+                raise ValueError(
+                    "valid_mask must be bool or 0..1 area coverage [B,N] over the target canvas")
         target_mask = target_mask.to(hidden.device)
         with torch.autocast(device_type=hidden.device.type, enabled=False):
             query = self.query_projection(self.query_norm(hidden[:, target_mask].float()))

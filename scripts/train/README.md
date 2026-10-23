@@ -18,6 +18,7 @@
 | `train_iper_qwen21_body.py` | 在冻结 Qwen-Image-2.1 主干上训练 target-token body adapter（默认从 V6 checkpoint 起）| iPER；默认从 `experiments/iper_v6_native_20k_v1/checkpoint_last.pt` 起 | 默认 `experiments/qwen21_iper_body` |
 | `train_iper_qwen21_face.py` | 在冻结 Body 20k adapter 之上训练 source-identity 的 Qwen21 Face ROI 分支 | iPER 人脸；默认 Body checkpoint `experiments/qwen21_iper_body/full_20k/checkpoint_last.pt` | 默认 `FACE_ROOT/face_train_3k` |
 | `train_iper_qwen21_full.py` | 完整 V6 架构在 Qwen21 上的有界 Body/Face 联合训练 | iPER | 默认由脚本内/参数指定 `experiments/` 下 run 目录 |
+| `train_qwen21_native_full.py` | **等比画布正式入口（方案 §4）**：只接受 `--canvas-policy native-pad / aspect-preserving`，`resize-square`、`square-crop` 直接拒；加载模型前先在 CPU 上跑 `--preflight-only`（`assert_pair_contract` 逐对验画布、token 网格与条件同栅格），latent 缓存按 `canvas_policy` 绑定，改造前的 checkpoint 只能以 `--warm-start-ok` 显式继承 | TikTok v3（`dataset_type=tiktok_v3`，`resolution='native'`）| `--output` 指定；落 `canvas_preflight.json`、`cache/`、`checkpoint_last.pt`、`run_manifest.json` |
 | `train_qwen21_joint_pilot.py` | 有界 joint Body+Face pilot，带固定可选 BFS 与严格 resume | 锁定子集（与 `scripts/data/prepare_qwen21_joint_pilot.py` 对齐）| 由参数指定 `experiments/` 下 pilot 目录 |
 
 ### V6.5 / V6.6 分支（Face / Hand）
@@ -44,7 +45,33 @@
 
 ## 注意与坑
 
-- 多数 Qwen21 训练入口默认从某个已有 checkpoint 起（V6 native 或 body 20k），改默认值前确认上游 run 存在，否则会直接报文件缺失。
+- 多数 Qwen21 训练入口默认从某个已有 checkpoint 起（V6 native 或 body 20k），改默认值前确认上游 run 存在，否则会直接报文件缺失。**2026-10-22 复核**：`execution.BODY_CHECKPOINT` 指向的 `experiments/iper_v6_native_20k_v1/checkpoint_last.pt` 在本机已不存在，三批清理清单 `/data/shangguanrz/_trash_ckpt_2026101{3,6,7}/MANIFEST.json` 里也不含任何 `iper_v6_native` 条目（不是这次整理挪走的）。但盘上**确实有**可用的改造前权重，别误记成"一个都不剩"：`nihaochen/qwen21_full/body_512_100/checkpoint_last.pt`（4.0 GB）、`qwen21_full/face_512_100/checkpoint_last.pt`（2.8 GB）、`nihaochen/iper1024/body_3k_final/checkpoint_best.pt`（772 MB）、`nihaochen/qwen21_face/face_train_3k/checkpoint_best_loss.pt`（216 MB）。它们 `canvas_policy=None`，所以 `require_canvas_compatible` 默认拒、`--warm-start-ok` 显式放行 —— 两个方向都在真实文件上验过。`train_qwen21_native_full.py --adapter-init scratch` 用 DeepGen config 随机初始化 adapter，只为验证画布/网格/反向传播接线，**不可当正式训练**。
+- 竖图训练一律走 `train_qwen21_native_full.py`；旧 `train_iper_qwen21_*` 的 `--align-mode` 已无默认值，复现历史 run 要显式 `--align-mode resize --legacy-policy-ok`。
 - `train_adapter.py` 是 DeepGen 线的「原始」训练入口，使用 `DiffusionPipeline.from_pretrained` 加载 DeepGen 并冻结全部组件；它的 `data_dir` 默认指向 `data/debug_samples`，正式训练需改 `--data_dir` 与 `--output_dir`。
 - V6.5/V6.6 的 overfit 入口 checkpoint 默认落在 `experiments/*_overfit`，属于工程验证，不是正式训练产出；不要把它们误当发布权重。
-- 训练脚本质疑「是否真的在学」时，优先用 `train_tiktok_overfit_sanity.py` 的两阶段 sanity 验证接线正确性。
+- padding 参与注意力的问题已可**按 run 开关**：`--exclude-padding-tokens`
+  （实现在 `src/pose_control/qwen21_full/padding_attention.py`，不改 diffusers）。
+  实测在真实 20B 主干上：不屏蔽时只扰动 41 个纯 padding token，有效 token 输出位移 4.037（= 信号的 501%）；
+  屏蔽后位移 **0.000000**；但屏蔽本身让有效输出变化 4.197（521%），
+  所以**已按旧语义训练的 checkpoint 不能打开它**。默认关闭，且必须显式 `allow_semantic_change=True`。
+  注意 `aspect-preserving --max-pixels 65536` 这类画布的 margin 只有 1~10 像素，凑不满一个 16×16 token 块，
+  此时开关是空操作（`padding_tokens: 0`）—— 这正是"先最小化 padding"应有的表现。
+- `train_qwen21_native_full.py` 实测边界（2026-10-22，RTX 6000D 83 GiB，qwen21 环境）：
+  `aspect-preserving --max-pixels 65536`（画布 352×192、网格 **22×12=264 token**）2 步跑通，
+  `grad_norm 16.09 → 22.58`，第 2 步 `residual_rms` 已到 **0.056–0.068**（第 1 步为 0 是 zero-head 初始化的正常表现），
+  峰值显存 48.6 → 54.2 GiB，落 `checkpoint_last.pt` + `run_manifest.json`，checkpoint 带
+  `canvas_schema_version=canvas_v2` 且 resume 时被 `require_canvas_compatible` 认下。
+  同日又跑了一次 `--steps 4 --warmup-steps 1`（真实 `train_pairs.jsonl` 11042 对 / `val_pairs.jsonl` 1364 对，
+  产物 `/data/shangguanrz/canvas_audit/native_full_train_ap_v1/`，ckpt 3.7 GB + cache 902 MB）：
+  `grad_norm = 0.0 / 3.27 / 55.7 / 65.2`。**第 1 步的 0.0 是 warmup 内**（`--warmup-steps 1` 使 step 索引 0 落在
+  trainable 相位为 0 的区间），不是接线坏了 —— 越过 warmup 后非零才是判据，这条断言已经封住假绿。
+  两次 loss（0.226/0.484/4.05/1.99 与前一组的 16.09 那次）都**不能读成学习曲线**：每步 `sigma` 不同，
+  样本也不同，4 步只证明管脚通。
+  同一张卡上 `native-pad`（1088×608 → **68×38=2584 token**）**直接 OOM**：入口会把它翻译成
+  「需要 gradient checkpointing，或降 `--max-pixels`」而不是丢一句 `Allocation on device`。
+  另有两个自陷坑已封：`--steps <= --warmup-steps` 直接拒（warmup 期相位被置零，grad_norm 恒为 0，
+  跑完看着绿其实没学）；step 越过 warmup 后 `grad_norm == 0` 抛 `AssertionError`。
+
+## Native Depth / CHAMP (2026-10-23)
+
+`train_qwen21_native_depth.py` 使用实际Native Geometry/Body与可选Depth；显式off/relative_png/camera_z、pair/canvas CPU预检、原生cache与flow训练。用法见 `src/pose_control/qwen21_full/NATIVE_DEPTH.md`。

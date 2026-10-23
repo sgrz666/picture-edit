@@ -87,3 +87,7 @@ commit `ae0e9808ef1300820d499e707ec4d655da158e6d`, original
 HaMeR are optional external offline preprocessors whose exported tensors can
 be merged by `scripts/precompute_iper_hand_features_v66.py`. HandRefiner is
 not bundled or invoked; only an interchange payload is provided.
+
+## Native Depth / CHAMP (2026-10-23)
+
+`third_party/champ_guidance/spatial_attention.py` adapts `models/transformer_3d.py` and the active spatial path of `TemporalBasicTransformerBlock` in `models/attention.py` from CHAMP commit `4d0cad2ca23990a26a0c2f69d4ecb1b55f5df140` (MIT, license retained). It preserves the active parameter names and spatial math, uses PyTorch SDPA and an optional valid-key mask, and omits temporal/cross attention and unused modules. Native Depth can explicitly import the official active CNN/attention weights; no weight is bundled in Git.
