@@ -10,6 +10,15 @@ from PIL import Image
 from torch.utils.data import Dataset
 from torchvision import transforms
 
+from .canvas_contract import LegacyStretch
+
+
+# iPER geometry ships already rendered at 512x512 (normal_512, dwpose_512, part_512) and RGB is
+# stretched to that square in this reader. Padding inside a Dataset cannot undo a distortion baked
+# into the assets, so the reader declares itself legacy: src/data/canvas_contract.py refuses it for
+# new training, and an aspect-preserving iPER set must be re-rendered from the original SMPL-X
+# parameters and cameras.
+CANVAS_POLICY = "resize_square"
 
 # 14 body part swap pairs for horizontal flip
 PART_FLIP_SWAP = {
@@ -291,6 +300,13 @@ class IPERPoseDataset(Dataset):
             'smplx_global': smplx_global, # [26] float32
             'human_mask': mask_tensor,    # [1, H, W] in [0, 1]
             'task_id': torch.tensor(0, dtype=torch.long),  # TaskType.SINGLE
+            'canvas_policy': CANVAS_POLICY,  # legacy square stretch, see canvas_contract
+            # Declared as a refusal record with the frame's true size, so a canonical trainer
+            # rejects it naming the stretch instead of tripping over a missing field.
+            'source_canvas': LegacyStretch(CANVAS_POLICY, (src_img.height, src_img.width),
+                                           (self.resolution, self.resolution)).metadata(),
+            'target_canvas': LegacyStretch(CANVAS_POLICY, (tgt_img.height, tgt_img.width),
+                                           (self.resolution, self.resolution)).metadata(),
             'appearance': appearance,
             'source_stem': source_stem,
             'target_stem': target_stem,

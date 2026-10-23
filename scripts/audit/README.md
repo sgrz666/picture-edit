@@ -4,9 +4,6 @@
 
 ## 里面有什么
 
-- `audit_qwen21_native_depth.py`：严格迁入CHAMP active path、与固定原版空间attention比较、512融合与梯度/state审计。
-- `verify_qwen21_native_depth_runtime.py`：真实7B、实际矩形几何与Depth的有界前向/反向；原Full不变、prefix保护、Depth/Body梯度，不更新优化器或采样图片。
-
 - `audit_qwen21_native_geometry.py` —— CPU-only读取已有Full checkpoint，核对新512维前端与旧encoder/reasoner/bridge数值一致；不构造Qwen/SD3主干，不写权重，JSON输出使用独占新文件。
 - `audit_qwen21_native_body.py` —— CPU真实32层小型Qwen结构核验，检查新Body零输出、prefix、条件与checkpoint梯度；可显式读取Full前端权重。
 - `verify_qwen21_native_body_runtime.py` —— 有界CUDA核验：现有7B基座、已训练Full前端、生产维度新Body的前向/反向；不采样图片、不更新优化器或写权重。
@@ -54,3 +51,7 @@
 - 这些脚本绝大多数**只做断言、不修数据**；`verify_project_organization.py` 默认只校验结构/链接/小文件哈希/资产是否存在，不要误以为它已核对过大文件内容——需加 `--full-assets`。
 - `probe_qwen21_face_single_sample.py` 依赖 `scripts/run/run_qwen21_face_single_sample.py` 里定义的输出常量（`OUT`），两者需同步。
 - 多数审计脚本的 docstring 都白纸黑字写了「不训练 / 不保存权重 / 不下载 checkpoint」，跑之前不要臆测它们会改动任何东西。
+
+## Native Depth / CHAMP (2026-10-23)
+
+`audit_qwen21_native_depth.py` 严格迁入官方active path并比较空间attention；`verify_qwen21_native_depth_runtime.py` 使用真实7B和矩形条件核对prefix、冻结基座与Depth/Body梯度，不更新优化器、不采样图片。

@@ -65,6 +65,12 @@ def valid_image_tokens(batch, grid, device):
         size = (int(grid[0]), int(grid[1]))
     else:
         size = (int(grid), int(grid))
+        canvas = batch.get('tgt_image')
+        if canvas is not None and size != (canvas.shape[-2] // 16, canvas.shape[-1] // 16):
+            raise ValueError(
+                f"square token grid {size} does not match the real canvas grid "
+                f"{(canvas.shape[-2] // 16, canvas.shape[-1] // 16)}; pass the rectangular "
+                "target_token_hw instead of one integer")
     return torch.nn.functional.interpolate(
         batch['valid_image_mask'].to(device=device, dtype=torch.float32),
         size=size, mode='area').flatten(2).transpose(1, 2)
