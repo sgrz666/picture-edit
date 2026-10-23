@@ -169,10 +169,10 @@ def main():
     completed = {(row['set'], row['resolution'], row['candidate'], row['mode'], row['pair_index']): row for row in rows}
     for resolution in (512, 1024):
         cache = Qwen21IPERCache(OUT / 'native_cache', resolution=resolution, prompt=PROMPT)
-        validation = QwenFullDataset(RUN_ROOT / 'val_pairs.jsonl', resolution=resolution)
+        validation = QwenFullDataset(RUN_ROOT / 'val_pairs.jsonl', resolution=resolution, align_mode='resize', legacy_policy_ok=True)
         datasets = [('validation', validation)]
         if resolution == 1024:
-            datasets.append(('cross_person', QwenFullDataset(RUN_ROOT / 'cross_person_pairs.jsonl', resolution=resolution)))
+            datasets.append(('cross_person', QwenFullDataset(RUN_ROOT / 'cross_person_pairs.jsonl', resolution=resolution, align_mode='resize', legacy_policy_ok=True)))
         for candidate, checkpoint in CHECKPOINTS.items():
             load_adapter_checkpoint(adapter, checkpoint)
             adapter.eval().requires_grad_(False)

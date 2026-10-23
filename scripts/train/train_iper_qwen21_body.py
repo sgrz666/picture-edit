@@ -35,6 +35,8 @@ def arguments() -> argparse.Namespace:
     parser.add_argument("--val-pairs", type=Path, default=ROOT / "datasets/iPER/iper_sampled_6src64tgt/splits/dev_val_pairs.jsonl")
     parser.add_argument("--dataset-type", choices=("auto", "iper", "tiktok_v3"), default="auto")
     parser.add_argument("--align-mode", choices=("square_crop", "resize"), default="square_crop")
+    parser.add_argument("--legacy-policy-ok", action="store_true",
+                        help="allow a stretching/cropping --align-mode when the manifest is TikTok and the run being reproduced used it")
     parser.add_argument("--sampled-root", type=Path, default=ROOT / "datasets/iPER/iper_sampled_6src64tgt")
     parser.add_argument("--assets-root", type=Path, default=ROOT / "datasets/iPER/iper_assets_512_nvdiffrast")
     parser.add_argument("--tiktok-raw-root", type=Path, default=ROOT / "datasets/TikTokDataset/TikTok_dataset/TikTok_dataset")
@@ -71,6 +73,7 @@ def load_dataset(args: argparse.Namespace, pairs: Path):
         resolution=args.resolution,
         align_mode=getattr(args, "align_mode", "square_crop"),
         augment=False,
+        legacy_policy_ok=getattr(args, "legacy_policy_ok", False),
     )
 
 

@@ -179,7 +179,7 @@ def cases():
     kw['contact_relations'].valid_mask[1] = False
     yield 'synthetic_mixed_contact_invalid_B', 1024, kw
     for resolution in (512, 1024):
-        dataset = QwenFullDataset(RUN / 'val_pairs.jsonl', resolution=resolution)
+        dataset = QwenFullDataset(RUN / 'val_pairs.jsonl', resolution=resolution, align_mode='resize', legacy_policy_ok=True)
         if len(dataset) != 4:
             raise AssertionError('Expected the fixed four validation pairs')
         for index in range(4):

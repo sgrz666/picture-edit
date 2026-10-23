@@ -51,3 +51,7 @@
 - 这些脚本绝大多数**只做断言、不修数据**；`verify_project_organization.py` 默认只校验结构/链接/小文件哈希/资产是否存在，不要误以为它已核对过大文件内容——需加 `--full-assets`。
 - `probe_qwen21_face_single_sample.py` 依赖 `scripts/run/run_qwen21_face_single_sample.py` 里定义的输出常量（`OUT`），两者需同步。
 - 多数审计脚本的 docstring 都白纸黑字写了「不训练 / 不保存权重 / 不下载 checkpoint」，跑之前不要臆测它们会改动任何东西。
+
+## Native Depth / CHAMP (2026-10-23)
+
+`audit_qwen21_native_depth.py` 严格迁入官方active path并比较空间attention；`verify_qwen21_native_depth_runtime.py` 使用真实7B和矩形条件核对prefix、冻结基座与Depth/Body梯度，不更新优化器、不采样图片。

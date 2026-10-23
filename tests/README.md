@@ -106,3 +106,7 @@
 - 测试刻意「fail-closed」：身份缺失、appearance 泄漏、参考路由错乱等都会被拒绝而非静默通过——改数据/训练逻辑时要同步更新这些断言，否则会红。
 - `pytest.ini` 已排除 `experiments/`、`datasets/` 等重目录；新增测试若需临时读大资产，应避免被误递归。
 - `test_tiktok_prompt_bank_contract.py` 通过 glob 在 `experiments/` 下定位改写脚本，仓库布局变动（脚本路径改名）会使其整体 skip 而非失败，重命名脚本时同步更新本测试的 `PATTERNS`。
+
+## Native Depth / CHAMP (2026-10-23)
+
+`test_qwen21_depth_condition.py` / `test_qwen21_native_depth.py` / `test_qwen21_native_depth_runtime.py` 覆盖Depth方向/valid/canvas、CHAMP权重、512残差、pair绑定、资产漂移、checkpoint重建与原生32层反向。

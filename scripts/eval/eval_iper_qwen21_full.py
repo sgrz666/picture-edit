@@ -26,7 +26,11 @@ def arguments():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('--pairs', type=Path, default=RUN_ROOT / 'val_pairs.jsonl')
     p.add_argument('--dataset-type', choices=('auto', 'iper', 'tiktok_v3'), default='auto')
-    p.add_argument('--align-mode', choices=('resize','letterbox'),default='resize')
+    p.add_argument('--align-mode', choices=('resize', 'letterbox'), required=True,
+                   help="must match the canvas the checkpoint was trained on; 'resize' stretches "
+                        "every portrait into a square and additionally needs --legacy-policy-ok")
+    p.add_argument('--legacy-policy-ok', action='store_true',
+                   help="allow --align-mode resize when reproducing a run trained on that stretch")
     p.add_argument('--tiktok-raw-root', type=Path, default=MODEL.parents[1] / 'datasets/TikTokDataset/TikTok_dataset/TikTok_dataset')
     p.add_argument('--tiktok-assets-root', type=Path, default=MODEL.parents[1] / 'datasets/TikTokDataset/TikTok_3d_assets_native')
     p.add_argument('--model', type=Path, default=MODEL)
@@ -88,7 +92,7 @@ def main():
     torch.set_num_threads(4)
     # Face geometry is remapped using the exact source/target RGB transforms in prepare().
     dataset = QwenFullDataset(args.pairs, resolution=args.resolution, dataset_type=args.dataset_type,
-                              align_mode=args.align_mode,
+                              align_mode=args.align_mode, legacy_policy_ok=args.legacy_policy_ok,
                               tiktok_raw_root=args.tiktok_raw_root, tiktok_assets_root=args.tiktok_assets_root)
     count = min(len(dataset), args.max_samples) if args.max_samples else len(dataset)
     store = FaceConditionStore(args.features)

@@ -1,0 +1,181 @@
+{
+  "steps": [
+    {
+      "step": "input",
+      "real_frame_wh": [
+        604,
+        1080
+      ]
+    },
+    {
+      "step": "canvas",
+      "real": {
+        "original_hw": [
+          1080,
+          604
+        ],
+        "canvas_hw": [
+          1088,
+          608
+        ],
+        "token_hw": [
+          68,
+          38
+        ],
+        "token_count": 2584
+      },
+      "odd": {
+        "original_hw": [
+          1333,
+          750
+        ],
+        "canvas_hw": [
+          1344,
+          768
+        ],
+        "token_hw": [
+          84,
+          48
+        ],
+        "token_count": 4032
+      },
+      "square_reference": {
+        "token_hw": [
+          64,
+          64
+        ],
+        "token_count": 4096
+      }
+    },
+    {
+      "step": "cache",
+      "preprocessing": "native_v1",
+      "canvas_policy": "native_pad",
+      "root": "/home/shangguanrz/project/pic-edit/research/canvas_native_portrait_acceptance_20261022/output/cache"
+    },
+    {
+      "step": "pipeline",
+      "load_seconds": 23.7,
+      "model": "/home/shangguanrz/project/pic-edit/models/Qwen-Image-2.1"
+    },
+    {
+      "step": "vae_pair",
+      "source_canvas": [
+        1088,
+        608
+      ],
+      "target_canvas": [
+        1344,
+        768
+      ],
+      "source_token_hw": [
+        68,
+        38
+      ],
+      "target_token_hw": [
+        84,
+        48
+      ],
+      "source_tokens": 2584,
+      "target_tokens": 4032,
+      "latent_dim": 64,
+      "rectangular": true,
+      "not_square_64": true
+    },
+    {
+      "step": "small_pair",
+      "canvas_hw": [
+        416,
+        256
+      ],
+      "token_hw": [
+        26,
+        16
+      ],
+      "token_count": 416
+    },
+    {
+      "step": "vae_decode",
+      "unpack_signature": "(latents, height, width, vae_scale_factor)",
+      "unpacked_shape": [
+        1,
+        64,
+        1,
+        84,
+        48
+      ],
+      "decoded_shape": [
+        1,
+        4,
+        1,
+        1344,
+        768
+      ],
+      "expected_canvas": [
+        1344,
+        768
+      ],
+      "decoded_matches_canvas": true
+    },
+    {
+      "step": "dit_forward",
+      "failed": "TypeError: 'int' object is not iterable",
+      "traceback": [
+        "  File \"/home/shangguanrz/project/pic-edit/research/canvas_native_portrait_acceptance_20261022/run_native_portrait_acceptance.py\", line 165, in main",
+        "    \"img_shapes\": [[list(s) for s in shape] for shape in inputs[\"img_shapes\"][0]],",
+        "                    ^^^^^^^",
+        "TypeError: 'int' object is not iterable"
+      ]
+    },
+    {
+      "step": "dit_backward",
+      "canvas_hw": [
+        416,
+        256
+      ],
+      "token_hw": [
+        26,
+        16
+      ],
+      "token_count": 416,
+      "loss": 0.9806625843048096,
+      "grad_shape": [
+        1,
+        416,
+        64
+      ],
+      "grad_finite": true
+    },
+    {
+      "step": "padding_participation",
+      "fully_invalid_tokens": 41,
+      "partial_tokens": 25,
+      "valid_tokens": 350,
+      "grad_norm_fully_invalid": 0.027586911600537417,
+      "grad_norm_partial": 0.009376953358296304,
+      "grad_norm_valid": 0.020704400384732122,
+      "invalid_over_valid": 1.332417799497377,
+      "reading": "a nonzero grad_norm_fully_invalid means padding tokens still take part in Qwen attention, so attention-level masking would be required"
+    },
+    {
+      "step": "sample",
+      "seconds": 7.1,
+      "output_wh": [
+        768,
+        1344
+      ],
+      "unpadded_wh": [
+        750,
+        1333
+      ],
+      "requested_wh": [
+        768,
+        1344
+      ],
+      "aspect_kept": true,
+      "path": "/home/shangguanrz/project/pic-edit/research/canvas_native_portrait_acceptance_20261022/output/portrait_768x1344.png"
+    }
+  ],
+  "errors": [],
+  "total_seconds": 45.1
+}

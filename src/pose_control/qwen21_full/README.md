@@ -29,3 +29,7 @@
 - `execution.py` 中 hand 默认 `hand_strength=0, hand_mode='off'`——即**默认关闭手分支**，要用手控制需显式开启。
 - `frozen_bfs_lora.py` 只冻结 Transformer 参数；若要彻底阻断 Qwen 梯度，需调用方自行处理，本模块不提供 no-grad 包裹。
 - `smplx_global` 仍为 26 维（betas10 + root rot6d6 + transl3 + cam7），不含关节姿态，与 v6 口径一致。
+
+## Native Depth / CHAMP (2026-10-23)
+
+独立Depth输入契约、CHAMP CNN/空间attention、512维残差与新checkpoint已接入Native。见 [NATIVE_DEPTH.md](NATIVE_DEPTH.md)。旧Full默认入口保留。

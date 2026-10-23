@@ -95,6 +95,16 @@ def _read_image(path: Path, mode: str = "RGB") -> Image.Image:
         return Image.open(f).convert(mode)
 
 
+# The margin is filled differently for RGB and for the condition maps today: images get
+# mid-grey, geometry rasters get black. This is a legacy state, not something to unify quietly —
+# research/canvas_native_portrait_acceptance_20261022/probe_padding_attention.py measured that the
+# margin value moves *valid*-token DiT outputs by ~4x their signal, so changing either constant
+# changes what every existing checkpoint was trained against. Pinned and asserted in
+# tests/test_geometry_pair_dataset_v2.py so any future unification is deliberate.
+RGB_PAD_VALUE = (128, 128, 128)
+CONDITION_PAD_VALUE = 0
+
+
 def _rgb_tensor(path: Path, resolution: int, crop_box: Optional[Tuple[int, int, int, int]] = None) -> torch.Tensor:
     image = _read_image(path, "RGB")
     if crop_box is not None:
@@ -578,7 +588,8 @@ class TikTokV3PoseDataset(Dataset):
         dwpose_root: str | Path = "/home/shangguanrz/project/pic-edit/datasets/TikTokDataset/TikTok_v3/dwpose_v1",
         resolution: int = 512,
         heatmap_sigma: float = 4.0,
-        align_mode: str = "resize",
+        align_mode: str | None = None,
+        max_pixels: int | None = None,
         augment: bool = False,
         strict_conditions: bool = False,
     ) -> None:
@@ -589,12 +600,21 @@ class TikTokV3PoseDataset(Dataset):
         self.sampled_root = ""
         self.resolution = resolution if isinstance(resolution, str) else int(resolution)
         self.heatmap_sigma = float(heatmap_sigma)
+        if align_mode is None:
+            raise ValueError(
+                "align_mode must be chosen explicitly: 'native', 'aspect_preserving' and 'letterbox' "
+                "keep body proportions, while 'resize' stretches them and 'square_crop' crops the "
+                "field of view")
         self.align_mode = str(align_mode)
+        self.max_pixels = None if max_pixels is None else int(max_pixels)
+        if self.align_mode == "aspect_preserving" and not self.max_pixels:
+            raise ValueError("aspect_preserving needs max_pixels: the budget is what keeps a "
+                             "3000x5000 portrait trainable without stretching it")
         self.augment = bool(augment)
         self.strict_conditions = bool(strict_conditions)
         self._v6_cache: Dict[str, Mapping[str, Any]] = {}
 
-        if self.align_mode not in ("resize", "square_crop", "letterbox", "native"):
+        if self.align_mode not in ("resize", "square_crop", "letterbox", "native", "aspect_preserving"):
             raise ValueError(f"Unsupported align_mode: {self.align_mode!r}")
 
         self.samples: List[Dict[str, Any]] = []
@@ -699,14 +719,19 @@ class TikTokV3PoseDataset(Dataset):
         return image
 
     def rgb_transform(self, image: Image.Image) -> torch.Tensor:
-        """Resize RGB PIL image to target resolution and normalize to [-1, 1]."""
-        if self.align_mode == 'letterbox':
-            from .letterbox import Letterbox
-            resized = Letterbox.from_size(image.size, self.resolution).image(image, fill=(128,128,128))
-        elif self.align_mode == 'native':
-            from .letterbox import NativePad
-            resized = NativePad.from_size(image.size).image(image, fill=(128,128,128))
+        """Put RGB on the canvas through the shared contract, then normalise to [-1, 1]."""
+        from .canvas_contract import canvas_for_mode
+        if self.align_mode in ('native', 'letterbox', 'aspect_preserving'):
+            canvas = canvas_for_mode(self.align_mode, (image.height, image.width),
+                                     resolution=self.resolution, max_pixels=self.max_pixels)
+            resized = canvas.image(image, fill=RGB_PAD_VALUE)
+        elif self.align_mode == 'square_crop':
+            # _load_image already cropped to a square, so this resize stays isotropic; the
+            # defect this mode retains is lost field of view, not stretched limbs.
+            resized = image.resize((self.resolution, self.resolution), Image.Resampling.BILINEAR)
         else:
+            # 'resize': 604x1080 -> 512x512 widens the body by 1080/604. Kept only so
+            # historical runs reproduce; require_canonical refuses it for new training.
             resized = image.resize((self.resolution, self.resolution), Image.Resampling.BILINEAR)
         array = np.asarray(resized, dtype=np.float32).copy()
         return torch.from_numpy(array).permute(2, 0, 1).div_(127.5).sub_(1.0)
@@ -729,6 +754,8 @@ class TikTokV3PoseDataset(Dataset):
             return self._letterbox_item(sample)
         if self.align_mode == 'native':
             return self._native_item(sample)
+        if self.align_mode == 'aspect_preserving':
+            return self._budget_item(sample)
         seq_id = sample["sequence_id"]
         src_stem = sample["source_stem"]
         tgt_stem = sample["target_stem"]
@@ -833,7 +860,7 @@ class TikTokV3PoseDataset(Dataset):
         if int(visible.sum()) < 8:
             raise ValueError(f'Body condition has fewer than 8 visible keypoints: {seq}/{stem}')
         def raster(path, mode, *, nearest=False):
-            image = b.image(_read_image(Path(path),mode), nearest=nearest, fill=0)
+            image = b.image(_read_image(Path(path),mode), nearest=nearest, fill=CONDITION_PAD_VALUE)
             array = np.asarray(image,dtype=np.float32).copy()
             tensor = torch.from_numpy(array).unsqueeze(0) if mode=='L' else torch.from_numpy(array).permute(2,0,1)
             return tensor/255
@@ -885,7 +912,7 @@ class TikTokV3PoseDataset(Dataset):
             if img.size != (b.width, b.height):
                 resample = Image.Resampling.NEAREST if nearest else Image.Resampling.BILINEAR
                 img = img.resize((b.width, b.height), resample)
-            padded = b.image(img, nearest=nearest, fill=0)
+            padded = b.image(img, nearest=nearest, fill=CONDITION_PAD_VALUE)
             array = np.asarray(padded, dtype=np.float32).copy()
             tensor = torch.from_numpy(array).unsqueeze(0) if mode == 'L' else torch.from_numpy(array).permute(2, 0, 1)
             return tensor / 255
@@ -909,7 +936,16 @@ class TikTokV3PoseDataset(Dataset):
         points = b.points(points)
         points[:, 2] = torch.where(visible, points[:, 2], torch.zeros_like(points[:, 2]))
         valid = b.valid_mask()
-        return {
+        # CanvasSpec records describe this pair's geometry for the downstream contract. NativePad
+        # produced the pixels and is proven pixel-identical to native_pad() in
+        # tests/test_canvas_contract.py, so the two records cannot disagree about the canvas.
+        from .canvas_contract import native_pad
+        from .geometry_pair_dataset_v2 import assert_pair_contract
+        source_spec = native_pad((source.height, source.width))
+        target_spec = native_pad((target.height, target.width))
+        remapped_camera = b.global_camera(vector)
+        has_depth = bool(sample.get('target_depth_vis')) and Path(sample['target_depth_vis']).is_file()
+        pair = {
             'src_image': self.rgb_transform(source),
             'tgt_image': self.rgb_transform(target),
             'control_map': torch.cat([raw_normal, depth, dwpose, mask]),
@@ -917,15 +953,120 @@ class TikTokV3PoseDataset(Dataset):
             'depth': depth,
             'part_onehot': part,
             'pose_heatmap': _pose_heatmaps(points, resolution=(b.padded_height, b.padded_width), sigma=self.heatmap_sigma) * valid,
-            'smplx_global': b.global_camera(vector),
+            'smplx_global': remapped_camera,
             'human_mask': mask,
             'valid_image_mask': valid,
             'task_id': torch.tensor(0, dtype=torch.long),
             'appearance': seq,
             'source_stem': sample['source_stem'],
             'target_stem': stem,
+            'source_canvas': source_spec.metadata(),
+            'target_canvas': target_spec.metadata(),
+            'target_token_hw': target_spec.token_hw,
+            'camera_metadata': {
+                'convention': 'legacy 26D SMPL-X global; normalised fx,fy,cx,cy at indices 19..22',
+                'original_smplx_global': vector,
+                'canvas_smplx_global': remapped_camera},
+            # depth_vis is a normalised visualisation, never metric depth (plan §6).
+            'depth_metadata': {'metric': False, 'source': 'depth_vis' if has_depth else 'absent'},
             'alignment_meta': json.dumps({'source': a.metadata(), 'target': b.metadata()}, sort_keys=True)
         }
+        assert_pair_contract(pair, where='TikTokV3PoseDataset native pair')
+        return pair
+
+    def _budget_item(self, sample):
+        """Shrink both axes by one factor to a pixel budget, then pad (the plan's §4 default).
+
+        Kept separate from `_native_item` on purpose: the native path also feeds legacy Face
+        records whose field names assume NativePad's no-scaling transform, and a downscaled
+        canvas cannot be expressed there. Merging the two would make those records lie.
+        """
+        from .canvas_contract import aspect_preserving
+        from .geometry_pair_dataset_v2 import assert_pair_contract
+        source = _read_image(Path(sample['source_rgb']), 'RGB')
+        target = _read_image(Path(sample['target_rgb']), 'RGB')
+        a = aspect_preserving((source.height, source.width), max_pixels=self.max_pixels)
+        b = aspect_preserving((target.height, target.width), max_pixels=self.max_pixels)
+        seq, stem = sample['sequence_id'], sample['target_stem']
+        bundle = self._get_v6_bundle(seq)
+        if bundle is None or stem not in bundle.get('stem_to_idx', {}):
+            raise ValueError(f'Missing budget geometry: {seq}/{stem}')
+        index = int(bundle['stem_to_idx'][stem])
+        vector = _tensor(bundle, 'smplx_global')[index].float().clone()
+        points = _tensor(bundle, 'kps_25_coords')[index].float().clone()
+        if (vector.shape != (26,) or points.shape != (25, 3)
+                or not torch.isfinite(vector).all() or not torch.isfinite(points).all()):
+            raise ValueError(f'Invalid budget geometry: {seq}/{stem}')
+        visible = (points[:, 2] > .05) & ((points[:, :2] >= 0) & (points[:, :2] <= 1)).all(-1)
+        if int(visible.sum()) < 8:
+            raise ValueError(f'Body condition has fewer than 8 visible keypoints: {seq}/{stem}')
+        frame = (b.original_hw[1], b.original_hw[0])
+
+        def raster(path, mode, *, nearest=False):
+            image = _read_image(Path(path), mode)
+            # Conditions live in the frame's normalised space, so they land on the frame grid
+            # first and then follow the very same canvas transform as RGB.
+            if image.size != frame:
+                image = image.resize(frame, Image.Resampling.NEAREST if nearest else Image.Resampling.BILINEAR)
+            array = np.asarray(b.image(image, nearest=nearest, fill=CONDITION_PAD_VALUE), dtype=np.float32).copy()
+            tensor = torch.from_numpy(array).unsqueeze(0) if mode == 'L' else torch.from_numpy(array).permute(2, 0, 1)
+            return tensor / 255
+
+        def rgb(image):
+            # Must be the same call precompute() uses, or the latent cache is keyed on different
+            # pixels than the ones training feeds.
+            return self.rgb_transform(image)
+
+        mask = raster(sample['target_person_mask'], 'L', nearest=True)
+        raw_normal = raster(sample['target_normal'], 'RGB')
+        normal = (raw_normal * 2 - 1) * mask
+        part_path = self.assets_root / seq / 'part_512' / f'{stem}.png'
+        if not part_path.is_file():
+            part_path = part_path.with_suffix('.jpg')
+        part_img = _read_image(part_path, 'L')
+        if part_img.size != frame:
+            part_img = part_img.resize(frame, Image.Resampling.NEAREST)
+        labels = torch.from_numpy(np.asarray(b.image(part_img, nearest=True), dtype=np.int64).copy())
+        if (labels < 0).any() or (labels > 14).any():
+            raise ValueError(f'Invalid part labels: {part_path}')
+        part = F.one_hot(labels, num_classes=15)[..., 1:].permute(2, 0, 1).float()
+        if not bool((mask.sum() > 0) & (part.sum() > 0)):
+            raise ValueError(f'Empty body mask/part: {seq}/{stem}')
+        has_depth = bool(sample.get('target_depth_vis')) and Path(sample['target_depth_vis']).is_file()
+        depth = raster(sample['target_depth_vis'], 'L') if has_depth else torch.zeros_like(mask)
+        canvas_h, canvas_w = b.canvas_hw
+        has_dwpose = bool(sample.get('target_dwpose')) and Path(sample['target_dwpose']).is_file()
+        dwpose = raster(sample['target_dwpose'], 'RGB') if has_dwpose else torch.zeros(3, canvas_h, canvas_w)
+        points = b.points(points)
+        points[:, 2] = torch.where(visible, points[:, 2], torch.zeros_like(points[:, 2]))
+        valid = b.valid_mask()
+        camera = b.global_camera(vector)
+        pair = {
+            'src_image': rgb(source),
+            'tgt_image': rgb(target),
+            'control_map': torch.cat([raw_normal, depth, dwpose, mask]),
+            'normal': normal,
+            'depth': depth,
+            'part_onehot': part,
+            'pose_heatmap': _pose_heatmaps(points, resolution=b.canvas_hw, sigma=self.heatmap_sigma) * valid,
+            'smplx_global': camera,
+            'human_mask': mask,
+            'valid_image_mask': valid,
+            'task_id': torch.tensor(0, dtype=torch.long),
+            'appearance': seq,
+            'source_stem': sample['source_stem'],
+            'target_stem': stem,
+            'source_canvas': a.metadata(),
+            'target_canvas': b.metadata(),
+            'target_token_hw': b.token_hw,
+            'camera_metadata': {
+                'convention': 'legacy 26D SMPL-X global; normalised fx,fy,cx,cy at indices 19..22',
+                'original_smplx_global': vector,
+                'canvas_smplx_global': camera},
+            'depth_metadata': {'metric': False, 'source': 'depth_vis' if has_depth else 'absent'},
+        }
+        assert_pair_contract(pair, where='TikTokV3PoseDataset budget pair')
+        return pair
 
 
 
@@ -953,14 +1094,32 @@ def load_pose_dataset(
     tiktok_raw_root: str | Path = "/home/shangguanrz/project/pic-edit/datasets/TikTokDataset/TikTok_dataset/TikTok_dataset",
     tiktok_assets_root: str | Path = "/home/shangguanrz/project/pic-edit/datasets/TikTokDataset/TikTok_3d_assets_native",
     resolution: int = 512,
-    align_mode: str = "resize",
+    align_mode: str | None = None,
+    max_pixels: int | None = None,
     augment: bool = False,
+    legacy_policy_ok: bool = False,
 ) -> Dataset:
-    """Unified factory returning TikTokV3PoseDataset or IPERPoseDataset."""
+    """Unified factory returning TikTokV3PoseDataset or IPERPoseDataset.
+
+    The TikTok branch enforces the same canvas gate as QwenFullDataset: the legacy iPER
+    trainers reach TikTok through here, and without it an omitted --align-mode still meant
+    "silently squeeze the portrait into a square".
+    """
     resolved_type = dataset_type
     if resolved_type == "auto":
         resolved_type = "tiktok_v3" if is_tiktok_v3_manifest(pairs_jsonl) else "iper"
     if resolved_type == "tiktok_v3":
+        from .canvas_contract import LEGACY_POLICIES, POLICY_FOR_MODE, CanvasPolicyError
+        if align_mode is None:
+            raise ValueError("align_mode must be given explicitly for TikTok: 'native', "
+                             "'aspect_preserving' or 'letterbox' keep body proportions")
+        policy = POLICY_FOR_MODE.get(str(align_mode), str(align_mode))
+        if policy in LEGACY_POLICIES and not legacy_policy_ok:
+            raise CanvasPolicyError(
+                f"align_mode={align_mode!r} is refused here: it "
+                + ("stretches the person to a square" if policy == "resize_square"
+                   else "crops the field of view")
+                + ". Pass legacy_policy_ok=True only to reproduce a run trained that way.")
         # If caller explicitly passed a TikTok assets directory via assets_root, honor it
         assets_p = Path(assets_root)
         if "TikTok" in str(assets_p) or (assets_p / "00001").exists():
@@ -971,6 +1130,7 @@ def load_pose_dataset(
             assets_root=tiktok_assets_root,
             resolution=resolution,
             align_mode=align_mode,
+            max_pixels=max_pixels,
             augment=augment,
         )
     if resolved_type == "iper":

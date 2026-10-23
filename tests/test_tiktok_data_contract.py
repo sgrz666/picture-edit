@@ -595,6 +595,7 @@ def test_tiktok_v3_pose_dataset_and_crop_alignment(tmp_path: Path) -> None:
         tiktok_assets_root=assets_root,
         resolution=512,
         align_mode="square_crop",
+        legacy_policy_ok=True,
     )
     assert isinstance(ds, TikTokV3PoseDataset)
     assert len(ds) == 1
@@ -630,6 +631,7 @@ def test_tiktok_v3_pose_dataset_and_crop_alignment(tmp_path: Path) -> None:
         tiktok_assets_root=assets_root,
         resolution=512,
         align_mode="resize",
+        legacy_policy_ok=True,
     )
     assert ds_resize.samples[0]["norm_crop"] == (0.0, 0.0, 1.0, 1.0)
     sample_resize = ds_resize[0]

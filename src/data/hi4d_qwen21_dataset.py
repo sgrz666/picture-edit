@@ -225,6 +225,12 @@ class Hi4DGeometryConverter:
         result["contact_distance"] = distance
         result["contact_valid_mask"] = valid
         result["person_b_valid"] = torch.tensor(True)
+        # The canvas this control was letterboxed onto. Stored so a later change to SIZE or to
+        # the letterbox math is caught on read instead of silently mixing stale caches; the
+        # pixels stay produced by letterbox_array, because cv2 and PIL resample differently and
+        # rewriting them here would invalidate the 1389 controls already on disk.
+        result["canvas_hw"] = torch.tensor([SIZE, SIZE], dtype=torch.int64)
+        result["native_hw"] = torch.tensor([height, width], dtype=torch.int64)
         return result
 
 
@@ -264,6 +270,22 @@ class Hi4DQwen21Dataset(torch.utils.data.Dataset):
         if not path.exists():
             raise FileNotFoundError(f"missing control cache {path}; run precompute first")
         control = torch.load(path, map_location="cpu", weights_only=True)
+        canvas = control.pop("canvas_hw", None)
+        native = control.pop("native_hw", None)
+        if canvas is not None and not torch.equal(canvas, torch.tensor([SIZE, SIZE])):
+            raise ValueError(
+                f"cached Hi4D control was letterboxed onto {canvas.tolist()} but this build renders "
+                f"onto [{SIZE}, {SIZE}] (native {None if native is None else native.tolist()}); "
+                "re-run precompute rather than training on a mixed canvas")
+        # Older caches carry no canvas_hw at all, so check the tensors too: a control rasterised
+        # onto a different square is the same hazard the canvas record exists to catch.
+        for key, value in control.items():
+            if (torch.is_tensor(value) and value.ndim >= 2 and value.shape[-1] == value.shape[-2] > 16
+                    and tuple(value.shape[-2:]) != (SIZE, SIZE)):
+                raise ValueError(
+                    f"cached Hi4D control {key!r} sits on {tuple(value.shape[-2:])} but this build "
+                    f"renders onto ({SIZE}, {SIZE}); re-run precompute rather than training on a "
+                    "mixed canvas")
         sample = {**control, "src_image": _rgb(row["source_rgb"]),
                   "source_mask_a": _mask(row["source_person_mask_A"]),
                   "source_mask_b": _mask(row["source_person_mask_B"]), "row": row}
