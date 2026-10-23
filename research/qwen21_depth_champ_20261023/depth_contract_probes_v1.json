@@ -1,0 +1,54 @@
+{
+  "torch": "2.8.0+cu128",
+  "device": "cpu",
+  "scope": "mechanisms only",
+  "masked_pool": {
+    "naive": 2.0,
+    "mask_aware": 4.0,
+    "coverage": 0.5
+  },
+  "double_zero_product": {
+    "gate_grad": 0.0,
+    "projection_grad_max": 0.0
+  },
+  "single_zero_projection": {
+    "projection_grad_norm": 6.601771831512451
+  },
+  "serial_zero_heads": [
+    {
+      "step": 0,
+      "body_head_grad": 1.0781010389328003,
+      "depth_head_grad": 0.0,
+      "depth_trunk_grad": 0.0
+    },
+    {
+      "step": 1,
+      "body_head_grad": 0.9867920279502869,
+      "depth_head_grad": 0.012937711551785469,
+      "depth_trunk_grad": 0.0
+    },
+    {
+      "step": 2,
+      "body_head_grad": 0.9037600755691528,
+      "depth_head_grad": 0.023218581452965736,
+      "depth_trunk_grad": 2.5373048629262485e-05
+    }
+  ],
+  "rgb_gray_to_depth_valid_conv": {
+    "original_shape": [
+      16,
+      3,
+      3,
+      3
+    ],
+    "converted_shape": [
+      16,
+      2,
+      3,
+      3
+    ],
+    "sum_conversion_max_abs": 2.980232238769531e-07,
+    "incorrect_mean_max_abs": 0.7569363713264465,
+    "scope": "first convolution equivalence only; no encoder or Qwen quality claim"
+  }
+}

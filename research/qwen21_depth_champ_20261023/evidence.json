@@ -1,0 +1,27 @@
+{
+  "created_at": "2026-10-22T17:02:35.676421+00:00",
+  "local_project": "D:\\codeplus\\pictureedit",
+  "local_head": "8399521ffcd2e81e3e83549d46b7351934039d18",
+  "remote_project": "/home/shangguanrz/project/pic-edit",
+  "remote_head": "51f7c3611b25395cb0a01fd158b048a59bc62ef1",
+  "remote_state": "working tree contains ongoing canvas, dataset and Native changes; source hashes are in remote_depth_audit_v1.json",
+  "local_source_hashes": {
+    "third_party/champ_guidance/guidance_encoder.py": "fea43b76e377653fa994086b23a7409d67807c890aea2ae2c2b7ee7a39a63760",
+    "src/pose_control/qwen21_full/geometry_encoder.py": "47c073c05d467d7f7c70d5b28e4929c3730e518fa6fe69d20453f29e474ea198",
+    "src/pose_control/qwen21_full/condition_injector.py": "f491702332c55f57cfbd67819ebd4da30dec057dae0fc7f685db0ac240895b93"
+  },
+  "producer_hashes": {
+    "add/tools/SMPLest-X/scripts/build_iper_assets_512_nvdiffrast.py": "8d2e7ad108dcf68ec45707cc569cd5ecf7e8f02ebd2e2812325d7af6415a2b71",
+    "add/tools/SMPLest-X/scripts/build_tiktok_3d_assets_512.py": "b22b7688f17802a79c80c9cb90dcec232cce400333ab182dd521a8bfd2dc356b"
+  },
+  "scope": [
+    "research documents and scripts only",
+    "15 existing depth assets inspected without modification",
+    "official depth weight cached on /data, not Git",
+    "CPU mechanism assertions passed",
+    "no production module or training config edits",
+    "no image generation/training",
+    "no subagents"
+  ],
+  "proposal_status": "not implemented or quality-validated"
+}
