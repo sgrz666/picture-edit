@@ -1,0 +1,182 @@
+{
+  "architecture": "qwen21_native_depth_runtime_v2",
+  "pair": {
+    "pair_id": "pose_iper_source_standard_f000078",
+    "source_appearance": "001_8",
+    "target_appearance": "001_8",
+    "source_stem": "source_standard_f000078",
+    "target_stem": "source_standard_f000078",
+    "source_rgb": "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_sampled_6src64tgt/001_8/rgb_1024/source_standard/source_standard_f000078.png",
+    "target_rgb": "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_sampled_6src64tgt/001_8/rgb_1024/source_standard/source_standard_f000078.png",
+    "cross_person": false
+  },
+  "target_canvas": {
+    "version": "canvas_v2",
+    "policy": "aspect_preserving",
+    "stride": 16,
+    "original_hw": [
+      1024,
+      1024
+    ],
+    "resized_hw": [
+      512,
+      512
+    ],
+    "canvas_hw": [
+      512,
+      512
+    ],
+    "offset_xy": [
+      0,
+      0
+    ],
+    "valid_rect": [
+      0,
+      0,
+      512,
+      512
+    ],
+    "token_hw": [
+      32,
+      32
+    ]
+  },
+  "geometry_shape": [
+    1,
+    1024,
+    512
+  ],
+  "pose_provenance": {
+    "record_id": "iper:001_8:source_standard:source_standard_f000078",
+    "record_sha256": "c75b6a66fab0bb5e9d2f42ac5bd2108010a2f1934605343ad80e850c9a2d3caa",
+    "schema": "smplx_body21_camera_v2",
+    "canvas_id": "5572a2133ea35bb2762628fd6c90c93b65e2c99dd1f9520fb92c84a1132d558f",
+    "camera": {
+      "selection": "raw",
+      "focal_xy": [
+        16778.08984375,
+        16778.091796875
+      ],
+      "principal_xy": [
+        580.119140625,
+        528.1306762695312
+      ],
+      "translation": [
+        -0.10143062472343445,
+        0.28369468450546265,
+        40.93545913696289
+      ],
+      "translation_field": "transl_raw",
+      "coordinates": "camera_xyz"
+    },
+    "sources": {
+      "params": {
+        "path": "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_sampled_6src64tgt/001_8/smplestx/params.pt",
+        "sha256": "d243104d6f6ef659ec3f6a6e8f54018d5c0205f38a2b80de80194a91feaacda8"
+      },
+      "frame_map": {
+        "path": "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_sampled_6src64tgt/001_8/smplestx/frame_map.json",
+        "sha256": "3fc2297945a6af4c4258d893e56eeaa3a51b55491d67a77f24bd075dfefcee4c"
+      },
+      "rgb": {
+        "path": "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_sampled_6src64tgt/001_8/rgb_1024/source_standard/source_standard_f000078.png",
+        "sha256": "972e52249c50ecf15c9df1a4164b5b472981492f4c809be351e885598a226f85"
+      },
+      "legacy_conditions": {
+        "path": "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_assets_512_nvdiffrast/001_8/v6_conditions.pt",
+        "sha256": "7fa6250b6317d255e2bdfeb327cdfd8464b5b231d711ef5f26f647117cab8be3"
+      },
+      "normal": {
+        "path": "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_assets_512_nvdiffrast/001_8/normal_512/source_standard/source_standard_f000078.png",
+        "sha256": "7838591000ad4d039cec10b94305cb74ed617b6a604b97ccaacc8217100194e4"
+      },
+      "smpl_mask": {
+        "path": "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_assets_512_nvdiffrast/001_8/mask_512/source_standard/source_standard_f000078.png",
+        "sha256": "415cf2bb338cd6df03c32eb04d89911b2d9c6d666731745d9cf0409dd9a7511d"
+      },
+      "part": {
+        "path": "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_assets_512_nvdiffrast/001_8/part_512/source_standard/source_standard_f000078.png",
+        "sha256": "e5c3bec291921f8e6bf5cac5dce96e78c630728b9b9e87ce799670c087905f26"
+      },
+      "depth_vis": {
+        "path": "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_assets_512_nvdiffrast/001_8/depth_vis_512/source_standard/source_standard_f000078.png",
+        "sha256": "7813b36eb7a68efaf41b01c3b01bf15bb8647d8e5253bc72c93a0d3d4283f9ae"
+      },
+      "model": {
+        "path": "/home/shangguanrz/project/pic-edit/add/tools/SMPLest-X/human_models/human_model_files/smplx/SMPLX_NEUTRAL.npz",
+        "sha256": "376021446ddc86e99acacd795182bbef903e61d33b76b9d8b359c2b0865bd992"
+      },
+      "fk_implementation": {
+        "path": "/home/shangguanrz/project/pic-edit/add/envs/smplestx_bw/lib/python3.12/site-packages/smplx/body_models.py",
+        "sha256": "3de717b66a31368120570dedd45a42effc1ce7b93d780bd71ce6879c10eeff75"
+      }
+    },
+    "condition_to_original": {
+      "normal": {
+        "source_hw": [
+          512,
+          512
+        ],
+        "original_hw": [
+          1024,
+          1024
+        ],
+        "scale_xy": [
+          2.0,
+          2.0
+        ],
+        "rule": "normalised_full_frame_then_target_canvas_once"
+      },
+      "smpl_mask": {
+        "source_hw": [
+          512,
+          512
+        ],
+        "original_hw": [
+          1024,
+          1024
+        ],
+        "scale_xy": [
+          2.0,
+          2.0
+        ],
+        "rule": "normalised_full_frame_then_target_canvas_once"
+      },
+      "part": {
+        "source_hw": [
+          512,
+          512
+        ],
+        "original_hw": [
+          1024,
+          1024
+        ],
+        "scale_xy": [
+          2.0,
+          2.0
+        ],
+        "rule": "normalised_full_frame_then_target_canvas_once"
+      },
+      "depth_vis": {
+        "source_hw": [
+          512,
+          512
+        ],
+        "original_hw": [
+          1024,
+          1024
+        ],
+        "scale_xy": [
+          2.0,
+          2.0
+        ],
+        "rule": "normalised_full_frame_then_target_canvas_once"
+      }
+    }
+  },
+  "depth_mode": "relative_png",
+  "no_optimizer": true,
+  "preflight_only": true,
+  "reference_resolution": 512,
+  "use_kv_cache": false
+}

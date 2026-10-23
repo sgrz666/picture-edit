@@ -1,0 +1,3599 @@
+{
+  "schema": "qwen21_body21_data_audit_v2",
+  "passed": true,
+  "count": 16,
+  "rows": [
+    {
+      "record_id": "tiktok:00001:target:0001",
+      "target_token_hw": [
+        22,
+        12
+      ],
+      "joint_tokens": [
+        1,
+        21,
+        256
+      ],
+      "global_tokens": [
+        1,
+        4,
+        256
+      ],
+      "geometry": [
+        1,
+        264,
+        512
+      ],
+      "zero_pose_delta_max_abs": 0.0,
+      "mesh_max_abs_error": 1.9073486328125e-06,
+      "camera": "standard",
+      "projectable": 12,
+      "sigma_px": 46.977500915527344,
+      "condition_to_original": {
+        "normal": {
+          "source_hw": [
+            1080,
+            604
+          ],
+          "original_hw": [
+            1080,
+            604
+          ],
+          "scale_xy": [
+            1.0,
+            1.0
+          ],
+          "rule": "normalised_full_frame_then_target_canvas_once"
+        },
+        "smpl_mask": {
+          "source_hw": [
+            1080,
+            604
+          ],
+          "original_hw": [
+            1080,
+            604
+          ],
+          "scale_xy": [
+            1.0,
+            1.0
+          ],
+          "rule": "normalised_full_frame_then_target_canvas_once"
+        },
+        "part": {
+          "source_hw": [
+            512,
+            512
+          ],
+          "original_hw": [
+            1080,
+            604
+          ],
+          "scale_xy": [
+            1.1796875,
+            2.109375
+          ],
+          "rule": "normalised_full_frame_then_target_canvas_once"
+        },
+        "depth_vis": {
+          "source_hw": [
+            1080,
+            604
+          ],
+          "original_hw": [
+            1080,
+            604
+          ],
+          "scale_xy": [
+            1.0,
+            1.0
+          ],
+          "rule": "normalised_full_frame_then_target_canvas_once"
+        }
+      },
+      "pose_provenance": {
+        "record_id": "tiktok:00001:target:0001",
+        "record_sha256": "500ed17201f1a1dc0cb1eca0524bd06815976dfb367d05ec08cd0acb83404e10",
+        "schema": "smplx_body21_camera_v2",
+        "canvas_id": "77573b4f5ce72fda9f8813d7e4135ac1e9c490c4ddf8df3893c89aaee775d9dd",
+        "camera": {
+          "selection": "standard",
+          "focal_xy": [
+            25210.08203125,
+            25210.083984375
+          ],
+          "principal_xy": [
+            284.447509765625,
+            537.8151245117188
+          ],
+          "translation": [
+            -0.00023097358644008636,
+            0.7524439692497253,
+            19.34340476989746
+          ],
+          "translation_field": "transl",
+          "coordinates": "camera_xyz"
+        },
+        "sources": {
+          "params": {
+            "path": "/data/shangguanrz/pic-edit-datasets/TikTokDataset/TikTok_3d_assets_native/00001/smplestx/params.pt",
+            "sha256": "274922191f3d283578e05ea865b5fb36397c7d6c9a7e8f116d02f39ff71df132"
+          },
+          "frame_map": {
+            "path": "/data/shangguanrz/pic-edit-datasets/TikTokDataset/TikTok_3d_assets_native/00001/smplestx/frame_map.json",
+            "sha256": "38bf0c7f80dcac13ef761ef1d2a280922b61f053714bec551133e82c09b30056"
+          },
+          "rgb": {
+            "path": "/data/shangguanrz/pic-edit-datasets/TikTokDataset/TikTok_dataset/TikTok_dataset/00001/images/0001.png",
+            "sha256": "88f4b23a9ecf7d7261274d1c348bc3edbbe1b26ed3ce9b8331c154b140128b1b"
+          },
+          "legacy_conditions": {
+            "path": "/data/shangguanrz/pic-edit-datasets/TikTokDataset/TikTok_3d_assets_native/00001/v6_conditions.pt",
+            "sha256": "0e6f607813b683e59aa1574d4074962c99322a3064a25d7ed60509d01c86edf9"
+          },
+          "normal": {
+            "path": "/data/shangguanrz/pic-edit-datasets/TikTokDataset/TikTok_3d_assets_native/00001/normal/0001.png",
+            "sha256": "fc9cb9635125f568537022592cf92cd2a6cc85c1b04eed90b66ae68747fa04e9"
+          },
+          "human_mask": {
+            "path": "/data/shangguanrz/pic-edit-datasets/TikTokDataset/TikTok_dataset/TikTok_dataset/00001/masks/0001.png",
+            "sha256": "c618bfa2dbbb11306de07a56b13584c09768035ed37bb6fc49917e32370d0ea9"
+          },
+          "smpl_mask": {
+            "path": "/data/shangguanrz/pic-edit-datasets/TikTokDataset/TikTok_3d_assets_native/00001/smplx_mask/0001.png",
+            "sha256": "630c27bef6eb76afa97ef7954ad6d246e954ea5169633a33943f35a314e8f4c3"
+          },
+          "part": {
+            "path": "/data/shangguanrz/pic-edit-datasets/TikTokDataset/TikTok_3d_assets_native/00001/part_512/0001.png",
+            "sha256": "85001398897cce9a6796d004685724c36d4fbdfb33e5b3de82d1cf3a720c7f11"
+          },
+          "depth_vis": {
+            "path": "/data/shangguanrz/pic-edit-datasets/TikTokDataset/TikTok_3d_assets_native/00001/depth_vis/0001.png",
+            "sha256": "bc905cda35712dc900c3d67434a8aa3a4a60fd38023345f46a5cc2578a3bea57"
+          },
+          "model": {
+            "path": "/home/shangguanrz/project/pic-edit/add/tools/SMPLest-X/human_models/human_model_files/smplx/SMPLX_NEUTRAL.npz",
+            "sha256": "376021446ddc86e99acacd795182bbef903e61d33b76b9d8b359c2b0865bd992"
+          },
+          "fk_implementation": {
+            "path": "/home/shangguanrz/project/pic-edit/add/envs/smplestx_bw/lib/python3.12/site-packages/smplx/body_models.py",
+            "sha256": "3de717b66a31368120570dedd45a42effc1ce7b93d780bd71ce6879c10eeff75"
+          }
+        },
+        "condition_to_original": {
+          "normal": {
+            "source_hw": [
+              1080,
+              604
+            ],
+            "original_hw": [
+              1080,
+              604
+            ],
+            "scale_xy": [
+              1.0,
+              1.0
+            ],
+            "rule": "normalised_full_frame_then_target_canvas_once"
+          },
+          "smpl_mask": {
+            "source_hw": [
+              1080,
+              604
+            ],
+            "original_hw": [
+              1080,
+              604
+            ],
+            "scale_xy": [
+              1.0,
+              1.0
+            ],
+            "rule": "normalised_full_frame_then_target_canvas_once"
+          },
+          "part": {
+            "source_hw": [
+              512,
+              512
+            ],
+            "original_hw": [
+              1080,
+              604
+            ],
+            "scale_xy": [
+              1.1796875,
+              2.109375
+            ],
+            "rule": "normalised_full_frame_then_target_canvas_once"
+          },
+          "depth_vis": {
+            "source_hw": [
+              1080,
+              604
+            ],
+            "original_hw": [
+              1080,
+              604
+            ],
+            "scale_xy": [
+              1.0,
+              1.0
+            ],
+            "rule": "normalised_full_frame_then_target_canvas_once"
+          }
+        }
+      }
+    },
+    {
+      "record_id": "tiktok:00001:target:0002",
+      "target_token_hw": [
+        22,
+        12
+      ],
+      "joint_tokens": [
+        1,
+        21,
+        256
+      ],
+      "global_tokens": [
+        1,
+        4,
+        256
+      ],
+      "geometry": [
+        1,
+        264,
+        512
+      ],
+      "zero_pose_delta_max_abs": 0.0,
+      "mesh_max_abs_error": 1.9073486328125e-06,
+      "camera": "standard",
+      "projectable": 12,
+      "sigma_px": 47.26250457763672,
+      "condition_to_original": {
+        "normal": {
+          "source_hw": [
+            1080,
+            604
+          ],
+          "original_hw": [
+            1080,
+            604
+          ],
+          "scale_xy": [
+            1.0,
+            1.0
+          ],
+          "rule": "normalised_full_frame_then_target_canvas_once"
+        },
+        "smpl_mask": {
+          "source_hw": [
+            1080,
+            604
+          ],
+          "original_hw": [
+            1080,
+            604
+          ],
+          "scale_xy": [
+            1.0,
+            1.0
+          ],
+          "rule": "normalised_full_frame_then_target_canvas_once"
+        },
+        "part": {
+          "source_hw": [
+            512,
+            512
+          ],
+          "original_hw": [
+            1080,
+            604
+          ],
+          "scale_xy": [
+            1.1796875,
+            2.109375
+          ],
+          "rule": "normalised_full_frame_then_target_canvas_once"
+        },
+        "depth_vis": {
+          "source_hw": [
+            1080,
+            604
+          ],
+          "original_hw": [
+            1080,
+            604
+          ],
+          "scale_xy": [
+            1.0,
+            1.0
+          ],
+          "rule": "normalised_full_frame_then_target_canvas_once"
+        }
+      },
+      "pose_provenance": {
+        "record_id": "tiktok:00001:target:0002",
+        "record_sha256": "d63137edb4af33f634cf689c7889015fde7c5adb463d5e89e691904a0d648c20",
+        "schema": "smplx_body21_camera_v2",
+        "canvas_id": "77573b4f5ce72fda9f8813d7e4135ac1e9c490c4ddf8df3893c89aaee775d9dd",
+        "camera": {
+          "selection": "standard",
+          "focal_xy": [
+            25217.859375,
+            25217.859375
+          ],
+          "principal_xy": [
+            281.25177001953125,
+            538.2774047851562
+          ],
+          "translation": [
+            0.0031959619373083115,
+            0.7527486085891724,
+            19.04253578186035
+          ],
+          "translation_field": "transl",
+          "coordinates": "camera_xyz"
+        },
+        "sources": {
+          "params": {
+            "path": "/data/shangguanrz/pic-edit-datasets/TikTokDataset/TikTok_3d_assets_native/00001/smplestx/params.pt",
+            "sha256": "274922191f3d283578e05ea865b5fb36397c7d6c9a7e8f116d02f39ff71df132"
+          },
+          "frame_map": {
+            "path": "/data/shangguanrz/pic-edit-datasets/TikTokDataset/TikTok_3d_assets_native/00001/smplestx/frame_map.json",
+            "sha256": "38bf0c7f80dcac13ef761ef1d2a280922b61f053714bec551133e82c09b30056"
+          },
+          "rgb": {
+            "path": "/data/shangguanrz/pic-edit-datasets/TikTokDataset/TikTok_dataset/TikTok_dataset/00001/images/0002.png",
+            "sha256": "66c065005710e8a3167dd0dff6325dee2fea95e563bfbd75ad983995475b7448"
+          },
+          "legacy_conditions": {
+            "path": "/data/shangguanrz/pic-edit-datasets/TikTokDataset/TikTok_3d_assets_native/00001/v6_conditions.pt",
+            "sha256": "0e6f607813b683e59aa1574d4074962c99322a3064a25d7ed60509d01c86edf9"
+          },
+          "normal": {
+            "path": "/data/shangguanrz/pic-edit-datasets/TikTokDataset/TikTok_3d_assets_native/00001/normal/0002.png",
+            "sha256": "dd7e25c3c4563d416899ba2dc367477725015eabbed85d78f952d07a82316528"
+          },
+          "human_mask": {
+            "path": "/data/shangguanrz/pic-edit-datasets/TikTokDataset/TikTok_dataset/TikTok_dataset/00001/masks/0002.png",
+            "sha256": "ee44b19a8d676aa4a0c0f79e0aac69f7ee030a11f9993d0e229699c6e8e85b84"
+          },
+          "smpl_mask": {
+            "path": "/data/shangguanrz/pic-edit-datasets/TikTokDataset/TikTok_3d_assets_native/00001/smplx_mask/0002.png",
+            "sha256": "711077a526465cfa01d6697fcd1edd07584aa3e9eac309a9ed9a7593bace36e2"
+          },
+          "part": {
+            "path": "/data/shangguanrz/pic-edit-datasets/TikTokDataset/TikTok_3d_assets_native/00001/part_512/0002.png",
+            "sha256": "4aab3280e11ca14353ed28163a1f924f2d762cfc7f82d297678d520e9aefcc3e"
+          },
+          "depth_vis": {
+            "path": "/data/shangguanrz/pic-edit-datasets/TikTokDataset/TikTok_3d_assets_native/00001/depth_vis/0002.png",
+            "sha256": "201ed47a33c8120eee525b07f61cb9597ce2f409e9a37b44e790adb96d746ebf"
+          },
+          "model": {
+            "path": "/home/shangguanrz/project/pic-edit/add/tools/SMPLest-X/human_models/human_model_files/smplx/SMPLX_NEUTRAL.npz",
+            "sha256": "376021446ddc86e99acacd795182bbef903e61d33b76b9d8b359c2b0865bd992"
+          },
+          "fk_implementation": {
+            "path": "/home/shangguanrz/project/pic-edit/add/envs/smplestx_bw/lib/python3.12/site-packages/smplx/body_models.py",
+            "sha256": "3de717b66a31368120570dedd45a42effc1ce7b93d780bd71ce6879c10eeff75"
+          }
+        },
+        "condition_to_original": {
+          "normal": {
+            "source_hw": [
+              1080,
+              604
+            ],
+            "original_hw": [
+              1080,
+              604
+            ],
+            "scale_xy": [
+              1.0,
+              1.0
+            ],
+            "rule": "normalised_full_frame_then_target_canvas_once"
+          },
+          "smpl_mask": {
+            "source_hw": [
+              1080,
+              604
+            ],
+            "original_hw": [
+              1080,
+              604
+            ],
+            "scale_xy": [
+              1.0,
+              1.0
+            ],
+            "rule": "normalised_full_frame_then_target_canvas_once"
+          },
+          "part": {
+            "source_hw": [
+              512,
+              512
+            ],
+            "original_hw": [
+              1080,
+              604
+            ],
+            "scale_xy": [
+              1.1796875,
+              2.109375
+            ],
+            "rule": "normalised_full_frame_then_target_canvas_once"
+          },
+          "depth_vis": {
+            "source_hw": [
+              1080,
+              604
+            ],
+            "original_hw": [
+              1080,
+              604
+            ],
+            "scale_xy": [
+              1.0,
+              1.0
+            ],
+            "rule": "normalised_full_frame_then_target_canvas_once"
+          }
+        }
+      }
+    },
+    {
+      "record_id": "tiktok:00001:target:0003",
+      "target_token_hw": [
+        22,
+        12
+      ],
+      "joint_tokens": [
+        1,
+        21,
+        256
+      ],
+      "global_tokens": [
+        1,
+        4,
+        256
+      ],
+      "geometry": [
+        1,
+        264,
+        512
+      ],
+      "zero_pose_delta_max_abs": 0.0,
+      "mesh_max_abs_error": 1.9073486328125e-06,
+      "camera": "standard",
+      "projectable": 12,
+      "sigma_px": 47.167503356933594,
+      "condition_to_original": {
+        "normal": {
+          "source_hw": [
+            1080,
+            604
+          ],
+          "original_hw": [
+            1080,
+            604
+          ],
+          "scale_xy": [
+            1.0,
+            1.0
+          ],
+          "rule": "normalised_full_frame_then_target_canvas_once"
+        },
+        "smpl_mask": {
+          "source_hw": [
+            1080,
+            604
+          ],
+          "original_hw": [
+            1080,
+            604
+          ],
+          "scale_xy": [
+            1.0,
+            1.0
+          ],
+          "rule": "normalised_full_frame_then_target_canvas_once"
+        },
+        "part": {
+          "source_hw": [
+            512,
+            512
+          ],
+          "original_hw": [
+            1080,
+            604
+          ],
+          "scale_xy": [
+            1.1796875,
+            2.109375
+          ],
+          "rule": "normalised_full_frame_then_target_canvas_once"
+        },
+        "depth_vis": {
+          "source_hw": [
+            1080,
+            604
+          ],
+          "original_hw": [
+            1080,
+            604
+          ],
+          "scale_xy": [
+            1.0,
+            1.0
+          ],
+          "rule": "normalised_full_frame_then_target_canvas_once"
+        }
+      },
+      "pose_provenance": {
+        "record_id": "tiktok:00001:target:0003",
+        "record_sha256": "a9cdb67f47bb5175dda7badb0e4a523a262ce6bbb522c3043a397adf61cb03d6",
+        "schema": "smplx_body21_camera_v2",
+        "canvas_id": "77573b4f5ce72fda9f8813d7e4135ac1e9c490c4ddf8df3893c89aaee775d9dd",
+        "camera": {
+          "selection": "standard",
+          "focal_xy": [
+            25136.560546875,
+            25136.560546875
+          ],
+          "principal_xy": [
+            278.6871337890625,
+            538.646484375
+          ],
+          "translation": [
+            0.007506160065531731,
+            0.7511428594589233,
+            19.05640983581543
+          ],
+          "translation_field": "transl",
+          "coordinates": "camera_xyz"
+        },
+        "sources": {
+          "params": {
+            "path": "/data/shangguanrz/pic-edit-datasets/TikTokDataset/TikTok_3d_assets_native/00001/smplestx/params.pt",
+            "sha256": "274922191f3d283578e05ea865b5fb36397c7d6c9a7e8f116d02f39ff71df132"
+          },
+          "frame_map": {
+            "path": "/data/shangguanrz/pic-edit-datasets/TikTokDataset/TikTok_3d_assets_native/00001/smplestx/frame_map.json",
+            "sha256": "38bf0c7f80dcac13ef761ef1d2a280922b61f053714bec551133e82c09b30056"
+          },
+          "rgb": {
+            "path": "/data/shangguanrz/pic-edit-datasets/TikTokDataset/TikTok_dataset/TikTok_dataset/00001/images/0003.png",
+            "sha256": "0e40db537525ae41796079c860bbd10fb3a5179ef619bdb683026ea3dac4b6bb"
+          },
+          "legacy_conditions": {
+            "path": "/data/shangguanrz/pic-edit-datasets/TikTokDataset/TikTok_3d_assets_native/00001/v6_conditions.pt",
+            "sha256": "0e6f607813b683e59aa1574d4074962c99322a3064a25d7ed60509d01c86edf9"
+          },
+          "normal": {
+            "path": "/data/shangguanrz/pic-edit-datasets/TikTokDataset/TikTok_3d_assets_native/00001/normal/0003.png",
+            "sha256": "7d57282ff2d4f88ab794b7b1126ded8d244655bc549f1345e2c445233f175571"
+          },
+          "human_mask": {
+            "path": "/data/shangguanrz/pic-edit-datasets/TikTokDataset/TikTok_dataset/TikTok_dataset/00001/masks/0003.png",
+            "sha256": "28222c8af87326722e5f5f907a27c6bd590ff6a4aaaaf6e6fb72218f3241d787"
+          },
+          "smpl_mask": {
+            "path": "/data/shangguanrz/pic-edit-datasets/TikTokDataset/TikTok_3d_assets_native/00001/smplx_mask/0003.png",
+            "sha256": "3c9d543f7b5543ac026913313f5fb2eadf5aaea7a1f3adb7186f69222dd6ce07"
+          },
+          "part": {
+            "path": "/data/shangguanrz/pic-edit-datasets/TikTokDataset/TikTok_3d_assets_native/00001/part_512/0003.png",
+            "sha256": "43225b51fd02d58bb5a1f839b4f5fd87985bc1c0624409a16243ade3655230ec"
+          },
+          "depth_vis": {
+            "path": "/data/shangguanrz/pic-edit-datasets/TikTokDataset/TikTok_3d_assets_native/00001/depth_vis/0003.png",
+            "sha256": "cba9981cc32cabb46e6e207b991a29e3fee56555abae33c887acdcb7c34464d4"
+          },
+          "model": {
+            "path": "/home/shangguanrz/project/pic-edit/add/tools/SMPLest-X/human_models/human_model_files/smplx/SMPLX_NEUTRAL.npz",
+            "sha256": "376021446ddc86e99acacd795182bbef903e61d33b76b9d8b359c2b0865bd992"
+          },
+          "fk_implementation": {
+            "path": "/home/shangguanrz/project/pic-edit/add/envs/smplestx_bw/lib/python3.12/site-packages/smplx/body_models.py",
+            "sha256": "3de717b66a31368120570dedd45a42effc1ce7b93d780bd71ce6879c10eeff75"
+          }
+        },
+        "condition_to_original": {
+          "normal": {
+            "source_hw": [
+              1080,
+              604
+            ],
+            "original_hw": [
+              1080,
+              604
+            ],
+            "scale_xy": [
+              1.0,
+              1.0
+            ],
+            "rule": "normalised_full_frame_then_target_canvas_once"
+          },
+          "smpl_mask": {
+            "source_hw": [
+              1080,
+              604
+            ],
+            "original_hw": [
+              1080,
+              604
+            ],
+            "scale_xy": [
+              1.0,
+              1.0
+            ],
+            "rule": "normalised_full_frame_then_target_canvas_once"
+          },
+          "part": {
+            "source_hw": [
+              512,
+              512
+            ],
+            "original_hw": [
+              1080,
+              604
+            ],
+            "scale_xy": [
+              1.1796875,
+              2.109375
+            ],
+            "rule": "normalised_full_frame_then_target_canvas_once"
+          },
+          "depth_vis": {
+            "source_hw": [
+              1080,
+              604
+            ],
+            "original_hw": [
+              1080,
+              604
+            ],
+            "scale_xy": [
+              1.0,
+              1.0
+            ],
+            "rule": "normalised_full_frame_then_target_canvas_once"
+          }
+        }
+      }
+    },
+    {
+      "record_id": "tiktok:00001:target:0004",
+      "target_token_hw": [
+        22,
+        12
+      ],
+      "joint_tokens": [
+        1,
+        21,
+        256
+      ],
+      "global_tokens": [
+        1,
+        4,
+        256
+      ],
+      "geometry": [
+        1,
+        264,
+        512
+      ],
+      "zero_pose_delta_max_abs": 0.0,
+      "mesh_max_abs_error": 1.9073486328125e-06,
+      "camera": "standard",
+      "projectable": 11,
+      "sigma_px": 47.12000274658203,
+      "condition_to_original": {
+        "normal": {
+          "source_hw": [
+            1080,
+            604
+          ],
+          "original_hw": [
+            1080,
+            604
+          ],
+          "scale_xy": [
+            1.0,
+            1.0
+          ],
+          "rule": "normalised_full_frame_then_target_canvas_once"
+        },
+        "smpl_mask": {
+          "source_hw": [
+            1080,
+            604
+          ],
+          "original_hw": [
+            1080,
+            604
+          ],
+          "scale_xy": [
+            1.0,
+            1.0
+          ],
+          "rule": "normalised_full_frame_then_target_canvas_once"
+        },
+        "part": {
+          "source_hw": [
+            512,
+            512
+          ],
+          "original_hw": [
+            1080,
+            604
+          ],
+          "scale_xy": [
+            1.1796875,
+            2.109375
+          ],
+          "rule": "normalised_full_frame_then_target_canvas_once"
+        },
+        "depth_vis": {
+          "source_hw": [
+            1080,
+            604
+          ],
+          "original_hw": [
+            1080,
+            604
+          ],
+          "scale_xy": [
+            1.0,
+            1.0
+          ],
+          "rule": "normalised_full_frame_then_target_canvas_once"
+        }
+      },
+      "pose_provenance": {
+        "record_id": "tiktok:00001:target:0004",
+        "record_sha256": "c546c43cfa578de72c912fb26a1ad9c1fd71e4f5fec8656b48a62c14f71cff38",
+        "schema": "smplx_body21_camera_v2",
+        "canvas_id": "77573b4f5ce72fda9f8813d7e4135ac1e9c490c4ddf8df3893c89aaee775d9dd",
+        "camera": {
+          "selection": "standard",
+          "focal_xy": [
+            25118.529296875,
+            25118.53125
+          ],
+          "principal_xy": [
+            275.298095703125,
+            539.2754516601562
+          ],
+          "translation": [
+            0.010320311412215233,
+            0.7496308088302612,
+            19.10102081298828
+          ],
+          "translation_field": "transl",
+          "coordinates": "camera_xyz"
+        },
+        "sources": {
+          "params": {
+            "path": "/data/shangguanrz/pic-edit-datasets/TikTokDataset/TikTok_3d_assets_native/00001/smplestx/params.pt",
+            "sha256": "274922191f3d283578e05ea865b5fb36397c7d6c9a7e8f116d02f39ff71df132"
+          },
+          "frame_map": {
+            "path": "/data/shangguanrz/pic-edit-datasets/TikTokDataset/TikTok_3d_assets_native/00001/smplestx/frame_map.json",
+            "sha256": "38bf0c7f80dcac13ef761ef1d2a280922b61f053714bec551133e82c09b30056"
+          },
+          "rgb": {
+            "path": "/data/shangguanrz/pic-edit-datasets/TikTokDataset/TikTok_dataset/TikTok_dataset/00001/images/0004.png",
+            "sha256": "f7d9ff5b4b642ac0629ab566936b2eaf373aa2ac59343b4112d51761a2a9f94f"
+          },
+          "legacy_conditions": {
+            "path": "/data/shangguanrz/pic-edit-datasets/TikTokDataset/TikTok_3d_assets_native/00001/v6_conditions.pt",
+            "sha256": "0e6f607813b683e59aa1574d4074962c99322a3064a25d7ed60509d01c86edf9"
+          },
+          "normal": {
+            "path": "/data/shangguanrz/pic-edit-datasets/TikTokDataset/TikTok_3d_assets_native/00001/normal/0004.png",
+            "sha256": "5204273d21586969685165b1ed20552a007418b494919bbe702f44b5de83ef5c"
+          },
+          "human_mask": {
+            "path": "/data/shangguanrz/pic-edit-datasets/TikTokDataset/TikTok_dataset/TikTok_dataset/00001/masks/0004.png",
+            "sha256": "11af6b5ca2cb241de408a526a93716796bb6240886ee1fda59963108b6e39ead"
+          },
+          "smpl_mask": {
+            "path": "/data/shangguanrz/pic-edit-datasets/TikTokDataset/TikTok_3d_assets_native/00001/smplx_mask/0004.png",
+            "sha256": "896339588ef4d8f8681125b841d03ed226cecc733da8e5233fb009d03ffa6e21"
+          },
+          "part": {
+            "path": "/data/shangguanrz/pic-edit-datasets/TikTokDataset/TikTok_3d_assets_native/00001/part_512/0004.png",
+            "sha256": "bde7c0587da9a380d57ee683ebb3ce3c2f3b1bfdeb71b5b04a433783e4ead1b7"
+          },
+          "depth_vis": {
+            "path": "/data/shangguanrz/pic-edit-datasets/TikTokDataset/TikTok_3d_assets_native/00001/depth_vis/0004.png",
+            "sha256": "c35dbccb77d699c94bb955e0edfb4a14e5a6440498e8ac0a9b1c455079e6af29"
+          },
+          "model": {
+            "path": "/home/shangguanrz/project/pic-edit/add/tools/SMPLest-X/human_models/human_model_files/smplx/SMPLX_NEUTRAL.npz",
+            "sha256": "376021446ddc86e99acacd795182bbef903e61d33b76b9d8b359c2b0865bd992"
+          },
+          "fk_implementation": {
+            "path": "/home/shangguanrz/project/pic-edit/add/envs/smplestx_bw/lib/python3.12/site-packages/smplx/body_models.py",
+            "sha256": "3de717b66a31368120570dedd45a42effc1ce7b93d780bd71ce6879c10eeff75"
+          }
+        },
+        "condition_to_original": {
+          "normal": {
+            "source_hw": [
+              1080,
+              604
+            ],
+            "original_hw": [
+              1080,
+              604
+            ],
+            "scale_xy": [
+              1.0,
+              1.0
+            ],
+            "rule": "normalised_full_frame_then_target_canvas_once"
+          },
+          "smpl_mask": {
+            "source_hw": [
+              1080,
+              604
+            ],
+            "original_hw": [
+              1080,
+              604
+            ],
+            "scale_xy": [
+              1.0,
+              1.0
+            ],
+            "rule": "normalised_full_frame_then_target_canvas_once"
+          },
+          "part": {
+            "source_hw": [
+              512,
+              512
+            ],
+            "original_hw": [
+              1080,
+              604
+            ],
+            "scale_xy": [
+              1.1796875,
+              2.109375
+            ],
+            "rule": "normalised_full_frame_then_target_canvas_once"
+          },
+          "depth_vis": {
+            "source_hw": [
+              1080,
+              604
+            ],
+            "original_hw": [
+              1080,
+              604
+            ],
+            "scale_xy": [
+              1.0,
+              1.0
+            ],
+            "rule": "normalised_full_frame_then_target_canvas_once"
+          }
+        }
+      }
+    },
+    {
+      "record_id": "tiktok:00001:target:0005",
+      "target_token_hw": [
+        22,
+        12
+      ],
+      "joint_tokens": [
+        1,
+        21,
+        256
+      ],
+      "global_tokens": [
+        1,
+        4,
+        256
+      ],
+      "geometry": [
+        1,
+        264,
+        512
+      ],
+      "zero_pose_delta_max_abs": 0.0,
+      "mesh_max_abs_error": 1.9073486328125e-06,
+      "camera": "standard",
+      "projectable": 13,
+      "sigma_px": 46.977500915527344,
+      "condition_to_original": {
+        "normal": {
+          "source_hw": [
+            1080,
+            604
+          ],
+          "original_hw": [
+            1080,
+            604
+          ],
+          "scale_xy": [
+            1.0,
+            1.0
+          ],
+          "rule": "normalised_full_frame_then_target_canvas_once"
+        },
+        "smpl_mask": {
+          "source_hw": [
+            1080,
+            604
+          ],
+          "original_hw": [
+            1080,
+            604
+          ],
+          "scale_xy": [
+            1.0,
+            1.0
+          ],
+          "rule": "normalised_full_frame_then_target_canvas_once"
+        },
+        "part": {
+          "source_hw": [
+            512,
+            512
+          ],
+          "original_hw": [
+            1080,
+            604
+          ],
+          "scale_xy": [
+            1.1796875,
+            2.109375
+          ],
+          "rule": "normalised_full_frame_then_target_canvas_once"
+        },
+        "depth_vis": {
+          "source_hw": [
+            1080,
+            604
+          ],
+          "original_hw": [
+            1080,
+            604
+          ],
+          "scale_xy": [
+            1.0,
+            1.0
+          ],
+          "rule": "normalised_full_frame_then_target_canvas_once"
+        }
+      },
+      "pose_provenance": {
+        "record_id": "tiktok:00001:target:0005",
+        "record_sha256": "3241e16f797d261f77e8832714a90efb49f77348a2fa3f1cd1eb2223c711b8e5",
+        "schema": "smplx_body21_camera_v2",
+        "canvas_id": "77573b4f5ce72fda9f8813d7e4135ac1e9c490c4ddf8df3893c89aaee775d9dd",
+        "camera": {
+          "selection": "standard",
+          "focal_xy": [
+            25105.046875,
+            25105.046875
+          ],
+          "principal_xy": [
+            272.428466796875,
+            538.880859375
+          ],
+          "translation": [
+            0.017114227637648582,
+            0.750647783279419,
+            19.154611587524414
+          ],
+          "translation_field": "transl",
+          "coordinates": "camera_xyz"
+        },
+        "sources": {
+          "params": {
+            "path": "/data/shangguanrz/pic-edit-datasets/TikTokDataset/TikTok_3d_assets_native/00001/smplestx/params.pt",
+            "sha256": "274922191f3d283578e05ea865b5fb36397c7d6c9a7e8f116d02f39ff71df132"
+          },
+          "frame_map": {
+            "path": "/data/shangguanrz/pic-edit-datasets/TikTokDataset/TikTok_3d_assets_native/00001/smplestx/frame_map.json",
+            "sha256": "38bf0c7f80dcac13ef761ef1d2a280922b61f053714bec551133e82c09b30056"
+          },
+          "rgb": {
+            "path": "/data/shangguanrz/pic-edit-datasets/TikTokDataset/TikTok_dataset/TikTok_dataset/00001/images/0005.png",
+            "sha256": "d96c2bb991ac8bda16d62e7e1933afc43a7256f8b5c4ce306da382d2340ffa7f"
+          },
+          "legacy_conditions": {
+            "path": "/data/shangguanrz/pic-edit-datasets/TikTokDataset/TikTok_3d_assets_native/00001/v6_conditions.pt",
+            "sha256": "0e6f607813b683e59aa1574d4074962c99322a3064a25d7ed60509d01c86edf9"
+          },
+          "normal": {
+            "path": "/data/shangguanrz/pic-edit-datasets/TikTokDataset/TikTok_3d_assets_native/00001/normal/0005.png",
+            "sha256": "4d653f649de7f4cf40b8bc96d63076d7579028879ecc51c8b4487367a3e8123d"
+          },
+          "human_mask": {
+            "path": "/data/shangguanrz/pic-edit-datasets/TikTokDataset/TikTok_dataset/TikTok_dataset/00001/masks/0005.png",
+            "sha256": "917f1cce191d42d303a5593368c6b1febd54058dfe978f38cbe14fa9cd47b3d2"
+          },
+          "smpl_mask": {
+            "path": "/data/shangguanrz/pic-edit-datasets/TikTokDataset/TikTok_3d_assets_native/00001/smplx_mask/0005.png",
+            "sha256": "2f042b09b903c31a25590f4500bf7e820e2dacdbf61564bf8232ccaa9120b298"
+          },
+          "part": {
+            "path": "/data/shangguanrz/pic-edit-datasets/TikTokDataset/TikTok_3d_assets_native/00001/part_512/0005.png",
+            "sha256": "891a31cbb1e28852e0d79e4f6a619f46fbc9eb8035afbf14315dc319b1a1155c"
+          },
+          "depth_vis": {
+            "path": "/data/shangguanrz/pic-edit-datasets/TikTokDataset/TikTok_3d_assets_native/00001/depth_vis/0005.png",
+            "sha256": "ec96e595fdafd0080663f8a13a675711ce7d9a5c3542ecf23f24866240b2c12c"
+          },
+          "model": {
+            "path": "/home/shangguanrz/project/pic-edit/add/tools/SMPLest-X/human_models/human_model_files/smplx/SMPLX_NEUTRAL.npz",
+            "sha256": "376021446ddc86e99acacd795182bbef903e61d33b76b9d8b359c2b0865bd992"
+          },
+          "fk_implementation": {
+            "path": "/home/shangguanrz/project/pic-edit/add/envs/smplestx_bw/lib/python3.12/site-packages/smplx/body_models.py",
+            "sha256": "3de717b66a31368120570dedd45a42effc1ce7b93d780bd71ce6879c10eeff75"
+          }
+        },
+        "condition_to_original": {
+          "normal": {
+            "source_hw": [
+              1080,
+              604
+            ],
+            "original_hw": [
+              1080,
+              604
+            ],
+            "scale_xy": [
+              1.0,
+              1.0
+            ],
+            "rule": "normalised_full_frame_then_target_canvas_once"
+          },
+          "smpl_mask": {
+            "source_hw": [
+              1080,
+              604
+            ],
+            "original_hw": [
+              1080,
+              604
+            ],
+            "scale_xy": [
+              1.0,
+              1.0
+            ],
+            "rule": "normalised_full_frame_then_target_canvas_once"
+          },
+          "part": {
+            "source_hw": [
+              512,
+              512
+            ],
+            "original_hw": [
+              1080,
+              604
+            ],
+            "scale_xy": [
+              1.1796875,
+              2.109375
+            ],
+            "rule": "normalised_full_frame_then_target_canvas_once"
+          },
+          "depth_vis": {
+            "source_hw": [
+              1080,
+              604
+            ],
+            "original_hw": [
+              1080,
+              604
+            ],
+            "scale_xy": [
+              1.0,
+              1.0
+            ],
+            "rule": "normalised_full_frame_then_target_canvas_once"
+          }
+        }
+      }
+    },
+    {
+      "record_id": "tiktok:00001:target:0006",
+      "target_token_hw": [
+        22,
+        12
+      ],
+      "joint_tokens": [
+        1,
+        21,
+        256
+      ],
+      "global_tokens": [
+        1,
+        4,
+        256
+      ],
+      "geometry": [
+        1,
+        264,
+        512
+      ],
+      "zero_pose_delta_max_abs": 0.0,
+      "mesh_max_abs_error": 1.9073486328125e-06,
+      "camera": "standard",
+      "projectable": 13,
+      "sigma_px": 47.167503356933594,
+      "condition_to_original": {
+        "normal": {
+          "source_hw": [
+            1080,
+            604
+          ],
+          "original_hw": [
+            1080,
+            604
+          ],
+          "scale_xy": [
+            1.0,
+            1.0
+          ],
+          "rule": "normalised_full_frame_then_target_canvas_once"
+        },
+        "smpl_mask": {
+          "source_hw": [
+            1080,
+            604
+          ],
+          "original_hw": [
+            1080,
+            604
+          ],
+          "scale_xy": [
+            1.0,
+            1.0
+          ],
+          "rule": "normalised_full_frame_then_target_canvas_once"
+        },
+        "part": {
+          "source_hw": [
+            512,
+            512
+          ],
+          "original_hw": [
+            1080,
+            604
+          ],
+          "scale_xy": [
+            1.1796875,
+            2.109375
+          ],
+          "rule": "normalised_full_frame_then_target_canvas_once"
+        },
+        "depth_vis": {
+          "source_hw": [
+            1080,
+            604
+          ],
+          "original_hw": [
+            1080,
+            604
+          ],
+          "scale_xy": [
+            1.0,
+            1.0
+          ],
+          "rule": "normalised_full_frame_then_target_canvas_once"
+        }
+      },
+      "pose_provenance": {
+        "record_id": "tiktok:00001:target:0006",
+        "record_sha256": "e219fc4e0cd031ff816a7ed85a58661f3f7b849ab6399b8f67e25bf8159c4857",
+        "schema": "smplx_body21_camera_v2",
+        "canvas_id": "77573b4f5ce72fda9f8813d7e4135ac1e9c490c4ddf8df3893c89aaee775d9dd",
+        "camera": {
+          "selection": "standard",
+          "focal_xy": [
+            25100.46484375,
+            25100.466796875
+          ],
+          "principal_xy": [
+            270.3809814453125,
+            539.47119140625
+          ],
+          "translation": [
+            0.022701358422636986,
+            0.7490909695625305,
+            19.200651168823242
+          ],
+          "translation_field": "transl",
+          "coordinates": "camera_xyz"
+        },
+        "sources": {
+          "params": {
+            "path": "/data/shangguanrz/pic-edit-datasets/TikTokDataset/TikTok_3d_assets_native/00001/smplestx/params.pt",
+            "sha256": "274922191f3d283578e05ea865b5fb36397c7d6c9a7e8f116d02f39ff71df132"
+          },
+          "frame_map": {
+            "path": "/data/shangguanrz/pic-edit-datasets/TikTokDataset/TikTok_3d_assets_native/00001/smplestx/frame_map.json",
+            "sha256": "38bf0c7f80dcac13ef761ef1d2a280922b61f053714bec551133e82c09b30056"
+          },
+          "rgb": {
+            "path": "/data/shangguanrz/pic-edit-datasets/TikTokDataset/TikTok_dataset/TikTok_dataset/00001/images/0006.png",
+            "sha256": "8cf63a50986c60dd157c066dbb624c6c70014257c7f880fadd9ca0c2333b6f93"
+          },
+          "legacy_conditions": {
+            "path": "/data/shangguanrz/pic-edit-datasets/TikTokDataset/TikTok_3d_assets_native/00001/v6_conditions.pt",
+            "sha256": "0e6f607813b683e59aa1574d4074962c99322a3064a25d7ed60509d01c86edf9"
+          },
+          "normal": {
+            "path": "/data/shangguanrz/pic-edit-datasets/TikTokDataset/TikTok_3d_assets_native/00001/normal/0006.png",
+            "sha256": "9644eaf348b17b18719744b95b6d356d3acac681a154a5c953e982113e2142b8"
+          },
+          "human_mask": {
+            "path": "/data/shangguanrz/pic-edit-datasets/TikTokDataset/TikTok_dataset/TikTok_dataset/00001/masks/0006.png",
+            "sha256": "befb01decd77f243f0eef2ce2c0a9cf1a7963828bbf6c3935a14682e47487c46"
+          },
+          "smpl_mask": {
+            "path": "/data/shangguanrz/pic-edit-datasets/TikTokDataset/TikTok_3d_assets_native/00001/smplx_mask/0006.png",
+            "sha256": "908641114c9fba8acce371df3e21e3cf0315e59bd6de5b6f4addaeaaeee453f5"
+          },
+          "part": {
+            "path": "/data/shangguanrz/pic-edit-datasets/TikTokDataset/TikTok_3d_assets_native/00001/part_512/0006.png",
+            "sha256": "acef8f5cbecfb1eabc17e3a451f4857ce6517d45030916638a51e15ce07a92dd"
+          },
+          "depth_vis": {
+            "path": "/data/shangguanrz/pic-edit-datasets/TikTokDataset/TikTok_3d_assets_native/00001/depth_vis/0006.png",
+            "sha256": "4b146e41662bbc42e1b577c7fd73500aed9333c048730b2a25728e74793ba9c5"
+          },
+          "model": {
+            "path": "/home/shangguanrz/project/pic-edit/add/tools/SMPLest-X/human_models/human_model_files/smplx/SMPLX_NEUTRAL.npz",
+            "sha256": "376021446ddc86e99acacd795182bbef903e61d33b76b9d8b359c2b0865bd992"
+          },
+          "fk_implementation": {
+            "path": "/home/shangguanrz/project/pic-edit/add/envs/smplestx_bw/lib/python3.12/site-packages/smplx/body_models.py",
+            "sha256": "3de717b66a31368120570dedd45a42effc1ce7b93d780bd71ce6879c10eeff75"
+          }
+        },
+        "condition_to_original": {
+          "normal": {
+            "source_hw": [
+              1080,
+              604
+            ],
+            "original_hw": [
+              1080,
+              604
+            ],
+            "scale_xy": [
+              1.0,
+              1.0
+            ],
+            "rule": "normalised_full_frame_then_target_canvas_once"
+          },
+          "smpl_mask": {
+            "source_hw": [
+              1080,
+              604
+            ],
+            "original_hw": [
+              1080,
+              604
+            ],
+            "scale_xy": [
+              1.0,
+              1.0
+            ],
+            "rule": "normalised_full_frame_then_target_canvas_once"
+          },
+          "part": {
+            "source_hw": [
+              512,
+              512
+            ],
+            "original_hw": [
+              1080,
+              604
+            ],
+            "scale_xy": [
+              1.1796875,
+              2.109375
+            ],
+            "rule": "normalised_full_frame_then_target_canvas_once"
+          },
+          "depth_vis": {
+            "source_hw": [
+              1080,
+              604
+            ],
+            "original_hw": [
+              1080,
+              604
+            ],
+            "scale_xy": [
+              1.0,
+              1.0
+            ],
+            "rule": "normalised_full_frame_then_target_canvas_once"
+          }
+        }
+      }
+    },
+    {
+      "record_id": "tiktok:00001:target:0007",
+      "target_token_hw": [
+        22,
+        12
+      ],
+      "joint_tokens": [
+        1,
+        21,
+        256
+      ],
+      "global_tokens": [
+        1,
+        4,
+        256
+      ],
+      "geometry": [
+        1,
+        264,
+        512
+      ],
+      "zero_pose_delta_max_abs": 0.0,
+      "mesh_max_abs_error": 1.9073486328125e-06,
+      "camera": "standard",
+      "projectable": 13,
+      "sigma_px": 47.025001525878906,
+      "condition_to_original": {
+        "normal": {
+          "source_hw": [
+            1080,
+            604
+          ],
+          "original_hw": [
+            1080,
+            604
+          ],
+          "scale_xy": [
+            1.0,
+            1.0
+          ],
+          "rule": "normalised_full_frame_then_target_canvas_once"
+        },
+        "smpl_mask": {
+          "source_hw": [
+            1080,
+            604
+          ],
+          "original_hw": [
+            1080,
+            604
+          ],
+          "scale_xy": [
+            1.0,
+            1.0
+          ],
+          "rule": "normalised_full_frame_then_target_canvas_once"
+        },
+        "part": {
+          "source_hw": [
+            512,
+            512
+          ],
+          "original_hw": [
+            1080,
+            604
+          ],
+          "scale_xy": [
+            1.1796875,
+            2.109375
+          ],
+          "rule": "normalised_full_frame_then_target_canvas_once"
+        },
+        "depth_vis": {
+          "source_hw": [
+            1080,
+            604
+          ],
+          "original_hw": [
+            1080,
+            604
+          ],
+          "scale_xy": [
+            1.0,
+            1.0
+          ],
+          "rule": "normalised_full_frame_then_target_canvas_once"
+        }
+      },
+      "pose_provenance": {
+        "record_id": "tiktok:00001:target:0007",
+        "record_sha256": "a7f2e77664ca5e7e919601fbf0c2d5322339a75bb2b2cdf63527dc4c006b7503",
+        "schema": "smplx_body21_camera_v2",
+        "canvas_id": "77573b4f5ce72fda9f8813d7e4135ac1e9c490c4ddf8df3893c89aaee775d9dd",
+        "camera": {
+          "selection": "standard",
+          "focal_xy": [
+            25123.591796875,
+            25123.591796875
+          ],
+          "principal_xy": [
+            270.1440734863281,
+            539.1168212890625
+          ],
+          "translation": [
+            0.023387042805552483,
+            0.7513217329978943,
+            19.294139862060547
+          ],
+          "translation_field": "transl",
+          "coordinates": "camera_xyz"
+        },
+        "sources": {
+          "params": {
+            "path": "/data/shangguanrz/pic-edit-datasets/TikTokDataset/TikTok_3d_assets_native/00001/smplestx/params.pt",
+            "sha256": "274922191f3d283578e05ea865b5fb36397c7d6c9a7e8f116d02f39ff71df132"
+          },
+          "frame_map": {
+            "path": "/data/shangguanrz/pic-edit-datasets/TikTokDataset/TikTok_3d_assets_native/00001/smplestx/frame_map.json",
+            "sha256": "38bf0c7f80dcac13ef761ef1d2a280922b61f053714bec551133e82c09b30056"
+          },
+          "rgb": {
+            "path": "/data/shangguanrz/pic-edit-datasets/TikTokDataset/TikTok_dataset/TikTok_dataset/00001/images/0007.png",
+            "sha256": "422a62c449d56873aeabb13f8e089d68f3eb4fe747987ab62275e68745ef31ba"
+          },
+          "legacy_conditions": {
+            "path": "/data/shangguanrz/pic-edit-datasets/TikTokDataset/TikTok_3d_assets_native/00001/v6_conditions.pt",
+            "sha256": "0e6f607813b683e59aa1574d4074962c99322a3064a25d7ed60509d01c86edf9"
+          },
+          "normal": {
+            "path": "/data/shangguanrz/pic-edit-datasets/TikTokDataset/TikTok_3d_assets_native/00001/normal/0007.png",
+            "sha256": "2f6cd04218e148b07149d9e8e469b5530417f5501c081879055050fb00969d2a"
+          },
+          "human_mask": {
+            "path": "/data/shangguanrz/pic-edit-datasets/TikTokDataset/TikTok_dataset/TikTok_dataset/00001/masks/0007.png",
+            "sha256": "2421a88eb69b41c363f803b05eabe975ebe4126abcb19f8f79dd585ec14f6121"
+          },
+          "smpl_mask": {
+            "path": "/data/shangguanrz/pic-edit-datasets/TikTokDataset/TikTok_3d_assets_native/00001/smplx_mask/0007.png",
+            "sha256": "a979e517883c89a739758a0ef093407fd5e82de2c887ecab0b74c7318bb8fcd9"
+          },
+          "part": {
+            "path": "/data/shangguanrz/pic-edit-datasets/TikTokDataset/TikTok_3d_assets_native/00001/part_512/0007.png",
+            "sha256": "653ac96a169a2aa168fac02e72ebe1c31e4b6e78c8718a095c0c655073fe7b73"
+          },
+          "depth_vis": {
+            "path": "/data/shangguanrz/pic-edit-datasets/TikTokDataset/TikTok_3d_assets_native/00001/depth_vis/0007.png",
+            "sha256": "f5cf1407f15854814819394dda751c8537de51640bb850ac5245a1e06cbfd053"
+          },
+          "model": {
+            "path": "/home/shangguanrz/project/pic-edit/add/tools/SMPLest-X/human_models/human_model_files/smplx/SMPLX_NEUTRAL.npz",
+            "sha256": "376021446ddc86e99acacd795182bbef903e61d33b76b9d8b359c2b0865bd992"
+          },
+          "fk_implementation": {
+            "path": "/home/shangguanrz/project/pic-edit/add/envs/smplestx_bw/lib/python3.12/site-packages/smplx/body_models.py",
+            "sha256": "3de717b66a31368120570dedd45a42effc1ce7b93d780bd71ce6879c10eeff75"
+          }
+        },
+        "condition_to_original": {
+          "normal": {
+            "source_hw": [
+              1080,
+              604
+            ],
+            "original_hw": [
+              1080,
+              604
+            ],
+            "scale_xy": [
+              1.0,
+              1.0
+            ],
+            "rule": "normalised_full_frame_then_target_canvas_once"
+          },
+          "smpl_mask": {
+            "source_hw": [
+              1080,
+              604
+            ],
+            "original_hw": [
+              1080,
+              604
+            ],
+            "scale_xy": [
+              1.0,
+              1.0
+            ],
+            "rule": "normalised_full_frame_then_target_canvas_once"
+          },
+          "part": {
+            "source_hw": [
+              512,
+              512
+            ],
+            "original_hw": [
+              1080,
+              604
+            ],
+            "scale_xy": [
+              1.1796875,
+              2.109375
+            ],
+            "rule": "normalised_full_frame_then_target_canvas_once"
+          },
+          "depth_vis": {
+            "source_hw": [
+              1080,
+              604
+            ],
+            "original_hw": [
+              1080,
+              604
+            ],
+            "scale_xy": [
+              1.0,
+              1.0
+            ],
+            "rule": "normalised_full_frame_then_target_canvas_once"
+          }
+        }
+      }
+    },
+    {
+      "record_id": "tiktok:00001:target:0008",
+      "target_token_hw": [
+        22,
+        12
+      ],
+      "joint_tokens": [
+        1,
+        21,
+        256
+      ],
+      "global_tokens": [
+        1,
+        4,
+        256
+      ],
+      "geometry": [
+        1,
+        264,
+        512
+      ],
+      "zero_pose_delta_max_abs": 0.0,
+      "mesh_max_abs_error": 1.9073486328125e-06,
+      "camera": "standard",
+      "projectable": 12,
+      "sigma_px": 47.07250213623047,
+      "condition_to_original": {
+        "normal": {
+          "source_hw": [
+            1080,
+            604
+          ],
+          "original_hw": [
+            1080,
+            604
+          ],
+          "scale_xy": [
+            1.0,
+            1.0
+          ],
+          "rule": "normalised_full_frame_then_target_canvas_once"
+        },
+        "smpl_mask": {
+          "source_hw": [
+            1080,
+            604
+          ],
+          "original_hw": [
+            1080,
+            604
+          ],
+          "scale_xy": [
+            1.0,
+            1.0
+          ],
+          "rule": "normalised_full_frame_then_target_canvas_once"
+        },
+        "part": {
+          "source_hw": [
+            512,
+            512
+          ],
+          "original_hw": [
+            1080,
+            604
+          ],
+          "scale_xy": [
+            1.1796875,
+            2.109375
+          ],
+          "rule": "normalised_full_frame_then_target_canvas_once"
+        },
+        "depth_vis": {
+          "source_hw": [
+            1080,
+            604
+          ],
+          "original_hw": [
+            1080,
+            604
+          ],
+          "scale_xy": [
+            1.0,
+            1.0
+          ],
+          "rule": "normalised_full_frame_then_target_canvas_once"
+        }
+      },
+      "pose_provenance": {
+        "record_id": "tiktok:00001:target:0008",
+        "record_sha256": "cbaf7d012debb0fb0b9793411d3ff809939240d5752fdb65bdfa0100081040f5",
+        "schema": "smplx_body21_camera_v2",
+        "canvas_id": "77573b4f5ce72fda9f8813d7e4135ac1e9c490c4ddf8df3893c89aaee775d9dd",
+        "camera": {
+          "selection": "standard",
+          "focal_xy": [
+            25110.5,
+            25110.5
+          ],
+          "principal_xy": [
+            269.5166931152344,
+            539.8309326171875
+          ],
+          "translation": [
+            0.019251374527812004,
+            0.7466080784797668,
+            19.4962100982666
+          ],
+          "translation_field": "transl",
+          "coordinates": "camera_xyz"
+        },
+        "sources": {
+          "params": {
+            "path": "/data/shangguanrz/pic-edit-datasets/TikTokDataset/TikTok_3d_assets_native/00001/smplestx/params.pt",
+            "sha256": "274922191f3d283578e05ea865b5fb36397c7d6c9a7e8f116d02f39ff71df132"
+          },
+          "frame_map": {
+            "path": "/data/shangguanrz/pic-edit-datasets/TikTokDataset/TikTok_3d_assets_native/00001/smplestx/frame_map.json",
+            "sha256": "38bf0c7f80dcac13ef761ef1d2a280922b61f053714bec551133e82c09b30056"
+          },
+          "rgb": {
+            "path": "/data/shangguanrz/pic-edit-datasets/TikTokDataset/TikTok_dataset/TikTok_dataset/00001/images/0008.png",
+            "sha256": "51e935f675ae04e2bdc1a3b80b612cd6b6de062672e0ad93753a12c4517181c3"
+          },
+          "legacy_conditions": {
+            "path": "/data/shangguanrz/pic-edit-datasets/TikTokDataset/TikTok_3d_assets_native/00001/v6_conditions.pt",
+            "sha256": "0e6f607813b683e59aa1574d4074962c99322a3064a25d7ed60509d01c86edf9"
+          },
+          "normal": {
+            "path": "/data/shangguanrz/pic-edit-datasets/TikTokDataset/TikTok_3d_assets_native/00001/normal/0008.png",
+            "sha256": "c208350d21fa53a3a1461180e1beb0479848b9a14742a72f39254c3f1511b95b"
+          },
+          "human_mask": {
+            "path": "/data/shangguanrz/pic-edit-datasets/TikTokDataset/TikTok_dataset/TikTok_dataset/00001/masks/0008.png",
+            "sha256": "947d81c2ffc076e7683a67a33eec9fca4def6eba6347f41b3c99fd26c069275b"
+          },
+          "smpl_mask": {
+            "path": "/data/shangguanrz/pic-edit-datasets/TikTokDataset/TikTok_3d_assets_native/00001/smplx_mask/0008.png",
+            "sha256": "3ae02b98cf2e7340de611269842c4ccb28e67d4f30d193a677213d685345815f"
+          },
+          "part": {
+            "path": "/data/shangguanrz/pic-edit-datasets/TikTokDataset/TikTok_3d_assets_native/00001/part_512/0008.png",
+            "sha256": "8a356cb6b830beb89e247e28ef7e830e2612d2b9f4147d4c709dd89fc2238936"
+          },
+          "depth_vis": {
+            "path": "/data/shangguanrz/pic-edit-datasets/TikTokDataset/TikTok_3d_assets_native/00001/depth_vis/0008.png",
+            "sha256": "7886fa878299e265752bd744f0f6aad5ef995747b0af68253f087050b820f365"
+          },
+          "model": {
+            "path": "/home/shangguanrz/project/pic-edit/add/tools/SMPLest-X/human_models/human_model_files/smplx/SMPLX_NEUTRAL.npz",
+            "sha256": "376021446ddc86e99acacd795182bbef903e61d33b76b9d8b359c2b0865bd992"
+          },
+          "fk_implementation": {
+            "path": "/home/shangguanrz/project/pic-edit/add/envs/smplestx_bw/lib/python3.12/site-packages/smplx/body_models.py",
+            "sha256": "3de717b66a31368120570dedd45a42effc1ce7b93d780bd71ce6879c10eeff75"
+          }
+        },
+        "condition_to_original": {
+          "normal": {
+            "source_hw": [
+              1080,
+              604
+            ],
+            "original_hw": [
+              1080,
+              604
+            ],
+            "scale_xy": [
+              1.0,
+              1.0
+            ],
+            "rule": "normalised_full_frame_then_target_canvas_once"
+          },
+          "smpl_mask": {
+            "source_hw": [
+              1080,
+              604
+            ],
+            "original_hw": [
+              1080,
+              604
+            ],
+            "scale_xy": [
+              1.0,
+              1.0
+            ],
+            "rule": "normalised_full_frame_then_target_canvas_once"
+          },
+          "part": {
+            "source_hw": [
+              512,
+              512
+            ],
+            "original_hw": [
+              1080,
+              604
+            ],
+            "scale_xy": [
+              1.1796875,
+              2.109375
+            ],
+            "rule": "normalised_full_frame_then_target_canvas_once"
+          },
+          "depth_vis": {
+            "source_hw": [
+              1080,
+              604
+            ],
+            "original_hw": [
+              1080,
+              604
+            ],
+            "scale_xy": [
+              1.0,
+              1.0
+            ],
+            "rule": "normalised_full_frame_then_target_canvas_once"
+          }
+        }
+      }
+    },
+    {
+      "record_id": "iper:001_8:source_standard:source_standard_f000078",
+      "target_token_hw": [
+        16,
+        16
+      ],
+      "joint_tokens": [
+        1,
+        21,
+        256
+      ],
+      "global_tokens": [
+        1,
+        4,
+        256
+      ],
+      "geometry": [
+        1,
+        256,
+        512
+      ],
+      "zero_pose_delta_max_abs": 0.0,
+      "mesh_max_abs_error": 3.814697265625e-06,
+      "camera": "raw",
+      "projectable": 21,
+      "sigma_px": 26.250001907348633,
+      "condition_to_original": {
+        "normal": {
+          "source_hw": [
+            512,
+            512
+          ],
+          "original_hw": [
+            1024,
+            1024
+          ],
+          "scale_xy": [
+            2.0,
+            2.0
+          ],
+          "rule": "normalised_full_frame_then_target_canvas_once"
+        },
+        "smpl_mask": {
+          "source_hw": [
+            512,
+            512
+          ],
+          "original_hw": [
+            1024,
+            1024
+          ],
+          "scale_xy": [
+            2.0,
+            2.0
+          ],
+          "rule": "normalised_full_frame_then_target_canvas_once"
+        },
+        "part": {
+          "source_hw": [
+            512,
+            512
+          ],
+          "original_hw": [
+            1024,
+            1024
+          ],
+          "scale_xy": [
+            2.0,
+            2.0
+          ],
+          "rule": "normalised_full_frame_then_target_canvas_once"
+        },
+        "depth_vis": {
+          "source_hw": [
+            512,
+            512
+          ],
+          "original_hw": [
+            1024,
+            1024
+          ],
+          "scale_xy": [
+            2.0,
+            2.0
+          ],
+          "rule": "normalised_full_frame_then_target_canvas_once"
+        }
+      },
+      "pose_provenance": {
+        "record_id": "iper:001_8:source_standard:source_standard_f000078",
+        "record_sha256": "c75b6a66fab0bb5e9d2f42ac5bd2108010a2f1934605343ad80e850c9a2d3caa",
+        "schema": "smplx_body21_camera_v2",
+        "canvas_id": "ddf8d613f173f34681b434a5109d06386e743a0dd666bf2f087aeea7712f8496",
+        "camera": {
+          "selection": "raw",
+          "focal_xy": [
+            16778.08984375,
+            16778.091796875
+          ],
+          "principal_xy": [
+            580.119140625,
+            528.1306762695312
+          ],
+          "translation": [
+            -0.10143062472343445,
+            0.28369468450546265,
+            40.93545913696289
+          ],
+          "translation_field": "transl_raw",
+          "coordinates": "camera_xyz"
+        },
+        "sources": {
+          "params": {
+            "path": "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_sampled_6src64tgt/001_8/smplestx/params.pt",
+            "sha256": "d243104d6f6ef659ec3f6a6e8f54018d5c0205f38a2b80de80194a91feaacda8"
+          },
+          "frame_map": {
+            "path": "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_sampled_6src64tgt/001_8/smplestx/frame_map.json",
+            "sha256": "3fc2297945a6af4c4258d893e56eeaa3a51b55491d67a77f24bd075dfefcee4c"
+          },
+          "rgb": {
+            "path": "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_sampled_6src64tgt/001_8/rgb_1024/source_standard/source_standard_f000078.png",
+            "sha256": "972e52249c50ecf15c9df1a4164b5b472981492f4c809be351e885598a226f85"
+          },
+          "legacy_conditions": {
+            "path": "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_assets_512_nvdiffrast/001_8/v6_conditions.pt",
+            "sha256": "7fa6250b6317d255e2bdfeb327cdfd8464b5b231d711ef5f26f647117cab8be3"
+          },
+          "normal": {
+            "path": "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_assets_512_nvdiffrast/001_8/normal_512/source_standard/source_standard_f000078.png",
+            "sha256": "7838591000ad4d039cec10b94305cb74ed617b6a604b97ccaacc8217100194e4"
+          },
+          "smpl_mask": {
+            "path": "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_assets_512_nvdiffrast/001_8/mask_512/source_standard/source_standard_f000078.png",
+            "sha256": "415cf2bb338cd6df03c32eb04d89911b2d9c6d666731745d9cf0409dd9a7511d"
+          },
+          "part": {
+            "path": "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_assets_512_nvdiffrast/001_8/part_512/source_standard/source_standard_f000078.png",
+            "sha256": "e5c3bec291921f8e6bf5cac5dce96e78c630728b9b9e87ce799670c087905f26"
+          },
+          "depth_vis": {
+            "path": "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_assets_512_nvdiffrast/001_8/depth_vis_512/source_standard/source_standard_f000078.png",
+            "sha256": "7813b36eb7a68efaf41b01c3b01bf15bb8647d8e5253bc72c93a0d3d4283f9ae"
+          },
+          "model": {
+            "path": "/home/shangguanrz/project/pic-edit/add/tools/SMPLest-X/human_models/human_model_files/smplx/SMPLX_NEUTRAL.npz",
+            "sha256": "376021446ddc86e99acacd795182bbef903e61d33b76b9d8b359c2b0865bd992"
+          },
+          "fk_implementation": {
+            "path": "/home/shangguanrz/project/pic-edit/add/envs/smplestx_bw/lib/python3.12/site-packages/smplx/body_models.py",
+            "sha256": "3de717b66a31368120570dedd45a42effc1ce7b93d780bd71ce6879c10eeff75"
+          }
+        },
+        "condition_to_original": {
+          "normal": {
+            "source_hw": [
+              512,
+              512
+            ],
+            "original_hw": [
+              1024,
+              1024
+            ],
+            "scale_xy": [
+              2.0,
+              2.0
+            ],
+            "rule": "normalised_full_frame_then_target_canvas_once"
+          },
+          "smpl_mask": {
+            "source_hw": [
+              512,
+              512
+            ],
+            "original_hw": [
+              1024,
+              1024
+            ],
+            "scale_xy": [
+              2.0,
+              2.0
+            ],
+            "rule": "normalised_full_frame_then_target_canvas_once"
+          },
+          "part": {
+            "source_hw": [
+              512,
+              512
+            ],
+            "original_hw": [
+              1024,
+              1024
+            ],
+            "scale_xy": [
+              2.0,
+              2.0
+            ],
+            "rule": "normalised_full_frame_then_target_canvas_once"
+          },
+          "depth_vis": {
+            "source_hw": [
+              512,
+              512
+            ],
+            "original_hw": [
+              1024,
+              1024
+            ],
+            "scale_xy": [
+              2.0,
+              2.0
+            ],
+            "rule": "normalised_full_frame_then_target_canvas_once"
+          }
+        }
+      }
+    },
+    {
+      "record_id": "iper:001_8:source_standard:source_standard_f000258",
+      "target_token_hw": [
+        16,
+        16
+      ],
+      "joint_tokens": [
+        1,
+        21,
+        256
+      ],
+      "global_tokens": [
+        1,
+        4,
+        256
+      ],
+      "geometry": [
+        1,
+        256,
+        512
+      ],
+      "zero_pose_delta_max_abs": 0.0,
+      "mesh_max_abs_error": 3.814697265625e-06,
+      "camera": "raw",
+      "projectable": 21,
+      "sigma_px": 26.625001907348633,
+      "condition_to_original": {
+        "normal": {
+          "source_hw": [
+            512,
+            512
+          ],
+          "original_hw": [
+            1024,
+            1024
+          ],
+          "scale_xy": [
+            2.0,
+            2.0
+          ],
+          "rule": "normalised_full_frame_then_target_canvas_once"
+        },
+        "smpl_mask": {
+          "source_hw": [
+            512,
+            512
+          ],
+          "original_hw": [
+            1024,
+            1024
+          ],
+          "scale_xy": [
+            2.0,
+            2.0
+          ],
+          "rule": "normalised_full_frame_then_target_canvas_once"
+        },
+        "part": {
+          "source_hw": [
+            512,
+            512
+          ],
+          "original_hw": [
+            1024,
+            1024
+          ],
+          "scale_xy": [
+            2.0,
+            2.0
+          ],
+          "rule": "normalised_full_frame_then_target_canvas_once"
+        },
+        "depth_vis": {
+          "source_hw": [
+            512,
+            512
+          ],
+          "original_hw": [
+            1024,
+            1024
+          ],
+          "scale_xy": [
+            2.0,
+            2.0
+          ],
+          "rule": "normalised_full_frame_then_target_canvas_once"
+        }
+      },
+      "pose_provenance": {
+        "record_id": "iper:001_8:source_standard:source_standard_f000258",
+        "record_sha256": "ec490643405b6881b4b271be15b39b971fe9eb7d3af9d3911dd4b45d82187315",
+        "schema": "smplx_body21_camera_v2",
+        "canvas_id": "ddf8d613f173f34681b434a5109d06386e743a0dd666bf2f087aeea7712f8496",
+        "camera": {
+          "selection": "raw",
+          "focal_xy": [
+            16615.197265625,
+            16615.19921875
+          ],
+          "principal_xy": [
+            471.77227783203125,
+            517.8760375976562
+          ],
+          "translation": [
+            -0.02207317389547825,
+            0.2824433147907257,
+            40.9781494140625
+          ],
+          "translation_field": "transl_raw",
+          "coordinates": "camera_xyz"
+        },
+        "sources": {
+          "params": {
+            "path": "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_sampled_6src64tgt/001_8/smplestx/params.pt",
+            "sha256": "d243104d6f6ef659ec3f6a6e8f54018d5c0205f38a2b80de80194a91feaacda8"
+          },
+          "frame_map": {
+            "path": "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_sampled_6src64tgt/001_8/smplestx/frame_map.json",
+            "sha256": "3fc2297945a6af4c4258d893e56eeaa3a51b55491d67a77f24bd075dfefcee4c"
+          },
+          "rgb": {
+            "path": "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_sampled_6src64tgt/001_8/rgb_1024/source_standard/source_standard_f000258.png",
+            "sha256": "aeb74e32ba489e9d43d2501dbb5be916c569951d7d62b848642ff2a531b4aa32"
+          },
+          "legacy_conditions": {
+            "path": "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_assets_512_nvdiffrast/001_8/v6_conditions.pt",
+            "sha256": "7fa6250b6317d255e2bdfeb327cdfd8464b5b231d711ef5f26f647117cab8be3"
+          },
+          "normal": {
+            "path": "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_assets_512_nvdiffrast/001_8/normal_512/source_standard/source_standard_f000258.png",
+            "sha256": "570323d00f1948130121e7234e33c5e9ee8bfd9048f0f3fd83165215ee0d3d9b"
+          },
+          "smpl_mask": {
+            "path": "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_assets_512_nvdiffrast/001_8/mask_512/source_standard/source_standard_f000258.png",
+            "sha256": "46cc23b93b61c6432f485b7204c3fd8a08e51e48e306f982adc6550d87e97367"
+          },
+          "part": {
+            "path": "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_assets_512_nvdiffrast/001_8/part_512/source_standard/source_standard_f000258.png",
+            "sha256": "4bd8fae24cae02a2087c607ac2c5251a0a46a7b302f6bd5dc891b2d4e615334e"
+          },
+          "depth_vis": {
+            "path": "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_assets_512_nvdiffrast/001_8/depth_vis_512/source_standard/source_standard_f000258.png",
+            "sha256": "76f3a13f4d9be851a754fe032c44231272f4df919180485fdf1b905956b2bab7"
+          },
+          "model": {
+            "path": "/home/shangguanrz/project/pic-edit/add/tools/SMPLest-X/human_models/human_model_files/smplx/SMPLX_NEUTRAL.npz",
+            "sha256": "376021446ddc86e99acacd795182bbef903e61d33b76b9d8b359c2b0865bd992"
+          },
+          "fk_implementation": {
+            "path": "/home/shangguanrz/project/pic-edit/add/envs/smplestx_bw/lib/python3.12/site-packages/smplx/body_models.py",
+            "sha256": "3de717b66a31368120570dedd45a42effc1ce7b93d780bd71ce6879c10eeff75"
+          }
+        },
+        "condition_to_original": {
+          "normal": {
+            "source_hw": [
+              512,
+              512
+            ],
+            "original_hw": [
+              1024,
+              1024
+            ],
+            "scale_xy": [
+              2.0,
+              2.0
+            ],
+            "rule": "normalised_full_frame_then_target_canvas_once"
+          },
+          "smpl_mask": {
+            "source_hw": [
+              512,
+              512
+            ],
+            "original_hw": [
+              1024,
+              1024
+            ],
+            "scale_xy": [
+              2.0,
+              2.0
+            ],
+            "rule": "normalised_full_frame_then_target_canvas_once"
+          },
+          "part": {
+            "source_hw": [
+              512,
+              512
+            ],
+            "original_hw": [
+              1024,
+              1024
+            ],
+            "scale_xy": [
+              2.0,
+              2.0
+            ],
+            "rule": "normalised_full_frame_then_target_canvas_once"
+          },
+          "depth_vis": {
+            "source_hw": [
+              512,
+              512
+            ],
+            "original_hw": [
+              1024,
+              1024
+            ],
+            "scale_xy": [
+              2.0,
+              2.0
+            ],
+            "rule": "normalised_full_frame_then_target_canvas_once"
+          }
+        }
+      }
+    },
+    {
+      "record_id": "iper:001_8:source_motion:source_motion_f000152",
+      "target_token_hw": [
+        16,
+        16
+      ],
+      "joint_tokens": [
+        1,
+        21,
+        256
+      ],
+      "global_tokens": [
+        1,
+        4,
+        256
+      ],
+      "geometry": [
+        1,
+        256,
+        512
+      ],
+      "zero_pose_delta_max_abs": 0.0,
+      "mesh_max_abs_error": 3.814697265625e-06,
+      "camera": "raw",
+      "projectable": 21,
+      "sigma_px": 26.92500114440918,
+      "condition_to_original": {
+        "normal": {
+          "source_hw": [
+            512,
+            512
+          ],
+          "original_hw": [
+            1024,
+            1024
+          ],
+          "scale_xy": [
+            2.0,
+            2.0
+          ],
+          "rule": "normalised_full_frame_then_target_canvas_once"
+        },
+        "smpl_mask": {
+          "source_hw": [
+            512,
+            512
+          ],
+          "original_hw": [
+            1024,
+            1024
+          ],
+          "scale_xy": [
+            2.0,
+            2.0
+          ],
+          "rule": "normalised_full_frame_then_target_canvas_once"
+        },
+        "part": {
+          "source_hw": [
+            512,
+            512
+          ],
+          "original_hw": [
+            1024,
+            1024
+          ],
+          "scale_xy": [
+            2.0,
+            2.0
+          ],
+          "rule": "normalised_full_frame_then_target_canvas_once"
+        },
+        "depth_vis": {
+          "source_hw": [
+            512,
+            512
+          ],
+          "original_hw": [
+            1024,
+            1024
+          ],
+          "scale_xy": [
+            2.0,
+            2.0
+          ],
+          "rule": "normalised_full_frame_then_target_canvas_once"
+        }
+      },
+      "pose_provenance": {
+        "record_id": "iper:001_8:source_motion:source_motion_f000152",
+        "record_sha256": "6654f4f57dc396f2758383983eb4f9a7e6f0fcd0819725787f01ee5240c42594",
+        "schema": "smplx_body21_camera_v2",
+        "canvas_id": "ddf8d613f173f34681b434a5109d06386e743a0dd666bf2f087aeea7712f8496",
+        "camera": {
+          "selection": "raw",
+          "focal_xy": [
+            17476.3515625,
+            17476.3515625
+          ],
+          "principal_xy": [
+            595.5225219726562,
+            499.70343017578125
+          ],
+          "translation": [
+            -0.10614175349473953,
+            0.3032000660896301,
+            42.01596450805664
+          ],
+          "translation_field": "transl_raw",
+          "coordinates": "camera_xyz"
+        },
+        "sources": {
+          "params": {
+            "path": "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_sampled_6src64tgt/001_8/smplestx/params.pt",
+            "sha256": "d243104d6f6ef659ec3f6a6e8f54018d5c0205f38a2b80de80194a91feaacda8"
+          },
+          "frame_map": {
+            "path": "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_sampled_6src64tgt/001_8/smplestx/frame_map.json",
+            "sha256": "3fc2297945a6af4c4258d893e56eeaa3a51b55491d67a77f24bd075dfefcee4c"
+          },
+          "rgb": {
+            "path": "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_sampled_6src64tgt/001_8/rgb_1024/source_motion/source_motion_f000152.png",
+            "sha256": "4cebd18927ce6a642ae96ca0e7c868c110aca6b108e3b648a4fdb1c75a1e878e"
+          },
+          "legacy_conditions": {
+            "path": "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_assets_512_nvdiffrast/001_8/v6_conditions.pt",
+            "sha256": "7fa6250b6317d255e2bdfeb327cdfd8464b5b231d711ef5f26f647117cab8be3"
+          },
+          "normal": {
+            "path": "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_assets_512_nvdiffrast/001_8/normal_512/source_motion/source_motion_f000152.png",
+            "sha256": "bfb7b2f74d1cf48ac2944d36439c30050d2029e6dd23fd0a1465f4fb1ffdbd16"
+          },
+          "smpl_mask": {
+            "path": "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_assets_512_nvdiffrast/001_8/mask_512/source_motion/source_motion_f000152.png",
+            "sha256": "49b98a70acc99eb95eac4b84da60673c6bfeadf3d3fc1ff9e2e03b1555f5ce60"
+          },
+          "part": {
+            "path": "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_assets_512_nvdiffrast/001_8/part_512/source_motion/source_motion_f000152.png",
+            "sha256": "4c6ce6f3495f31ec58c8a96c7e643efddeb74402a0833eb3926b9dc41698beed"
+          },
+          "depth_vis": {
+            "path": "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_assets_512_nvdiffrast/001_8/depth_vis_512/source_motion/source_motion_f000152.png",
+            "sha256": "921fb391bea5bd7ca3c305bf7a97ca2ca760521895f27e89d0831a6c43076345"
+          },
+          "model": {
+            "path": "/home/shangguanrz/project/pic-edit/add/tools/SMPLest-X/human_models/human_model_files/smplx/SMPLX_NEUTRAL.npz",
+            "sha256": "376021446ddc86e99acacd795182bbef903e61d33b76b9d8b359c2b0865bd992"
+          },
+          "fk_implementation": {
+            "path": "/home/shangguanrz/project/pic-edit/add/envs/smplestx_bw/lib/python3.12/site-packages/smplx/body_models.py",
+            "sha256": "3de717b66a31368120570dedd45a42effc1ce7b93d780bd71ce6879c10eeff75"
+          }
+        },
+        "condition_to_original": {
+          "normal": {
+            "source_hw": [
+              512,
+              512
+            ],
+            "original_hw": [
+              1024,
+              1024
+            ],
+            "scale_xy": [
+              2.0,
+              2.0
+            ],
+            "rule": "normalised_full_frame_then_target_canvas_once"
+          },
+          "smpl_mask": {
+            "source_hw": [
+              512,
+              512
+            ],
+            "original_hw": [
+              1024,
+              1024
+            ],
+            "scale_xy": [
+              2.0,
+              2.0
+            ],
+            "rule": "normalised_full_frame_then_target_canvas_once"
+          },
+          "part": {
+            "source_hw": [
+              512,
+              512
+            ],
+            "original_hw": [
+              1024,
+              1024
+            ],
+            "scale_xy": [
+              2.0,
+              2.0
+            ],
+            "rule": "normalised_full_frame_then_target_canvas_once"
+          },
+          "depth_vis": {
+            "source_hw": [
+              512,
+              512
+            ],
+            "original_hw": [
+              1024,
+              1024
+            ],
+            "scale_xy": [
+              2.0,
+              2.0
+            ],
+            "rule": "normalised_full_frame_then_target_canvas_once"
+          }
+        }
+      }
+    },
+    {
+      "record_id": "iper:001_8:source_motion:source_motion_f000971",
+      "target_token_hw": [
+        16,
+        16
+      ],
+      "joint_tokens": [
+        1,
+        21,
+        256
+      ],
+      "global_tokens": [
+        1,
+        4,
+        256
+      ],
+      "geometry": [
+        1,
+        256,
+        512
+      ],
+      "zero_pose_delta_max_abs": 0.0,
+      "mesh_max_abs_error": 3.814697265625e-06,
+      "camera": "raw",
+      "projectable": 21,
+      "sigma_px": 31.500001907348633,
+      "condition_to_original": {
+        "normal": {
+          "source_hw": [
+            512,
+            512
+          ],
+          "original_hw": [
+            1024,
+            1024
+          ],
+          "scale_xy": [
+            2.0,
+            2.0
+          ],
+          "rule": "normalised_full_frame_then_target_canvas_once"
+        },
+        "smpl_mask": {
+          "source_hw": [
+            512,
+            512
+          ],
+          "original_hw": [
+            1024,
+            1024
+          ],
+          "scale_xy": [
+            2.0,
+            2.0
+          ],
+          "rule": "normalised_full_frame_then_target_canvas_once"
+        },
+        "part": {
+          "source_hw": [
+            512,
+            512
+          ],
+          "original_hw": [
+            1024,
+            1024
+          ],
+          "scale_xy": [
+            2.0,
+            2.0
+          ],
+          "rule": "normalised_full_frame_then_target_canvas_once"
+        },
+        "depth_vis": {
+          "source_hw": [
+            512,
+            512
+          ],
+          "original_hw": [
+            1024,
+            1024
+          ],
+          "scale_xy": [
+            2.0,
+            2.0
+          ],
+          "rule": "normalised_full_frame_then_target_canvas_once"
+        }
+      },
+      "pose_provenance": {
+        "record_id": "iper:001_8:source_motion:source_motion_f000971",
+        "record_sha256": "c0e95152dd3619da5a27ae461f4e6e22e3b1ef448f95963ad8f02a8eb50d3d59",
+        "schema": "smplx_body21_camera_v2",
+        "canvas_id": "ddf8d613f173f34681b434a5109d06386e743a0dd666bf2f087aeea7712f8496",
+        "camera": {
+          "selection": "raw",
+          "focal_xy": [
+            20642.8359375,
+            20642.8359375
+          ],
+          "principal_xy": [
+            487.5260925292969,
+            476.278564453125
+          ],
+          "translation": [
+            -0.065585657954216,
+            0.3525760769844055,
+            46.84185028076172
+          ],
+          "translation_field": "transl_raw",
+          "coordinates": "camera_xyz"
+        },
+        "sources": {
+          "params": {
+            "path": "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_sampled_6src64tgt/001_8/smplestx/params.pt",
+            "sha256": "d243104d6f6ef659ec3f6a6e8f54018d5c0205f38a2b80de80194a91feaacda8"
+          },
+          "frame_map": {
+            "path": "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_sampled_6src64tgt/001_8/smplestx/frame_map.json",
+            "sha256": "3fc2297945a6af4c4258d893e56eeaa3a51b55491d67a77f24bd075dfefcee4c"
+          },
+          "rgb": {
+            "path": "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_sampled_6src64tgt/001_8/rgb_1024/source_motion/source_motion_f000971.png",
+            "sha256": "cfef78b24f27e3f4579466aac7099081213cf4f5fb565c3ba49bf67dca13b4db"
+          },
+          "legacy_conditions": {
+            "path": "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_assets_512_nvdiffrast/001_8/v6_conditions.pt",
+            "sha256": "7fa6250b6317d255e2bdfeb327cdfd8464b5b231d711ef5f26f647117cab8be3"
+          },
+          "normal": {
+            "path": "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_assets_512_nvdiffrast/001_8/normal_512/source_motion/source_motion_f000971.png",
+            "sha256": "fe8f320c034fe7e265ffd84581e3bca140937ddf36c9855207845ad4cfea6d25"
+          },
+          "smpl_mask": {
+            "path": "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_assets_512_nvdiffrast/001_8/mask_512/source_motion/source_motion_f000971.png",
+            "sha256": "5cc06150a6d86762c74b44e9b2850ac1a5dd2bf31493545522194fcb52e80dc0"
+          },
+          "part": {
+            "path": "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_assets_512_nvdiffrast/001_8/part_512/source_motion/source_motion_f000971.png",
+            "sha256": "1a5d55674793f2d05a3871bf7ccba75fa0010b9e9204b72b0532a9a56a70f390"
+          },
+          "depth_vis": {
+            "path": "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_assets_512_nvdiffrast/001_8/depth_vis_512/source_motion/source_motion_f000971.png",
+            "sha256": "df5e6c62486cc6ef1f1b8ba7514b6dd4099f2c9abb86924f67e5413ad8e2393d"
+          },
+          "model": {
+            "path": "/home/shangguanrz/project/pic-edit/add/tools/SMPLest-X/human_models/human_model_files/smplx/SMPLX_NEUTRAL.npz",
+            "sha256": "376021446ddc86e99acacd795182bbef903e61d33b76b9d8b359c2b0865bd992"
+          },
+          "fk_implementation": {
+            "path": "/home/shangguanrz/project/pic-edit/add/envs/smplestx_bw/lib/python3.12/site-packages/smplx/body_models.py",
+            "sha256": "3de717b66a31368120570dedd45a42effc1ce7b93d780bd71ce6879c10eeff75"
+          }
+        },
+        "condition_to_original": {
+          "normal": {
+            "source_hw": [
+              512,
+              512
+            ],
+            "original_hw": [
+              1024,
+              1024
+            ],
+            "scale_xy": [
+              2.0,
+              2.0
+            ],
+            "rule": "normalised_full_frame_then_target_canvas_once"
+          },
+          "smpl_mask": {
+            "source_hw": [
+              512,
+              512
+            ],
+            "original_hw": [
+              1024,
+              1024
+            ],
+            "scale_xy": [
+              2.0,
+              2.0
+            ],
+            "rule": "normalised_full_frame_then_target_canvas_once"
+          },
+          "part": {
+            "source_hw": [
+              512,
+              512
+            ],
+            "original_hw": [
+              1024,
+              1024
+            ],
+            "scale_xy": [
+              2.0,
+              2.0
+            ],
+            "rule": "normalised_full_frame_then_target_canvas_once"
+          },
+          "depth_vis": {
+            "source_hw": [
+              512,
+              512
+            ],
+            "original_hw": [
+              1024,
+              1024
+            ],
+            "scale_xy": [
+              2.0,
+              2.0
+            ],
+            "rule": "normalised_full_frame_then_target_canvas_once"
+          }
+        }
+      }
+    },
+    {
+      "record_id": "iper:001_8:target:target_f000055",
+      "target_token_hw": [
+        16,
+        16
+      ],
+      "joint_tokens": [
+        1,
+        21,
+        256
+      ],
+      "global_tokens": [
+        1,
+        4,
+        256
+      ],
+      "geometry": [
+        1,
+        256,
+        512
+      ],
+      "zero_pose_delta_max_abs": 0.0,
+      "mesh_max_abs_error": 3.814697265625e-06,
+      "camera": "raw",
+      "projectable": 21,
+      "sigma_px": 26.700000762939453,
+      "condition_to_original": {
+        "normal": {
+          "source_hw": [
+            512,
+            512
+          ],
+          "original_hw": [
+            1024,
+            1024
+          ],
+          "scale_xy": [
+            2.0,
+            2.0
+          ],
+          "rule": "normalised_full_frame_then_target_canvas_once"
+        },
+        "smpl_mask": {
+          "source_hw": [
+            512,
+            512
+          ],
+          "original_hw": [
+            1024,
+            1024
+          ],
+          "scale_xy": [
+            2.0,
+            2.0
+          ],
+          "rule": "normalised_full_frame_then_target_canvas_once"
+        },
+        "part": {
+          "source_hw": [
+            512,
+            512
+          ],
+          "original_hw": [
+            1024,
+            1024
+          ],
+          "scale_xy": [
+            2.0,
+            2.0
+          ],
+          "rule": "normalised_full_frame_then_target_canvas_once"
+        },
+        "depth_vis": {
+          "source_hw": [
+            512,
+            512
+          ],
+          "original_hw": [
+            1024,
+            1024
+          ],
+          "scale_xy": [
+            2.0,
+            2.0
+          ],
+          "rule": "normalised_full_frame_then_target_canvas_once"
+        }
+      },
+      "pose_provenance": {
+        "record_id": "iper:001_8:target:target_f000055",
+        "record_sha256": "85454725a6969c54080e37cd7f17cd3683604484b159c6524a3f6fd0275d89cc",
+        "schema": "smplx_body21_camera_v2",
+        "canvas_id": "ddf8d613f173f34681b434a5109d06386e743a0dd666bf2f087aeea7712f8496",
+        "camera": {
+          "selection": "raw",
+          "focal_xy": [
+            17399.888671875,
+            17399.890625
+          ],
+          "principal_xy": [
+            557.804931640625,
+            525.2982177734375
+          ],
+          "translation": [
+            -0.0959971621632576,
+            0.2561130225658417,
+            41.75297546386719
+          ],
+          "translation_field": "transl_raw",
+          "coordinates": "camera_xyz"
+        },
+        "sources": {
+          "params": {
+            "path": "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_sampled_6src64tgt/001_8/smplestx/params.pt",
+            "sha256": "d243104d6f6ef659ec3f6a6e8f54018d5c0205f38a2b80de80194a91feaacda8"
+          },
+          "frame_map": {
+            "path": "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_sampled_6src64tgt/001_8/smplestx/frame_map.json",
+            "sha256": "3fc2297945a6af4c4258d893e56eeaa3a51b55491d67a77f24bd075dfefcee4c"
+          },
+          "rgb": {
+            "path": "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_sampled_6src64tgt/001_8/rgb_1024/target/target_f000055.png",
+            "sha256": "2dc436ae686e88d0f2180f4a5d97397ec46f5a236ce8c0d3a5933979fc1aa536"
+          },
+          "legacy_conditions": {
+            "path": "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_assets_512_nvdiffrast/001_8/v6_conditions.pt",
+            "sha256": "7fa6250b6317d255e2bdfeb327cdfd8464b5b231d711ef5f26f647117cab8be3"
+          },
+          "normal": {
+            "path": "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_assets_512_nvdiffrast/001_8/normal_512/target/target_f000055.png",
+            "sha256": "e2d1d5a2d6a326ed7010508a0269fa25b103ad6086d50a0839b0a1e1d6cfd101"
+          },
+          "smpl_mask": {
+            "path": "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_assets_512_nvdiffrast/001_8/mask_512/target/target_f000055.png",
+            "sha256": "4141c036d46538d08094a565d7f22c76eeb9982ff55067a708e74c858acb2c8e"
+          },
+          "part": {
+            "path": "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_assets_512_nvdiffrast/001_8/part_512/target/target_f000055.png",
+            "sha256": "7280b5056a900dc8b66db75bef5c50426090ef0c87377a6148aeedcd051957b5"
+          },
+          "depth_vis": {
+            "path": "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_assets_512_nvdiffrast/001_8/depth_vis_512/target/target_f000055.png",
+            "sha256": "e1de0f4547901bf279db81fdb7b645d3a603ffd26b3d7b093c93bcd353e4997c"
+          },
+          "model": {
+            "path": "/home/shangguanrz/project/pic-edit/add/tools/SMPLest-X/human_models/human_model_files/smplx/SMPLX_NEUTRAL.npz",
+            "sha256": "376021446ddc86e99acacd795182bbef903e61d33b76b9d8b359c2b0865bd992"
+          },
+          "fk_implementation": {
+            "path": "/home/shangguanrz/project/pic-edit/add/envs/smplestx_bw/lib/python3.12/site-packages/smplx/body_models.py",
+            "sha256": "3de717b66a31368120570dedd45a42effc1ce7b93d780bd71ce6879c10eeff75"
+          }
+        },
+        "condition_to_original": {
+          "normal": {
+            "source_hw": [
+              512,
+              512
+            ],
+            "original_hw": [
+              1024,
+              1024
+            ],
+            "scale_xy": [
+              2.0,
+              2.0
+            ],
+            "rule": "normalised_full_frame_then_target_canvas_once"
+          },
+          "smpl_mask": {
+            "source_hw": [
+              512,
+              512
+            ],
+            "original_hw": [
+              1024,
+              1024
+            ],
+            "scale_xy": [
+              2.0,
+              2.0
+            ],
+            "rule": "normalised_full_frame_then_target_canvas_once"
+          },
+          "part": {
+            "source_hw": [
+              512,
+              512
+            ],
+            "original_hw": [
+              1024,
+              1024
+            ],
+            "scale_xy": [
+              2.0,
+              2.0
+            ],
+            "rule": "normalised_full_frame_then_target_canvas_once"
+          },
+          "depth_vis": {
+            "source_hw": [
+              512,
+              512
+            ],
+            "original_hw": [
+              1024,
+              1024
+            ],
+            "scale_xy": [
+              2.0,
+              2.0
+            ],
+            "rule": "normalised_full_frame_then_target_canvas_once"
+          }
+        }
+      }
+    },
+    {
+      "record_id": "iper:001_8:target:target_f000227",
+      "target_token_hw": [
+        16,
+        16
+      ],
+      "joint_tokens": [
+        1,
+        21,
+        256
+      ],
+      "global_tokens": [
+        1,
+        4,
+        256
+      ],
+      "geometry": [
+        1,
+        256,
+        512
+      ],
+      "zero_pose_delta_max_abs": 0.0,
+      "mesh_max_abs_error": 3.814697265625e-06,
+      "camera": "raw",
+      "projectable": 21,
+      "sigma_px": 27.600000381469727,
+      "condition_to_original": {
+        "normal": {
+          "source_hw": [
+            512,
+            512
+          ],
+          "original_hw": [
+            1024,
+            1024
+          ],
+          "scale_xy": [
+            2.0,
+            2.0
+          ],
+          "rule": "normalised_full_frame_then_target_canvas_once"
+        },
+        "smpl_mask": {
+          "source_hw": [
+            512,
+            512
+          ],
+          "original_hw": [
+            1024,
+            1024
+          ],
+          "scale_xy": [
+            2.0,
+            2.0
+          ],
+          "rule": "normalised_full_frame_then_target_canvas_once"
+        },
+        "part": {
+          "source_hw": [
+            512,
+            512
+          ],
+          "original_hw": [
+            1024,
+            1024
+          ],
+          "scale_xy": [
+            2.0,
+            2.0
+          ],
+          "rule": "normalised_full_frame_then_target_canvas_once"
+        },
+        "depth_vis": {
+          "source_hw": [
+            512,
+            512
+          ],
+          "original_hw": [
+            1024,
+            1024
+          ],
+          "scale_xy": [
+            2.0,
+            2.0
+          ],
+          "rule": "normalised_full_frame_then_target_canvas_once"
+        }
+      },
+      "pose_provenance": {
+        "record_id": "iper:001_8:target:target_f000227",
+        "record_sha256": "484e8d1675ce7b5b8b87dca6ca1a91a7f4e8ba81e7250cedfc9ad9b5bee85739",
+        "schema": "smplx_body21_camera_v2",
+        "canvas_id": "ddf8d613f173f34681b434a5109d06386e743a0dd666bf2f087aeea7712f8496",
+        "camera": {
+          "selection": "raw",
+          "focal_xy": [
+            17044.2265625,
+            17044.2265625
+          ],
+          "principal_xy": [
+            533.3974609375,
+            526.5064697265625
+          ],
+          "translation": [
+            -0.016404276713728905,
+            0.28507110476493835,
+            39.965641021728516
+          ],
+          "translation_field": "transl_raw",
+          "coordinates": "camera_xyz"
+        },
+        "sources": {
+          "params": {
+            "path": "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_sampled_6src64tgt/001_8/smplestx/params.pt",
+            "sha256": "d243104d6f6ef659ec3f6a6e8f54018d5c0205f38a2b80de80194a91feaacda8"
+          },
+          "frame_map": {
+            "path": "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_sampled_6src64tgt/001_8/smplestx/frame_map.json",
+            "sha256": "3fc2297945a6af4c4258d893e56eeaa3a51b55491d67a77f24bd075dfefcee4c"
+          },
+          "rgb": {
+            "path": "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_sampled_6src64tgt/001_8/rgb_1024/target/target_f000227.png",
+            "sha256": "6344fa202950e76a813ab09836dd6f9672446a20f8be86031900c7212f2240ac"
+          },
+          "legacy_conditions": {
+            "path": "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_assets_512_nvdiffrast/001_8/v6_conditions.pt",
+            "sha256": "7fa6250b6317d255e2bdfeb327cdfd8464b5b231d711ef5f26f647117cab8be3"
+          },
+          "normal": {
+            "path": "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_assets_512_nvdiffrast/001_8/normal_512/target/target_f000227.png",
+            "sha256": "736d6590d6aec6b6842ee10a7790ec740c79e8c7442b8dd166784efe44a57e47"
+          },
+          "smpl_mask": {
+            "path": "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_assets_512_nvdiffrast/001_8/mask_512/target/target_f000227.png",
+            "sha256": "08e6a5f0de4b8f8a2e6ea1269da843d9c47b16fca616ea7a23d0bd17f60516e1"
+          },
+          "part": {
+            "path": "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_assets_512_nvdiffrast/001_8/part_512/target/target_f000227.png",
+            "sha256": "9228d718768d522b03739642d986a7ce18b1993f8a865014aa61f67cd6245862"
+          },
+          "depth_vis": {
+            "path": "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_assets_512_nvdiffrast/001_8/depth_vis_512/target/target_f000227.png",
+            "sha256": "cbee498d440b3eae100a6eb9f1e8f36a56fc3b26dad42bc22070207e22870ac4"
+          },
+          "model": {
+            "path": "/home/shangguanrz/project/pic-edit/add/tools/SMPLest-X/human_models/human_model_files/smplx/SMPLX_NEUTRAL.npz",
+            "sha256": "376021446ddc86e99acacd795182bbef903e61d33b76b9d8b359c2b0865bd992"
+          },
+          "fk_implementation": {
+            "path": "/home/shangguanrz/project/pic-edit/add/envs/smplestx_bw/lib/python3.12/site-packages/smplx/body_models.py",
+            "sha256": "3de717b66a31368120570dedd45a42effc1ce7b93d780bd71ce6879c10eeff75"
+          }
+        },
+        "condition_to_original": {
+          "normal": {
+            "source_hw": [
+              512,
+              512
+            ],
+            "original_hw": [
+              1024,
+              1024
+            ],
+            "scale_xy": [
+              2.0,
+              2.0
+            ],
+            "rule": "normalised_full_frame_then_target_canvas_once"
+          },
+          "smpl_mask": {
+            "source_hw": [
+              512,
+              512
+            ],
+            "original_hw": [
+              1024,
+              1024
+            ],
+            "scale_xy": [
+              2.0,
+              2.0
+            ],
+            "rule": "normalised_full_frame_then_target_canvas_once"
+          },
+          "part": {
+            "source_hw": [
+              512,
+              512
+            ],
+            "original_hw": [
+              1024,
+              1024
+            ],
+            "scale_xy": [
+              2.0,
+              2.0
+            ],
+            "rule": "normalised_full_frame_then_target_canvas_once"
+          },
+          "depth_vis": {
+            "source_hw": [
+              512,
+              512
+            ],
+            "original_hw": [
+              1024,
+              1024
+            ],
+            "scale_xy": [
+              2.0,
+              2.0
+            ],
+            "rule": "normalised_full_frame_then_target_canvas_once"
+          }
+        }
+      }
+    },
+    {
+      "record_id": "iper:001_8:target:target_f000556",
+      "target_token_hw": [
+        16,
+        16
+      ],
+      "joint_tokens": [
+        1,
+        21,
+        256
+      ],
+      "global_tokens": [
+        1,
+        4,
+        256
+      ],
+      "geometry": [
+        1,
+        256,
+        512
+      ],
+      "zero_pose_delta_max_abs": 0.0,
+      "mesh_max_abs_error": 3.814697265625e-06,
+      "camera": "raw",
+      "projectable": 21,
+      "sigma_px": 33.150001525878906,
+      "condition_to_original": {
+        "normal": {
+          "source_hw": [
+            512,
+            512
+          ],
+          "original_hw": [
+            1024,
+            1024
+          ],
+          "scale_xy": [
+            2.0,
+            2.0
+          ],
+          "rule": "normalised_full_frame_then_target_canvas_once"
+        },
+        "smpl_mask": {
+          "source_hw": [
+            512,
+            512
+          ],
+          "original_hw": [
+            1024,
+            1024
+          ],
+          "scale_xy": [
+            2.0,
+            2.0
+          ],
+          "rule": "normalised_full_frame_then_target_canvas_once"
+        },
+        "part": {
+          "source_hw": [
+            512,
+            512
+          ],
+          "original_hw": [
+            1024,
+            1024
+          ],
+          "scale_xy": [
+            2.0,
+            2.0
+          ],
+          "rule": "normalised_full_frame_then_target_canvas_once"
+        },
+        "depth_vis": {
+          "source_hw": [
+            512,
+            512
+          ],
+          "original_hw": [
+            1024,
+            1024
+          ],
+          "scale_xy": [
+            2.0,
+            2.0
+          ],
+          "rule": "normalised_full_frame_then_target_canvas_once"
+        }
+      },
+      "pose_provenance": {
+        "record_id": "iper:001_8:target:target_f000556",
+        "record_sha256": "239161cad6c574e266e628021d43d265e9a882539d3f284ba0187d175bd56f6c",
+        "schema": "smplx_body21_camera_v2",
+        "canvas_id": "ddf8d613f173f34681b434a5109d06386e743a0dd666bf2f087aeea7712f8496",
+        "camera": {
+          "selection": "raw",
+          "focal_xy": [
+            20909.515625,
+            20909.517578125
+          ],
+          "principal_xy": [
+            480.3099365234375,
+            454.53143310546875
+          ],
+          "translation": [
+            -0.008582418784499168,
+            0.3754490315914154,
+            47.7349967956543
+          ],
+          "translation_field": "transl_raw",
+          "coordinates": "camera_xyz"
+        },
+        "sources": {
+          "params": {
+            "path": "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_sampled_6src64tgt/001_8/smplestx/params.pt",
+            "sha256": "d243104d6f6ef659ec3f6a6e8f54018d5c0205f38a2b80de80194a91feaacda8"
+          },
+          "frame_map": {
+            "path": "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_sampled_6src64tgt/001_8/smplestx/frame_map.json",
+            "sha256": "3fc2297945a6af4c4258d893e56eeaa3a51b55491d67a77f24bd075dfefcee4c"
+          },
+          "rgb": {
+            "path": "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_sampled_6src64tgt/001_8/rgb_1024/target/target_f000556.png",
+            "sha256": "4a5abb2d939a5b73114c20216b8c03a7a5d4407c4c74bca8cbb874883d2cd091"
+          },
+          "legacy_conditions": {
+            "path": "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_assets_512_nvdiffrast/001_8/v6_conditions.pt",
+            "sha256": "7fa6250b6317d255e2bdfeb327cdfd8464b5b231d711ef5f26f647117cab8be3"
+          },
+          "normal": {
+            "path": "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_assets_512_nvdiffrast/001_8/normal_512/target/target_f000556.png",
+            "sha256": "7fdd54d4a5728e5cbd790010dfeea5b983e0101f186bc3bf4ea985c32e319bf1"
+          },
+          "smpl_mask": {
+            "path": "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_assets_512_nvdiffrast/001_8/mask_512/target/target_f000556.png",
+            "sha256": "65e7f439984f58c3c2e6357a8b8a7527427435ea7effd2c55533bdd1dc916293"
+          },
+          "part": {
+            "path": "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_assets_512_nvdiffrast/001_8/part_512/target/target_f000556.png",
+            "sha256": "87da5ec983b0b293fe73dea3984bc483f7d0cf2543145624b5e5f8c80bbd9431"
+          },
+          "depth_vis": {
+            "path": "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_assets_512_nvdiffrast/001_8/depth_vis_512/target/target_f000556.png",
+            "sha256": "bcd96dbfecba838b0e5a980e06d3a4de162d4b2b9b7b1bc2ffddd16a67042f6b"
+          },
+          "model": {
+            "path": "/home/shangguanrz/project/pic-edit/add/tools/SMPLest-X/human_models/human_model_files/smplx/SMPLX_NEUTRAL.npz",
+            "sha256": "376021446ddc86e99acacd795182bbef903e61d33b76b9d8b359c2b0865bd992"
+          },
+          "fk_implementation": {
+            "path": "/home/shangguanrz/project/pic-edit/add/envs/smplestx_bw/lib/python3.12/site-packages/smplx/body_models.py",
+            "sha256": "3de717b66a31368120570dedd45a42effc1ce7b93d780bd71ce6879c10eeff75"
+          }
+        },
+        "condition_to_original": {
+          "normal": {
+            "source_hw": [
+              512,
+              512
+            ],
+            "original_hw": [
+              1024,
+              1024
+            ],
+            "scale_xy": [
+              2.0,
+              2.0
+            ],
+            "rule": "normalised_full_frame_then_target_canvas_once"
+          },
+          "smpl_mask": {
+            "source_hw": [
+              512,
+              512
+            ],
+            "original_hw": [
+              1024,
+              1024
+            ],
+            "scale_xy": [
+              2.0,
+              2.0
+            ],
+            "rule": "normalised_full_frame_then_target_canvas_once"
+          },
+          "part": {
+            "source_hw": [
+              512,
+              512
+            ],
+            "original_hw": [
+              1024,
+              1024
+            ],
+            "scale_xy": [
+              2.0,
+              2.0
+            ],
+            "rule": "normalised_full_frame_then_target_canvas_once"
+          },
+          "depth_vis": {
+            "source_hw": [
+              512,
+              512
+            ],
+            "original_hw": [
+              1024,
+              1024
+            ],
+            "scale_xy": [
+              2.0,
+              2.0
+            ],
+            "rule": "normalised_full_frame_then_target_canvas_once"
+          }
+        }
+      }
+    },
+    {
+      "record_id": "iper:001_8:target:target_f001407",
+      "target_token_hw": [
+        16,
+        16
+      ],
+      "joint_tokens": [
+        1,
+        21,
+        256
+      ],
+      "global_tokens": [
+        1,
+        4,
+        256
+      ],
+      "geometry": [
+        1,
+        256,
+        512
+      ],
+      "zero_pose_delta_max_abs": 0.0,
+      "mesh_max_abs_error": 3.814697265625e-06,
+      "camera": "raw",
+      "projectable": 21,
+      "sigma_px": 27.075000762939453,
+      "condition_to_original": {
+        "normal": {
+          "source_hw": [
+            512,
+            512
+          ],
+          "original_hw": [
+            1024,
+            1024
+          ],
+          "scale_xy": [
+            2.0,
+            2.0
+          ],
+          "rule": "normalised_full_frame_then_target_canvas_once"
+        },
+        "smpl_mask": {
+          "source_hw": [
+            512,
+            512
+          ],
+          "original_hw": [
+            1024,
+            1024
+          ],
+          "scale_xy": [
+            2.0,
+            2.0
+          ],
+          "rule": "normalised_full_frame_then_target_canvas_once"
+        },
+        "part": {
+          "source_hw": [
+            512,
+            512
+          ],
+          "original_hw": [
+            1024,
+            1024
+          ],
+          "scale_xy": [
+            2.0,
+            2.0
+          ],
+          "rule": "normalised_full_frame_then_target_canvas_once"
+        },
+        "depth_vis": {
+          "source_hw": [
+            512,
+            512
+          ],
+          "original_hw": [
+            1024,
+            1024
+          ],
+          "scale_xy": [
+            2.0,
+            2.0
+          ],
+          "rule": "normalised_full_frame_then_target_canvas_once"
+        }
+      },
+      "pose_provenance": {
+        "record_id": "iper:001_8:target:target_f001407",
+        "record_sha256": "e934a12f9caeaee939d455ee700e09c44c7cb84652bb6098932387c80a5df56b",
+        "schema": "smplx_body21_camera_v2",
+        "canvas_id": "ddf8d613f173f34681b434a5109d06386e743a0dd666bf2f087aeea7712f8496",
+        "camera": {
+          "selection": "raw",
+          "focal_xy": [
+            16550.66015625,
+            16550.66015625
+          ],
+          "principal_xy": [
+            382.1195068359375,
+            515.2463989257812
+          ],
+          "translation": [
+            0.2066466063261032,
+            0.26063838601112366,
+            38.8302001953125
+          ],
+          "translation_field": "transl_raw",
+          "coordinates": "camera_xyz"
+        },
+        "sources": {
+          "params": {
+            "path": "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_sampled_6src64tgt/001_8/smplestx/params.pt",
+            "sha256": "d243104d6f6ef659ec3f6a6e8f54018d5c0205f38a2b80de80194a91feaacda8"
+          },
+          "frame_map": {
+            "path": "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_sampled_6src64tgt/001_8/smplestx/frame_map.json",
+            "sha256": "3fc2297945a6af4c4258d893e56eeaa3a51b55491d67a77f24bd075dfefcee4c"
+          },
+          "rgb": {
+            "path": "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_sampled_6src64tgt/001_8/rgb_1024/target/target_f001407.png",
+            "sha256": "3e46ff40ee1f9b57c39fb138192f898c6512da74a8478b010512ad3455f0fea4"
+          },
+          "legacy_conditions": {
+            "path": "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_assets_512_nvdiffrast/001_8/v6_conditions.pt",
+            "sha256": "7fa6250b6317d255e2bdfeb327cdfd8464b5b231d711ef5f26f647117cab8be3"
+          },
+          "normal": {
+            "path": "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_assets_512_nvdiffrast/001_8/normal_512/target/target_f001407.png",
+            "sha256": "fe802ebc4e247a81850aca9e51e621a717b89264556ca7999997fd1cf575cb76"
+          },
+          "smpl_mask": {
+            "path": "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_assets_512_nvdiffrast/001_8/mask_512/target/target_f001407.png",
+            "sha256": "8967c13af3bbcd3113ffba1f7f8d494a384e58be3773e6b1b822d0c284a7e4ca"
+          },
+          "part": {
+            "path": "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_assets_512_nvdiffrast/001_8/part_512/target/target_f001407.png",
+            "sha256": "6e49c08ed3cd0c25c78c897b538dca4adfc2b11abde2581b6ed6129735b46831"
+          },
+          "depth_vis": {
+            "path": "/home/shangguanrz/project/pic-edit/datasets/iPER/iper_assets_512_nvdiffrast/001_8/depth_vis_512/target/target_f001407.png",
+            "sha256": "6df8ae54515d3ff63aa6d2edff0b7881df27b32f32ec9ac87c50601adb1f5398"
+          },
+          "model": {
+            "path": "/home/shangguanrz/project/pic-edit/add/tools/SMPLest-X/human_models/human_model_files/smplx/SMPLX_NEUTRAL.npz",
+            "sha256": "376021446ddc86e99acacd795182bbef903e61d33b76b9d8b359c2b0865bd992"
+          },
+          "fk_implementation": {
+            "path": "/home/shangguanrz/project/pic-edit/add/envs/smplestx_bw/lib/python3.12/site-packages/smplx/body_models.py",
+            "sha256": "3de717b66a31368120570dedd45a42effc1ce7b93d780bd71ce6879c10eeff75"
+          }
+        },
+        "condition_to_original": {
+          "normal": {
+            "source_hw": [
+              512,
+              512
+            ],
+            "original_hw": [
+              1024,
+              1024
+            ],
+            "scale_xy": [
+              2.0,
+              2.0
+            ],
+            "rule": "normalised_full_frame_then_target_canvas_once"
+          },
+          "smpl_mask": {
+            "source_hw": [
+              512,
+              512
+            ],
+            "original_hw": [
+              1024,
+              1024
+            ],
+            "scale_xy": [
+              2.0,
+              2.0
+            ],
+            "rule": "normalised_full_frame_then_target_canvas_once"
+          },
+          "part": {
+            "source_hw": [
+              512,
+              512
+            ],
+            "original_hw": [
+              1024,
+              1024
+            ],
+            "scale_xy": [
+              2.0,
+              2.0
+            ],
+            "rule": "normalised_full_frame_then_target_canvas_once"
+          },
+          "depth_vis": {
+            "source_hw": [
+              512,
+              512
+            ],
+            "original_hw": [
+              1024,
+              1024
+            ],
+            "scale_xy": [
+              2.0,
+              2.0
+            ],
+            "rule": "normalised_full_frame_then_target_canvas_once"
+          }
+        }
+      }
+    }
+  ],
+  "dimensions": {
+    "body_local_aa": 63,
+    "rotation6d": [
+      21,
+      6
+    ],
+    "joint_numeric_input": 11,
+    "joint_tokens": [
+      21,
+      256
+    ],
+    "global_tokens": [
+      4,
+      256
+    ],
+    "task_tokens": [
+      1,
+      256
+    ],
+    "joint_attention": [
+      512,
+      8
+    ],
+    "geometry_width": 512,
+    "qwen_added_tokens": 0
+  },
+  "pose_parameters": 3100672,
+  "legacy_parameters": 75966284,
+  "v2_parameters": 79066956,
+  "inheritance": {
+    "source_architecture": "qwen21_full_v1",
+    "schema": "qwen21_full_native_geometry_v2",
+    "initialized_pose_keys": [
+      "condition_injector.body_pose_encoder.projection.0.weight",
+      "condition_injector.body_pose_encoder.projection.0.bias",
+      "condition_injector.body_pose_encoder.projection.2.weight",
+      "condition_injector.body_pose_encoder.projection.2.bias",
+      "condition_injector.body_pose_encoder.joint_embedding.weight",
+      "condition_injector.body_pose_encoder.skeleton.0.norm1.weight",
+      "condition_injector.body_pose_encoder.skeleton.0.norm1.bias",
+      "condition_injector.body_pose_encoder.skeleton.0.attention.in_proj_weight",
+      "condition_injector.body_pose_encoder.skeleton.0.attention.in_proj_bias",
+      "condition_injector.body_pose_encoder.skeleton.0.attention.out_proj.weight",
+      "condition_injector.body_pose_encoder.skeleton.0.attention.out_proj.bias",
+      "condition_injector.body_pose_encoder.skeleton.0.norm2.weight",
+      "condition_injector.body_pose_encoder.skeleton.0.norm2.bias",
+      "condition_injector.body_pose_encoder.skeleton.0.ffn.0.weight",
+      "condition_injector.body_pose_encoder.skeleton.0.ffn.0.bias",
+      "condition_injector.body_pose_encoder.skeleton.0.ffn.2.weight",
+      "condition_injector.body_pose_encoder.skeleton.0.ffn.2.bias",
+      "condition_injector.body_pose_encoder.skeleton.1.norm1.weight",
+      "condition_injector.body_pose_encoder.skeleton.1.norm1.bias",
+      "condition_injector.body_pose_encoder.skeleton.1.attention.in_proj_weight",
+      "condition_injector.body_pose_encoder.skeleton.1.attention.in_proj_bias",
+      "condition_injector.body_pose_encoder.skeleton.1.attention.out_proj.weight",
+      "condition_injector.body_pose_encoder.skeleton.1.attention.out_proj.bias",
+      "condition_injector.body_pose_encoder.skeleton.1.norm2.weight",
+      "condition_injector.body_pose_encoder.skeleton.1.norm2.bias",
+      "condition_injector.body_pose_encoder.skeleton.1.ffn.0.weight",
+      "condition_injector.body_pose_encoder.skeleton.1.ffn.0.bias",
+      "condition_injector.body_pose_encoder.skeleton.1.ffn.2.weight",
+      "condition_injector.body_pose_encoder.skeleton.1.ffn.2.bias",
+      "reasoner.person_reasoner.joint_attention.context_projection.weight",
+      "reasoner.person_reasoner.joint_attention.context_projection.bias",
+      "reasoner.person_reasoner.joint_attention.query_norm.weight",
+      "reasoner.person_reasoner.joint_attention.query_norm.bias",
+      "reasoner.person_reasoner.joint_attention.context_norm.weight",
+      "reasoner.person_reasoner.joint_attention.context_norm.bias",
+      "reasoner.person_reasoner.joint_attention.attention.in_proj_weight",
+      "reasoner.person_reasoner.joint_attention.attention.in_proj_bias",
+      "reasoner.person_reasoner.joint_attention.attention.out_proj.weight",
+      "reasoner.person_reasoner.joint_attention.attention.out_proj.bias",
+      "reasoner.person_reasoner.joint_attention.projection.weight",
+      "reasoner.person_reasoner.joint_attention.projection.bias"
+    ],
+    "loaded_tensor_count": 329,
+    "loaded_element_count": 75966284,
+    "parameter_count": 79066956,
+    "ignored_key_count": 648,
+    "source_prefixes": [
+      "legacy.condition_injector.",
+      "legacy.reasoner.",
+      "legacy.condition_bridge.geometry_high_downsample.",
+      "legacy.condition_bridge.interaction_high_downsample."
+    ]
+  },
+  "no_optimizer": true,
+  "seconds": 8.2068293960765
+}

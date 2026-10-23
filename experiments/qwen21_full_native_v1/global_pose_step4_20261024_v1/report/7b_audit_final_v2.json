@@ -1,0 +1,479 @@
+{
+  "schema": "qwen21_body21_7b_audit_v2",
+  "passed": true,
+  "pair_id": "pose_tiktok_0001",
+  "target_token_hw": [
+    44,
+    24
+  ],
+  "target_tokens": 1056,
+  "reference_tokens": 256,
+  "prefix_positions_checked": 260,
+  "image_sequence_shape": [
+    1,
+    1316,
+    64
+  ],
+  "qwen_added_tokens": 0,
+  "qwen_blocks": 32,
+  "geometry_shape": [
+    1,
+    1056,
+    512
+  ],
+  "zero_body_max_abs": 0.0,
+  "active_prefix_max_abs": 0.0,
+  "active_target_max_abs": 0.16015625,
+  "gradient_norms": {
+    "pose_mlp": 2.74780086328974e-05,
+    "joint_embedding": 2.094161209242884e-05,
+    "skeleton_layer0": 0.00016097037587314844,
+    "skeleton_layer1": 0.00016446079825982451,
+    "joint_cross_attention": 0.0007440187619067729,
+    "joint_projection": 0.002301904372870922,
+    "depth_conv": 1.2140212675149087e-05,
+    "depth_attention": 0.004544686991721392,
+    "depth_projection": 0.015503072179853916
+  },
+  "body_head_gradient_norms": [
+    1.6683048009872437,
+    1.4351800680160522,
+    1.4207980632781982,
+    1.615513563156128,
+    1.2721247673034668,
+    0.9545062184333801
+  ],
+  "base_frozen_unchanged": true,
+  "old_geometry_frozen": true,
+  "pose_encoder_calls": 2,
+  "pose_encoder_calls_during_qwen": 0,
+  "source_checkpoint_stat_unchanged": true,
+  "sequence_unchanged": true,
+  "finite": true,
+  "context_clean": true,
+  "pose_config": {
+    "schema": "qwen21_full_native_geometry_v2",
+    "reasoning_config": {
+      "condition_dim": 256,
+      "hidden_dim": 512,
+      "reasoning_downsample_factor": 2,
+      "global_attention_heads": 8,
+      "global_attention_layers": 1,
+      "cross_person_heads": 8,
+      "cross_person_layers": 2,
+      "contact_attention_heads": 8,
+      "contact_attention_layers": 1,
+      "ffn_ratio": 4,
+      "dropout": 0.0,
+      "contact_gate_init": -4.0
+    },
+    "normal_backend": "native",
+    "use_depth": false,
+    "grid_policy": "exact",
+    "pose_config": {
+      "rotation": "rotation6d_columns",
+      "spatial_bias": true,
+      "token_dim": 256,
+      "layers": 2,
+      "heads": 8,
+      "ffn_ratio": 4,
+      "dropout": 0.0,
+      "min_sigma_px": 16.0,
+      "bbox_sigma_ratio": 0.15
+    },
+    "pose_schema": "smplx_body21_camera_v2",
+    "rotation_convention": "matrix_columns_0_then_1",
+    "joint_names": [
+      "left_hip",
+      "right_hip",
+      "spine1",
+      "left_knee",
+      "right_knee",
+      "spine2",
+      "left_ankle",
+      "right_ankle",
+      "spine3",
+      "left_foot",
+      "right_foot",
+      "neck",
+      "left_collar",
+      "right_collar",
+      "head",
+      "left_shoulder",
+      "right_shoulder",
+      "left_elbow",
+      "right_elbow",
+      "left_wrist",
+      "right_wrist"
+    ],
+    "pose_source": "target_frame_same_shape_pose_camera; verified offline FK"
+  },
+  "pose_provenance": {
+    "record_id": "tiktok:00001:target:0001",
+    "record_sha256": "500ed17201f1a1dc0cb1eca0524bd06815976dfb367d05ec08cd0acb83404e10",
+    "schema": "smplx_body21_camera_v2",
+    "canvas_id": "48a9db7c3dc281532f372d1d7e65b559a55d1e7e64f5eca28e44e0feb9aa64f4",
+    "camera": {
+      "selection": "standard",
+      "focal_xy": [
+        25210.08203125,
+        25210.083984375
+      ],
+      "principal_xy": [
+        284.447509765625,
+        537.8151245117188
+      ],
+      "translation": [
+        -0.00023097358644008636,
+        0.7524439692497253,
+        19.34340476989746
+      ],
+      "translation_field": "transl",
+      "coordinates": "camera_xyz"
+    },
+    "sources": {
+      "params": {
+        "path": "/data/shangguanrz/pic-edit-datasets/TikTokDataset/TikTok_3d_assets_native/00001/smplestx/params.pt",
+        "sha256": "274922191f3d283578e05ea865b5fb36397c7d6c9a7e8f116d02f39ff71df132"
+      },
+      "frame_map": {
+        "path": "/data/shangguanrz/pic-edit-datasets/TikTokDataset/TikTok_3d_assets_native/00001/smplestx/frame_map.json",
+        "sha256": "38bf0c7f80dcac13ef761ef1d2a280922b61f053714bec551133e82c09b30056"
+      },
+      "rgb": {
+        "path": "/data/shangguanrz/pic-edit-datasets/TikTokDataset/TikTok_dataset/TikTok_dataset/00001/images/0001.png",
+        "sha256": "88f4b23a9ecf7d7261274d1c348bc3edbbe1b26ed3ce9b8331c154b140128b1b"
+      },
+      "legacy_conditions": {
+        "path": "/data/shangguanrz/pic-edit-datasets/TikTokDataset/TikTok_3d_assets_native/00001/v6_conditions.pt",
+        "sha256": "0e6f607813b683e59aa1574d4074962c99322a3064a25d7ed60509d01c86edf9"
+      },
+      "normal": {
+        "path": "/data/shangguanrz/pic-edit-datasets/TikTokDataset/TikTok_3d_assets_native/00001/normal/0001.png",
+        "sha256": "fc9cb9635125f568537022592cf92cd2a6cc85c1b04eed90b66ae68747fa04e9"
+      },
+      "human_mask": {
+        "path": "/data/shangguanrz/pic-edit-datasets/TikTokDataset/TikTok_dataset/TikTok_dataset/00001/masks/0001.png",
+        "sha256": "c618bfa2dbbb11306de07a56b13584c09768035ed37bb6fc49917e32370d0ea9"
+      },
+      "smpl_mask": {
+        "path": "/data/shangguanrz/pic-edit-datasets/TikTokDataset/TikTok_3d_assets_native/00001/smplx_mask/0001.png",
+        "sha256": "630c27bef6eb76afa97ef7954ad6d246e954ea5169633a33943f35a314e8f4c3"
+      },
+      "part": {
+        "path": "/data/shangguanrz/pic-edit-datasets/TikTokDataset/TikTok_3d_assets_native/00001/part_512/0001.png",
+        "sha256": "85001398897cce9a6796d004685724c36d4fbdfb33e5b3de82d1cf3a720c7f11"
+      },
+      "depth_vis": {
+        "path": "/data/shangguanrz/pic-edit-datasets/TikTokDataset/TikTok_3d_assets_native/00001/depth_vis/0001.png",
+        "sha256": "bc905cda35712dc900c3d67434a8aa3a4a60fd38023345f46a5cc2578a3bea57"
+      },
+      "model": {
+        "path": "/home/shangguanrz/project/pic-edit/add/tools/SMPLest-X/human_models/human_model_files/smplx/SMPLX_NEUTRAL.npz",
+        "sha256": "376021446ddc86e99acacd795182bbef903e61d33b76b9d8b359c2b0865bd992"
+      },
+      "fk_implementation": {
+        "path": "/home/shangguanrz/project/pic-edit/add/envs/smplestx_bw/lib/python3.12/site-packages/smplx/body_models.py",
+        "sha256": "3de717b66a31368120570dedd45a42effc1ce7b93d780bd71ce6879c10eeff75"
+      }
+    },
+    "condition_to_original": {
+      "normal": {
+        "source_hw": [
+          1080,
+          604
+        ],
+        "original_hw": [
+          1080,
+          604
+        ],
+        "scale_xy": [
+          1.0,
+          1.0
+        ],
+        "rule": "normalised_full_frame_then_target_canvas_once"
+      },
+      "smpl_mask": {
+        "source_hw": [
+          1080,
+          604
+        ],
+        "original_hw": [
+          1080,
+          604
+        ],
+        "scale_xy": [
+          1.0,
+          1.0
+        ],
+        "rule": "normalised_full_frame_then_target_canvas_once"
+      },
+      "part": {
+        "source_hw": [
+          512,
+          512
+        ],
+        "original_hw": [
+          1080,
+          604
+        ],
+        "scale_xy": [
+          1.1796875,
+          2.109375
+        ],
+        "rule": "normalised_full_frame_then_target_canvas_once"
+      },
+      "depth_vis": {
+        "source_hw": [
+          1080,
+          604
+        ],
+        "original_hw": [
+          1080,
+          604
+        ],
+        "scale_xy": [
+          1.0,
+          1.0
+        ],
+        "rule": "normalised_full_frame_then_target_canvas_once"
+      }
+    }
+  },
+  "depth_metadata": {
+    "kind": "relative_png",
+    "source_id": "tiktok:00001:target:0001",
+    "polarity": "near_one",
+    "depth_path": "/data/shangguanrz/pic-edit-datasets/TikTokDataset/TikTok_3d_assets_native/00001/depth_vis/0001.png",
+    "valid_path": "/data/shangguanrz/pic-edit-datasets/TikTokDataset/TikTok_3d_assets_native/00001/smplx_mask/0001.png",
+    "camera_id": "tiktok:00001:target:0001",
+    "units": "unknown",
+    "scale_status": "unknown",
+    "asset_hw": [
+      1080,
+      604
+    ],
+    "canvas_id": "3cf82829ea0720fb2059f9046b8829884104fdd8056294ad26fa0467656908c4",
+    "source_sha256": "bc905cda35712dc900c3d67434a8aa3a4a60fd38023345f46a5cc2578a3bea57",
+    "valid_sha256": "630c27bef6eb76afa97ef7954ad6d246e954ea5169633a33943f35a314e8f4c3",
+    "canvas": {
+      "original_hw": [
+        1080,
+        604
+      ],
+      "resized_hw": [
+        685,
+        383
+      ],
+      "canvas_hw": [
+        704,
+        384
+      ],
+      "offset_xy": [
+        0,
+        9
+      ]
+    },
+    "schema": "qwen21_native_depth_condition_v1",
+    "input_polarity": "near_one",
+    "normalization_scope": "scene",
+    "metric": false
+  },
+  "champ_inheritance": {
+    "upstream_commit": "4d0cad2ca23990a26a0c2f69d4ecb1b55f5df140",
+    "loaded_tensor_count": 33,
+    "source_elements": 1533136,
+    "loaded_elements": 1532992,
+    "ignored_keys": [
+      "attentions.0.norm.bias",
+      "attentions.0.norm.weight",
+      "attentions.0.proj_in.bias",
+      "attentions.0.proj_in.weight",
+      "attentions.0.proj_out.bias",
+      "attentions.0.proj_out.weight",
+      "attentions.0.transformer_blocks.0.attn1.to_k.weight",
+      "attentions.0.transformer_blocks.0.attn1.to_out.0.bias",
+      "attentions.0.transformer_blocks.0.attn1.to_out.0.weight",
+      "attentions.0.transformer_blocks.0.attn1.to_q.weight",
+      "attentions.0.transformer_blocks.0.attn1.to_v.weight",
+      "attentions.0.transformer_blocks.0.ff.net.0.proj.bias",
+      "attentions.0.transformer_blocks.0.ff.net.0.proj.weight",
+      "attentions.0.transformer_blocks.0.ff.net.2.bias",
+      "attentions.0.transformer_blocks.0.ff.net.2.weight",
+      "attentions.0.transformer_blocks.0.norm1.bias",
+      "attentions.0.transformer_blocks.0.norm1.weight",
+      "attentions.0.transformer_blocks.0.norm3.bias",
+      "attentions.0.transformer_blocks.0.norm3.weight",
+      "attentions.1.norm.bias",
+      "attentions.1.norm.weight",
+      "attentions.1.proj_in.bias",
+      "attentions.1.proj_in.weight",
+      "attentions.1.proj_out.bias",
+      "attentions.1.proj_out.weight",
+      "attentions.1.transformer_blocks.0.attn1.to_k.weight",
+      "attentions.1.transformer_blocks.0.attn1.to_out.0.bias",
+      "attentions.1.transformer_blocks.0.attn1.to_out.0.weight",
+      "attentions.1.transformer_blocks.0.attn1.to_q.weight",
+      "attentions.1.transformer_blocks.0.attn1.to_v.weight",
+      "attentions.1.transformer_blocks.0.ff.net.0.proj.bias",
+      "attentions.1.transformer_blocks.0.ff.net.0.proj.weight",
+      "attentions.1.transformer_blocks.0.ff.net.2.bias",
+      "attentions.1.transformer_blocks.0.ff.net.2.weight",
+      "attentions.1.transformer_blocks.0.norm1.bias",
+      "attentions.1.transformer_blocks.0.norm1.weight",
+      "attentions.1.transformer_blocks.0.norm3.bias",
+      "attentions.1.transformer_blocks.0.norm3.weight",
+      "attentions.2.norm.bias",
+      "attentions.2.norm.weight",
+      "attentions.2.proj_in.bias",
+      "attentions.2.proj_in.weight",
+      "attentions.2.proj_out.bias",
+      "attentions.2.proj_out.weight",
+      "attentions.2.transformer_blocks.0.attn1.to_k.weight",
+      "attentions.2.transformer_blocks.0.attn1.to_out.0.bias",
+      "attentions.2.transformer_blocks.0.attn1.to_out.0.weight",
+      "attentions.2.transformer_blocks.0.attn1.to_q.weight",
+      "attentions.2.transformer_blocks.0.attn1.to_v.weight",
+      "attentions.2.transformer_blocks.0.ff.net.0.proj.bias",
+      "attentions.2.transformer_blocks.0.ff.net.0.proj.weight",
+      "attentions.2.transformer_blocks.0.ff.net.2.bias",
+      "attentions.2.transformer_blocks.0.ff.net.2.weight",
+      "attentions.2.transformer_blocks.0.norm1.bias",
+      "attentions.2.transformer_blocks.0.norm1.weight",
+      "attentions.2.transformer_blocks.0.norm3.bias",
+      "attentions.2.transformer_blocks.0.norm3.weight",
+      "attentions.3.norm.bias",
+      "attentions.3.norm.weight",
+      "attentions.3.proj_in.bias",
+      "attentions.3.proj_in.weight",
+      "attentions.3.proj_out.bias",
+      "attentions.3.proj_out.weight",
+      "attentions.3.transformer_blocks.0.attn1.to_k.weight",
+      "attentions.3.transformer_blocks.0.attn1.to_out.0.bias",
+      "attentions.3.transformer_blocks.0.attn1.to_out.0.weight",
+      "attentions.3.transformer_blocks.0.attn1.to_q.weight",
+      "attentions.3.transformer_blocks.0.attn1.to_v.weight",
+      "attentions.3.transformer_blocks.0.ff.net.0.proj.bias",
+      "attentions.3.transformer_blocks.0.ff.net.0.proj.weight",
+      "attentions.3.transformer_blocks.0.ff.net.2.bias",
+      "attentions.3.transformer_blocks.0.ff.net.2.weight",
+      "attentions.3.transformer_blocks.0.norm1.bias",
+      "attentions.3.transformer_blocks.0.norm1.weight",
+      "attentions.3.transformer_blocks.0.norm3.bias",
+      "attentions.3.transformer_blocks.0.norm3.weight",
+      "attentions.4.norm.bias",
+      "attentions.4.norm.weight",
+      "attentions.4.proj_in.bias",
+      "attentions.4.proj_in.weight",
+      "attentions.4.proj_out.bias",
+      "attentions.4.proj_out.weight",
+      "attentions.4.transformer_blocks.0.attn1.to_k.weight",
+      "attentions.4.transformer_blocks.0.attn1.to_out.0.bias",
+      "attentions.4.transformer_blocks.0.attn1.to_out.0.weight",
+      "attentions.4.transformer_blocks.0.attn1.to_q.weight",
+      "attentions.4.transformer_blocks.0.attn1.to_v.weight",
+      "attentions.4.transformer_blocks.0.ff.net.0.proj.bias",
+      "attentions.4.transformer_blocks.0.ff.net.0.proj.weight",
+      "attentions.4.transformer_blocks.0.ff.net.2.bias",
+      "attentions.4.transformer_blocks.0.ff.net.2.weight",
+      "attentions.4.transformer_blocks.0.norm1.bias",
+      "attentions.4.transformer_blocks.0.norm1.weight",
+      "attentions.4.transformer_blocks.0.norm3.bias",
+      "attentions.4.transformer_blocks.0.norm3.weight",
+      "conv_out.bias",
+      "conv_out.weight",
+      "norms.0.bias",
+      "norms.0.weight",
+      "norms.1.bias",
+      "norms.1.weight",
+      "norms.2.bias",
+      "norms.2.weight",
+      "norms.3.bias",
+      "norms.3.weight",
+      "norms.4.bias",
+      "norms.4.weight",
+      "norms.5.bias",
+      "norms.5.weight"
+    ],
+    "discarded_sd_output_head": true,
+    "attention_relocated": true,
+    "input_conversion": "sum RGB kernels for depth; valid kernel zero"
+  },
+  "free_gib_before": 79.84869384765625,
+  "total_gib": 83.04705810546875,
+  "peak_allocated_gib": 14.655386447906494,
+  "seconds": 6.430750251049176,
+  "qwen_source_sha256": "0eb0555e21ca93195e1fe9389113cafbf0e8822f6454c3001cebb3d21521ebd7",
+  "source_sha256": {
+    "src/pose_control/qwen21_full/native_depth.py": "e483214ca0c95f9953a329f79043e7a02af8211b0ebf91450efb2c7a67109228",
+    "src/pose_control/qwen21_full/experts.py": "50e0444d19441448ce0701df4800b1d67c5ca98c5953dfcf4587611b4e77c3d6",
+    "src/pose_control/qwen21_full/checkpoint.py": "42c7517eab3eb64b52b5e2622e2bc1a806b2c946215f4a61a2974432c106a2e3",
+    "src/pose_control/qwen21_full/execution.py": "b6514ac512e126e5c2524ecfc8788d7778048d9f5fbc72aaaab34c8c5dacd446",
+    "src/pose_control/qwen21_full/qwen_runtime.py": "7e62882be1d0e3f516fcdd75f6b9e6e082b9828d71dbe017190869211fd9434c",
+    "src/pose_control/qwen21_full/deepgen_adapter.py": "b63ad72639673ea6949ccb32c5831ca22b614a13952196e3ee6d5c904543544d",
+    "src/pose_control/qwen21_full/data_runtime.py": "abee7b9894876b4963dabdcbf1cafc321a8171d1d4bc60cbbdf9d60fc6c37c25",
+    "src/pose_control/qwen21_full/native_depth_runtime.py": "7c1e012dca35f7dbe618d917f63e2d33b479181a64bed88b278d9e42ddfadd25",
+    "src/pose_control/qwen21_full/condition_injector.py": "7d5fe5df5fd9098b48479ff083478a8f7078649ecb913636550fe981a74bf566",
+    "src/pose_control/qwen21_full/pose_cache.py": "2c5e9471edc8ecdd9b666ab5ec6d4656e7e4b9cb09ccb012920d3bbd064e90f2",
+    "src/pose_control/qwen21_full/qwen_adapter.py": "f2b7d74db4ca63cca70158b8b9de54c07456909e51dc3ebf77481523adf7c367",
+    "src/pose_control/qwen21_full/frozen_bfs_lora.py": "d364338e603bf257883da51dee1d5bcb4cc8baefaad4b029541bb7b446bc0c1a",
+    "src/pose_control/qwen21_full/control_core.py": "e5e551e9ab8696f1d547b9b6a111a5b690a9942913b51cc0eb48a0ed011420c9",
+    "src/pose_control/qwen21_full/geometry_encoder.py": "47c073c05d467d7f7c70d5b28e4929c3730e518fa6fe69d20453f29e474ea198",
+    "src/pose_control/qwen21_full/native_integration.py": "cd9904e2ab00d49e9be1cbe1423c499087832a0f4b0624b54da289916401037a",
+    "src/pose_control/qwen21_full/joint_training.py": "17f063c77e6e651e2ad6b8396615fb3f4940f8f3c7aa480a6b2a535e8ac36d4b",
+    "src/pose_control/qwen21_full/body_pose.py": "ee9cb636b66a26828a0c071e0b966cb50a10baf10f8c2dfde99043af92b10250",
+    "src/pose_control/qwen21_full/token_encoders.py": "f287ba0cf8b080bae41782fc0c7fac85f845da54f36e40ccef27c304259b501f",
+    "src/pose_control/qwen21_full/native_body.py": "1463d807ee72287c31b1e4230e519af9bf26b43fefdcd624452134880a75937f",
+    "src/pose_control/qwen21_full/condition_bridge.py": "81b7eed16f9892f58657571a44bd3d0e38a1bce7821725692cbbee92f9f5c2fd",
+    "src/pose_control/qwen21_full/native_geometry.py": "6a67793763a7f424f2292f5769b42854e863c1c8976baa80aec077e5c24d896f",
+    "src/pose_control/qwen21_full/face_coordinates.py": "fb2abb180f2466a123e45af15edd5baefb686d08ffb034efced41e2c4594f9f6",
+    "src/pose_control/qwen21_full/padding_attention.py": "614d20141fdbaab3564b62d0f9f6ec809bbd7160d11c6a9bf1d17b848d8696ec",
+    "src/pose_control/qwen21_full/face_supervision.py": "7a6e9b559a84cb643064e534f7e627ec0244947393913b522b4ab98603920b32",
+    "src/pose_control/qwen21_full/depth_condition.py": "2d6aec91d3f48a4ac8f5fd825143746faeb3160b2b6613b2cb72aa410e572149",
+    "src/pose_control/qwen21_full/controlled_pipeline.py": "d7c9afcea9c1b443b8c23a679287d8469a324090688d730d397c96e29f6a9cbc",
+    "src/pose_control/qwen21_full/__init__.py": "310ac0f0db6f4c871162c17482b0e1f4c293a50f51bc331598617a81361e60fa",
+    "src/pose_control/qwen21_full/pose_data_runtime.py": "7c92dc0cdaaa18377bcad8fd750da67b213fe9959bd218ec3e0ab57d1c211711",
+    "src/pose_control/qwen21_full/canvas_provenance.py": "be7b15135f8733acd05eff9f044908282f2896ac74c33540964e56046f5029c2",
+    "src/pose_control/qwen21_full/conditions.py": "3fd8ab58f336946f95c00bf120a7422f07b9f719c17e8a12804fab198f683a10",
+    "src/pose_control/qwen21_full/face_loss_alignment.py": "178a4f4786c27eb3ea6144a594763393797d274cb1fcc806eebf300f32d2bdbe",
+    "src/pose_control/qwen21_full/face/geometry.py": "787fd100eb74e82e747e45a6a2bb38c04069e170bb893f07adc3cc63e0a791f6",
+    "src/pose_control/qwen21_full/face/preparer.py": "ae3b218f88a98c5d4efb6e69a8e11f5f8e79efc1f8ae63e3f3118d044b186c93",
+    "src/pose_control/qwen21_full/face/content_encoder.py": "2271eecbd7eb88cfce8ad805d61aaf2f950292a32ad135a9e1fa447ca34548b7",
+    "src/pose_control/qwen21_full/face/iper_dataset.py": "033910faa42352926d0eab1cbad0d09b8c3da5c2dcc41609b5a4edf584efd94a",
+    "src/pose_control/qwen21_full/face/spatial.py": "30c7072c4fe66b234bced81e33af3ed2a52b824511a15d0273ce81c3f4938781",
+    "src/pose_control/qwen21_full/face/resampler.py": "d149af3f79d1466cefba7e084fbaf88fc6bc08813848de34ff39e4a8267bc576",
+    "src/pose_control/qwen21_full/face/adapter.py": "0b9b66c396de155e2bc0d25ca5d885e2e3aa2296a8e3e547e2c69144ee98dc52",
+    "src/pose_control/qwen21_full/face/__init__.py": "bfc1ef7085a446646d667c5459b10647ebbdcc40c57caca80bf100936381cafe",
+    "src/pose_control/qwen21_full/face/conditions.py": "b4b338b7ceec954c37178cdf05f01b0157c51c6a9ece5f8938b93786a7fee4c0",
+    "src/pose_control/qwen21_full/detail/preparer.py": "d42a29bb4d342f92d9d8f746c57836c20caf4a68ea34d152dbf901447ebe0bd0",
+    "src/pose_control/qwen21_full/detail/__init__.py": "c21e3db511029086297287ef8b0897176878509ec66c1eebd3ba95c96c140c94",
+    "src/pose_control/qwen21_full/detail/conditions.py": "55de19e7e2cc5afb8a3c610b7503da7f64d718e137e36324d46096f9f5def15a",
+    "src/pose_control/qwen21_full/detail/encoders.py": "6b68787bb104579ca323f76157d8543f8aef91798c30f6c4bb98e52e350c0629",
+    "src/pose_control/qwen21_full/detail/hand.py": "5783a338542d8e5e7dca55c7ff39e9708309e222335863150c5e8461fac93f27",
+    "src/pose_control/qwen21_full/detail/binder.py": "da4e8132a02afaa1f3d880a07f661a057cbee149c4f82508dd77a3fa9415b8b2",
+    "src/pose_control/qwen21_full/interface/outputs.py": "75b1d9f1b644973c1ee16dafba71c7afc5e324c0ec5e8707cb6478dc059ce0aa",
+    "src/pose_control/qwen21_full/interface/deepgen_interface.py": "1c2c73755b73c8800cf4097ddefc3a520d7ebe0f5d801c8f64d0e64f202e2475",
+    "src/pose_control/qwen21_full/interface/__init__.py": "d67dc02f7f30605bb7b7d4343f90260bf5cf22224003d9d6e8e123b8a72b1a4f",
+    "src/pose_control/qwen21_full/interface/strength.py": "74f3c3fca143b685666814e04e4598106294d71d9dbfa4a4d93679a53ba84d97",
+    "src/pose_control/qwen21_full/reasoning/fusion.py": "facc75905b80ff974de9f91a7ba04e72def93155ccb5a56a170db9319182e455",
+    "src/pose_control/qwen21_full/reasoning/reasoner.py": "e253764d3d794d1d62d0c6b9c8956b10e748524386073969339631006ab28ea2",
+    "src/pose_control/qwen21_full/reasoning/config.py": "9b8134b3ee735c0cc9f2331f439de78089decda300bdaa62825c1ffcbfce6169",
+    "src/pose_control/qwen21_full/reasoning/state.py": "cd7e60ea37946d1c6dcf8639cd5f983a0a09a050a3450595ac65a8a71b681e67",
+    "src/pose_control/qwen21_full/reasoning/blocks.py": "84a2c3f9e6f8d8388f3066a4c9a221c1516abba2d7dc521c22a3214b614dbad5",
+    "src/pose_control/qwen21_full/reasoning/cross_person.py": "46f390c93fe213a00dbbc633f6b180156e92b94f37b3e9fc9c4ed8cbdc533b96",
+    "src/pose_control/qwen21_full/reasoning/contact.py": "a1d91617cc39ea4cbf3e9ee041aa626bcbc5a73e964027a501520128e5a0113c",
+    "src/pose_control/qwen21_full/reasoning/person_geometry.py": "902809064c01495ee770cfd3c57639487b835abed15bab47fb9ad07a50a341c0",
+    "src/pose_control/qwen21_full/reasoning/__init__.py": "df319de41594e018676be54a28ca6990988604afc183f0eb831b44f7db7afb43",
+    "src/pose_control/qwen21_full/hand/refiner_export.py": "204a25859dc8e522e756cf5e4dcfe6e13c47f0679a0f967e0756074fbaec127d",
+    "src/pose_control/qwen21_full/hand/geometry.py": "a7f4192bc267cb0772ffe1b07c9feba3e215d4d3cb835f27dbb60bf826c34179",
+    "src/pose_control/qwen21_full/hand/vton_layers.py": "316e4fb836b64eba23dcb24d233369dbca94cb72cb640121188ec0ee55a6c3d1",
+    "src/pose_control/qwen21_full/hand/preparer.py": "7c0947a7469c48572e8b08d83eefc6028337d20e7039804dd34f09749b25ce1d",
+    "src/pose_control/qwen21_full/hand/quality.py": "08b460c83740c199c768a4951a973c5505ad72f0d9c18c204f643b2abf2262cf",
+    "src/pose_control/qwen21_full/hand/adapter.py": "e4a3acc84321576739bd7150ad37b98b03034c169f54c33cfb5424df4be1cbbd",
+    "src/pose_control/qwen21_full/hand/__init__.py": "528230c4db55811bbd08afc45fb4c3bb93174f04321154738f55ef89f30723d7",
+    "src/pose_control/qwen21_full/hand/conditions.py": "015ab92c7bdfff90f6cd55f27ee0b0cbca53c71b46f799894aee0d777ec5b6bd"
+  },
+  "no_optimizer": true,
+  "no_weight_save": true,
+  "limits": "Synthetic text/latents, real geometry/depth; fresh heads perturbed only in memory. No image quality conclusion."
+}

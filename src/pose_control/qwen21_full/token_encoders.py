@@ -5,6 +5,71 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 from .conditions import ContactRelationBatch, PART_NAMES, TaskType
+from .body_pose import BodyPoseConfig, axis_angle_to_matrix, matrix_to_rotation_6d, joint_tree_distances
+
+
+class SkeletonAttentionLayer(nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.norm1 = nn.LayerNorm(256)
+        self.attention = nn.MultiheadAttention(256, 8, dropout=0., batch_first=True)
+        self.norm2 = nn.LayerNorm(256)
+        self.ffn = nn.Sequential(nn.Linear(256, 1024), nn.GELU(), nn.Linear(1024, 256))
+        self.register_buffer('topology', -joint_tree_distances(), persistent=False)
+
+    def forward(self, tokens, valid):
+        safe = valid.clone()
+        safe[~safe.any(1), 0] = True
+        bias = self.topology[None].expand(tokens.shape[0], -1, -1).clone()
+        bias = bias.masked_fill(~safe[:, None], float('-inf')).repeat_interleave(8, dim=0)
+        value = self.norm1(tokens)
+        update = self.attention(value, value, value, attn_mask=bias, need_weights=False)[0]
+        tokens = tokens + update
+        return (tokens + self.ffn(self.norm2(tokens))) * valid[..., None].to(tokens.dtype)
+
+
+class BodyPoseTokenEncoder(nn.Module):
+    """Encode 21 anatomical joints once, before Qwen executes any blocks."""
+    def __init__(self, config: BodyPoseConfig | None = None):
+        super().__init__()
+        self.config = config or BodyPoseConfig()
+        width = 11 if self.config.rotation == 'rotation6d_columns' else 8
+        self.projection = nn.Sequential(nn.Linear(width, 256), nn.SiLU(), nn.Linear(256, 256))
+        self.joint_embedding = nn.Embedding(21, 256)
+        self.skeleton = nn.ModuleList(SkeletonAttentionLayer() for _ in range(2))
+
+    def forward(self, body_pose, joints_cam, joint_uv, fk_valid, projection_valid, body_height, canvas_hw):
+        batch = body_pose.shape[0]
+        specs = ((body_pose, (batch, 63)), (joints_cam, (batch, 22, 3)),
+                 (joint_uv, (batch, 21, 2)), (fk_valid, (batch, 22)),
+                 (projection_valid, (batch, 21)), (body_height, (batch,)), (canvas_hw, (batch, 2)))
+        for value, shape in specs:
+            if tuple(value.shape) != shape or value.device != body_pose.device:
+                raise ValueError(f'Body Pose requires 63D SMPL-X and matching tensors; expected {shape}')
+            if value.is_floating_point() and not torch.isfinite(value).all():
+                raise ValueError('Body Pose inputs must be finite, including invalid entries')
+        if fk_valid.dtype != torch.bool or projection_valid.dtype != torch.bool:
+            raise ValueError('FK/projection validity must be bool')
+        if not body_pose.is_floating_point() or (body_height <= 0).any() or (canvas_hw <= 0).any():
+            raise ValueError('Body Pose float and positive height/canvas required')
+        if (projection_valid & ~fk_valid[:, 1:]).any():
+            raise ValueError('Projection validity requires FK validity')
+        in_canvas = ((joint_uv >= 0) & (joint_uv < canvas_hw[:, None, [1, 0]])).all(-1)
+        if (projection_valid & (~in_canvas | (joints_cam[:, 1:, 2] <= 1e-8))).any():
+            raise ValueError('projection_valid cannot mark a behind-camera or outside joint as projectable')
+        rotation = body_pose.reshape(batch, 21, 3)
+        if self.config.rotation == 'rotation6d_columns':
+            rotation = matrix_to_rotation_6d(axis_angle_to_matrix(rotation))
+        position = (joints_cam[:, 1:] - joints_cam[:, :1]) / body_height[:, None, None]
+        valid = fk_valid[:, 1:] & fk_valid[:, :1]
+        uv = joint_uv / canvas_hw[:, None, [1, 0]]
+        uv = torch.where(projection_valid[..., None], uv, torch.zeros_like(uv))
+        inputs = torch.cat((rotation, position, uv), dim=-1)
+        inputs = torch.where(valid[..., None], inputs, torch.zeros_like(inputs))
+        tokens = (self.projection(inputs) + self.joint_embedding.weight[None]) * valid[..., None].to(inputs.dtype)
+        for block in self.skeleton:
+            tokens = block(tokens, valid)
+        return tokens
 
 
 class AppearanceTokenEncoder(nn.Module):

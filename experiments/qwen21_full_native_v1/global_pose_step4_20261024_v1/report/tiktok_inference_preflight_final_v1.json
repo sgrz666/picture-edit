@@ -1,0 +1,185 @@
+{
+  "architecture": "qwen21_native_depth_runtime_v2",
+  "pair": {
+    "pair_id": "pose_tiktok_0001",
+    "source_appearance": "00001",
+    "target_appearance": "00001",
+    "source_stem": "0080",
+    "target_stem": "0001",
+    "source_rgb": "/home/shangguanrz/project/pic-edit/datasets/TikTokDataset/TikTok_dataset/TikTok_dataset/00001/images/0080.png",
+    "target_rgb": "/home/shangguanrz/project/pic-edit/datasets/TikTokDataset/TikTok_dataset/TikTok_dataset/00001/images/0001.png",
+    "cross_person": false,
+    "dataset_type": "tiktok_v3"
+  },
+  "target_canvas": {
+    "version": "canvas_v2",
+    "policy": "aspect_preserving",
+    "stride": 16,
+    "original_hw": [
+      1080,
+      604
+    ],
+    "resized_hw": [
+      685,
+      383
+    ],
+    "canvas_hw": [
+      704,
+      384
+    ],
+    "offset_xy": [
+      0,
+      9
+    ],
+    "valid_rect": [
+      0,
+      9,
+      383,
+      694
+    ],
+    "token_hw": [
+      44,
+      24
+    ]
+  },
+  "geometry_shape": [
+    1,
+    1056,
+    512
+  ],
+  "pose_provenance": {
+    "record_id": "tiktok:00001:target:0001",
+    "record_sha256": "500ed17201f1a1dc0cb1eca0524bd06815976dfb367d05ec08cd0acb83404e10",
+    "schema": "smplx_body21_camera_v2",
+    "canvas_id": "48a9db7c3dc281532f372d1d7e65b559a55d1e7e64f5eca28e44e0feb9aa64f4",
+    "camera": {
+      "selection": "standard",
+      "focal_xy": [
+        25210.08203125,
+        25210.083984375
+      ],
+      "principal_xy": [
+        284.447509765625,
+        537.8151245117188
+      ],
+      "translation": [
+        -0.00023097358644008636,
+        0.7524439692497253,
+        19.34340476989746
+      ],
+      "translation_field": "transl",
+      "coordinates": "camera_xyz"
+    },
+    "sources": {
+      "params": {
+        "path": "/data/shangguanrz/pic-edit-datasets/TikTokDataset/TikTok_3d_assets_native/00001/smplestx/params.pt",
+        "sha256": "274922191f3d283578e05ea865b5fb36397c7d6c9a7e8f116d02f39ff71df132"
+      },
+      "frame_map": {
+        "path": "/data/shangguanrz/pic-edit-datasets/TikTokDataset/TikTok_3d_assets_native/00001/smplestx/frame_map.json",
+        "sha256": "38bf0c7f80dcac13ef761ef1d2a280922b61f053714bec551133e82c09b30056"
+      },
+      "rgb": {
+        "path": "/data/shangguanrz/pic-edit-datasets/TikTokDataset/TikTok_dataset/TikTok_dataset/00001/images/0001.png",
+        "sha256": "88f4b23a9ecf7d7261274d1c348bc3edbbe1b26ed3ce9b8331c154b140128b1b"
+      },
+      "legacy_conditions": {
+        "path": "/data/shangguanrz/pic-edit-datasets/TikTokDataset/TikTok_3d_assets_native/00001/v6_conditions.pt",
+        "sha256": "0e6f607813b683e59aa1574d4074962c99322a3064a25d7ed60509d01c86edf9"
+      },
+      "normal": {
+        "path": "/data/shangguanrz/pic-edit-datasets/TikTokDataset/TikTok_3d_assets_native/00001/normal/0001.png",
+        "sha256": "fc9cb9635125f568537022592cf92cd2a6cc85c1b04eed90b66ae68747fa04e9"
+      },
+      "human_mask": {
+        "path": "/data/shangguanrz/pic-edit-datasets/TikTokDataset/TikTok_dataset/TikTok_dataset/00001/masks/0001.png",
+        "sha256": "c618bfa2dbbb11306de07a56b13584c09768035ed37bb6fc49917e32370d0ea9"
+      },
+      "smpl_mask": {
+        "path": "/data/shangguanrz/pic-edit-datasets/TikTokDataset/TikTok_3d_assets_native/00001/smplx_mask/0001.png",
+        "sha256": "630c27bef6eb76afa97ef7954ad6d246e954ea5169633a33943f35a314e8f4c3"
+      },
+      "part": {
+        "path": "/data/shangguanrz/pic-edit-datasets/TikTokDataset/TikTok_3d_assets_native/00001/part_512/0001.png",
+        "sha256": "85001398897cce9a6796d004685724c36d4fbdfb33e5b3de82d1cf3a720c7f11"
+      },
+      "depth_vis": {
+        "path": "/data/shangguanrz/pic-edit-datasets/TikTokDataset/TikTok_3d_assets_native/00001/depth_vis/0001.png",
+        "sha256": "bc905cda35712dc900c3d67434a8aa3a4a60fd38023345f46a5cc2578a3bea57"
+      },
+      "model": {
+        "path": "/home/shangguanrz/project/pic-edit/add/tools/SMPLest-X/human_models/human_model_files/smplx/SMPLX_NEUTRAL.npz",
+        "sha256": "376021446ddc86e99acacd795182bbef903e61d33b76b9d8b359c2b0865bd992"
+      },
+      "fk_implementation": {
+        "path": "/home/shangguanrz/project/pic-edit/add/envs/smplestx_bw/lib/python3.12/site-packages/smplx/body_models.py",
+        "sha256": "3de717b66a31368120570dedd45a42effc1ce7b93d780bd71ce6879c10eeff75"
+      }
+    },
+    "condition_to_original": {
+      "normal": {
+        "source_hw": [
+          1080,
+          604
+        ],
+        "original_hw": [
+          1080,
+          604
+        ],
+        "scale_xy": [
+          1.0,
+          1.0
+        ],
+        "rule": "normalised_full_frame_then_target_canvas_once"
+      },
+      "smpl_mask": {
+        "source_hw": [
+          1080,
+          604
+        ],
+        "original_hw": [
+          1080,
+          604
+        ],
+        "scale_xy": [
+          1.0,
+          1.0
+        ],
+        "rule": "normalised_full_frame_then_target_canvas_once"
+      },
+      "part": {
+        "source_hw": [
+          512,
+          512
+        ],
+        "original_hw": [
+          1080,
+          604
+        ],
+        "scale_xy": [
+          1.1796875,
+          2.109375
+        ],
+        "rule": "normalised_full_frame_then_target_canvas_once"
+      },
+      "depth_vis": {
+        "source_hw": [
+          1080,
+          604
+        ],
+        "original_hw": [
+          1080,
+          604
+        ],
+        "scale_xy": [
+          1.0,
+          1.0
+        ],
+        "rule": "normalised_full_frame_then_target_canvas_once"
+      }
+    }
+  },
+  "depth_mode": "off",
+  "no_optimizer": true,
+  "preflight_only": true
+}

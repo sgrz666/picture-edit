@@ -203,10 +203,26 @@ def load_depth_record(record: Mapping, canvas: Mapping) -> DepthCondition:
     valid = torch.from_numpy(validity > 0)[None, None]
     if not torch.isfinite(value[valid]).all() or (record["kind"] == "camera_z" and bool((value[valid] <= 0).any())):
         raise ValueError("Depth asset contains invalid values on its declared support")
+    asset_hw = tuple(value.shape[-2:])
+    original_hw = tuple(int(x) for x in canvas['original_hw'])
+    if 'asset_to_original' in record:
+        # Historical iPER conditions were rendered at 512, RGB/camera at 1024.
+        # Restore that explicitly declared frame grid before the one target canvas
+        # transform. No inferred resize, translation, crop or second camera scaling.
+        transform = np.asarray(record['asset_to_original'], dtype=np.float64)
+        expected = np.diag([original_hw[1] / asset_hw[1], original_hw[0] / asset_hw[0], 1.])
+        if transform.shape != (3, 3) or not np.isfinite(transform).all() or not np.allclose(transform, expected, atol=1e-10, rtol=0):
+            raise ValueError('asset_to_original must declare the exact full-frame asset/RGB scale, applied once')
+        if asset_hw != original_hw:
+            clean = F.interpolate(torch.where(valid, value, 0.), size=original_hw, mode='bilinear', align_corners=False)
+            coverage = F.interpolate(valid.float(), size=original_hw, mode='bilinear', align_corners=False)
+            value = torch.where(coverage > 1e-8, clean / coverage.clamp_min(1e-8), 0.)
+            valid = coverage > 1e-8
     identity = canvas_identity(canvas)
     if "canvas_id" in record and record["canvas_id"] != identity:
         raise ValueError("Depth record canvas_id differs from target canvas")
     meta = dict(record)
+    meta['asset_hw'] = list(asset_hw)
     meta.update(canvas_id=identity, source_sha256=hashlib.sha256(depth_path.read_bytes()).hexdigest(),
                 valid_sha256=hashlib.sha256(valid_path.read_bytes()).hexdigest(),
                 canvas={k: list(canvas[k]) for k in ("original_hw", "resized_hw", "canvas_hw", "offset_xy")})

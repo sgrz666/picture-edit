@@ -1,0 +1,29 @@
+........................................................................ [ 47%]
+........................................................................ [ 94%]
+........                                                                 [100%]
+=============================== warnings summary ===============================
+<frozen importlib._bootstrap>:488
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute
+
+<frozen importlib._bootstrap>:488
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute
+
+../../nihaochen/envs/qwen21/lib/python3.12/site-packages/torch/cuda/__init__.py:829
+  /home/shangguanrz/nihaochen/envs/qwen21/lib/python3.12/site-packages/torch/cuda/__init__.py:829: UserWarning: Can't initialize NVML
+    warnings.warn("Can't initialize NVML")
+
+tests/test_canvas_contract.py::test_native_pad_and_letterbox_reproduce_the_legacy_transforms_exactly
+tests/test_canvas_contract.py::test_native_pad_and_letterbox_reproduce_the_legacy_transforms_exactly
+tests/test_canvas_contract.py::test_native_pad_and_letterbox_reproduce_the_legacy_transforms_exactly
+tests/test_canvas_contract.py::test_native_pad_and_letterbox_reproduce_the_legacy_transforms_exactly
+tests/test_canvas_contract.py::test_native_pad_and_letterbox_reproduce_the_legacy_transforms_exactly
+tests/test_canvas_contract.py::test_unpadded_native_canvas_is_bit_identical_to_the_original
+tests/test_canvas_contract.py::test_condition_maps_and_rgb_share_one_transform_on_the_canvas
+tests/test_canvas_contract.py::test_a_pil_size_misread_as_hw_is_caught_by_the_image_check
+tests/test_canvas_contract.py::test_a_pil_size_misread_as_hw_is_caught_by_the_image_check
+  /home/shangguanrz/project/pic-edit/tests/test_canvas_contract.py:41: DeprecationWarning: 'mode' parameter is deprecated and will be removed in Pillow 13 (2026-10-15)
+    return Image.fromarray(np.dstack([band, band[::-1], np.roll(band, 7, axis=1)]), "RGB")
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+152 passed, 12 warnings in 23.27s
+sys:1: DeprecationWarning: builtin type swigvarlink has no __module__ attribute

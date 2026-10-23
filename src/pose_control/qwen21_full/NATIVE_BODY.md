@@ -1,5 +1,7 @@
 # Full Native Body：Qwen主干实时反馈接口
 
+Body21 前端见 [GLOBAL_GEOMETRY_V2.md](GLOBAL_GEOMETRY_V2.md)。本页低层接口示例显式使用旧 Geometry，Body 接口保持不变。
+
 `native_body.py` 接收第一步的原生geometry特征；`native_integration.py` 在每个选定Qwen block完成后，读取当层目标hidden并计算残差。默认32个位置、6组输出head；新head初始全零。没有Union控制链或SD3控制核。
 
 ## 计算与权重
@@ -19,7 +21,7 @@ from src.pose_control.qwen21_full.native_body import Qwen21NativeBody
 from src.pose_control.qwen21_full.native_integration import install_native_body, bind_native_body
 
 # pipe须为现有QwenImage21Pipeline，并已按原生流程加载BF16基座。
-frontend = Qwen21NativeGeometry.from_full_checkpoint(full_payload).eval().requires_grad_(False).to("cuda")
+frontend = Qwen21NativeGeometry.from_full_checkpoint(full_payload, legacy=True).eval().requires_grad_(False).to("cuda")
 body = Qwen21NativeBody().to("cuda")
 audit = install_native_body(pipe.transformer, body)
 features = frontend(condition_bundle, target_token_hw=(height // 16, width // 16))

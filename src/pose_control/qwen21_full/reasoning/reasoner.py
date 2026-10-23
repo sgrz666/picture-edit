@@ -17,11 +17,11 @@ from .state import InternalControlState
 class SMPLXAdapterReasoner(nn.Module):
     """Convert a ConditionBundle into batch-safe geometry/interaction state."""
 
-    def __init__(self, config: AdapterReasoningConfig | None = None) -> None:
+    def __init__(self, config: AdapterReasoningConfig | None = None, *, pose_config=None) -> None:
         super().__init__()
         self.config = config or AdapterReasoningConfig()
         hidden_dim = self.config.hidden_dim
-        self.person_reasoner = PersonGeometryReasoner(self.config)
+        self.person_reasoner = PersonGeometryReasoner(self.config, pose_config=pose_config)
         self.role_embedding = nn.Embedding(2, hidden_dim)
         self.cross_person_reasoner = BidirectionalCrossPersonReasoner(self.config)
         self.contact_reasoner = ContactConditionReasoner(self.config)
@@ -71,6 +71,9 @@ class SMPLXAdapterReasoner(nn.Module):
             bundle.person_a_mask,
             bundle.person_a_global_tokens,
             bundle.task_token,
+            joint_tokens=getattr(bundle, 'person_a_joint_tokens', None), joint_uv=getattr(bundle, 'person_a_joint_uv', None),
+            projection_valid=getattr(bundle, 'person_a_projection_valid', None), joint_sigma=getattr(bundle, 'person_a_joint_sigma', None),
+            pose_canvas_hw=getattr(bundle, 'person_a_pose_canvas_hw', None),
         )
         return self._role_bind(output, self.role_embedding.weight[0])
 
@@ -86,6 +89,9 @@ class SMPLXAdapterReasoner(nn.Module):
             bundle.person_b_mask,
             bundle.person_b_global_tokens,
             bundle.task_token,
+            joint_tokens=getattr(bundle, 'person_b_joint_tokens', None), joint_uv=getattr(bundle, 'person_b_joint_uv', None),
+            projection_valid=getattr(bundle, 'person_b_projection_valid', None), joint_sigma=getattr(bundle, 'person_b_joint_sigma', None),
+            pose_canvas_hw=getattr(bundle, 'person_b_pose_canvas_hw', None),
         )
         return self._role_bind(output, self.role_embedding.weight[1])
 

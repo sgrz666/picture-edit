@@ -1,0 +1,26 @@
+{
+  "schema": "native_body21_migration_v2",
+  "legacy_contract": "Original v6 unchanged; only five declared copies have optional v2 extensions; Full defaults to legacy.",
+  "changed_original_files": {
+    "condition_injector.py": {
+      "baseline_sha256": "f491702332c55f57cfbd67819ebd4da30dec057dae0fc7f685db0ac240895b93",
+      "v2_sha256": "7d5fe5df5fd9098b48479ff083478a8f7078649ecb913636550fe981a74bf566"
+    },
+    "conditions.py": {
+      "baseline_sha256": "90bf30b06b6d7e3cd3bb3109706ee366f02c5e8d4991051308881bc6f9a9c5d9",
+      "v2_sha256": "3fd8ab58f336946f95c00bf120a7422f07b9f719c17e8a12804fab198f683a10"
+    },
+    "token_encoders.py": {
+      "baseline_sha256": "fd609c7fe1f55ad1fd54385fd524d9c00ca9c2adc692749152e007c6d4327f7e",
+      "v2_sha256": "f287ba0cf8b080bae41782fc0c7fac85f845da54f36e40ccef27c304259b501f"
+    },
+    "reasoning/person_geometry.py": {
+      "baseline_sha256": "175f64b6ba08e03f252e38030dc7b5b4a6aa4b4d0b5af9dad994cd168536f54e",
+      "v2_sha256": "902809064c01495ee770cfd3c57639487b835abed15bab47fb9ad07a50a341c0"
+    },
+    "reasoning/reasoner.py": {
+      "baseline_sha256": "a9eccf162b5eb0617478db88a9c4c071315dea7b84cbea310f0f5bbf519810df",
+      "v2_sha256": "e253764d3d794d1d62d0c6b9c8956b10e748524386073969339631006ab28ea2"
+    }
+  }
+}

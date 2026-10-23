@@ -150,6 +150,18 @@ class ConditionBundle:
     task_token: torch.Tensor
     person_valid: torch.Tensor
     person_count: torch.Tensor
+    person_a_joint_tokens: Optional[torch.Tensor] = None
+    person_a_joint_uv: Optional[torch.Tensor] = None
+    person_a_fk_valid: Optional[torch.Tensor] = None
+    person_a_projection_valid: Optional[torch.Tensor] = None
+    person_a_joint_sigma: Optional[torch.Tensor] = None
+    person_a_pose_canvas_hw: Optional[torch.Tensor] = None
+    person_b_joint_tokens: Optional[torch.Tensor] = None
+    person_b_joint_uv: Optional[torch.Tensor] = None
+    person_b_fk_valid: Optional[torch.Tensor] = None
+    person_b_projection_valid: Optional[torch.Tensor] = None
+    person_b_joint_sigma: Optional[torch.Tensor] = None
+    person_b_pose_canvas_hw: Optional[torch.Tensor] = None
 
     @property
     def batch_size(self) -> int:
@@ -214,6 +226,29 @@ class ConditionBundle:
                 raise ValueError("contact_tokens must have shape [B,8,256]")
             if tuple(self.contact_mask.shape) != (batch_size, 8) or self.contact_mask.dtype != torch.bool:
                 raise ValueError("contact_mask must have shape [B,8] and dtype bool")
+        pose_specs = {'joint_tokens': (batch_size, 21, 256), 'joint_uv': (batch_size, 21, 2),
+                      'fk_valid': (batch_size, 21), 'projection_valid': (batch_size, 21),
+                      'joint_sigma': (batch_size,), 'pose_canvas_hw': (batch_size, 2)}
+        for person in ('a', 'b'):
+            values = {key: getattr(self, f'person_{person}_{key}') for key in pose_specs}
+            if all(value is None for value in values.values()):
+                continue
+            if any(value is None for value in values.values()):
+                raise ValueError('Joint conditions must be complete per person')
+            if person == 'b' and self.person_b_spatial is None:
+                raise ValueError('Joint B requires spatial B')
+            for key, value in values.items():
+                if tuple(value.shape) != pose_specs[key] or value.device != self.device:
+                    raise ValueError(f'Invalid joint field {person}/{key}')
+                if key in ('fk_valid', 'projection_valid'):
+                    if value.dtype != torch.bool:
+                        raise ValueError('Joint validity must remain bool')
+                elif not value.is_floating_point() or not torch.isfinite(value).all():
+                    raise ValueError('Joint fields must be finite floats')
+            if (values['projection_valid'] & ~values['fk_valid']).any():
+                raise ValueError('Projectable joints require valid FK')
+            if (values['joint_sigma'] <= 0).any() or (values['pose_canvas_hw'] <= 0).any():
+                raise ValueError('Joint sigma and canvas must be positive')
         return self
 
     def index_select(self, indices: torch.Tensor) -> "ConditionBundle":

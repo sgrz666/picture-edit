@@ -2,7 +2,7 @@
 
 ## 实验目的
 
-从现有Full Body checkpoint继承几何前端，核验512维输出，再接Qwen主干实时反馈与独立Depth。目前完成CPU/7B核验及3次真实更新冒烟；尚未做正式训练和生成质量对照。
+从现有Full Body checkpoint继承几何前端，核验512维输出，再接Qwen主干实时反馈与独立Depth。已完成 Native v1 的 CPU/7B 核验及此前 3 次更新冒烟，以及 Body21 v2 数据、兼容性与有界前反向验收；第四步未训练，尚无正式质量对照。
 
 ## 里面有什么
 
@@ -34,6 +34,8 @@
 
 第三步见 [Depth验收记录](report/STEP3_VERIFICATION.md)：本地109项、服务器116项通过；官方空间attention最大差0；新增Depth为2,254,656参数。实际704×384条件接入7B，初始/zero-Depth/prefix差均0，Depth与Body均有梯度；3次真实更新后的新checkpoint可独立重建。尚未做质量对照。
 
+第四步见 [Global Geometry v2 验收](report/STEP4_VERIFICATION.md)：默认 21×256 关节条件，新增 3,100,672 参数；16 帧 FK/零增量检查通过，服务器 152 项、Windows 59 项测试通过。7B 矩形 1056 target tokens 的全部 260 prefix 位置差为 0，关节支路梯度可达。版本化缓存、v1/v2 迁移与入口预检已交付；不执行训练更新。产物与源码快照在 `global_pose_step4_20261024_v1/`。
+
 ## 与其他实验的关系
 
-上游是现有Full Body和方案C研究；现已完成Native主干反馈及独立Depth接口。下一步固定预算训练noDepth/Depth对照，再考虑稀疏层数和Face/Hand迁移。无需Union模型或Pro checkpoint。
+上游是现有Full Body和方案C研究；现已完成Native主干反馈及独立Depth接口。Body21 的训练与质量对照留待下一轮单独确定；不把结构验收当成效果结论。无需Union模型或Pro checkpoint。

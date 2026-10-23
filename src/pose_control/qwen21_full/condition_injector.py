@@ -7,7 +7,9 @@ import torch.nn as nn
 
 from .conditions import ConditionBundle, ContactRelationBatch, PART_NAMES, TaskType
 from .geometry_encoder import SpatialConditionEncoder, normalize_scene_depth
+from .body_pose import BodyPoseConfig
 from .token_encoders import (
+    BodyPoseTokenEncoder,
     ContactRasterEncoder,
     ExplicitTaskTokenEncoder,
     GlobalConditionTokenEncoder,
@@ -34,10 +36,14 @@ class SMPLXConditionInjector(nn.Module):
         contact_channels: int = 128,
         max_contact_relations: int = 8,
         use_full_pose_tokens: bool = False,
+        pose_config: BodyPoseConfig | None = None,
     ) -> None:
         super().__init__()
-        if use_full_pose_tokens:
-            raise ValueError("full pose tokens are reserved but disabled in condition injection V1")
+        if use_full_pose_tokens and pose_config is None:
+            raise ValueError('full pose tokens are reserved in legacy injection; Native v2 requires explicit pose_config')
+        self.pose_config = pose_config
+        if pose_config is not None:
+            self.body_pose_encoder = BodyPoseTokenEncoder(pose_config)
         public_contract = {
             "spatial_dim": (spatial_dim, 256),
             "token_dim": (token_dim, 256),
@@ -154,6 +160,20 @@ class SMPLXConditionInjector(nn.Module):
         relative_geometry: torch.Tensor | None = None,
         contact_raster: torch.Tensor | None = None,
         contact_relations: ContactRelationBatch | None = None,
+        body_pose_a: torch.Tensor | None = None,
+        joints_cam_a: torch.Tensor | None = None,
+        joint_uv_a: torch.Tensor | None = None,
+        fk_valid_a: torch.Tensor | None = None,
+        projection_valid_a: torch.Tensor | None = None,
+        body_height_a: torch.Tensor | None = None,
+        smpl_bbox_height_a: torch.Tensor | None = None,
+        body_pose_b: torch.Tensor | None = None,
+        joints_cam_b: torch.Tensor | None = None,
+        joint_uv_b: torch.Tensor | None = None,
+        fk_valid_b: torch.Tensor | None = None,
+        projection_valid_b: torch.Tensor | None = None,
+        body_height_b: torch.Tensor | None = None,
+        smpl_bbox_height_b: torch.Tensor | None = None,
     ) -> ConditionBundle:
         if normal_a.ndim != 4:
             raise ValueError("normal_a must have shape [B,3,H,W]")
@@ -288,6 +308,35 @@ class SMPLXConditionInjector(nn.Module):
                 contact_relations, valid_b
             )
 
+        pose_fields = {}
+        raw_pose = ((body_pose_a, joints_cam_a, joint_uv_a, fk_valid_a, projection_valid_a, body_height_a, smpl_bbox_height_a),
+                    (body_pose_b, joints_cam_b, joint_uv_b, fk_valid_b, projection_valid_b, body_height_b, smpl_bbox_height_b))
+        if self.pose_config is None:
+            if any(v is not None for group in raw_pose for v in group):
+                raise ValueError('Body Pose is disabled in explicit legacy mode')
+        else:
+            for person, group, present, valid in zip(('a', 'b'), raw_pose, (True, has_b), (valid_a, valid_b)):
+                if not present:
+                    if any(v is not None for v in group):
+                        raise ValueError('Body Pose B requires person-B core inputs')
+                    continue
+                if any(v is None for v in group):
+                    raise ValueError(f'Body Pose v2 requires all canonical pose fields for person {person}')
+                pose, joints, uv, fk, projected, body_height, bbox = group
+                self._same_device('Body Pose', group, device)
+                if bbox.shape != (batch_size,) or not torch.isfinite(bbox).all() or (bbox < 0).any():
+                    raise ValueError('SMPL mask bbox height must be finite nonnegative [B]')
+                if (valid & ~fk[:, 0]).any() or (valid & ~fk[:, 1:].any(1)).any():
+                    raise ValueError('Valid person requires pelvis and body FK, never a zero Pose fallback')
+                canvas = normal_a.new_tensor([height, width])[None].expand(batch_size, -1)
+                fk = fk & valid[:, None]
+                projected = projected & valid[:, None]
+                tokens = self.body_pose_encoder(pose, joints, uv, fk, projected, body_height, canvas)
+                sigma = (bbox * self.pose_config.bbox_sigma_ratio).clamp_min(self.pose_config.min_sigma_px)
+                for key, value in (('joint_tokens', tokens), ('joint_uv', uv), ('fk_valid', fk[:, 1:]),
+                                   ('projection_valid', projected), ('joint_sigma', sigma), ('pose_canvas_hw', canvas)):
+                    pose_fields[f'person_{person}_{key}'] = value
+
         return ConditionBundle(
             person_a_spatial=spatial_a,
             person_b_spatial=spatial_b,
@@ -302,4 +351,5 @@ class SMPLXConditionInjector(nn.Module):
             task_token=self.task_encoder(task_id),
             person_valid=torch.stack((valid_a, valid_b), dim=1),
             person_count=person_count,
+            **pose_fields,
         )

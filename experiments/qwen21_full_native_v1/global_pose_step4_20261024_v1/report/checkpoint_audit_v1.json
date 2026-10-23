@@ -1,0 +1,28 @@
+{
+  "schema": "body21_checkpoint_audit_v2",
+  "passed": true,
+  "no_optimizer": true,
+  "source_sha256": "118882749892421caa0be5bdc636697b4f09df99e1bf693d1ece6babeef2057f",
+  "migrations": [
+    {
+      "file": "/data/shangguanrz/pic-edit-experiments/qwen21_full_native_v1/global_pose_step4_20261024_v1/checkpoints/native_legacy_rebuild_v1.pt",
+      "architecture": "qwen21_native_depth_runtime_v1",
+      "exact_inherited_tensors": 389,
+      "declared_new_pose_keys": 0,
+      "all_inherited_tensor_max_abs": 0,
+      "strict_roundtrip": true,
+      "optimizer_present": false,
+      "sha256": "5f6b08fc4130d090d20dc08b4b1a3f0569835b08de623feb59309ff45c34f320"
+    },
+    {
+      "file": "/data/shangguanrz/pic-edit-experiments/qwen21_full_native_v1/global_pose_step4_20261024_v1/checkpoints/native_body21_v2.pt",
+      "architecture": "qwen21_native_depth_runtime_v2",
+      "exact_inherited_tensors": 389,
+      "declared_new_pose_keys": 41,
+      "all_inherited_tensor_max_abs": 0,
+      "strict_roundtrip": true,
+      "optimizer_present": false,
+      "sha256": "1ee72cb9cfa776efa2b60f52b1947335358db4c92d44c5ac874000ae27bbe66f"
+    }
+  ]
+}

@@ -61,7 +61,7 @@ def main():
     coverage = F.avg_pool2d(batch["valid_image_mask"].cuda().float(), 16).flatten(1)
     before_stat = args.full_checkpoint.stat()
     source = torch.load(args.full_checkpoint, map_location="cpu", mmap=True, weights_only=False)
-    geometry = Qwen21NativeGeometry.from_full_checkpoint(source)
+    geometry = Qwen21NativeGeometry.from_full_checkpoint(source, legacy=True)
     del source
     depth = Qwen21NativeDepth()
     inheritance = depth.load_champ_state_dict(torch.load(args.champ_checkpoint, map_location="cpu", weights_only=True))
