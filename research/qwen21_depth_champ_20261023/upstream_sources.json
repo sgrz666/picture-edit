@@ -1,0 +1,118 @@
+{
+  "retrieved_at": "2026-10-22T16:50:21.338082+00:00",
+  "commit": "4d0cad2ca23990a26a0c2f69d4ecb1b55f5df140",
+  "files": [
+    {
+      "path": "sources/champ/LICENSE",
+      "upstream_path": "LICENSE",
+      "url": "https://raw.githubusercontent.com/fudan-generative-vision/champ/4d0cad2ca23990a26a0c2f69d4ecb1b55f5df140/LICENSE",
+      "bytes": 1110,
+      "sha256": "2d6fbc322496915068f8b764e5282f080fe09858383f987ca8024add6b919ab1"
+    },
+    {
+      "path": "sources/champ/README.md",
+      "upstream_path": "README.md",
+      "url": "https://raw.githubusercontent.com/fudan-generative-vision/champ/4d0cad2ca23990a26a0c2f69d4ecb1b55f5df140/README.md",
+      "bytes": 12275,
+      "sha256": "741e38029496bf138658a7265a49fc83224b23df255f49eba0f096c2b8f836c0"
+    },
+    {
+      "path": "sources/champ/models/guidance_encoder.py",
+      "upstream_path": "models/guidance_encoder.py",
+      "url": "https://raw.githubusercontent.com/fudan-generative-vision/champ/4d0cad2ca23990a26a0c2f69d4ecb1b55f5df140/models/guidance_encoder.py",
+      "bytes": 3295,
+      "sha256": "da9c8c3a5f9c2173eabdb712ffe28769f2f6f1962e85d4bdaaa5c69d07f8fe43"
+    },
+    {
+      "path": "sources/champ/models/transformer_3d.py",
+      "upstream_path": "models/transformer_3d.py",
+      "url": "https://raw.githubusercontent.com/fudan-generative-vision/champ/4d0cad2ca23990a26a0c2f69d4ecb1b55f5df140/models/transformer_3d.py",
+      "bytes": 5897,
+      "sha256": "68cd30d1e85122bc7621ef13d3a9a165dc3e6bcbcb97ef5a9aa2500fb6826b35"
+    },
+    {
+      "path": "sources/champ/models/attention.py",
+      "upstream_path": "models/attention.py",
+      "url": "https://raw.githubusercontent.com/fudan-generative-vision/champ/4d0cad2ca23990a26a0c2f69d4ecb1b55f5df140/models/attention.py",
+      "bytes": 17727,
+      "sha256": "1f0e8c38e289c4b427983420cb266890eb9ce468ac4e430093c5254f1f27f86f"
+    },
+    {
+      "path": "sources/champ/models/resnet.py",
+      "upstream_path": "models/resnet.py",
+      "url": "https://raw.githubusercontent.com/fudan-generative-vision/champ/4d0cad2ca23990a26a0c2f69d4ecb1b55f5df140/models/resnet.py",
+      "bytes": 8153,
+      "sha256": "186c7efd14d1b6284807b7ab3561973af90b6ffc8e149b73787034840de93e31"
+    },
+    {
+      "path": "sources/champ/models/champ_model.py",
+      "upstream_path": "models/champ_model.py",
+      "url": "https://raw.githubusercontent.com/fudan-generative-vision/champ/4d0cad2ca23990a26a0c2f69d4ecb1b55f5df140/models/champ_model.py",
+      "bytes": 2358,
+      "sha256": "70b5d6841ae70fb481297f27ab898c810b48a731b6501117a63b2a13d319ce1d"
+    },
+    {
+      "path": "sources/champ/models/unet_3d.py",
+      "upstream_path": "models/unet_3d.py",
+      "url": "https://raw.githubusercontent.com/fudan-generative-vision/champ/4d0cad2ca23990a26a0c2f69d4ecb1b55f5df140/models/unet_3d.py",
+      "bytes": 27957,
+      "sha256": "d3e3948b2b29cd3ecbf6c5c3d5affcd1d8987923c85658a5c187c7583585b38c"
+    },
+    {
+      "path": "sources/champ/configs/train/stage1.yaml",
+      "upstream_path": "configs/train/stage1.yaml",
+      "url": "https://raw.githubusercontent.com/fudan-generative-vision/champ/4d0cad2ca23990a26a0c2f69d4ecb1b55f5df140/configs/train/stage1.yaml",
+      "bytes": 1671,
+      "sha256": "2c1b5b15c0421864c242087ea53ec1e45386d332da7feee6ade9176f058a16fe"
+    },
+    {
+      "path": "sources/champ/configs/inference/inference.yaml",
+      "upstream_path": "configs/inference/inference.yaml",
+      "url": "https://raw.githubusercontent.com/fudan-generative-vision/champ/4d0cad2ca23990a26a0c2f69d4ecb1b55f5df140/configs/inference/inference.yaml",
+      "bytes": 1880,
+      "sha256": "a6b0c3df71b03aaf0b14f4d7a289c111f3416ffaf6d9596bb19757013fdc4e1d"
+    },
+    {
+      "path": "sources/champ/datasets/image_dataset.py",
+      "upstream_path": "datasets/image_dataset.py",
+      "url": "https://raw.githubusercontent.com/fudan-generative-vision/champ/4d0cad2ca23990a26a0c2f69d4ecb1b55f5df140/datasets/image_dataset.py",
+      "bytes": 8831,
+      "sha256": "ac143ec5e7b3aa5d8e3454e395a6ca965b8649f795cfd10d6f239cdacd78b0ac"
+    },
+    {
+      "path": "sources/champ/datasets/data_utils.py",
+      "upstream_path": "datasets/data_utils.py",
+      "url": "https://raw.githubusercontent.com/fudan-generative-vision/champ/4d0cad2ca23990a26a0c2f69d4ecb1b55f5df140/datasets/data_utils.py",
+      "bytes": 2160,
+      "sha256": "7f2060a68e3cf7ccfb96b0cc78903d990db58f512885c1c1e776043a47a5f8f7"
+    },
+    {
+      "path": "sources/champ/train_s1.py",
+      "upstream_path": "train_s1.py",
+      "url": "https://raw.githubusercontent.com/fudan-generative-vision/champ/4d0cad2ca23990a26a0c2f69d4ecb1b55f5df140/train_s1.py",
+      "bytes": 25242,
+      "sha256": "95ff86be453155ce34dc2a9210374e82d42ac4fe9eb7a37c63bde8a07ed7e131"
+    },
+    {
+      "path": "sources/champ/pipelines/pipeline_guidance2image.py",
+      "upstream_path": "pipelines/pipeline_guidance2image.py",
+      "url": "https://raw.githubusercontent.com/fudan-generative-vision/champ/4d0cad2ca23990a26a0c2f69d4ecb1b55f5df140/pipelines/pipeline_guidance2image.py",
+      "bytes": 12901,
+      "sha256": "8970be89aa5b591d930b2bc786818776f41674b44a0a95c62dbe119fda3b1fdd"
+    },
+    {
+      "path": "sources/champ/pipelines/pipeline_guidance2video.py",
+      "upstream_path": "pipelines/pipeline_guidance2video.py",
+      "url": "https://raw.githubusercontent.com/fudan-generative-vision/champ/4d0cad2ca23990a26a0c2f69d4ecb1b55f5df140/pipelines/pipeline_guidance2video.py",
+      "bytes": 17615,
+      "sha256": "431655af8aba555135310534a2f84f4e039df2672e63c09b2eb8935f73bfe57a"
+    },
+    {
+      "path": "sources/champ/scripts/data_processors/smpl/render_condition_maps.py",
+      "upstream_path": "scripts/data_processors/smpl/render_condition_maps.py",
+      "url": "https://raw.githubusercontent.com/fudan-generative-vision/champ/4d0cad2ca23990a26a0c2f69d4ecb1b55f5df140/scripts/data_processors/smpl/render_condition_maps.py",
+      "bytes": 10924,
+      "sha256": "381158faa707d7578736180d0421a152eeb47e7158ff17afe5cf23f1cf32959e"
+    }
+  ]
+}

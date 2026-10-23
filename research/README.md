@@ -4,6 +4,8 @@
 
 ## 里面有什么
 
+2026-10-23 新增 [Depth / CHAMP 编码与融合研究](qwen21_depth_champ_20261023/README.md)：核对官方实际 attention/求和/注入路径、10.7MB Depth 权重、15份服务器深度样本，确认iPER PNG/NPY读取方向存在差异，并给出现有Full→Native的独立Depth分支提案与复查命令。
+
 2026-10-22 新增 [Full 方案 C 研究](qwen21_full_native_geometry_20261022/README.md)：按用户最新选择，以现有 Full 为基准研究条件编码、Qwen 主干实时反馈和 Depth，停止沿用 Pro/Union 优先的旧建议。研究阶段没有改模型或启动训练，旧证据包保持原样。
 
 | 子目录 | 专题 | 主要证据形态 |
