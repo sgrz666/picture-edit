@@ -222,13 +222,168 @@ test_hi4d_native_binding / test_tiktok_data_contract` = 85 passed, 1 failed。
 
 **范围要说清，不能算成 §8 全过**：这道门装在 native 路径（`native_body.py` +
 `native_integration.py`，方案 §1 指定的正式架构入口）。
-而 `train_qwen21_native_full.py` 现在走的是 **Full control context**
-（`execution.py:642` → `qwen_adapter.py:435`），那里 mask 同样只乘在 token 残差上；
-它的卷积跑在画布像素的条件图上，padding 像素喂进卷积后**照样因为 conv bias 出非 0 特征**。
-要在那条路上补齐，得在 controller 的卷积输出上按画布有效区再乘一次 ——
-`qwen_adapter.py` 不在 47 个 SHA pin 文件里（实测 `pinned=False`），技术上可以改，
-但它是 V6 全线的共享语义，属于"另一个实验变量"，方案 §9 也把它排在 P2 之后。
-**这一条我没动，留作明确的下一步，不是已经做完。**
+`tests/test_qwen21_native_conv_gate.py` 把门**过了一遍真实装载好的
+`QwenImage21Transformer2DModel`**（32 层、causal_condition、`inner_dim` 与 body 配置对齐），
+不是只测模块：
+
+| padding token 的梯度 | 门关 | 门开 |
+|---|---|---|
+| 逐元素绝对值均值 | 4.1875e-02 | **0.0000e+00** |
+| 非零元素个数 | 32 | **0** |
+| 有效 token 的梯度（对照，必须仍在学） | 1.3730e-01 | 1.2331e-01（降 10%，就是被抽掉的漏入） |
+
+同一条测试还钉住：门开着但没声明 `valid_mask` → 直接 `ValueError`（不许"默认全有效"静默放行），
+以及默认关时整条 native 前向照常跑完。
+
+`train_qwen21_native_full.py` 现在走的**不是** native 路径而是 **Full control context**
+（`execution.py:642` → `qwen_adapter.py:435`），那里 mask 只乘在 token 残差上；它的卷积跑在
+画布像素条件图上，padding 像素喂进卷积后照样因 conv bias 出非 0 特征。
+**这条路补不了的原因不是"要小心"，是硬约束**：真正做卷积的 `control_core.py`、
+`token_encoders.py`、`condition_bridge.py`、`geometry_encoder.py` 全都在
+`migration_manifest.json` 那 47 个 SHA256 pin 的文件里（实测列名确认），改它们必挂
+preservation 测试；`qwen_adapter.py` 里唯一的 Conv2d 是 `latent_bridge`（1×1、单位初始化、
+bias 置零），不在漏的路径上。方案 §5 只把这三条约束派给 native 三件套，
+所以按方案的字面范围，§8 第 6 条**已在正式入口达成**；
+要在 Full 线上也达成，等价于"给一条即将退役的线动共享 V6 语义"，需要单独立项而不是顺手改。
+（本轮复核：改完之后 47 个 pin 文件 **DRIFT: NONE**。）
+
+## 统一入口的 warm-start 修好了一个"参数存在但没用"的缺陷（2026-10-23）
+
+`--adapter-init warm-start --init-checkpoint <ckpt>` 之前**根本读不到那个参数**：`build_adapter()`
+直接 `return new_adapter(device)`，而 `new_adapter()` 写死 V6 的
+`experiments/iper_v6_native_20k_v1/checkpoint_last.pt` 与 `experiments/iper_v65_face_overfit_024_6/...`
+——**这两个文件在 sg 上都不存在**（实测 `MISSING`）。结果：warm-start 这个模式在本机上完全跑不起来，
+方案 §7 明确要求的"先测迁移"（继承旧几何编码器权重、单独建目录、`warm_start_ok` 显式放行）
+被这根断掉的管子卡死。
+
+修的时候撞出两类 checkpoint 不能混为一谈：
+
+| 种类 | 判据 | 正确入口 |
+|---|---|---|
+| `qwen21_full_v1` run checkpoint | `architecture` 字段、键带 `legacy.` 前缀、`adapter_state_dict` | `execution.load_adapter_checkpoint()`（strict） |
+| V6 时代权重 | 无前缀、喂 `UnifiedSMPLXAdapterV6` | `Qwen21FullAdapter.from_checkpoints()` |
+
+第一次只按种类二处理，真实文件（`body_512_100/checkpoint_last.pt`，977 条键）报
+`Body checkpoint key mismatch: missing=[...]`；按种类一走 strict load 又报
+`Unexpected key(s): legacy.hand_preparer.*` —— **分支集合必须跟着 checkpoint 走**，
+现在按 `adapter_state_dict` 里有没有 `legacy.hand_` 前缀决定建不建 hand 分支。
+
+现在的实测行为（都是真实文件、真实退出码）：
+
+- `--init-checkpoint /no/such.ckpt` → `--init-checkpoint is not a file: /no/such.ckpt`（不是 traceback）
+- 给改造前权重但不带 `--warm-start-ok` → `checkpoint has no canvas_v2 canvas record; --init-checkpoint warm start may only inherit it as an explicit warm start`
+- 带 `--warm-start-ok` → `warm start inherited from checkpoint_last.pt (architecture qwen21_full_v1, step 100, canvas pre-contract/pre_canvas_warm_start); its features were trained without a portrait canvas`，
+  并把 `source_architecture / source_canvas_policy / source_canvas_schema / warm_start_ok / checkpoint_sha256 / source_run_manifest` 全写进 `initialization_provenance`。
+  加 `--init-face-checkpoint` 配 Full checkpoint 会被直接拒（Full checkpoint 的 `adapter_state_dict` 本来就带全部分支）。
+
+**还没打通的那一段，如实记在这里**：继承权重之后要真跑竖图迁移，撞上新发现的管线层缺陷 ——
+小预算画布在 `transformer_qwenimage21.py:923` 抛
+`shape mismatch: value tensor of shape [320, 4096] cannot be broadcast to indexing result of shape [1, 468, 4096]`
+（`max_pixels=32768`，画布 256×160 → 每图 160 token、两图 320；`max_pixels=16384` 画布 192×96 → 144 vs 360）。
+同一份代码在 `max_pixels=65536`（画布 352×192、264 token）上 4 步训练是通的（上一节实测）。
+所以缺陷与"source+target 图像 token 总数 ≠ `image_pad_mask` 标记的位置数"有关、只在某些网格尺寸出现；
+而 65536 那一档今天**因为卡被别人占了 32 GiB（空余 51 GiB，本工作负载峰值 54.2 GiB）直接 OOM**，
+入口把它翻译成了可执行建议而不是 `Allocation on device`。
+⇒ §8 第 11 条（出图验收）仍需：卡空出来时跑 65536 档 warm-start，或先修 32768/16384 档的 mask 对齐。
+这条留作下一步，**不算已验证**。
+
+## 又挖出两个"隐式回退"（2026-10-23，方案 §4 禁止隐式回退那条的同一类）
+
+顺着上面那次 shape mismatch 去查，发现我们自己代码里还有两处方形时代的假设没清：
+
+1. **数据集根本不输出 `source_token_hw`。** 实测三个预算（16384 / 32768 / 65536）的样本里
+   只有 `source_canvas`、`target_canvas`、`target_token_hw` 三个键，**参考图的 token 网格无处可取**。
+2. **`qwen_runtime.transformer_inputs()` 在拿不到时直接 `(th, tw)` 顶替**
+   —— 即"参考图与目标图同网格"。这正是 §8「源/目标比例不同 不得复用同一画布变换」禁的事，
+   只是换了个地方：画布变换没复用，**token 网格被复用了**。
+
+两处都已改：数据集现在两处样本路径都写 `source_token_hw`；
+`transformer_inputs()` 改成**先信声明、再验一致、缺声明就拒**，四种行为实测：
+
+| 情形 | 结果 |
+|---|---|
+| 声明了不同的源网格 | `img_shapes [[(1,12,8),(1,16,10)]]`，源与目标各用各的 |
+| 声明的源网格与 latent 数不符 | `source_token_hw 12x8 does not match the reference latent (160 tokens)` |
+| 缺声明且 latent 数与目标网格不符 | `source_token_hw is required for a native pair: the reference latent has 96 tokens while …` |
+| 缺声明但两者恰好相等（旧 512 方图路径） | 照常出 `[(1,16,10),(1,16,10)]`，不误伤历史复现 |
+
+回归：`test_canvas_contract / geometry_pair_dataset_v2 / qwen21_canvas_coverage /
+qwen21_padding_attention / qwen21_native_conv_gate / hi4d_canvas_record /
+tiktok_data_contract / qwen21_native_depth_runtime` = **98 passed, 1 failed**，
+失败仍是 `test_smoke_test_runner_dry_run`（`No module named 'run_tiktok_sample_00001_smoke'`，
+入口层迁移的旧 import，与本次无关）。
+
+**但这两个洞不是上面那个 shape mismatch 的原因**：修完后 `--max-pixels 32768` 的 warm-start
+仍在 `transformer_qwenimage21.py` 抛 `[320, 4096] vs [1, 468, 4096]`。
+按 4-token 槽位反推：我们给的是 160+160=320 个图像位置（80 个槽），
+而 `image_pad_mask` 标出 468 个位置（≈117 个槽）。差在**缓存里的 `img_mask` 是按 VLM 侧的
+图像槽数生成的**，只有当画布尺寸让"VAE latent token 数"与"VLM 图像槽数"恰好成同一比例时两者才对得上
+（352×192 这一档对得上，256×160 与 192×96 对不上）。
+⇒ 这条属于管道层的 VLM/latent 槽数耦合，**不是 resize 预处理**，已单独立项（任务 #12），
+修它要在 diffusers 的 mask 构造上做，超出一轮改动范围，也不该顺手混进这次整改。
+
+## 方案 §7 的迁移测试：warm-start 训练段已跑通（2026-10-23 实测，exit 0）
+
+上面那个死参数修好之后，`--adapter-init warm-start --init-checkpoint
+/home/shangguanrz/nihaochen/qwen21_full/body_512_100/checkpoint_last.pt --warm-start-ok`
+在真实 TikTok 竖图训练集上跑完 3 步（画布 352×192，网格 **(22,12)=264 token**）：
+
+| step | loss | grad_norm | residual_rms（前 3 组） | raw geometry rms | 峰值显存 |
+|---|---|---|---|---|---|
+| 1 | 0.2421 | **1.298** | **0.087 / 0.147 / 0.157** | 0.222 / 0.310 / 0.331 | 45.8 GiB |
+| 2 | 0.5049 | 1.241 | 0.0865 / 0.148 / 0.157 | 0.218 / 0.310 / 0.329 | 52.9 GiB |
+| 3 | 0.1974 | 1.270 | 0.087 / 0.166 / 0.152 | 0.225 / 0.340 / 0.332 | 54.3 GiB |
+
+**关键判据是第 1 步的 `residual_rms` 就不为 0**。对照上一节 `--adapter-init scratch` 的同尺寸跑：
+前两步 `residual_rms` 恒为 0.0（zero-init head 的正常表现）。现在一上来就是 0.087–0.157，
+说明 V6 时代权重的确进了这条 native 画布训练回路，而不是"加载成功但没参与计算"。
+loss 三步 0.242→0.505→0.197 依然**不能读成学习曲线**（每步 sigma/样本不同）。
+
+两条环境事实记下来避免误判：
+- **`native-pad`（1088×608，2584 token）这一档不是 OOM，是 precompute 慢**：
+  它的 latent 缓存是空的，`timeout 570` 全部耗在 VAE 预编码上（退出码 124，`train_metrics.jsonl` 没生成）。
+  之前那次"2584 token 反向 OOM"是在卡只剩 51 GiB 时测的；本轮 79.8 GiB 空闲时 65536 档峰值 54.3 GiB 通过。
+  ⇒ 竖图正式训练仍需要 gradient checkpointing（入口和 `execution.py` 里实测**没有**这个开关，
+  `grep gradient_checkpointing` 无结果），或者先让 native-pad 缓存预热完。
+- 卡是共用的，同一档显存占用会因他人负载从"通过"变"OOM"，报数要带当时的 `mem_get_info()`。
+
+**§8 第 11 条（出图验收）仍未完成**：训练段通了，但没有把 warm-start 权重接进去采样、
+也没有对出图的身体比例/姿态/ID/服装做测量。统一入口目前只有训练循环，采样在
+`run_native_portrait_acceptance.py` 里是接 scratch 管道跑的；
+要完成这一条需要给入口加一个采样出口（或让验收脚本读 checkpoint），已立项。
+
+## 评测脚本接入等比画布：竖图出图第一次跑通并出数（2026-10-23）
+
+方案 §4 最后一行「所有 Eval/Precompute 脚本与训练共同使用同一 CanvasSpec」原先没落地，
+`scripts/eval/eval_iper_qwen21_full.py` 实测三处死写方形：
+`--align-mode choices=('resize','letterbox')` 连竖图模式都点不到、
+`width=args.resolution, height=args.resolution, output_resolution=args.resolution`、
+`pair = {'source_latent': …, 'resolution': args.resolution}`（这条把 `transformer_inputs`
+推进 `grid = resolution // 16` 的方形猜测分支）。
+另外该脚本第 137 行 `new_adapter('cuda')` 依赖本机**不存在**的 V6 权重，
+而它随后又用 `load_adapter_checkpoint` 逐参数覆盖 —— 那个缺失文件其实毫无必要，
+只是让脚本一启动就 `FileNotFoundError`。
+
+改动（`sampling_size()` 走样本自己声明的画布；新增 `--max-pixels` 与显式 `--square-sampling`；
+`align-mode` 放开 `native / aspect_preserving`；缓存按 `canvas_policy` 绑；
+adapter 改从 DeepGen config 构造 `new_adapter_from_config`，hand 分支按 checkpoint 实际键判定）：
+
+| 同一样本对（pair 0）、同 seed、`--modes body --steps 4` | 出图尺寸 | PSNR | SSIM | human_mae | background_mae |
+|---|---|---|---|---|---|
+| 方形老路（`--align-mode resize --legacy-policy-ok --square-sampling`） | 512×512 | 13.24 | 0.638 | 62.72 | 16.45 |
+| 等比画布（`--align-mode aspect_preserving --max-pixels 65536`） | **352×192（W×H=192×352）** | 12.85 | 0.588 | 63.18 | 22.79 |
+
+**这张表不能被读成"竖图更差"**，两条混淆都得写出来：
+`metrics.metric_resolution = 512`，等比那档是把 352×192 **上采样**到 512 再算指标的，
+插值本身就吃掉一部分 SSIM；两档用的是同一个**方形时代训出来的** body checkpoint
+（`RUN_ROOT/body_512_100`，`canvas_policy=None`），等比画布对它本来就是分布外输入。
+峰值显存 34.7 vs 35.2 GiB、耗时 1.03 vs 2.68 s。
+
+⇒ 到这一步**成立的是**：评测管线已经能在真实竖图画布上出图、落盘、算指标（这是 §8 第 11 条的前提，
+之前根本没有这条通路）；**尚未成立的是**第 11 条的结论本身——
+身体比例/姿态/ID/服装的判定还需要 (a) 多样本、(b) 不受 `metric_resolution` 上采样污染的对照、
+(c) 基于 DWPose 的比例与姿态量（在 smplestx 环境，不在本次 qwen21 采样进程里）。
+这些留在任务 #13，**这条验收项没被算成通过**。
 
 ## 还没定的三件事（代码已经到位，方向要人拍板）
 

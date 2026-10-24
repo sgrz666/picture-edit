@@ -1,5 +1,7 @@
 # 原生512维几何前端：方案C第一步
 
+本文保留 Native v1 的复现说明。当前默认 Body21 v2，见 [GLOBAL_GEOMETRY_V2.md](GLOBAL_GEOMETRY_V2.md)；以下旧路径均显式选择 legacy。
+
 本模块把现有Full的几何编码和推理独立取出。输出是高低分辨率融合后的geometry/interaction token，默认 `[B,N,512]`；主干反馈接入另见 [NATIVE_BODY.md](NATIVE_BODY.md)，本模块本身不生成残差。
 
 ## 保留的内容
@@ -15,13 +17,13 @@ import torch
 from src.pose_control.qwen21_full.native_geometry import Qwen21NativeGeometry
 
 payload = torch.load(full_checkpoint, map_location="cpu", weights_only=False, mmap=True)
-frontend = Qwen21NativeGeometry.from_full_checkpoint(payload)
+frontend = Qwen21NativeGeometry.from_full_checkpoint(payload, legacy=True)
 print(frontend.inheritance_report)
 ```
 
 输入必须是已有的可信 `qwen21_full_v1` checkpoint。只导入四个前缀：`legacy.condition_injector.`、`legacy.reasoner.`、`legacy.condition_bridge.geometry_high_downsample.`、`legacy.condition_bridge.interaction_high_downsample.`。其他Body控制核、Face、Hand、optimizer等不会恢复；报告明确加载数量与忽略键数。缺键、选中前缀内多余键、错误shape、非有限值都拒绝，不用 `strict=False` 蒙混加载。
 
-如果已有完整Full对象，可用 `Qwen21NativeGeometry.from_full_adapter(full)`。返回独立FP32 CPU参数，不与旧模型共享存储；之后显式 `.to(device)`。非默认reasoner须传原 `reasoning_config`。本阶段拒绝Depth-enabled和非native stem的模型。
+如果已有完整Full对象，可用 `Qwen21NativeGeometry.from_full_adapter(full, legacy=True)`。返回独立FP32 CPU参数，不与旧模型共享存储；之后显式 `.to(device)`。非默认reasoner须传原 `reasoning_config`。本阶段拒绝Depth-enabled和非native stem的模型。
 
 原生前端自己的 `state_dict()` 带 `qwen21_full_native_geometry_v1` schema及reasoner配置，构造同配置实例后strict恢复。Full→native是warm-start，不是恢复旧optimizer/RNG。
 

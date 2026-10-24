@@ -63,6 +63,29 @@ def new_adapter(device='cpu'):
     return adapter.to(device=device, dtype=torch.float32)
 
 
+def new_adapter_from_config(device='cpu', *, enable_hand=False):
+    """Structure the adapter from the DeepGen config alone, with no inherited weights.
+
+    Callers that overwrite every parameter right afterwards with `load_adapter_checkpoint` should
+    use this instead of `new_adapter`, which insists on V6 warm-start files that are not on every
+    machine. The branch set has to match the checkpoint or the strict load fails on extra keys.
+    """
+    from types import SimpleNamespace
+
+    from .deepgen_adapter import UnifiedSMPLXAdapterV6
+
+    legacy = UnifiedSMPLXAdapterV6.from_deepgen_config(
+        SimpleNamespace(**json.loads((ROOT / 'models/DeepGen-1.0-diffusers/transformer/config.json').read_text())),
+        enable_face_adapter=True, enable_hand_adapter=enable_hand)
+    return Qwen21FullAdapter(legacy).to(device=device, dtype=torch.float32)
+
+
+def checkpoint_has_branch(checkpoint, prefix):
+    saved = torch.load(checkpoint, map_location='cpu', weights_only=False, mmap=True)
+    state = saved.get('adapter_state_dict') or {}
+    return any(str(key).startswith(prefix) for key in state)
+
+
 def load_adapter_checkpoint(adapter, path):
     saved = torch.load(path, map_location='cpu', weights_only=False, mmap=True)
     if saved.get('architecture') != ARCHITECTURE:

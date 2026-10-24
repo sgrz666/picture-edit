@@ -1,5 +1,9 @@
 # Native Depth：CHAMP式编码与Qwen适配
 
+本页是Depth V1复现说明。新建Depth默认V2，架构及未验收状态见 [NATIVE_DEPTH_V2.md](NATIVE_DEPTH_V2.md)。旧训练命令需显式 `--depth-version v1`。
+
+当前默认 Body21 Geometry v2，详见 [GLOBAL_GEOMETRY_V2.md](GLOBAL_GEOMETRY_V2.md)。下列第三步历史复现显式选 legacy；Depth 编码与 512 维接口保持不变。旧 iPER 512 Depth 图可在 manifest 中声明 `asset_to_original` 后读取，未声明尺寸差异仍拒绝。
+
 ## 实现与结构
 
 原Full的Pose25 / Normal3 / Part14 frontend继续输出512维geometry。新Depth独立编码 `[relative_depth, depth_valid]`，投影到同一个1/16 target网格，与原geometry做残差相加，再交给已有Native Body的4096→512→4096实时反馈。
@@ -44,6 +48,7 @@ camera_z记录改为NPY路径、删除polarity。有来源证据后才改units/s
 ```bash
 /home/shangguanrz/nihaochen/envs/qwen21/bin/python scripts/train/train_qwen21_native_depth.py \
   --pairs /data/shangguanrz/pic-edit-experiments/qwen21_full_native_v1/depth_step3_20261023_v1/data/pairs.jsonl \
+  --geometry-version legacy_v1 --depth-version v1 \
   --depth-mode relative_png \
   --depth-manifest /data/shangguanrz/pic-edit-experiments/qwen21_full_native_v1/depth_step3_20261023_v1/data/depth.jsonl \
   --full-checkpoint /home/shangguanrz/nihaochen/qwen21_full/body_512_100/checkpoint_last.pt \
@@ -62,7 +67,7 @@ import torch
 from src.pose_control.qwen21_full.native_depth_runtime import NativeDepthRuntime
 saved = torch.load("/data/shangguanrz/pic-edit-experiments/qwen21_full_native_v1/depth_step3_20261023_v1/training_smoke_v1/checkpoint_last.pt",
                    map_location="cpu", weights_only=True, mmap=True)
-system = NativeDepthRuntime.from_native_checkpoint(saved).to("cuda").eval()
+system = NativeDepthRuntime.from_native_checkpoint(saved, legacy=True).to("cuda").eval()
 ```
 
 推理时`system.encode`只读目标几何/Depth，通过已有`install_native_body` / `bind_native_body`接入Qwen原pipeline；源RGB走原生参考图路径。训练用target RGB不能作为生成条件，KV cache仍关闭。

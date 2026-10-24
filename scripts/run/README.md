@@ -63,3 +63,11 @@
 - `home/` 下是**项目外宿主脚本的软链接**，不在仓库内维护；改这些运行逻辑要去 `/home/shangguanrz/` 改原文件，`scripts/run/home/` 只是入口映射。
 - `run_*` 多数为有副作用入口（写 `experiments/`、占 GPU），跑前确认目标 run 目录与 GPU 状态；`run_v6_comparative_3000.sh` 等 `.sh` 已写死各自 conda 环境路径。
 - `run_qwen21_face_single_sample.py` 与 `scripts/audit/probe_qwen21_face_single_sample.py` 通过共享常量耦合，改动输出格式需两边同步。
+
+## Native Body21 推理
+
+`run_qwen21_native_pose.py` 读取独立 runtime checkpoint、目标几何缓存与源 RGB，支持 TikTok/iPER 和可选 typed Depth；KV cache 关闭，参考预算显式记录。`--preflight-only` 只核验条件与 checkpoint，不加载 Qwen 或采样。输出必须使用新目录；本轮没有训练更新或采样质量结论。详见 `src/pose_control/qwen21_full/GLOBAL_GEOMETRY_V2.md`。
+
+## Depth V2 接线（未运行验收）
+
+Native推理按checkpoint版本原样重建，`--depth-version`仅作断言，`--depth-mode auto`只读取manifest明确声明的模态。V2使用同一Body21记录、23通道几何和29维Gate上下文；不会从PNG猜Z。V1保留。当前未运行模型或采样，后续命令见 `src/pose_control/qwen21_full/NATIVE_DEPTH_V2.md`。

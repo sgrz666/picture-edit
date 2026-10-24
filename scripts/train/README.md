@@ -75,3 +75,11 @@
 ## Native Depth / CHAMP (2026-10-23)
 
 `train_qwen21_native_depth.py` 使用实际Native Geometry/Body与可选Depth；显式off/relative_png/camera_z、pair/canvas CPU预检、原生cache与flow训练。用法见 `src/pose_control/qwen21_full/NATIVE_DEPTH.md`。
+
+## Native Geometry Body21
+
+`train_qwen21_native_depth.py` 默认 `--geometry-version body21`，必须给出 `--pose-manifest`，接通 TikTok/iPER 的同一目标帧体型、动作与相机。新增 Pose 参数独立开放，`--freeze-pose` 可关闭；`--geometry-version legacy_v1` 保留旧路径。只改条件/配置/checkpoint 接线，原 loss、optimizer 与训练算法保持原样。本轮仅执行 `--preflight-only`。复查见 `src/pose_control/qwen21_full/GLOBAL_GEOMETRY_V2.md`。
+
+## Native Depth V2 架构接线（2026-10-24，未训练）
+
+新建启用Depth时默认 `--depth-version v2`，须Body21及V2 manifest；旧Depth使用 `--depth-version v1`。`--depth-mode auto`支持逐条明确声明的Camera-Z/PNG混合数据。七组参数可单独freeze，或显式 `--train-native-all`；旧loss/AdamW算法保留，没有分阶段调度。本轮没有运行preflight、测试、模型或训练。详见 `src/pose_control/qwen21_full/NATIVE_DEPTH_V2.md`。

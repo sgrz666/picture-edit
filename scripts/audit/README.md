@@ -55,3 +55,7 @@
 ## Native Depth / CHAMP (2026-10-23)
 
 `audit_qwen21_native_depth.py` 严格迁入官方active path并比较空间attention；`verify_qwen21_native_depth_runtime.py` 使用真实7B和矩形条件核对prefix、冻结基座与Depth/Body梯度，不更新优化器、不采样图片。
+
+## Global Geometry v2
+
+`audit_qwen21_global_pose.py` 使用真实 TikTok/iPER 缓存，核对 21×256 / 512 接口与相同 canonical 输入下的零 Pose 增量。`verify_qwen21_global_pose_runtime.py` 对真实 7B 矩形网格执行有界前反向，覆盖完整 prefix、Pose/Depth/Body 梯度和冻结状态；不创建 optimizer、不保存权重。`test_qwen21_full_preservation.py` 用原迁移 manifest 加五个明确声明的可扩展文件 SHA，继续核验未改动的 v6 及 legacy 数值。详见 `src/pose_control/qwen21_full/GLOBAL_GEOMETRY_V2.md`。

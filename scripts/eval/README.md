@@ -80,3 +80,17 @@
 - 评测与生成解耦：大多数 `eval_*` 读取**已保存图像**，不重新训练；但 `eval_iper_qwen21_*`、`eval_qwen21_joint_pilot.py` 等会真正跑推理生成图像，需确认 GPU 空闲。
 - 多套「参考契约」（A-RGB、B-RGB、skeleton、native）由 `qwen21_condition_combinations.py` 集中定义，改对照矩阵前先核对 `COMBINATION_REFERENCES`，避免误用 skeleton 输入契约。
 - B 的 RGB 在整套评测中**只作评测目标，从不当作 adapter 的参考输入**——这是反复在 docstring 里强调的不变量，回归测试（`test_qwen21_dual_inference_boundary.py`）守护它。
+- **竖图评测（2026-10-23 起可用）**：`eval_iper_qwen21_full.py` 的出图尺寸不再写死方形，改从样本声明的画布取
+  （`src/data/canvas_contract.sampling_size()`）。跑竖图：
+  `PYTHONPATH=. python scripts/eval/eval_iper_qwen21_full.py --pairs datasets/TikTokDataset/TikTok_v3/manifests/pairs/val_pairs.jsonl --dataset-type tiktok_v3 --align-mode aspect_preserving --max-pixels 65536 --modes body --steps 4 --max-samples 1 --cache <新目录> --output <新目录>`。
+  复现历史方形结果必须显式 `--align-mode resize --legacy-policy-ok --square-sampling`（三个都要，缺一个就报错）。
+  实测对照（pair 0、同 seed、body、4 步）：等比画布出图 192×352、PSNR 12.85 / SSIM 0.588；方形老路 512×512、PSNR 13.24 / SSIM 0.638。
+  **别把这两行读成"竖图更差"**：`metrics.metric_resolution=512` 会把 352×192 上采样后再算分，
+  而且两档都用方形时代训的 checkpoint（`canvas_policy=None`），等比画布对它是分布外输入。
+- 还有 **8 个出图点仍写死方形**，尚未接入 `sampling_size()`：
+  `eval_iper_qwen21_body.py:109`、`eval_iper_qwen21_face.py:118`、`eval_qwen21_bfs_skeleton.py:165`、
+  `eval_qwen21_face_cross_person.py:89`、`eval_qwen21_face_references.py:107`、`bfs_compare.py:135`、
+  `eval_qwen21_native_value.py:430/683`、`../run/run_qwen21_weight_inheritance.py:217`。
+  这些脚本的竖图结论在接上之前不要引用。
+- `eval_iper_qwen21_full.py` 与多数旧入口**没有 repo-root `sys.path` 兜底**，按路径直接执行会
+  `ModuleNotFoundError: No module named 'src'`，必须带 `PYTHONPATH=.`（与 `scripts/train/` 同类问题）。

@@ -199,7 +199,23 @@ class Qwen21IPERCache:
 def transformer_inputs(pair: dict[str, torch.Tensor], noisy_target: torch.Tensor, sigma: torch.Tensor):
     if pair.get('target_token_hw') is not None:
         th, tw = pair['target_token_hw']
-        sh, sw = pair.get('source_token_hw', (th, tw))
+        source_grid = pair.get('source_token_hw')
+        if source_grid is None:
+            # The reference image is not obliged to sit on the target canvas. Defaulting its grid
+            # to the target one is the square-assumption bug wearing a new hat, so the fallback is
+            # only allowed when the reference latent really has that many tokens.
+            if pair['source_latent'].shape[1] != th * tw:
+                raise ValueError(
+                    f"source_token_hw is required for a native pair: the reference latent has "
+                    f"{pair['source_latent'].shape[1]} tokens while the target grid {th}x{tw} would "
+                    "imply a different image; refusing to build img_shapes from an assumed grid")
+            sh, sw = th, tw
+        else:
+            sh, sw = source_grid
+        if pair['source_latent'].shape[1] != sh * sw:
+            raise ValueError(
+                f"source_token_hw {sh}x{sw} does not match the reference latent "
+                f"({pair['source_latent'].shape[1]} tokens)")
     else:
         grid = int(pair['resolution']) // 16
         th = tw = sh = sw = grid

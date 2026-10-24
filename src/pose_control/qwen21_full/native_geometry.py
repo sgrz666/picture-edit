@@ -1,7 +1,7 @@
 """Full's learned geometry frontend without the legacy SD3 control core.
 
-This opt-in endpoint preserves both resolution paths before the old 128-channel
-projection. It does not resize conditions, generate Qwen residuals, or load Union.
+V2 defaults to Body21 conditioning; legacy=True reconstructs the original v1.
+Both preserve the native target grid and the 512-wide Body/Depth interface.
 """
 from __future__ import annotations
 
@@ -14,9 +14,12 @@ from torch import nn
 from .condition_injector import SMPLXConditionInjector
 from .conditions import ConditionBundle
 from .reasoning import AdapterReasoningConfig, InternalControlState, SMPLXAdapterReasoner
+from .body_pose import BodyPoseConfig, POSE_SCHEMA, ROTATION_CONVENTION, JOINT_NAMES
 
 
-SCHEMA = "qwen21_full_native_geometry_v1"
+LEGACY_SCHEMA = "qwen21_full_native_geometry_v1"
+SCHEMA = "qwen21_full_native_geometry_v2"
+POSE_PREFIXES = ('condition_injector.body_pose_encoder.', 'reasoner.person_reasoner.joint_attention.')
 SOURCE_ARCHITECTURE = "qwen21_full_v1"
 _FULL_PREFIXES = (
     ("condition_injector.", "legacy.condition_injector."),
@@ -41,32 +44,46 @@ class Qwen21NativeGeometry(nn.Module):
 
     Construct with the original reasoning configuration when migrating a
     non-default Full model. All checkpoint imports create independent FP32 CPU
-    parameters; call .to(device) afterwards. Depth is intentionally unsupported
-    in this first migration, rather than changing the old fusion input shape.
+    parameters; call .to(device) afterwards. CHAMP Depth is a separate residual
+    module, preserving the inherited Full fusion shape.
     """
 
-    def __init__(self, *, reasoning_config: AdapterReasoningConfig | None = None):
+    def __init__(self, *, reasoning_config: AdapterReasoningConfig | None = None,
+                 legacy: bool = False, pose_config: BodyPoseConfig | None = None):
         super().__init__()
         config = reasoning_config or AdapterReasoningConfig()
         if not isinstance(config, AdapterReasoningConfig):
             raise ValueError("reasoning_config must be AdapterReasoningConfig")
-        self.condition_injector = SMPLXConditionInjector(use_depth=False, normal_backend="native")
-        self.reasoner = SMPLXAdapterReasoner(config)
+        if legacy and pose_config is not None:
+            raise ValueError('Explicit legacy geometry cannot enable Body Pose v2')
+        self.legacy = bool(legacy)
+        self.pose_config = None if legacy else (pose_config or BodyPoseConfig())
+        self.condition_injector = SMPLXConditionInjector(use_depth=False, normal_backend="native", pose_config=self.pose_config)
+        self.reasoner = SMPLXAdapterReasoner(config, pose_config=self.pose_config)
         self.geometry_high_downsample = nn.Conv2d(config.hidden_dim, config.hidden_dim, 3, stride=2, padding=1, bias=False)
         self.interaction_high_downsample = nn.Conv2d(config.hidden_dim, config.hidden_dim, 3, stride=2, padding=1, bias=False)
         self.inheritance_report: dict = {}
 
     def get_extra_state(self):
-        return {"schema": SCHEMA, "reasoning_config": asdict(self.reasoner.config),
+        result = {"schema": LEGACY_SCHEMA if self.legacy else SCHEMA, "reasoning_config": asdict(self.reasoner.config),
                 "normal_backend": "native", "use_depth": False, "grid_policy": "exact"}
+        if not self.legacy:
+            result.update(pose_config=self.pose_config.to_dict(), pose_schema=POSE_SCHEMA,
+                          rotation_convention=ROTATION_CONVENTION, joint_names=list(JOINT_NAMES),
+                          pose_source='target_frame_same_shape_pose_camera; verified offline FK')
+        return result
+
+    def pose_parameters(self):
+        return (p for name, p in self.named_parameters() if name.startswith(POSE_PREFIXES))
 
     def set_extra_state(self, state):
         if state != self.get_extra_state():
             raise ValueError("Native geometry schema/config does not match this model")
 
     @classmethod
-    def from_full_adapter(cls, full):
+    def from_full_adapter(cls, full, *, legacy=False, pose_config=None):
         """Warm-start from a Full object without sharing parameters or buffers."""
+        legacy_mode = legacy
         legacy = getattr(full, "legacy", None)
         if legacy is None or not hasattr(full, "qwen_hidden_size"):
             raise ValueError("Expected Qwen21FullAdapter, not a simplified or legacy adapter")
@@ -77,12 +94,14 @@ class Qwen21NativeGeometry(nn.Module):
         result = cls.from_full_checkpoint(
             {"architecture": SOURCE_ARCHITECTURE, "adapter_state_dict": full.state_dict()},
             reasoning_config=legacy.reasoner.config,
+            legacy=legacy_mode, pose_config=pose_config,
         )
         result.train(full.training)
         return result
 
     @classmethod
-    def from_full_checkpoint(cls, checkpoint: Mapping, *, reasoning_config: AdapterReasoningConfig | None = None):
+    def from_full_checkpoint(cls, checkpoint: Mapping, *, reasoning_config: AdapterReasoningConfig | None = None,
+                             legacy=False, pose_config=None):
         """Import the four frontend prefixes from a loaded Full checkpoint.
 
         No old Full/SD3 model is constructed. The caller owns file loading (and
@@ -100,8 +119,9 @@ class Qwen21NativeGeometry(nn.Module):
         # Explicitly materialize this small frontend before copying learned
         # weights; load_state_dict into meta parameters would silently do nothing.
         with torch.device("cpu"):
-            result = cls(reasoning_config=reasoning_config).float()
-        expected = {key: value for key, value in result.state_dict().items() if key != "_extra_state"}
+            result = cls(reasoning_config=reasoning_config, legacy=legacy, pose_config=pose_config).float()
+        expected = {key: value for key, value in result.state_dict().items()
+                    if key != "_extra_state" and not key.startswith(POSE_PREFIXES)}
         selected = {}
         for key, value in state.items():
             for new_prefix, old_prefix in _FULL_PREFIXES:
@@ -116,10 +136,11 @@ class Qwen21NativeGeometry(nn.Module):
                 raise ValueError(f"Full frontend tensor shape differs: {key}")
             if not value.is_floating_point() or not torch.isfinite(value).all():
                 raise ValueError(f"Full frontend tensor must be finite floating point: {key}")
-        result.load_state_dict({**selected, "_extra_state": result.get_extra_state()}, strict=True)
+        result.load_state_dict({**result.state_dict(), **selected}, strict=True)
         result.inheritance_report = {
             "source_architecture": SOURCE_ARCHITECTURE,
-            "schema": SCHEMA,
+            "schema": result.get_extra_state()['schema'],
+            "initialized_pose_keys": [k for k in result.state_dict() if k.startswith(POSE_PREFIXES)],
             "loaded_tensor_count": len(selected),
             "loaded_element_count": sum(value.numel() for value in selected.values()),
             "parameter_count": sum(parameter.numel() for parameter in result.parameters()),

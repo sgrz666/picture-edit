@@ -315,7 +315,7 @@ def test_a_checkpoint_records_which_canvas_it_was_trained_under():
     assert require_canvas_compatible(fresh) == CANVAS_SCHEMA_VERSION
     # Pre-contract checkpoints may still be used, but only as a declared warm start.
     legacy = {"architecture_version": "v6.5", "preprocessing_schema_version": "1"}
-    with pytest.raises(CanvasPolicyError if False else ValueError, match="warm start"):
+    with pytest.raises(ValueError, match="warm start"):
         require_canvas_compatible(legacy, where="native canvas training")
     assert require_canvas_compatible(legacy, warm_start_ok=True) == "pre_canvas_warm_start"
     assert require_canvas_compatible(None, warm_start_ok=True) == "pre_canvas_warm_start"
@@ -332,3 +332,50 @@ def test_legacy_record_cannot_masquerade_as_a_canvas():
         CanvasSpec.from_record(LegacyStretch(RESIZE_SQUARE, TIKTOK_HW, (512, 512)).metadata())
     with pytest.raises(CanvasPolicyError, match="not aspect-preserving"):
         CanvasSpec(TIKTOK_HW, TIKTOK_HW, (1088, 608), policy="resize_square")
+
+
+def test_sampling_size_follows_the_portrait_canvas_not_a_square_default():
+    # Plan 4: eval and run scripts must share the training CanvasSpec. Sampling used to be
+    # hard-coded width=height=resolution, which redraws a portrait as a square.
+    from src.data.canvas_contract import CanvasPolicyError, sampling_size
+
+    spec = aspect_preserving(TIKTOK_HW, max_pixels=65536)
+    width, height = sampling_size({"target_canvas": spec.metadata()})
+    assert (width, height) == (spec.canvas_hw[1], spec.canvas_hw[0])
+    assert width != height, "a portrait canvas must not come back square"
+    assert sampling_size({}, fallback_side=512) == (512, 512)
+    with pytest.raises(CanvasPolicyError, match="no target_canvas"):
+        sampling_size({})
+    legacy = LegacyStretch(RESIZE_SQUARE, TIKTOK_HW, (512, 512))
+    with pytest.raises(CanvasPolicyError, match="refusing to sample|cannot masquerade"):
+        sampling_size({"target_canvas": legacy.metadata()})
+    assert sampling_size({"target_canvas": legacy.metadata()},
+                         fallback_side=512) == (512, 512)
+
+
+def test_transformer_inputs_refuses_an_inferred_reference_grid():
+    import torch
+
+    from src.pose_control.qwen21_full.qwen_runtime import transformer_inputs
+
+    def pair(**extra):
+        base = {"prompt_embeds": torch.zeros(1, 3, 8),
+                "prompt_mask": torch.ones(1, 3, dtype=torch.bool),
+                "img_mask": torch.ones(1, 5, dtype=torch.bool),
+                "source_latent": torch.zeros(1, 96, 64)}
+        base.update(extra)
+        return base
+
+    declared = transformer_inputs(pair(target_token_hw=(16, 10), source_token_hw=(12, 8)),
+                                  torch.zeros(1, 160, 64), torch.tensor([.5]))
+    assert declared["img_shapes"] == [[(1, 12, 8), (1, 16, 10)]]
+    with pytest.raises(ValueError, match="source_token_hw is required"):
+        transformer_inputs(pair(target_token_hw=(16, 10)), torch.zeros(1, 160, 64),
+                           torch.tensor([.5]))
+    with pytest.raises(ValueError, match="does not match the reference latent"):
+        transformer_inputs(pair(target_token_hw=(16, 10), source_token_hw=(16, 9)),
+                           torch.zeros(1, 160, 64), torch.tensor([.5]))
+    agreeing = transformer_inputs(pair(target_token_hw=(16, 10),
+                                       source_latent=torch.zeros(1, 160, 64)),
+                                  torch.zeros(1, 160, 64), torch.tensor([.5]))
+    assert agreeing["img_shapes"] == [[(1, 16, 10), (1, 16, 10)]]

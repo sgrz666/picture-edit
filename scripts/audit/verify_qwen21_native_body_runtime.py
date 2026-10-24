@@ -43,7 +43,7 @@ def verify_runtime(*, base_model, full_checkpoint, device="cuda", resolution=512
     checkpoint_stat = checkpoint.stat()
     checkpoint_sha = _sha256(checkpoint)
     payload = torch.load(checkpoint, map_location="cpu", weights_only=False, mmap=True)
-    frontend = Qwen21NativeGeometry.from_full_checkpoint(payload).eval().requires_grad_(False).to(device)
+    frontend = Qwen21NativeGeometry.from_full_checkpoint(payload, legacy=True).eval().requires_grad_(False).to(device)
     # The audit helper's width is variable; make its height match the requested
     # canvas without changing any trained preprocessing convention.
     raw = _conditions(torch, resolution, False)
