@@ -1,0 +1,8 @@
+{
+  "injection_layers": [5,10,15,21,26,31], "hidden_dim": 4096, "num_layers": 32,
+  "verification_only": false, "width": 512, "min_spatial_cells": 4,
+  "tie_tolerance": 0.0001, "local_mode": "dynamic",
+  "face_schedule": [[0,1],[1,1]], "hand_schedule": [[0,1],[1,1]],
+  "strength_preset": "constant", "schedules": [], "stage_modulation": "none",
+  "canonical_hand": false, "hand_fusion": "parallel", "identity_pooling": "roi48", "feather_px": 8
+}

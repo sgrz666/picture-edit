@@ -93,3 +93,7 @@
 `train_qwen21_native_full_v4.py`提供Face-heads/Face-full/Hand-heads/Hand-full/Joint及all-native配置，独立分组freeze/LR，沿用velocity loss与AdamW。安装保留requires_grad，拒绝counterfactual几何直接配原B RGB；不自动阶段切换。本轮未运行预检、optimizer或训练。见 `src/pose_control/qwen21_full/NATIVE_FULL_V4.md`。
 
 V4.1增加`--data-profile hybrid_hi4d|full_smplx|auto`，在读取和preflight记录实际数据Profile，原冻结／学习率／velocity loss／AdamW不变。Hi4D不再以完整SMPL-X作为局部2D输入的前置条件。详见`src/pose_control/qwen21_full/NATIVE_FULL_V41_HYBRID.md`；本轮未执行preflight或训练。
+
+## Native Full V5（接口未执行）
+
+`train_qwen21_native_full_v5.py`增加Detail／Interaction heads/full，默认velocity-only，显式local_velocity／local_aux配置及冻结评估器；保留flat AdamW、分组冻结／LR，无自动阶段切换。原manifest失败行保留，局部专训保存eligible索引；schedule为零的attempt不更新optimizer，`steps`为实际更新数并有显式attempt上限。本轮没有执行preflight、测试、模型、optimizer或训练，详见`src/pose_control/qwen21_full/native_v5/README.md`。

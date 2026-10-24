@@ -86,3 +86,7 @@
 ## Native Full V4.1 Hi4D Hybrid（静态交付，未运行验收）
 
 `prepare_qwen21_hi4d_hybrid.py`提供`import-observations`、显式`detect-missing`、`reference-jobs`、`build`四个离线子命令。复用真实V3原生SMPL Body／Depth／Contact，添加可选原图Face／Hand 2D条件；不要求完整SMPL-X，不新增权重迁移。Source外观按模态惰性加载，允许显式空引用。所有工具本轮未执行，schema、示例及后续命令见`src/pose_control/qwen21_full/NATIVE_FULL_V41_HYBRID.md`。
+
+## Native Full V5（工具未执行）
+
+`prepare_qwen21_native_full_v5.py`提供V4 manifest提升为V5侧车、Source-only R1–R3外观、Hand质量审计和离线修复I/O；不自动检测、渲染或调用Refiner。`migrate_qwen21_native_full_v5.py`显式严格继承V4并初始化新分流Head，未确认Hand／新Source Detail需显式允许fresh，不恢复optimizer。完整契约与命令见`src/pose_control/qwen21_full/native_v5/README.md`。本轮两个工具均未运行。
