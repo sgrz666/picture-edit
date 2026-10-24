@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Hi4D Hybrid V4.1 manifest record",
+  "type": "object",
+  "required": ["schema", "data_profile", "scene_kind", "pair_id", "body", "local", "references", "source_rgb", "target_rgb", "body_model_family", "body_record_sha256", "driver_record_sha256", "v3_pair", "v3_manifest"],
+  "properties": {
+    "schema": {"const": "native_full_pair_v4"},
+    "data_profile": {"const": "hybrid_hi4d"},
+    "scene_kind": {"const": "dual"},
+    "body_model_family": {"const": "smpl"},
+    "pair_id": {"type": "string", "minLength": 1},
+    "body": {"$ref": "#/$defs/record"},
+    "local": {"$ref": "#/$defs/record"},
+    "references": {"$ref": "#/$defs/record"},
+    "source_rgb": {"$ref": "#/$defs/file"},
+    "target_rgb": {"$ref": "#/$defs/file"},
+    "v3_manifest": {"$ref": "#/$defs/file"},
+    "body_record_sha256": {"$ref": "#/$defs/sha"},
+    "driver_record_sha256": {"$ref": "#/$defs/sha"},
+    "v3_pair": {"type": "object"}
+  },
+  "$defs": {
+    "sha": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "file": {"type": "object", "required": ["path", "sha256"], "properties": {"path": {"type": "string", "minLength": 1}, "sha256": {"$ref": "#/$defs/sha"}}},
+    "record": {"allOf": [{"$ref": "#/$defs/file"}], "required": ["schema"], "properties": {"schema": {"type": "string"}}},
+    "observation_index": {
+      "type": "object", "required": ["schema", "key", "geometry", "asset"],
+      "properties": {"schema": {"const": "native_hi4d_observation_index_v1"}, "key": {"type": "array", "minItems": 4, "maxItems": 4, "items": {"type": "string"}}, "geometry": {"$ref": "#/$defs/file"}, "asset": {"$ref": "#/$defs/record"}}
+    }
+  },
+  "x-raw-asset-schema": "native_hi4d_hybrid_asset_v1",
+  "x-fixed-array-contracts": {
+    "xy_native": {"shape": [2,134,2], "dtype": "float32", "coordinates": "original_pixels_unclipped"},
+    "scores": {"shape": [2,134], "dtype": "float32"},
+    "point_valid": {"shape": [2,134], "dtype": "bool"},
+    "person_assigned": {"shape": [2], "dtype": "bool"}
+  },
+  "x-report-required": ["all sample rows", "assignment status/reason", "roi source", "reliable points", "wrist check", "support pixels", "canvas coverage", "effective target cells", "unknown overlap pixels", "independent appearance availability"]
+}

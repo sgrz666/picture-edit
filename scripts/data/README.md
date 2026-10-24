@@ -82,3 +82,7 @@
 ## Native Full V4（架构交付，尚未验收）
 
 `import_qwen21_native_smplx_v4.py`导入完整模型参数并核对FK；`cache_qwen21_native_local_references_v4.py`仅提取Source ArcFace/DINO；`build_qwen21_native_full_cache_v4.py`构建同源Body21/Depth/局部几何/BPS；`migrate_qwen21_native_full_v4.py`显式继承V3及兼容局部编码器，缺Hand来源需allow_fresh_hand。全部工具本轮未执行。契约与顺序见 `src/pose_control/qwen21_full/NATIVE_FULL_V4.md`。
+
+## Native Full V4.1 Hi4D Hybrid（静态交付，未运行验收）
+
+`prepare_qwen21_hi4d_hybrid.py`提供`import-observations`、显式`detect-missing`、`reference-jobs`、`build`四个离线子命令。复用真实V3原生SMPL Body／Depth／Contact，添加可选原图Face／Hand 2D条件；不要求完整SMPL-X，不新增权重迁移。Source外观按模态惰性加载，允许显式空引用。所有工具本轮未执行，schema、示例及后续命令见`src/pose_control/qwen21_full/NATIVE_FULL_V41_HYBRID.md`。

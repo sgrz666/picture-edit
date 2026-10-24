@@ -5,7 +5,7 @@ from torch.nn import functional as F
 
 from .hand.vton_layers import HandStructureProjector,HandResampler,OneLinearLN
 from .hand.geometry import axis_angle45_to_6d96,hand_heatmaps
-from .native_face import gather_source
+from .native_face import gather_source,encode_available
 
 
 def roi_sample(value,boxes,size=16,mode='bilinear'):
@@ -56,11 +56,13 @@ class NativeHandPreparer(nn.Module):
         ids=has_mesh.flatten().nonzero(as_tuple=True)[0]
         if ids.numel(): bps=bps.reshape(-1,512).index_copy(0,ids,self.structure.mano_bps(condition.mesh_bps.reshape(-1,1024)[ids])).reshape(b,2,2,512)
         side=torch.arange(2,device=points.device,dtype=points.dtype).reshape(1,1,2,1).expand(b,2,-1,-1)
-        three=self.structure.combined(torch.cat((bps,pose_features,self.structure.handtype(side)),-1))
         has_3d=has_pose|has_mesh
-        three=three*has_3d[...,None]
-        two=self.structure.mano_2d((points[...,:2]*pv[...,None]).flatten(-2))
-        two=(two+self.keypoint_availability(points[...,2]))*has_2d[...,None]
+        three=points.new_zeros(b,2,2,512)
+        if has_3d.any():
+            handtype=encode_available(self.structure.handtype,side,has_3d,(512,))
+            three=encode_available(self.structure.combined,torch.cat((bps,pose_features,handtype),-1),has_3d,(512,))
+        two=encode_available(self.structure.mano_2d,(points[...,:2]*pv[...,None]).flatten(-2),has_2d,(512,))
+        two=two+encode_available(self.keypoint_availability,points[...,2],has_2d,(512,))
         slots=gather_source(condition.source_slot_ids,condition)
         binding=self.source_embedding(slots)[:,:,None]+self.person_embedding.weight[None,:,None]+self.side_embedding.weight[None,None]+self.region_embedding
         geometry=torch.stack((three,two,(three+two)*.5,three-two),-2)+binding[...,None,:]
@@ -72,10 +74,11 @@ class NativeHandPreparer(nn.Module):
         zv=roi_sample(condition.local_z_valid[:,2:,None].float(),boxes.flatten(1,2),mode='nearest').reshape(b,2,2,1,16,16)>.5
         depth=torch.where(zv,torch.asinh((z-condition.wrist_z[...,None,None,None])/condition.body_height[...,None,None,None,None].clamp_min(1e-6)),0.)
         spatial_input=torch.cat((heat,masks[...,None,:,:],depth),-3)
-        spatial=self.spatial(spatial_input.reshape(b*4,23,16,16)).reshape(b,2,2,512,16,16)
         modality=torch.stack((has_2d,has_pose,has_mesh,zv.flatten(-3).any(-1)),-1).float()
         sv=has_2d|has_3d
-        spatial=(spatial+(three+two+binding+self.modality_embedding(modality))[...,None,None])*sv[...,None,None,None]
+        spatial=encode_available(self.spatial,spatial_input,sv,(512,16,16))
+        modality_features=encode_available(self.modality_embedding,modality,sv,(512,))
+        spatial=(spatial+(three+two+binding+modality_features)[...,None,None])*sv[...,None,None,None]
         patches=gather_source(references.hand_dino,condition)
         valid=gather_source(references.hand_dino_valid,condition)&active[...,None]
         r=patches.shape[3]

@@ -120,13 +120,24 @@ class NativeLocalConditionV4(_TensorRecord):
         if (self.scene_z[self.scene_z_valid]<=0).any() or (self.scene_z[~self.scene_z_valid]!=0).any():
             raise ValueError('Scene Camera-Z needs independent validity')
         if len(self.metadata)!=b: raise ValueError('Local provenance batch differs')
-        for meta in self.metadata:
+        for row,meta in enumerate(self.metadata):
             if meta.get('schema')!=LOCAL_SCHEMA or meta.get('expression_mode') not in ('source','driver','off'):
                 raise ValueError('Explicit V4 local schema/expression mode required')
             for key in ('target_canvas_id','source_canvas_id','driver_record_sha256','camera_id','scale_group_id'):
                 if not isinstance(meta.get(key),str) or not meta[key]: raise ValueError('Missing local '+key)
-            if meta.get('normal_space')!='camera_cv' or meta.get('hand_pose_convention')!='full_axis_angle_after_pose_mean':
+            convention=meta.get('hand_pose_convention')
+            unavailable=convention=='unavailable' and not self.hand_pose_valid[row].any()
+            if meta.get('normal_space')!='camera_cv' or not (convention=='full_axis_angle_after_pose_mean' or unavailable):
                 raise ValueError('Local coordinate/hand rotation convention differs')
+            profile=meta.get('data_profile','full_smplx')
+            if profile not in ('full_smplx','hybrid_hi4d'): raise ValueError('Unknown V4 data profile')
+            if profile=='hybrid_hi4d':
+                if meta.get('body_model_family')!='smpl' or meta.get('geometry_source')!='hi4d_official_smpl':
+                    raise ValueError('Hybrid body must retain original Hi4D SMPL provenance')
+                if any(getattr(self,name)[row].any() for name in ('jaw_valid','expression_valid','hand_pose_valid','mesh_valid','local_z_valid')):
+                    raise ValueError('Hybrid 2D observations cannot assert SMPL-X parameters or fine local depth')
+                if not meta.get('body_record_sha256') or convention!='unavailable':
+                    raise ValueError('Hybrid body container SHA / unavailable pose convention required')
             if len(meta.get('source_person_ids',()))!=2 or len(meta.get('target_person_ids',()))!=2:
                 raise ValueError('Declare stable Source and Driver person IDs, including inactive slots')
             if meta.get('expression_mode')=='source' and any(meta.get('expression_retargeted',(False,False))) and not meta.get('source_asset_sha256'):

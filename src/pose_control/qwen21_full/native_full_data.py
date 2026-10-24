@@ -33,14 +33,19 @@ def _rgb(record,spec):
 
 
 class NativeFullDatasetV4(torch.utils.data.Dataset):
-    def __init__(self,manifest,*,load_target=False):
+    def __init__(self,manifest,*,load_target=False,data_profile='auto'):
         self.rows=[json.loads(line) for line in Path(manifest).read_text(encoding='utf8').splitlines() if line.strip()]
         self.load_target=load_target
+        if data_profile not in ('auto','full_smplx','hybrid_hi4d'): raise ValueError('Unknown V4 data profile assertion')
+        self.data_profile=data_profile
         ids=[r.get('pair_id') for r in self.rows]
         if not ids or any(not isinstance(key,str) or not key for key in ids) or len(set(ids))!=len(ids): raise ValueError('Unique nonempty V4 pairs required')
         for row in self.rows:
             if row.get('schema')!=PAIR_SCHEMA or row.get('scene_kind') not in ('single','dual'):
                 raise ValueError('Explicit V4 manifest and scene kind required')
+            profile=row.get('data_profile','full_smplx')
+            if profile not in ('full_smplx','hybrid_hi4d') or (data_profile!='auto' and profile!=data_profile):
+                raise ValueError('V4 manifest data profile differs from requested profile')
 
     def __len__(self): return len(self.rows)
 
@@ -50,6 +55,20 @@ class NativeFullDatasetV4(torch.utils.data.Dataset):
         if 'src_image' in sample or 'tgt_image' in sample: raise ValueError('Body cache must not embed RGB')
         local=read_record(row['local'],schema=LOCAL_SCHEMA).validate()
         refs=read_record(row['references'],schema='native_local_reference_v4').validate()
+        profile=row.get('data_profile','full_smplx')
+        if local.metadata[0].get('data_profile','full_smplx')!=profile: raise ValueError('Local/manifest data profiles differ')
+        if profile=='hybrid_hi4d':
+            if row['scene_kind']!='dual' or row.get('body_model_family')!='smpl': raise ValueError('Hybrid Hi4D needs native dual SMPL')
+            if row.get('body_record_sha256')!=row['body']['sha256'] or local.metadata[0]['body_record_sha256']!=row['body']['sha256']:
+                raise ValueError('Hybrid body container SHA differs')
+            driver=row.get('driver_record_sha256')
+            if not driver or local.metadata[0]['driver_record_sha256']!=driver:
+                raise ValueError('Hybrid driver SHA must bind original V3 geometry separately')
+            if any(sample[key]['record_sha256']!=driver for key in ('pose_provenance','pose_provenance_b')):
+                raise ValueError('Hybrid must retain both original V3 pose fingerprints')
+            dual=sample['dual_depth'].validate()
+            if dual.model_family.tolist()!=[[1,1]] or sample['pair_metadata'].get('data_profile')!='hybrid_hi4d':
+                raise ValueError('Hybrid cannot replace SMPL body with fabricated conditions')
         source=CanvasSpec.from_record(sample['source_canvas']);target=CanvasSpec.from_record(sample['target_canvas'])
         if source.fingerprint()!=local.metadata[0]['source_canvas_id'] or target.fingerprint()!=local.metadata[0]['target_canvas_id']:
             raise ValueError('Source/driver Canvas differs from local cache')
@@ -59,7 +78,7 @@ class NativeFullDatasetV4(torch.utils.data.Dataset):
             if sample['pair_metadata'].get(key+'_rgb_sha256')!=row[key+'_rgb']['sha256']:
                 raise ValueError('Paired RGB declaration differs from cached geometry: '+key)
         sample.update(native_scene_kind=row['scene_kind'],local_condition_v4=local,local_references_v4=refs,
-            src_image=_rgb(row['source_rgb'],source),supervised_target_rgb=self.load_target)
+            src_image=_rgb(row['source_rgb'],source),supervised_target_rgb=self.load_target,data_profile=profile)
         if self.load_target:
             if local.metadata[0].get('counterfactual_geometry') and not local.metadata[0].get('paired_rgb_compatible',False):
                 raise ValueError('Counterfactual expression/geometry cannot use original target RGB')

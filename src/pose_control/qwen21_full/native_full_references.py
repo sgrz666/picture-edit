@@ -14,26 +14,38 @@ def extract_source_references(job):
     sources=job['references']
     if not 1<=len(sources)<=3 or (len(sources)>1 and not job.get('explicit_multi_reference')):
         raise ValueError('Default R=1; declare all legacy multi-reference sources explicitly')
-    import onnxruntime as ort
-    from transformers import AutoImageProcessor,AutoModel
-    from .native_full_assets import read_record
-    # No package installation, download, estimator, or asset search here.
-    if sha256(job['arcface_model'])!=job['arcface_sha256']: raise ValueError('ArcFace checkpoint SHA differs')
-    dino_dir=Path(job['dino_model'])
-    if not job['dino_files']: raise ValueError('Declare DINO model/config/processor fingerprints')
-    for name,digest in job['dino_files'].items():
-        if sha256(dino_dir/name)!=digest: raise ValueError('DINO model/processor SHA differs')
-    session=ort.InferenceSession(job['arcface_model'],providers=['CPUExecutionProvider'])
-    processor=AutoImageProcessor.from_pretrained(str(dino_dir),local_files_only=True)
-    dino=AutoModel.from_pretrained(str(dino_dir),local_files_only=True).float().eval().to(job.get('device','cpu'))
+    requested=job.get('modalities',{'arcface':True,'face_dino':True,'hand_dino':True})
+    if set(requested)!={'arcface','face_dino','hand_dino'} or any(type(v)!=bool for v in requested.values()):
+        raise ValueError('Declare independent Source appearance modality requests')
+    session=processor=dino=None
+    def arcface_session():
+        nonlocal session
+        if session is None:
+            import onnxruntime as ort
+            if sha256(job['arcface_model'])!=job['arcface_sha256']: raise ValueError('ArcFace checkpoint SHA differs')
+            session=ort.InferenceSession(job['arcface_model'],providers=['CPUExecutionProvider'])
+        return session
+    def dino_models():
+        nonlocal processor,dino
+        if dino is None:
+            from transformers import AutoImageProcessor,AutoModel
+            dino_dir=Path(job['dino_model'])
+            if not job['dino_files']: raise ValueError('Declare DINO model/config/processor fingerprints')
+            for name,digest in job['dino_files'].items():
+                if sha256(dino_dir/name)!=digest: raise ValueError('DINO model/processor SHA differs')
+            processor=AutoImageProcessor.from_pretrained(str(dino_dir),local_files_only=True)
+            dino=AutoModel.from_pretrained(str(dino_dir),local_files_only=True).float().eval().to(job.get('device','cpu'))
+        return processor,dino
     r=len(sources);arc=torch.zeros(1,2,r,512);av=torch.zeros(1,2,r,dtype=torch.bool)
     face=torch.zeros(1,2,r,256,1536);fv=av.clone();hand=torch.zeros(1,2,2,r,256,1536);hv=torch.zeros(1,2,2,r,dtype=torch.bool)
     boxes_face=torch.zeros(1,2,4);boxes_hand=torch.zeros(1,2,2,4);provenance=[]
     def patches(image,box):
         # PIL pads an out-of-image crop; coordinates are never clamped onto ROI.
         w,h=image.size;x0,y0,x1,y1=box
-        if x1<=x0 or y1<=y0 or x1<=0 or y1<=0 or x0>=1 or y0>=1: return None
+        if x1<=x0 or y1<=y0 or x1<=0 or y1<=0 or x0>=1 or y0>=1:
+            raise ValueError('Declared available Source texture has no valid canvas ROI')
         crop=image.crop((int(np.floor(x0*w)),int(np.floor(y0*h)),int(np.ceil(x1*w)),int(np.ceil(y1*h))))
+        processor,dino=dino_models()
         inputs=processor(images=crop,return_tensors='pt',size={'height':224,'width':224},do_center_crop=False)
         with torch.no_grad(): tokens=dino(**{k:v.to(dino.device) for k,v in inputs.items()}).last_hidden_state
         if tokens.shape!=(1,257,1536): raise ValueError('Require ViT-g/14 16x16 patches without register tokens')
@@ -59,10 +71,10 @@ def extract_source_references(job):
             crop_record={'face':crop_transform(person['face_box']),'hands':[crop_transform(box) for box in person['hand_boxes']],
                          'canvas_to_arcface112':None}
             if ref==0: boxes_face[0,p]=torch.from_numpy(fb);boxes_hand[0,p]=torch.from_numpy(hb)
-            if person.get('face_texture_valid',False):
+            if requested['face_dino'] and person.get('face_texture_valid',False):
                 value=patches(image,fb)
                 if value is not None: face[0,p,ref]=value;fv[0,p,ref]=True
-            if person.get('identity_valid',False):
+            if requested['arcface'] and person.get('identity_valid',False):
                 import cv2
                 points=np.asarray(person['arcface_five_points_canvas_pixels'],np.float32)
                 if points.shape!=(5,2) or not np.isfinite(points).all(): raise ValueError('Explicit valid Source ArcFace alignment points required')
@@ -72,11 +84,12 @@ def extract_source_references(job):
                 crop_record['canvas_to_arcface112']=affine.tolist()
                 crop=cv2.warpAffine(np.asarray(image),affine,(112,112),borderValue=0)
                 value=(crop.astype(np.float32)-127.5)/127.5
-                output=session.run(None,{session.get_inputs()[0].name:value.transpose(2,0,1)[None]})[0]
+                active_session=arcface_session()
+                output=active_session.run(None,{active_session.get_inputs()[0].name:value.transpose(2,0,1)[None]})[0]
                 if output.shape!=(1,512) or not np.isfinite(output).all(): raise ValueError('ArcFace must output512')
                 arc[0,p,ref]=torch.from_numpy(output[0]);av[0,p,ref]=True
             for side in range(2):
-                if person['hand_texture_valid'][side]:
+                if requested['hand_dino'] and person['hand_texture_valid'][side]:
                     value=patches(image,hb[side])
                     if value is not None: hand[0,p,side,ref]=value;hv[0,p,side,ref]=True
             transforms.append(crop_record)
@@ -85,6 +98,9 @@ def extract_source_references(job):
             'roi_and_alignment':source['people'],'geometry_sha256':source['geometry_sha256']})
     metadata={'schema':REFERENCE_SCHEMA,'role':'source_only','reference_count':r,'reference_sources':provenance,
         'source_rgb_sha256':sources[0]['rgb']['sha256'],'source_canvas_id':CanvasSpec.from_record(sources[0]['canvas']).fingerprint(),
-        'source_person_ids':job['source_person_ids'],'arcface_sha256':job['arcface_sha256'],'dino_files':job['dino_files'],
+        'source_person_ids':job['source_person_ids'],'arcface_sha256':job.get('arcface_sha256') if session is not None else None,
+        'dino_files':job.get('dino_files') if dino is not None else {},'modalities_requested':requested,
+        'models_loaded':{'arcface':session is not None,'dino':dino is not None},
         'arcface_preprocessing':'source_5point_similarity; RGB112; (x-127.5)/127.5', 'dino_preprocessing':'local_processor;224;no_center_crop'}
+    if 'hybrid_observation' in job: metadata['hybrid_observation']=job['hybrid_observation']
     return NativeLocalReferencesV4(arc,av,face,fv,hand,hv,boxes_face,boxes_hand,(metadata,)).validate()

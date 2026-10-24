@@ -258,6 +258,11 @@ class NativeFullRuntimeV4(nn.Module):
             if key in self.source_provenance and source!=self.source_provenance[key]: raise ValueError('Source appearance provenance changed')
             self.source_provenance[key]=deepcopy(source)
             target_key=meta['driver_record_sha256']+'@'+meta['target_canvas_id']
+            if meta.get('data_profile')=='hybrid_hi4d':
+                # The same driver can legitimately appear with several sources.
+                # Its V3 geometry SHA stays fixed; each new body container binds
+                # the corresponding source/pair metadata separately.
+                target_key+='@'+meta['body_record_sha256']
             compact={k:deepcopy(v) for k,v in meta.items() if k!='bps'}
             compact['bps']=[[{k:v for k,v in side.items() if k!='basis'} for side in person] for person in meta.get('bps',())]
             if target_key in self.local_provenance and compact!=self.local_provenance[target_key]: raise ValueError('Local geometry provenance changed')
