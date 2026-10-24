@@ -37,12 +37,19 @@ def cpu_threads():
 def suite(name: str, namespace: str = OLD):
     """Read existing fixtures, replacing their control namespace when requested."""
     path = ROOT / "tests" / (name + ".py")
+    if not path.exists():
+        pytest.skip('Original preservation fixtures live on sg; run this audit there')
     if str(path.parent) not in sys.path:
         sys.path.insert(0, str(path.parent))
     module = types.ModuleType(f"_preservation_{namespace.rsplit('.', 1)[-1]}_{name}")
     module.__file__ = str(path)
     sys.modules[module.__name__] = module
-    exec(compile(path.read_text().replace(OLD, namespace), str(path), "exec"), module.__dict__)
+    source = path.read_text().replace(OLD, namespace)
+    # Repository scripts were moved into scripts/data; the historical fixture
+    # still imports its old root path. Resolve the same implementation for both namespaces.
+    source = source.replace('from scripts.precompute_iper_hand_features_v66 import',
+                            'from scripts.data.precompute_iper_hand_features_v66 import')
+    exec(compile(source, str(path), "exec"), module.__dict__)
     return module
 
 
@@ -81,9 +88,15 @@ def assert_gradients(a, b):
 
 
 def test_manifest_preserves_every_original_file_and_hash():
+    if not MANIFEST.exists():
+        pytest.skip('Original source manifest is on sg')
     manifest = json.loads(MANIFEST.read_text())
     original = ROOT / "src/pose_control/v6"
     copied = ROOT / "src/pose_control/qwen21_full"
+    v2 = json.loads((copied / 'native_v2_migration_manifest.json').read_text())
+    changed = v2['changed_original_files']
+    assert set(changed) == {'condition_injector.py', 'conditions.py', 'token_encoders.py',
+                            'reasoning/person_geometry.py', 'reasoning/reasoner.py'}
     paths = {item["relative_path"] for item in manifest["files"]}
     assert len(paths) == 47
     assert paths == {str(p.relative_to(original)) for p in original.rglob("*.py")}
@@ -92,10 +105,16 @@ def test_manifest_preserves_every_original_file_and_hash():
         source_hash = hashlib.sha256((original / path).read_bytes()).hexdigest()
         copied_hash = hashlib.sha256((copied / path).read_bytes()).hexdigest()
         assert source_hash == item["source_sha256"], path
-        assert copied_hash == item["copied_sha256"] == source_hash, path
+        if path in changed:
+            assert changed[path]['baseline_sha256'] == item['copied_sha256'] == source_hash, path
+            assert copied_hash == changed[path]['v2_sha256'], path
+        else:
+            assert copied_hash == item["copied_sha256"] == source_hash, path
 
 
 def test_copied_modules_do_not_import_old_namespace():
+    if not MANIFEST.exists():
+        pytest.skip('Original source manifest is on sg')
     manifest = json.loads(MANIFEST.read_text())
     for item in manifest["files"]:
         path = ROOT / "src/pose_control/qwen21_full" / item["relative_path"]

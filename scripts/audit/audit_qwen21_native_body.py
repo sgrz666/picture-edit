@@ -42,7 +42,7 @@ def audit_native_body(*, full_checkpoint=None, threads=2):
             stat = checkpoint.stat()
             fingerprint = _sha256(checkpoint)
             payload = torch.load(checkpoint, map_location="cpu", weights_only=False, mmap=True)
-            frontend = Qwen21NativeGeometry.from_full_checkpoint(payload).eval().requires_grad_(False)
+            frontend = Qwen21NativeGeometry.from_full_checkpoint(payload, legacy=True).eval().requires_grad_(False)
             raw_a = _conditions(torch, 32, False)
             raw_b = {key: value.clone() for key, value in raw_a.items()}
             raw_b["normal_a"].neg_()

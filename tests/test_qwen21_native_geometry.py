@@ -80,7 +80,7 @@ def assert_legacy_projection_parity(full, state, features):
 @pytest.mark.parametrize("dual,width", [(False, 32), (False, 64), (True, 64)])
 def test_frontend_reuses_learned_features_before_old_projection(dual, width):
     full = full_model()
-    native = api().from_full_adapter(full).eval()
+    native = api().from_full_adapter(full, legacy=True).eval()
     inputs = raw_inputs(dual=dual, width=width)
     with torch.no_grad():
         bundle = full.condition_injector(**inputs)
@@ -96,7 +96,7 @@ def test_frontend_reuses_learned_features_before_old_projection(dual, width):
 
 def test_copied_frontend_is_independent_and_has_no_control_core():
     full = full_model()
-    native = api().from_full_adapter(full)
+    native = api().from_full_adapter(full, legacy=True)
     old_weight = full.condition_injector.spatial_encoder.normal_stem.stages[0].weight
     new_weight = native.condition_injector.spatial_encoder.normal_stem.stages[0].weight
     before = old_weight.detach().clone()
@@ -104,14 +104,14 @@ def test_copied_frontend_is_independent_and_has_no_control_core():
         new_weight.add_(1)
     torch.testing.assert_close(old_weight, before, rtol=0, atol=0)
     assert old_weight.data_ptr() != new_weight.data_ptr()
-    assert not hasattr(native, "legacy")
+    assert native.legacy is True  # a mode flag, never a nested legacy control core
     assert not hasattr(native, "control_core")
     assert not any("1536" in name or "control_core" in name or "output_bridge" in name for name, _ in native.named_parameters())
 
 
 def test_all_four_feature_paths_receive_gradients():
     full = full_model()
-    native = api().from_full_adapter(full)
+    native = api().from_full_adapter(full, legacy=True)
     state = full.legacy.reasoner(full.condition_injector(**raw_inputs(dual=True)))
     names = ("geometry_feature", "geometry_highres", "interaction_feature", "interaction_highres")
     leaves = {name: getattr(state, name).detach().clone().requires_grad_() for name in names}
@@ -122,7 +122,7 @@ def test_all_four_feature_paths_receive_gradients():
 
 
 def test_raw_conditions_still_train_the_existing_encoder_and_reasoner():
-    native = api().from_full_adapter(full_model()).train()
+    native = api().from_full_adapter(full_model(), legacy=True).train()
     features = native(native.condition_injector(**raw_inputs()), target_token_hw=(2, 4))
     features.geometry.square().mean().backward()
     for module in (native.condition_injector.spatial_encoder.pose_stem, native.reasoner.person_reasoner, native.geometry_high_downsample):
@@ -131,14 +131,14 @@ def test_raw_conditions_still_train_the_existing_encoder_and_reasoner():
 
 @pytest.mark.parametrize("hw", [(4, 2), (2, 3), (0, 4), (True, 4), (2,), (2.0, 4)])
 def test_grid_errors_never_trigger_silent_resize(hw):
-    native = api().from_full_adapter(full_model())
+    native = api().from_full_adapter(full_model(), legacy=True)
     bundle = native.condition_injector(**raw_inputs())
     with pytest.raises(ValueError, match="grid|target_token_hw"):
         native(bundle, target_token_hw=hw)
 
 
 def test_nonfinite_features_are_rejected():
-    native = api().from_full_adapter(full_model())
+    native = api().from_full_adapter(full_model(), legacy=True)
     state = native.reasoner(native.condition_injector(**raw_inputs()))
     state.geometry_feature[0, 0, 0, 0] = float("nan")
     with pytest.raises(ValueError, match="finite"):
@@ -147,10 +147,10 @@ def test_nonfinite_features_are_rejected():
 
 def test_checkpoint_extraction_is_complete_and_does_not_instantiate_legacy():
     full = full_model()
-    native = api().from_full_checkpoint(payload(full), reasoning_config=full.legacy.reasoner.config)
+    native = api().from_full_checkpoint(payload(full), legacy=True, reasoning_config=full.legacy.reasoner.config)
     inputs = raw_inputs()
     native.eval()
-    expected = api().from_full_adapter(full).eval()
+    expected = api().from_full_adapter(full, legacy=True).eval()
     actual_features = native(native.condition_injector(**inputs), target_token_hw=(2, 4))
     expected_features = expected(expected.condition_injector(**inputs), target_token_hw=(2, 4))
     torch.testing.assert_close(actual_features.geometry, expected_features.geometry, rtol=0, atol=0)
@@ -177,7 +177,7 @@ def test_checkpoint_incompatibility_is_explicit(mutation):
         value["architecture"] = "qwen21_union_v1"
     value["adapter_state_dict"] = state
     with pytest.raises(ValueError):
-        api().from_full_checkpoint(value, reasoning_config=full.legacy.reasoner.config)
+        api().from_full_checkpoint(value, legacy=True, reasoning_config=full.legacy.reasoner.config)
 
 
 def test_depth_enabled_full_is_not_silently_migrated():
@@ -186,10 +186,10 @@ def test_depth_enabled_full_is_not_silently_migrated():
 
 
 def test_native_state_has_version_and_rejects_a_different_configuration():
-    model = api().from_full_adapter(full_model())
+    model = api().from_full_adapter(full_model(), legacy=True)
     state = copy.deepcopy(model.state_dict())
     assert state["_extra_state"]["schema"] == "qwen21_full_native_geometry_v1"
-    clone = api()(reasoning_config=model.reasoner.config)
+    clone = api()(reasoning_config=model.reasoner.config, legacy=True)
     clone.load_state_dict(state, strict=True)
     state["_extra_state"]["reasoning_config"]["dropout"] = .5
     with pytest.raises(ValueError, match="config"):
@@ -208,14 +208,14 @@ def test_checkpoint_import_really_materializes_cpu_weights_inside_meta_context()
     full = full_model()
     constructor = api()
     with torch.device("meta"):
-        native = constructor.from_full_checkpoint(payload(full), reasoning_config=full.legacy.reasoner.config)
+        native = constructor.from_full_checkpoint(payload(full), legacy=True, reasoning_config=full.legacy.reasoner.config)
     assert all(p.device.type == "cpu" and p.dtype == torch.float32 for p in native.parameters())
     torch.testing.assert_close(native.geometry_high_downsample.weight, full.legacy.condition_bridge.geometry_high_downsample.weight)
 
 
 def test_mixed_batch_keeps_interaction_on_dual_rows_only():
     full = full_model()
-    native = api().from_full_adapter(full).eval()
+    native = api().from_full_adapter(full, legacy=True).eval()
     values = {key: torch.cat((value, value), dim=0) for key, value in raw_inputs(dual=True).items()}
     values["person_b_valid"] = torch.tensor([True, False])
     values["task_id"] = torch.tensor([1, 0])

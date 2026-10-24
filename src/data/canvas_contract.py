@@ -515,6 +515,36 @@ def canvas_for_mode(mode: str, original_hw: Sequence[int], *, resolution: int | 
                      f"aspect_preserving, resize, square_crop")
 
 
+def sampling_size(sample: Mapping[str, Any], *, fallback_side: int | None = None,
+                  where: str = "sampling") -> tuple[int, int]:
+    """Return the (width, height) a generated frame must have for this sample's canvas.
+
+    Evaluation and run scripts used to hard-code `width=height=resolution`, which draws a square
+    even when the pair was loaded onto a portrait canvas — the same distortion the loaders were
+    fixed to refuse, reintroduced one stage later. With no canonical canvas this raises instead of
+    quietly falling back; pass `fallback_side` only where a pre-contract square is the intent.
+    """
+    record = sample.get("target_canvas") if hasattr(sample, "get") else None
+    if record is None:
+        if fallback_side is None:
+            raise CanvasPolicyError(
+                f"{where}: no target_canvas on the sample, so the output size cannot be derived; "
+                "load the pair through a canvas-aware dataset")
+        return int(fallback_side), int(fallback_side)
+    if isinstance(record, LegacyStretch) or (isinstance(record, Mapping)
+                                             and record.get("version") == LegacyStretch.VERSION):
+        # Checked before CanvasSpec.from_record, which refuses a legacy record outright: without
+        # this order an explicit fallback_side could never reach the pre-contract path.
+        if fallback_side is None:
+            described = (record.describe() if isinstance(record, LegacyStretch)
+                         else f"legacy {record.get('policy')!r} record")
+            raise CanvasPolicyError(f"{where}: refusing to sample from {described}")
+        return int(fallback_side), int(fallback_side)
+    spec = record if isinstance(record, CanvasSpec) else CanvasSpec.from_record(record)
+    height, width = spec.canvas_hw
+    return int(width), int(height)
+
+
 def require_canonical(canvas: Any, *, where: str = "training") -> CanvasSpec:
     """Fail closed unless the sample declares a canonical aspect-preserving canvas.
 

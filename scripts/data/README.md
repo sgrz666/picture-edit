@@ -64,3 +64,13 @@
 - 本目录有 4 个**相对软链接**（`build_tiktok_v6_conditions.py`、`precompute_tiktok_face_features_v65.py`、`prepare_tiktok_qwen21_face.py`、`prepare_tiktok_qwen21_training.py`），它们指向 `scripts/` 根下的同名文件；不要按文件名重复维护两份，改原文件即可。
 - iPER 的官方划分约束（train 79 / test 20，appearance 无重叠）由 `split_iper_train_val.py` 强制保证，改划分逻辑时必须维持 test appearance 完全不动。
 - 多数特征预计算脚本要求 ArcFace/DINO 等重模型**已存在于本地**，脚本本身不下载权重。
+
+## Body21 版本化几何缓存与迁移
+
+- `build_qwen21_body_pose_cache.py`：现有 SMPLest-X 环境从 TikTok/iPER 参数计算 22 FK、Body63 和原图投影，逐帧核对 mesh_cam（门槛 1e-4），只写新输出目录及来源 SHA256。
+- `migrate_qwen21_geometry_v2.py`：Full/v1 严格继承到 Body21，或显式 legacy 重建；不建 optimizer，不覆盖原权重。用法见 `src/pose_control/qwen21_full/GLOBAL_GEOMETRY_V2.md`。
+
+## Native Depth V2
+
+- `export_qwen21_depth_v2.py`：读取现有目标mesh_cam和Body21记录，导出版本化Camera-Z/valid NPY或为已有PNG建立V2 manifest；不重跑人体估计，输出新目录。
+- `migrate_qwen21_depth_v2.py`：显式继承Geometry、Body和CHAMP Encoder，丢弃旧Depth投影，初始化新Detail/Gate/投影；原版本仍可重建。本轮两个工具均未执行，见 `src/pose_control/qwen21_full/NATIVE_DEPTH_V2.md`。

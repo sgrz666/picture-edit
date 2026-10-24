@@ -71,7 +71,7 @@ def runtime(depth=True):
     from src.pose_control.qwen21_full.native_depth import NativeDepthConfig, Qwen21NativeDepth
     full = Qwen21FullAdapter(UnifiedSMPLXAdapterV6.build_tiny(), qwen_hidden_size=16,
                              qwen_text_dim=24, pooled_input_dim=20)
-    geom = Qwen21NativeGeometry.from_full_adapter(full)
+    geom = Qwen21NativeGeometry.from_full_adapter(full, legacy=True)
     width = geom.reasoner.config.hidden_dim
     body = Qwen21NativeBody(NativeBodyConfig(hidden_dim=16, geometry_dim=width, width=8))
     d = Qwen21NativeDepth(NativeDepthConfig(geometry_dim=width)) if depth else None
@@ -98,7 +98,7 @@ def test_native_checkpoint_can_rebuild_without_original_full_weights(tmp_path):
     path = tmp_path / "native.pt"
     torch.save(system.checkpoint_payload(metadata={"step":3}), path)
     saved = torch.load(path,map_location="cpu",weights_only=True)
-    rebuilt = api().NativeDepthRuntime.from_native_checkpoint(saved)
+    rebuilt = api().NativeDepthRuntime.from_native_checkpoint(saved, legacy=True)
     assert rebuilt.body.config == system.body.config
     assert rebuilt.depth.config == system.depth.config
     assert all(torch.equal(a,b) for a,b in zip(system.parameters(),rebuilt.parameters()))
@@ -112,6 +112,27 @@ def test_depth_asset_drift_is_rejected_after_first_read(tmp_path):
     records.records["pair-1"]["depth_path"] = str(replacement)
     with pytest.raises(ValueError,match="changed"):
         records.condition(sample())
+
+
+def test_explicit_depth_asset_to_original_affine_for_iper(tmp_path):
+    Image.fromarray(np.full((32, 32), 127, np.uint8)).save(tmp_path / 'depth.png')
+    Image.fromarray(np.full((32, 32), 255, np.uint8)).save(tmp_path / 'valid.png')
+    row = {'pair_id': 'p', 'target_stem': 't', 'kind': 'relative_png', 'polarity': 'near_one',
+           'depth_path': str(tmp_path / 'depth.png'), 'valid_path': str(tmp_path / 'valid.png'),
+           'camera_id': 'raw', 'units': 'unknown', 'scale_status': 'unknown',
+           'asset_to_original': [[2., 0., 0.], [0., 2., 0.], [0., 0., 1.]]}
+    manifest = tmp_path / 'depth.jsonl'
+    manifest.write_text(json.dumps(row) + '\n')
+    s = {'pair_metadata': {'pair_id': 'p', 'target_stem': 't'}, 'target_token_hw': (4, 4),
+         'valid_image_mask': torch.ones(1, 64, 64),
+         'target_canvas': {'original_hw': [64, 64], 'resized_hw': [64, 64], 'canvas_hw': [64, 64], 'offset_xy': [0, 0]}}
+    c = api().NativeDepthRecords(manifest, mode='relative_png').condition(s)
+    assert c.relative.shape == (1, 1, 64, 64) and c.available.all()
+    assert c.relative.mean() == pytest.approx(127 / 255)
+    row['asset_to_original'][0][0] = 1.  # reject a wrong/double-applied scale
+    manifest.write_text(json.dumps(row) + '\n')
+    with pytest.raises(ValueError, match='asset_to_original'):
+        api().NativeDepthRecords(manifest, mode='relative_png').condition(s)
 
 
 def test_flow_loss_masks_padding_without_erasing_partial_tokens():
@@ -151,7 +172,7 @@ def test_partial_canvas_coverage_scales_the_body_residual():
 
 def test_training_entry_refuses_ambiguous_depth_configuration():
     from scripts.train.train_qwen21_native_depth import arguments, validate_arguments
-    argv = ["--pairs", "pairs.jsonl", "--output", "run", "--full-checkpoint", "full.pt"]
+    argv = ["--pairs", "pairs.jsonl", "--output", "run", "--full-checkpoint", "full.pt", "--geometry-version", "legacy_v1"]
     args = arguments(argv + ["--depth-mode", "relative_png"])
     with pytest.raises(ValueError, match="manifest"):
         validate_arguments(args)

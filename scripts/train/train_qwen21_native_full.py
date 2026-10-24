@@ -33,7 +33,8 @@ from src.data.geometry_pair_dataset_v2 import (
 from src.pose_control.qwen21_full.canvas_provenance import require_canvas_compatible
 from src.pose_control.qwen21_full.data_runtime import FaceConditionStore, QwenFullDataset
 from src.pose_control.qwen21_full.execution import (
-    MODEL, ROOT, batch_one, json_write, new_adapter, precompute, run_loss, save_checkpoint,
+    ARCHITECTURE, MODEL, ROOT, batch_one, checkpoint_provenance, json_write,
+    load_adapter_checkpoint, new_adapter, precompute, run_loss, save_checkpoint,
     set_training_phase, seed_all,
 )
 from src.pose_control.qwen21_full.qwen_runtime import PROMPT, Qwen21IPERCache
@@ -46,6 +47,19 @@ FORBIDDEN_POLICIES = {"resize-square": RESIZE_SQUARE, "square-crop": SQUARE_CROP
 DEEPGEN_CONFIG = ROOT / "models/DeepGen-1.0-diffusers/transformer/config.json"
 
 
+def adapter_from_config(*, enable_hand: bool = False):
+    """Fresh adapter straight from the DeepGen transformer config, on CPU, FP32."""
+    from types import SimpleNamespace
+
+    from src.pose_control.qwen21_full.deepgen_adapter import UnifiedSMPLXAdapterV6
+    from src.pose_control.qwen21_full.qwen_adapter import Qwen21FullAdapter
+
+    config = SimpleNamespace(**json.loads(DEEPGEN_CONFIG.read_text()))
+    legacy = UnifiedSMPLXAdapterV6.from_deepgen_config(config, enable_face_adapter=True,
+                                                       enable_hand_adapter=enable_hand)
+    return Qwen21FullAdapter(legacy)
+
+
 def build_adapter(args, device):
     """warm-start reproduces the legacy initialisation; scratch exists for plumbing smoke tests.
 
@@ -54,19 +68,64 @@ def build_adapter(args, device):
     backward pass to agree on a non-square grid.
     """
     if args.adapter_init == "warm-start":
+        if args.init_checkpoint is not None:
+            return warm_start_from(args, device)
         return new_adapter(device)
-    from types import SimpleNamespace
-
-    from src.pose_control.qwen21_full.deepgen_adapter import UnifiedSMPLXAdapterV6
-    from src.pose_control.qwen21_full.qwen_adapter import Qwen21FullAdapter
-
     print("adapter initialised from the DeepGen config WITHOUT pretrained V6 weights: "
           "this validates the canvas plumbing only and must not be used for real training",
           flush=True)
-    config = SimpleNamespace(**json.loads(DEEPGEN_CONFIG.read_text()))
-    legacy = UnifiedSMPLXAdapterV6.from_deepgen_config(config, enable_face_adapter=True,
-                                                       enable_hand_adapter=False)
-    return Qwen21FullAdapter(legacy).to(device=device, dtype=torch.float32)
+    adapter = adapter_from_config()
+    adapter.initialization_provenance = {"mode": "scratch", "init_checkpoint": None}
+    return adapter.to(device=device, dtype=torch.float32)
+
+
+def warm_start_from(args, device):
+    """Inherit weights from a checkpoint the caller named, and record which canvas it saw.
+
+    `--init-checkpoint` used to be accepted and then ignored: warm-start went straight to
+    `new_adapter()`, whose hardcoded V6 paths are absent on this machine, so the mode could not
+    run at all. Two checkpoint species exist and must not be confused: a `qwen21_full_v1` run
+    checkpoint carries `legacy.`-prefixed keys and loads through `load_adapter_checkpoint`,
+    while a V6-era checkpoint feeds `Qwen21FullAdapter.from_checkpoints`. Weights trained under
+    the square preprocessing are still only inheritable as an explicit warm start, which is what
+    `--warm-start-ok` is for.
+    """
+    from src.pose_control.qwen21_full.qwen_adapter import Qwen21FullAdapter
+
+    body = Path(args.init_checkpoint)
+    if not body.is_file():
+        raise SystemExit(f"--init-checkpoint is not a file: {body}")
+    face = args.init_face_checkpoint
+    if face is not None and not Path(face).is_file():
+        raise SystemExit(f"--init-face-checkpoint is not a file: {face}")
+    saved = torch.load(body, map_location="cpu", weights_only=False, mmap=True)
+    try:
+        source_schema = require_canvas_compatible(saved, warm_start_ok=args.warm_start_ok,
+                                                  where="--init-checkpoint warm start")
+    except ValueError as exc:
+        raise SystemExit(str(exc)) from exc
+    if saved.get("architecture") == ARCHITECTURE:
+        if face is not None:
+            raise SystemExit("--init-face-checkpoint does not apply to a qwen21_full checkpoint: "
+                             "it already carries every branch in adapter_state_dict")
+        state = saved.get("adapter_state_dict") or {}
+        # The branch set has to match the checkpoint or the strict load fails on unexpected keys.
+        enable_hand = any(str(key).startswith("legacy.hand_") for key in state)
+        adapter = adapter_from_config(enable_hand=enable_hand)
+        load_adapter_checkpoint(adapter, body)
+    else:
+        adapter = Qwen21FullAdapter.from_checkpoints(DEEPGEN_CONFIG, body, face, enable_hand=False)
+    adapter.initialization_provenance = {
+        "mode": "warm-start", "source_architecture": saved.get("architecture"),
+        "source_canvas_policy": saved.get("canvas_policy"),
+        "source_canvas_schema": source_schema, "warm_start_ok": args.warm_start_ok,
+        **checkpoint_provenance(body, saved),
+    }
+    print(f"warm start inherited from {body.name} "
+          f"(architecture {saved.get('architecture') or 'v6-legacy'}, step {saved.get('step')}, "
+          f"canvas {saved.get('canvas_policy') or 'pre-contract/' + source_schema}); "
+          "its features were trained without a portrait canvas", flush=True)
+    return adapter.to(device=device, dtype=torch.float32)
 
 
 def arguments(argv=None):
@@ -100,7 +159,11 @@ def arguments(argv=None):
                         "because save_checkpoint records it in the run metadata")
     p.add_argument("--adapter-init", choices=("warm-start", "scratch"), default="warm-start",
                    help="scratch skips the legacy V6 warm-start weights; smoke tests only")
-    p.add_argument("--init-checkpoint", type=Path)
+    p.add_argument("--init-checkpoint", type=Path,
+                   help="warm-start body weights; without this the entry falls back to the "
+                        "hardcoded V6 paths, which are not on every machine")
+    p.add_argument("--init-face-checkpoint", type=Path,
+                   help="optional Face branch weights to inherit alongside --init-checkpoint")
     p.add_argument("--warm-start-ok", action="store_true",
                    help="inherit a pre-contract checkpoint's weights, without claiming its features "
                         "already suit an aspect-preserving canvas")

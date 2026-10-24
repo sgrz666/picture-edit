@@ -14,9 +14,11 @@ from diffusers import QwenImage21Pipeline
 from PIL import Image
 from skimage.metrics import peak_signal_noise_ratio, structural_similarity
 
+from src.data.canvas_contract import sampling_size
 from src.pose_control.qwen21_full.execution import (
     MODEL, RUN_ROOT, FaceConditionStore, QwenFullDataset, Qwen21IPERCache,
-    batch_one, json_write, load_adapter_checkpoint, new_adapter, prepare, seed_all,
+    batch_one, checkpoint_has_branch, json_write, load_adapter_checkpoint,
+    new_adapter_from_config, prepare, seed_all,
 )
 from src.pose_control.qwen21_full.qwen_adapter import Qwen21FullControlContext, validate_face_group_gains
 from src.pose_control.qwen21_full.qwen_runtime import PROMPT, dataset_image_to_pil
@@ -26,9 +28,16 @@ def arguments():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('--pairs', type=Path, default=RUN_ROOT / 'val_pairs.jsonl')
     p.add_argument('--dataset-type', choices=('auto', 'iper', 'tiktok_v3'), default='auto')
-    p.add_argument('--align-mode', choices=('resize', 'letterbox'), required=True,
+    p.add_argument('--align-mode', choices=('native', 'aspect_preserving', 'letterbox', 'resize'),
+                   required=True,
                    help="must match the canvas the checkpoint was trained on; 'resize' stretches "
                         "every portrait into a square and additionally needs --legacy-policy-ok")
+    p.add_argument('--max-pixels', type=int, default=1024 * 1024,
+                   help="pixel budget for --align-mode aspect_preserving; the two axes always shrink "
+                        "together, so the body is never distorted")
+    p.add_argument('--square-sampling', action='store_true',
+                   help="sample at --resolution x --resolution instead of the sample's own canvas. "
+                        "Reproduces the historical square outputs and nothing else")
     p.add_argument('--legacy-policy-ok', action='store_true',
                    help="allow --align-mode resize when reproducing a run trained on that stretch")
     p.add_argument('--tiktok-raw-root', type=Path, default=MODEL.parents[1] / 'datasets/TikTokDataset/TikTok_dataset/TikTok_dataset')
@@ -91,13 +100,18 @@ def main():
     seed_all(args.seed)
     torch.set_num_threads(4)
     # Face geometry is remapped using the exact source/target RGB transforms in prepare().
-    dataset = QwenFullDataset(args.pairs, resolution=args.resolution, dataset_type=args.dataset_type,
-                              align_mode=args.align_mode, legacy_policy_ok=args.legacy_policy_ok,
+    dataset = QwenFullDataset(args.pairs, resolution=(
+        'native' if args.align_mode in ('native', 'aspect_preserving') else args.resolution),
+        dataset_type=args.dataset_type,
+        align_mode=args.align_mode, legacy_policy_ok=args.legacy_policy_ok,
+        max_pixels=args.max_pixels,
                               tiktok_raw_root=args.tiktok_raw_root, tiktok_assets_root=args.tiktok_assets_root)
     count = min(len(dataset), args.max_samples) if args.max_samples else len(dataset)
     store = FaceConditionStore(args.features)
-    cache = Qwen21IPERCache(args.cache, resolution=args.resolution, prompt=args.prompt,
-                          preprocessing='letterbox_v1' if args.align_mode=='letterbox' else 'resize_v1')
+    cache = Qwen21IPERCache(args.cache, resolution=('native' if args.align_mode in ('native', 'aspect_preserving') else args.resolution), prompt=args.prompt,
+                          preprocessing='letterbox_v1' if args.align_mode == 'letterbox' else 'resize_v1',
+                          canvas_policy=None if args.align_mode in ('letterbox', 'resize')
+                          else {'native': 'native_pad'}.get(args.align_mode, args.align_mode))
     config = {key: str(value) if isinstance(value, Path) else value for key, value in vars(args).items()}
     config.update(true_cfg_scale=1.0, added_face_reference=False,
                   scope='validation engineering acceptance, not final test evaluation')
@@ -121,7 +135,8 @@ def main():
     for model in (pipe.transformer, pipe.text_encoder, pipe.vae):
         model.eval().requires_grad_(False)
     pipe.set_progress_bar_config(disable=True)
-    adapter = new_adapter('cuda').eval().requires_grad_(False)
+    adapter = new_adapter_from_config(
+        'cuda', enable_hand=checkpoint_has_branch(args.body_checkpoint, 'legacy.hand_')).eval().requires_grad_(False)
     initial_state = {key: value.detach().cpu() for key, value in adapter.state_dict().items()}
     rows = []
     records = args.output / 'per_sample.jsonl'
@@ -155,7 +170,14 @@ def main():
             with torch.no_grad():
                 entry = cache.source(pipe, source)
                 pair = {'source_latent': entry['reference_latent'].to('cuda'), 'resolution': args.resolution}
+                if sample.get('target_token_hw') is not None:
+                    pair['target_token_hw'] = tuple(sample['target_token_hw'])
+                    if sample.get('source_token_hw') is not None:
+                        pair['source_token_hw'] = tuple(sample['source_token_hw'])
                 prepared = prepare(adapter, batch, pair, [meta], store, with_face=mode == 'body_face')
+            out_width, out_height = sampling_size(
+                sample, fallback_side=args.resolution if args.square_sampling else None,
+                where='eval sampling')
             torch.cuda.synchronize()
             torch.cuda.reset_peak_memory_stats()
             began = time.perf_counter()
@@ -169,10 +191,16 @@ def main():
                                              diagnostic_stage_steps=args.diagnostic_stage_steps,
                                              diagnostic_sigma_provider=lambda step_index: pipe.scheduler.sigmas[step_index],
                                              num_inference_steps=args.steps) as context:
-                    result = pipe(prompt=args.prompt, image=[source], width=args.resolution, height=args.resolution,
-                                  output_resolution=args.resolution, num_inference_steps=args.steps,
-                                  true_cfg_scale=1.0, use_kv_cache=args.use_kv_cache,
-                                  generator=torch.Generator(device='cuda').manual_seed(args.seed))
+                    sampling_kwargs = dict(prompt=args.prompt, image=[source],
+                                          width=out_width, height=out_height,
+                                          num_inference_steps=args.steps, true_cfg_scale=1.0,
+                                          use_kv_cache=args.use_kv_cache,
+                                          generator=torch.Generator(device='cuda').manual_seed(args.seed))
+                    if args.square_sampling:
+                        # Only the declared square-reproduction path keeps output_resolution,
+                        # because that argument resizes the frame to a single side.
+                        sampling_kwargs['output_resolution'] = args.resolution
+                    result = pipe(**sampling_kwargs)
             torch.cuda.synchronize()
             seconds = time.perf_counter() - began
             generated = opaque(result.images[0])

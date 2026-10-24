@@ -962,6 +962,7 @@ class TikTokV3PoseDataset(Dataset):
             'target_stem': stem,
             'source_canvas': source_spec.metadata(),
             'target_canvas': target_spec.metadata(),
+            'source_token_hw': source_spec.token_hw,
             'target_token_hw': target_spec.token_hw,
             'camera_metadata': {
                 'convention': 'legacy 26D SMPL-X global; normalised fx,fy,cx,cy at indices 19..22',
@@ -1058,6 +1059,7 @@ class TikTokV3PoseDataset(Dataset):
             'target_stem': stem,
             'source_canvas': a.metadata(),
             'target_canvas': b.metadata(),
+            'source_token_hw': a.token_hw,
             'target_token_hw': b.token_hw,
             'camera_metadata': {
                 'convention': 'legacy 26D SMPL-X global; normalised fx,fy,cx,cy at indices 19..22',

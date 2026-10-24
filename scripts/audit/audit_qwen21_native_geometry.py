@@ -52,7 +52,7 @@ def audit_checkpoint(checkpoint, *, reasoning_config=None, threads=2):
     try:
         config = reasoning_config or AdapterReasoningConfig()
         payload = torch.load(path, map_location="cpu", weights_only=False, mmap=True)
-        native = Qwen21NativeGeometry.from_full_checkpoint(payload, reasoning_config=config).eval()
+        native = Qwen21NativeGeometry.from_full_checkpoint(payload, legacy=True, reasoning_config=config).eval()
         state_dict = payload["adapter_state_dict"]
 
         def restore(module, prefix):

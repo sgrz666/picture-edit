@@ -17,7 +17,7 @@ from src.pose_control.qwen21_full.native_integration import bind_native_body, in
 GRID = (2, 4)
 TOKENS = GRID[0] * GRID[1]
 GEOMETRY_DIM = 32
-HIDDEN = 64
+LATENT_DIM = 64  # what the transformer is fed; inner_dim is what Native Body injects into
 
 
 def build():
@@ -26,9 +26,10 @@ def build():
     torch.manual_seed(7)
     model = QwenImage21Transformer2DModel(
         in_channels=64, out_channels=64, num_layers=32, num_attention_heads=2,
-        attention_head_dim=8, context_in_dim=8, axes_dims_rope=(2, 2, 4), mlp_ratio=2).eval()
-    body = Qwen21NativeBody(NativeBodyConfig(hidden_dim=HIDDEN, geometry_dim=GEOMETRY_DIM,
-                                             width=8, num_layers=32, injection_layers=(0, 16)))
+        attention_head_dim=8, context_in_dim=8, axes_dims_rope=(2, 2, 4), mlp_ratio=2,
+        causal_condition=True).eval()
+    body = Qwen21NativeBody(NativeBodyConfig(hidden_dim=model.inner_dim,
+                                             geometry_dim=GEOMETRY_DIM, width=8))
     install_native_body(model, body)
     with torch.no_grad():
         for head in body.output_heads:
@@ -44,11 +45,10 @@ def features():
 
 
 def inputs():
-    # Reference image is 2x2 (4 slots), target is the 2x4 grid; the last target token is padding.
-    img_mask = torch.zeros(1, 3 + TOKENS, dtype=torch.bool)
-    img_mask[0, 3:] = True
-    img_mask[0, :3] = True
-    return {"hidden_states": torch.randn(1, 4 + TOKENS, HIDDEN),
+    # img_mask is per four-token slot: 3 text positions + 2 target slots; the reference image is
+    # (1,2,2)=4 tokens and the target canvas is the (2,4) grid = 8 tokens.
+    img_mask = torch.tensor([[True, False, False, True, True]])
+    return {"hidden_states": torch.randn(1, 4 + TOKENS, LATENT_DIM),
             "encoder_hidden_states": torch.randn(1, 3, 8),
             "encoder_hidden_states_mask": torch.ones(1, 3, dtype=torch.bool),
             "timestep": torch.tensor([.5]),
@@ -85,4 +85,5 @@ def test_gate_needs_a_declared_mask_and_is_off_by_default():
             model(**values)
     # Same binding without the gate must run, proving the default is unchanged behaviour.
     with torch.no_grad(), bind_native_body(model, feats):
-        assert model(**values)[0].shape == values["hidden_states"].shape
+        out = model(**values)[0]
+    assert out.ndim == 3 and out.shape[0] == 1 and out.shape[-1] == LATENT_DIM

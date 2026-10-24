@@ -11,6 +11,7 @@ import sys as _sys
 _sys.path.insert(0, str(_Path(__file__).resolve().parents[2]))
 
 import argparse
+from dataclasses import asdict
 import hashlib
 import json
 from pathlib import Path
@@ -30,7 +31,17 @@ def arguments(argv=None):
     p.add_argument("--output", type=Path, required=True)
     p.add_argument("--full-checkpoint", type=Path, required=True)
     p.add_argument("--model", type=Path, default=ROOT / "models/Qwen-Image-2.1")
-    p.add_argument("--depth-mode", choices=("off", "relative_png", "camera_z"), default="off")
+    p.add_argument("--depth-mode", choices=("off", "relative_png", "camera_z", "auto"), default="off")
+    p.add_argument('--depth-version', choices=('v1', 'v2'), default='v2')
+    p.add_argument('--upgrade-depth-v2', action='store_true')
+    p.add_argument('--body-jump-threshold', type=float, default=.02)
+    p.add_argument('--relative-jump-threshold', type=float, default=.05)
+    p.add_argument('--train-native-all', action='store_true')
+    p.add_argument('--freeze-native-body', action='store_true')
+    p.add_argument('--freeze-champ-cnn', action='store_true')
+    p.add_argument('--freeze-champ-attention', action='store_true')
+    p.add_argument('--freeze-depth-detail', action='store_true')
+    p.add_argument('--freeze-depth-fusion', action='store_true')
     p.add_argument("--depth-manifest", type=Path)
     p.add_argument("--depth-strength", type=float, default=1.)
     p.add_argument("--attention-scale", type=int, choices=(8, 16), default=16)
@@ -38,6 +49,12 @@ def arguments(argv=None):
     p.add_argument("--warm-start-native", type=Path)
     p.add_argument("--warm-start-components", choices=("geometry-body", "all"), default="geometry-body")
     p.add_argument("--train-geometry", action="store_true")
+    p.add_argument('--geometry-version', choices=('body21', 'legacy_v1'), default='body21')
+    p.add_argument('--pose-manifest', type=Path)
+    p.add_argument('--pose-rotation', choices=('rotation6d_columns', 'axis_angle'), default='rotation6d_columns')
+    p.add_argument('--no-pose-spatial-bias', action='store_true')
+    p.add_argument('--freeze-pose', action='store_true')
+    p.add_argument('--upgrade-v1-native', action='store_true', help='Explicit v1 -> Body21 weight migration only')
     p.add_argument("--canvas-policy", choices=("native", "aspect_preserving"), default="aspect_preserving")
     p.add_argument("--max-pixels", type=int, default=512*512)
     p.add_argument("--steps", type=int, default=100)
@@ -51,11 +68,31 @@ def arguments(argv=None):
 
 def validate_arguments(args):
     import math
+    from src.pose_control.qwen21_full.depth_geometry import DepthGeometryConfig
+    DepthGeometryConfig(args.body_jump_threshold, args.relative_jump_threshold)
+    if args.depth_mode != 'off' and args.depth_version == 'v2' and args.geometry_version != 'body21':
+        raise ValueError('Depth V2 requires Body21 paired geometry')
+    if args.depth_version == 'v1' and args.depth_mode == 'auto':
+        raise ValueError('auto per-record modality is a V2 contract')
+    if args.upgrade_depth_v2 and (args.depth_mode == 'off' or args.depth_version != 'v2' or args.warm_start_native is None or args.warm_start_components != 'all'):
+        raise ValueError('Depth upgrade needs V2 and explicit all-component Native warm-start')
+    if args.champ_checkpoint is not None and args.warm_start_native is not None and args.warm_start_components == 'all':
+        raise ValueError('Choose official CHAMP initialization or all-component Native Encoder inheritance, not both')
+    if args.train_native_all and any((args.freeze_pose, args.freeze_native_body, args.freeze_champ_cnn,
+                                      args.freeze_champ_attention, args.freeze_depth_detail, args.freeze_depth_fusion)):
+        raise ValueError('All-Native and individual freeze overrides are mutually exclusive')
+    if args.geometry_version == 'body21' and args.pose_manifest is None:
+        raise ValueError('Native Body21 default requires --pose-manifest; legacy_v1 is explicit')
+    if args.geometry_version == 'legacy_v1' and (args.pose_manifest is not None or args.upgrade_v1_native):
+        raise ValueError('legacy_v1 cannot consume v2 Pose caches/migration')
     if args.depth_mode == "off":
         if args.depth_manifest is not None or args.champ_checkpoint is not None:
             raise ValueError("Depth off cannot consume a manifest or CHAMP checkpoint")
     elif args.depth_manifest is None:
         raise ValueError("Enabled Depth requires --depth-manifest")
+    if (not args.preflight_only and args.depth_mode != 'off' and args.depth_version == 'v2' and args.champ_checkpoint is None
+            and not (args.warm_start_native is not None and args.warm_start_components == 'all')):
+        raise ValueError('Depth V2 requires explicit CHAMP weights or a Native Encoder warm-start')
     if args.warm_start_components == "all" and args.warm_start_native is None:
         raise ValueError("--warm-start-components all requires --warm-start-native")
     if args.steps <= 0 or args.preflight_samples <= 0 or args.max_pixels <= 0:
@@ -74,7 +111,8 @@ def preflight_samples(dataset, records, *, count):
         facts.append({"pair_id": sample["pair_metadata"]["pair_id"],
                       "target_token_hw": list(sample["target_token_hw"]),
                       "target_canvas": sample["target_canvas"],
-                      "depth": None if depth is None else depth.metadata[0]})
+                      "depth": None if depth is None else depth.metadata[0],
+                      'pose': sample.get('pose_provenance')})
     if not facts:
         raise ValueError("No training pairs passed preflight")
     return {"checked_pairs": len(facts), "total_pairs": len(dataset),
@@ -108,9 +146,21 @@ def main(argv=None):
         raise FileExistsError("Use a new output directory; this entry never overwrites an earlier run")
     from src.pose_control.qwen21_full.data_runtime import QwenFullDataset
     from src.data.geometry_pair_dataset_v2 import assert_pair_contract
-    dataset = QwenFullDataset(args.pairs, resolution="native", dataset_type="tiktok_v3",
-                             align_mode=args.canvas_policy, max_pixels=args.max_pixels)
-    records = None if args.depth_mode == "off" else NativeDepthRecords(args.depth_manifest, mode=args.depth_mode)
+    if args.geometry_version == 'legacy_v1':
+        dataset = QwenFullDataset(args.pairs, resolution="native", dataset_type="tiktok_v3",
+                                 align_mode=args.canvas_policy, max_pixels=args.max_pixels)
+    else:
+        from src.pose_control.qwen21_full.pose_data_runtime import NativePoseDataset
+        dataset = NativePoseDataset(args.pairs, args.pose_manifest, canvas_policy=args.canvas_policy, max_pixels=args.max_pixels)
+    if args.depth_mode == 'off':
+        records = None
+    elif args.depth_version == 'v1':
+        records = NativeDepthRecords(args.depth_manifest, mode=args.depth_mode)
+    else:
+        from src.pose_control.qwen21_full.depth_v2_records import NativeDepthV2Records
+        from src.pose_control.qwen21_full.depth_geometry import DepthGeometryConfig
+        records = NativeDepthV2Records(args.depth_manifest, pose_records=dataset.records, mode=args.depth_mode,
+                                      geometry_config=DepthGeometryConfig(args.body_jump_threshold, args.relative_jump_threshold))
     for i in range(min(args.preflight_samples, len(dataset))):
         assert_pair_contract(dataset[i], where=f"Native Depth preflight pair {i}")
     report = preflight_samples(dataset, records, count=args.preflight_samples)
@@ -134,24 +184,43 @@ def main(argv=None):
     torch.manual_seed(args.seed)
     torch.cuda.manual_seed_all(args.seed)
     source = torch.load(args.full_checkpoint, map_location="cpu", mmap=True, weights_only=False)
-    geometry = Qwen21NativeGeometry.from_full_checkpoint(source)
+    from src.pose_control.qwen21_full.body_pose import BodyPoseConfig
+    pose_config = None if args.geometry_version == 'legacy_v1' else BodyPoseConfig(
+        rotation=args.pose_rotation, spatial_bias=not args.no_pose_spatial_bias)
+    geometry = Qwen21NativeGeometry.from_full_checkpoint(source, legacy=args.geometry_version == 'legacy_v1', pose_config=pose_config)
     del source
-    depth = None if args.depth_mode == "off" else Qwen21NativeDepth(NativeDepthConfig(attention_scale=args.attention_scale))
-    system = NativeDepthRuntime(geometry, Qwen21NativeBody(), depth, train_geometry=args.train_geometry)
+    from src.pose_control.qwen21_full.native_depth_v2 import Qwen21NativeDepthV2, NativeDepthV2Config
+    from src.pose_control.qwen21_full.native_depth_runtime import NativeTrainabilityConfig
+    if args.depth_mode == 'off':
+        depth = None
+    elif args.depth_version == 'v1':
+        depth = Qwen21NativeDepth(NativeDepthConfig(attention_scale=args.attention_scale))
+    else:
+        depth = Qwen21NativeDepthV2(NativeDepthV2Config(attention_scale=args.attention_scale,
+                    body_jump_threshold=args.body_jump_threshold, relative_jump_threshold=args.relative_jump_threshold))
+    flags = NativeTrainabilityConfig(geometry=args.train_geometry, pose=not args.freeze_pose,
+        body=not args.freeze_native_body, champ_cnn=not args.freeze_champ_cnn, champ_attention=not args.freeze_champ_attention,
+        depth_detail=not args.freeze_depth_detail, depth_fusion=not args.freeze_depth_fusion)
+    system = NativeDepthRuntime(geometry, Qwen21NativeBody(), depth,
+                               trainability=NativeTrainabilityConfig.all_native() if args.train_native_all else flags)
     inheritance = {}
     if args.champ_checkpoint is not None:
         inheritance["champ"] = depth.load_champ_state_dict(torch.load(args.champ_checkpoint, map_location="cpu", weights_only=True))
     if args.warm_start_native:
         saved = torch.load(args.warm_start_native, map_location="cpu", weights_only=True)
-        inheritance["native"] = system.load_native_weights(saved, include_depth=args.warm_start_components == "all")
+        inheritance["native"] = system.load_native_weights(saved, include_depth=args.warm_start_components == "all",
+                                                          upgrade_pose=args.upgrade_v1_native, upgrade_depth=args.upgrade_depth_v2)
         del saved
     metadata = {"args": {k: str(v) if isinstance(v, Path) else v for k, v in vars(args).items()}, "base_revision": MODEL_REVISION,
                 "pairs_sha256": _sha(args.pairs), "depth_manifest_sha256": _sha(args.depth_manifest),
+                'pose_manifest_sha256': _sha(args.pose_manifest), 'pose_config': None if pose_config is None else pose_config.to_dict(),
                 "full_checkpoint_sha256": _sha(args.full_checkpoint),
                 "champ_checkpoint_sha256": _sha(args.champ_checkpoint),
                 "warm_start_native_sha256": _sha(args.warm_start_native),
                 "inheritance": inheritance, "loss": "canvas_coverage_weighted_velocity_mse",
-                "geometry_frozen": not args.train_geometry, "face_hand": "native_reference_only"}
+                "geometry_frozen": not system.train_geometry, 'pose_trainable': system.train_pose,
+                'depth_version': args.depth_version, 'trainability': asdict(system.trainability),
+                "face_hand": "native_reference_only"}
     _write(args.output / "run_manifest.json", metadata)
 
     # Cache VLM/reference/target features before reserving GPU memory for the DiT.
@@ -178,6 +247,8 @@ def main(argv=None):
     system.train()
     pipe.transformer.enable_gradient_checkpointing()
     parameters = [p for p in system.parameters() if p.requires_grad]
+    if not parameters:
+        raise ValueError('No trainable Native parameters; select explicit parameter groups')
     optimizer = torch.optim.AdamW(parameters, lr=args.lr)
     started = time.perf_counter()
     metrics_path = args.output / "metrics.jsonl"
@@ -207,8 +278,8 @@ def main(argv=None):
             grad_norm = torch.nn.utils.clip_grad_norm_(parameters, 1.)
             if not torch.isfinite(loss) or not torch.isfinite(grad_norm) or grad_norm == 0:
                 raise FloatingPointError("Native training loss/gradient is nonfinite or zero")
-            depth_grad = None if depth is None else float(depth.projection.weight.grad.norm())
-            depth_conv_grad = None if depth is None else float(depth.encoder.conv_in.weight.grad.norm())
+            depth_grad = None if depth is None or depth.projection.weight.grad is None else float(depth.projection.weight.grad.norm())
+            depth_conv_grad = None if depth is None or depth.encoder.conv_in.weight.grad is None else float(depth.encoder.conv_in.weight.grad.norm())
             optimizer.step()
             row = {"step": step+1, "pair_index": index, "pair_id": sample["pair_metadata"]["pair_id"],
                    "loss": float(loss.detach()), "grad_norm": float(grad_norm), "depth_head_grad": depth_grad,

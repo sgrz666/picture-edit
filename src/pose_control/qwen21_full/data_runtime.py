@@ -129,8 +129,21 @@ class QwenFullDataset(torch.utils.data.Dataset):
 
 
 def qwen_full_collate(rows: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
-    result = default_collate([{k: v for k, v in row.items() if k != "pair_metadata"} for row in rows])
-    result["pair_metadata"] = [dict(row["pair_metadata"]) for row in rows]
+    provenance_keys = ('pair_metadata', 'pose_provenance', 'pose_provenance_b')
+    structured_keys = ('depth_condition_v2', 'depth_fusion_context')
+    result = default_collate([{k: v for k, v in row.items() if k not in (*provenance_keys, *structured_keys)} for row in rows])
+    for key in structured_keys:
+        if any(key in row for row in rows):
+            if not all(key in row for row in rows):
+                raise ValueError(f'Incomplete structured batch: {key}')
+            from .depth_condition_v2 import DepthConditionV2, DepthFusionContext
+            cls = DepthConditionV2 if key == 'depth_condition_v2' else DepthFusionContext
+            result[key] = cls.stack([row[key] for row in rows])
+    for key in provenance_keys:
+        if any(key in row for row in rows):
+            if not all(key in row for row in rows):
+                raise ValueError(f'Incomplete batch provenance: {key}')
+            result[key] = [dict(row[key]) for row in rows]
     return result
 
 
@@ -143,6 +156,23 @@ def build_condition_bundle(adapter, batch: Mapping[str, Any], *, device, dtype) 
                   human_mask_a=floating("human_mask"), task_id=batch["task_id"].to(device=device, dtype=torch.long))
     if bool(getattr(adapter.condition_injector, "use_depth", False)):
         kwargs["depth_a"] = floating("depth")
+    if getattr(adapter.condition_injector, 'pose_config', None) is not None:
+        from .body_pose import pose_kwargs_from_batch
+        kwargs.update(pose_kwargs_from_batch(batch, device=device, dtype=dtype))
+    if 'normal_b' in batch:
+        for name in ('normal', 'pose_heatmap', 'part_onehot', 'human_mask', 'smplx_global'):
+            kwargs[name + '_b'] = floating(name + '_b')
+        if 'person_b_valid' in batch:
+            kwargs['person_b_valid'] = batch['person_b_valid'].to(device=device, dtype=torch.bool)
+        if getattr(adapter.condition_injector, 'pose_config', None) is not None:
+            kwargs.update(pose_kwargs_from_batch(batch, device=device, dtype=dtype, person='b', suffix='_b'))
+        if bool(getattr(adapter.condition_injector, 'use_depth', False)):
+            kwargs['depth_b'] = floating('depth_b')
+        for name in ('relative_geometry', 'contact_raster'):
+            if name in batch:
+                kwargs[name] = floating(name)
+        if 'contact_relations' in batch:
+            kwargs['contact_relations'] = batch['contact_relations'].to(device=device, dtype=dtype)
     return adapter.condition_injector(**kwargs)
 
 
