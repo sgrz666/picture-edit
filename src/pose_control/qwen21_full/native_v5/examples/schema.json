@@ -1,0 +1,25 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "title":"Native Full V5 pair manifest record",
+  "type":"object",
+  "required":["schema","pair_id","v4_manifest","detail","supervision","references"],
+  "properties":{
+    "schema":{"const":"native_full_pair_v5"},
+    "pair_id":{"type":"string","minLength":1},
+    "v4_manifest":{"$ref":"#/$defs/file"},
+    "detail":{"$ref":"#/$defs/record"},
+    "supervision":{"$ref":"#/$defs/record"},
+    "references":{"anyOf":[{"type":"null"},{"$ref":"#/$defs/record"}]}
+  },
+  "$defs":{
+    "file":{"type":"object","required":["path","sha256"],"properties":{"path":{"type":"string","minLength":1},"sha256":{"type":"string","pattern":"^[0-9a-f]{64}$"}}},
+    "record":{"allOf":[{"$ref":"#/$defs/file"}],"required":["schema"],"properties":{"schema":{"type":"string"}}}
+  },
+  "x-detail-schema":"native_detail_references_v5",
+  "x-detail-contract":{"boxes":["B",6,4],"support":["B",6,"Hs","Ws"],"valid":["B",6],"source_indices":["B",2],"role":"primary_source_only"},
+  "x-training-schema":"native_training_supervision_v5",
+  "x-training-contract":{"weights":["B",6,"Ht","Wt"],"auxiliary_valid":["B",2],"landmarks5":["B",2,5,2],"paired":["B"],"role":"training_only"},
+  "x-repair-result-contract":{"schema":"native_hand_repair_result_v5","role":"offline_geometry_repair","points":["B",2,2,21,3],"replace":["B",2,2],"metadata":"original driver metadata, exact batch and source binding"},
+  "x-repair-support-contract":{"schema":"native_hand_repair_support_v5","support":["B",2,"Ht","Wt"],"metadata":["driver_rgb_sha256","target_canvas_id","target_person_ids"]},
+  "x-dtypes":{"geometry_and_features":"float32","validity_and_masks":"bool","indices":"int64"}
+}

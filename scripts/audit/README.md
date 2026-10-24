@@ -63,3 +63,5 @@
 ## Native Full V4（工具未执行）
 
 `audit_qwen21_native_full_sources_v4.py`仅用FakeTensor读取已指定checkpoint容器的键、shape、dtype和历史step元数据，不构造模型或执行迁移。本轮仅编译该脚本；Face为3000步候选，Hand训练来源未确认，不能据结构匹配宣称预训练有效。使用见 `src/pose_control/qwen21_full/NATIVE_FULL_V4.md`。
+
+`audit_qwen21_native_full_v5.py`为V5准备显式state容器的FakeTensor键／尺寸清单，分别记录结构、权重证据、运行、控制和质量结论；不构造模型或执行迁移。本轮工具未执行，源码／日志账本和后续顺序见`src/pose_control/qwen21_full/native_v5/README.md`。

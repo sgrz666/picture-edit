@@ -1,0 +1,15 @@
+{
+  "baseline": "efc26ba77845a2e11b6f60f335d4096a6940ef3c",
+  "architecture": "native_full_v5",
+  "claims": {"structure":"code_connected_static_only","weights":"migration_tool_only_not_executed","runtime":"not_run","control":"not_run","quality":"not_run"},
+  "inherited": ["Geometry Pose/Normal/Part/Global26","Body21","CHAMP Depth and person Detail","CrossPerson/Contact","Native Body","Relation Raster/Part Tokens","Source Identity Binder","Face/Hand compatible static encoders"],
+  "adapted": ["Source16 Detail mapping -> Native64 masked ROI Bridge","Geometry/Interaction independent residuals","Face raw ID vs DINO/Perceiver texture split","Hand geometry/texture independent increments","Native sigma and six-group gains","visible local velocity/ID/perceptual training interfaces","Hand quality/refiner interchange","explicit R1-R3 offline Source references"],
+  "optional_default_off": ["film_rank64","canonical_left_hand_2d_new_projection","sequential2_hand_geometry_query_appearance_kv","native64_body8_or_bodyhead8_identity_budget"],
+  "replaced_not_copied": ["DeepGen recurrent control core","DeepGen16 latent bridge and old patch embedding","legacy text/pooled bridge","legacy1536 output bridge","legacy DeepGen zero_heads"],
+  "weight_candidates": {
+    "face": {"path":"/home/shangguanrz/nihaochen/qwen21_full/tiktok_face_v1_20261004/training/checkpoint_last.pt","log_summary_steps":3000,"state_audit":"not_run","native_effect":"not_verified"},
+    "body": {"path":"/home/shangguanrz/nihaochen/qwen21_full/tiktok_body_fullpass_20261004/training/checkpoint_step_006000.pt","source":"Face run_manifest init_checkpoint declaration; requires file/header/weight audit"},
+    "hand": {"training_source":"unconfirmed","policy":"explicit_allow_fresh_required"},
+    "source_detail_native64": {"training_source":"new_architecture","policy":"explicit_allow_fresh_required"}
+  }
+}

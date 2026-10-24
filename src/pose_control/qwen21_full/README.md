@@ -41,3 +41,7 @@ V4独立Runtime已接通单/双人共享Body、Depth、Interaction、Identity和
 ## Native Full V4.1 Hi4D Hybrid
 
 Hi4D新增`hybrid_hi4d`数据Profile：保留V3原生SMPL Body21／Depth／Interaction／Contact，使用可选原图DWPose Face／Hand；不要求Hi4D补齐完整SMPL-X。共用V4网络与严格checkpoint接口，不新增迁移，原完整SMPL-X路径保留。三个Hybrid模块、离线CLI、独立缺失模态和来源校验见[NATIVE_FULL_V41_HYBRID.md](NATIVE_FULL_V41_HYBRID.md)。本轮只完成静态交付，真实数据和运行时尚未验收。
+
+## Native Full V5（静态交付）
+
+V5在独立包[native_v5](native_v5/README.md)接通Geometry／Interaction分流、原生64通道Source Detail、Face／Hand模态增量、六组sigma调度、多参考侧车、局部Loss及严格迁移；不改旧V3／V4默认执行。新增输出Head置零，V4.1保留原样复现，V5不承诺初始化数值等价。本轮只做语法／AST／SHA，不运行测试、模型、缓存、迁移或训练。
