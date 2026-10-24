@@ -83,3 +83,7 @@
 ## Native Depth V2 架构接线（2026-10-24，未训练）
 
 新建启用Depth时默认 `--depth-version v2`，须Body21及V2 manifest；旧Depth使用 `--depth-version v1`。`--depth-mode auto`支持逐条明确声明的Camera-Z/PNG混合数据。七组参数可单独freeze，或显式 `--train-native-all`；旧loss/AdamW算法保留，没有分阶段调度。本轮没有运行preflight、测试、模型或训练。详见 `src/pose_control/qwen21_full/NATIVE_DEPTH_V2.md`。
+
+## Native Dual V3（入口已写，未运行）
+
+`train_qwen21_native_dual.py` 要求显式迁移后的V3 checkpoint，接通同源双人Reader、12组参数和源64通道latent身份绑定，复用原velocity loss与flat AdamW。`--preflight-only`只读缓存，`--freeze-group`和`--train-native-all`控制训练范围；未新增loss或调度。使用与后续验收见 `src/pose_control/qwen21_full/NATIVE_DUAL_V3.md`，本轮没有执行预检、optimizer或训练。

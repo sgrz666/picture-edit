@@ -74,3 +74,7 @@
 
 - `export_qwen21_depth_v2.py`：读取现有目标mesh_cam和Body21记录，导出版本化Camera-Z/valid NPY或为已有PNG建立V2 manifest；不重跑人体估计，输出新目录。
 - `migrate_qwen21_depth_v2.py`：显式继承Geometry、Body和CHAMP Encoder，丢弃旧Depth投影，初始化新Detail/Gate/投影；原版本仍可重建。本轮两个工具均未执行，见 `src/pose_control/qwen21_full/NATIVE_DEPTH_V2.md`。
+
+## Native Dual V3（源码交付，未执行）
+
+`build_qwen21_native_dual_cache.py` 在独立SMPL/FCL环境构建同源双人Body21、独立表面与真实部位距离缓存；`migrate_qwen21_native_dual_v3.py` 仅从Body21＋Depth V2显式升级，输出新文件，不恢复optimizer。输入契约与命令见 `src/pose_control/qwen21_full/NATIVE_DUAL_V3.md`。本轮没有构建缓存、安装FCL或迁移权重。

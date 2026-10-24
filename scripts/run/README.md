@@ -71,3 +71,7 @@
 ## Depth V2 接线（未运行验收）
 
 Native推理按checkpoint版本原样重建，`--depth-version`仅作断言，`--depth-mode auto`只读取manifest明确声明的模态。V2使用同一Body21记录、23通道几何和29维Gate上下文；不会从PNG猜Z。V1保留。当前未运行模型或采样，后续命令见 `src/pose_control/qwen21_full/NATIVE_DEPTH_V2.md`。
+
+## Native Dual V3（尚未运行验收）
+
+`run_qwen21_native_dual.py` 使用独立V3 checkpoint和同源双人manifest，仅加载源RGB，直接读取实际Qwen参考latent前缀完成身份绑定。保持一张参考图、B=1和原Native Body，不新增Qwen token。输出须新目录，详见 `src/pose_control/qwen21_full/NATIVE_DUAL_V3.md`。

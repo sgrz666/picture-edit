@@ -51,3 +51,7 @@ Hi4D Qwen 2.1 双人交互姿态编辑实验子目录 `hi4d_qwen21_dual_20260930
 
 - 更多全局架构说明与模型演进路线请参阅根目录 [README.md](../../README.md) 或 [docs/PROJECT_STRUCTURE_20261003.md](../../docs/PROJECT_STRUCTURE_20261003.md)。
 - 本目录下的所有文件均遵循项目统一的代码风格与数据管理规范。
+
+## Native Dual V3（2026-10-24）
+
+`native_dual_v3_20261024_v1/` 记录当前Body21＋Depth V2的双人架构升级，源码/快照/静态记录与旧训练产物隔离。包含独立表面、FCL部位关系和源身份绑定，尚未运行模型、测试或训练。远端新产物位于 `/data/shangguanrz/pic-edit-experiments/qwen21_hi4d_dual/native_dual_v3_20261024_v1`。
