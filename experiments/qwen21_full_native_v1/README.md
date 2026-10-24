@@ -36,6 +36,8 @@
 
 第四步见 [Global Geometry v2 验收](report/STEP4_VERIFICATION.md)：默认 21×256 关节条件，新增 3,100,672 参数；16 帧 FK/零增量检查通过，服务器 152 项、Windows 59 项测试通过。7B 矩形 1056 target tokens 的全部 260 prefix 位置差为 0，关节支路梯度可达。版本化缓存、v1/v2 迁移与入口预检已交付；不执行训练更新。产物与源码快照在 `global_pose_step4_20261024_v1/`。
 
+第五步为 [Native Depth V2 架构接线](depth_geometry_step5_20261024_v1/README.md)：接入23通道Camera-aware Detail CNN与29维Normal/Part Gate、runtime v3和显式迁移工具。仅做语法与静态核对；没有测试、模型执行、训练、渲染或迁移。本轮不继承前四步的验收数字。
+
 ## 与其他实验的关系
 
 上游是现有Full Body和方案C研究；现已完成Native主干反馈及独立Depth接口。Body21 的训练与质量对照留待下一轮单独确定；不把结构验收当成效果结论。无需Union模型或Pro checkpoint。

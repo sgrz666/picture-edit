@@ -21,7 +21,8 @@ def arguments(argv=None):
     p.add_argument('--geometry-version', choices=('body21', 'legacy_v1'), default='body21')
     p.add_argument('--output', type=Path, required=True)
     p.add_argument('--model', type=Path, default=Path(__file__).resolve().parents[2] / 'models/Qwen-Image-2.1')
-    p.add_argument('--depth-mode', choices=('off', 'relative_png', 'camera_z'), default='off')
+    p.add_argument('--depth-mode', choices=('off', 'relative_png', 'camera_z', 'auto'), default='off')
+    p.add_argument('--depth-version', choices=('v1', 'v2'), help='Default: reconstruct the saved checkpoint version')
     p.add_argument('--depth-manifest', type=Path)
     p.add_argument('--pair-index', type=int, default=0)
     p.add_argument('--max-pixels', type=int, default=512*512)
@@ -47,15 +48,26 @@ def main(argv=None):
     if args.output.exists():
         raise FileExistsError('Use a new output directory')
     from src.pose_control.qwen21_full.native_depth_runtime import NativeDepthRuntime, NativeDepthRecords
+    from src.pose_control.qwen21_full.native_depth_v2 import Qwen21NativeDepthV2
     from src.pose_control.qwen21_full.pose_data_runtime import NativePoseDataset
     from src.pose_control.qwen21_full.data_runtime import QwenFullDataset
     saved = torch.load(args.checkpoint, map_location='cpu', mmap=True, weights_only=True)
     system = NativeDepthRuntime.from_native_checkpoint(saved, legacy=args.geometry_version == 'legacy_v1', train_pose=False).eval()
+    depth_version = 'v2' if isinstance(system.depth, Qwen21NativeDepthV2) else 'v1'
+    if args.depth_version is not None and args.depth_version != depth_version:
+        raise ValueError('Requested Depth version differs from checkpoint; migrate explicitly first')
     dataset = (NativePoseDataset(args.pairs, args.pose_manifest, max_pixels=args.max_pixels)
                if args.geometry_version == 'body21' else QwenFullDataset(args.pairs, resolution='native', dataset_type='tiktok_v3',
                     align_mode='aspect_preserving', max_pixels=args.max_pixels))
     sample = dataset[args.pair_index]
-    depth = None if args.depth_mode == 'off' else NativeDepthRecords(args.depth_manifest, mode=args.depth_mode).condition(sample)
+    if args.depth_mode == 'off':
+        depth = None
+    elif depth_version == 'v2':
+        from src.pose_control.qwen21_full.depth_v2_records import NativeDepthV2Records
+        depth = NativeDepthV2Records(args.depth_manifest, pose_records=dataset.records, mode=args.depth_mode,
+                                     geometry_config=system.depth.config.geometry_config()).condition(sample)
+    else:
+        depth = NativeDepthRecords(args.depth_manifest, mode=args.depth_mode).condition(sample)
     if depth is not None and system.depth is None:
         raise ValueError('This checkpoint has no Depth module')
     batch = {k: v[None] if torch.is_tensor(v) else [v] for k, v in sample.items()}
@@ -65,7 +77,7 @@ def main(argv=None):
         features = system.encode(batch, target_token_hw=grid, depth=depth, depth_strength=depth_strength)
     report = {'architecture': saved['architecture'], 'pair': sample['pair_metadata'],
               'target_canvas': sample['target_canvas'], 'geometry_shape': list(features.geometry.shape),
-              'pose_provenance': sample.get('pose_provenance'), 'depth_mode': args.depth_mode,
+              'pose_provenance': sample.get('pose_provenance'), 'depth_mode': args.depth_mode, 'depth_version': depth_version,
               'no_optimizer': True, 'preflight_only': args.preflight_only,
               'reference_resolution': args.reference_resolution, 'use_kv_cache': False}
     args.output.mkdir(parents=True, exist_ok=False)

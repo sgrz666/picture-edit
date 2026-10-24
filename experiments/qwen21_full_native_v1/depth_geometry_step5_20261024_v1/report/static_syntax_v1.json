@@ -1,0 +1,34 @@
+{
+  "stage": "static_only_not_runtime_acceptance",
+  "compiled_python_files": [
+    "scripts/data/export_qwen21_depth_v2.py",
+    "scripts/data/migrate_qwen21_depth_v2.py",
+    "scripts/run/run_qwen21_native_pose.py",
+    "scripts/train/train_qwen21_native_depth.py",
+    "src/pose_control/qwen21_full/data_runtime.py",
+    "src/pose_control/qwen21_full/depth_condition_v2.py",
+    "src/pose_control/qwen21_full/depth_geometry.py",
+    "src/pose_control/qwen21_full/depth_v2_records.py",
+    "src/pose_control/qwen21_full/native_depth_runtime.py",
+    "src/pose_control/qwen21_full/native_depth_v2.py"
+  ],
+  "preservation": {
+    "src/pose_control/qwen21_full/native_depth.py": true,
+    "src/pose_control/qwen21_full/depth_condition.py": true,
+    "src/pose_control/qwen21_full/native_geometry.py": true,
+    "src/pose_control/qwen21_full/native_body.py": true,
+    "src/pose_control/qwen21_full/body_pose.py": true,
+    "AdamW_unchanged": true,
+    "velocity_loss_unchanged": true
+  },
+  "not_executed": [
+    "tests",
+    "model_forward",
+    "model_backward",
+    "optimizer",
+    "training",
+    "rendering",
+    "cache_export",
+    "weight_migration"
+  ]
+}

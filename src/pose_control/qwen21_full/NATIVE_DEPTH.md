@@ -1,5 +1,7 @@
 # Native Depth：CHAMP式编码与Qwen适配
 
+本页是Depth V1复现说明。新建Depth默认V2，架构及未验收状态见 [NATIVE_DEPTH_V2.md](NATIVE_DEPTH_V2.md)。旧训练命令需显式 `--depth-version v1`。
+
 当前默认 Body21 Geometry v2，详见 [GLOBAL_GEOMETRY_V2.md](GLOBAL_GEOMETRY_V2.md)。下列第三步历史复现显式选 legacy；Depth 编码与 512 维接口保持不变。旧 iPER 512 Depth 图可在 manifest 中声明 `asset_to_original` 后读取，未声明尺寸差异仍拒绝。
 
 ## 实现与结构
@@ -46,7 +48,7 @@ camera_z记录改为NPY路径、删除polarity。有来源证据后才改units/s
 ```bash
 /home/shangguanrz/nihaochen/envs/qwen21/bin/python scripts/train/train_qwen21_native_depth.py \
   --pairs /data/shangguanrz/pic-edit-experiments/qwen21_full_native_v1/depth_step3_20261023_v1/data/pairs.jsonl \
-  --geometry-version legacy_v1 \
+  --geometry-version legacy_v1 --depth-version v1 \
   --depth-mode relative_png \
   --depth-manifest /data/shangguanrz/pic-edit-experiments/qwen21_full_native_v1/depth_step3_20261023_v1/data/depth.jsonl \
   --full-checkpoint /home/shangguanrz/nihaochen/qwen21_full/body_512_100/checkpoint_last.pt \

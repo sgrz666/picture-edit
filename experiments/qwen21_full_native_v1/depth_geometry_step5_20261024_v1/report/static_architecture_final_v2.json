@@ -1,0 +1,82 @@
+{
+  "status": "static_only_runtime_acceptance_not_run",
+  "checks": {
+    "src/pose_control/qwen21_full/native_depth.py_byte_identical": true,
+    "src/pose_control/qwen21_full/depth_condition.py_byte_identical": true,
+    "src/pose_control/qwen21_full/native_geometry.py_byte_identical": true,
+    "src/pose_control/qwen21_full/native_body.py_byte_identical": true,
+    "src/pose_control/qwen21_full/body_pose.py_byte_identical": true,
+    "AdamW_AST_unchanged": true,
+    "velocity_loss_AST_unchanged": true,
+    "training_loop_AST_unchanged_except_frozen_gradient_logging": true,
+    "detail_channels_23": true,
+    "gate_context_29": true
+  },
+  "compiled_python_files": [
+    "scripts/data/export_qwen21_depth_v2.py",
+    "scripts/data/migrate_qwen21_depth_v2.py",
+    "scripts/run/run_qwen21_native_pose.py",
+    "scripts/train/train_qwen21_native_depth.py",
+    "src/pose_control/qwen21_full/data_runtime.py",
+    "src/pose_control/qwen21_full/depth_condition_v2.py",
+    "src/pose_control/qwen21_full/depth_geometry.py",
+    "src/pose_control/qwen21_full/depth_v2_records.py",
+    "src/pose_control/qwen21_full/native_depth_runtime.py",
+    "src/pose_control/qwen21_full/native_depth_v2.py"
+  ],
+  "detail_channels": [
+    "relative_dx",
+    "relative_dy",
+    "relative_laplacian",
+    "relative_jump",
+    "silhouette",
+    "body_z",
+    "body_z_dx",
+    "body_z_dy",
+    "body_z_laplacian",
+    "body_z_jump",
+    "ray_x",
+    "ray_y",
+    "ray_z",
+    "normal_cosine",
+    "normal_relation_valid",
+    "depth_valid",
+    "geometry_valid",
+    "confidence",
+    "confidence_available",
+    "root_distance",
+    "calibrated_height",
+    "metric_available",
+    "camera_available"
+  ],
+  "declared_shape_chain": [
+    "2→CHAMP→256@1/16",
+    "23→16→32→64→128→256@1/16",
+    "concat512→mixer256",
+    "gate:(64+64+32)160→128→512",
+    "zero_projection:256→512"
+  ],
+  "not_executed": [
+    "tests",
+    "project_imports",
+    "model_forward",
+    "model_backward",
+    "optimizer",
+    "training",
+    "rendering",
+    "cache_export",
+    "checkpoint_load_or_migration"
+  ],
+  "source_sha256": {
+    "scripts/data/export_qwen21_depth_v2.py": "210c02fc0056188bd602dc6354276f07eff2263cb928020617829ec313dfff8b",
+    "scripts/data/migrate_qwen21_depth_v2.py": "0ae742f57b84b811e787c55c6e7804882af83dad6fd6dfe3a112acffad1a45bb",
+    "scripts/run/run_qwen21_native_pose.py": "33e94ee69113474ca221ed5ad7864077fa105e8a8ae9c1f12c27969acb4fc95e",
+    "scripts/train/train_qwen21_native_depth.py": "b20ba5cccd4f0006df4bd8611ce49273173fb1ac5219cee893050f995067db93",
+    "src/pose_control/qwen21_full/data_runtime.py": "6e88b4b60ea243a283bd2011955efd309fd3ae402b7e94617a9e0f14e3777415",
+    "src/pose_control/qwen21_full/depth_condition_v2.py": "47ea7f0fcc1e90f98a2578200d45c9c55ae3d20a0915475cc44b57e6fd28dd13",
+    "src/pose_control/qwen21_full/depth_geometry.py": "2cbd4733ab50550e56e241c42f63fcc51ef6a3255e097e9b7d8daa610af7bc8f",
+    "src/pose_control/qwen21_full/depth_v2_records.py": "4ae9fab0b5cd7fcad20a705d4c82ab1c58302a9168044489f49732f45bae6f49",
+    "src/pose_control/qwen21_full/native_depth_runtime.py": "a37649a51cadd5c4465005acc039c77e6b1fada9dbca20f3ecbccc5e5ebc02a7",
+    "src/pose_control/qwen21_full/native_depth_v2.py": "ef927f69bb2d43c22a9939df1e70ef5c78e64bb1ae2998d16352b41a39da69a7"
+  }
+}

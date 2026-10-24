@@ -67,3 +67,7 @@
 ## Native Body21 推理
 
 `run_qwen21_native_pose.py` 读取独立 runtime checkpoint、目标几何缓存与源 RGB，支持 TikTok/iPER 和可选 typed Depth；KV cache 关闭，参考预算显式记录。`--preflight-only` 只核验条件与 checkpoint，不加载 Qwen 或采样。输出必须使用新目录；本轮没有训练更新或采样质量结论。详见 `src/pose_control/qwen21_full/GLOBAL_GEOMETRY_V2.md`。
+
+## Depth V2 接线（未运行验收）
+
+Native推理按checkpoint版本原样重建，`--depth-version`仅作断言，`--depth-mode auto`只读取manifest明确声明的模态。V2使用同一Body21记录、23通道几何和29维Gate上下文；不会从PNG猜Z。V1保留。当前未运行模型或采样，后续命令见 `src/pose_control/qwen21_full/NATIVE_DEPTH_V2.md`。

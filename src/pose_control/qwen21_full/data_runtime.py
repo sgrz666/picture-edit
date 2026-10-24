@@ -130,7 +130,15 @@ class QwenFullDataset(torch.utils.data.Dataset):
 
 def qwen_full_collate(rows: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
     provenance_keys = ('pair_metadata', 'pose_provenance', 'pose_provenance_b')
-    result = default_collate([{k: v for k, v in row.items() if k not in provenance_keys} for row in rows])
+    structured_keys = ('depth_condition_v2', 'depth_fusion_context')
+    result = default_collate([{k: v for k, v in row.items() if k not in (*provenance_keys, *structured_keys)} for row in rows])
+    for key in structured_keys:
+        if any(key in row for row in rows):
+            if not all(key in row for row in rows):
+                raise ValueError(f'Incomplete structured batch: {key}')
+            from .depth_condition_v2 import DepthConditionV2, DepthFusionContext
+            cls = DepthConditionV2 if key == 'depth_condition_v2' else DepthFusionContext
+            result[key] = cls.stack([row[key] for row in rows])
     for key in provenance_keys:
         if any(key in row for row in rows):
             if not all(key in row for row in rows):
