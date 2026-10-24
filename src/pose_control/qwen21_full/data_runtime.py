@@ -14,8 +14,6 @@ import torch
 from torch.utils.data._utils.collate import default_collate
 
 from src.data.canvas_contract import LEGACY_POLICIES, POLICY_FOR_MODE, CanvasPolicyError
-from src.data.iper_dataset import IPERPoseDataset
-from src.data.tiktok_dataset import TikTokV3PoseDataset, is_tiktok_v3_manifest
 from .conditions import AdapterIdentityCondition, ConditionBundle
 from .face.conditions import FaceFineCondition, FaceReferenceFeatures
 
@@ -71,6 +69,8 @@ class QwenFullDataset(torch.utils.data.Dataset):
         self.rows = read_pairs(pairs_jsonl)
         if not self.rows:
             raise ValueError(f"Empty pair manifest: {pairs_jsonl}")
+        from src.data.iper_dataset import IPERPoseDataset
+        from src.data.tiktok_dataset import TikTokV3PoseDataset, is_tiktok_v3_manifest
         self.dataset_type = ("tiktok_v3" if is_tiktok_v3_manifest(pairs_jsonl) else "iper") if dataset_type == "auto" else dataset_type
         self.sampled_root = Path(sampled_root)
         if self.dataset_type == "tiktok_v3":

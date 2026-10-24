@@ -95,6 +95,9 @@ def test_manifest_preserves_every_original_file_and_hash():
     copied = ROOT / "src/pose_control/qwen21_full"
     v2 = json.loads((copied / 'native_v2_migration_manifest.json').read_text())
     changed = v2['changed_original_files']
+    v4 = json.loads((copied / 'native_v4_migration_manifest.json').read_text())
+    lazy_exports = v4['changed_original_files']
+    assert set(lazy_exports) == {'__init__.py'}
     assert set(changed) == {'condition_injector.py', 'conditions.py', 'token_encoders.py',
                             'reasoning/person_geometry.py', 'reasoning/reasoner.py'}
     paths = {item["relative_path"] for item in manifest["files"]}
@@ -105,7 +108,11 @@ def test_manifest_preserves_every_original_file_and_hash():
         source_hash = hashlib.sha256((original / path).read_bytes()).hexdigest()
         copied_hash = hashlib.sha256((copied / path).read_bytes()).hexdigest()
         assert source_hash == item["source_sha256"], path
-        if path in changed:
+        if path in lazy_exports:
+            assert lazy_exports[path]['original_namespace_sha256'] == item['source_sha256'], path
+            assert copied_hash == lazy_exports[path]['v4_sha256'], path
+            assert lazy_exports[path]['change'] == 'lazy_compatibility_exports', path
+        elif path in changed:
             assert changed[path]['baseline_sha256'] == item['copied_sha256'] == source_hash, path
             assert copied_hash == changed[path]['v2_sha256'], path
         else:

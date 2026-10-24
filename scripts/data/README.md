@@ -78,3 +78,7 @@
 ## Native Dual V3（源码交付，未执行）
 
 `build_qwen21_native_dual_cache.py` 在独立SMPL/FCL环境构建同源双人Body21、独立表面与真实部位距离缓存；`migrate_qwen21_native_dual_v3.py` 仅从Body21＋Depth V2显式升级，输出新文件，不恢复optimizer。输入契约与命令见 `src/pose_control/qwen21_full/NATIVE_DUAL_V3.md`。本轮没有构建缓存、安装FCL或迁移权重。
+
+## Native Full V4（架构交付，尚未验收）
+
+`import_qwen21_native_smplx_v4.py`导入完整模型参数并核对FK；`cache_qwen21_native_local_references_v4.py`仅提取Source ArcFace/DINO；`build_qwen21_native_full_cache_v4.py`构建同源Body21/Depth/局部几何/BPS；`migrate_qwen21_native_full_v4.py`显式继承V3及兼容局部编码器，缺Hand来源需allow_fresh_hand。全部工具本轮未执行。契约与顺序见 `src/pose_control/qwen21_full/NATIVE_FULL_V4.md`。
