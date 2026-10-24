@@ -134,13 +134,13 @@ class Qwen21NativeBody(nn.Module):
         return PreparedNativeGeometry(tokens, grid)
 
     def forward(self, hidden, *, prepared: PreparedNativeGeometry, layer: int, sigma,
-                target_mask, valid_mask=None, strength: float = 1.0):
+                target_mask, valid_mask=None, strength: float = 1.0, return_delta: bool = False):
         self._require_fp32()
         cfg = self.config
         if type(layer) is not int or not 0 <= layer < cfg.num_layers:
             raise ValueError("Invalid Native Body layer index")
         if layer not in cfg.injection_layers:
-            return hidden
+            return hidden[:,target_mask].new_zeros(hidden.shape[0],int(target_mask.sum()),cfg.hidden_dim,dtype=torch.float32) if return_delta else hidden
         if (not isinstance(hidden, torch.Tensor) or hidden.ndim != 3
                 or hidden.shape[-1] != cfg.hidden_dim or not hidden.is_floating_point()):
             raise ValueError("Hidden must be floating [B,L,hidden_dim]")
@@ -177,6 +177,8 @@ class Qwen21NativeBody(nn.Module):
             delta = self.output_heads[cfg.num_groups * layer // cfg.num_layers](fused) * strength
             if valid_mask is not None:
                 delta = delta * valid_mask.to(device=hidden.device, dtype=delta.dtype)[..., None]
+        if return_delta:
+            return delta
         result = hidden.clone()
         result[:, target_mask] = _IdentitySafeAdd.apply(hidden[:, target_mask], delta.to(hidden.dtype))
         return result

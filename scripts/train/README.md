@@ -87,3 +87,7 @@
 ## Native Dual V3（入口已写，未运行）
 
 `train_qwen21_native_dual.py` 要求显式迁移后的V3 checkpoint，接通同源双人Reader、12组参数和源64通道latent身份绑定，复用原velocity loss与flat AdamW。`--preflight-only`只读缓存，`--freeze-group`和`--train-native-all`控制训练范围；未新增loss或调度。使用与后续验收见 `src/pose_control/qwen21_full/NATIVE_DUAL_V3.md`，本轮没有执行预检、optimizer或训练。
+
+## Native Full V4（架构交付，尚未验收）
+
+`train_qwen21_native_full_v4.py`提供Face-heads/Face-full/Hand-heads/Hand-full/Joint及all-native配置，独立分组freeze/LR，沿用velocity loss与AdamW。安装保留requires_grad，拒绝counterfactual几何直接配原B RGB；不自动阶段切换。本轮未运行预检、optimizer或训练。见 `src/pose_control/qwen21_full/NATIVE_FULL_V4.md`。

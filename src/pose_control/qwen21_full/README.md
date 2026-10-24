@@ -33,3 +33,7 @@
 ## Native Depth / CHAMP (2026-10-23)
 
 独立Depth输入契约、CHAMP CNN/空间attention、512维残差与新checkpoint已接入Native。见 [NATIVE_DEPTH.md](NATIVE_DEPTH.md)。旧Full默认入口保留。
+
+## Native Full V4（架构交付，尚未验收）
+
+V4独立Runtime已接通单/双人共享Body、Depth、Interaction、Identity和Native Face/Hand；4096→512稀疏Query、六个零残差头、pixel owner与Static对照。见 [NATIVE_FULL_V4.md](NATIVE_FULL_V4.md)。本轮仅语法/AST/SHA核对，未运行测试、模型、迁移或训练；SMPL-X资产待补齐。

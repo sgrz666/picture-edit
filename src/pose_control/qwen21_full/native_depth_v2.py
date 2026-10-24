@@ -109,7 +109,7 @@ class Qwen21NativeDepthV2(Qwen21NativeDepth):
         nn.init.zeros_(self.projection.weight)
         nn.init.zeros_(self.projection.bias)
 
-    def forward(self, features, depth, *, enabled=True, strength=1.):
+    def forward(self, features, depth, *, enabled=True, strength=1., use_detail=True):
         import math
         self._require_fp32()
         if type(enabled) is not bool or type(strength) not in (int, float) or not math.isfinite(strength) or strength < 0:
@@ -140,7 +140,7 @@ class Qwen21NativeDepthV2(Qwen21NativeDepth):
         selected = depth.index_select(active)
         with torch.autocast(device_type=value.device.type, enabled=False):
             champ = self.encoder(selected.relative, selected.valid)
-            detail = self.detail_encoder(selected.detail_features, selected.valid)
+            detail = self.detail_encoder(selected.detail_features, selected.valid) if use_detail else torch.zeros_like(champ)
             if tuple(champ.shape[-2:]) != grid or tuple(detail.shape[-2:]) != grid:
                 raise ValueError('CHAMP/detail must land directly on the target 1/16 grid')
             mixed = self.mixer(torch.cat((champ, detail), 1))

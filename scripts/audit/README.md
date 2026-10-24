@@ -59,3 +59,7 @@
 ## Global Geometry v2
 
 `audit_qwen21_global_pose.py` 使用真实 TikTok/iPER 缓存，核对 21×256 / 512 接口与相同 canonical 输入下的零 Pose 增量。`verify_qwen21_global_pose_runtime.py` 对真实 7B 矩形网格执行有界前反向，覆盖完整 prefix、Pose/Depth/Body 梯度和冻结状态；不创建 optimizer、不保存权重。`test_qwen21_full_preservation.py` 用原迁移 manifest 加五个明确声明的可扩展文件 SHA，继续核验未改动的 v6 及 legacy 数值。详见 `src/pose_control/qwen21_full/GLOBAL_GEOMETRY_V2.md`。
+
+## Native Full V4（工具未执行）
+
+`audit_qwen21_native_full_sources_v4.py`仅用FakeTensor读取已指定checkpoint容器的键、shape、dtype和历史step元数据，不构造模型或执行迁移。本轮仅编译该脚本；Face为3000步候选，Hand训练来源未确认，不能据结构匹配宣称预训练有效。使用见 `src/pose_control/qwen21_full/NATIVE_FULL_V4.md`。

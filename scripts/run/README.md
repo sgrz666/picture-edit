@@ -75,3 +75,7 @@ Native推理按checkpoint版本原样重建，`--depth-version`仅作断言，`-
 ## Native Dual V3（尚未运行验收）
 
 `run_qwen21_native_dual.py` 使用独立V3 checkpoint和同源双人manifest，仅加载源RGB，直接读取实际Qwen参考latent前缀完成身份绑定。保持一张参考图、B=1和原Native Body，不新增Qwen token。输出须新目录，详见 `src/pose_control/qwen21_full/NATIVE_DUAL_V3.md`。
+
+## Native Full V4（架构交付，尚未验收）
+
+`run_qwen21_native_full_v4.py`使用显式V4 checkpoint及versioned manifest；推理不加载target RGB，只复用一张源图实际64通道latent。Face/Hand独立开关和强度、单/双人共享路径、Dynamic/Static按checkpoint构建。B=1、KV关闭。尚未运行模型或生成，使用见 `src/pose_control/qwen21_full/NATIVE_FULL_V4.md`。
