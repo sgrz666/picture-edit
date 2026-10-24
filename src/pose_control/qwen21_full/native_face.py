@@ -9,6 +9,16 @@ from .face.spatial import FaceSpatialEncoder, render_face_landmark_heatmaps
 from .native_local_condition import RIGID_FACE_SLOTS
 
 
+def encode_available(module, value, valid, output_shape):
+    """Absent modalities never enter biased projections; parameter layout is unchanged."""
+    leading=valid.shape
+    ids=valid.flatten().nonzero(as_tuple=True)[0]
+    result=value.new_zeros(valid.numel(),*output_shape)
+    if ids.numel():
+        result=result.index_copy(0,ids,module(value.reshape(valid.numel(),*value.shape[len(leading):])[ids]))
+    return result.reshape(*leading,*output_shape)
+
+
 def gather_source(value, condition):
     rows=torch.arange(value.shape[0],device=value.device)[:,None]
     return value[rows,condition.source_indices.clamp_min(0)]
@@ -23,10 +33,12 @@ class NativeFaceGeometryTokenizer(FaceGeometryTokenizer):
     def forward(self, points, point_valid, jaw, jaw_valid, expression, expression_valid):
         leading=points.shape[:-2]
         index=self.landmark_index(torch.arange(72,device=points.device)).expand(*leading,-1,-1)
-        encoded=self.point_encoder(torch.cat((points,index),-1))*points[...,2,None]*point_valid[...,None]
+        encoded=encode_available(self.point_encoder,torch.cat((points,index),-1),point_valid,(512,))*points[...,2,None]
         complete=jaw_valid & expression_valid
-        context=torch.cat((encoded,self.parameter_encoder(torch.cat((jaw,expression),-1))[...,None,:],
-            self.jaw_partial(jaw)[...,None,:],self.expression_partial(expression)[...,None,:]),-2).reshape(-1,75,512)
+        parameters=encode_available(self.parameter_encoder,torch.cat((jaw,expression),-1),complete,(512,))
+        partial_jaw=encode_available(self.jaw_partial,jaw,jaw_valid & ~expression_valid,(512,))
+        partial_expression=encode_available(self.expression_partial,expression,expression_valid & ~jaw_valid,(512,))
+        context=torch.cat((encoded,parameters[...,None,:],partial_jaw[...,None,:],partial_expression[...,None,:]),-2).reshape(-1,75,512)
         valid=torch.cat((point_valid,complete[...,None],(jaw_valid & ~expression_valid)[...,None],
                          (expression_valid & ~jaw_valid)[...,None]),-1).reshape(-1,75)
         active=valid.any(1).nonzero(as_tuple=True)[0]
@@ -73,9 +85,9 @@ class NativeFacePreparer(nn.Module):
         av=gather_source(references.arcface_valid,condition) & active[...,None]
         dv=gather_source(references.face_dino_valid,condition) & active[...,None]
         dino=gather_source(references.face_dino,condition)
-        identity=self.content_encoder.fusion_face_id.project_identity(pool_arcface_references(arc,av))
         id_valid=av.any(-1)
-        identity=identity*id_valid[...,None,None]
+        identity=encode_available(self.content_encoder.fusion_face_id.project_identity,
+            pool_arcface_references(arc,av),id_valid,(4,512))
         r=dino.shape[2]
         flat=dino.reshape(b*2*r,256,1536)
         ids=dv.flatten().nonzero(as_tuple=True)[0]

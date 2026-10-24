@@ -34,10 +34,10 @@ def main():
     from src.pose_control.qwen21_full.native_full_data import NativeFullDatasetV4,collate_native_full_v4,identity_from_reference_v4
     from src.pose_control.qwen21_full.native_depth_runtime import native_velocity_loss
     from src.pose_control.qwen21_full.native_full_assets import sha256
-    dataset=NativeFullDatasetV4(args.manifest,load_target=True)
+    dataset=NativeFullDatasetV4(args.manifest,load_target=True,data_profile=args.data_profile)
     facts=[]
     for i in range(min(args.preflight_samples,len(dataset))):
-        sample=dataset[i];facts.append({'pair':sample['pair_metadata'],'canvas':sample['target_canvas'],'local':sample['local_condition_v4'].metadata})
+        sample=dataset[i];facts.append({'data_profile':sample['data_profile'],'pair':sample['pair_metadata'],'canvas':sample['target_canvas'],'local':sample['local_condition_v4'].metadata})
     args.output.mkdir(parents=True,exist_ok=False)
     with (args.output/'preflight.json').open('x',encoding='utf8') as stream: json.dump({'samples':facts,'model_constructed':False},stream,indent=2,default=str)
     if args.preflight_only: return

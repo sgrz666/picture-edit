@@ -9,6 +9,7 @@ from scripts.run.run_qwen21_native_dual import add_control_arguments,control_opt
 
 
 def add_local_arguments(parser):
+    parser.add_argument('--data-profile',choices=('auto','full_smplx','hybrid_hi4d'),default='auto',help='Assert manifest profile; absent profile is legacy full_smplx')
     parser.add_argument('--no-face',action='store_true');parser.add_argument('--no-hand',action='store_true')
     parser.add_argument('--face-strength',type=float,default=1.);parser.add_argument('--hand-strength',type=float,default=1.)
 
@@ -44,7 +45,7 @@ def main():
     saved=torch.load(args.checkpoint,map_location='cpu',mmap=True,weights_only=True)
     runtime=NativeFullRuntimeV4.from_checkpoint(saved).eval().to('cuda')
     if runtime.config.verification_only: raise ValueError('Verification-only checkpoints cannot run production inference')
-    sample=NativeFullDatasetV4(args.manifest,load_target=False)[args.pair_index];batch=collate_native_full_v4([sample])
+    sample=NativeFullDatasetV4(args.manifest,load_target=False,data_profile=args.data_profile)[args.pair_index];batch=collate_native_full_v4([sample])
     options,base=options_for(args,batch['native_scene_kind'])
     pipe=QwenImage21Pipeline.from_pretrained(str(args.model),dtype=torch.bfloat16,local_files_only=True).to('cuda')
     install=install_native_full_v4(pipe.transformer,runtime)
@@ -58,7 +59,7 @@ def main():
     if image.size!=(w,h): raise ValueError('Generated canvas differs')
     image.save(args.output/'image.png')
     with (args.output/'request.json').open('x',encoding='utf8') as stream:
-        json.dump({'architecture':'native_full_v4','pair':sample['pair_metadata'],'local_options':asdict(options),
+        json.dump({'architecture':'native_full_v4','data_profile':sample['data_profile'],'pair':sample['pair_metadata'],'local_options':asdict(options),
             'base_options':asdict(base),'installation':install,'binding':binding,'target_rgb_loaded':False,
             'seed':args.seed,'steps':args.steps},stream,indent=2)
 

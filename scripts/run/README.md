@@ -79,3 +79,5 @@ Native推理按checkpoint版本原样重建，`--depth-version`仅作断言，`-
 ## Native Full V4（架构交付，尚未验收）
 
 `run_qwen21_native_full_v4.py`使用显式V4 checkpoint及versioned manifest；推理不加载target RGB，只复用一张源图实际64通道latent。Face/Hand独立开关和强度、单/双人共享路径、Dynamic/Static按checkpoint构建。B=1、KV关闭。尚未运行模型或生成，使用见 `src/pose_control/qwen21_full/NATIVE_FULL_V4.md`。
+
+V4.1沿用该入口和V4权重，新增`--data-profile hybrid_hi4d|full_smplx|auto`断言与运行记录。旧manifest缺字段仍按full_smplx读取。Hi4D Hybrid从原生SMPL V3缓存和可选2D局部观测构建，见`src/pose_control/qwen21_full/NATIVE_FULL_V41_HYBRID.md`；本轮未执行推理。

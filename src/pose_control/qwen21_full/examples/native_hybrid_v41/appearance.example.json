@@ -1,0 +1,8 @@
+{
+  "modalities": {"arcface": false, "face_dino": true, "hand_dino": false},
+  "models": {
+    "dino_model": "/data/shangguanrz/REPLACE/local-dinov2-vitg14",
+    "dino_files": {"REPLACE_actual_model_filename": "REPLACE_SHA256", "config.json": "REPLACE_SHA256", "preprocessor_config.json": "REPLACE_SHA256"},
+    "device": "cpu"
+  }
+}

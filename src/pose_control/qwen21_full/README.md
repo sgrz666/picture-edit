@@ -37,3 +37,7 @@
 ## Native Full V4（架构交付，尚未验收）
 
 V4独立Runtime已接通单/双人共享Body、Depth、Interaction、Identity和Native Face/Hand；4096→512稀疏Query、六个零残差头、pixel owner与Static对照。见 [NATIVE_FULL_V4.md](NATIVE_FULL_V4.md)。本轮仅语法/AST/SHA核对，未运行测试、模型、迁移或训练；SMPL-X资产待补齐。
+
+## Native Full V4.1 Hi4D Hybrid
+
+Hi4D新增`hybrid_hi4d`数据Profile：保留V3原生SMPL Body21／Depth／Interaction／Contact，使用可选原图DWPose Face／Hand；不要求Hi4D补齐完整SMPL-X。共用V4网络与严格checkpoint接口，不新增迁移，原完整SMPL-X路径保留。三个Hybrid模块、离线CLI、独立缺失模态和来源校验见[NATIVE_FULL_V41_HYBRID.md](NATIVE_FULL_V41_HYBRID.md)。本轮只完成静态交付，真实数据和运行时尚未验收。
