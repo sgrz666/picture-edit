@@ -1,5 +1,6 @@
 """Explicit local velocity/auxiliary objectives; default is unchanged velocity-only."""
 from dataclasses import dataclass,asdict
+import math
 import torch
 from torch.nn import functional as F
 from ..native_depth_runtime import native_velocity_loss
@@ -11,12 +12,17 @@ class LocalLossConfig:
     profile: str='velocity_only'
     auxiliary_every: int=4
     auxiliary_sigma_max: float=.35
+    weights: tuple | None=None
 
     def __post_init__(self):
         if self.profile not in ('velocity_only','local_velocity','local_aux') or type(self.auxiliary_every)!=int or self.auxiliary_every<1 or not 0<self.auxiliary_sigma_max<=1:
             raise ValueError('Unknown local loss profile/auxiliary gate')
+        if self.weights is not None and (len(self.weights)!=4 or any(type(v) not in (int,float) or not math.isfinite(v) or v<0 for v in self.weights)):
+            raise ValueError('Explicit Face/Hand/ID/Perceptual weights must be finite nonnegative')
     @property
-    def coefficients(self): return (0.,0.,0.,0.) if self.profile=='velocity_only' else ((.5,.5,0.,0.) if self.profile=='local_velocity' else (.5,.5,.1,.05))
+    def coefficients(self):
+        if self.weights is not None:return tuple(self.weights)
+        return (0.,0.,0.,0.) if self.profile=='velocity_only' else ((.5,.5,0.,0.) if self.profile=='local_velocity' else (.5,.5,.1,.05))
 
 
 def region_velocity(squared,weight):
@@ -39,7 +45,10 @@ def local_velocity_loss(prediction,target,coverage,supervision,config):
     f,h,_,_=config.coefficients
     total=base+f*face+h*hand
     return total,{'velocity':base,'face_velocity':face,'hand_velocity':hand,
-        'face_area':face_weight.sum(),'hand_area':hand_weight.sum()}
+        'face_area':face_weight.sum(),'hand_area':hand_weight.sum(),
+        'velocity_numerator':(squared*coverage[...,None]).sum(),'velocity_denominator':coverage.sum()*squared.shape[-1],
+        'face_numerator':(squared*face_weight[...,None]).sum(),'face_denominator':face_weight.sum()*squared.shape[-1],
+        'hand_numerator':(squared*hand_weight[...,None]).sum(),'hand_denominator':hand_weight.sum()*squared.shape[-1]}
 
 
 def decode_qwen64(pipe,tokens,hw):
@@ -54,9 +63,10 @@ def decode_qwen64(pipe,tokens,hw):
 def frozen_evaluators(identity_path,perceptual_path,*,device,sha):
     from ..native_full_assets import sha256
     paths=(identity_path,perceptual_path)
-    if len(sha)!=2 or any(sha256(p)!=v for p,v in zip(paths,sha)): raise ValueError('Pinned evaluator SHA differs')
+    if len(sha)!=2 or any(p is not None and sha256(p)!=v for p,v in zip(paths,sha)): raise ValueError('Pinned evaluator SHA differs')
     models=[]
     for path in paths:
+        if path is None:models.append(None);continue
         model=torch.jit.load(str(path),map_location=device).eval()
         for parameter in model.parameters(): parameter.requires_grad_(False)
         models.append(model)
@@ -70,8 +80,9 @@ def _feature(model,image):
 def auxiliary_loss(pipe,noisy,prediction,sigma,target_pixels,supervision,config,*,step,evaluators):
     zero=prediction.sum()*0;_,_,identity_weight,perceptual_weight=config.coefficients
     eligible=supervision.auxiliary_valid & (sigma[:,None]<=config.auxiliary_sigma_max)
-    if not identity_weight or step%config.auxiliary_every or not eligible.any(): return zero,{'identity':zero,'perceptual':zero,'eligible':0}
-    if evaluators is None or any(p.requires_grad for model in evaluators for p in model.parameters()): raise ValueError('Auxiliary losses require explicitly frozen evaluators')
+    if not (identity_weight or perceptual_weight) or step%config.auxiliary_every or not eligible.any(): return zero,{'identity':zero,'perceptual':zero,'eligible':0}
+    if (evaluators is None or (identity_weight and evaluators[0] is None) or (perceptual_weight and evaluators[1] is None)
+        or any(p.requires_grad for model in evaluators if model is not None for p in model.parameters())): raise ValueError('Auxiliary losses require explicitly frozen evaluators')
     x0=noisy.float()-sigma[:,None,None]*prediction.float()
     decoded=decode_qwen64(pipe,x0,target_pixels.shape[-2:])
     ii=[];pp=[]
@@ -79,8 +90,10 @@ def auxiliary_loss(pipe,noisy,prediction,sigma,target_pixels,supervision,config,
         grid=build_arcface_alignment_grid(supervision.landmarks5[row:row+1,person],decoded.shape[-2:],device=decoded.device)
         generated=align_face_rgb(decoded[row:row+1],grid=grid)*2-1
         reference=align_face_rgb(target_pixels[row:row+1].float(),grid=grid)*2-1
-        with torch.no_grad(): target_id=_feature(evaluators[0],reference);target_perc=_feature(evaluators[1],reference)
-        ii.append((1-F.cosine_similarity(_feature(evaluators[0],generated),target_id)).mean())
-        pp.append((_feature(evaluators[1],generated)-target_perc).square().mean())
-    identity=torch.stack(ii).mean();perceptual=torch.stack(pp).mean()
-    return identity_weight*identity+perceptual_weight*perceptual,{'identity':identity,'perceptual':perceptual,'eligible':len(ii)}
+        with torch.no_grad():
+            target_id=_feature(evaluators[0],reference) if identity_weight else None
+            target_perc=_feature(evaluators[1],reference) if perceptual_weight else None
+        if identity_weight:ii.append((1-F.cosine_similarity(_feature(evaluators[0],generated),target_id)).mean())
+        if perceptual_weight:pp.append((_feature(evaluators[1],generated)-target_perc).square().mean())
+    identity=torch.stack(ii).mean() if ii else zero;perceptual=torch.stack(pp).mean() if pp else zero
+    return identity_weight*identity+perceptual_weight*perceptual,{'identity':identity,'perceptual':perceptual,'eligible':int(eligible.sum())}

@@ -97,3 +97,7 @@ V4.1增加`--data-profile hybrid_hi4d|full_smplx|auto`，在读取和preflight�
 ## Native Full V5（接口未执行）
 
 `train_qwen21_native_full_v5.py`增加Detail／Interaction heads/full，默认velocity-only，显式local_velocity／local_aux配置及冻结评估器；保留flat AdamW、分组冻结／LR，无自动阶段切换。原manifest失败行保留，局部专训保存eligible索引；schedule为零的attempt不更新optimizer，`steps`为实际更新数并有显式attempt上限。本轮没有执行preflight、测试、模型、optimizer或训练，详见`src/pose_control/qwen21_full/native_v5/README.md`。
+
+### V5 Training Preparation v1
+
+同一入口已简化为`NativeV5Trainer`的CLI，默认`prepare`；仅显式`train/resume/advance-stage`才进入优化器路径。S0–S3人工切换，参数／路由／Loss／数据／LR解耦，支持保留moment的阶段推进、完整RNG／日志恢复和独立无更新梯度门禁。旧`--profile`转换配置，`--preflight-only`映射data检查。默认LR保护继承Encoder，Full原倍率和flat预设仍可选择。用法见`src/pose_control/qwen21_full/native_v5/training/README.md`；本轮只静态核对。

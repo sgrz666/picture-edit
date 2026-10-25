@@ -1,0 +1,7 @@
+{
+  "schema":"native_v5_training_v1",
+  "stage":{"stage_id":"S3_joint","phase":"S3","budget_updates":null,"accumulation":1,
+    "routes":[{"name":"joint","branch":"joint","weight":1}],
+    "optimizer":{"preset":"protect_inherited","multiplier":0.1,"scheduler":"constant"}},
+  "sources":[],"initialization":null,"model_manifest":null,"cache_root":null,"cache_identity":null,"output_root":null
+}

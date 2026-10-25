@@ -1,0 +1,11 @@
+{
+  "schema":"native_v5_training_v1",
+  "stage":{"stage_id":"S1_heads","phase":"S1","budget_updates":null,"accumulation":1,
+    "routes":[
+      {"name":"face","branch":"face","weight":1,"loss":{"face":0.5}},
+      {"name":"hand","branch":"hand","weight":1,"loss":{"hand":0.5}},
+      {"name":"detail","branch":"detail","weight":1,"loss":{"face":0.5,"hand":0.5}},
+      {"name":"interaction","branch":"interaction","weight":1}],
+    "optimizer":{"preset":"protect_inherited","scheduler":"constant"}},
+  "sources":[],"initialization":null,"model_manifest":null,"cache_root":null,"cache_identity":null,"output_root":null
+}

@@ -129,3 +129,7 @@ $PY scripts/train/train_qwen21_native_full_v5.py --checkpoint /data/shangguanrz/
 零输出验收相对V5核心，不与V4.1混为一谈；首个反向只要求新Head梯度，再用显式非零探针检查上游，不能用常数填零Head。必须检查prefix、Token数、冻结状态、同一次原Hidden、非重入checkpoint跨forward上下文和所有活动组梯度。完整权重回读由显式`QWEN_V5_ACCEPTANCE_JOB`绑定真实V4／V5 checkpoint、V5 manifest和index后另行运行。
 
 五层结论分别记录结构、权重、运行参与、独立控制和生成效果。**当前仅为“V5架构与工具接通、静态核对完成”；真实权重迁移、数据与运行时验收、效果对照尚未执行。** 不复用前几轮测试数字。
+
+## 训练接口准备v1（2026-10-25）
+
+训练管理已独立整理为[training](training/README.md)，模型架构与参数布局不改。训练入口现在默认`prepare`，旧裸参数不会自动训练；`train/resume/advance-stage`必须显式选择。新增S0–S3人工门禁、规范参数超集、保护继承编码器的LR预设、混合采样／累积、完整RNG与日志恢复；原flat AdamW是可选对照而非新默认。旧Loss默认数值保留，仅扩展权重／统计。本轮仍仅静态交付，没有数据预检、权重加载、测试、模型、optimizer或训练。
