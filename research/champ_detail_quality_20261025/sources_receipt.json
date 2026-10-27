@@ -1,0 +1,114 @@
+{
+  "schemaVersion": 1,
+  "items": [
+    {
+      "id": "current-dataset",
+      "title": "当前 v2 是 46 张原始帧、158 对训练配对",
+      "queries": [
+        {
+          "id": "pristine-profile",
+          "source": {
+            "label": "CHAMP pristine_v2 实盘快照",
+            "files": [
+              {
+                "label": "snapshot.json"
+              },
+              {
+                "label": "train_pairs_pristine_v2.jsonl"
+              }
+            ],
+            "executedAt": "2026-10-25T17:19:12.009835+08:00",
+            "filters": [
+              "图片：用户指定 pristine_v2 目录",
+              "配对：与该版本同名的训练清单"
+            ],
+            "caveats": [
+              "只核对该清单与目录，不代表已检查正在运行的训练入口。"
+            ],
+            "evidenceFlow": [
+              {
+                "kind": "validation",
+                "title": "清单与原图对账",
+                "detail": "158 对涉及 46 个唯一帧，等于目录文件集合；46 张导出 PNG 与原 frames 对应文件 SHA256 一致。"
+              }
+            ]
+          },
+          "columns": [
+            {
+              "field": "sequence",
+              "label": "序列"
+            },
+            {
+              "field": "frames",
+              "label": "保留帧数"
+            }
+          ],
+          "rows": [
+            {
+              "sequence": "000000",
+              "frames": 6
+            },
+            {
+              "sequence": "000111",
+              "frames": 10
+            },
+            {
+              "sequence": "000444",
+              "frames": 19
+            },
+            {
+              "sequence": "000666",
+              "frames": 11
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "detail-quality",
+      "title": "分数与几何可用性不能代替脸、手纹理检查",
+      "assumptions": [
+        "处理建议以自然人脸身份与真实细节训练为目标。"
+      ],
+      "queries": [
+        {
+          "id": "native-region-review",
+          "source": {
+            "label": "原生 ROI 与现有质量记录",
+            "files": [
+              {
+                "label": "face_hand_quality_audit.json"
+              },
+              {
+                "label": "46 帧及 123 个原生局部裁剪"
+              }
+            ],
+            "executedAt": "2026-10-25T17:19:12.009835+08:00",
+            "filters": [
+              "范围：当前 46 张",
+              "裁剪：原始像素，无锐化或 AI 修复"
+            ],
+            "caveats": [
+              "视觉判断来自本次模型辅助审查，不是经过多人标注验证的质量标签。",
+              "15 个手窗口缺少充分支持点；缺失不等于模糊。",
+              "新计算的 Laplacian 仅作诊断，没有作为新增自动准入门槛。"
+            ],
+            "evidenceFlow": [
+              {
+                "kind": "result",
+                "title": "具体反例",
+                "detail": "000111_00088 的已有手部 Laplacian 为 272.83，原图与局部仍可见运动模糊；该序列还带动物脸效果。"
+              },
+              {
+                "kind": "result",
+                "title": "像素与可见性",
+                "detail": "6 张脸宽为 94–106 像素；92 个手窗口中 15 个旧记录的支持点少于 12。"
+              }
+            ]
+          },
+          "summary": "已查看完整概览、四张原图及覆盖全部 46 帧的八张局部审查页。"
+        }
+      ]
+    }
+  ]
+}

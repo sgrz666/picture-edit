@@ -1,0 +1,37 @@
+{
+  "geometry_qc_frames": 167,
+  "geometry_qc_frames_valid": 159,
+  "test": {
+    "dropped": {
+      "geometry_invalid": 8,
+      "missing_condition": {},
+      "missing_rgb": 0,
+      "no_qc_record": 0,
+      "stale_flag_said_invalid": 35
+    },
+    "rows_in": 43,
+    "rows_trainable": 35
+  },
+  "train": {
+    "dropped": {
+      "geometry_invalid": 55,
+      "missing_condition": {},
+      "missing_rgb": 0,
+      "no_qc_record": 0,
+      "stale_flag_said_invalid": 862
+    },
+    "rows_in": 917,
+    "rows_trainable": 862
+  },
+  "val": {
+    "dropped": {
+      "geometry_invalid": 0,
+      "missing_condition": {},
+      "missing_rgb": 0,
+      "no_qc_record": 0,
+      "stale_flag_said_invalid": 461
+    },
+    "rows_in": 461,
+    "rows_trainable": 461
+  }
+}

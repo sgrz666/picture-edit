@@ -1,0 +1,40 @@
+{
+  "index_table": "pinned by eye on qc/layout/sheet_000000_00112.png and zoom_* for 000444_00024",
+  "frames_gated": 167,
+  "frames_skipped_missing_json": 0,
+  "unparsed_detail_names": {
+    "count": 0,
+    "examples": []
+  },
+  "hand_attach_forearm": {
+    "n": 258,
+    "p50": 0.086,
+    "p90": 0.1757,
+    "max": 14.5375
+  },
+  "hand_span_forearm": {
+    "n": 258,
+    "p50": 0.4103,
+    "p90": 0.7602,
+    "max": 6.6009
+  },
+  "hand_a_usable": 99,
+  "hand_b_usable": 101,
+  "face_usable": 164,
+  "foot_usable": 100,
+  "both_hands_claim_same_wrist": 21,
+  "usable_side_rows": 200,
+  "counterexample_face_slice_scored_as_hand": {
+    "n": 167,
+    "passed_hand_gate": 0,
+    "expected": 0,
+    "note": "a face sub-slice fed to the hand gate must not pass"
+  },
+  "thresholds": {
+    "attach_forearm_max": 0.35,
+    "span_forearm_max": 0.9,
+    "beyond_wrist_min": 0.0,
+    "conf_min": 0.3,
+    "chosen_from": "hand-sized geometry, not tuned on these rows"
+  }
+}

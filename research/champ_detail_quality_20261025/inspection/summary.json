@@ -1,0 +1,32 @@
+{
+  "schema": "champ_pristine_detail_quality_audit_v1",
+  "observed_at": "2026-10-25T17:19:12.009835+08:00",
+  "frame_count": 46,
+  "sequence_counts": {
+    "000000": 6,
+    "000111": 10,
+    "000444": 19,
+    "000666": 11
+  },
+  "native_sizes": [
+    [
+      1080,
+      1920
+    ]
+  ],
+  "unchanged_from_original_video_frames": true,
+  "pristine_v2_pairs": 158,
+  "pair_unique_frames": 46,
+  "pairs_and_directory_match": true,
+  "faces_with_width_94_to_106": 6,
+  "unsupported_legacy_hand_metrics": 15,
+  "total_hand_slots": 92,
+  "face_width_min_median_max": [
+    94,
+    143.5,
+    538
+  ],
+  "training_manifest_modified": false,
+  "source_images_deleted_moved_or_overwritten": false,
+  "annotations": "Sequence-level visual flags and numerical diagnostics; individual texture labels remain unconfirmed."
+}

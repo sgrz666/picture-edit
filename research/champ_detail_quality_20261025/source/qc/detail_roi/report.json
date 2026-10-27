@@ -1,0 +1,50 @@
+{
+  "sequences": 6,
+  "frames": 167,
+  "format": {
+    "candidate": "134x2 points, DWPose order",
+    "subset": "per-point confidence"
+  },
+  "index_layout": {
+    "face": [
+      24,
+      92
+    ],
+    "hand_a": [
+      92,
+      113
+    ],
+    "hand_b": [
+      113,
+      134
+    ]
+  },
+  "conf_gate": 0.3,
+  "frames_without_face_mask": 0,
+  "frames_without_either_hand": 24,
+  "share_without_face": 0.0,
+  "share_without_either_hand": 0.1437,
+  "face_hull_over_measured_width": {
+    "n": 167,
+    "p05": 0.995,
+    "p50": 1.0,
+    "p95": 1.007
+  },
+  "layout_guard": {
+    "pass": true,
+    "p50": 1.0,
+    "meaning": "the 68-point hull width must agree with the detector's own face box; 0.14 (the previous run) meant points had collapsed"
+  },
+  "face_guard_verdict": "PASS",
+  "hand_center_to_nearest_wrist_over_body_diag": {
+    "n": 215,
+    "p50": 0.4827,
+    "p95": 0.7376,
+    "per_side_p95": {
+      "hand_a": 0.7316,
+      "hand_b": 0.7376
+    },
+    "meaning": "a real hand ROI sits at the wrist, so this must be small; a wrong slice would put the hull across the frame"
+  },
+  "hand_guard_verdict": "FAIL p95=0.738 of the body diagonal -- the 92:113 / 113:134 windows do not sit at the wrists, so hand ROIs are NOT shipped as verified"
+}
