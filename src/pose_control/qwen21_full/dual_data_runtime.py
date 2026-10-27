@@ -6,7 +6,7 @@ import numpy as np
 from PIL import Image
 import torch
 
-from src.data.canvas_contract import aspect_preserving, letterbox
+from src.data.canvas_contract import CanvasSpec, aspect_preserving, letterbox
 from .body_pose import JOINT_NAMES, BODY25_BY_NAME, PARENTS_22, ROTATION_CONVENTION
 from .conditions import ContactRelationBatch, TaskType
 from .pose_cache import sha256
@@ -17,6 +17,17 @@ from .dual_depth_condition import DualDepthConditionV3, NativeDualIdentityCondit
 from .native_dual_depth import NativeDualConfig
 
 PAIR_SCHEMA = 'native_dual_pair_v3'
+
+
+def pair_canvases(row, source, target, max_pixels, reference_side):
+    declared = ('source_canvas' in row, 'target_canvas' in row)
+    if any(declared):
+        if not all(declared):raise ValueError('Declare both independent Source/target canvases')
+        s=CanvasSpec.from_record(row['source_canvas']);t=CanvasSpec.from_record(row['target_canvas'])
+        if s.original_hw!=tuple(source['original_hw']) or t.original_hw!=tuple(target['original_hw']):
+            raise ValueError('Declared native Canvas differs from original geometry')
+        return s,t
+    return letterbox(source['original_hw'],reference_side),aspect_preserving(target['original_hw'],max_pixels=max_pixels,pad_multiple=32)
 
 
 def _rgb(path, spec):
@@ -137,11 +148,7 @@ class NativeDualDataset(torch.utils.data.Dataset):
             raise ValueError('Mesh records and pair IDs disagree')
         if row['source_rgb'] != sm['rgb'] or row['target_rgb'] != tm['rgb']:
             raise ValueError('Paired RGB references must match the exact geometry frames')
-        target_spec = aspect_preserving(tm['original_hw'], max_pixels=self.max_pixels, pad_multiple=32)
-        # Qwen resizes references to output_resolution^2 internally. An explicit
-        # square letterbox lets its real prefix and our identity masks share the
-        # exact same grid while the target remains rectangular/native.
-        source_spec = letterbox(sm['original_hw'], self.reference_side)
+        source_spec,target_spec=pair_canvases(row,sm,tm,self.max_pixels,self.reference_side)
         tm = {**tm, 'pair_id': row['pair_id']}
         png, png_valid = None, None
         if row['kind'] == 'relative_png':

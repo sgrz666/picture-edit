@@ -117,7 +117,8 @@ def official_masks(asset):
 
 
 def source_job(dataset, row, asset, source_data, meta, config, modalities, models):
-    spec=letterbox(meta['original_hw'],dataset.reference_side)
+    spec=CanvasSpec.from_record(row['source_canvas']) if 'source_canvas' in row else letterbox(meta['original_hw'],dataset.reference_side)
+    if spec.original_hw!=tuple(meta['original_hw']):raise ValueError('Source observation Canvas differs from original geometry')
     raw_masks=official_masks(asset)
     masks=torch.stack([spec.stack(torch.from_numpy(m).float(),nearest=True)>.5 for m in raw_masks])
     # Head masks are from the existing V3 source part asset; no local renderer.

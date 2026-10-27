@@ -8,7 +8,7 @@ from ..native_dual_depth import DualControlOptions
 
 
 @contextmanager
-def bind_native_full_pipeline_v5(transformer,runtime,batch,*,options=None,base_options=None):
+def bind_native_full_pipeline_v5(transformer,runtime,batch,*,options=None,base_options=None,qwen_condition=None):
     if runtime.training: raise ValueError('Inference binding requires eval; training uses encode with autograd')
     options=options or NativeControlOptionsV5();base_options=base_options or DualControlOptions()
     prepared=None;report={'architecture':'native_full_v5','condition_encodes':0,'primary_reference_images':1,'qwen_tokens_added':0}
@@ -16,9 +16,15 @@ def bind_native_full_pipeline_v5(transformer,runtime,batch,*,options=None,base_o
         nonlocal prepared
         if torch.is_grad_enabled() or args: raise ValueError('Use named Qwen inputs under no_grad for inference')
         shapes=kwargs.get('img_shapes')
-        if not isinstance(shapes,(tuple,list)) or len(shapes)!=1 or len(shapes[0])!=2: raise ValueError('V5 requires B=1 and one primary Source')
-        source,target=shapes[0];n=source[1]*source[2];hidden=kwargs['hidden_states']
-        if tuple(source[1:])!=tuple(batch['source_token_hw']) or tuple(target[1:])!=tuple(batch['target_token_hw']) or hidden.shape!=(1,n+target[1]*target[2],64):
+        if not isinstance(shapes,(tuple,list)) or len(shapes)!=1 or len(shapes[0]) not in (2,3,5): raise ValueError('V5 requires B=1 and explicit reference grids')
+        source,target=shapes[0][0],shapes[0][-1];n=source[1]*source[2];hidden=kwargs['hidden_states']
+        if len(shapes[0])!=2:
+            from .conditioning import ROLES
+            if qwen_condition is None or len(ROLES.get(qwen_condition.get('profile'),()))!=len(shapes[0])-1:
+                raise ValueError('Explicit multi-image reference roles required')
+            report['qwen_reference_images']=len(shapes[0])-1
+        prefix=sum(s[0]*s[1]*s[2] for s in shapes[0][:-1])
+        if tuple(source[1:])!=tuple(batch['source_token_hw']) or tuple(target[1:])!=tuple(batch['target_token_hw']) or hidden.shape!=(1,prefix+target[1]*target[2],64):
             raise ValueError('Actual Qwen64 prefix/grid differs from declared Canvas')
         if prepared is None:
             primary=hidden[:,:n]

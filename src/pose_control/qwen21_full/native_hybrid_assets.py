@@ -238,6 +238,17 @@ def read_observation(row, *, geometry_sha=None):
     return asset
 
 
+def detector_peak_response(raw):
+    """Keep raw SIMCC evidence; bounded network response is not a probability."""
+    raw=np.asarray(raw,np.float32)
+    finite=np.isfinite(raw)
+    return np.where(finite,np.clip(raw,0.,1.),0.).astype(np.float32),{
+        'semantics':'simcc_heatmap_peak_not_calibrated_probability','mapping':'clip(finite_response,0,1); nonfinite=unavailable',
+        'raw_scores':np.where(finite,raw,0.).tolist(),'raw_finite':finite.tolist(),
+        'above_one':int((finite&(raw>1)).sum()),'below_zero':int((finite&(raw<0)).sum()),'nonfinite':int((~finite).sum()),
+        'threshold_preserved_for':'0 < threshold <= 1'}
+
+
 def detect_frame(dataset, record, prior, detector_config, config):
     """Explicit opt-in only; detector uses original RGB, never target appearance features."""
     from src.pose_edit.dwpose import detect_people, load_sessions
@@ -254,7 +265,11 @@ def detect_frame(dataset, record, prior, detector_config, config):
     image=cv2.imread(str(verified(meta['rgb'])))
     if image is None or tuple(image.shape[:2])!=tuple(meta['original_hw']): raise ValueError('Native detection RGB dimensions differ')
     detected=detect_people(detector_config,image,sessions=load_sessions(detector_config))
-    candidates=[canonical_points(d['points'],d['scores'],LAYOUT_134) for d in detected]
+    candidates=[];responses=[]
+    for d in detected:
+        bounded,response=detector_peak_response(d['scores']);responses.append(response)
+        points=d['points'].copy();points[~np.isfinite(d['scores'])]=np.nan
+        candidates.append(canonical_points(points,bounded,LAYOUT_134))
     return observation_asset(data,meta,masks,candidates,{**provenance,'masks':mask_refs,'rgb':meta['rgb'],
         'camera':file_ref(row['camera_file']),'detector_models':model_refs,'source_status':'direct_native_detection',
-        'prior_status':prior['metadata']['assignment']},config)
+        'detector_response_records':responses,'prior_status':prior['metadata']['assignment']},config)

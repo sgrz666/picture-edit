@@ -30,8 +30,15 @@ def model_identity(config):
 def asset_identity(config,data_plan):
     bound,model_files=model_identity(config)
     cache,cache_ref=read_json_ref(config.cache_identity)
-    if cache.get('schema')!='native_v5_frozen_cache_index_v1' or cache.get('model_manifest_sha256')!=bound['sha256'] or cache.get('prompt_sha256')!=digest(config.prompt):
-        raise ValueError('Frozen cache model/prompt identity differs')
+    if config.qwen_condition_profile=='legacy_single':
+        if cache.get('schema')!='native_v5_frozen_cache_index_v1' or cache.get('prompt_sha256')!=digest(config.prompt):
+            raise ValueError('Frozen legacy cache prompt identity differs')
+    else:
+        from ..conditioning import CACHE_SCHEMA
+        conditions={s+'\0'+data_plan.datasets[s].rows[i]['pair_id']:ref['sha256'] for (s,i),(ref,_) in data_plan.conditions.items()}
+        if (cache.get('schema')!=CACHE_SCHEMA or cache.get('profile')!=config.qwen_condition_profile or cache.get('condition_bindings')!=conditions):
+            raise ValueError('Frozen multi-reference cache condition/Prompt identity differs')
+    if cache.get('model_manifest_sha256')!=bound['sha256']:raise ValueError('Frozen cache model identity differs')
     evaluators={}
     required={name for r in config.stage.routes for name in ('identity','perceptual') if getattr(r.loss,name)>0}
     for name in required:
@@ -106,6 +113,12 @@ class NativeBackend:
         for name in ('source_latent','target_latent'):
             if pair[name].shape[-1]!=64:raise ValueError('Frozen cache must retain native Qwen64 latents')
         pair={k:v.to(self.device) if torch.is_tensor(v) else v for k,v in pair.items()}
+        if self.config.qwen_condition_profile!='legacy_single':
+            from ..conditioning import validate_pair
+            validate_pair(pair)
+            ref,spec=self.data.conditions[(source,index)]
+            if entry.get('condition_sha256')!=ref['sha256'] or pair.get('prompt_sha256')!=spec['prompt']['sha256']:
+                raise ValueError('Frozen pair uses another prompt or reference order')
         return sample,collate_native_full_v5([sample]),pair
 
     def forward(self,batch,pair,route,sigma,noise,options,base):
@@ -130,15 +143,27 @@ def prepare_cache(config,data_plan,output):
     manifest,_=model_identity(config)
     pipe=QwenImage21Pipeline.from_pretrained(config.model_path,dtype=torch.bfloat16,local_files_only=True)
     pipe.text_encoder.requires_grad_(False).eval().to('cuda');pipe.vae.requires_grad_(False).eval().to('cuda')
-    cache=Qwen21IPERCache(root/'frozen',resolution='native',prompt=config.prompt,canvas_policy='aspect_preserving');entries={}
+    cache=Qwen21IPERCache(root/'frozen',resolution='native',prompt=config.prompt,canvas_policy='native_pad') if config.qwen_condition_profile=='legacy_single' else None
+    entries={};conditions={}
     with torch.no_grad():
         for source,dataset in data_plan.datasets.items():
             for i in range(len(dataset)):
-                sample=dataset[i];batch=collate_native_full_v5([sample]);pair=cache.pair(pipe,batch,torch.device('cuda'))
+                sample=dataset[i]
+                if cache is None:
+                    from ..conditioning import encode_pair
+                    ref,spec=data_plan.conditions[(source,i)];pair=encode_pair(pipe,sample,spec)
+                    conditions[source+'\0'+sample['pair_metadata']['pair_id']]=ref['sha256']
+                else:
+                    batch=collate_native_full_v5([sample]);pair=cache.pair(pipe,batch,torch.device('cuda'))
                 path=root/('pair_'+digest([source,sample['pair_metadata']['pair_id']])[:24]+'.pt')
                 with path.open('xb') as f:torch.save({k:v.cpu() if torch.is_tensor(v) else v for k,v in pair.items()},f)
                 c=sample['local_condition_v4'].metadata[0]
                 entries[source+'\0'+sample['pair_metadata']['pair_id']]={'file':{'path':str(path),'sha256':file_sha(path)},
                     **{k:c[k] for k in ('source_rgb_sha256','driver_rgb_sha256','source_canvas_id','target_canvas_id')}}
+                if cache is None:entries[source+'\0'+sample['pair_metadata']['pair_id']]['condition_sha256']=ref['sha256']
+    if cache is None:
+        from ..conditioning import CACHE_SCHEMA
+        return write_json(root/'index.json',{'schema':CACHE_SCHEMA,'model_manifest_sha256':manifest['sha256'],
+            'profile':config.qwen_condition_profile,'condition_bindings':conditions,'entries':entries})
     return write_json(root/'index.json',{'schema':'native_v5_frozen_cache_index_v1','model_manifest_sha256':manifest['sha256'],
         'prompt_sha256':digest(config.prompt),'entries':entries})

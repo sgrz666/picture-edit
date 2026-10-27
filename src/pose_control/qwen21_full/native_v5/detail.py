@@ -12,6 +12,36 @@ class NativeDetailAppearanceBridge(nn.Module):
         self.source_embedding=nn.Embedding(16,512)
         self.region_embedding=nn.Embedding(3,512)
 
+    def forward_bank(self,bank,condition):
+        """Reuse this same bridge per region on its actual independent source."""
+        bank.validate(require_latent=True);b=condition.person_valid.shape[0]
+        first=bank.sources[0].latent
+        out=first.new_zeros(b,6,512,16,16,dtype=torch.float32)
+        valid=torch.zeros(b,6,dtype=torch.bool,device=first.device)
+        yy,xx=torch.meshgrid((torch.arange(16,device=first.device)+.5)/16,
+            (torch.arange(16,device=first.device)+.5)/16,indexing='ij')
+        unit=torch.stack((xx,yy),-1)
+        for row in range(b):
+            for region,p in enumerate((0,1,0,0,1,1)):
+                if not condition.person_valid[row,p] or not condition.region_valid[row,region]: continue
+                entry=bank.sources[int(bank.target_qwen_image_indices[row,p])]
+                if entry.detail is None: raise ValueError('Each source requires its own explicit Detail availability sidecar')
+                kind=0 if region<2 else 1+(region-2)%2
+                person=int(bank.target_person_indices[row,p]);src_region=person if kind==0 else 2+2*person+kind-1
+                refs=entry.detail
+                if not refs.valid[row,src_region]: continue
+                latent=entry.latent_map(row);box=refs.boxes[row,src_region]
+                grid=(box[:2]+unit*(box[2:]-box[:2]))[None]*2-1
+                support=F.interpolate(refs.support[row:row+1,src_region:src_region+1].float(),size=entry.token_hw,mode='area')
+                denominator=F.grid_sample(support,grid,align_corners=False)
+                if not (denominator>1e-6).any(): continue
+                numerator=F.grid_sample(latent*support,grid,align_corners=False)
+                value=self.encoder(numerator/denominator.clamp_min(1e-6))
+                binding=self.source_embedding.weight[entry.source_slot_id]+self.region_embedding.weight[kind]
+                out[row,region]=(value[0]+binding[:,None,None])*(denominator[0]>1e-6)
+                valid[row,region]=True
+        return out,valid
+
     def forward(self,latent,references,condition):
         references.validate();b=condition.person_valid.shape[0]
         if latent.ndim!=4 or latent.shape[:2]!=(b,64) or not torch.isfinite(latent).all():

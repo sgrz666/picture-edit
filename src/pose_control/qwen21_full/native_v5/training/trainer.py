@@ -47,7 +47,7 @@ class NativeV5Trainer:
         from .sampling import DeterministicSampler,derived_seed
         from .parameters import UpdateScheduler
         from .checkpointing import load_committed,validate_resume,restore_rng
-        from .validation import validate_gate,check_body_baseline,frozen_digest,assert_optimizer_fp32
+        from .validation import validate_gate,check_body_baseline,check_warmed_heads,frozen_digest,assert_optimizer_fp32
         config=self.config;config.require_ready();random.seed(config.seed);np.random.seed(config.seed%(2**32));torch.manual_seed(config.seed);torch.cuda.manual_seed_all(config.seed)
         if mode!='resume' and not config.gradient_report:raise ValueError('Explicit matching gradient report required before model/optimizer construction')
         if mode=='train' and config.stage.phase not in ('S0','S1'):raise ValueError('S2/S3 start through explicit advance-stage')
@@ -80,11 +80,7 @@ class NativeV5Trainer:
             # Its explicit command is the human stage decision; no auto advance.
             gradient=validate_gate(config.gradient_report,backend,config,data)
             if config.stage.phase in ('S2','S3'):
-                groups={'face_heads','hand_heads','interaction_heads'}
-                relevant={r.runtime_group for r in catalog.rows if r.name in active and r.runtime_group in groups}
-                for group in relevant:
-                    if not any(catalog.parameters[r.name].detach().count_nonzero() for r in catalog.rows if r.runtime_group==group and r.role=='head'):
-                        raise ValueError('Selected branch Head has not been warmed: '+group)
+                check_warmed_heads(catalog,active,data)
             origin=parent;global_update=state['global_update'];stage_update=attempts=0
         optimizer=catalog.build_optimizer(config.stage.optimizer)
         if mode!='train':
@@ -106,7 +102,8 @@ class NativeV5Trainer:
             'stage_origin':origin,'parent_checkpoint':parent,'old_log_tail':tail,'environment_policy':'strict_resume; frozen_Qwen_eval; B1; workers0'})
         if mode=='advance-stage':write_json(segment/'stage_transition.json',{'parent':parent,'old_stage':saved['training_state']['config']['stage'],
             'new_stage':asdict(config.stage),'optimizer_state_retained':True,'new_state_policy':'AdamW lazily initializes first gradient',
-            'manual_command':True,'new_gradient_report':gradient})
+            'manual_command':config.continuous_stage_authorization is None,
+            'continuous_stage_authorization':config.continuous_stage_authorization,'new_gradient_report':gradient})
         journal=Journal(segment/'metrics.jsonl')
         if mode=='resume':restore_rng(saved['training_state']['rng'])
         frozen=frozen_digest(backend)
@@ -174,10 +171,13 @@ class NativeV5Trainer:
                 ctx['journal'].append({'global_update':ctx['global_update'],'stage_update':ctx['stage_update'],'attempts':ctx['attempts'],
                     'optimizer_updated':True,'window':window,'losses':values,'gradient_norm':float(norm),'gradients':gradients,
                     'learning_rates':{g['name']:g['lr'] for g in ctx['optimizer'].param_groups}})
+                if ctx['stage_update']%config.save_every_updates==0:last_snapshot=save()
                 if config.probe_every_updates and ctx['stage_update']%config.probe_every_updates==0:
                     from .probes import loss_probe
                     ctx['journal'].append(loss_probe(backend,config,ctx['data'],ctx['global_update']))
-                if ctx['stage_update']%config.save_every_updates==0:last_snapshot=save()
+                if config.generation_every_updates and ctx['global_update']%config.generation_every_updates==0:
+                    from .observations import generation_probe
+                    ctx['journal'].append(generation_probe(backend,config,ctx['data'],ctx['global_update'],Path(config.output_root)/'output/images'))
             except Exception as error:
                 write_json(ctx['segment']/'failure.json',{'error':str(error),'micro_position':micro_position,
                     'last_committed_snapshot':last_snapshot,'partial_window_not_checkpointed':micro_position!=0})
