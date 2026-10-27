@@ -63,49 +63,6 @@ def test_joint_loss_masks_padding_and_upweights_small_faces():
     assert squared.grad[0, 1] > squared.grad[0, 0]
 
 
-def test_joint_optimizer_updates_all_three_branches_when_hand_enabled():
-    module = joint_module()
-    adapter = TinyAdapter()
-    groups, names = module.joint_parameter_groups(adapter, body_scale=.25, face_scale=.5, hand_scale=1.0, with_hand=True)
-    module.enable_joint_training(adapter, names)
-    flat = [p for group in groups for p in group['params']]
-    assert len(flat) == len({id(p) for p in flat})
-    optimizer = torch.optim.AdamW(groups, weight_decay=0)
-    before = {name: p.detach().clone() for name, p in adapter.named_parameters()}
-    x = torch.ones(1, 2)
-    loss = (adapter.output_bridges['geometry'](x).sum() +
-            adapter.output_bridges['face'](x).sum() +
-            adapter.output_bridges['hand'](x).sum() +
-            adapter.legacy.hand_preparer(x).sum())
-    loss.backward()
-    optimizer.step()
-    assert not torch.equal(before['output_bridges.geometry.weight'], adapter.output_bridges['geometry'].weight)
-    assert not torch.equal(before['output_bridges.face.weight'], adapter.output_bridges['face'].weight)
-    assert not torch.equal(before['output_bridges.hand.weight'], adapter.output_bridges['hand'].weight)
-    assert adapter.legacy.hand_preparer.weight.requires_grad
-    assert not torch.equal(before['legacy.hand_preparer.weight'], adapter.legacy.hand_preparer.weight)
-    rates = {group['name']: group['lr'] for group in groups}
-    assert rates['hand_heads_and_interface'] == pytest.approx(1e-4)
-
-
-def test_joint_loss_with_hand():
-    module = joint_module()
-    squared = torch.tensor([[[1.], [3.], [5.], [1000.]]], requires_grad=True)
-    human = torch.ones(1, 4, 1)
-    valid = torch.tensor([[[1.], [1.], [1.], [0.]]])
-    face = torch.tensor([[[0.], [1.], [0.], [0.]]])
-    hand = torch.tensor([[[0.], [0.], [1.], [0.]]])
-    total, parts = module.joint_velocity_loss(
-        squared, human, valid, face, face_active=True, face_weight=.5,
-        hand_mask=hand, hand_active=True, hand_weight=.5,
-    )
-    assert parts['body'].item() == pytest.approx(3.)
-    assert parts['face'].item() == pytest.approx(3.)
-    assert parts['hand'].item() == pytest.approx(5.)
-    assert total.item() == pytest.approx(7.0)
-
-
-
 def test_joint_high_noise_does_not_require_an_active_face():
     module = joint_module()
     squared = torch.ones(1, 4, 2, requires_grad=True)

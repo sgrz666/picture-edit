@@ -10,20 +10,32 @@ from ..native_depth_v2 import Qwen21NativeDepthV2
 from ..native_dual_depth import interaction_context
 from ..native_dual_identity import _roi
 from ..native_depth import _ResidualAdd
+from .source_bank import NativeSourceBankV5
 
 
 def identity_update(binder,identity,state,weights,pooling):
-    b=state.person_tokens.shape[0];latent=identity.source_latent.float();updates=[]
+    b=state.person_tokens.shape[0];bank=isinstance(identity,NativeSourceBankV5)
+    latent=None if bank else identity.source_latent.float();updates=[]
     sizes={'roi48':((8,4),(4,4)),'body8':((2,4),None),'bodyhead8':((2,3),(1,2))}[pooling]
     for p in range(2):
         qvalid=state.person_token_mask[:,p]&state.person_valid[:,p,None]
-        source=identity.source_indices[:,p].clamp_min(0);rows=torch.arange(b,device=latent.device)
+        source=identity.source_indices[:,p].clamp_min(0);device=state.person_tokens.device
+        rows=torch.arange(b,device=device)
         context=[];valid=[]
         for region,size in enumerate(sizes):
             if size is None: continue
-            mask=(identity.person_mask if region==0 else identity.head_mask)[rows,source]
-            values,v=_roi(latent,mask,size)
-            yy,xx=torch.meshgrid(torch.linspace(-1,1,size[0],device=latent.device),torch.linspace(-1,1,size[1],device=latent.device),indexing='ij')
+            if bank:
+                pooled=[];availability=[]
+                for row in range(b):
+                    entry=identity.sources[int(identity.target_qwen_image_indices[row,p])]
+                    index=int(identity.target_person_indices[row,p])
+                    mask=(entry.person_mask if region==0 else entry.head_mask)[row:row+1,index]
+                    values,v=_roi(entry.latent_map(row),mask,size);pooled.append(values);availability.append(v)
+                values=torch.cat(pooled);v=torch.cat(availability)
+            else:
+                mask=(identity.person_mask if region==0 else identity.head_mask)[rows,source]
+                values,v=_roi(latent,mask,size)
+            yy,xx=torch.meshgrid(torch.linspace(-1,1,size[0],device=device),torch.linspace(-1,1,size[1],device=device),indexing='ij')
             position=torch.stack((xx,yy),-1).reshape(-1,2)
             context.append(binder.encoder(values)+binder.region.weight[region]+binder.slot.weight[p]+binder.position(position)[None])
             valid.append(v)
@@ -99,7 +111,9 @@ def encode_frontend(runtime,batch,grid,base_options,options,identity):
     if base_options.identity and base_options.identity_strength:
         if identity is None: raise ValueError('Reuse actual Source64 prefix for body identity')
         identity=identity.to(device).validate()
-        if tuple(batch['identity_metadata'])!=identity.metadata: raise ValueError('V5 identity provenance differs from declared Source')
+        bank=isinstance(identity,NativeSourceBankV5)
+        if bank: identity.validate_target(batch)
+        elif tuple(batch['identity_metadata'])!=identity.metadata: raise ValueError('V5 identity provenance differs from declared Source')
         if not torch.equal(identity.source_indices,batch['source_indices'].to(device)): raise ValueError('V5 body Source mapping differs')
         for i,im in enumerate(identity.metadata):
             target_ids=depth.metadata[i]['person_ids'] if kind=='dual' else [batch['pose_provenance'][i]['person_id']]

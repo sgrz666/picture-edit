@@ -1,0 +1,33 @@
+{
+  "environment": {
+    "python": "3.12.14",
+    "platform": "Linux-7.0.0-29-generic-x86_64-with-glibc2.39",
+    "packages": {
+      "torch": "2.8.0",
+      "diffusers": "0.35.2",
+      "transformers": "4.56.1",
+      "accelerate": "1.10.1",
+      "safetensors": "0.6.2",
+      "numpy": "2.1.2",
+      "nvidia-ml-py": "12.570.86"
+    },
+    "cuda_runtime": "12.8",
+    "gpu": "NVIDIA RTX 6000D",
+    "torch_total_gib": 83.04705810546875,
+    "model_revision": "85c2ed257b9406d8531965c68e140dc7fdb81382"
+  },
+  "weights": {
+    "transformer/diffusion_pytorch_model.safetensors": "54078ee51ab477275e94b610249ea912d6f80d24256c4197fe48945eef706883",
+    "connector/model.safetensors": "425ce59f596eeb573f9cd52138b775df47ce69c60d2782fb32cac5498ed208f3",
+    "vae/diffusion_pytorch_model.safetensors": "5a170129752b4ad4ab98996d2e59097c8c693afc31a5964bd2ad60896686c1e2",
+    "vlm/model-00001-of-00002.safetensors": "d6f11cc9c30184ce92605f25ac1e6b6644ee217e7b86a28282b3c9b17de3e609",
+    "vlm/model-00002-of-00002.safetensors": "c675c19a231b0ead141d8d3a05fe930892ddf17f1324d75bb94d2a42a79f7ebc"
+  },
+  "weights_valid": true,
+  "source_hashes": {
+    "worker.py": "3494bd0bc449c37cd720968fb7278a783fcd4dd43d8c6eed8c07e4ef6d68edbe",
+    "common.py": "9c03835c1f237cf5b597a6871c61cf407cb024779146431b4ae971460055e456",
+    "run.py": "d996cd63522ee27d03b3643b3391a6bbf5295e56786914aaeba7dfd44ac2e80e",
+    "__init__.py": "7b244b6f72a808b9c688c5309934c8aa454beb7b4ad927482838b7a82a273386"
+  }
+}

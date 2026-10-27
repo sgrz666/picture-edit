@@ -94,7 +94,7 @@ class NativeHandPreparerV5(NativeHandPreparer):
         return spatial,tokens,mask,sv
 
 
-def prepare_local_v5(face,hand,bridge,c,r,detail_refs,source_latent,options,strength,config):
+def prepare_local_v5(face,hand,bridge,c,r,detail_refs,source_latent,options,strength,config,*,source_bank=None):
     b=c.person_valid.shape[0];x=c.face_landmarks;parts=[]
     for family,module,count in (('face',face,2),('hand',hand,4)):
         branches=('face_identity','face_texture','face_geometry') if family=='face' else ('hand_texture','hand_geometry')
@@ -109,12 +109,12 @@ def prepare_local_v5(face,hand,bridge,c,r,detail_refs,source_latent,options,stre
     spatial,tokens,mask,sv=(torch.cat([p[i] for p in parts],1) for i in range(4))
     detail=x.new_zeros(b,6,512,16,16);dv=torch.zeros(b,6,dtype=torch.bool,device=x.device)
     if strength.enabled('detail',options) and ((options.face and options.face_strength>0) or (options.hand and options.hand_strength>0)):
-        if detail_refs is None: raise ValueError('V5 Detail needs explicit Source sidecar, including unavailable declarations')
-        if source_latent is None: raise ValueError('Reuse the actual primary Qwen64 prefix for Detail')
+        if source_bank is None and detail_refs is None: raise ValueError('V5 Detail needs explicit Source sidecar, including unavailable declarations')
+        if source_bank is None and source_latent is None: raise ValueError('Reuse the actual primary Qwen64 prefix for Detail')
         from dataclasses import replace
         detail_condition=replace(c,face_roi_valid=c.face_roi_valid if options.face and options.face_strength>0 else torch.zeros_like(c.face_roi_valid),
             hand_roi_valid=c.hand_roi_valid if options.hand and options.hand_strength>0 else torch.zeros_like(c.hand_roi_valid))
-        detail,dv=bridge(source_latent,detail_refs,detail_condition)
+        detail,dv=bridge(source_latent,detail_refs,detail_condition) if source_bank is None else bridge.forward_bank(source_bank,detail_condition)
     enabled=torch.tensor([options.face]*2+[options.hand]*4,device=x.device)[None]
     dv&=enabled
     weights=resolve_local_ownership(c,face=options.face,hand=options.hand,tie_tolerance=config.tie_tolerance)

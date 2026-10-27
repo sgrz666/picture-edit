@@ -1,0 +1,37 @@
+{
+  "kind": "quality",
+  "group": "Q0",
+  "task": "S0",
+  "seed": 42,
+  "resolution": 512,
+  "preprocess": "letterbox",
+  "cfg": 4.5,
+  "steps": 35,
+  "negative_prompt": "blurry, low quality, low resolution, distorted, deformed, broken content, missing parts, damaged details, artifacts, glitch, noise, extra fingers, missing fingers, mutated hands, bad composition, wrong proportion, unfinished.",
+  "prompt": "Keep this photograph unchanged, including the same person, pose, sunglasses, hat, clothing, ski equipment and background.",
+  "control_injected": false,
+  "id": "Q0_S0_42_letterbox_35_4.5",
+  "source_hashes": {
+    "worker.py": "954b231dd3b0ecef51b92459221a85c3cc827dcac389469718cb11fa16b8cb34",
+    "common.py": "9c03835c1f237cf5b597a6871c61cf407cb024779146431b4ae971460055e456",
+    "run.py": "ec7e2627b7a1ed1331c597c6ad9be0894befe0286e883cb61ba651ba0bf2c693",
+    "__init__.py": "7b244b6f72a808b9c688c5309934c8aa454beb7b4ad927482838b7a82a273386"
+  },
+  "adapter_source_sha256": "bb6e2df5118abea7c05c52dc41723e9fefc26ce0e0d3c7b451d79e4e84b36d57",
+  "scheduler_config_sha256": "3d0ec27d3bf788b49b2ced5bc0f0999881e80d06e7e2e06550148b13b374b8cc",
+  "input_sha256": "83981537a7baeafbeb9c8cb67b3484dc26433f574b3685d021fa537e277e4726",
+  "input_path": "/home/shangguanrz/project/pic-edit/inputs/person1.jpg",
+  "original_size": [
+    640,
+    425
+  ],
+  "content_box": [
+    0,
+    86,
+    512,
+    426
+  ],
+  "model_revision": "85c2ed257b9406d8531965c68e140dc7fdb81382",
+  "pipeline_sha256": "41e0f263d9ad55940426a4b2092688a74711395499c12a71ee69dc378ec9d3a9",
+  "rng_policy": "global_cpu_cuda_and_denoising_generator_same_seed"
+}

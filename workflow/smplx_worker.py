@@ -20,6 +20,7 @@ if str(REPO_ROOT) not in sys.path:
 
 from src.pose_edit.common import atomic_json, finish_stage, read_json, runtime_paths
 from src.pose_edit.estimator import estimate_single, project, reconstruct
+from src.pose_edit import dwpose
 from src.pose_edit.geometry import (align_to_source_bbox, choose_subject, render_poseguide,
     smplx137_to_dwpose134, valid_points)
 
@@ -81,9 +82,25 @@ def main():
     bbox_a = np.asarray(detections['A']['bbox_xyxy'])
     sx, sy = source_meta['scale_xy']
     ox, oy = source_meta['offset_xy']
+    framing = settings.get('pose_framing', 'source_person')
+    # source_torso scales the transferred pose onto A's own torso. A carries no landmarks of its
+    # own in this stage, so measure them: a box height is not a stand-in for a torso (on this
+    # line's own source frames 0.31/ratio spans 0.59x-1.20x, see workflow-multiple/torso_ratio.py).
+    a_torso_px = None
+    if framing == 'source_torso':
+        a_image_bgr = np.asarray(Image.open(paths['A_rgb']).convert('RGB'))[:, :, ::-1].copy()
+        a_torso_px = dwpose.measure_torso(settings, a_image_bgr, detections['A']['bbox_xyxy'])
+        if a_torso_px is None:
+            raise RuntimeError(
+                'source_torso framing needs A landmarks, but DWPose found no person overlapping '
+                'the subject box ' + str(detections['A']['bbox_xyxy']) + ' in '
+                + str(paths['A_rgb']) + '. Refusing to fall back to the box-height constant '
+                'silently: that would change this run\'s transfer scale without recording it.')
+        # A is measured in its native pixels; alignment happens in canvas units.
+        a_torso_px *= sy
     bbox_a = bbox_a * np.array([sx, sy, sx, sy]) + np.array([ox, oy, ox, oy])
     aligned, transform = align_to_source_bbox(points, detections['B']['bbox_xyxy'], bbox_a,
-        settings.get('pose_framing', 'source_person'))
+        framing, a_torso_px=a_torso_px)
     with Image.open(paths['B_rgb']) as image:
         b_image = image.convert('RGB')
     with Image.open(paths['A_reference']) as image:

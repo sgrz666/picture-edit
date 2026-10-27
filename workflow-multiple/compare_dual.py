@@ -105,7 +105,11 @@ def paired_rows(facts, key):
     for (pair, held), by_treatment in sorted(slots.items()):
         sides = {treatment: pick(items) for treatment, items in by_treatment.items()}
         if left_value in sides and right_value in sides:
-            rows.append(differences(sides[left_value], sides[right_value], key))
+            row = differences(sides[left_value], sides[right_value], key)
+            row['held'] = dict(zip(held_variables, held))
+            row['left_run'] = sides[left_value].get('run')
+            row['right_run'] = sides[right_value].get('run')
+            rows.append(row)
         elif len(sides) == 1:
             missing.append({'pair': pair,
                 'held': dict(zip(held_variables, held)), 'held_variables': held_variables,
@@ -113,18 +117,39 @@ def paired_rows(facts, key):
     return rows, missing
 
 
-def summarise(rows):
-    summary = {'comparisons': len(rows), 'by_metric': {}}
+def context_of(row):
+    """The held variables as a stable label, e.g. 'framing=b_canvas source=dwpose'."""
+    return ' '.join(f'{name}={row["held"][name]}' for name in sorted(row.get('held', {}))) or None
+
+
+def tally(items):
+    out = {'comparisons': len(items), 'by_metric': {}}
     for name, _ in METRICS:
-        verdicts = [row['metrics'][name]['verdict'] for row in rows]
-        values = [row['metrics'][name].get('delta') for row in rows
+        verdicts = [row['metrics'][name]['verdict'] for row in items]
+        values = [row['metrics'][name].get('delta') for row in items
             if row['metrics'][name].get('delta') is not None]
-        summary['by_metric'][name] = {
+        out['by_metric'][name] = {
             'n': len(values), 'left_wins': verdicts.count('left'),
             'right_wins': verdicts.count('right'), 'ties': verdicts.count('tie'),
             'not_measured': verdicts.count('not measured'),
             'median_delta': float(np.median(values)) if values else None,
             'mean_delta': float(np.mean(values)) if values else None}
+    return out
+
+
+def summarise(rows):
+    """Per held context, plus a pooled block that is labelled as such.
+
+    Quoting the pooled block as a single result is what this tool exists to prevent: rows in it can
+    differ in the variables that were supposed to stay fixed."""
+    summary = tally(rows)
+    contexts = {}
+    for row in rows:
+        contexts.setdefault(context_of(row) or 'no held context', []).append(row)
+    summary['by_context'] = {name: tally(items) for name, items in sorted(contexts.items())}
+    summary['contexts'] = sorted(contexts)
+    summary['quote'] = ('quote the per-context block; the pooled by_metric block mixes rows whose '
+        'held variables differ')
     return summary
 
 
@@ -158,10 +183,19 @@ def main():
         cells = ' '.join(f'{number(row["metrics"][name].get("left"))}|'
             f'{number(row["metrics"][name].get("right"))}'
             f'{VERDICT_MARK[row["metrics"][name]["verdict"]]}' for name, _ in METRICS)
-        print(f'{row["pair"]:42} {str(row["left"]):14} {str(row["right"]):14} {cells}')
+        context = ' '.join(f'{name}={value}' for name, value in sorted(row['held'].items()))
+        print(f'{row["pair"]:42} {str(row["left"]):14} {str(row["right"]):14} [{context:34}] {cells}')
     if not rows:
         print('no pair has both sides complete yet; this table fills in as the batch runs')
     summary = summarise(rows)
+    for context, block in summary['by_context'].items():
+        print(f'--- held [{context}] with {block["comparisons"]} row(s) ---')
+        for name, item in block['by_metric'].items():
+            print(f'  {name:10} n={item["n"]:2} left_wins={item["left_wins"]:2} '
+                f'right_wins={item["right_wins"]:2} ties={item["ties"]:2} '
+                f'not_measured={item["not_measured"]:2} median_delta={number(item["median_delta"])}')
+    if len(summary['contexts']) > 1:
+        print(f'--- POOLED over {len(summary["contexts"])} held contexts: not a single-framing result ---')
     for name, item in summary['by_metric'].items():
         print(f'  {name:10} n={item["n"]:2} left_wins={item["left_wins"]:2} '
             f'right_wins={item["right_wins"]:2} ties={item["ties"]:2} '

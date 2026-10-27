@@ -50,6 +50,27 @@ def assert_optimizer_fp32(optimizer):
         for k in ('exp_avg','exp_avg_sq','max_exp_avg_sq'):
             if k in state and state[k].dtype!=torch.float32:raise ValueError('AdamW moments must remain FP32')
 
+
+def check_warmed_heads(catalog,active,data):
+    """Require warmup for usable training routes, not dormant single/dual heads."""
+    required=set()
+    for row in data.records:
+        if row.get('role')!='train' or not row.get('eligible'):continue
+        branches=row['branch_usable']
+        if branches.get('face'):required.add('face_heads')
+        if branches.get('hand'):required.add('hand_heads')
+        if branches.get('interaction'):required.add('interaction_heads')
+        if branches.get('detail'):
+            detail=row['effective_regions']['detail']
+            if any(detail[:2]):required.add('face_heads')
+            if any(detail[2:]):required.add('hand_heads')
+    relevant=required & {r.runtime_group for r in catalog.rows if r.name in active and r.role=='head'}
+    for group in sorted(relevant):
+        if not any(catalog.parameters[r.name].detach().count_nonzero() for r in catalog.rows
+                if r.runtime_group==group and r.role=='head' and r.name in active):
+            raise ValueError('Selected branch Head has not been warmed: '+group)
+    return sorted(relevant)
+
 @contextmanager
 def preserved_rng():
     state=capture_rng()
@@ -82,7 +103,13 @@ def check_body_baseline(config,initialization):
     if config.stage.phase=='S0':return None
     if not config.body_baseline_report:raise ValueError('Starting beyond S0 requires a bound Body baseline report and manual acceptance')
     report,bound=read_json_ref(config.body_baseline_report)
-    if report.get('body_accepted') is not True or report.get('manual_acknowledgment') is not True or report.get('checkpoint_sha256')!=initialization['sha256']:
+    accepted=report.get('manual_acknowledgment') is True
+    if not accepted and config.continuous_stage_authorization is not None:
+        if (report.get('continuous_stage_authorization')==config.continuous_stage_authorization and
+                report.get('acceptance_kind')=='technical_pilot_gate'):
+            gradient,_=read_json_ref(report['s0_gradient_report'])
+            accepted=gradient.get('level')=='grad' and gradient.get('passed') is True and gradient.get('production_passed') is True
+    if report.get('body_accepted') is not True or not accepted or report.get('checkpoint_sha256')!=initialization['sha256']:
         raise ValueError('Body baseline was not accepted for this initialization')
     return bound
 
@@ -96,7 +123,10 @@ def prefix_trace(backend,pair,noisy,sigma):
     for index,block in enumerate(backend.pipe.transformer.transformer_blocks):
         def hook(module,args,result,index=index):
             if result.shape[1]!=target.numel():raise ValueError('Block output does not match joint text/reference/target layout')
-            observed[str(index)]=tensor_digest([('text_and_reference_prefix',result[:,~target])])
+            # Detach BEFORE indexing. Indexing a grad-tracked block output
+            # saves its mask inside a non-reentrant checkpoint; the temporary
+            # observation hook is absent during recomputation.
+            observed[str(index)]=tensor_digest([('text_and_reference_prefix',result.detach()[:,~target])])
         handles.append(block.register_forward_hook(hook))
     try:yield observed,values
     finally:

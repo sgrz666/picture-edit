@@ -31,6 +31,7 @@
    - [3.18 workflow/ —— 单人动作迁移基座流水线](#318-workflow--单人动作迁移基座流水线)
    - [3.19 workflow-multiple/ —— 双人姿态编辑流水线](#319-workflow-multiple--双人姿态编辑流水线)
    - [3.20 task/ —— 合同任务书](#320-task--合同任务书)
+   - [3.21 workflow-v2/ —— A+B+C 双源交互流水线](#321-workflow-v2--abc-双源交互流水线)
 4. [核心工作流运行命令矩阵 (Workflows)](#4-核心工作流运行命令矩阵)
 5. [环境配置与资产路径规范](#5-环境配置与资产路径规范)
 6. [文档体系：人工 README](#6-文档体系人工-readme)
@@ -100,6 +101,7 @@ pic-edit/
 │   ├── logs/ patches/      #   批处理与单跑日志 / SMPLest-X 本地补丁
 │   └── pose_transfer/ tests/  #  几何与提示词核心逻辑 / 单元测试
 ├── workflow-multiple/      # [双人姿态编辑流水线] Hi4D 双人交互迁移，与 workflow/ 共用 src/pose_edit/
+├── workflow-v2/            # [A+B+C 双源流水线] 独立人物 A/B、交互 C、官方 Hi4D 骨架接触与 Native V5
 ├── task/                   # [合同任务书] 人物图像姿态编辑任务书_v3.docx（验收条款权威来源）
 ├── datasets/               # [数据集本体] 图像、视频帧与 3D 几何标注资产
 │   ├── iPER/               #   iPER 视频基准 (raw_1024, sampled_6src64tgt, assets_512)
@@ -389,6 +391,9 @@ workflow/
 ### 3.20 `task/` —— 合同任务书
 存放与合同方签订的人物图像姿态编辑任务书 v3（`人物图像姿态编辑任务书_v3.docx`），是**验收条款的权威来源**：阶段一/二的身高体型相对估计准确率（≥60%/≥80%）、双人交互主观合理比例（≥70%/≥90%）、主观质量优胜率（超 Qwen-Edit 基线 5%）等口径均出自此处。`workflow/human_eval/` 的主观验收与 `evaluate2.py` 的六轴补测都对照它，详见 [`task/README.md`](task/README.md)。
 
+### 3.21 `workflow-v2/` —— A+B+C 双源交互流水线
+输入两张独立单人照片 A/B 和双人动作参考 C，保留 A 场景、A/B 各自外观与估计体型。入口 `bash workflow-v2/run.sh`，支持 `geometry_only`、`qwen_baseline`、`native_v5`。Hi4D 样例通过 `--hi4d-record` 优先使用官方 SMPL/接触标注，生成火柴人骨架接触条件；普通 C 照片使用估计分支。V5 的两个 Source 保持独立画布、Source64 和脸手/Detail 来源，复用已有权重，不启动新训练。输出位于 `/data/shangguanrz/pic-edit-workflow-v2/runs/`；命令、阶段产物、Source 缓存复用和只读验证见 [`workflow-v2/README.md`](workflow-v2/README.md)。
+
 ---
 
 ## 4. 核心工作流运行命令矩阵
@@ -411,6 +416,7 @@ cd /home/shangguanrz/project/pic-edit
 | **两阶段 BFS 高清换脸精修** | `python3 bfs_explore.py --pairs <pairs.jsonl> --resolution 768 --steps 30` | Stage 1 锁姿态 + Stage 2 BFS 局部修脸 |
 | **单人动作迁移（workflow，无 adapter）** | `cd workflow && bash run.sh --check`；测试集单对：`PAIRS=../experiments/2.qwen-test/qwen-2.1-test/data/testset/pairs bash run.sh --pair $PAIRS/hard_05 --resolution 768` | 输出 `workflow/runs/<name>/` 四阶段产物（几何/提示词/生成/回估） |
 | **双人姿态编辑（workflow-multiple）** | `cd workflow-multiple && bash batch_dual.sh`（用法见其 README） | 输出 `workflow-multiple/runs/<name>/` |
+| **A+B+C 双源交互（workflow-v2）** | `cd workflow-v2 && bash run.sh --check --mode geometry_only`（三模式用法见其 README） | 输出 `/data/shangguanrz/pic-edit-workflow-v2/runs/<name>/` |
 | **自动化单元测试全量执行** | `pytest tests/test_qwen21_*.py -v` | 验证控制契约与数学正确性 |
 
 ---

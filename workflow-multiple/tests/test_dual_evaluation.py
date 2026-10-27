@@ -54,5 +54,22 @@ class RegionBoxTests(unittest.TestCase):
         self.assertEqual(list(moved['scores']), [0.9, 0.8])
 
 
+
+class FiniteMetricTest(unittest.TestCase):
+    """An unscoreable run has to record missing values; NaN once aborted the whole evaluation."""
+
+    def test_non_finite_values_become_none(self):
+        from evaluate_dual import finite
+        self.assertEqual(finite({'a': float('nan'), 'b': [float('inf'), 0.5],
+            'c': {'d': float('nan')}}), {'a': None, 'b': [None, 0.5], 'c': {'d': None}})
+
+    def test_json_accepts_the_result(self):
+        """atomic_json dumps with allow_nan=False, so an unsanitised NaN aborts the stage."""
+        import json
+        from evaluate_dual import finite
+        json.dumps(finite({'body_pck@0.2': float('nan')}), allow_nan=False)
+        with self.assertRaises(ValueError):
+            json.dumps({'body_pck@0.2': float('nan')}, allow_nan=False)
+
 if __name__ == '__main__':
     unittest.main()

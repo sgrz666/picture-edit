@@ -1,0 +1,99 @@
+{
+  "adapter_parameters": 130277376,
+  "validation_passed": true,
+  "train_steps": 3,
+  "steady_steps": 2,
+  "step_p50_seconds": 0.4524046385195106,
+  "step_p95_seconds": 0.4539731257245876,
+  "semantic_shapes": {
+    "S0": {
+      "seq": [
+        1,
+        418,
+        4096
+      ],
+      "pooled": [
+        1,
+        2048
+      ],
+      "ref": [
+        1,
+        16,
+        64,
+        64
+      ],
+      "target": [
+        1,
+        16,
+        64,
+        64
+      ]
+    }
+  },
+  "interpretation": "Real image reconstruction with simulated controls; not pose-edit quality training.",
+  "wall_seconds": 59.780676324968226,
+  "peak_nvml_gib": 18.75250244140625,
+  "peak_allocated_gib": 16.865621089935303,
+  "peak_reserved_gib": 17.572265625,
+  "stages": [
+    {
+      "stage": "load_complete_pipeline",
+      "event": "end",
+      "seconds": 9.67387936601881,
+      "allocated_gib": 12.704115390777588,
+      "reserved_gib": 13.123046875,
+      "peak_allocated_gib": 12.704115390777588,
+      "peak_reserved_gib": 13.123046875
+    },
+    {
+      "stage": "adapter_optimizer_setup",
+      "event": "end",
+      "seconds": 0.7542431829497218,
+      "allocated_gib": 13.189999103546143,
+      "reserved_gib": 13.609375,
+      "peak_allocated_gib": 13.189999103546143,
+      "peak_reserved_gib": 13.609375
+    },
+    {
+      "stage": "zero_equivalence_validation",
+      "event": "end",
+      "seconds": 1.0224531999556348,
+      "allocated_gib": 13.205868244171143,
+      "reserved_gib": 14.98046875,
+      "peak_allocated_gib": 14.213936805725098,
+      "peak_reserved_gib": 14.98046875
+    },
+    {
+      "stage": "first_update",
+      "event": "end",
+      "seconds": 0.6606785790063441,
+      "allocated_gib": 14.671332359313965,
+      "reserved_gib": 16.56640625,
+      "peak_allocated_gib": 15.893853187561035,
+      "peak_reserved_gib": 16.56640625
+    },
+    {
+      "stage": "steady_train",
+      "event": "end",
+      "seconds": 0.450661874958314,
+      "allocated_gib": 14.672308921813965,
+      "reserved_gib": 17.572265625,
+      "peak_allocated_gib": 16.865621089935303,
+      "peak_reserved_gib": 17.572265625
+    },
+    {
+      "stage": "steady_train",
+      "event": "end",
+      "seconds": 0.45414740208070725,
+      "allocated_gib": 14.672308921813965,
+      "reserved_gib": 17.572265625,
+      "peak_allocated_gib": 16.865621089935303,
+      "peak_reserved_gib": 17.572265625
+    }
+  ],
+  "nvml_sample_interval_ms": 50,
+  "nvml_error": null,
+  "nvml_sample_count": 1116,
+  "status": "PASS",
+  "process_wall_seconds": 60.971993425046094
+}

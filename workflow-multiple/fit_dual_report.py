@@ -57,8 +57,20 @@ ERROR_SLOTS = np.array([slot for slot in DWPOSE_TO_JOINT if slot != 1])
 # asking an estimator to agree with DWPose better than the true geometry does is not a question
 # about the estimator. An absolute threshold calibrated on generation quality was tried first and
 # is unreachable for any estimator: the ground truth itself does not meet it.
+# The hip-gap term is decided against the projected Hi4D geometry, not against DWPose. On an
+# embrace DWPose can place both hip centres on the same pixel (measured: 4.2-4.4 px where the fit
+# and the projected geometry both report ~72 px), which made the DWPose-referenced term the only
+# gate failure (mean 0.120) while the same term against projected geometry was 0.021 (max 0.058).
+# The DWPose-referenced value is still reported, as a statement about the guide, not about the fit.
 GATE = {'correspondence_rate': ('min', 0.90), 'person_count_rate': ('min', 0.90),
-    'hip_gap_error_norm': ('max', 0.10), 'torso_scale_ratio': ('range', (0.85, 1.20))}
+    'hip_gap_error_norm_gt': ('max', 0.10), 'torso_scale_ratio': ('range', (0.85, 1.20))}
+DIAGNOSTIC = {'hip_gap_error_norm': 'fit vs DWPose hip gap; a disagreement here can be the '
+    'landmarks being wrong (backhug), so it never decides the gate'}
+
+
+def hip_gap_errors(gap):
+    """(deciding error against projected geometry, diagnostic error against DWPose)."""
+    return (gap or {}).get('error_norm_gt'), (gap or {}).get('error_norm')
 FLOOR_SLACK_PCK = 0.05
 FLOOR_SLACK_MPJPE = 1.25
 
@@ -298,7 +310,8 @@ def score_pair(record, fit, out_dir):
             torsos = [value for value in
                 (torso_length(person['points']) for person in record['gt_people']) if value]
             if torsos:
-                result['hip_gap']['error_norm'] = error / float(np.mean(torsos))
+                result['hip_gap']['norm_torso_px'] = float(np.mean(torsos))
+                result['hip_gap']['error_norm'] = error / result['hip_gap']['norm_torso_px']
         costs = [sum(comparison(record['gt_people'][slot], fitted[permutation[slot]])
             .get('mpjpe_px', float('inf')) for slot in range(2))
             for permutation in ([0, 1], [1, 0])]
@@ -315,6 +328,9 @@ def score_pair(record, fit, out_dir):
             result['hip_gap']['projected_gt_px'] = hip_gap(
                 record['ground_truth']['people'][0]['points'],
                 record['ground_truth']['people'][1]['points'])
+            gap = result['hip_gap']
+            if gap.get('norm_torso_px') and gap['projected_gt_px'] is not None:
+                gap['error_norm_gt'] = abs(gap['fit_px'] - gap['projected_gt_px']) / gap['norm_torso_px']
             result['error_3d'] = []
             indices, smpl_indices = joint_indices(names), joint_indices(SMPL24_NAMES)
             pelvis_fit, pelvis_smpl = names.index('pelvis'), SMPL24_NAMES.index('pelvis')
@@ -364,8 +380,8 @@ def aggregate(results, records):
             else 0.0 for item in scored]),
         'hip_gap_error_relative': mean([(item.get('hip_gap') or {}).get('error_relative')
             for item in scored]),
-        'hip_gap_error_norm': mean([(item.get('hip_gap') or {}).get('error_norm')
-            for item in scored]),
+        'hip_gap_error_norm': mean([hip_gap_errors(item.get('hip_gap'))[1] for item in scored]),
+        'hip_gap_error_norm_gt': mean([hip_gap_errors(item.get('hip_gap'))[0] for item in scored]),
         'mpjpe3d_absolute_m': mean([person['mpjpe3d_absolute_m'] for item in scored
             for person in (item.get('error_3d') or [])]),
         'mpjpe3d_root_aligned_m': mean([person['mpjpe3d_root_aligned_m'] for item in scored
@@ -380,7 +396,7 @@ def aggregate(results, records):
             for check in record['ground_truth']['checks']]}
     measured = {'correspondence_rate': summary['correspondence_rate'],
         'person_count_rate': summary['person_count_rate'],
-        'hip_gap_error_norm': summary['hip_gap_error_norm'],
+        'hip_gap_error_norm_gt': summary['hip_gap_error_norm_gt'],
         'torso_scale_ratio': summary['torso_scale_ratio']}
     verdict = {}
     for key, (direction, limit) in GATE.items():
@@ -395,6 +411,8 @@ def aggregate(results, records):
             passed = limit[0] <= value <= limit[1]
         verdict[key] = {'measured': value, 'limit': list(limit) if isinstance(limit, tuple) else limit,
             'direction': direction, 'pass': bool(passed)}
+    for key, note in DIAGNOSTIC.items():
+        print(f'DIAGNOSTIC {key}={number(summary.get(key))} -- {note}')
     fit, floor = summary['fit_vs_dwpose'], summary['floor_dwpose_vs_smpl']
     limits = {'pck@0.2': (floor['pck@0.2'] - FLOOR_SLACK_PCK if floor['pck@0.2'] is not None else None,
             'min', f'floor {number(floor["pck@0.2"])} - {FLOOR_SLACK_PCK}'),

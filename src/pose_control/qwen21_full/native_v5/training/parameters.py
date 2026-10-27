@@ -32,6 +32,9 @@ class ParameterCatalog:
     def __init__(self,runtime):
         params=dict(runtime.named_parameters());groups=runtime.named_parameter_groups();seen={};rows=[]
         report=runtime.inheritance_report or {};fresh=set(report.get('new_initialized',()))
+        # Passing through a V4 container does not make a randomly initialized
+        # Hand encoder pretrained. Preserve the known origin across migrations.
+        fresh.update(report.get('v4_migration',{}).get('new_initialized',()))
         inherited=set(report.get('inherited',()))|set(report.get('adapted',()))
         object_names={}
         for group,items in groups.items():

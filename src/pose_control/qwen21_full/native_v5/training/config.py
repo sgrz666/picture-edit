@@ -77,7 +77,7 @@ class SourceSpec:
     weight: float | None=None
 
     def __post_init__(self):
-        if not self.source_id or '\0' in self.source_id or self.role not in ('train','validation') or self.data_profile not in ('auto','full_smplx','hybrid_hi4d') or self.scene_kind not in ('any','single','dual'):
+        if not self.source_id or '\0' in self.source_id or self.role not in ('train','validation','observation') or self.data_profile not in ('auto','full_smplx','hybrid_hi4d') or self.scene_kind not in ('any','single','dual'):
             raise ValueError('Invalid source declaration')
         if self.source_id=='champ_motions_example':raise ValueError('Unpaired CHAMP motion examples are not supervised training data')
         if self.weight is not None:positive(self.weight,'source weight')
@@ -150,8 +150,25 @@ class TrainingConfig:
     world_size: int=1
     eligibility_min_spatial_cells: int=4
     eligibility_feather_px: int=8
+    experiment_mode: str='standard'
+    qwen_condition_profile: str='legacy_single'
+    generation_every_updates: int=0
+    generation_steps: int=20
+    generation_seed: int=42
+    continuous_stage_authorization: dict | None=None
 
     def __post_init__(self):
+        if self.continuous_stage_authorization is not None:
+            a=self.continuous_stage_authorization
+            if not isinstance(a,dict) or a.get('source')!='direct_user_message' or not isinstance(a.get('text'),str) or not a['text'].strip():
+                raise ValueError('Explicit recorded user instruction required for continuous stages')
+        if self.experiment_mode not in ('standard','fixed_pair_overfit') or self.qwen_condition_profile not in ('legacy_single','single_2ref','dual_4ref'):
+            raise ValueError('Unknown experiment/condition protocol')
+        if any(s.role=='observation' for s in self.sources) and self.experiment_mode!='fixed_pair_overfit':
+            raise ValueError('Same-scene observation requires an explicit fixed_pair_overfit experiment')
+        if (type(self.generation_every_updates)!=int or self.generation_every_updates<0 or
+                type(self.generation_steps)!=int or self.generation_steps<=0 or type(self.generation_seed)!=int):
+            raise ValueError('Invalid fixed generation settings')
         if self.schema!=SCHEMA or self.num_workers!=0 or self.micro_batch!=1 or self.world_size!=1:raise ValueError('V5 preparation supports one process/GPU, B1, workers0')
         if self.eligibility_min_spatial_cells<1 or not 0<=self.eligibility_feather_px<=32:raise ValueError('Invalid eligibility grid rules')
         if type(self.seed)!=int or not 0<=self.seed<2**63 or any(type(x)!=int for x in (self.save_every_updates,self.probe_every_updates,self.probe_samples)) or self.save_every_updates<1 or self.probe_every_updates<0 or self.probe_samples<1:raise ValueError('Invalid seed/interval')
@@ -174,7 +191,8 @@ class TrainingConfig:
         missing=[k for k in ('initialization','model_manifest','cache_root','cache_identity','output_root') if not getattr(self,k)]
         if self.stage.budget_updates is None:missing.append('stage.budget_updates')
         if not any(s.role=='train' for s in self.sources):missing.append('train source')
-        if not any(s.role=='validation' for s in self.sources):missing.append('validation source')
+        evaluation_role='observation' if self.experiment_mode=='fixed_pair_overfit' else 'validation'
+        if not any(s.role==evaluation_role for s in self.sources):missing.append(evaluation_role+' source')
         for s in self.sources:
             if not s.manifest:missing.append(s.source_id+'.manifest')
             if not s.groups:missing.append(s.source_id+'.groups')

@@ -1,0 +1,34 @@
+{
+  "backbone_before": {
+    "transformer": "b3bb4a50b6183c6233a39cb5aec91c42c34eeb6d5ba23a9288e5cc82f4797d6c",
+    "vae": "138d3a53458a6ee9a8e2863514ed90aa4fe234fdba81bfb4e88e888a8f5d2ae2",
+    "lmm": "1cf48132bb0bb5af7e1439d0390faff69319b918560b3dabb460aaefc854e5ab",
+    "connector": "aacde0b5b62028a9b12a64ea529e4e89b54965da58cc3a658c86141fddeacc55"
+  },
+  "backbone_after": {
+    "transformer": "b3bb4a50b6183c6233a39cb5aec91c42c34eeb6d5ba23a9288e5cc82f4797d6c",
+    "vae": "138d3a53458a6ee9a8e2863514ed90aa4fe234fdba81bfb4e88e888a8f5d2ae2",
+    "lmm": "1cf48132bb0bb5af7e1439d0390faff69319b918560b3dabb460aaefc854e5ab",
+    "connector": "aacde0b5b62028a9b12a64ea529e4e89b54965da58cc3a658c86141fddeacc55"
+  },
+  "zero_max_abs_diff": 0.0,
+  "gradients": {
+    "heads_nonzero": [
+      true,
+      true,
+      true,
+      true,
+      true,
+      true
+    ],
+    "body_nonzero": true,
+    "backbone_gradients_absent": true
+  },
+  "recomputation": {
+    "dit": 2,
+    "adapter": 2
+  },
+  "optimizer_dtypes": [
+    "torch.float32"
+  ]
+}

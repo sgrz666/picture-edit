@@ -1,0 +1,42 @@
+{
+  "kind": "quality",
+  "group": "Q2",
+  "task": "D1",
+  "seed": 42,
+  "resolution": 512,
+  "preprocess": "letterbox",
+  "cfg": 4.5,
+  "steps": 50,
+  "negative_prompt": "blurry, low quality, low resolution, distorted, deformed, broken content, missing parts, damaged details, artifacts, glitch, noise, extra fingers, missing fingers, mutated hands, bad composition, wrong proportion, unfinished.",
+  "prompt": "The man sitting on the left in a light-colored graphic T-shirt stands up and shakes hands with the existing standing man in a dark plaid short-sleeved shirt. These are the two people who interact. Keep both men's original faces and respective clothing. Keep all other people and the room unchanged. Do not add, duplicate, replace or remove anyone.",
+  "control_injected": false,
+  "id": "Q2_D1_42_letterbox_50_4.5",
+  "source_hashes": {
+    "analysis.py": "a12f628b865773feb0e269456ab13b5a3a9f68b48a03cbcddc5b23b3ca895e71",
+    "acceptance.py": "7a3cf674bb79e6c2d292b69bf78afc14adecc5594d8c81a269a9d966c0bb7ea7",
+    "worker.py": "8f16be96987d50b8e3257a0cea9dba46fe09b894f1ce7244a573f0335301b84d",
+    "common.py": "87cf0458f3dea8d04d6ecdd64aba792ef5d8e65d8895c1d49254a725cf5cf21c",
+    "run.py": "56a283834cbee2c0fb2a80fba5b9dfb7afb51e101a909760a2eb19515a6c9583",
+    "__init__.py": "7b244b6f72a808b9c688c5309934c8aa454beb7b4ad927482838b7a82a273386",
+    "package.py": "e100194748fdcea89858f7be2620cae28a9d26c10010da944a6ebc53849aaca8",
+    "report.py": "35f1536fb41b57ab3e5c24e1b0313f9297a25cd57dc875f47ef57f9454df2713",
+    "contact_sheet.py": "142dfd0cfd3ede28369d3d24fa352f3b104cc7ddc8ba6effb0680728cb74234d"
+  },
+  "adapter_source_sha256": "bb6e2df5118abea7c05c52dc41723e9fefc26ce0e0d3c7b451d79e4e84b36d57",
+  "scheduler_config_sha256": "3d0ec27d3bf788b49b2ced5bc0f0999881e80d06e7e2e06550148b13b374b8cc",
+  "input_sha256": "39df957040ee07907626207f3f80ae92e599b7b871034b1c4d677eda06a8bf1a",
+  "input_path": "/home/shangguanrz/project/pic-edit/inputs/dual_person.jpg",
+  "original_size": [
+    480,
+    640
+  ],
+  "content_box": [
+    64,
+    0,
+    448,
+    512
+  ],
+  "model_revision": "85c2ed257b9406d8531965c68e140dc7fdb81382",
+  "pipeline_sha256": "41e0f263d9ad55940426a4b2092688a74711395499c12a71ee69dc378ec9d3a9",
+  "rng_policy": "global_cpu_cuda_and_denoising_generator_same_seed"
+}

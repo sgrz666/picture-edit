@@ -19,8 +19,8 @@ import sys
 import time
 
 import cv2
+import math
 import numpy as np
-import onnxruntime as ort
 from PIL import Image, ImageDraw
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -31,13 +31,12 @@ from src.pose_edit.common import (atomic_json, finish_stage, make_request, read_
     sha256_file, stage_reasons)
 from src.pose_edit.appearance import (crop_person, judge_appearance, judge_import, load_embedder,
     mask_box)
+from src.pose_edit import dwpose
 from src.pose_edit.geometry import (cocowholebody133_to_dwpose134, valid_points)
-from src.evaluation.dwpose_onnx.onnxdet import inference_detector
-from src.evaluation.dwpose_onnx.onnxpose import inference_pose
 
 ROOT = Path(__file__).resolve().parent
 CODE = ['evaluate_dual.py', 'src/pose_edit/common.py', 'src/pose_edit/geometry.py',
-    'src/pose_edit/appearance.py']
+    'src/pose_edit/appearance.py', 'src/pose_edit/dwpose.py']
 BODY_SLOTS = slice(0, 18)
 HIP_SLOTS = (8, 11)
 PCK_THRESHOLDS = (0.1, 0.2, 0.5)
@@ -45,26 +44,12 @@ AMBIGUOUS_ASSIGNMENT_PX = 40.0
 
 
 def detect_people(config, image_bgr):
-    """Return one entry per detected person: box, 134 points and their detector scores."""
-    det_session = ort.InferenceSession(config['dwpose_det_model'],
-        providers=['CPUExecutionProvider'])
-    pose_session = ort.InferenceSession(config['dwpose_pose_model'],
-        providers=['CPUExecutionProvider'])
-    detected = inference_detector(det_session, image_bgr)
-    people = []
-    if len(detected):
-        # This build of inference_detector returns xyxy boxes only; it has already dropped
-        # candidates under its own 0.3 threshold and kept class 0.
-        points, scores = inference_pose(pose_session, detected.copy(), image_bgr)
-        for index in range(len(detected)):
-            raw_points = np.asarray(points[index], dtype=float)
-            raw_scores = np.asarray(scores[index], dtype=float)
-            converted_scores = cocowholebody133_to_dwpose134(raw_scores[:, None])[:, 0]
-            converted_scores[1] = float(min(raw_scores[5], raw_scores[6]))
-            people.append({'box_xyxy': [float(value) for value in detected[index][:4]],
-                'points': cocowholebody133_to_dwpose134(raw_points),
-                'scores': converted_scores})
-    return people
+    """Return one entry per detected person: box, 134 points and their detector scores.
+
+    Delegates to ``src.pose_edit.dwpose`` so the 133->134 slot convention lives in exactly one
+    place; a second copy is what made the earlier 133-vs-134 bug silent.
+    """
+    return dwpose.detect_people(config, image_bgr)
 
 
 def hip_centre(points):
@@ -322,6 +307,17 @@ def region_people(config, image_bgr, requested, threshold, size):
     return people
 
 
+def finite(value):
+    """Replace NaN/inf with None: an unmeasurable metric is missing evidence, not a number."""
+    if isinstance(value, float) and not math.isfinite(value):
+        return None
+    if isinstance(value, dict):
+        return {key: finite(item) for key, item in value.items()}
+    if isinstance(value, (list, tuple)):
+        return [finite(item) for item in value]
+    return value
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--run', required=True)
@@ -434,8 +430,10 @@ def main():
             'result that hides a limb can score better than it looks. Person count is reported '
             'separately because extra bodies are the dominant failure when the target photograph '
             'is given to the generator.'}
+    evaluation = finite(evaluation)
+    summary = finite(evaluation['summary'])
     atomic_json(stage_dir / 'eval_dual.json', evaluation)
-    draw_overlay(Image.fromarray(rgb), requested, detected_people, mapping) \
+    draw_overlay(Image.fromarray(rgb), requested, scoring_people, mapping) \
         .save(stage_dir / 'eval_overlay.png')
     finish_stage(record, request, {'eval_dual': stage_dir / 'eval_dual.json',
         'overlay': stage_dir / 'eval_overlay.png'},

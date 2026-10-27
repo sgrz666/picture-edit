@@ -83,10 +83,19 @@ def sample_status(sample,route,config):
             'bps':c.mesh_valid.tolist(),'hand_2d':c.hand_point_valid.any(-1).tolist(),'face_2d':c.face_point_valid.any(-1).tolist()},
         'bucket':[list(sample['target_token_hw']),list(sample['source_token_hw']),sample['native_scene_kind'],sample['data_profile'],r.arcface.shape[2]]}
 
+def validate_evaluation_split(config,groups,targets):
+    if groups['train'] & groups['validation']:
+        raise ValueError('Original-video/sequence leakage between train and validation')
+    if config.experiment_mode=='standard' and groups['observation']:
+        raise ValueError('Same-scene observation requires fixed_pair_overfit')
+    if config.experiment_mode=='fixed_pair_overfit' and (targets.get('train',set()) & targets.get('observation',set())):
+        raise ValueError('Observation target must never be a training target')
+
+
 class DataPlan:
     def __init__(self,config):
-        self.config=config;self.datasets={};self.group_indices={};self.bindings={};self.status={};self.records=[]
-        split_groups={'train':set(),'validation':set()};identities={}
+        self.config=config;self.datasets={};self.group_indices={};self.bindings={};self.status={};self.records=[];self.conditions={}
+        split_groups={'train':set(),'validation':set(),'observation':set()};targets={k:set() for k in split_groups};identities={}
         for spec in config.sources:
             manifest=verify(spec.manifest);groups,bound=read_json_ref(spec.groups)
             dataset=NativeFullDatasetV5(manifest['path'],load_target=True,data_profile=spec.data_profile)
@@ -96,17 +105,27 @@ class DataPlan:
             self.datasets[spec.source_id]=dataset;self.group_indices[spec.source_id]=groups
             closure=[]
             for row in dataset.rows:
-                closure.append({k:row.get(k) for k in ('pair_id','v4_manifest','detail','supervision','references')})
+                closure.append({k:row.get(k) for k in ('pair_id','v4_manifest','detail','supervision','references','qwen_condition')})
             identities[spec.source_id]={'manifest':manifest,'groups':bound,'closure':closure,'role':spec.role}
             for index in range(len(dataset)):
                 sample=dataset[index]
+                targets[spec.role].add(sample['local_condition_v4'].metadata[0]['driver_rgb_sha256'])
+                if config.qwen_condition_profile!='legacy_single':
+                    from ..conditioning import read_condition
+                    ref=dataset.rows[index].get('qwen_condition')
+                    if ref is None:raise ValueError('Missing explicit per-pair multi-image condition')
+                    condition=read_condition(ref,sample)
+                    if condition['profile']!=config.qwen_condition_profile:raise ValueError('Declared Qwen profile differs')
+                    self.conditions[(spec.source_id,index)]=(ref,condition)
                 if spec.scene_kind!='any' and spec.scene_kind!=sample['native_scene_kind']:raise ValueError('Source scene kind assertion differs')
                 for route in config.stage.routes:
                     status=sample_status(sample,route,config)
                     if spec.role=='train' and route.source_ids and spec.source_id not in route.source_ids:status={**status,'eligible':False,'reasons':status['reasons']+['source_not_selected_for_route']}
                     self.status[(route.name,spec.source_id,index)]=status
                     self.records.append({'source_id':spec.source_id,'role':spec.role,'index':index,'pair_id':dataset.rows[index]['pair_id'],'route':route.name,**status})
-        if split_groups['train']&split_groups['validation']:raise ValueError('Original-video/sequence leakage between train and validation')
+        validate_evaluation_split(config,split_groups,targets)
+        if config.experiment_mode=='fixed_pair_overfit' and not split_groups['observation']:
+            raise ValueError('Fixed-pair experiment requires explicitly declared observation samples')
         self.identity={'sources':identities,'config_sha256':config.signature()};self.signature=digest(self.identity)
         self.pools={}
         for route in config.stage.routes:
@@ -119,7 +138,8 @@ class DataPlan:
             selected=[self.status[(route.name,s.source_id,i)] for s in sources for i in self.pools[(route.name,s.source_id)]]
             for term,field in (('face','face_area'),('hand','hand_area'),('identity','auxiliary_faces'),('perceptual','auxiliary_faces')):
                 if getattr(route.loss,term)>0 and not any(row[field]>0 for row in selected):raise ValueError('Requested loss has no eligible data: '+route.name+'/'+term)
-            if not any(row['role']=='validation' and row['route']==route.name and row['eligible'] for row in self.records):raise ValueError('Route has no eligible held-out validation samples: '+route.name)
+            if config.experiment_mode=='standard' and not any(row['role']=='validation' and row['route']==route.name and row['eligible'] for row in self.records):raise ValueError('Route has no eligible held-out validation samples: '+route.name)
     def sample(self,source,index):return self.datasets[source][index]
     def report(self):return {'schema':'native_v5_data_preflight_v1','level':'data','passed':True,'signature':self.signature,'identity':self.identity,
+        'experiment_mode':self.config.experiment_mode,'evaluation_kind':'same_scene_observation' if self.config.experiment_mode=='fixed_pair_overfit' else 'held_out_validation',
         'rows':self.records,'all_rows_retained':True,'model_constructed':False,'gradient_passed':False}

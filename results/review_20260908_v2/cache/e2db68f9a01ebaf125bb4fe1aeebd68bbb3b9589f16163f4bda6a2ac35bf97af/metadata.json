@@ -1,0 +1,39 @@
+{
+  "input_sha256": "39df957040ee07907626207f3f80ae92e599b7b871034b1c4d677eda06a8bf1a",
+  "prompt": "Keep this photograph unchanged. Preserve every existing person, their faces, clothing, poses and all background objects.",
+  "resolution": 768,
+  "preprocess": "letterbox",
+  "model_revision": "85c2ed257b9406d8531965c68e140dc7fdb81382",
+  "pipeline_sha256": "41e0f263d9ad55940426a4b2092688a74711395499c12a71ee69dc378ec9d3a9",
+  "encoding_seed": 1701,
+  "vae_sampling": "sample",
+  "dtype": "bfloat16",
+  "condition_batch": 1,
+  "encoding_implementation_sha256": "aa94eaf716d4d04e891ad8600bea6f19b04b68a473bc7a32a3356bec929c6534",
+  "cache_key": "e2db68f9a01ebaf125bb4fe1aeebd68bbb3b9589f16163f4bda6a2ac35bf97af",
+  "source_run": "CACHE_768_D0_e2db68f9a0",
+  "tensor_sha256": "e4d8e748a269029b2f692c6bbb660514658d29306ef72211d584415c84b46710",
+  "shapes": {
+    "seq": [
+      1,
+      736,
+      4096
+    ],
+    "pooled": [
+      1,
+      2048
+    ],
+    "ref": [
+      1,
+      16,
+      96,
+      96
+    ],
+    "target": [
+      1,
+      16,
+      96,
+      96
+    ]
+  }
+}

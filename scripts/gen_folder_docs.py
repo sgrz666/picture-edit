@@ -4,6 +4,8 @@
 
 文件说明来自实际读取文件内容（Python 模块 docstring、Markdown 首个标题、JSON 顶层键、
 Shell 注释等），二进制文件按扩展名与体积归类说明。已存在的 README.md 一律不覆盖。
+
+刷新全仓：python3 scripts/gen_folder_docs.py --dataset-profile（约半分钟；--only <相对路径> 可局部刷新）。
 """
 
 import os
@@ -12,6 +14,9 @@ import re
 import json
 import argparse
 from collections import Counter
+from datetime import datetime
+
+_GEN_TS = datetime.now().strftime("%Y-%m-%d %H:%M")
 
 DOC_NAME = "目录说明.md"
 INDEX_NAME = "目录总览.md"
@@ -857,8 +862,8 @@ def build_doc(relpath, dnames, fnames, absdir):
     up = link_target(relpath)
 
     lines = ["# `%s` 目录说明" % (relpath if relpath != "." else "/"), ""]
-    lines.append("> 本文件由 `scripts/gen_folder_docs.py` 依据目录实际内容自动生成；"
-                 "如需补充人工说明，请写在本目录 `README.md` 中（生成器不会覆盖 README）。")
+    lines.append("> 本文件由 `scripts/gen_folder_docs.py` 依据目录实际内容自动生成（"
+                 "生成时间：%s）；如需补充人工说明，请写在本目录 `README.md` 中（生成器不会覆盖 README）。" % _GEN_TS)
     lines.append("")
     crumb = "- **路径**：`%s`" % (relpath if relpath != "." else "./")
     crumb += "　- **层级**：第 %d 级" % (depth + 1)
@@ -930,7 +935,7 @@ def build_doc(relpath, dnames, fnames, absdir):
     cap_files = 200 if PROFILE else MAX_LIST
     if fnames:
         exts = Counter(os.path.splitext(f)[1].lower() for f in fnames)
-        lines.append("共 **%d** 个文件。类型分布：%s" % (
+        lines.append("共 **%d** 个文件（不含隐藏文件与自动生成的说明文件）。类型分布：%s" % (
             len(fnames), "、".join("%s×%d" % (kind(e), n) for e, n in exts.most_common())))
         lines.append("")
         readable = [f for f in fnames if os.path.splitext(f)[1].lower() in TEXT_EXTS][:MAX_TEXT_READ]
@@ -1024,6 +1029,7 @@ def build_index(root, tree_lines, n_docs):
         "",
         "- %s路径：`%s`" % ("仓库" if in_repo else "数据盘", root),
         "- 目录说明数量：**%d** 个" % n_docs,
+        "- 生成时间：**%s**" % _GEN_TS,
         "- 隐藏目录、`__pycache__` 不生成说明；未跟随的符号链接不在其目标内生成说明，"
         "但会在上层目录中列出并标注链接去向（实体侧说明文件另按实体位置生成）。",
         "",
@@ -1123,7 +1129,7 @@ def main():
     ap.add_argument("--only", default=None, help="只为该相对子树生成（调试用）")
     ap.add_argument("--dry-run", action="store_true")
     ap.add_argument("--dataset-profile", action="store_true",
-                    help="附加数据集构成画像与人工核定的数据集详解章节")
+                    help="附加数据集构成画像章节（刷新全仓时推荐使用）")
     ap.add_argument("--print-sample", type=int, default=0)
     ap.add_argument("--follow-under", default="",
                     help="逗号分隔的绝对路径前缀：仅进入目标位于这些前缀之下的符号链接目录")

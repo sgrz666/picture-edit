@@ -107,7 +107,7 @@ def stage_identity(stage, config, paths):
     common_code = ['src/pose_edit/common.py']
     if stage == 'geometry':
         fields = ['smplest_root', 'smplest_checkpoint', 'person_detection_confidence',
-            'pose_framing', 'subject']
+            'pose_framing', 'subject', 'dwpose_pose_model', 'dwpose_det_model']
         input_names = ['A_rgb', 'B_rgb', 'A_reference', 'source_preprocess']
         model = Path(config['smplest_root'])
         checkpoint = model / 'pretrained_models' / config['smplest_checkpoint']
@@ -115,8 +115,13 @@ def stage_identity(stage, config, paths):
             'detector': model_signature(model / 'pretrained_models/yolov8x.pt'),
             'human_models': model_signature(model / 'human_models/human_model_files/smplx'),
             'estimator_source': {name: sha256_file(model / name) for name in ESTIMATOR_SOURCE_FILES}}
+        if config.get('pose_framing') == 'source_torso':
+            # The geometry stage only reads the pose ONNX for this framing, so its fingerprint
+            # changes only then: the DWPose weights are part of the result, not just its path.
+            identities['dwpose'] = {key: model_signature(Path(config[key]))
+                for key in ('dwpose_det_model', 'dwpose_pose_model') if config.get(key)}
         code = common_code + ['smplx_worker.py', 'src/pose_edit/estimator.py',
-            'src/pose_edit/geometry.py']
+            'src/pose_edit/geometry.py', 'src/pose_edit/dwpose.py']
     elif stage == 'prompt':
         fields = ['pe_model', 'pe_seed', 'prop_policy']
         input_names = ['A_reference', 'B_rgb', 'B_3d_dwpose']

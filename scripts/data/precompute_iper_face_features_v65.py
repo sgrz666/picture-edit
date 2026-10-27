@@ -261,12 +261,7 @@ def build_v65_face_cache(
             image = image_loader(stem)
             tight = safe_expanded_crop(image, box, scale=1.0)
             expanded = safe_expanded_crop(image, box, scale=1.35)
-            try:
-                arc_value, dino_value = extractor.extract(
-                    tight, expanded, full_image=image
-                )
-            except TypeError:
-                arc_value, dino_value = extractor.extract(tight, expanded)
+            arc_value, dino_value = extractor.extract(tight, expanded)
             arc_value = torch.as_tensor(arc_value, dtype=torch.float32).detach().cpu()
             dino_value = torch.as_tensor(dino_value, dtype=torch.float32).detach().cpu()
             if arc_value.shape != (512,):
@@ -476,21 +471,12 @@ class LocalFaceFeatureExtractor:
 
     @torch.inference_mode()
     def extract(
-        self,
-        tight_crop: np.ndarray,
-        expanded_crop: np.ndarray,
-        full_image: np.ndarray | None = None,
+        self, tight_crop: np.ndarray, expanded_crop: np.ndarray
     ) -> tuple[torch.Tensor, torch.Tensor]:
         from PIL import Image
 
-        full_bgr = (
-            np.ascontiguousarray(full_image[..., ::-1])
-            if full_image is not None
-            else None
-        )
         arcface = self._arcface.extract_bgr(
-            np.ascontiguousarray(tight_crop[..., ::-1]),
-            full_image_bgr=full_bgr,
+            np.ascontiguousarray(tight_crop[..., ::-1])
         )
         inputs = self._processor(
             images=Image.fromarray(expanded_crop), return_tensors="pt"

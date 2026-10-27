@@ -1,0 +1,15 @@
+{
+  "id": "ADAPTER_INFER_512_D0",
+  "kind": "adapter_infer",
+  "group": "adapter_infer",
+  "task": "D0",
+  "seed": 42,
+  "resolution": 512,
+  "preprocess": "letterbox",
+  "prompt": "Keep this photograph unchanged. Preserve every existing person, their faces, clothing, poses and all background objects.",
+  "negative_prompt": "",
+  "cfg": 4.5,
+  "steps": 35,
+  "adapter_checkpoint": "/home/shangguanrz/project/pic-edit/experiments/review_20260908_v2/runs/STABLE_M_512_0/adapter.pt",
+  "control_injected": true
+}

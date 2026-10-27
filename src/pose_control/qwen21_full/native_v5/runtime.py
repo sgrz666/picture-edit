@@ -15,6 +15,7 @@ from .strength import NativeStrengthController
 from .detail import NativeDetailAppearanceBridge
 from .local import NativeFacePreparerV5,NativeHandPreparerV5,NativeLocalControllerV5,prepare_local_v5
 from .frontend import encode_frontend
+from .source_bank import NativeSourceBankV5
 
 
 class NativeInteractionResidualHead(nn.Module):
@@ -64,13 +65,16 @@ class NativeFullRuntimeV5(NativeFullRuntimeV4):
     def set_extra_state(self,value):
         if value!=self.get_extra_state(): raise ValueError('V5 checkpoint architecture/schema differs')
 
-    def _validate_sources(self,c,r,batch,identity):
+    def _validate_sources(self,c,r,batch,identity,source_bank=None):
         if len(c.metadata)!=len(r.metadata): raise ValueError('V5 reference batch differs')
         for i,(meta,source) in enumerate(zip(c.metadata,r.metadata)):
-            for key in ('source_canvas_id','source_rgb_sha256','source_person_ids'):
-                if meta.get(key)!=source.get(key): raise ValueError('V5 Source binding differs: '+key)
-            if source.get('reference_count')!=r.arcface.shape[2] or len(source.get('reference_sources',()))!=r.arcface.shape[2]:
-                raise ValueError('Declare all V5 local references')
+            if source_bank is None:
+                for key in ('source_canvas_id','source_rgb_sha256','source_person_ids'):
+                    if meta.get(key)!=source.get(key): raise ValueError('V5 Source binding differs: '+key)
+                if source.get('reference_count')!=r.arcface.shape[2] or len(source.get('reference_sources',()))!=r.arcface.shape[2]:
+                    raise ValueError('Declare all V5 local references')
+            elif source.get('source_bank')!=source_bank.metadata[i]:
+                raise ValueError('Local feature source bank binding differs')
             for p in range(2):
                 if not c.person_valid[i,p]: continue
                 src=int(c.source_indices[i,p]);provenance=batch['pose_provenance' if p==0 else 'pose_provenance_b'][i]
@@ -94,7 +98,7 @@ class NativeFullRuntimeV5(NativeFullRuntimeV4):
             if typed is not None:
                 dm=typed.metadata[i]
                 if any(dm.get(k)!=meta.get(k) for k in ('camera_id','scale_group_id')): raise ValueError('V5 local/depth camera or scale differs')
-            if identity is not None and (identity.metadata[i]['source_rgb_sha256']!=source['source_rgb_sha256'] or not torch.equal(identity.source_indices[i],c.source_indices[i])):
+            if source_bank is None and identity is not None and (identity.metadata[i]['source_rgb_sha256']!=source['source_rgb_sha256'] or not torch.equal(identity.source_indices[i],c.source_indices[i])):
                 raise ValueError('Local and body identities differ')
             if batch.get('supervised_target_rgb',False) and meta.get('counterfactual_geometry') and not meta.get('paired_rgb_compatible',False):
                 raise ValueError('Counterfactual geometry cannot use original target RGB')
@@ -102,7 +106,7 @@ class NativeFullRuntimeV5(NativeFullRuntimeV4):
             # are legitimate. Bind each complete set instead of rejecting R1/R3
             # mixtures as a mutation of the primary image.
             fingerprint=hashlib.sha256(json.dumps(source,sort_keys=True,separators=(',',':')).encode()).hexdigest()
-            key=source['source_rgb_sha256']+'@'+source['source_canvas_id']+'@'+fingerprint
+            key=fingerprint if source_bank is not None else source['source_rgb_sha256']+'@'+source['source_canvas_id']+'@'+fingerprint
             self.source_provenance[key]=deepcopy(source)
             target_key=meta['driver_record_sha256']+'@'+meta['target_canvas_id']+'@'+fingerprint+'@'+str(meta.get('body_record_sha256',''))
             compact=deepcopy(meta)
@@ -161,31 +165,41 @@ class NativeFullRuntimeV5(NativeFullRuntimeV4):
             for _,p in rows: p.requires_grad_(flags[key])
         self.profile=profile;self.trainability=flags;self.train(self.training);return self
 
-    def encode(self,batch,*,target_token_hw,options=None,base_options=None,identity=None,source_latent=None):
+    def encode(self,batch,*,target_token_hw,options=None,base_options=None,identity=None,source_latent=None,source_bank=None):
         options=options or NativeControlOptionsV5();base_options=base_options or DualControlOptions()
         if any(p.dtype!=torch.float32 for p in self.parameters()): raise ValueError('V5 controls must remain FP32')
         device=next(self.body.parameters()).device
+        source_bank=source_bank if source_bank is not None else batch.get('source_bank_v5')
+        if source_bank is not None:
+            if not isinstance(source_bank,NativeSourceBankV5): raise ValueError('Explicit typed V5 Source bank required')
+            source_bank=source_bank.to(device).validate_target(batch)
+            if identity is not None and identity is not source_bank and not isinstance(identity,NativeSourceBankV5):
+                raise ValueError('Two-source appearance cannot fall back to a primary-only identity')
+            identity=source_bank if base_options.identity and base_options.identity_strength else None
         with torch.autocast(device_type=device.type,enabled=False):
             features,relation,rv=encode_frontend(self,batch,target_token_hw,base_options,options,identity)
             local=None
             if (options.face and options.face_strength>0) or (options.hand and options.hand_strength>0):
-                c=batch['local_condition_v4'].to(device).validate();r=batch['local_references_v4'].to(device).validate()
+                c=batch['local_condition_v4'].to(device).validate()
+                r=(batch['local_references_v4'].to(device).validate() if source_bank is None else source_bank.merged_references())
                 if not torch.equal(c.person_valid,features.person_valid): raise ValueError('V5 local person validity differs from Body')
-                self._validate_sources(c,r,batch,identity)
-                refs=batch.get('detail_references_v5');refs=None if refs is None else refs.to(device).validate()
+                self._validate_sources(c,r,batch,identity,source_bank)
+                refs=batch.get('detail_references_v5') if source_bank is None else None
+                refs=None if refs is None else refs.to(device).validate()
                 if refs is not None:
                     for m,cm in zip(refs.metadata,c.metadata):
                         for key in ('source_rgb_sha256','source_canvas_id','source_person_ids'):
                             if m.get(key)!=cm.get(key): raise ValueError('Detail Source provenance differs: '+key)
                         fingerprint=hashlib.sha256(json.dumps(m,sort_keys=True,separators=(',',':')).encode()).hexdigest()
                         self.detail_provenance[fingerprint]=deepcopy(m)
-                if source_latent is not None:
+                if source_latent is not None and source_bank is None:
                     sh,sw=batch['source_token_hw']
                     if source_latent.shape!=(features.geometry.shape[0],sh*sw,64): raise ValueError('Use the actual flattened primary64 Source latent')
                     source_latent=source_latent.to(device).float().transpose(1,2).reshape(-1,64,sh,sw)
-                local=prepare_local_v5(self.face_preparer,self.hand_preparer,self.detail_bridge,c,r,refs,source_latent,options,self.strength,self.config)
+                local=prepare_local_v5(self.face_preparer,self.hand_preparer,self.detail_bridge,c,r,refs,source_latent,options,self.strength,self.config,source_bank=source_bank)
         metadata=tuple({'scene_kind':batch['native_scene_kind'],'architecture':ARCHITECTURE,'options':asdict(options),
-            'body_control_source':'geometry_depth_identity_without_interaction'} for _ in range(features.geometry.shape[0]))
+            'body_control_source':'geometry_depth_identity_without_interaction',
+            **({'source_bank':source_bank.metadata[i]} if source_bank is not None else {})} for i in range(features.geometry.shape[0]))
         core=PreparedNativeFullControlV4(features,None,metadata)
         return PreparedNativeFullControlV5(core,relation,rv,local,metadata).validate()
 

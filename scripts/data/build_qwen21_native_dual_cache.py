@@ -93,6 +93,9 @@ def export_frame(frame, target, model_root, rasterizer, asset_max_side):
     key = f"hi4d:{frame['pair']}:{frame['action']}:{frame['camera_id']}:{frame['frame_id']}"
     sources = {name: _source(frame[field]) for name, field in (('params', 'official_smpl'), ('meta', 'meta'), ('camera', 'camera_file'))}
     sources.update({f'model_{p}': _source(path) for p, path in enumerate(models)})
+    for name,item in frame.get('additional_sources',{}).items():
+        if name in sources or _source(item['path'])!=item:raise ValueError('Additional geometry source SHA differs')
+        sources[name]=item
     sources['fk_implementation'] = _source(ROOT/'src/pose_control/qwen21_full/dual_hi4d_geometry.py')
     metadata = {'schema': CACHE_SCHEMA, 'record_id': key, 'person_ids': [f"{frame['pair']}:0", f"{frame['pair']}:1"],
         'pair': frame['pair'], 'action': frame['action'], 'frame_id': frame['frame_id'],

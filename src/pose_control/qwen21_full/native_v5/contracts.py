@@ -183,6 +183,24 @@ class PreparedNativeFullControlV5(_TensorRecord):
 
     @property
     def body(self): return self.core.body
+
+    def to(self,*args,**kwargs):
+        # V4 core implements its own typed conversion rather than inheriting
+        # _TensorRecord, so generic recursion must explicitly include it.
+        return replace(super().to(*args,**kwargs),core=self.core.to(*args,**kwargs))
+
+    def index_select(self,indices):
+        return replace(super().index_select(indices),core=self.core.index_select(indices))
+
+    @classmethod
+    def stack(cls,records):
+        if not records or any(type(r) is not cls for r in records):raise ValueError('Cannot stack mixed/empty V5 controls')
+        if any(r.local is None for r in records) and not all(r.local is None for r in records):
+            raise ValueError('Bucket prepared controls by the enabled local profile')
+        return cls(PreparedNativeFullControlV4.stack([r.core for r in records]),
+            torch.cat([r.relation for r in records]),torch.cat([r.relation_valid for r in records]),
+            None if records[0].local is None else PreparedLocalV5.stack([r.local for r in records]),
+            tuple(m for r in records for m in r.metadata)).validate()
     def validate(self):
         self.core.validate();b,n,_=self.body.geometry.shape;d=self.body.geometry.device
         _tensor(self.relation,(b,n,512),d,'Separate Interaction')

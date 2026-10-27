@@ -10,8 +10,12 @@ def loss_probe(backend,config,data,update):
         try:
             backend.runtime.eval()
             for route_index,route in enumerate(config.stage.routes):
-                selected=[r for r in data.records if r['role']=='validation' and r['route']==route.name and r['eligible']][:config.probe_samples]
-                if not selected:raise ValueError('Missing held-out probe examples: '+route.name)
+                role='observation' if config.experiment_mode=='fixed_pair_overfit' else 'validation'
+                selected=[r for r in data.records if r['role']==role and r['route']==route.name and r['eligible']][:config.probe_samples]
+                if not selected:
+                    if role=='observation':
+                        records.append({'route':route.name,'status':'observation_route_unavailable'});continue
+                    raise ValueError('Missing held-out probe examples: '+route.name)
                 for i,row in enumerate(selected):
                     source,index=row['source_id'],row['index'];sample,batch,pair=backend.pair(source,index)
                     options,base=route_options(route,sample['native_scene_kind'])
@@ -28,4 +32,5 @@ def loss_probe(backend,config,data,update):
                     records.append({'route':route.name,'source_id':source,'index':index,'sigma':float(sigma[0]),'objective':float(loss),
                         'parts':{k:float(v) if torch.is_tensor(v) else v for k,v in parts.items()}})
         finally:backend.runtime.train(was_training)
-    return {'kind':'held_out_loss_probe','update':update,'records':records,'training_rng_preserved':True,'generation_executed':False}
+    return {'kind':'same_scene_observation_loss' if config.experiment_mode=='fixed_pair_overfit' else 'held_out_loss_probe',
+        'update':update,'records':records,'training_rng_preserved':True,'generation_executed':False}

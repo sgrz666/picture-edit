@@ -45,10 +45,6 @@ if "diffusers" not in sys.modules and _diffusers_spec is None:
     sys.modules["diffusers"] = diffusers
     sys.modules["diffusers.models"] = diffusers_models
 
-_PROJECT_ROOT = Path(__file__).resolve().parents[1]
-if str(_PROJECT_ROOT) not in sys.path:
-    sys.path.insert(0, str(_PROJECT_ROOT))
-
 from scripts.precompute_iper_face_features_v65 import (
     CACHE_SCHEMA_VERSION,
     atomic_save_cache,

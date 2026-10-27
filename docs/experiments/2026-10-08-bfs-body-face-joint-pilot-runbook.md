@@ -8,7 +8,7 @@
 
 在本地打开：
 
-- `D:/codeplus/pictureedit/experiments/bfs_body_face_joint_pilot_20261008/report/index.html`：按样本查看 A、B、几何图以及各模型的输出和面部裁剪。
+- `D:/codeplus/pictureedit/research/bfs_body_face_joint_pilot_20261008/report/index.html`：按样本查看 A、B、几何图以及各模型的输出和面部裁剪。
 - 同目录 `summary.md`：完整 36 个验证对的指标、配对差值及视频 / 人物组汇总。
 - `evaluation/`：每个阶段独立保存原始 PNG、脸部 PNG、对比 JPG、逐样本记录、评分和配置。B 图只用于离线对照及监督。
 - `quality_reviews/`：中途 12 个固定样本的全身和面部对比大图，以及继续训练前的人工审查。

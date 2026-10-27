@@ -66,7 +66,14 @@ def main():
     if args.strict_source_baseline:
         check(head_unchanged, 'HEAD changed since organization')
         check(index_unchanged, 'Git index changed since organization')
+    retired_rel = set()
+    retired_manifest = root / 'archive/cleanup_20261008/removed_links.json'
+    if retired_manifest.exists():
+        retired_rel = {item['source'] for item in json.loads(retired_manifest.read_text())['removed']}
     for item in organization['moves']:
+        if str(Path(item['source']).relative_to(root)) in retired_rel:
+            check(not Path(item['source']).exists() and not Path(item['source']).is_symlink(), 'Retired link still present: ' + str(item['source']))
+            continue
         source, target, backup = (Path(item[n]) for n in ('source', 'target', 'backup'))
         check(source.is_symlink() and source.resolve() == target, 'Entry link differs: ' + str(source))
         check(target.is_file(), 'Moved entry missing: ' + str(target))

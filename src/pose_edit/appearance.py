@@ -20,8 +20,19 @@ MIN_CROP_PIXELS = 32
 SWAP_MARGIN_PER_PERSON = 0.02
 
 
-def crop_person(image: Image.Image, box, pad_ratio: float = 0.02) -> Image.Image | None:
-    """Crop one person box with a small margin, clamped to the image."""
+def crop_person(image: Image.Image, box, pad_ratio: float = 0.02,
+    shape: str = 'tight') -> Image.Image | None:
+    """Crop one person box with a small margin, clamped to the image.
+
+    ``shape='tight'`` keeps the detector's own aspect ratio and is what every stored evaluation in
+    both pipelines used. ``shape='square'`` grows the shorter side to match the longer one, which
+    is the comparison the two-person import metric needs: the reference crops come from Hi4D
+    silhouette mask boxes and the generated crops from detector boxes, so a tight crop puts a
+    different amount of background around the two sides and can move a cosine similarity without
+    any change in appearance. A square that no longer fits (a body against the image border) is
+    shrunk to what fits rather than padded with invented pixels, so the caller can still tell that
+    this crop lost area.
+    """
     width, height = image.size
     x0, y0, x1, y1 = [float(value) for value in box[:4]]
     if not all(np.isfinite([x0, y0, x1, y1])) or x1 <= x0 or y1 <= y0:
@@ -29,6 +40,21 @@ def crop_person(image: Image.Image, box, pad_ratio: float = 0.02) -> Image.Image
     pad_x, pad_y = (x1 - x0) * pad_ratio, (y1 - y0) * pad_ratio
     left, top = max(0, int(np.floor(x0 - pad_x))), max(0, int(np.floor(y0 - pad_y)))
     right, bottom = min(width, int(np.ceil(x1 + pad_x))), min(height, int(np.ceil(y1 + pad_y)))
+    if right - left < 2 or bottom - top < 2:
+        return None
+    if shape == 'square':
+        centre_x, centre_y = (left + right) / 2.0, (top + bottom) / 2.0
+        # One integer side length for both axes. Rounding the two edges independently can differ by
+        # a pixel when the centre is fractional, which quietly produced a 51x50 'square' near a
+        # border, so the side is chosen first and the box is then re-anchored inside the image.
+        half = min(max(right - left, bottom - top) / 2.0, centre_x, width - centre_x,
+            centre_y, height - centre_y)
+        side = int(2 * half)
+        left = min(max(0, int(round(centre_x - side / 2.0))), width - side)
+        top = min(max(0, int(round(centre_y - side / 2.0))), height - side)
+        right, bottom = left + side, top + side
+    elif shape != 'tight':
+        raise ValueError(f"unknown crop shape {shape!r}; use 'tight' or 'square'")
     if right - left < 2 or bottom - top < 2:
         return None
     return image.crop((left, top, right, bottom))

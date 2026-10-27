@@ -28,126 +28,18 @@ def read_pairs(path: str | Path) -> list[dict[str, Any]]:
     return [json.loads(line) for line in Path(path).read_text().splitlines() if line.strip()]
 
 
-def study_prompt_signature(bank) -> dict[str, Any]:
-    from .prompt_study.protocol import P0_PROMPT, text_sha256
-    identities = {(row['instruction_version'], row['instruction_sha256']) for row in bank.records.values()}
-    if len(identities) != 1:
-        raise ValueError('Prompt manifest mixes instruction templates')
-    version, sha = next(iter(identities))
-    return {'instruction_version': version,
-            'prompt_instruction_sha256': text_sha256(P0_PROMPT) if bank.protocol == 'p0' else sha}
-
-
-def validate_study_supervision(store, rows) -> None:
-    if store.data.get('align_mode') != 'native':
-        raise ValueError('Study supervision requires native coordinates')
-    for row in rows:
-        record = store.record(row)
-        native = record.get('by_resolution', {}).get('native')
-        if not isinstance(native, dict) or not isinstance(native.get('valid'), bool):
-            raise ValueError('Study supervision missing explicit native gate')
-
-
-def study_asset_signature(features: str | Path, data_dir: str | Path) -> dict[str, Any]:
-    from .prompt_study.protocol import sha256_file
-    features, data_dir = Path(features), Path(data_dir)
-    if features.resolve() != (data_dir / 'face_cache').resolve():
-        raise ValueError('Study features must use the run data/face_cache')
-    path = data_dir / 'face_assets.json'
-    manifest = json.loads(path.read_text(encoding='utf-8'))
-    if manifest.get('schema') != 'qwen21_study_face_cache_v2' or manifest.get('source_identity_only') is not True:
-        raise ValueError('Study Face asset manifest must contain verified source-only v2 caches')
-    records = manifest.get('sequences', [])
-    if not records or len({record['sequence_id'] for record in records}) != len(records):
-        raise ValueError('Study Face assets missing or duplicated')
-    for record in records:
-        cache = features / f"{record['sequence_id']}.pt"
-        if Path(record['path']).resolve() != cache.resolve() or sha256_file(cache) != record['sha256']:
-            raise ValueError(f"Study Face cache changed: {record['sequence_id']}")
-    from .prompt_study.protocol import load_study_lock
-    from .prompt_study.measurement import loss_signature
-    lock = load_study_lock(data_dir / 'lock.json', verify_assets=False)
-    return {'face_assets_sha256': sha256_file(path),
-            'loss_models_sha256': loss_signature(lock, ROOT / 'models')}
-
-
-def study_code_signature() -> dict[str, Any]:
-    """Bind the real controller, native transforms and installed Qwen runtime."""
-    import importlib.metadata
-    import importlib.util
-    from .prompt_study.protocol import sha256_file
-    paths = list((ROOT / 'src/pose_control/qwen21_full').rglob('*.py'))
-    for relative in ('third_party/v65_face', 'third_party/champ_guidance'):
-        paths.extend(path for path in (ROOT / relative).rglob('*.py') if '__pycache__' not in path.parts)
-    paths.extend(ROOT / relative for relative in (
-        'src/adapter/pose_adapter.py', 'src/data/letterbox.py', 'src/data/tiktok_dataset.py',
-        'scripts/precompute_iper_face_features_v65.py'))
-    hashes = {str(path.relative_to(ROOT)).replace('\\', '/'): sha256_file(path) for path in sorted(set(paths))}
-    spec = importlib.util.find_spec('diffusers')
-    if spec is None:
-        raise ValueError('Study requires the installed Qwen Diffusers runtime')
-    package = Path(spec.origin).parent
-    runtime_files = list((package / 'pipelines/qwenimage').glob('*.py'))
-    runtime_files.extend((package / 'models/transformers').glob('*qwenimage*.py'))
-    if not runtime_files:
-        raise ValueError('Installed Diffusers lacks Qwen runtime files')
-    return {'runtime_code_sha256': hashes, 'native_preprocessing': 'native_v1',
-            'diffusers_version': importlib.metadata.version('diffusers'),
-            'diffusers_qwen_code_sha256': {str(path.relative_to(package)).replace('\\', '/'): sha256_file(path)
-                                        for path in sorted(runtime_files)}}
-
-
-def validate_study_cache(cache, dataset, bank, *, indices, require_target: bool) -> None:
-    """Require prepared CPU cache entries before allocating a generation model."""
-    from .qwen_runtime import dataset_image_to_pil
-    for index in indices:
-        sample = dataset[index]
-        pair_id = sample['pair_metadata']['pair_id']
-        source = dataset_image_to_pil(sample['src_image'])
-        source_path = cache._path(source, 'source', prompt=bank.prompt_for(pair_id))
-        if not source_path.is_file():
-            raise FileNotFoundError(f'Missing source cache for {pair_id}: {source_path}')
-        entry = torch.load(source_path, map_location='cpu', weights_only=True)
-        hw = (source.height // 16, source.width // 16)
-        keys = {'reference_latent', 'prompt_embeds', 'prompt_mask', 'image_mask', 'token_hw'}
-        if (not isinstance(entry, dict) or not keys <= entry.keys() or tuple(entry['token_hw']) != hw
-                or entry['reference_latent'].shape != (1, hw[0] * hw[1], 64)
-                or entry['prompt_embeds'].shape[:2] != entry['prompt_mask'].shape
-                or any(not torch.isfinite(entry[key]).all() for key in keys - {'token_hw'})):
-            raise ValueError(f'Invalid source cache for {pair_id}')
-        if require_target:
-            target = dataset_image_to_pil(sample['tgt_image'])
-            target_path = cache._path(target, 'target')
-            if not target_path.is_file():
-                raise FileNotFoundError(f'Missing target cache for {pair_id}: {target_path}')
-            latent = torch.load(target_path, map_location='cpu', weights_only=True)
-            expected = (1, (target.height // 16) * (target.width // 16), 64)
-            if not torch.is_tensor(latent) or latent.shape != expected or not torch.isfinite(latent).all():
-                raise ValueError(f'Invalid target cache for {pair_id}')
-
-
 def pair_metadata(row: Mapping[str, Any], sampled_root: str | Path = SAMPLED) -> dict[str, Any]:
     if "sequence_id" in row:
         appearance = str(row["sequence_id"])
-        source_app = str(row.get("source_appearance", appearance))
-        target_app = str(row.get("target_appearance", appearance))
-        if target_app != appearance:
-            raise ValueError("TikTok sequence_id must select target geometry")
         source_stem = str(row["source_stem"] if "source_stem" in row else row["source"]["stem"])
         target_stem = str(row["target_stem"] if "target_stem" in row else row["target"]["stem"])
-        meta = {
-            "pair_id": str(row.get("pair_id", f"{source_app}_{source_stem}__{target_app}_{target_stem}")),
-            "source_appearance": source_app, "target_appearance": target_app,
+        return {
+            "pair_id": str(row.get("pair_id", f"{appearance}_{source_stem}__{target_stem}")),
+            "source_appearance": appearance, "target_appearance": appearance,
             "source_stem": source_stem, "target_stem": target_stem,
             "source_rgb": str(row["source_rgb"]), "target_rgb": str(row["target_rgb"]),
-            "cross_person": source_app != target_app, "dataset_type": "tiktok_v3",
+            "cross_person": False, "dataset_type": "tiktok_v3",
         }
-        for key in ("sequence_id", "source_video_group", "target_video_group", "video_group",
-                    "source_dwpose_json", "target_dwpose_json", "target_dwpose_png",
-                    "target_depth_vis", "target_normal", "filtered_dwpose", "split"):
-            if key in row:
-                meta[key] = row[key]
-        return meta
     source_app = str(row.get("source_appearance", row.get("appearance")))
     target_app = str(row.get("target_appearance", row.get("appearance")))
     root = Path(sampled_root)

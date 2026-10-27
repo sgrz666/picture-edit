@@ -371,7 +371,7 @@ def build_report(root, output=None, thumb_side=192):
                 '<title>Body + Face + Hand (BFH) 联合调控对比实验报告</title><style>body{font:15px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif,"Microsoft YaHei";margin:0 auto;padding:24px;max-width:1600px;background:#fafafa;color:#222}h1{font-size:28px}h2{font-size:20px}article{border-top:1px solid #bbb;margin-top:36px;padding-top:16px}table{border-collapse:collapse;width:100%}th,td{border:1px solid #ccc;padding:10px;vertical-align:top;min-width:130px}th{background:#e8e8e8}td p{margin:6px 0}a{color:#155b98}img{max-width:100%;height:auto}.scroll{overflow:auto}.failure{color:#a02c34;font-weight:600}.missing{color:#777}summary{cursor:pointer;font-weight:600;margin:12px 0}</style></head><body>'
                 f'<h1>Body + Face + Hand (BFH) 联合调控对比实验报告</h1>'
                 f'<p>{len(cases)} 个固定验证样本 · {len(runs)} 轮评估运行 · {total - failed}/{total} 项成功生成 · {failed} 项失败或缺失。</p>'
-                '<p><b>评测协议：</b>每个用例统一输入源人物 A RGB 图像、目标动作 B 身体几何条件、目标动作 B 面部几何与 A 身份特征、以及目标动作 B 手部几何与关键点（BFH 分支启用 Hand Adapter）。目标 B RGB 仅作为离线参考真值 (offline reference)，不参与生成前向。Shared Detail 与 Interaction 保持关闭。</p>'
+                '<p><b>评测协议：</b>每个用例统一输入源人物 A RGB 图像、目标动作 B 身体几何条件、目标动作 B 面部几何与 A 身份特征、以及目标动作 B 手部几何与关键点（BFH 分支启用 Hand Adapter）。目标 B RGB 仅作为离线参考真值，不参与生成前向。Shared Detail 与 Interaction 保持关闭。</p>'
                 '<p><b>局部 ROI 评测原则：</b>面部与手部在所有阶段与分支中均按照目标 B 的固定几何 ROI 坐标进行无损裁剪对比，确保客观同口径评测。</p>'
                 '<p><b>阶段行说明：</b>initial (初始底座) / common (联合底座 J) / hotload (热加载 0 步) / mid (中期 128 步) / final (最终 256 步)。<br>'
                 '<b>模型分支说明：</b>纯 Qwen 基干微调 / 加载 BFSBody LoRA / 加载 BFSHead LoRA / BFH (三分支联合调控)。单元格显示“未评测”表示该阶段未执行该项测试。</p>'

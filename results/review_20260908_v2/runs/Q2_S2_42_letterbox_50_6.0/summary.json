@@ -1,0 +1,44 @@
+{
+  "component_cuda_ms": {
+    "visual_encoder": 463.94580078125,
+    "vae_encoder": 149.59420776367188,
+    "vlm": 78.39651489257812,
+    "connector_proj1": 0.19459199905395508,
+    "connector": 9.344575881958008,
+    "connector_proj2": 0.018432000651955605,
+    "connector_proj3": 0.08355200290679932,
+    "dit": 6154.263977050781,
+    "vae_decoder": 74.83203125
+  },
+  "file_save_seconds": 0.19884825602639467,
+  "interpretation": "Native image+text edit; no structural adapter injected.",
+  "wall_seconds": 21.606000223080628,
+  "peak_nvml_gib": 15.28961181640625,
+  "peak_allocated_gib": 13.513941287994385,
+  "peak_reserved_gib": 14.126953125,
+  "stages": [
+    {
+      "stage": "load_complete_pipeline",
+      "event": "end",
+      "seconds": 9.907719652052037,
+      "allocated_gib": 12.704115390777588,
+      "reserved_gib": 13.123046875,
+      "peak_allocated_gib": 12.704115390777588,
+      "peak_reserved_gib": 13.123046875
+    },
+    {
+      "stage": "edit_end_to_end_no_file_io",
+      "event": "end",
+      "seconds": 7.03812614409253,
+      "allocated_gib": 12.712050914764404,
+      "reserved_gib": 14.126953125,
+      "peak_allocated_gib": 13.513941287994385,
+      "peak_reserved_gib": 14.126953125
+    }
+  ],
+  "nvml_sample_interval_ms": 50,
+  "nvml_error": null,
+  "nvml_sample_count": 411,
+  "status": "PASS",
+  "process_wall_seconds": 22.73906834900845
+}

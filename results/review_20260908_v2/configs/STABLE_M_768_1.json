@@ -1,0 +1,17 @@
+{
+  "id": "STABLE_M_768_1",
+  "kind": "train",
+  "group": "stable",
+  "task": "S0",
+  "seed": 43,
+  "resolution": 768,
+  "encoding": "cache",
+  "checkpointing": true,
+  "adapter_size": "M",
+  "alternate": true,
+  "preprocess": "letterbox",
+  "prompt": "Keep this photograph unchanged, including the same person, pose, sunglasses, hat, clothing, ski equipment and background.",
+  "warmup": 5,
+  "updates": 95,
+  "control_injected": true
+}

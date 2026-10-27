@@ -86,6 +86,14 @@ def test_body_head_and_encoder_lineage_lr_classification():
     assert catalog.base_lr(rows['hand_preparer.weight'],o)==1e-5
     assert catalog.base_lr(rows['base.body.fusion.weight'],OptimizerSpec(preset='full_legacy'))==1e-5
 
+
+def test_transitively_fresh_hand_encoder_is_not_pretrained():
+    model=ToyRuntime()
+    model.inheritance_report['v4_migration']={'new_initialized':['hand_preparer.weight']}
+    catalog=ParameterCatalog(model);rows={r.name:r for r in catalog.rows}
+    assert rows['hand_preparer.weight'].lineage=='new'
+    assert catalog.base_lr(rows['hand_preparer.weight'],OptimizerSpec())==5e-5
+
 def test_head_warmup_exact_frozen_mask():
     model=ToyRuntime();catalog=ParameterCatalog(model);active=catalog.apply(stage_preset('S1','face',budget=2))
     assert active=={'face_controller.output_heads.0.weight'}

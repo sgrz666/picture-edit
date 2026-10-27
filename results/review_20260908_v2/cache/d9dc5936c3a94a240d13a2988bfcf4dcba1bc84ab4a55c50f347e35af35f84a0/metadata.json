@@ -1,0 +1,39 @@
+{
+  "input_sha256": "83981537a7baeafbeb9c8cb67b3484dc26433f574b3685d021fa537e277e4726",
+  "prompt": "Keep this photograph unchanged, including the same person, pose, sunglasses, hat, clothing, ski equipment and background.",
+  "resolution": 768,
+  "preprocess": "letterbox",
+  "model_revision": "85c2ed257b9406d8531965c68e140dc7fdb81382",
+  "pipeline_sha256": "41e0f263d9ad55940426a4b2092688a74711395499c12a71ee69dc378ec9d3a9",
+  "encoding_seed": 1701,
+  "vae_sampling": "sample",
+  "dtype": "bfloat16",
+  "condition_batch": 1,
+  "encoding_implementation_sha256": "aa94eaf716d4d04e891ad8600bea6f19b04b68a473bc7a32a3356bec929c6534",
+  "cache_key": "d9dc5936c3a94a240d13a2988bfcf4dcba1bc84ab4a55c50f347e35af35f84a0",
+  "source_run": "CACHE_768_S0_d9dc5936c3",
+  "tensor_sha256": "b5419c38780dd3ef833e2eefe7e52997fa054ddfa4ecc096270f2ba460d54a01",
+  "shapes": {
+    "seq": [
+      1,
+      738,
+      4096
+    ],
+    "pooled": [
+      1,
+      2048
+    ],
+    "ref": [
+      1,
+      16,
+      96,
+      96
+    ],
+    "target": [
+      1,
+      16,
+      96,
+      96
+    ]
+  }
+}

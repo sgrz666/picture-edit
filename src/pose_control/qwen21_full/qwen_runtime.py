@@ -197,6 +197,9 @@ class Qwen21IPERCache:
 
 
 def transformer_inputs(pair: dict[str, torch.Tensor], noisy_target: torch.Tensor, sigma: torch.Tensor):
+    if 'reference_latents' in pair:
+        from .native_v5.conditioning import reference_inputs
+        return reference_inputs(pair, noisy_target, sigma)
     if pair.get('target_token_hw') is not None:
         th, tw = pair['target_token_hw']
         source_grid = pair.get('source_token_hw')
