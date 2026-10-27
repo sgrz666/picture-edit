@@ -1,0 +1,48 @@
+{
+  "schema": "champ_visual_review_notes_v1",
+  "reviewer": "Codex image inspection",
+  "human_confirmed_labels": false,
+  "overview_reviewed": true,
+  "full_frame_examples_reviewed": [
+    "000000_00144",
+    "000111_00088",
+    "000444_00144",
+    "000666_00080"
+  ],
+  "all_46_frames_present_in_reviewed_sheets": true,
+  "reviewed_sheets": [
+    {
+      "path": "inspection\\sheets\\review_01.png",
+      "sha256": "6ac83b72ad7695adf81097776b3a6ecfbcd5e1aa2b51f40076f7af848f8cc370"
+    },
+    {
+      "path": "inspection\\sheets\\review_02.png",
+      "sha256": "6c0d9da26e4e781a4d8a62218513b5805ee1cff8d1a2e1ecb0906392a4dadc61"
+    },
+    {
+      "path": "inspection\\sheets\\review_03.png",
+      "sha256": "96b51777eb49df137b9e35d107fbfb2a84075ff7f7064cf516178346b12715d1"
+    },
+    {
+      "path": "inspection\\sheets\\review_04.png",
+      "sha256": "c60ec1821f10cd5fdba3d4c0ad786bebdd70d84483480f12047d9e498e689d65"
+    },
+    {
+      "path": "inspection\\sheets\\review_05.png",
+      "sha256": "817bd40565eb68c7f2a4f89d8f98b38f18add8a639c9a877ee85524ff1c1bf22"
+    },
+    {
+      "path": "inspection\\sheets\\review_06.png",
+      "sha256": "b6fda2980458afe9f828b2dfd22722a2e807770e0580b9ff052ef3eda5e9516c"
+    },
+    {
+      "path": "inspection\\sheets\\review_07.png",
+      "sha256": "b7b719e5c542c522582dba195bab7c6b28494b44d93f1557c189c0e30be81450"
+    },
+    {
+      "path": "inspection\\sheets\\review_08.png",
+      "sha256": "412c15ed609ff35bb9a5f53290738a456e1700c3afaa14313465b5bd6354b6cf"
+    }
+  ],
+  "individual_training_eligibility": "Requires confirmation; existing numerical/geometry diagnostics were not converted to final quality labels."
+}

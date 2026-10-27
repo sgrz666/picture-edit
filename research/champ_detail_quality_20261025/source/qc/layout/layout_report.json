@@ -1,0 +1,594 @@
+{
+  "frames_usable": 57,
+  "anchor": "every number below uses only body points 0..17; no slice is its own anchor",
+  "body_order_symmetry": {
+    "upper_arm_L_over_R": {
+      "n": 57,
+      "p50": 0.9749,
+      "p90": 1.1044
+    },
+    "forearm_L_over_R": {
+      "n": 57,
+      "p50": 1.0071,
+      "p90": 1.5783
+    },
+    "thigh_L_over_R": {
+      "n": 57,
+      "p50": 0.232,
+      "p90": 0.447
+    },
+    "shin_L_over_R": {
+      "n": 57,
+      "p50": 0.4758,
+      "p90": 0.5551
+    },
+    "ear_mid_to_nose_over_eye_to_nose": {
+      "n": 57,
+      "p50": 0.4865,
+      "p90": 1.0406
+    },
+    "eye_span_over_nose_eye": {
+      "n": 57,
+      "p50": 2.2091,
+      "p90": 2.5463
+    }
+  },
+  "null_random_21_window_d_forearm": {
+    "n": 57,
+    "p50": 1.355,
+    "p90": 2.3291,
+    "note": "lenient null"
+  },
+  "windows_read_from_data": {
+    "hand_21": [
+      {
+        "start": 90,
+        "end": 111,
+        "n": 57,
+        "p50": 0.3474,
+        "n_frac_of_frames": 1.0
+      },
+      {
+        "start": 91,
+        "end": 112,
+        "n": 57,
+        "p50": 0.3597,
+        "n_frac_of_frames": 1.0
+      },
+      {
+        "start": 89,
+        "end": 110,
+        "n": 57,
+        "p50": 0.3779,
+        "n_frac_of_frames": 1.0
+      },
+      {
+        "start": 88,
+        "end": 109,
+        "n": 57,
+        "p50": 0.3962,
+        "n_frac_of_frames": 1.0
+      },
+      {
+        "start": 112,
+        "end": 133,
+        "n": 56,
+        "p50": 0.4329,
+        "n_frac_of_frames": 0.982
+      },
+      {
+        "start": 113,
+        "end": 134,
+        "n": 55,
+        "p50": 0.441,
+        "n_frac_of_frames": 0.965
+      },
+      {
+        "start": 93,
+        "end": 114,
+        "n": 57,
+        "p50": 0.4496,
+        "n_frac_of_frames": 1.0
+      },
+      {
+        "start": 87,
+        "end": 108,
+        "n": 57,
+        "p50": 0.4542,
+        "n_frac_of_frames": 1.0
+      }
+    ],
+    "face_68": [
+      {
+        "start": 24,
+        "end": 92,
+        "n": 57,
+        "p50": 0.4064,
+        "n_frac_of_frames": 1.0
+      },
+      {
+        "start": 25,
+        "end": 93,
+        "n": 57,
+        "p50": 0.6637,
+        "n_frac_of_frames": 1.0
+      },
+      {
+        "start": 26,
+        "end": 94,
+        "n": 57,
+        "p50": 0.8661,
+        "n_frac_of_frames": 1.0
+      },
+      {
+        "start": 27,
+        "end": 95,
+        "n": 57,
+        "p50": 1.0431,
+        "n_frac_of_frames": 1.0
+      },
+      {
+        "start": 23,
+        "end": 91,
+        "n": 57,
+        "p50": 1.1064,
+        "n_frac_of_frames": 1.0
+      },
+      {
+        "start": 28,
+        "end": 96,
+        "n": 57,
+        "p50": 1.2312,
+        "n_frac_of_frames": 1.0
+      },
+      {
+        "start": 29,
+        "end": 97,
+        "n": 57,
+        "p50": 1.3174,
+        "n_frac_of_frames": 1.0
+      },
+      {
+        "start": 30,
+        "end": 98,
+        "n": 57,
+        "p50": 1.4919,
+        "n_frac_of_frames": 1.0
+      }
+    ],
+    "foot_6": [
+      {
+        "start": 21,
+        "end": 27,
+        "n": 57,
+        "p50": 0.2401,
+        "n_frac_of_frames": 1.0
+      },
+      {
+        "start": 22,
+        "end": 28,
+        "n": 57,
+        "p50": 0.2947,
+        "n_frac_of_frames": 1.0
+      },
+      {
+        "start": 18,
+        "end": 24,
+        "n": 57,
+        "p50": 0.4171,
+        "n_frac_of_frames": 1.0
+      },
+      {
+        "start": 20,
+        "end": 26,
+        "n": 57,
+        "p50": 0.4469,
+        "n_frac_of_frames": 1.0
+      },
+      {
+        "start": 109,
+        "end": 115,
+        "n": 57,
+        "p50": 0.4742,
+        "n_frac_of_frames": 1.0
+      },
+      {
+        "start": 110,
+        "end": 116,
+        "n": 57,
+        "p50": 0.4778,
+        "n_frac_of_frames": 1.0
+      },
+      {
+        "start": 108,
+        "end": 114,
+        "n": 57,
+        "p50": 0.481,
+        "n_frac_of_frames": 1.0
+      },
+      {
+        "start": 111,
+        "end": 117,
+        "n": 57,
+        "p50": 0.5179,
+        "n_frac_of_frames": 1.0
+      }
+    ]
+  },
+  "per_window_verdict": {
+    "hand@18:39": {
+      "n": 57,
+      "p50": 1.3187,
+      "p90": 2.5411,
+      "share_within_1p5_forearm": 0.596,
+      "share_beyond_wrist": 0.105,
+      "share_span_under_1p2_forearm": 0.0
+    },
+    "hand@39:60": {
+      "n": 57,
+      "p50": 1.96,
+      "p90": 3.3938,
+      "share_within_1p5_forearm": 0.298,
+      "share_beyond_wrist": 0.544,
+      "share_span_under_1p2_forearm": 1.0
+    },
+    "hand@92:113": {
+      "n": 57,
+      "p50": 0.4752,
+      "p90": 0.5951,
+      "share_within_1p5_forearm": 1.0,
+      "share_beyond_wrist": 0.982,
+      "share_span_under_1p2_forearm": 1.0
+    },
+    "hand@113:134": {
+      "n": 55,
+      "p50": 0.441,
+      "p90": 0.6886,
+      "share_within_1p5_forearm": 1.0,
+      "share_beyond_wrist": 0.982,
+      "share_span_under_1p2_forearm": 1.0
+    },
+    "face@24:92": {
+      "n": 57,
+      "p50": 0.4064,
+      "p90": 0.636,
+      "share_within_2_head": 1.0,
+      "share_span_under_3_head": 0.667,
+      "share_below_eyes": 1.0
+    },
+    "face@60:128": {
+      "n": 57,
+      "p50": 6.639,
+      "p90": 14.1312,
+      "share_within_2_head": 0.123,
+      "share_span_under_3_head": 0.0,
+      "share_below_eyes": 0.93
+    },
+    "foot@18:24": {
+      "n": 57,
+      "p50": 0.4171,
+      "p90": 0.7452,
+      "share_within_1_shin": 1.0,
+      "share_below_ankle": 0.965
+    },
+    "foot@128:134": {
+      "n": 56,
+      "p50": 0.5998,
+      "p90": 1.1211,
+      "share_within_1_shin": 0.839,
+      "share_below_ankle": 0.0
+    }
+  },
+  "confidence_by_segment": {
+    "0-17 body": {
+      "mean": 0.846,
+      "p10": 0.669,
+      "share_at_zero_coord": 0.0
+    },
+    "18-38": {
+      "mean": 0.91,
+      "p10": 0.697,
+      "share_at_zero_coord": 0.0
+    },
+    "39-59": {
+      "mean": 0.997,
+      "p10": 0.963,
+      "share_at_zero_coord": 0.0
+    },
+    "60-91": {
+      "mean": 0.99,
+      "p10": 0.959,
+      "share_at_zero_coord": 0.0
+    },
+    "92-112": {
+      "mean": 0.682,
+      "p10": 0.459,
+      "share_at_zero_coord": 0.0
+    },
+    "113-127": {
+      "mean": 0.68,
+      "p10": 0.449,
+      "share_at_zero_coord": 0.0
+    },
+    "128-133": {
+      "mean": 0.673,
+      "p10": 0.448,
+      "share_at_zero_coord": 0.0
+    },
+    "24-91": {
+      "mean": 0.989,
+      "p10": 0.955,
+      "share_at_zero_coord": 0.0
+    }
+  },
+  "adjacency_profile": {
+    "unit": "distance between consecutive indices / body bbox diagonal, median over frames",
+    "values": [
+      0.1175,
+      0.0822,
+      0.1458,
+      0.1136,
+      0.258,
+      0.1437,
+      0.1209,
+      0.2978,
+      0.2485,
+      0.246,
+      0.5032,
+      0.2491,
+      0.2428,
+      0.9134,
+      0.0414,
+      0.0706,
+      0.0988,
+      0.9568,
+      0.0289,
+      0.0509,
+      0.1414,
+      0.0281,
+      0.0511,
+      0.9573,
+      0.0124,
+      0.0117,
+      0.0118,
+      0.0111,
+      0.0119,
+      0.0112,
+      0.0115,
+      0.0115,
+      0.0117,
+      0.0118,
+      0.0108,
+      0.0121,
+      0.0113,
+      0.0121,
+      0.0117,
+      0.0116,
+      0.0834,
+      0.0064,
+      0.0065,
+      0.0064,
+      0.0068,
+      0.0196,
+      0.0072,
+      0.007,
+      0.007,
+      0.0069,
+      0.0379,
+      0.0068,
+      0.0069,
+      0.0066,
+      0.0117,
+      0.0041,
+      0.0041,
+      0.0053,
+      0.004,
+      0.0459,
+      0.0065,
+      0.0069,
+      0.0063,
+      0.0058,
+      0.0058,
+      0.0361,
+      0.0065,
+      0.0069,
+      0.0065,
+      0.0061,
+      0.0058,
+      0.0526,
+      0.0073,
+      0.0072,
+      0.0036,
+      0.0036,
+      0.0077,
+      0.008,
+      0.0065,
+      0.0062,
+      0.0071,
+      0.0068,
+      0.0062,
+      0.0054,
+      0.0072,
+      0.0074,
+      0.0076,
+      0.0076,
+      0.0074,
+      0.0087,
+      0.0074,
+      0.2454,
+      0.0154,
+      0.0149,
+      0.0127,
+      0.0111,
+      0.0193,
+      0.0121,
+      0.0076,
+      0.006,
+      0.0269,
+      0.0134,
+      0.0078,
+      0.0057,
+      0.025,
+      0.0122,
+      0.006,
+      0.0054,
+      0.0228,
+      0.0098,
+      0.0051,
+      0.0038,
+      0.2745,
+      0.0164,
+      0.015,
+      0.0123,
+      0.0103,
+      0.0165,
+      0.0115,
+      0.0071,
+      0.0066,
+      0.026,
+      0.0109,
+      0.0076,
+      0.0067,
+      0.0227,
+      0.0101,
+      0.0066,
+      0.0056,
+      0.0214,
+      0.0086,
+      0.0058,
+      0.0052
+    ],
+    "median_of_medians": 0.0111,
+    "peaks_over_3x": [
+      {
+        "between_indices": "0-1",
+        "ratio": 10.61
+      },
+      {
+        "between_indices": "1-2",
+        "ratio": 7.42
+      },
+      {
+        "between_indices": "2-3",
+        "ratio": 13.16
+      },
+      {
+        "between_indices": "3-4",
+        "ratio": 10.25
+      },
+      {
+        "between_indices": "4-5",
+        "ratio": 23.29
+      },
+      {
+        "between_indices": "5-6",
+        "ratio": 12.98
+      },
+      {
+        "between_indices": "6-7",
+        "ratio": 10.92
+      },
+      {
+        "between_indices": "7-8",
+        "ratio": 26.89
+      },
+      {
+        "between_indices": "8-9",
+        "ratio": 22.44
+      },
+      {
+        "between_indices": "9-10",
+        "ratio": 22.21
+      },
+      {
+        "between_indices": "10-11",
+        "ratio": 45.43
+      },
+      {
+        "between_indices": "11-12",
+        "ratio": 22.49
+      },
+      {
+        "between_indices": "12-13",
+        "ratio": 21.92
+      },
+      {
+        "between_indices": "13-14",
+        "ratio": 82.46
+      },
+      {
+        "between_indices": "14-15",
+        "ratio": 3.74
+      },
+      {
+        "between_indices": "15-16",
+        "ratio": 6.37
+      },
+      {
+        "between_indices": "16-17",
+        "ratio": 8.92
+      },
+      {
+        "between_indices": "17-18",
+        "ratio": 86.38
+      },
+      {
+        "between_indices": "19-20",
+        "ratio": 4.59
+      },
+      {
+        "between_indices": "20-21",
+        "ratio": 12.76
+      },
+      {
+        "between_indices": "22-23",
+        "ratio": 4.61
+      },
+      {
+        "between_indices": "23-24",
+        "ratio": 86.43
+      },
+      {
+        "between_indices": "40-41",
+        "ratio": 7.53
+      },
+      {
+        "between_indices": "50-51",
+        "ratio": 3.42
+      },
+      {
+        "between_indices": "59-60",
+        "ratio": 4.15
+      },
+      {
+        "between_indices": "65-66",
+        "ratio": 3.26
+      },
+      {
+        "between_indices": "71-72",
+        "ratio": 4.75
+      },
+      {
+        "between_indices": "91-92",
+        "ratio": 22.15
+      },
+      {
+        "between_indices": "112-113",
+        "ratio": 24.78
+      }
+    ]
+  },
+  "colour_key": {
+    "0-17": "red = body anchor",
+    "18-38": "cyan",
+    "39-59": "yellow",
+    "60-127": "green",
+    "128-133": "violet"
+  },
+  "sheets": [
+    "sheet_000000_00112.png",
+    "sheet_000444_00040.png",
+    "sheet_000333_00008.png",
+    "sheet_000444_00104.png"
+  ]
+}
