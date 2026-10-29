@@ -1,0 +1,123 @@
+{
+  "mode": "sapiens_detr070",
+  "frames": 127,
+  "thresholds": [
+    {
+      "nms_thr": 0.3,
+      "frames": 127,
+      "frames_with_two_distinct_people": 85,
+      "two_distinct_rate": 0.6692913385826772,
+      "frames_with_exactly_two_matching": 83,
+      "capped_two_distinct_frames": 85,
+      "det_box_histogram": {
+        "1": 42,
+        "2": 83,
+        "3": 2
+      },
+      "frames_with_any_person": 127,
+      "duplicate_person_candidates": 0
+    },
+    {
+      "nms_thr": 0.4,
+      "frames": 127,
+      "frames_with_two_distinct_people": 96,
+      "two_distinct_rate": 0.7559055118110236,
+      "frames_with_exactly_two_matching": 94,
+      "capped_two_distinct_frames": 96,
+      "det_box_histogram": {
+        "1": 30,
+        "2": 95,
+        "3": 2
+      },
+      "frames_with_any_person": 127,
+      "duplicate_person_candidates": 1
+    },
+    {
+      "nms_thr": 0.5,
+      "frames": 127,
+      "frames_with_two_distinct_people": 104,
+      "two_distinct_rate": 0.8188976377952756,
+      "frames_with_exactly_two_matching": 102,
+      "capped_two_distinct_frames": 104,
+      "det_box_histogram": {
+        "1": 22,
+        "2": 103,
+        "3": 2
+      },
+      "frames_with_any_person": 127,
+      "duplicate_person_candidates": 1
+    },
+    {
+      "nms_thr": 0.6,
+      "frames": 127,
+      "frames_with_two_distinct_people": 113,
+      "two_distinct_rate": 0.889763779527559,
+      "frames_with_exactly_two_matching": 110,
+      "capped_two_distinct_frames": 113,
+      "det_box_histogram": {
+        "1": 13,
+        "2": 111,
+        "3": 2,
+        "4": 1
+      },
+      "frames_with_any_person": 127,
+      "duplicate_person_candidates": 1
+    },
+    {
+      "nms_thr": 0.7,
+      "frames": 127,
+      "frames_with_two_distinct_people": 115,
+      "two_distinct_rate": 0.905511811023622,
+      "frames_with_exactly_two_matching": 108,
+      "capped_two_distinct_frames": 115,
+      "det_box_histogram": {
+        "1": 11,
+        "2": 109,
+        "3": 6,
+        "4": 1
+      },
+      "frames_with_any_person": 127,
+      "duplicate_person_candidates": 1
+    },
+    {
+      "nms_thr": 0.8,
+      "frames": 127,
+      "frames_with_two_distinct_people": 119,
+      "two_distinct_rate": 0.937007874015748,
+      "frames_with_exactly_two_matching": 110,
+      "capped_two_distinct_frames": 119,
+      "det_box_histogram": {
+        "1": 8,
+        "2": 110,
+        "3": 8,
+        "4": 1
+      },
+      "frames_with_any_person": 127,
+      "duplicate_person_candidates": 0
+    },
+    {
+      "nms_thr": 0.9,
+      "frames": 127,
+      "frames_with_two_distinct_people": 120,
+      "two_distinct_rate": 0.9448818897637795,
+      "frames_with_exactly_two_matching": 109,
+      "capped_two_distinct_frames": 120,
+      "det_box_histogram": {
+        "1": 7,
+        "2": 109,
+        "3": 10,
+        "4": 1
+      },
+      "frames_with_any_person": 127,
+      "duplicate_person_candidates": 0
+    }
+  ],
+  "reproduction_check": {
+    "first_frame_kept": [
+      0,
+      1,
+      2,
+      3
+    ]
+  }
+}
