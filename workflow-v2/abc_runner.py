@@ -14,6 +14,7 @@ HERE=Path(__file__).resolve().parent
 ROOT=HERE.parent
 sys.path.insert(0,str(ROOT))
 from abc_contracts import parse_role_map
+from abc_variants import VARIANTS, DIAGNOSTICS, control_records, generation_key
 from src.pose_edit.common import atomic_json,file_lock
 
 MODES=('geometry_only','qwen_baseline','native_v5')
@@ -27,11 +28,17 @@ def sha256(path):
         for chunk in iter(lambda:stream.read(8*1024*1024),b''):h.update(chunk)
     return h.hexdigest()
 
-def asset_identity(path):
+def asset_identity(path,*,snapshot=None):
     path=Path(path).resolve()
-    if path.is_file():return {'sha256':sha256(path)}
+    def content(file):
+        if snapshot is None:return sha256(file)
+        identity=snapshot.get(str(file.resolve()));stat=file.stat()
+        if identity is None or stat.st_size!=identity['bytes'] or stat.st_mtime_ns!=identity['mtime_ns']:
+            raise ValueError('Frozen asset changed or is absent from snapshot: '+str(file))
+        return identity['sha256']
+    if path.is_file():return {'sha256':content(path)}
     if not path.is_dir():raise FileNotFoundError(path)
-    return {str(p.relative_to(path)):sha256(p) for p in sorted(path.rglob('*'))
+    return {str(p.relative_to(path)):content(p) for p in sorted(path.rglob('*'))
         if p.is_file() and '__pycache__' not in p.parts and '.git' not in p.parts}
 
 def parse_args(argv=None):
@@ -50,6 +57,12 @@ def parse_args(argv=None):
     parser.add_argument('--resolution',type=int)
     parser.add_argument('--steps',type=int)
     parser.add_argument('--seed',type=int)
+    parser.add_argument('--variant',choices=VARIANTS,default='full')
+    parser.add_argument('--generation-tag',help='Independent sibling generation/evaluation stage')
+    parser.add_argument('--diagnostic',choices=DIAGNOSTICS,default='none')
+    parser.add_argument('--observe-native',action='store_true',help='Record scalar residual contributions without changing sampling')
+    parser.add_argument('--asset-snapshot',type=Path,help='Campaign-owned, fully hashed frozen model manifest')
+    parser.add_argument('--asset-snapshot-sha256',help='Exact SHA of the immutable asset snapshot')
     for name in ('check','verify','force'):parser.add_argument('--'+name,action='store_true')
     args=parser.parse_args(argv)
     if args.pair:parser.error('workflow-v2 uses A+B+C; legacy --pair remains in workflow-multiple')
@@ -57,6 +70,11 @@ def parse_args(argv=None):
     try:parse_role_map(args.role_map)
     except ValueError as error:parser.error(str(error))
     if args.force and args.verify:parser.error('--force and --verify are mutually exclusive')
+    try:generation_key(args.mode,args.variant,args.generation_tag)
+    except ValueError as error:parser.error(str(error))
+    if args.diagnostic!='none' and not args.generation_tag:parser.error('--diagnostic requires an explicit --generation-tag')
+    if args.mode!='native_v5' and args.observe_native:parser.error('--observe-native requires --mode native_v5')
+    if bool(args.asset_snapshot)!=bool(args.asset_snapshot_sha256):parser.error('Asset snapshot needs both path and pinned SHA256')
     if not args.check:
         if not all((args.source_a,args.source_b,args.interaction)):parser.error('--source-a, --source-b and --interaction are required')
         if args.mode=='native_v5' and not args.checkpoint:parser.error('--checkpoint is required for native_v5')
@@ -143,6 +161,13 @@ def dependency_check(settings,mode,checkpoint=None,official=False):
 
 def run(args):
     settings=settings_for(args)
+    snapshot=None
+    if args.asset_snapshot:
+        if sha256(args.asset_snapshot)!=args.asset_snapshot_sha256:raise ValueError('Frozen asset snapshot SHA changed')
+        manifest=json.loads(args.asset_snapshot.read_text(encoding='utf8'))
+        if manifest.get('schema')!='abc_quality_freeze_v1':raise ValueError('Unknown asset snapshot schema')
+        snapshot=manifest['assets']
+    asset=lambda path:asset_identity(path,snapshot=snapshot)
     from hi4d import resolve_record
     official=resolve_record(args.hi4d_record) if args.hi4d_record else None
     if args.check:
@@ -157,6 +182,7 @@ def run(args):
     request=dict(schema='abc_workflow_request_v1',project_root=str(ROOT),run_dir=str(run_dir),
         settings=settings,inputs=inputs,role_mapping=role_mapping,mode=args.mode,
         official_record=official,
+        variant=args.variant,generation_tag=args.generation_tag,diagnostic=args.diagnostic,observe_native=args.observe_native,
         checkpoint=str(args.checkpoint.resolve()) if args.checkpoint else None,user_prompt=args.user_prompt)
     source_binding=None
     if args.sources_from:
@@ -171,39 +197,44 @@ def run(args):
             'src/pose_edit/*.py','src/data/canvas_contract.py','src/pose_control/qwen21_pro/geometry.py',
             'src/pose_control/qwen21_full/native_full_assets.py','src/pose_control/qwen21_full/*condition*.py',
             'src/pose_control/qwen21_full/*geometry*.py','src/pose_control/qwen21_full/body_pose.py','src/pose_control/qwen21_full/conditions.py']),
-        models={k:asset_identity(settings[k]) for k in ('sam2_checkpoint','dwpose_det_model','dwpose_pose_model','fcl_root')},
-        estimator_assets={k:asset_identity(settings[k]) for k in (('smplest_weights','smplx_model') if official else ('smplest_weights','multihmr_weights','smplx_model'))})
+        models={k:asset(settings[k]) for k in ('sam2_checkpoint','dwpose_det_model','dwpose_pose_model','fcl_root')},
+        estimator_assets={k:asset(settings[k]) for k in (('smplest_weights','smplx_model') if official else ('smplest_weights','multihmr_weights','smplx_model'))})
     if source_binding is not None:geometry_identity['source_cache']=source_binding
     if official is not None:
         geometry_identity['official_hi4d']=dict(frame={k:official[k] for k in ('pair','action','frame_id','camera_id')},
-            assets={k:asset_identity(official[k]) for k in ('official_smpl','meta','camera_file','rgb')},
-            models=asset_identity(settings['hi4d_model_root']))
+            assets={k:asset(official[k]) for k in ('official_smpl','meta','camera_file','rgb')},
+            models=asset(settings['hi4d_model_root']))
     def execute():
         geom=execute_stage(run_dir,'geometry',geometry_identity,request,
             subprocess_worker('abc_geometry_worker.py',settings),verify=args.verify)
         request['scene']=str(run_dir/'geometry/scene.json')
         if args.mode=='geometry_only':return {'geometry':geom['fingerprint']}
         prompt_identity=dict(geometry=geom['fingerprint'],user_prompt=args.user_prompt,
-            pe=asset_identity(settings['pe_model']),seed=settings['pe_seed'],max_new_tokens=settings['pe_max_new_tokens'],
+            pe=asset(settings['pe_model']),seed=settings['pe_seed'],max_new_tokens=settings['pe_max_new_tokens'],
             code=code_identity(['workflow-v2/abc_prompt_worker.py','workflow-v2/abc_contracts.py','src/pose_edit/prompt_contract.py']))
         prompt=execute_stage(run_dir,'prompt',prompt_identity,request,
             subprocess_worker('abc_prompt_worker.py',settings),verify=args.verify)
         request['prompt']=str(run_dir/'prompt/generation_prompt.txt')
+        output_key=generation_key(args.mode,args.variant,args.generation_tag)
+        native_controls,base_controls=control_records(args.variant)
         generation_identity=dict(geometry=geom['fingerprint'],prompt=prompt['fingerprint'],mode=args.mode,
+            variant=args.variant,diagnostic=args.diagnostic,observe_native=args.observe_native,
+            controls=native_controls if args.mode=='native_v5' else None,
+            base_controls=base_controls if args.mode=='native_v5' else None,
             settings={k:settings[k] for k in ('resolution','steps','seed','true_cfg_scale','memory_mode')},
-            qwen=asset_identity(settings['qwen_model']),
-            code=code_identity(['workflow-v2/abc_generate_worker.py','workflow-v2/abc_native*.py',
+            qwen=asset(settings['qwen_model']),
+            code=code_identity(['workflow-v2/abc_generate_worker.py','workflow-v2/abc_variants.py','workflow-v2/abc_feature_cache.py','workflow-v2/abc_native*.py',
                 'src/pose_control/qwen21_full/native_v5/*.py','src/pose_control/qwen21_full/*.py']))
         if args.mode=='native_v5':
-            generation_identity['checkpoint']=asset_identity(args.checkpoint)
-            generation_identity['appearance_models']={key:asset_identity(settings[key]) for key in ('arcface_model','native_dino_model')}
-        generation=execute_stage(run_dir,'generation/'+args.mode,generation_identity,request,
+            generation_identity['checkpoint']=asset(args.checkpoint)
+            generation_identity['appearance_models']={key:asset(settings[key]) for key in ('arcface_model','native_dino_model')}
+        generation=execute_stage(run_dir,'generation/'+output_key,generation_identity,request,
             subprocess_worker('abc_generate_worker.py',settings),verify=args.verify)
-        request['image']=str(run_dir/'generation'/args.mode/'final_image.png')
-        evaluation=execute_stage(run_dir,'evaluation/'+args.mode,
-            {'generation':generation['fingerprint'],'code':code_identity(['workflow-v2/abc_evaluate.py']),
-             'detector':geometry_identity['models'],'appearance':asset_identity(settings['appearance_dino_model']),
-             'identity_model':asset_identity(settings['arcface_model'])},
+        request['image']=str(run_dir/'generation'/output_key/'final_image.png')
+        evaluation=execute_stage(run_dir,'evaluation/'+output_key,
+            {'generation':generation['fingerprint'],'code':code_identity(['workflow-v2/abc_evaluate.py','workflow-v2/abc_quality.py']),
+             'detector':geometry_identity['models'],'appearance':asset(settings['appearance_dino_model']),
+             'identity_model':asset(settings['arcface_model'])},
             request,subprocess_worker('abc_evaluate.py',settings),verify=args.verify)
         return dict(geometry=geom['fingerprint'],prompt=prompt['fingerprint'],
             generation=generation['fingerprint'],evaluation=evaluation['fingerprint'])
@@ -214,10 +245,10 @@ def run(args):
         with file_lock(run_dir/'.workflow.lock'):
             try:
                 result=execute()
-                atomic_json(run_dir/('run_'+args.mode+'.json'),dict(schema='abc_workflow_v1',mode=args.mode,
+                atomic_json(run_dir/('run_'+generation_key(args.mode,args.variant,args.generation_tag)+'.json'),dict(schema='abc_workflow_v1',mode=args.mode,
                     status='complete',stages=result,request=request,verification='validated',quality='see_evaluation',finished_at_unix=time.time()))
             except Exception as error:
-                atomic_json(run_dir/('run_'+args.mode+'.json'),dict(schema='abc_workflow_v1',mode=args.mode,
+                atomic_json(run_dir/('run_'+generation_key(args.mode,args.variant,args.generation_tag)+'.json'),dict(schema='abc_workflow_v1',mode=args.mode,
                     status='failed',error=str(error),request=request,finished_at_unix=time.time()))
                 raise
     print(('VERIFIED ' if args.verify else 'WORKFLOW_FINISHED ')+str(run_dir),flush=True)

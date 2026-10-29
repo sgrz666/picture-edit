@@ -60,6 +60,8 @@ FCL 使用 `/data/shangguanrz/pic-edit-workflow-v2/deps/python_fcl` 中的 `pyth
 
 ## 测试与当前验收
 
+正式质量对照使用 [`scripts/quality-baseline/README.md`](scripts/quality-baseline/README.md)。新增 `--variant`、`--generation-tag` 和可选 `--observe-native`；同一几何与 PE Prompt 下，各种子和消融保存为独立同级阶段。默认调用保持 Full 和原产物路径。该工具固定运行 12 张 Smoke、36 张正式对照、4 张交换检查、16 张诊断，不启动训练。
+
 ```bash
 cd /home/shangguanrz/project/pic-edit
 OMP_NUM_THREADS=2 /home/shangguanrz/nihaochen/envs/qwen21/bin/python -B -m pytest \

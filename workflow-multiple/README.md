@@ -4,6 +4,33 @@
 
 输入 A（双人照片，出身份/服装/场景）与 B（双人交互照片，出交互姿态），让 Qwen 基座把 A 中两个人的姿态与相互关系改成 B 呈现的交互。**无 adapter、无 LoRA**，B 是否交给生成器是一个被测量的变量（见下）。
 
+### 目录导航与数据盘落点
+
+外部数据盘落点：/data/shangguanrz/pic-edit-workflow-multiple/runs/（二期 A+B+C 产物位于 /data/shangguanrz/pic-edit-workflow-v2/runs/）。
+
+| 模块 / 脚本 | 定位与职责 |
+|---|---|
+| 
+un.sh / 
+un.py | 双人姿态迁移流水线启动入口与参数编排 |
+| atch_dual.sh | 批量运行脚本（支持 _canvas 与 source_fit 两种定标对照） |
+| evaluate_dual.py | 双人姿态回估评测（DWPose-134、PCK@0.2、MPJPE、髋距误差、换人检测） |
+| compare_dual.py | 成对对照分析工具（按 arm 比 skeleton_only vs with_b，按 framing 比 _canvas vs source_fit） |
+| bc_estimate_worker.py | A+B+C 双源姿态估计工序（为双人二期准备） |
+| bc_geometry_worker.py | A+B+C 几何对齐与骨架渲染工序 |
+| bc_source_worker.py | 双源外观与特征提取工序 |
+| 
+ender/ | 基于 SMPL-X 三角网格的 Z-buffer 场景渲染 (
+ender/abc_scene.py) |
+| 
+etarget/ | 动作重定向、同体型重建与有限接触修正 (
+etarget/core.py, 
+etarget/backend.py) |
+| pairs/ | 构建完成的 17 对测试样本（12 对 same_identity + 5 对 cross_pair） |
+| its/ | Multi-HMR 3D 拟合骨架向导缓存 |
+
+---
+
 ## 一期用什么数据
 
 B 的骨架来自 Hi4D 预计算的**逐人 DWPose-134**（`target_dwpose_A/B`），不做拟合；A 的人物区域来自 Hi4D 的人体掩码。这样先把"编辑本身行不行"和"拟合误差"分开测量，multi-HMR 单图双人拟合臂是二期（`add/envs/multihmr` 与 `add/tools/multi-hmr/models/multiHMR/multiHMR_896_L.pt` 已在位）。

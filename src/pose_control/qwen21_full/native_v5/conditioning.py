@@ -10,6 +10,7 @@ import torch
 from PIL import Image
 from src.data.canvas_contract import CanvasSpec
 from ..native_full_assets import sha256
+from .person_order import verify_condition
 
 SCHEMA = 'native_v5_qwen_condition_v2'
 CACHE_SCHEMA = 'native_v5_frozen_cache_index_v2'
@@ -50,6 +51,16 @@ def read_condition(ref, sample=None):
     if prompt.get('field') != 'compiled_prompt_inference':
         raise ValueError('Use the existing final multi-image Plan A prompt')
     verified(prompt['bank'])
+    # A dual condition must not describe one person while showing another. The prompt addresses
+    # the pair by side ("<image3> ... on the left in <image1>"), so the declared person_order
+    # provenance has to agree with that sentence and with the measured source geometry.
+    # Conditions assembled before the field existed carry no provenance and keep loading.
+    order = spec.get('person_order')
+    if order is not None:
+        problems = verify_condition(prompt['text'], order)
+        if problems:
+            raise ValueError('Dual condition text contradicts its image order: '
+                             + '; '.join(problems))
     for image in images:
         verified(image['file'])
         canvas = CanvasSpec.from_record(image['canvas'])
