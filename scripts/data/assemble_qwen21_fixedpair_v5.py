@@ -110,14 +110,30 @@ def promote(kind):
         sample=reader[i];case=selected[row['pair_id']];source=reader.rows[i]['source_rgb'];roles=['source']
         images=[{'role':'source','file':source,'canvas':sample['source_canvas'],'canvas_id':CanvasSpec.from_record(sample['source_canvas']).fingerprint(),'space':'original'}]
         spec=CanvasSpec.from_record(sample['target_canvas'])
+        order=None
         if kind=='tiktok':
             stem=case['bank_record']['target_stem'];guides=[imports[stem]['guide']];roles+=['target_pose']
         else:
             raw,meta=dual.geometry_record(dual.rows[i]['target_geometry']);obs=observation_for(observations,meta)
             if not obs['person_assigned'].all():raise ValueError('Selected Hi4D guides need verified one-to-one native observations')
             points=spec.pixel_points(obs['xy_native']);points[~obs['point_valid']]=np.nan
+            # <image3> has to carry the source-left person: the prompt addresses the two people by
+            # side ("person 1 on the left in <image1>"), while native geometry slot 0 is always
+            # tracked identity A. Ordering by the bank's left_actor, re-measured here, is what keeps
+            # the text and the pixels about the same human being.
+            from src.pose_control.qwen21_full.native_v5 import person_order
+            src_masks=[x['path'] if isinstance(x,dict) else x for x in dual.rows[i]['source_masks']]
+            try:
+                order=person_order.resolve_slot_identities(case['bank_record'],src_masks[0],src_masks[1])
+            except person_order.PersonOrderError as error:
+                raise ValueError('Hi4D pair '+row['pair_id']+' cannot be ordered by side: '
+                    +str(error)+' -- exclude records flagged side_ambiguous before building '
+                    'a selection; guessing an order here is what produced the swapped '
+                    'conditioning.') from error
+            slot_of={'A':0,'B':1}
             guides=[]
-            for name,which in (('combined',None),('person_0',0),('person_1',1)):
+            for name,which in (('combined',None),('person_0',slot_of[order['slot0_identity']]),
+                               ('person_1',slot_of[order['slot1_identity']])):
                 p=dest/(row['pair_id']+'_'+name+'_pose.png')
                 if which is None:
                     a=render_poseguide(points[0],(spec.canvas_hw[1],spec.canvas_hw[0]))
@@ -127,10 +143,42 @@ def promote(kind):
                 else:render_poseguide(points[which],(spec.canvas_hw[1],spec.canvas_hw[0])).save(p)
                 guides.append(h.ref(p))
             roles+=['combined_pose','person_0_pose','person_1_pose']
+            # The map under test cannot produce this evidence: the geometry rows declare which
+            # tracked person occupies which native slot in each frame. Comparing the declaration
+            # with the hard-coded map is what lets a wrong map fail -- the earlier pixel check
+            # compared the guide against points[slot_of[...]], which the same slot_of rendered,
+            # so it passed even when the map was deliberately inverted.
+            drow=dual.rows[i]
+            src_ids=list(drow['source_person_ids'] or [])
+            tgt_ids=list(drow['target_person_ids'] or [])
+            if len(src_ids)!=2 or len(tgt_ids)!=2 or len(set(src_ids))!=2:
+                raise ValueError('Hi4D '+row['pair_id']+' has no per-slot person declaration '
+                    '(source='+str(src_ids)+' target='+str(tgt_ids)+'), so the identity->slot '
+                    'map cannot be checked against anything but itself')
+            if set(src_ids)!=set(tgt_ids):
+                raise ValueError('Hi4D '+row['pair_id']+' target slots '+str(tgt_ids)+' are not '
+                    'the two source tracks '+str(src_ids)+'; the pair is not identity-consistent')
+            # source_masks is stored [mask_A, mask_B], so slot i of the source declaration is the
+            # person whose silhouette measure_source_order just measured.
+            track_of={'A':src_ids[0],'B':src_ids[1]}
+            declared_slot_of={ident:tgt_ids.index(track) for ident,track in track_of.items()}
+            if declared_slot_of!=slot_of:
+                raise ValueError('Hi4D '+row['pair_id']+' identity->slot map '+str(slot_of)+
+                    ' contradicts the geometry declaration '+str(declared_slot_of)+
+                    ' (source ids '+str(src_ids)+', target ids '+str(tgt_ids)+')')
+            guide_a=h.ref(dest/(row['pair_id']+'_person_0_pose.png'))
+            guide_b=h.ref(dest/(row['pair_id']+'_person_1_pose.png'))
+            if guide_a['sha256']==guide_b['sha256']:
+                raise ValueError('Hi4D '+row['pair_id']+' isolated skeletons are byte-identical, '
+                    'so one person was drawn into both slots')
+            problems=person_order.verify_condition(case['prompt'],order)
+            if problems:
+                raise ValueError('Hi4D condition text contradicts its image order: '
+                                 +row['pair_id']+' :: '+'; '.join(problems))
         for role,guide in zip(roles[1:],guides):
             images.append({'role':role,'file':guide,'canvas':spec.metadata(),'canvas_id':spec.fingerprint(),'space':'canvas'})
         condition={'schema':SCHEMA,'profile':selection['profile'],'pair_id':row['pair_id'],'primary_source_index':0,
-            'target_canvas_id':spec.fingerprint(),'images':images,
+            'target_canvas_id':spec.fingerprint(),'images':images,'person_order':order,
             'prompt':{'text':case['prompt'],'sha256':case['prompt_sha256'],'bank':selection['bank'],
                 'field':'compiled_prompt_inference','schema':case['bank_record']['schema'],'pair_id':row['pair_id']}}
         row['qwen_condition']=h.write(dest/(row['pair_id']+'_qwen.json'),condition)

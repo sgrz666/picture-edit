@@ -43,7 +43,7 @@ def lock():
         ('train_0000247','train_0000212'),'tiktok_pei2i_q4_plan_a_v1','single_2ref'),
         (HROOT,ROOT/'experiments/4.two man /hi4d_pe_prompt_rewrite_20261020/prompts/hi4d_train_prompts_v2.jsonl',
         ('train_pair12_highfive12_cam4_000011_000082','train_pair12_highfive12_cam4_000011_000112'),
-        'hi4d_pei2i_q4_plan_a_v1','dual_4ref')]
+        'hi4d_pei2i_q4_plan_a_v2','dual_4ref')]
     for output,bank,ids,schema,profile in cases:
         found={r['pair_id']:r for r in rows(bank)};selected=[]
         for role,key in zip(('train','observation'),ids):

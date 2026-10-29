@@ -14,6 +14,7 @@ ROOT=Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(ROOT))
 from abc_contracts import ROLES,PROFILE,image_records
 from abc_runner import sha256
+from abc_variants import control_records, PHOTO_SUFFIX
 from src.pose_edit.common import atomic_json
 
 def condition_spec(request,scene):
@@ -35,7 +36,7 @@ def condition_spec(request,scene):
         prompt={'text':prompt,'sha256':text_sha(prompt),'field':'compiled_prompt_inference',
             'bank':{'path':str(prompt_path.resolve()),'sha256':sha256(prompt_path)}})
 
-def prepare_bank(scene,index,settings,output):
+def prepare_bank(scene,index,settings,output,*,feature_cache=None):
     import numpy as np
     import torch
     from PIL import Image
@@ -53,7 +54,13 @@ def prepare_bank(scene,index,settings,output):
         geom=read_record(ref,schema='abc_native_source_geometry_v1');local=geom['local'];canvas=CanvasSpec.from_record(source['canvas'])
         with np.load(source['keypoints_npz'],allow_pickle=False) as archive:observation={k:archive[k] for k in archive.files}
         job=source_reference_job(source,observation,local['boxes'][0],models)
-        features=extract_source_references(job)
+        if feature_cache is None:
+            features=extract_source_references(job)
+        else:
+            from abc_feature_cache import frozen_source_features
+            binding=dict(source_rgb_sha256=sha256(source['image']),source_mask_sha256=sha256(source['mask']),
+                source_canvas_id=canvas.fingerprint(),geometry=ref,models=models)
+            features=frozen_source_features(feature_cache,binding,lambda:extract_source_references(job))
         with Image.open(source['mask']) as im:mask=torch.from_numpy(np.asarray(im).copy()>0)[None,None,None]
         head=mask&torch.from_numpy(geom['raster']['part']==1)[None,None,None]
         h,w=canvas.canvas_hw;support=torch.zeros(1,6,h,w,dtype=torch.bool);boxes=torch.zeros(1,6,4)
@@ -79,6 +86,19 @@ def main():
     parser=argparse.ArgumentParser();parser.add_argument('--request',type=Path,required=True);args=parser.parse_args()
     request=json.loads(args.request.read_text(encoding='utf8'));settings=request['settings'];out=Path(request['output_dir'])
     scene=json.loads(Path(request['scene']).read_text(encoding='utf8'));enabled=request['mode']=='native_v5'
+    original_prompt=request['prompt'];diagnostic=request.get('diagnostic','none')
+    if diagnostic=='photo_prompt':
+        effective=out/'diagnostic_prompt.txt'
+        effective.write_text(Path(original_prompt).read_text(encoding='utf8').strip()+PHOTO_SUFFIX,encoding='utf8')
+        request={**request,'prompt':str(effective)}
+    elif diagnostic=='monochrome_guides':
+        from PIL import Image,ImageOps
+        guides={}
+        for role,path in scene['guides'].items():
+            destination=out/('monochrome_'+role+'.png')
+            with Image.open(path) as im:ImageOps.grayscale(im).convert('RGB').save(destination)
+            guides[role]=str(destination)
+        scene={**scene,'guides':guides}
     import torch
     from diffusers import QwenImage21Pipeline
     from src.data.canvas_contract import CanvasSpec
@@ -110,7 +130,8 @@ def main():
             index=json.loads((out/'native_geometry/index.json').read_text(encoding='utf8'))
         raw=read_record(index['target'],schema='abc_native_target_geometry_v1')
         sample=raw['sample'];sample['local_condition_v4']=raw['local']
-        batch=collate_native_full_v4([sample]);bank=prepare_bank(scene,index,settings,out)
+        batch=collate_native_full_v4([sample]);bank=prepare_bank(scene,index,settings,out,
+            feature_cache=Path(request['run_dir'])/'appearance_cache')
         batch['source_bank_v5']=bank
     spec=condition_spec(request,scene);atomic_json(out/'qwen_condition.json',spec)
     spec=read_condition({'path':str(out/'qwen_condition.json'),'sha256':sha256(out/'qwen_condition.json')})
@@ -131,12 +152,20 @@ def main():
     torch.save({'schema':'abc_frozen_qwen_sources_v1','sources':source_latents,'provenance':source_proof},out/'qwen_source64.pt')
     pipe.text_encoder.to('cpu');pipe.vae.to('cpu');gc.collect();torch.cuda.empty_cache()
     pipe.transformer.to('cuda')
-    options=NativeControlOptionsV5();base=DualControlOptions()
+    controls,base_controls=control_records(request.get('variant','full'))
+    options=NativeControlOptionsV5(**controls);base=DualControlOptions(**base_controls)
+    from src.pose_control.qwen21_full.native_v5.observation import ResidualObserver
+    observer=ResidualObserver() if enabled and request.get('observe_native',False) else None
+    sampling={}
     if enabled:
         runtime.to('cuda');installation=install_native_full_v5(pipe.transformer,runtime)
     with torch.inference_mode():
         image=generate_native(pipe,runtime,batch,pair,options=options,base_options=base,
-            seed=settings['seed'],steps=settings['steps'],enabled=enabled)
+            seed=settings['seed'],steps=settings['steps'],enabled=enabled,observer=observer,sampling_report=sampling)
+    if observer is not None:
+        atomic_json(out/'native_residuals.json',dict(**observer.report(),controls=controls,base_controls=base_controls,
+            source_binding=bank.metadata,condition_validity=sampling.get('condition_validity'),
+            contribution_space_note='Local modality RMS is measured before shared output projection; face/hand RMS is the actual injected hidden residual.'))
     if image.size!=(canvas.canvas_hw[1],canvas.canvas_hw[0]):raise ValueError('Generated target Canvas differs')
     image=image.convert('RGB');image.save(out/'final_canvas.png')
     source_canvas=CanvasSpec.from_record(scene['sources'][0]['canvas'])
@@ -149,13 +178,16 @@ def main():
         contact_transfer=scene['diagnostics'].get('contact_candidates'),
         adapter_loaded=enabled,native_forward_executed=enabled,checkpoint=request.get('checkpoint'),
         checkpoint_sha256=sha256(request['checkpoint']) if enabled else None,source_images_in_qwen=2,
-        checkpoint_trained_source_count=1 if enabled else None,reference_images=[
+        checkpoint_trained_source_count=saved['runtime_config'].get('source_images_in_qwen') if enabled else None,reference_images=[
             {'index':i+1,'role':entry['role'],'input_file':entry['file'],'canvas':entry['canvas'],
              'canvas_id':entry['canvas_id'],'space':entry['space']} for i,entry in enumerate(spec['images'])],
         qwen_profile=PROFILE,reference_token_hws=pair['reference_token_hws'],target_token_hw=canvas.token_hw,
         qwen_source64={'path':str(out/'qwen_source64.pt'),'sha256':sha256(out/'qwen_source64.pt'),'sources':source_proof},
         target_rgb_loaded=False,source_bank=None if bank is None else bank.metadata,
         native_installation=installation,controls=asdict(options) if enabled else None,
+        base_controls=asdict(base) if enabled else None,variant=request.get('variant','full'),diagnostic=diagnostic,
+        original_prompt_sha256=sha256(original_prompt),sampling=sampling,
+        residual_observation=None if observer is None else {'path':str(out/'native_residuals.json'),'sha256':sha256(out/'native_residuals.json')},
         seed=settings['seed'],steps=settings['steps'],canvas_size=list(image.size),final_size=list(final.size),
         prompt_sha256=sha256(request['prompt']),seconds=time.perf_counter()-started,
         peak_memory_gib=torch.cuda.max_memory_allocated()/1024**3))

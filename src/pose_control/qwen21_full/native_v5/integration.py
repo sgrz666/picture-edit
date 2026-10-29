@@ -9,6 +9,7 @@ from torch.utils.checkpoint import checkpoint as torch_checkpoint
 from ..native_integration import _prepare_execution
 from ..native_body import _IdentitySafeAdd
 from .contracts import PreparedNativeFullControlV5,NativeControlOptionsV5
+from .observation import observe_residual
 
 
 @dataclass(frozen=True)
@@ -51,18 +52,25 @@ class BlockMixin:
             body_gain=strength('body',layer,e.sigma,options)
             delta=body_delta(owner.native_body,query,geometry,layer,e.sigma)*body_gain[:,None,None] if body_gain.any() else hidden.new_zeros(hidden.shape)
             if e.valid_mask is not None: delta=delta*e.valid_mask[...,None]
+            observe_residual('body',delta,layer=layer,sigma=e.sigma,gain=body_gain)
             if layer in config.injection_layers:
                 gain=strength('interaction',layer,e.sigma,options)
                 if gain.any() and p.relation_valid.any():
                     update=owner.native_v5_interaction(query,p,layer=layer,sigma=e.sigma)*gain[:,None,None]
                     if e.valid_mask is not None: update=update*e.valid_mask[...,None]
+                    observe_residual('interaction',update,layer=layer,sigma=e.sigma,gain=gain)
                     delta=delta+update
+                else:
+                    observe_residual('interaction',None,layer=layer,sigma=e.sigma,gain=gain,condition_valid=p.relation_valid.any())
                 if config.local_mode=='dynamic' and p.local is not None:
                     for family,regions in (('face',(0,1)),('hand',(2,3,4,5))):
-                        if not getattr(options,family) or getattr(options,family+'_strength')==0: continue
+                        if not getattr(options,family) or getattr(options,family+'_strength')==0:
+                            observe_residual(family,None,layer=layer,sigma=e.sigma,condition_valid=False)
+                            continue
                         update=getattr(owner,'native_v5_'+family)(hidden,p.local,layer=layer,sigma=e.sigma,
                             target_hw=p.body.target_token_hw,regions=regions,strength=strength,options=options)
                         if e.valid_mask is not None: update=update*(e.valid_mask!=0)[...,None]
+                        observe_residual(family,update,layer=layer,sigma=e.sigma)
                         delta=delta+update
         result=original.clone();result[:,e.target_mask]=_IdentitySafeAdd.apply(original[:,e.target_mask],delta.to(original.dtype))
         return result

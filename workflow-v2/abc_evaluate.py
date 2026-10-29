@@ -49,6 +49,13 @@ def evaluate(request):
             chosen=min(people,key=lambda q:np.linalg.norm(np.nanmean(q['points'][[8,11]],0)-np.nanmean(requested[p][[8,11]],0))) if people else None
             assigned.append(chosen)
     pose=[legacy.score_person(target,person,.5,image.size) for target,person in zip(requested,assigned)]
+    # Contacts in generated RGB are 2D observations, never recovered 3D truth.
+    def pelvis(points):
+        return np.asarray(points)[[8,11]].mean(0)
+    relative=None
+    if all(p is not None and (np.asarray(p['scores'])[[8,11]]>=.5).all() for p in assigned):
+        expected=pelvis(requested[1])-pelvis(requested[0]);observed=pelvis(assigned[1]['points'])-pelvis(assigned[0]['points'])
+        relative=dict(expected_px=expected.tolist(),observed_px=observed.tolist(),error_px=float(np.linalg.norm(expected-observed)))
     overlay=image.copy();draw=ImageDraw.Draw(overlay)
     for p,(target,person) in enumerate(zip(requested,assigned)):
         for x,y in target[:18]:
@@ -114,9 +121,10 @@ def evaluate(request):
     source=scene['sources'][0]
     with Image.open(source['canvas_image']) as im:background=np.asarray(im.convert('RGB'),np.float32)
     with Image.open(source['mask']) as mask:source_mask=np.asarray(mask)>0
-    union=source_mask|arrays['mask'].any(0)
-    union=cv2.dilate(union.astype(np.uint8),np.ones((17,17),np.uint8))>0
-    support=~union
+    from abc_quality import background_support,review_artifacts
+    from src.data.canvas_contract import CanvasSpec
+    valid=CanvasSpec.from_record(source['canvas']).valid_mask().numpy().squeeze()>0
+    support=background_support(valid,source_mask,arrays['mask'])
     if support.any():
         mse=float(np.square(background-np.asarray(image,np.float32))[support].mean())
         report['background']=dict(status='measured',pixels=int(support.sum()),mae=float(np.abs(background-np.asarray(image,np.float32))[support].mean()),
@@ -130,6 +138,22 @@ def evaluate(request):
         body_shape={'status':'measured_in_geometry_only','source_parameter_preservation':retained,
             'betas_preserved':all(p['betas'] for p in retained),'generated_3d_shape':'not_estimated'},
         generated_contact={'status':'unavailable','reason':'RGB does not provide verified 3D contact distance'})
+    report['relative_pelvis']={'status':'measured' if relative else 'unavailable','value':relative,
+        'assignment_uncertain':basis=='regions' or bool(assignment.get('ambiguous',False))}
+    duplicate=False
+    if all(p is not None for p in assigned):
+        duplicate=bool(np.linalg.norm(pelvis(assigned[0]['points'])-pelvis(assigned[1]['points']))<.02*max(image.size))
+    report['person_count']['possible_duplicate_region_assignment']=duplicate
+    if duplicate:report['person_count']['status']='uncertain'
+    report['visual_review']=review_artifacts(image,arrays,out)
+    from abc_quality import pose_coverage
+    report['pose']['coverage']=pose_coverage(pose)
+    report['annotation_scope']=dict(interaction_source=scene['interaction'].get('source'),
+        requested_geometry_is_generated_target=True,driver_is_not_output_ground_truth=True,
+        official_finger_pose_available=False if 'official' in str(scene['interaction'].get('source','')).lower() else None,
+        upper_body_handshake_caveat='Estimated lower body is not annotated truth; report target-fit metrics separately from observed driver evidence.')
+    from abc_quality import contact_projection_proxy
+    report['contact_2d_proxy']=contact_projection_proxy(arrays,requested,assigned)
     atomic_json(out/'evaluation.json',report)
     return report
 

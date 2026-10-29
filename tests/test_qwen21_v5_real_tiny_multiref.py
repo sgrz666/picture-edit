@@ -69,6 +69,12 @@ def test_real_native_qwen_frozen_prefix_and_checkpoint_gradient(references,devic
         for head in runtime.body.output_heads:head.weight.normal_(0,.001)
     with torch.autocast(device_type=device,dtype=torch.bfloat16,enabled=device=='cuda'):
         probe=model(**values,native_full_control=control,native_full_options=options,native_valid_mask=torch.ones(1,8,device=device))[0]
+    from src.pose_control.qwen21_full.native_v5.observation import ResidualObserver
+    observer=ResidualObserver()
+    with torch.no_grad(),observer.capture(),torch.autocast(device_type=device,dtype=torch.bfloat16,enabled=device=='cuda'):
+        observed=model(**values,native_full_control=control,native_full_options=options,native_valid_mask=torch.ones(1,8,device=device))[0]
+    assert torch.equal(probe,observed), 'Scalar observation must not change real native Qwen output'
+    assert observer.records and observer.report()['branch_summary']['body']['nonzero']>0
     probe[:,-8:].square().mean().backward()
     assert geometry.grad is not None and geometry.grad.count_nonzero()
     assert runtime.body.query_projection.weight.grad.count_nonzero()

@@ -11,6 +11,7 @@ from ..native_local_control import NativeLocalController,resolve_local_ownership
 from ..native_dual_identity import ContextDelta
 from .contracts import PreparedLocalV5
 from .detail import inner_feather
+from .observation import observe_residual
 
 
 class NativeFacePreparerV5(NativeFacePreparer):
@@ -169,7 +170,9 @@ class NativeLocalControllerV5(NativeLocalController):
                 if mi==2 and p.spatial_valid[row,region]:
                     sampled=F.grid_sample(p.spatial[row:row+1,region],grid[row:row+1,region].reshape(1,-1,1,2)[:,cells],align_corners=False)
                     update=update+self.spatial_projection(sampled.squeeze(-1).transpose(1,2))
-            result=result+self._refine(update,slot,sigma)*gain[:,None,None]
+            increment=self._refine(update,slot,sigma)*gain[:,None,None]
+            observe_residual(branch,increment,layer=layer,sigma=sigma,gain=gain,region=region,row=row,space='local_before_shared_output_projection')
+            result=result+increment
         return result
 
     def forward(self,hidden,p,*,layer,sigma,target_hw,regions,strength,options):

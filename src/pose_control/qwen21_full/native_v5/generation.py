@@ -5,6 +5,8 @@ normalisation and latent packing are retained; its area-based reference resize
 is deliberately bypassed, without modifying the installed diffusers package.
 """
 import numpy as np
+import hashlib
+from contextlib import nullcontext
 import torch
 from torch.nn import functional as F
 from ..qwen_runtime import transformer_inputs
@@ -14,7 +16,7 @@ from .conditioning import primary_source
 
 
 @torch.no_grad()
-def generate_native(pipe,runtime,batch,pair,*,options,base_options,seed=42,steps=20,enabled=True):
+def generate_native(pipe,runtime,batch,pair,*,options,base_options,seed=42,steps=20,enabled=True,observer=None,sampling_report=None):
     from diffusers.pipelines.qwenimage21.pipeline_qwenimage21 import calculate_shift,retrieve_timesteps
     device=next(pipe.transformer.parameters()).device
     pair={k:v.to(device) if torch.is_tensor(v) else v for k,v in pair.items() if k!='target_latent'}
@@ -22,11 +24,16 @@ def generate_native(pipe,runtime,batch,pair,*,options,base_options,seed=42,steps
     generator=torch.Generator(device=device).manual_seed(seed)
     noise=torch.randn((1,1,64,th,tw),device=device,dtype=dtype,generator=generator)
     latent=pipe._pack_latents(noise,1,64,th,tw)
+    if sampling_report is not None:
+        sampling_report.update(initial_noise_sha256=hashlib.sha256(noise.detach().contiguous().view(torch.uint8).cpu().numpy().tobytes()).hexdigest(),
+            noise_shape=list(noise.shape),noise_dtype=str(noise.dtype),seed=seed)
     scheduler=type(pipe.scheduler).from_config(pipe.scheduler.config)
     mu=calculate_shift(th*tw,scheduler.config.get('base_image_seq_len',256),scheduler.config.get('max_image_seq_len',4096),
         scheduler.config.get('base_shift',.5),scheduler.config.get('max_shift',1.15))
     timesteps,_=retrieve_timesteps(scheduler,steps,device,sigmas=np.linspace(1.,1/steps,steps),mu=mu)
     scheduler.set_begin_index(0)
+    if sampling_report is not None:
+        sampling_report.update(timesteps=timesteps.detach().float().cpu().tolist(),scheduler=type(scheduler).__name__)
     prepared=None
     if enabled:
         bank=batch.get('source_bank_v5')
@@ -50,7 +57,12 @@ def generate_native(pipe,runtime,batch,pair,*,options,base_options,seed=42,steps
             return pipe.transformer(**values)[0][:,-th*tw:]
 
     if enabled:
-        with bind_native_full_v5(pipe.transformer,prepared,options=options,valid_mask=coverage):
+        if sampling_report is not None:
+            sampling_report['condition_validity']=dict(person_valid=prepared.body.person_valid.tolist(),
+                relation_tokens=int(prepared.relation_valid.sum()),local=None if prepared.local is None else dict(
+                region_valid=prepared.local.region_valid.tolist(),token_valid=prepared.local.token_valid.sum(-1).tolist(),
+                detail_valid=prepared.local.detail_valid.tolist()))
+        with bind_native_full_v5(pipe.transformer,prepared,options=options,valid_mask=coverage), (observer.capture() if observer is not None else nullcontext()):
             for t in timesteps:latent=scheduler.step(predict(t),t,latent,return_dict=False)[0]
     else:
         for t in timesteps:latent=scheduler.step(predict(t),t,latent,return_dict=False)[0]

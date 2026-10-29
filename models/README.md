@@ -1,90 +1,51 @@
-# models/ —— 模型权重目录（不纳入 Git）
+# models/ —— 预训练基座与外挂权重库
 
-本目录存放生成主干 **DeepGen-1.0-diffusers** 的权重文件，完整约 **14 GB**，体积过大不纳入仓库，需要自行下载。
+> **核心原则**：
+> 1. 本目录存放项目依赖的生成基座与预训练提取器，总计约 **88 GB**，属于大体积二进制资产，不入 Git 仓库。
+> 2. **物理实体全部位于独立数据盘 `/data/shangguanrz/`**，本目录下的条目均为软链接，透明支持绝对路径与相对路径读取。
+> 3. 训练产出的 checkpoint 权重一律保存在各实验对应的目录中，不放在本目录。
 
-## 模型来源
+---
 
-- Hugging Face 官方仓库：[`deepgenteam/DeepGen-1.0-diffusers`](https://huggingface.co/deepgenteam/DeepGen-1.0-diffusers)
-- 国内镜像（推荐）：https://hf-mirror.com/deepgenteam/DeepGen-1.0-diffusers
-- 模型主页（非 diffusers 版）：https://huggingface.co/deepgenteam/DeepGen-1.0
-- License：Apache-2.0；基座：Qwen/Qwen2.5-VL-3B-Instruct
+## 一、模型资产清单与物理落点导航
 
-## 下载后的目录结构
+| 模型条目 | 真实物理落点 (`/data/shangguanrz/`) | 实体体积 | 类别与作用 | 关键调用模块 |
+|---|---|---|---|---|
+| `Qwen-Image-2.1/` | `/data/shangguanrz/pic-edit-models/Qwen-Image-2.1` | 31 GB | 阿里 7B 单流 DiT 图像编辑与生成基座 | `src/pose_control/qwen21*`, `workflow/` |
+| `DeepGen-1.0-diffusers/` | `/data/shangguanrz/pic-edit-models/repo-models/DeepGen-1.0-diffusers` | 14.4 GB | 2.47B MMDiT 双流生成基座（10-25 迁入） | `src/pose_control/v6/`, `scripts/train/train_iper_v6*` |
+| `antelopev2/` | `/data/shangguanrz/pic-edit-models/repo-models/antelopev2` | 4.97 GB | SCRFD 人脸检测与 ArcFace 512D 提取器（10-25 迁入） | `src/evaluation/`, `src/pose_control/*/face*` |
+| `DWPose/` | `/data/shangguanrz/pic-edit-models/repo-models/DWPose` | 351 MB | ONNX 姿态估计器 (`yolox_l`, `dw-ll_ucoco_384`)（10-25 迁入） | `src/evaluation/dwpose_onnx/`, `workflow/` |
+| `face_eval/` | `/data/shangguanrz/pic-edit-models/repo-models/face_eval` | 356 MB | 面部相似度评测专用模型（10-25 迁入） | `src/evaluation/` |
+| `smpl/` | `/data/shangguanrz/pic-edit-models/repo-models/smpl` | 78 MB | 官方人体拓扑与网格模型 (`SMPLX_NEUTRAL.pkl`)（10-25 迁入） | `workflow/pose_transfer/`, `src/controls/` |
+| `Qwen-Image-2.1-PE-I2I/` | `/data/shangguanrz/pic-edit-models/Qwen-Image-2.1-PE-I2I` | 18 GB | 官方 9B 图像到图像提示词重写增强模型 (Prompt Enhancement) | `workflow/pe_worker.py` |
+| `Qwen-Image-2.1-PE-I2I-GGUF/` | `/data/shangguanrz/pic-edit-models/Qwen-Image-2.1-PE-I2I-GGUF` | 10 GB | PE-I2I 的 Q8_0 高精度量化版 + bf16 视觉投影头 | `workflow/pe_worker.py` (llama.cpp 引擎) |
+| `Qwen-Image-2.1-PE-MTP-Q4_K_M/` | `/data/shangguanrz/pic-edit-models/Qwen-Image-2.1-PE-MTP-Q4_K_M` | 6.5 GB | PE-I2I 的 Q4_K_M 中精度低显存量化版 | 低显存环境备用 |
+| `Qwen3-VL-4B-Instruct-GGUF/` | `/data/shangguanrz/pic-edit-models/Qwen3-VL-4B-Instruct-GGUF` | 3.2 GB | 4B 多模态视觉-语言模型 GGUF 版本（快速图像理解） | 提示词规划与轻量视觉审计 |
+| `home-models/` | `/data/shangguanrz/models/home-models` | 15.3 GB | 10-25 迁移自 `~/models` 的家目录模型集合 | 离线环境与开发调用 |
 
-```
-models/DeepGen-1.0-diffusers/
-├── model_index.json
-├── prompt_template.json
-├── deepgen_pipeline.py          # 自包含 pipeline（trust_remote_code=True 加载）
-├── scheduler/scheduler_config.json
-├── tokenizer/                   # tokenizer.json / vocab / merges / chat_template 等
-├── connector/model.safetensors  # 约 1.7 GB
-├── vlm/                         # Qwen2.5-VL 文本/视觉编码器，共约 7.5 GB
-│   ├── config.json
-│   ├── model.safetensors.index.json
-│   ├── model-00001-of-00002.safetensors   # 约 4.9 GB
-│   └── model-00002-of-00002.safetensors   # 约 2.6 GB
-├── transformer/
-│   ├── config.json
-│   └── diffusion_pytorch_model.safetensors  # DiT 主干，约 4.9 GB（存储张量元素约 2.47B）
-└── vae/
-    ├── config.json
-    └── diffusion_pytorch_model.safetensors
-```
+---
 
-## 下载方式
+## 二、2026-10-25 跨盘迁移说明
 
-### 方式一：huggingface-cli（推荐）
+为解决系统根盘 `/`（1.8TB 占用率 99%）空间紧缺问题，2026-10-25 将仓库内 5 组模型（`DeepGen-1.0-diffusers`、`antelopev2`、`DWPose`、`face_eval`、`smpl`）整体迁移至数据盘 `/data/shangguanrz/pic-edit-models/repo-models/`：
+- **一致性**：源端与目标端逐文件 SHA256 **8/8 组全等**（详见 `docs/模型跨盘迁移执行记录_20261025.md`）。
+- **零代码改动**：在 `models/` 原位建立同名软链接回填，所有代码直接访问 `models/<name>` 保持完全兼容。
 
-```bash
-pip install -U huggingface_hub
-export HF_ENDPOINT=https://hf-mirror.com   # 国内加速，海外可省略
-huggingface-cli download deepgenteam/DeepGen-1.0-diffusers \
-  --local-dir models/DeepGen-1.0-diffusers --resume-download
-```
+---
 
-### 方式二：Python API
-
-```python
-import os
-os.environ.setdefault("HF_ENDPOINT", "https://hf-mirror.com")
-from huggingface_hub import snapshot_download
-snapshot_download(
-    repo_id="deepgenteam/DeepGen-1.0-diffusers",
-    local_dir="models/DeepGen-1.0-diffusers",
-    resume_download=True,
-)
-```
-
-## 加载验证
+## 三、基座加载验证示例
 
 ```python
 import torch
 from diffusers import DiffusionPipeline
 
+# 加载 DeepGen-1.0（软链直达 /data 实体）
 pipe = DiffusionPipeline.from_pretrained(
-    "models/DeepGen-1.0-diffusers",   # 或直接写 repo_id 在线加载
+    "models/DeepGen-1.0-diffusers",
     torch_dtype=torch.bfloat16,
     trust_remote_code=True,
-)
-pipe.to("cuda")
+).to("cuda")
+
+# 加载 Qwen-Image-2.1（位于 /data/shangguanrz/pic-edit-models/Qwen-Image-2.1）
+# 可直接通过绝对路径或软链调用
 ```
-
-下载完成后可检查各分片大小是否与上文目录结构一致，并尝试用上面的加载代码实例化 pipeline，以确认权重完整、无损坏。
-
----
-
-## 其他模型子目录
-
-除 DeepGen-1.0-diffusers 外，`models/` 下还有六项辅助权重，各有独立说明（两个 Qwen 权重目录保留上游官方模型卡为 `README.md`，项目侧说明以 `README.pic-edit.md` 承载）：
-
-| 子目录 | 内容 | 在项目中的角色 |
-|---|---|---|
-| [`antelopev2/`](antelopev2/README.md) | InsightFace 检测/关键点/ArcFace onnx + DINOv2-giant | 人脸检测与身份特征提取（Face ID、身份评测） |
-| [`DWPose/`](DWPose/README.md) | DWPose ONNX（dw-ll_ucoco_384 + yolox_l） | 全身 134 关键点估计，骨架条件的来源 |
-| [`Qwen-Image-2.1/`](Qwen-Image-2.1/README.pic-edit.md) | Qwen 2.1 7B 单流 DiT 基座，软链 → `/data/shangguanrz/pic-edit-models/Qwen-Image-2.1` | Qwen 迁移线的生成基座（body/face/dual/full 适配器均挂在它上面） |
-| [`Qwen-Image-Edit-20B/`](Qwen-Image-Edit-20B/README.pic-edit.md) | Qwen-Image-Edit-20B，软链经 `model-qwen-edit` → `pic-edit-archive/cleanup_20261003/models/` | 历史/备用权重：`src/` 与 `workflow/` 均无代码引用，作为基线对照留存，注意其位于归档盘、存在被清理的风险 |
-| [`smpl/`](smpl/README.md) | SMPL / SMPL-X 官方拓扑模型文件 | 三维人体参数模型（适配器条件编码的人体先验） |
-| [`face_eval/`](face_eval/README.md) | 面部评测专用权重（身份/关键点/LPIPS/感知编码器） | 面部保持与画质量化评测 |
-
-两项 Qwen 权重都不在 Git 内，实体位于数据盘；换机器时只需重建软链，不要移动上游模型卡。
