@@ -235,3 +235,17 @@ RuntimeError，**不**悄悄退回常数——那会在不留记录的情况下�
 改名为 `..._falls_back_to_the_box_height_only_without_a_measurement` 并加了来源断言），新增
 `workflow/tests/test_dwpose_helper.py` 8 条（IoU、按重叠而非检测顺序选人、133→134、neck 分数规则、
 量不到人返回 None）。单人线 33 条与双人线 11 个模块全绿。
+
+---
+
+## 关键实验与实测 runs 导航
+
+| 目录 | 定位与内容 | 核心数据与结论 |
+|---|---|---|
+| `runs/test/` | 跨测试集基线验证（含 `hard_01` ~ `hard_05`） | 覆盖大角度转体、极端动作与多人物主体选择 |
+| `runs/tiktok/` | TikTok 8 对主线动作迁移 baseline 产物 | 8 对同口径评测，Baseline 身份余弦均值 0.534，PCK@0.2 达 0.976 |
+| `runs/tiktok/union-test/` | 官方 ControlNet Union 在 TikTok 上的能力实测 | 8 对 × 4 臂 (T1, T2b, D1, D2b) 共 32 组出图：对齐布局下 T2b 逐对与 Baseline 打平 (0.976)；纯控制无 A 图时 ID 余弦降至 0.012~0.087 |
+| `experiment/qwen-union/` | 单样本官方 Union Inpainting 实验 | 验证官方 `image=A + mask + pose` 路径，证实 Mask 擦除导致身份丢失 |
+| `experiment/qwen-union-hybrid/` | 单样本 Hybrid Qwen Base + Union Control 实验 | 验证切断 Mask 直接走多模态参考图使 ID 余弦从 0.075 提升至 0.238 (+219%)，但裸残差注入干扰自注意力 |
+| `scripts/six-picture-create/` | 六图面板标准化导出工具 | 输入源图、目标动作、对齐骨架、生成图等，自动拼出 2×3 验收面板 |
+

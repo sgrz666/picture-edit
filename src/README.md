@@ -1,29 +1,39 @@
-# src/ —— 人物图像姿态编辑系统的全部可训练与推理代码
+# src/ —— 核心源码架构与模块导航
 
-`src/` 是 pic-edit 的 Python 源码根目录，承载项目的全部核心逻辑（仓库根只放配置、模型权重与 `experiments/`，两阶段基座流水线在仓库其他位置的 `workflow/`）。
+`src/` 是 pic-edit 的核心源码根目录，承载人物图像姿态编辑系统的全部可训练模型、几何条件构建、推理管线与评测逻辑。
 
-项目要解的题是：给定源人物 A 的图像与参考人物 B 的 SMPL-X 姿态，保持 A 的身份（Face ID）、服饰材质与背景不变，把 B 的姿态与表情重定向到 A 上。`src/` 内的代码按三条技术线组织：
+---
 
-1. **DeepGen-1.0-diffusers 线**：基座是 2.47B 参数的 MMDiT 双流模型，推理时 frozen；在其上挂载自研 **Unified SMPL-X Adapter V6**（trainable）。条件编码 → 循环控制核心 → 残差注入（block 0–22，第 23 层不注入）；后续演进为 V6.4 detail 分支、V6.5 face 分支、V6.6 hand 分支。
-2. **Qwen-Image-2.1 迁移线**：基座换成 7B 单流 DiT。其中 `pose_control/qwen21/` 是简化实现（body/face/dual 三个独立控制头），`pose_control/qwen21_full/` 是把 V6 全量迁移到 Qwen 的完整实现（32 层注入、面部监督、双人 Token 绑定）。
-3. **workflow/ 基座流水线**（不在 `src/` 内）：无 adapter/LoRA 的两阶段方案，A 保外观、B 供动作，SMPLest-X 估计 + DWPose-134 骨架 + PE-I2I 提示词编译。
+## 一、核心子目录导航
 
-## 里面有什么
+| 目录 | 职责与定位 | 核心模块 / 关键代码 |
+|---|---|---|
+| [`pose_control/`](pose_control/README.md) | **姿态控制器核心**（训练与受控推理） | 包含 DeepGen V6、Qwen21 简化版、Qwen21 Full (含 `native_v5`)、Qwen21 Pro 与 Union 架构 |
+| [`pose_edit/`](pose_edit/README.md) | **推理流水线共享层**（单/双人共用） | 缓存指纹（`fingerprint.py`）、SMPLest-X 封装、DWPose-134、geometry 定标与外观计算 |
+| [`data/`](data/) | **数据集读取与几何预处理** | `tiktok_dataset.py`, `base_dataset.py`, `augmentation.py`，负责空间对齐与流式加载 |
+| [`evaluation/`](evaluation/) | **定量评测与关键点回估** | `dwpose_onnx/` (133/134 点转换)、ArcFace 人脸特征提取、PSNR/SSIM/PCK/NME 计算 |
+| [`controls/`](controls/) | **SMPL-X 控制信号生成器** | `generator.py`，负责从 3D 参数离线/在线渲染骨架、法线、深度、接触图 |
+| [`integration/`](integration/) | **生成管线挂接与推理桥接** | `deepgen_pipeline.py`，将控制器残差无缝插入 Diffusers Pipeline 采样循环 |
+| [`adapter/`](adapter/) | **早期 CNN 姿态适配器** | `pose_adapter.py`，早期零卷积基线实验代码 |
 
-- `pose_control/` —— 上述前两线的控制适配器核心（**训练侧**），详见 [pose_control/README.md](pose_control/README.md)。
-- `pose_edit/` —— 两条 workflow 线（单人 `workflow/`、双人 `workflow-multiple/`）共用的**推理侧共享层**：缓存指纹与阶段溯源、SMPLest-X 估计器封装、DWPose-134 关节表、geometry 定标、外观相似度、提示词契约。与 `pose_control/` 的区别是「推理侧流水线共享层 vs 训练侧适配器」，二者互不依赖。详见 [pose_edit/README.md](pose_edit/README.md)。
-- `adapter/` —— 早期/独立的姿态条件适配器（`pose_adapter.py`），ControlNet 式条件编码雏形。
-- `controls/` —— 骨架可视化与生成辅助（`generator.py`）。
-- `data/` —— iPER / TikTok / Hi4D 数据集读取与几何/letterbox 预处理。
-- `evaluation/` —— 四臂评测（身份/姿态指标）、无 GT 评测指标集与手部合理性判断、DWPose-134 ONNX 推理封装。
-- `integration/` —— CHAMP / DeepGen 样本校验与残差对齐。
+---
 
-## 与上下层的关系
+## 二、姿态控制技术线划分
 
-- 上游：仓库根的模型权重（DeepGen、Qwen-Image-2.1）、`third_party/`（v65_face.xdyna、visual_persona 等锁定依赖）、`datasets/`。
-- 下游：训练脚本（`pose_control/qwen21_full/execution.py`、`joint_training.py` 等）与推理入口调用 `pose_control/` 下导出的适配器与 pipeline；评测脚本调用 `evaluation/`；两条 workflow 流水线（单人 `workflow/`、双人 `workflow-multiple/`）`import src.pose_edit.*` 复用推理侧共享层。
-- 仓库根 README（人工正稿）不在本目录覆盖范围内，整体导航见 [../README.md](../README.md)。
+1. **DeepGen V6 主线** ([`pose_control/v6/`](pose_control/v6/README.md))：
+   - 基于 DeepGen-1.0 (2.47B MMDiT 双流基座)，挂载可训练的 Unified SMPL-X Adapter V6（V6.4 detail / V6.5 face / V6.6 hand）。
+2. **Qwen 2.1 迁移与 Native V5 主线** ([`pose_control/qwen21_full/`](pose_control/qwen21_full/README.md))：
+   - 基于 Qwen-Image-2.1 (7B 单流 DiT)，32 层全量注入。
+   - 最新包含 [`native_v5/`](pose_control/qwen21_full/native_v5/)：模块化训练架构、显式损失权重、解耦 source_bank 与无检测器 ROI 监督。
+3. **Qwen 2.1 Pro 适配器主线** ([`pose_control/qwen21_pro/`](pose_control/qwen21_pro/))：
+   - 继承官方 16 个原生控制块 (4096维) + 14.6M FP32 ProTaskAdapter，零初始化安全相加，独立外观 Bank (`visible_owner`)，显式双人接触关系与两阶段局部精修工厂。
+4. **官方 ControlNet Union 适配** ([`pose_control/qwen21_union/`](pose_control/qwen21_union/))：
+   - 官方 Qwen-Image-2.1-Fun-Controlnet-Union 权重加载、契约审计与 pipeline 封装。
 
-## 注意与坑
+---
 
-- 多处直接 `import third_party.*`（如 `third_party.v65_face.xdyna`、`third_party.v65_face.stableanimator`），这是该目录锁定的外部实现，缺包时相关模块无法导入。
+## 三、与外部数据盘及上下层关系
+
+- **模型依赖**：基座与提取器实体位于独立数据盘 `/data/shangguanrz/pic-edit-models/`，通过 `models/` 软链透明读取。
+- **训练输出**：权重检查点与训练日志直接落盘于 `/data/shangguanrz/pic-edit-experiments/`。
+- **流水线复用**：`workflow/` 与 `workflow-multiple/` 统一通过 `import src.pose_edit.*` 复用几何、投影与提示词契约。
