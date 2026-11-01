@@ -12,6 +12,9 @@ ROOT=Path(__file__).resolve().parents[2]
 sys.path.insert(0,str(ROOT))
 TROOT=Path('/data/shangguanrz/pic-edit-experiments/qwen21_full_native_v1/tiktok-fixedpair-v5_20261025_v1')
 HROOT=Path('/data/shangguanrz/pic-edit-experiments/qwen21_hi4d_dual/hi4d-fixedpair-v5_20261025_v1')
+DATA_ROOT=Path('/data/shangguanrz')
+HI4D_BANK=ROOT/'experiments/4.two man /hi4d_pe_prompt_rewrite_20261020/v5_grounded_3d_20261030_r4/prompts/hi4d_train_prompts_v2.jsonl'
+HI4D_SCHEMA='hi4d_pei2i_q4_plan_a_v5'
 
 
 def sha(p):
@@ -38,29 +41,77 @@ def producer_snapshot():
     return ref(p)
 
 
-def lock():
-    cases=[(TROOT,ROOT/'experiments/3.singel man/tiktok_pe_prompt_rewrite_20261014/prompts/train.jsonl',
-        ('train_0000247','train_0000212'),'tiktok_pei2i_q4_plan_a_v1','single_2ref'),
-        (HROOT,ROOT/'experiments/4.two man /hi4d_pe_prompt_rewrite_20261020/prompts/hi4d_train_prompts_v2.jsonl',
-        ('train_pair12_highfive12_cam4_000011_000082','train_pair12_highfive12_cam4_000011_000112'),
-        'hi4d_pei2i_q4_plan_a_v2','dual_4ref')]
-    for output,bank,ids,schema,profile in cases:
-        found={r['pair_id']:r for r in rows(bank)};selected=[]
-        for role,key in zip(('train','observation'),ids):
-            r=found[key];text=r['compiled_prompt_inference']
-            if r['schema']!=schema or hashlib.sha256(text.encode()).hexdigest()!=r['compiled_prompt_inference_sha256']:
-                raise ValueError('Existing final Plan A prompt fingerprint differs')
-            selected.append({'role':role,'pair_id':key,'bank_record':r,'prompt':text,'prompt_sha256':r['compiled_prompt_inference_sha256']})
-        write(output/'data/selection.json',{'schema':'native_v5_fixedpair_selection_v1','profile':profile,
-            'bank':ref(bank),'pairs':selected,'updates':300,'save_and_generate_every':30,'seed':42,
-            'loss':'velocity_only','canvas_policy':'native_pad','primary_source_index':0,
-            'stage_budgets':[60,60,120,60],'continuous_stage_authorization':
-            {'source':'direct_user_message','text':'不要停下直接训练300步就行'}})
-        (output/'README.md').write_text('# V5 固定配对训练\n\n'
-            '目的：1对训练＋1对同场景未训练姿态观察；总预算300个成功update。\n\n'
-            'data/selection.json锁定Plan A原文、图片角色与阶段预算；source/保存实施前源码。\n'
-            '当前状态：准备中，尚未开始optimizer更新。后续状态写入report与追加日志。\n\n'
-            '沿用Native V5，原图native_pad，多图Qwen只以image1提供Adapter外观。\n',encoding='utf8')
+def new_hi4d_root(path):
+    if path is None:
+        raise ValueError('Explicit hi4d_root is required; never lock into the old live pilot')
+    output=Path(path).resolve()
+    if output==HROOT.resolve():
+        raise ValueError('Refusing the old live Hi4D pilot root')
+    if DATA_ROOT.resolve() not in output.parents:
+        raise ValueError('New Hi4D pilot must be beneath the persistent DATA_ROOT')
+    if output.exists():
+        raise FileExistsError('New Hi4D pilot root already exists: '+str(output))
+    return output
+
+
+def lock(*,kind='all',hi4d_root=None,bank=None,expected_schema=None,pair_ids=None,roles=None):
+    """Lock immutable prompt bytes; Hi4D requires a new, explicit persistent root.
+
+    Multiple banks may supply diagnostic pairs across splits. Every selected row retains its
+    own bank reference; the top-level bank remains compatible for the single-bank case.
+    Explicit bank/schema arguments support historical banks without changing the live default.
+    """
+    if kind not in ('all','tiktok','hi4d'):raise ValueError('Unknown preparation kind: '+kind)
+    cases=[]
+    if kind in ('all','hi4d'):
+        output=new_hi4d_root(hi4d_root)
+        paths=[Path(p) for p in bank] if isinstance(bank,(list,tuple)) else [Path(bank or HI4D_BANK)]
+        ids=tuple(pair_ids or ('train_pair12_highfive12_cam4_000011_000082',
+                              'train_pair12_highfive12_cam4_000011_000112'))
+        selected_roles=tuple(roles or ['train']+['observation']*(len(ids)-1))
+        cases.append((output,paths,ids,expected_schema or HI4D_SCHEMA,'dual_4ref',selected_roles))
+    if kind in ('all','tiktok'):
+        cases.append((TROOT,[ROOT/'experiments/3.singel man/tiktok_pe_prompt_rewrite_20261014/prompts/train.jsonl'],
+                      ('train_0000247','train_0000212'),'tiktok_pei2i_q4_plan_a_v1','single_2ref',('train','observation')))
+    prepared=[]
+    for output,paths,ids,schema,profile,selected_roles in cases:
+        if len(ids)!=len(selected_roles) or not ids or len(set(ids))!=len(ids):
+            raise ValueError('Unique pair_ids and one explicit role per pair required')
+        if any(role not in ('train','observation','validation') for role in selected_roles):
+            raise ValueError('Unknown selected pair role')
+        found={};banks=[ref(p) for p in paths]
+        for path,bound in zip(paths,banks):
+            for r in rows(path):
+                if r['pair_id'] in found:raise ValueError('Duplicate pair_id across prompt banks: '+r['pair_id'])
+                found[r['pair_id']]=(r,bound)
+        selected=[]
+        for role,key in zip(selected_roles,ids):
+            if key not in found:raise ValueError('Selected pair absent from prompt banks: '+key)
+            r,bound=found[key];text=r['compiled_prompt_inference']
+            if r.get('schema')!=schema:raise ValueError('Prompt bank schema differs: '+key)
+            if hashlib.sha256(text.encode()).hexdigest()!=r.get('compiled_prompt_inference_sha256'):
+                raise ValueError('Existing final Plan A prompt fingerprint differs: '+key)
+            selected.append({'role':role,'pair_id':key,'bank_record':r,'bank':bound,
+                             'prompt':text,'prompt_sha256':r['compiled_prompt_inference_sha256']})
+        selection={'schema':'native_v5_fixedpair_selection_v1','profile':profile,
+            'bank':banks[0] if len(banks)==1 else None,'banks':banks,'pairs':selected,
+            'seed':42,'loss':'velocity_only','canvas_policy':'native_pad','primary_source_index':0}
+        if profile=='dual_4ref':
+            selection.update(updates=None,stage_budgets=None,training_ready=False,
+                             preparation_only=True,frozen_cache_status='not_encoded')
+        else:
+            selection.update(updates=300,save_and_generate_every=30,stage_budgets=[60,60,120,60],
+                continuous_stage_authorization={'source':'direct_user_message','text':'不要停下直接训练300步就行'})
+        prepared.append((output,selection))
+    results=[]
+    for output,selection in prepared:
+        results.append(write(output/'data/selection.json',selection))
+        with (output/'README.md').open('x',encoding='utf8') as f:
+            f.write('# V5 固定配对准备\n\n'
+                    'data/selection.json锁定逐对原文、bank SHA和图片角色。\n\n'
+                    +('Hi4D当前仅准备数据；训练预算未绑定，frozen cache尚未编码，未启动训练。\n'
+                      if selection['profile']=='dual_4ref' else 'TikTok保留既有300步预算与阶段定义。\n'))
+    return results
 
 
 def human_model_map():
@@ -228,8 +279,17 @@ def hi4d_geometry():
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('action',choices=('lock','tiktok-import','hi4d-geometry'))
+    parser.add_argument('--kind',choices=('all','tiktok','hi4d'),default='all')
+    parser.add_argument('--hi4d-root',type=Path)
+    parser.add_argument('--bank',type=Path,action='append')
+    parser.add_argument('--schema')
+    parser.add_argument('--pair-id',action='append')
+    parser.add_argument('--role',action='append')
     args=parser.parse_args()
-    {'lock':lock,'tiktok-import':tiktok_import,'hi4d-geometry':hi4d_geometry}[args.action]()
+    if args.action=='lock':
+        lock(kind=args.kind,hi4d_root=args.hi4d_root,bank=args.bank,expected_schema=args.schema,
+             pair_ids=args.pair_id,roles=args.role)
+    else:{'tiktok-import':tiktok_import,'hi4d-geometry':hi4d_geometry}[args.action]()
 
 
 if __name__=='__main__':main()

@@ -54,3 +54,24 @@ research/dfm_preview_20261008/*.zip
 workflow/diagnostics/**/*.tar
 *_champ_samples/**/*.zip
 
+
+# 依赖与临时工作区
+node_modules/
+/.agents/
+*.bak*
+
+# 第三方上游与外部模型仓库
+vendor/
+
+# Union 控制网权重（实体从 /data 迁入，目录内仅保留代码与说明）
+/union-adapter/*
+!/union-adapter/README.md
+!/union-adapter/fulladapter/
+!/union-adapter/pro-adapter/
+
+# 调研产出的高分辨率渲染图集与报告资源（不进 Git）
+research/hi4d_smplx_pilot_20261011/multihmr_*
+reports/qwen_union_controlnet_20261027/assets/
+reports/qwen_union_controlnet_20261027/_docimg/
+reports/hia_dataset_status_20261031/assets/
+reports/hia_dataset_status_20261031/render/

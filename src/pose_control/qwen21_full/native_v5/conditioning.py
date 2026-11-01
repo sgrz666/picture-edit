@@ -87,6 +87,8 @@ def read_condition(ref, sample=None):
                     raise ValueError('Independent Source bank/Qwen binding differs')
         if any(x['file']['sha256'] == meta['driver_rgb_sha256'] for x in images):
             raise ValueError('Supervision RGB cannot be a Qwen reference image')
+    from .hi4d_guide_binding import verify_grounded_hi4d
+    verify_grounded_hi4d(spec, sample)
     return spec
 
 

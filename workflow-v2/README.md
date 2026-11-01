@@ -87,3 +87,20 @@ OMP_NUM_THREADS=2 /home/shangguanrz/nihaochen/envs/qwen21/bin/python -B -m pytes
 文件 SHA256：`6a340c0a9bde9fbea943bfb26cbfce425a893ac2201d1b23651e0508e4bd20e2`。每次运行仍核对实际文件，不自动寻找或切换最新权重。
 
 此流水线复用 `src/pose_edit`、SMPLest-X、Multi-HMR 和已有 Native V5，与单人 `workflow` 及旧双人 `workflow-multiple` 共存。
+
+## 阶段 1 正式质量基线 V2（2026-10-30）
+
+本轮完成 68/68：Smoke12、768/30 三种子主矩阵36、交换4、诊断16；全资产／阶段只读复验通过。独立重建16个目标，最大mesh误差7.63e-6m、自投影0.000182px，满足1e-4m/.25px契约；源码回归107通过、2跳过（另8个subtests通过）。没有新训练。
+
+**质量尚未达标。** Full共同可测人物ArcFace在9组中均低于Qwen-only，中位差-0.1294；覆盖下界PCK总体中位+2.78个百分点，剔除匹配歧义组后约0。Hand-off／Face-off诊断分别改善手部重复轮廓／脸部软化，Source Detail有明确负面影响但并非全部原因。另有原人物残留、骨架泄漏、拥抱Prompt动作冲突及接触几何残差；不能把工程通过当成质量通过。
+
+完整结果：`/data/shangguanrz/pic-edit-workflow-v2/validation/quality_baseline_20261029_v2/`。先看`report/质量分析与验收.md`、`report/index.html`；数值与歧义分层在`analysis/paired_quality.json`，实际校验记录在`final_checks/`。
+
+共享主干在长运行中被其他工作继续修改，V2最终使用该批次归档的精确源码运行快照，保留主干现状。固定批次复验：
+
+```bash
+cd /data/shangguanrz/pic-edit-workflow-v2/validation/quality_baseline_20261029_v2/runtime_snapshot/workflow-v2
+bash scripts/quality-baseline/script/run.sh --campaign quality_baseline_20261029_v2 --verify
+```
+
+新实验仍从主干统一入口运行并使用全新名称；当前主干拒绝旧代码指纹属于预期行为，不要改SHA或覆盖旧图来绕过校验。V1仅保留历史材料，不混入V2生成统计。V2站立geometry/Prompt只读复用的依赖记录在`parent_campaign.json`；调度将缓存别名正规化到相同的物理缓存目录，并继续逐项检查SHA，未更改冻结推理代码。

@@ -11,6 +11,6 @@ Approved design: `../specs/2026-10-08-bfs-body-face-joint-pilot-design.md`.
 5. Save initial 36 outputs. Train J to 128; save 12 monitor outputs and inspect for new severe failures. Continue to 256 only after quality review; save 36 outputs plus four Body-only and four Face-only diagnostics.
 6. From the same J256 weights, separately run Qwen / BFS Body V1.0 / BFS Head V1.1 with fresh matching optimizers. Each arm: preflight, 12 hotload outputs, 128 updates, 12 monitor outputs and review, then 256 and 36 final outputs.
 7. Score unique-face identity to A and generated pose to original transformed Body25 B. Keep failed samples. Compare paired outcomes by video / actor group; do not infer independent identities from adjacent frames.
-8. Copy all raw images, crops, panels, records, locks, metrics and reports to `D:/codeplus/pictureedit/research/bfs_body_face_joint_pilot_20261008`. Inspect local links/images. Document actual completed budget, results and limitations.
+8. Copy all raw images, crops, panels, records, locks, metrics and reports to `D:/codeplus/pictureedit/experiments/bfs_body_face_joint_pilot_20261008`. Inspect local links/images. Document actual completed budget, results and limitations.
 
 Remote entry point: `scripts/run/run_qwen21_joint_pilot.py --phase PHASE`. Phases are explicit, sequential, and stop on errors. Mid-stage continuation requires a written image review of all 12 fixed monitor cases. No old run is overwritten.

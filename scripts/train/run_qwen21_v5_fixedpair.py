@@ -11,6 +11,16 @@ import traceback
 ROOT=Path(__file__).resolve().parents[2];sys.path.insert(0,str(ROOT))
 
 
+def resolve_hi4d_root(path):
+    """An action must name its Hi4D run; never inherit the historical V1 pilot."""
+    if path is None:
+        raise ValueError('An explicit --hi4d-root is required for Hi4D actions')
+    root=Path(path).resolve()
+    if Path('/data/shangguanrz').resolve() not in root.parents or not root.is_dir():
+        raise ValueError('Explicit Hi4D root must be an existing run beneath /data/shangguanrz')
+    return root
+
+
 def main():
     import torch
     from src.pose_control.qwen21_full.native_v5.training.config import TrainingConfig
@@ -27,19 +37,27 @@ def main():
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument('action',choices=('accept-only','accept-and-train'))
     p.add_argument('--kind',choices=('tiktok','hi4d','both'),default='both')
+    p.add_argument('--hi4d-root',type=Path,help='Explicit existing Hi4D run; required for both Hi4D actions')
     p.add_argument('--reuse-tiktok-baseline',type=Path,help='Explicit immutable baseline report from the same locked initialization/conditions')
     p.add_argument('--continue-tiktok-from',type=Path,help='Committed completed-stage checkpoint; preserve AdamW state and finish the remaining stages')
-    args=p.parse_args();torch.set_num_threads(4)
+    args=p.parse_args()
+    try:hi4d_root=resolve_hi4d_root(args.hi4d_root) if args.kind in ('hi4d','both') else None
+    except ValueError as error:p.error(str(error))
+    torch.set_num_threads(4)
     run_id=datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%S%fZ')
     initialization=h.ref(h.TROOT/'initialization/native_v5_init_v2.pt')
-    for kind,root in (('tiktok',h.TROOT),('hi4d',h.HROOT)):
+    for kind,root in (('tiktok',h.TROOT),('hi4d',hi4d_root)):
         if args.kind not in ('both',kind):continue
+        selected=json.loads((root/'data/selection.json').read_text())
+        if selected.get('training_ready') is False or selected.get('frozen_cache_status')=='not_encoded':
+            raise ValueError('Selected Hi4D preparation is not train-ready: budget/frozen cache are unbound')
+        authorization=selected.get('continuous_stage_authorization')
+        if authorization is None:raise ValueError('Selected run has no explicit continuous-stage authorization')
         log=root/'logs/orchestration.jsonl';log.parent.mkdir(parents=True,exist_ok=True)
         def event(**values):
             row={'time':datetime.now(timezone.utc).isoformat(),'run_id':run_id,'kind':kind,**values}
             with log.open('a',encoding='utf8') as f:f.write(json.dumps(row,ensure_ascii=False)+'\n');f.flush()
             print(json.dumps(row,ensure_ascii=False),flush=True)
-        selected=json.loads((root/'data/selection.json').read_text());authorization=selected['continuous_stage_authorization']
         previous=None;s0_gradient=None;body_gate=None
         event(status='starting',action=args.action,initialization=initialization,updates=300)
         try:
