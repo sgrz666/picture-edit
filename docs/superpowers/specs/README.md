@@ -2,13 +2,14 @@
 
 `docs/superpowers/specs/` 收纳 pic-edit 的**接口/设计规格（spec）**：约定模块边界、控制条件契约与设计约束，是 `plans/` 执行计划的上游契约。本目录是 `docs/superpowers/` 的方法论层之一，与 `plans/` 同名成对。
 
-## 里面有什么（3 篇）
+## 里面有什么
 
 | 文件 | 主题 | 日期 |
 |---|---|---|
 | `2026-09-12-champ-deepgen-single-sample-design.md` | CHAMP 控制条件与 DeepGen PoseAdapter **单样本联合设计**：normal/depth/openpose/semantic 四图契约与注入点 | 9-12 |
 | `2026-09-12-deepgen-no-control-ablation-design.md` | DeepGen **无动作约束消融实验设计**：去除姿态控制后基座能力的对照基线设定 | 9-12 |
 | `2026-10-08-bfs-body-face-joint-pilot-design.md` | TikTok Body+Face 联合训练与 BFS 小规模对照**方案设计**：两阶段（Adapter 控姿 + BFS 768 ROI 精修面部）的接口与对照设置 | 10-08 |
+| [`2026-11-03-hia-full-geometry-repair-design.md`](2026-11-03-hia-full-geometry-repair-design.md) | HIA 全量几何修复方案：合并几何输入清单、局部修复与质量选择、unknown/裁切分流、分层验收、断点续跑及疑难帧补修 | 11-03 |
 
 
 ## 与上下层的关系

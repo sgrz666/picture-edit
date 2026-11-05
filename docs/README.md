@@ -31,4 +31,5 @@
 - [`superpowers/`](superpowers/README.md)：工程规划与设计规格层：
   - `plans/2026-10-26-hia-face-hand-dataset.md`：HIA 双人手脸高质量子集构建计划。
   - `plans/2026-10-26-hia-scaled-v2.md`：HIA 规模化数据集扩展方案。
+  - [`specs/2026-11-03-hia-full-geometry-repair-design.md`](superpowers/specs/2026-11-03-hia-full-geometry-repair-design.md)：HIA 全量几何修复的执行顺序、质量分流与验收方案。
 - [`experiments/`](experiments/README.md)：实验专项说明与交接 runbook（BFS Body+Face 联合实验总结与历史操作记录）。
