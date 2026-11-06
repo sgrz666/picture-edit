@@ -171,7 +171,8 @@ def gradient_preflight(backend,config,data):
                 if baseline_prefix!=controlled_prefix:raise RuntimeError('Native control changed a text/reference prefix')
                 supervision=batch['training_supervision_v5'].to(backend.device)
                 loss,_=compute_micro_loss(backend.pipe,output,target,coverage,supervision,actual_noisy,sigma,
-                    (batch['tgt_image'].to(backend.device).float()+1)*.5,route.loss,counts,route.loss.auxiliary_every,evaluators)
+                    (batch['tgt_image'].to(backend.device).float()+1)*.5,route.loss,counts,route.loss.auxiliary_every,evaluators,
+                    spatial=batch.get('spatial_weights_v5'))
                 if not torch.isfinite(loss):raise FloatingPointError('Nonfinite preflight objective')
                 loss.backward();return audit_gradients(backend)
             first=backward_once()

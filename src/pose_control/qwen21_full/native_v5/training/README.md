@@ -2,7 +2,7 @@
 
 本训练层以sg部署`68daace`为基线，保留`native_full_v5`模型版本及全部参数名称／形状。Runtime、Integration、Local和编码器不改；只扩展既有Loss的显式权重和统计接口。旧Full工程机制被重新组织为V5管理代码，不导入DeepGen训练循环。
 
-**本轮只实现代码和静态核对。没有执行测试或收集、数据预检、缓存构建、权重加载、模型前反向、optimizer或训练，没有安装依赖。** 下文命令均供后续单独启动，不表示已经通过运行验收。
+2026-11-06 新增离线 Body／Joint／Hand 空间权重 FM，已执行 CPU 合成测试。真实数据预检、Qwen 缓存构建、权重加载、模型前反向、optimizer 和训练仍需单独运行；下文命令不表示真实训练已经通过验收。
 
 ## 安全入口与使用顺序
 
@@ -77,6 +77,62 @@ Sources只接受已验证V5 manifest，训练／验证分别声明。每份group
 
 旧Loss API的默认系数和核心数值公式保留。新Route Loss默认velocity-only；局部模板0.5／0.5，辅助模板0.10／0.05是可配置起点。评估器只按实际请求的ID／Perceptual加载，预测分支保留梯度、目标无梯度。Target RGB只作配对监督，反事实／跨身份原图继续拒绝。
 
+### 离线空间权重 FM
+
+每个 Source 可增加 `spatial_weights`，引用绝对路径和 SHA256 固定的 `native_spatial_index_v1` 索引。索引按 `gt_rgb_sha256 + ":" + target_canvas_id` 查找，不按 Source 身份或文件名猜测。每个条目包含 `file: {path, sha256}` 和 `metadata`；NPZ 中的 `body`、`joint`、`hand`、`valid` 已经位于 Target Canvas，形状为 `[H,W]`，类型为 `float16` 或 `uint8`，值在 `[0,1]`。metadata 是标量 JSON 字符串，schema 为 `native_spatial_components_v1`，记录 GT SHA、Target Canvas 指纹、完整 `CanvasSpec.metadata()`、`frame_id` 和 `geometry_method`。
+
+`valid` 必须覆盖真实图像内容及其背景，padding 为零。数据预检会校验索引与 NPZ 的 SHA、GT／Canvas 绑定、尺寸、数值范围，以及 `valid == CanvasSpec.valid_mask()`；读取训练样本时再次校验 NPZ。缺索引、缺目标条目或缓存过期直接报错，不会删行或重分配采样权重。索引及全部条目的文件引用和 metadata 进入 DataPlan／checkpoint 输入身份。
+
+在已有配置对应位置增加以下字段，原来的 manifest、groups 等字段继续保留：
+
+```json
+{
+  "sources": [{
+    "source_id": "bilibili_train",
+    "spatial_weights": {
+      "path": "/data/shangguanrz/.../spatial/index.json",
+      "sha256": "填写实际索引的64位SHA256"
+    }
+  }],
+  "stage": {
+    "routes": [{
+      "name": "body",
+      "branch": "body",
+      "loss": {
+        "velocity": 1.0,
+        "spatial_body": 0.5,
+        "spatial_joint": 0.5,
+        "spatial_hand": 1.0,
+        "spatial_max": 2.5
+      }
+    }]
+  }
+}
+```
+
+三个空间系数默认都是 `0`，`spatial_max` 默认 `2.5`，必须有限且至少为 `1`。系数全零时保留原有 loss 路径，不要求空间缓存。非零时，所选训练 Source 及验证／observation Source 都要绑定缓存，`prepare` 会列出未绑定的空间索引；可以只改系数复用同一份离线组件。非零空间系数与旧 `face`／`hand` 局部 velocity 项不能同时启用，避免重复加权；ID／Perceptual 的既有门控可继续使用。
+
+像素权重为 `valid * clamp(1 + spatial_body*body + spatial_joint*joint + spatial_hand*hand, 1, spatial_max)`。先在像素层叠加和截断，再 area pooling 到实际 `pair['target_token_hw']`，按行展平为 `[B,N]`。背景基准是 `1`；padding 为 `0`；局部重叠最多加到 `spatial_max`。pool 后的 `valid` 必须与模型实际 coverage 相同，损失不再乘第二次 coverage。每个样本使用 `sum(w * squared_error) / (C * sum(w))`，然后对批次取均值；生产缓存仍要求 Qwen64 channels。日志会记录 `spatial_weight_sum`／`spatial_weight_max` 及相应 velocity 分子、分母。训练、loss probe 和梯度预检使用同一条路径。
+
+CPU 合成回归可直接运行：
+
+```bash
+python -m pytest tests/test_native_spatial_weights.py -q
+```
+
+离线组件由 `scripts/data/build_native_spatial_weights.py` 单独生成，例如：
+
+```bash
+python scripts/data/build_native_spatial_weights.py \
+  --frames /data/shangguanrz/datasets/bilibili/frames/frames.jsonl \
+  --output-root /data/shangguanrz/pic-edit-experiments/<新实验名>/spatial \
+  --limit 0 --canvas-long-side 512 --device cuda
+```
+
+命令的 Canvas 参数必须与训练数据相同，输出使用新目录；随后将生成的 `index.json` 绝对路径和实际 SHA 填入对应 Source。该命令运行分割和已有几何标签处理，不是训练入口。
+
+测试覆盖像素截断后 pooling、背景和部分 padding、实际网格、逐样本归一化、局部梯度比、零系数兼容、索引／GT／Canvas／SHA 失配，以及 backend 批次传递。真实训练使用上文的 `preflight --level data` → `preflight --level grad` → `train` 顺序，重新生成与当前配置和代码匹配的门禁报告。
+
 ## 冻结latent缓存与验收门禁
 
 训练只读取已有冻结Qwen缓存。`model_manifest`是本地pipeline配置／索引／权重文件的绝对路径＋SHA列表，必须覆盖本地safetensors／bin权重；`cache_identity`为冻结cache index引用，绑定模型manifest SHA、prompt SHA和每个pair文件SHA／Source与Target Canvas指纹。
@@ -109,6 +165,6 @@ checkpoint使用独占新文件＋SHA＋`.commit.json`提交记录，不覆盖�
 
 使用说明／模板不包含可直接启动的默认训练预算或真实资产绑定。先补齐来源、数据划分、缓存和报告，再分别启动CPU合成测试、真实数据预检及有界梯度验收，最后才决定训练。
 
-`tests/test_qwen21_native_v5_training.py`已编写但未执行／收集，默认测试使用2维合成模块；真实模型用例需另行提供`NATIVE_V5_TRAINING_ACCEPTANCE_CONFIG`。静态结果在实验族`training_prepare_v5_20261025_v1/report/`，不沿用上一轮V5模型测试数字。
+`tests/test_qwen21_native_v5_training.py` 默认使用2维合成模块；真实模型用例需另行提供 `NATIVE_V5_TRAINING_ACCEPTANCE_CONFIG`。`tests/test_native_spatial_weights.py` 的 CPU 合成回归已执行，不能代替真实数据和模型验收。历史静态结果在实验族 `training_prepare_v5_20261025_v1/report/`。
 
-**训练接口与训前准备代码接通、静态核对完成；真实数据预检、梯度验收、恢复运行验证和训练均未执行。**
+**空间权重已接入训练、probe 和梯度预检并通过 CPU 合成回归；真实数据预检、梯度验收、恢复运行验证和训练均需另行执行。**

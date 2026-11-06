@@ -11,6 +11,7 @@ from ...native_local_condition import RIGID_FACE_SLOTS
 from ...native_local_control import resolve_local_ownership
 from .io import verify,read_json_ref
 from .config import digest
+from ..spatial_weights import read_spatial_index,read_spatial_components
 
 def route_options(route,kind):
     raw={}
@@ -94,7 +95,7 @@ def validate_evaluation_split(config,groups,targets):
 
 class DataPlan:
     def __init__(self,config):
-        self.config=config;self.datasets={};self.group_indices={};self.bindings={};self.status={};self.records=[];self.conditions={}
+        self.config=config;self.datasets={};self.group_indices={};self.bindings={};self.status={};self.records=[];self.conditions={};self.spatial={}
         split_groups={'train':set(),'validation':set(),'observation':set()};targets={k:set() for k in split_groups};identities={}
         for spec in config.sources:
             manifest=verify(spec.manifest);groups,bound=read_json_ref(spec.groups)
@@ -107,8 +108,21 @@ class DataPlan:
             for row in dataset.rows:
                 closure.append({k:row.get(k) for k in ('pair_id','v4_manifest','detail','supervision','references','qwen_condition')})
             identities[spec.source_id]={'manifest':manifest,'groups':bound,'closure':closure,'role':spec.role}
+            needs_spatial=any(any(route.loss.spatial_coefficients) and
+                (spec.role!='train' or not route.source_ids or spec.source_id in route.source_ids) for route in config.stage.routes)
+            if needs_spatial and spec.spatial_weights is None:raise ValueError('Spatial weighting requires an index for source: '+spec.source_id)
+            spatial_index=None
+            if spec.spatial_weights is not None:
+                spatial_index,spatial_ref=read_spatial_index(spec.spatial_weights)
+                identities[spec.source_id]['spatial_weights']={'index':spatial_ref,'entries':spatial_index['entries']}
             for index in range(len(dataset)):
                 sample=dataset[index]
+                if spatial_index is not None:
+                    meta=sample['local_condition_v4'].metadata[0];key=meta['driver_rgb_sha256']+':'+meta['target_canvas_id']
+                    entry=spatial_index['entries'].get(key)
+                    if entry is None:raise ValueError('Spatial index misses GT/Canvas for source/pair: '+spec.source_id+'/'+dataset.rows[index]['pair_id'])
+                    self.spatial[(spec.source_id,index)]=entry
+                    self._attach_spatial(spec.source_id,index,sample)
                 targets[spec.role].add(sample['local_condition_v4'].metadata[0]['driver_rgb_sha256'])
                 if config.qwen_condition_profile!='legacy_single':
                     from ..conditioning import read_condition
@@ -139,7 +153,19 @@ class DataPlan:
             for term,field in (('face','face_area'),('hand','hand_area'),('identity','auxiliary_faces'),('perceptual','auxiliary_faces')):
                 if getattr(route.loss,term)>0 and not any(row[field]>0 for row in selected):raise ValueError('Requested loss has no eligible data: '+route.name+'/'+term)
             if config.experiment_mode=='standard' and not any(row['role']=='validation' and row['route']==route.name and row['eligible'] for row in self.records):raise ValueError('Route has no eligible held-out validation samples: '+route.name)
-    def sample(self,source,index):return self.datasets[source][index]
+    def _attach_spatial(self,source,index,sample):
+        entry=self.spatial[(source,index)];meta=sample['local_condition_v4'].metadata[0]
+        maps=read_spatial_components(entry['file'],gt_rgb_sha256=meta['driver_rgb_sha256'],
+            target_canvas_id=meta['target_canvas_id'],canvas=sample['target_canvas'])
+        if maps['metadata']!=entry['metadata']:raise ValueError('Spatial index/NPZ metadata differs')
+        if maps['valid'].shape!=sample['valid_image_mask'].shape or not torch.equal(maps['valid'],sample['valid_image_mask'].float()):
+            raise ValueError('Spatial valid differs from actual image coverage')
+        sample['spatial_weights_v5']={'components':{k:maps[k] for k in ('body','joint','hand')},
+            'valid':maps['valid'],'target_token_hw':tuple(sample['target_token_hw'])}
+        return sample
+    def sample(self,source,index):
+        sample=self.datasets[source][index]
+        return self._attach_spatial(source,index,sample) if (source,index) in self.spatial else sample
     def report(self):return {'schema':'native_v5_data_preflight_v1','level':'data','passed':True,'signature':self.signature,'identity':self.identity,
         'experiment_mode':self.config.experiment_mode,'evaluation_kind':'same_scene_observation' if self.config.experiment_mode=='fixed_pair_overfit' else 'held_out_validation',
         'rows':self.records,'all_rows_retained':True,'model_constructed':False,'gradient_passed':False}

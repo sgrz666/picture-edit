@@ -32,10 +32,20 @@ class LossSpec:
     perceptual: float=0.
     auxiliary_every: int=4
     auxiliary_sigma_max: float=.35
+    spatial_body: float=0.
+    spatial_joint: float=0.
+    spatial_hand: float=0.
+    spatial_max: float=2.5
 
     def __post_init__(self):
-        for k in ('velocity','face','hand','identity','perceptual'):positive(getattr(self,k),k,zero=True)
+        for k in ('velocity','face','hand','identity','perceptual','spatial_body','spatial_joint','spatial_hand'):positive(getattr(self,k),k,zero=True)
+        positive(self.spatial_max,'spatial_max')
+        if self.spatial_max<1:raise ValueError('spatial_max must be at least one')
+        if any(self.spatial_coefficients) and (self.face or self.hand):raise ValueError('Spatial weighting cannot duplicate legacy Face/Hand velocity loss')
         if self.velocity<=0 or type(self.auxiliary_every)!=int or self.auxiliary_every<1 or not 0<self.auxiliary_sigma_max<=1:raise ValueError('Invalid loss/gate')
+
+    @property
+    def spatial_coefficients(self):return (self.spatial_body,self.spatial_joint,self.spatial_hand)
 
 @dataclass(frozen=True)
 class RouteSpec:
@@ -75,6 +85,7 @@ class SourceSpec:
     data_profile: str='auto'
     scene_kind: str='any'
     weight: float | None=None
+    spatial_weights: dict | None=None     # Hash-pinned offline GT/Canvas component index
 
     def __post_init__(self):
         if not self.source_id or '\0' in self.source_id or self.role not in ('train','validation','observation') or self.data_profile not in ('auto','full_smplx','hybrid_hi4d') or self.scene_kind not in ('any','single','dual'):
@@ -82,6 +93,8 @@ class SourceSpec:
         if self.source_id=='champ_motions_example':raise ValueError('Unpaired CHAMP motion examples are not supervised training data')
         if self.weight is not None:positive(self.weight,'source weight')
         reference_syntax(self.manifest);reference_syntax(self.groups)
+        reference_syntax(self.spatial_weights)
+        if self.spatial_weights is not None and not self.spatial_weights.get('sha256'):raise ValueError('Spatial index requires a pinned SHA256')
 
 @dataclass(frozen=True)
 class OptimizerSpec:
@@ -196,6 +209,9 @@ class TrainingConfig:
         for s in self.sources:
             if not s.manifest:missing.append(s.source_id+'.manifest')
             if not s.groups:missing.append(s.source_id+'.groups')
+            if not s.spatial_weights and any(any(r.loss.spatial_coefficients) and
+                (s.role!='train' or not r.source_ids or s.source_id in r.source_ids) for r in self.stage.routes):
+                missing.append(s.source_id+'.spatial_weights')
         return missing
     def require_ready(self):
         if self.missing():raise ValueError('Preparation is not train-ready: '+', '.join(self.missing()))

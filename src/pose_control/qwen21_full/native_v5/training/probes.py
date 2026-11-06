@@ -28,7 +28,8 @@ def loss_probe(backend,config,data,update):
                     evaluators=backend.ensure_evaluators(required)
                     output,target,coverage,noisy=backend.forward(batch,pair,route,sigma,noise,options,base)
                     loss,parts=compute_micro_loss(backend.pipe,output,target,coverage,batch['training_supervision_v5'].to(backend.device),
-                        noisy,sigma,(batch['tgt_image'].to(backend.device).float()+1)*.5,route.loss,counts,update,evaluators)
+                        noisy,sigma,(batch['tgt_image'].to(backend.device).float()+1)*.5,route.loss,counts,update,evaluators,
+                        spatial=batch.get('spatial_weights_v5'))
                     records.append({'route':route.name,'source_id':source,'index':index,'sigma':float(sigma[0]),'objective':float(loss),
                         'parts':{k:float(v) if torch.is_tensor(v) else v for k,v in parts.items()}})
         finally:backend.runtime.train(was_training)
