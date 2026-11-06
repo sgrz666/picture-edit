@@ -10,10 +10,10 @@
 
 ## 任务与验收
 
-- [ ] 数据生成：新增 src/pose_control/qwen21_full/native_v5/spatial_masks.py、scripts/data/build_native_spatial_weights.py、tests/test_native_spatial_masks.py。先测试遮挡/裁切无增强、左右手独立、坐标及面积下采样，再实现。CLI 不下载模型，不重估 SMPL-X，不覆盖已存在文件；每个 GT 与 Canvas 只生成一次。
-- [ ] 训练接入：新增 spatial_weights.py，修改 training/config.py、data.py、backend.py、objective.py、trainer.py、probes.py、validation.py。SourceSpec 显式绑定空间缓存 index，LossSpec 提供空间系数和上限；拒绝同时叠加旧 face/hand 区域项。零系数走旧路径。测试 Padding 一次、空区域、错位/SHA 失败、逐图归一化、配置序列化和微批梯度。
-- [ ] 小样本实测：只读核对远端 git 与模型，快照带 UTC 时间。检查 SAM2.1 实际推理，20 张覆盖不同视频及手部状态，保存每张 Body/Joint/Hand、GT 叠加图、权重热图、latent 图和统计。视觉核验通过后才构建全量。
-- [ ] 全量与交付：缓存 1,960 张有效 GT（若源清单改变则按当前清单重新登记）；每条原记录保留，失败显式报告。全量审计 SHA、数组有限性/范围、Canvas、Padding、目标网格及 lambda=0 基线。更新中文 README，给出真实命令与路径。
+- [x] 数据生成：新增 src/pose_control/qwen21_full/native_v5/spatial_masks.py、scripts/data/build_native_spatial_weights.py、tests/test_native_spatial_masks.py。先测试遮挡/裁切无增强、左右手独立、坐标及面积下采样，再实现。CLI 不下载模型，不重估 SMPL-X，不覆盖已存在文件；每个 GT 与 Canvas 只生成一次。
+- [x] 训练接入：新增 spatial_weights.py，修改 training/config.py、data.py、backend.py、objective.py、trainer.py、probes.py、validation.py。SourceSpec 显式绑定空间缓存 index，LossSpec 提供空间系数和上限；拒绝同时叠加旧 face/hand 区域项。零系数走旧路径。测试 Padding 一次、空区域、错位/SHA 失败、逐图归一化、配置序列化和微批梯度。
+- [x] 小样本实测：只读核对远端 git 与模型，快照带 UTC 时间。检查 SAM2.1 实际推理，20 张覆盖不同视频及手部状态，保存每张 Body/Joint/Hand、GT 叠加图、权重热图、latent 图和统计。视觉核验通过后才构建全量。
+- [x] 全量与交付：缓存 1,960 张有效 GT（若源清单改变则按当前清单重新登记）；每条原记录保留，失败显式报告。全量审计 SHA、数组有限性/范围、Canvas、Padding、目标网格及 lambda=0 基线。更新中文 README，给出真实命令与路径。
 
 ## 数值契约
 
