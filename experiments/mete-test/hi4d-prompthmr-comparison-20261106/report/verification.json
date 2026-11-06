@@ -1,0 +1,74 @@
+{
+  "geometry_checks": [
+    {
+      "arm": "box-only",
+      "id": "809de42848f7edd5",
+      "sha256": "977f5a3f27da21bc022c400dc06ce6a83473314da1bf5b02fd040e40c2ff5a93",
+      "verified": true
+    },
+    {
+      "arm": "box-only",
+      "id": "be3143ff3423db7c",
+      "sha256": "c50c3f795abb89e8f7a8b6b51bb66dc114e2cc87ee1e091eb31db59babc6fa20",
+      "verified": true
+    },
+    {
+      "arm": "box-only",
+      "id": "3da3afa1d3751ba5",
+      "sha256": "f8525ea3b04f50ef55a7f26d37cf8532b732cbb7f124149be2145ec565ee1d31",
+      "verified": true
+    },
+    {
+      "arm": "box-only",
+      "id": "09fb91c00c68d3cc",
+      "sha256": "7501aac5d152baeb7ef9d371de1f6383b2ca32639ae215feb8da4218ce86a547",
+      "verified": true
+    },
+    {
+      "arm": "interaction",
+      "id": "809de42848f7edd5",
+      "sha256": "05460f4caa0d5a32e1cb038c7d01ee6719265751db16655f366da04acdf763a4",
+      "verified": true
+    },
+    {
+      "arm": "interaction",
+      "id": "be3143ff3423db7c",
+      "sha256": "6d7f8c03e0495078dc4a8a1f90eae5b708172487ce5c3384c28aa94bd44c22d7",
+      "verified": true
+    },
+    {
+      "arm": "interaction",
+      "id": "3da3afa1d3751ba5",
+      "sha256": "95acf767da94eb35fc6b67d8d9a4dbc926f8cd8117396e6e1ce4bf540a6be061",
+      "verified": true
+    },
+    {
+      "arm": "interaction",
+      "id": "09fb91c00c68d3cc",
+      "sha256": "5f0a99fb390a26c94d7fffd9ec91fd1042419bd0038ff418bdc0fbc03291502f",
+      "verified": true
+    }
+  ],
+  "interaction_changes": [
+    {
+      "id": "09fb91c00c68d3cc",
+      "mean_vertex_displacement_mm": 25.92676544189453,
+      "p95_vertex_displacement_mm": 30.809520721435547
+    },
+    {
+      "id": "3da3afa1d3751ba5",
+      "mean_vertex_displacement_mm": 10.10940170288086,
+      "p95_vertex_displacement_mm": 21.09369468688965
+    },
+    {
+      "id": "809de42848f7edd5",
+      "mean_vertex_displacement_mm": 8.002327919006348,
+      "p95_vertex_displacement_mm": 15.889396667480469
+    },
+    {
+      "id": "be3143ff3423db7c",
+      "mean_vertex_displacement_mm": 5.233890056610107,
+      "p95_vertex_displacement_mm": 10.355965614318848
+    }
+  ]
+}

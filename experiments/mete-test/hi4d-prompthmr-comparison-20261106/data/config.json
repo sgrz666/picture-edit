@@ -1,0 +1,21 @@
+{
+  "schema": "prompthmr_hi4d_comparison_v1",
+  "sample_ids": ["809de42848f7edd5", "be3143ff3423db7c", "3da3afa1d3751ba5", "09fb91c00c68d3cc"],
+  "fit_records": "/home/shangguanrz/project/pic-edit/experiments/9.hi4d/mete-test/dual_mesh_refine_20261103_v1/data/fit_records.json",
+  "selection": "/home/shangguanrz/project/pic-edit/experiments/9.hi4d/mete-test/dual_mesh_refine_20261103_v1/data/selected.json",
+  "multihmr_predictions": "/data/shangguanrz/models/two-man/benchmark_results/M2_MultiHMR_672/predictions.pkl",
+  "box_source": "MultiHMR automatically selected candidates; no GT boxes",
+  "source_root": "/data/shangguanrz/models/two-man/M1_PromptHMR/PromptHMR",
+  "weights_dir": "/data/shangguanrz/models/two-man/M1_PromptHMR/PromptHMR/data/phmr",
+  "smpl_model_dir": "/data/shangguanrz/pic-edit-runtime/prompthmr-hi4d-20261106/assets/smpl",
+  "output_root": "/data/shangguanrz/pic-edit-experiments/mete-test/hi4d-prompthmr-comparison-20261106",
+  "arms": {"box-only": false, "interaction": true},
+  "image_size": 896,
+  "text": null,
+  "masks": null,
+  "use_mean_hands": true,
+  "seed": 20261106,
+  "attention_backend": "xformers-cutlass",
+  "construction_pretrained_download": false,
+  "checkpoint_strict": true
+}

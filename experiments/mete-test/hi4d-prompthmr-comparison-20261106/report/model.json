@@ -1,0 +1,28 @@
+{
+  "checkpoint_sha256": "a3ef04ef8a12c3068682b03c62c95f8959cd8554424e105c63bf97f6c8e97e99",
+  "model_config_sha256": "31142aaac12a7ef60adba77c85addffad1ea466a6555717b24c3fbed079a2447",
+  "model_config_text": "LOGDIR: 'lightning_logs'\nSEED_VALUE: 0\nDEVICES: [0,1,2,3,4,5,6,7]\n\nMODEL:\n  BACKBONE: 'dinov2_vitl14'\n  IMG_SIZE: 896\n  PATCH_SIZE: 14\n  EMBED_DIM: 1024\n  MLP_DIM: 1024\n  DECODER_DEPTH: 4\n  REGRESSOR_DEPTH: 2\n  TRANSFORMER: 'cross-person'\n  PROMPT_TYPE: 'prompt'\n  TRANSL: 'root'\n  MASK_PROMPT: True\n  INVERSE_DEPTH: True\n\nEXP_NAME: 'fhmr_170'\n\n\n",
+  "numeric_smpl_sha256": "c1eb8b77f799ecb0640edac6e0f6f9017cb66628cd5091a6707a2ec3bf68ffd7",
+  "checkpoint_keys": 765,
+  "strict_load": true,
+  "missing_keys": [],
+  "unexpected_keys": [],
+  "construction_only_clip_pretrained_disabled": true,
+  "source_git_head": "3b566b7dbb28ce506c7ea972c18693f4c705ce8c",
+  "source_sha256": {
+    "prompt_hmr/__init__.py": "8166a573518599dd8d3bc6e664668a8985e6346783d1e2eff94c0b77154c8b4e",
+    "prompt_hmr/models/__init__.py": "3624220fef1b752683a8a67482edde55f55e0867886ade5d9fafd529ac478bb1",
+    "prompt_hmr/models/phmr.py": "4ab790da1fbd5c1d526f309b59b285b974cad57e10777ce72af220caff5f6f06",
+    "prompt_hmr/models/inference.py": "4290bf7459ae697763292337b93679f9b7255d8db7defe9fe6c677c2284c626a",
+    "prompt_hmr/models/components/clip_encoder.py": "d34563bc571c5d238f9e397e3d47b2baa167f79137aaaa9863767bc8218ee078",
+    "prompt_hmr/models/components/twoway_transformer.py": "eb0a064722ba7e938508fb6541d5da46650001f09877e61fb26d1a1c9edbce48"
+  },
+  "torch": "2.7.1+cu128",
+  "cuda": "12.8",
+  "attention_backend": "xformers-cutlass",
+  "config_sha256": "000d7d675691927fd69a3678db77f01ee93427c18194ce7e16828b08ab4d3da1",
+  "runner_sha256": "2d7676e0cc85fdda292214614ae1308a7180e7c156da37265b1a52f310186c17",
+  "contracts_sha256": "3168a86802eb84231a8f24db788a4c2372ec31b12a517bbb98dd0cad25d3fee5",
+  "runtime_python": "/data/shangguanrz/pic-edit-runtime/prompthmr-hi4d-20261106/env/bin/python",
+  "peak_allocated_bytes_before": 2299984384
+}
