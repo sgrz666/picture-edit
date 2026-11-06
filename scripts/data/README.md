@@ -1,5 +1,7 @@
 # scripts/data/ —— 数据构建、过滤、划分与预计算
 
+手部修复使用 `--hand-policy visible_region_v2`（CLI 默认）：可信 DWPose 提供较弱粗区域，可信 MediaPipe 提供精细区域，明确遮挡／出画仍排除。`--body-cache-index` 可复用已校验的原 Body PNG，CPU 重建 Hand 和权重而不加载 SAM。旧门控通过 `--hand-policy legacy_strict` 显式选择。两版不会覆盖旧缓存，原始 loss_mask 不变。
+
 2026-11-06 新增 `build_native_spatial_weights.py`：复用本机现有 SAM2.1，从 GT RGB 和已有关键点生成 Body／Joint／Hand 离线监督分量，按 Canvas 指纹缓存，不下载模型、不训练、不改原数据。真实环境、20 张预览、全量结果和命令见 [`experiments/native-spatial-supervision/README.md`](../../experiments/native-spatial-supervision/README.md)。SAM 使用已有 deepgen 环境，不能假定 qwen21 环境有 hydra；后者不安装新包。
 
 本目录是人物图像姿态编辑系统的数据准备中枢，负责把原始视频/图像数据集（iPER、TikTok_v3、3DPW、Hi4D）转换成训练与评测所需的配对、条件图与控制特征缓存。它位于 `src/` 上游模块与 `scripts/train/`、`scripts/eval/` 下游之间：读 `datasets/`、`data/` 中的原始资产，产出 `datasets/<name>/manifests/` 下的 JSONL/JSON 清单与 `TikTok_3d_assets_native/`、`experiments/<run>/condition_cache/` 等特征缓存，供训练加载器与评测脚本消费。本目录还有若干指向 `scripts/` 根下同名脚本的**相对软链接**（如 `build_tiktok_v6_conditions.py`），从分类入口执行时 `Path(__file__).resolve()` 会落回原文件，不改变源码身份。

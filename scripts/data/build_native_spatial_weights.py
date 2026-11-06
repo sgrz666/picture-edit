@@ -20,7 +20,7 @@ sys.path.insert(0, str(ROOT))
 import numpy as np
 from PIL import Image, ImageDraw
 import torch
-from src.pose_control.qwen21_full.native_v5.spatial_masks import canvas_for, build_prompts, regional_maps
+from src.pose_control.qwen21_full.native_v5.spatial_masks import canvas_for, build_prompts, regional_maps, HAND_POLICIES
 
 
 def sha(path):
@@ -136,6 +136,49 @@ class SamForeground:
                           foreground_fraction=float(mask.mean()), candidate=chosen)
 
 
+class CachedForeground:
+    """Reuse an immutable, GT/Canvas-bound original-resolution SAM mask."""
+    def __init__(self,args):
+        from src.pose_control.qwen21_full.native_v5.spatial_weights import read_spatial_index
+        self.index,self.bound=read_spatial_index(dict(path=str(args.body_cache_index.resolve()),sha256=sha(args.body_cache_index)))
+        self.long_side=args.canvas_long_side
+
+    def __call__(self,image,frame):
+        from src.pose_control.qwen21_full.native_v5.spatial_weights import read_spatial_components
+        from src.pose_control.qwen21_full.native_v5.training.io import verify
+        spec=canvas_for(frame['original_hw'],self.long_side)
+        key=frame['rgb_sha256']+':'+spec.fingerprint()
+        entry=self.index['entries'].get(key)
+        if entry is None:
+            raise ValueError('Body cache misses exact GT/Canvas: '+frame['frame_id'])
+        maps=read_spatial_components(entry['file'],gt_rgb_sha256=frame['rgb_sha256'],target_canvas_id=spec.fingerprint(),canvas=spec)
+        if maps['metadata']!=entry['metadata'] or entry['metadata'].get('source_frame_sha256')!=digest(frame):
+            raise ValueError('Body cache source annotation/metadata differs')
+        parent=Path(entry['file']['path']).parent
+        record=None
+        for folder in (parent,parent.parent):
+            for marker in sorted(folder.glob('ready*.json')):
+                try:
+                    candidate=json.loads(marker.read_text())
+                except (json.JSONDecodeError,UnicodeError):
+                    continue
+                if candidate.get('artifacts',{}).get('components')==entry['file'] and candidate.get('metadata')==entry['metadata']:
+                    record=candidate;break
+            if record is not None:break
+        if record is None:
+            raise ValueError('Body cache original-mask provenance missing')
+        bound=verify(record['artifacts']['body_mask'])
+        with Image.open(bound['path']) as mask:
+            body=(np.array(mask.convert('L'))>127).astype(np.uint8)
+        if body.shape!=spec.original_hw or image.size!=spec.original_hw[::-1]:
+            raise ValueError('Body cache original dimensions differ')
+        rebuilt,_=regional_maps(frame,body,spec,hand_policy='legacy_strict')
+        if not np.array_equal(rebuilt['body'].astype(np.float16),maps['body'][0].numpy().astype(np.float16)):
+            raise ValueError('Body PNG differs from pinned donor components')
+        return body,dict(body_mask_reused=True,donor_index=self.bound,reused_body_mask=bound,
+                         donor_components=entry['file'],original_segmentation=entry['metadata'].get('segmentation',{}))
+
+
 def weight_pixels(maps, coefficients=(.5,.5,1.), max_weight=2.5):
     value = 1 + sum(c*maps[k] for c,k in zip(coefficients, ('body','joint','hand')))
     return maps['valid'] * np.clip(value, 1., max_weight)
@@ -177,7 +220,7 @@ def process_frame(frame, args, predictor, config):
     meta = dict(schema='native_spatial_components_v1', frame_id=fid, gt_rgb_sha256=rgb_sha,
                 target_canvas_id=spec.fingerprint(), canvas=spec.metadata(), geometry_method=args.geometry_method,
                 source_frame_sha256=digest(frame), producer_config_sha256=digest(config),
-                role='training_only_gt_supervision', hand_policy='existing_loss_mask_and_hand_raw_pose_usable',
+                role='training_only_gt_supervision', hand_policy=getattr(args,'hand_policy','legacy_strict'),
                 geometry_role='version_binding_only; foreground from GT RGB; joint/hand from existing 2D annotations')
     frame_directory = args.output_root/'frames'/fid
     ready = frame_directory/'ready.json'
@@ -204,7 +247,8 @@ def process_frame(frame, args, predictor, config):
     if (image.height,image.width) != spec.original_hw:
         raise ValueError('GT dimensions differ from frame metadata')
     body, sam = predictor(image,frame)
-    maps, status = regional_maps(frame,body,spec)
+    maps, status = regional_maps(frame,body,spec,hand_policy=getattr(args,'hand_policy','legacy_strict'))
+    sam={**sam,'body_mask_pixel_sha256':hashlib.sha256(body.tobytes()).hexdigest()}
     meta.update(region_status=status, segmentation=sam)
     strip, weight, latent = previews(image,spec,maps)
     paths = dict(components=directory/'components.npz',body_mask=directory/'body_mask.png',
@@ -249,7 +293,10 @@ def run(args):
         raise ValueError('Duplicate frame IDs')
     selected=select_frames(rows,args.limit,args.seed)
     config=dict(schema='native_spatial_generation_v1',frames=dict(path=str(args.frames),sha256=sha(args.frames)),
-                selected_frame_ids=[r['frame_id'] for r in selected],sam_checkpoint=dict(path=str(args.sam_checkpoint),sha256=sha(args.sam_checkpoint)),
+                selected_frame_ids=[r['frame_id'] for r in selected],
+                sam_checkpoint=None if args.body_cache_index else dict(path=str(args.sam_checkpoint),sha256=sha(args.sam_checkpoint)),
+                body_cache_index=dict(path=str(args.body_cache_index.resolve()),sha256=sha(args.body_cache_index)) if args.body_cache_index else None,
+                hand_policy=args.hand_policy,
                 sam_config=args.sam_config,device=args.device,torch_threads=args.torch_threads,canvas_long_side=args.canvas_long_side,
                 geometry_method=args.geometry_method,seed=args.seed,
                 preview_coefficients=[.5,.5,1.],preview_max_weight=2.5,
@@ -260,7 +307,8 @@ def run(args):
         publish_recoverable(args.output_root/'config.json',config)
     else:
         args.output_root.mkdir(parents=True,exist_ok=False);publish_recoverable(args.output_root/'config.json',config)
-    predictor=SamForeground(args); records=[];started=time.time()
+    predictor=CachedForeground(args) if args.body_cache_index else SamForeground(args)
+    records=[];started=time.time()
     with (args.output_root/('progress_'+datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%S%fZ')+'.jsonl')).open('x') as progress:
         for i,frame in enumerate(selected):
             try:
@@ -284,7 +332,7 @@ def run(args):
                  padding_weight_max=max(r['statistics']['padding_weight_max'] for r in records),
                  zero_coefficients_baseline_max_error=max(r['statistics']['zero_coefficients_baseline_error'] for r in records),
                  index=dict(path=str(index_path),sha256=sha(index_path)),
-                 training_started=False,models_downloaded=False)
+                 training_started=False,models_downloaded=False,sam_inference_executed=args.body_cache_index is None)
     publish_recoverable(args.output_root/'summary.json',summary,allow_revision=True)
     preview_records=records if len(records)<=20 else records[::max(1,len(records)//20)][:20]
     thumbs=[]
@@ -305,6 +353,8 @@ def main():
     p.add_argument('--sam-checkpoint',type=Path,default=Path('/data/shangguanrz/models/home-models/sam2.1/sam2.1_hiera_large.pt'))
     p.add_argument('--sam-repo',type=Path,default=Path('/home/shangguanrz/project/pic-edit/add/tools/sam2'))
     p.add_argument('--sam-config',default='configs/sam2.1/sam2.1_hiera_l.yaml')
+    p.add_argument('--body-cache-index',type=Path,help='Reuse original Body PNGs from a pinned previous index; no SAM loading')
+    p.add_argument('--hand-policy',choices=HAND_POLICIES,default='visible_region_v2')
     p.add_argument('--device',choices=('cuda','cpu'),default='cuda')
     p.add_argument('--torch-threads',type=int,default=4)
     p.add_argument('--canvas-long-side',type=int,default=512);p.add_argument('--geometry-method',default='sapiens_v1')

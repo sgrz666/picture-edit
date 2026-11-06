@@ -153,3 +153,105 @@ def test_json_recovery_retains_truncated_marker_and_checks_existing_index(tmp_pa
     assert publish_recoverable(path,{'entries':{}})==fixed
     with pytest.raises(ValueError,match='differs'):
         publish_recoverable(path,{'entries':{'changed':1}})
+
+
+def visible_frame():
+    f=frame()
+    for key,start,wrist,shift in (('hand_a',113,4,0),('hand_b',92,7,35)):
+        hand=np.array([[20+shift+(i%5)*3,70+(i//5)*3] for i in range(21)],dtype=float)
+        f['candidate'][start:start+21]=hand.tolist();f['candidate'][wrist]=hand[0].tolist()
+        f[key+'_present']=True;f[key+'_status']='visible_blurry'
+    f['hand_body_wrist_indices']={'hand_a':4,'hand_b':7}
+    f['loss_mask'].update(hand_a=False,hand_b=False)
+    f['hand_raw_pose_usable'].update(hand_a=False,hand_b=False)
+    f['hand_landmarks21']={'hand_a':None,'hand_b':None}
+    return f
+
+
+def test_visible_dwpose_hand_does_not_require_mediapipe_trainability():
+    from src.pose_control.qwen21_full.native_v5.spatial_masks import canvas_for,regional_maps
+    f=visible_frame();before=deepcopy(f);spec=canvas_for(f['original_hw'],160)
+    maps,status=regional_maps(f,np.ones((160,96),np.uint8),spec,hand_policy='visible_region_v2')
+    assert all(s['coarse']['enabled'] for s in status['hands'].values())
+    assert not any(s['fine']['enabled'] for s in status['hands'].values())
+    assert 0 < maps['hand'].max() < 1 and f==before
+
+
+@pytest.mark.parametrize('bad', ['low_confidence','occluded','out_of_frame','wrong_wrist','background'])
+def test_coarse_hand_rejects_unreliable_regions(bad):
+    from src.pose_control.qwen21_full.native_v5.spatial_masks import canvas_for,regional_maps
+    f=visible_frame();f['hand_b_present']=False
+    body=np.ones((160,96),np.uint8)
+    if bad=='low_confidence':f['effective_confidence'][113:134]=[.1]*21
+    elif bad in ('occluded','out_of_frame'):f['hand_a_status']=bad
+    elif bad=='wrong_wrist':f['candidate'][4]=[90.,145.]
+    elif bad=='background':body[:]=0
+    maps,status=regional_maps(f,body,canvas_for((160,96),160),hand_policy='visible_region_v2')
+    assert not status['hands']['hand_a']['coarse']['enabled']
+    assert maps['hand'].max()==0
+
+
+def test_coarse_hand_has_positive_latent_weight_above_body_only():
+    import torch
+    from src.pose_control.qwen21_full.native_v5.spatial_masks import canvas_for,regional_maps
+    from src.pose_control.qwen21_full.native_v5.spatial_weights import spatial_token_weights
+    f=visible_frame();spec=canvas_for((160,96),160)
+    maps,_=regional_maps(f,np.ones((160,96),np.uint8),spec,hand_policy='visible_region_v2')
+    parts={k:torch.from_numpy(v)[None] for k,v in maps.items() if k!='valid'}
+    valid=torch.from_numpy(maps['valid'])[None]
+    baseline=spatial_token_weights(parts,valid,spec.token_hw,(.5,.5,0))
+    boosted=spatial_token_weights(parts,valid,spec.token_hw,(.5,.5,1))
+    assert (boosted-baseline).max()>.1
+
+
+def test_existing_body_cache_is_reused_without_loading_sam(tmp_path):
+    import json
+    from types import SimpleNamespace
+    from PIL import Image
+    from scripts.data.build_native_spatial_weights import process_frame,sha,CachedForeground
+    f=frame();rgb=tmp_path/'rgb.png';Image.new('RGB',(96,160),'gray').save(rgb)
+    f.update(rgb_path=str(rgb),rgb_sha256=sha(rgb))
+    args=SimpleNamespace(output_root=tmp_path/'old',canvas_long_side=160,geometry_method='sapiens_v1',resume=False)
+    record=process_frame(f,args,lambda image,row:(np.ones((160,96),np.uint8),{'sam_score':.9}),{})
+    index=tmp_path/'index.json'
+    key=f['rgb_sha256']+':'+record['metadata']['target_canvas_id']
+    index.write_text(json.dumps({'schema':'native_spatial_index_v1','entries':{key:{'file':record['artifacts']['components'],'metadata':record['metadata']}}}),encoding='utf8')
+    args.body_cache_index=index
+    cached=CachedForeground(args)
+    body,evidence=cached(Image.open(rgb),f)
+    assert body.shape==(160,96) and body.all()
+    assert evidence['body_mask_reused'] and evidence['donor_index']['sha256']==sha(index)
+    with open(record['artifacts']['body_mask']['path'],'ab') as stream:stream.write(b'changed')
+    with pytest.raises(ValueError,match='SHA'):
+        cached(Image.open(rgb),f)
+
+
+def test_nested_explicit_absence_also_blocks_fine_hand():
+    from src.pose_control.qwen21_full.native_v5.spatial_masks import canvas_for,regional_maps
+    f=frame();f['hand_presence']={'hand_a':{'present':False},'hand_b':{'present':False}}
+    maps,status=regional_maps(f,np.ones((160,96),np.uint8),canvas_for((160,96),160),hand_policy='visible_region_v2')
+    assert not status['hands']['hand_a']['enabled'] and maps['hand'].max()==0
+
+
+def test_ablation_cannot_claim_improvement_for_legacy_candidate(tmp_path):
+    import importlib.util,json,os
+    from pathlib import Path
+    from types import SimpleNamespace
+    from PIL import Image
+    from scripts.data.build_native_spatial_weights import process_frame,sha
+    default_script=Path(__file__).resolve().parents[1]/'experiments/native-spatial-supervision/scripts/hand_region_ablation.py'
+    script=Path(os.environ.get('NATIVE_SPATIAL_ABLATION_SCRIPT',str(default_script)))
+    spec=importlib.util.spec_from_file_location('hand_ablation_test',script)
+    module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module)
+    f=visible_frame();rgb=tmp_path/'rgb.png';Image.new('RGB',(96,160),'gray').save(rgb)
+    f.update(rgb_path=str(rgb),rgb_sha256=sha(rgb))
+    args=SimpleNamespace(output_root=tmp_path/'old',canvas_long_side=160,geometry_method='sapiens_v1',resume=False)
+    record=process_frame(f,args,lambda image,row:(np.ones((160,96),np.uint8),{'sam_score':.9}),{})
+    index=tmp_path/'index.json';key=f['rgb_sha256']+':'+record['metadata']['target_canvas_id']
+    index.write_text(json.dumps({'schema':'native_spatial_index_v1','config':{'hand_policy':'legacy_strict'},
+           'entries':{key:{'file':record['artifacts']['components'],'metadata':record['metadata']}}}),encoding='utf8')
+    frames=tmp_path/'frames.jsonl';frames.write_text(json.dumps(f)+'\n',encoding='utf8')
+    selection=tmp_path/'selection.json';selection.write_text(json.dumps({'frames':{'path':str(frames)},'negative_cases':[],
+           'original_pilot_ids':['test']}),encoding='utf8')
+    with pytest.raises(ValueError,match='[Cc]andidate.*policy'):
+        module.compare(SimpleNamespace(selection=selection,baseline_index=index,candidate_index=index,output_root=tmp_path/'comparison'))

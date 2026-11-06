@@ -3,6 +3,7 @@
 from __future__ import annotations
 import argparse
 from datetime import datetime,timezone
+import hashlib
 import json
 from pathlib import Path
 import sys
@@ -10,13 +11,14 @@ import sys
 ROOT=Path(__file__).resolve().parents[2]
 sys.path.insert(0,str(ROOT))
 import torch
+import numpy as np
 from torch.nn import functional as F
 from PIL import Image
 from src.data.canvas_contract import CanvasSpec
 from src.pose_control.qwen21_full.native_v5.spatial_weights import read_spatial_index,read_spatial_components,spatial_token_weights,spatial_velocity_loss
 from src.pose_control.qwen21_full.native_depth_runtime import native_velocity_loss
 from scripts.data.build_native_spatial_weights import sha,digest,publish
-from src.pose_control.qwen21_full.native_v5.spatial_masks import canvas_for
+from src.pose_control.qwen21_full.native_v5.spatial_masks import canvas_for,regional_maps
 
 
 def audit(index_path,frames_path,*,allow_subset=False):
@@ -34,7 +36,7 @@ def audit(index_path,frames_path,*,allow_subset=False):
     result=dict(schema='native_spatial_audit_v1',timestamp_utc=datetime.now(timezone.utc).isoformat(),passed=True,
                 frames=len(entries),source_frames=len(rows),index=bound,source_manifest_sha256=sha(frames_path),
                 qwen_channels=64,padding_weight_max=0.,zero_coefficients_baseline_max_error=0.,
-                hand_enabled_frames=0,hand_support_frames=0,weight_max=0.,loss_min=None,loss_max=None,
+                hand_enabled_frames=0,hand_support_frames=0,hand_latent_delta_max=0.,weight_max=0.,loss_min=None,loss_max=None,
                 all_gt_rgb_verified=True,all_component_sha_verified=True,all_canvas_verified=True,
                 training_started=False,model_forward_executed=False)
     for i,entry in enumerate(entries):
@@ -56,12 +58,36 @@ def audit(index_path,frames_path,*,allow_subset=False):
         if 'canvas_long_side' in generation and spec.metadata()!=canvas_for(original_hw,generation['canvas_long_side']).metadata():
             raise ValueError('Canvas differs from declared generation policy: '+frame['frame_id'])
         components={k:maps[k] for k in ('body','joint','hand')};valid=maps['valid']
-        enabled=any(frame.get('loss_mask',{}).get(k,False) and frame.get('hand_raw_pose_usable',{}).get(k,False) for k in ('hand_a','hand_b'))
+        policy=metadata.get('hand_policy','legacy_strict')
+        if 'hand_policy' in generation and metadata.get('hand_policy')!=generation['hand_policy']:
+            raise ValueError('Entry hand policy differs from declared generation policy')
+        if policy=='visible_region_v2':
+            body_path=Path(entry['file']['path']).parent/'body_mask.png'
+            with Image.open(body_path) as mask:
+                body=(np.array(mask.convert('L'))>127).astype(np.uint8)
+            if hashlib.sha256(body.tobytes()).hexdigest()!=metadata.get('segmentation',{}).get('body_mask_pixel_sha256'):
+                raise ValueError('Original Body PNG pixel SHA differs')
+            expected,status=regional_maps(frame,body,spec,hand_policy=policy)
+            if status!=metadata.get('region_status'):
+                raise ValueError('Hand policy provenance differs from actual source annotations')
+            for name in ('body','joint','hand','valid'):
+                if not np.array_equal(expected[name].astype(np.float16),maps[name][0].numpy().astype(np.float16)):
+                    raise ValueError('Recomputed region policy differs from cached '+name)
+            enabled=any(s['enabled'] for s in status['hands'].values())
+        elif policy in ('legacy_strict','existing_loss_mask_and_hand_raw_pose_usable'):
+            enabled=any(frame.get('loss_mask',{}).get(k,False) and frame.get('hand_raw_pose_usable',{}).get(k,False) for k in ('hand_a','hand_b'))
+        else:
+            raise ValueError('Unknown hand supervision policy')
         support=bool(maps['hand'].any())
         if support and not enabled:
             raise ValueError('Disabled hand received extra supervision: '+frame['frame_id'])
         result['hand_enabled_frames']+=int(enabled);result['hand_support_frames']+=int(support)
         weights=spatial_token_weights(components,valid,spec.token_hw,(.5,.5,1.))
+        hand_off=spatial_token_weights(components,valid,spec.token_hw,(.5,.5,0.))
+        delta=float((weights-hand_off).max())
+        if support and delta<=0:
+            raise ValueError('Hand enhancement vanished on actual latent grid')
+        result['hand_latent_delta_max']=max(result['hand_latent_delta_max'],delta)
         zero=spatial_token_weights(components,valid,spec.token_hw,(0.,0.,0.))
         coverage=F.interpolate(valid[:,None],size=spec.token_hw,mode='area').flatten(1)
         if not torch.equal(zero,coverage):

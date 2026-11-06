@@ -8,6 +8,8 @@ from src.data.canvas_contract import CanvasSpec, native_pad
 
 BODY_JOINTS = (2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13)
 HAND_EDGES = tuple((start + k, start + k + 1) for start in (1, 5, 9, 13, 17) for k in range(3)) + tuple((0, i) for i in (1, 5, 9, 13, 17))
+HAND_POLICIES = ('legacy_strict', 'visible_region_v2')
+COARSE_HAND_GAIN = .65
 
 
 def canvas_for(original_hw, long_side=512):
@@ -128,7 +130,80 @@ def _hand_region(frame, key, spec):
     return value, dict(enabled=True, reason='existing_loss_and_raw_hand_gates', source=frame.get('hand_landmarks_source'), valid_points=int(good.sum()))
 
 
-def regional_maps(frame, body_original, spec, *, confidence=.3, joint_sigma_fraction=.025):
+def _hand_presence(frame,key):
+    value=frame.get(key+'_present')
+    return frame.get('hand_presence',{}).get(key,{}).get('present') if value is None else value
+
+
+def _coarse_hand_region(frame, key, spec, body):
+    """Visible GT region, not a source of finger-coordinate supervision."""
+    zero=np.zeros(spec.canvas_hw,np.float32)
+    def reject(reason,**evidence):
+        return zero,dict(enabled=False,reason=reason,**evidence)
+    if frame.get(key+'_status') in ('occluded','out_of_frame'):
+        return reject('explicit_occluded_or_out_of_frame')
+    present=_hand_presence(frame,key)
+    if not present:
+        return reject('hand_not_present')
+    block=frame.get('hand_block_slices',{}).get(key)
+    wrist=frame.get('hand_body_wrist_indices',{}).get(key)
+    if (not isinstance(block,(list,tuple)) or len(block)!=2 or
+            any(type(i)!=int for i in block) or block[1]-block[0]!=21 or not 18<=block[0]<block[1]<=134 or
+            type(wrist)!=int or not 0<=wrist<18):
+        return reject('missing_explicit_dwpose_hand_mapping')
+    raw,score,visible=valid_keypoints(frame)
+    ids=np.arange(*block);good=visible[ids]&(score[ids]>=.35)
+    evidence=dict(valid_points=int(good.sum()),mean_score=float(score[ids][good].mean()) if good.any() else 0.)
+    if good.sum()<8 or not good[0] or evidence['mean_score']<.45:
+        return reject('insufficient_confident_dwpose_points',**evidence)
+    if not visible[wrist] or score[wrist]<.3:
+        return reject('body_wrist_unreliable',**evidence)
+    points=spec.pixel_points(raw[ids]);anchor=spec.pixel_points(raw[wrist:wrist+1])[0]
+    extent=np.ptp(points[good],axis=0);span=float(max(extent))
+    box=frame.get('detection',{}).get('primary_box')
+    person_height=float((box[3]-box[1])*spec.scale_xy[1]) if box is not None else float(spec.resized_hw[0])
+    if span<1 or span>.3*person_height:
+        return reject('implausible_dwpose_hand_extent',span_canvas_px=span,**evidence)
+    root_distance=float(np.linalg.norm(points[0]-anchor))
+    if root_distance>max(6.,.4*span):
+        return reject('dwpose_hand_body_wrist_mismatch',root_distance_canvas_px=root_distance,**evidence)
+    # A small halo tolerates segmentation edges, but does not turn arbitrary
+    # background detections into high-weight regions.
+    foreground=np.asarray(Image.fromarray(np.uint8(body*255)).filter(ImageFilter.MaxFilter(5)),dtype=np.float32)/255.
+    xy=np.rint(points[good]).astype(int)
+    xy[:,0]=np.clip(xy[:,0],0,spec.canvas_hw[1]-1);xy[:,1]=np.clip(xy[:,1],0,spec.canvas_hw[0]-1)
+    fraction=float((foreground[xy[:,1],xy[:,0]]>.1).mean())
+    if fraction<.6:
+        return reject('dwpose_hand_outside_gt_foreground',foreground_point_fraction=fraction,**evidence)
+    hull=_hull(points[good])
+    if len(hull)<3:
+        return reject('degenerate_dwpose_hand_hull',**evidence)
+    radius=float(np.clip(.12*span,2.5,6.))
+    image=Image.new('L',spec.canvas_hw[::-1]);draw=ImageDraw.Draw(image)
+    draw.polygon(hull,fill=255)
+    for x,y in points[good]:
+        draw.ellipse((x-radius,y-radius,x+radius,y+radius),fill=255)
+    value=np.asarray(image.filter(ImageFilter.GaussianBlur(float(max(.8,radius*.35)))),dtype=np.float32)/255.
+    value*=foreground*COARSE_HAND_GAIN
+    return value,dict(enabled=bool(value.any()),reason='visible_confident_dwpose_region',
+                      source='dwpose134',gain=COARSE_HAND_GAIN,foreground_point_fraction=fraction,
+                      root_distance_canvas_px=root_distance,**evidence)
+
+
+def visible_hand_region(frame,key,spec,body):
+    coarse,coarse_status=_coarse_hand_region(frame,key,spec,body)
+    fine,fine_status=_hand_region(frame,key,spec)
+    # Explicit visibility negatives also protect the fine path from contradictory
+    # upstream trainability flags. No original annotation is modified.
+    if frame.get(key+'_status') in ('occluded','out_of_frame') or _hand_presence(frame,key) is False:
+        fine=np.zeros_like(fine);fine_status=dict(enabled=False,reason='explicit_visibility_negative')
+    combined=np.maximum(coarse,fine)
+    return combined,dict(enabled=bool(combined.any()),reason='visible_region_v2',coarse=coarse_status,fine=fine_status)
+
+
+def regional_maps(frame, body_original, spec, *, confidence=.3, joint_sigma_fraction=.025, hand_policy='legacy_strict'):
+    if hand_policy not in HAND_POLICIES:
+        raise ValueError('Unknown explicit hand region policy')
     if tuple(frame['original_hw']) != spec.original_hw:
         raise ValueError('Frame original shape differs from CanvasSpec')
     body = canvas_mask(body_original, spec)
@@ -154,7 +229,8 @@ def regional_maps(frame, body_original, spec, *, confidence=.3, joint_sigma_frac
                 used.append(i)
     hands, statuses = [], {}
     for key in ('hand_a', 'hand_b'):
-        value, statuses[key] = _hand_region(frame, key, spec)
+        value, statuses[key] = (visible_hand_region(frame,key,spec,body) if hand_policy=='visible_region_v2'
+                                else _hand_region(frame,key,spec))
         hands.append(value)
     hand = np.maximum(*hands) * valid
     return dict(body=body, joint=joint*valid, hand=hand, valid=valid), dict(joint_ids=used, joint_sigma_canvas_px=sigma, hands=statuses)

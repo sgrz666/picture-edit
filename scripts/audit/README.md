@@ -1,5 +1,7 @@
 # scripts/audit/ —— 审计与验证工具集
 
+v2 空间权重审计要求条目策略与生成配置一致，并根据 Body PNG 像素 SHA 及原始关键点重算分量／状态，避免将可信粗区域误当作越过精细门控。另检查实际 latent 权重相对关闭 Hand 时有正增量，不能只看彩色热图。
+
 `audit_native_spatial_weights.py` 验证离线 Body／Joint／Hand 缓存：逐条核对 GT／组件 SHA、Canvas、原始记录、手部门控和 Padding，并在真实 target 网格用合成 64 通道误差核对零系数等于原 Flow Loss。默认要求覆盖完整 frames 清单；20 张预览需显式 `--allow-subset`。它不加载 Qwen、SAM 或优化器。入口示例见 [`experiments/native-spatial-supervision/README.md`](../../experiments/native-spatial-supervision/README.md)。
 
 本目录集中存放「只读检查 / 结构冒烟 / 验收」类脚本，是人物图像姿态编辑系统的事实核查层。它们不训练、不生成最终产物、不修改源权重，只在既有产物、缓存、权重与目录组织上做断言与比对，用来证明训练线（DeepGen V6 / Qwen21 各分支）在架构保全、权重溯源、数据质量与条件契约上没有悄悄退化。所有脚本一律把项目根插入 `sys.path`（`parents[2]`），因此从项目外也能以分类实体身份运行；多数的 docstring 明确标注了「CPU-only / 不写权重 / 不改控制模块」等约束。
