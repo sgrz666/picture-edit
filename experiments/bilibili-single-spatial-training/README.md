@@ -101,3 +101,14 @@ ls -lt "$RUN"/logs/code_update_* "$RUN"/control/code_update_*
 
 
 v7采用按需冻结输入。所有12,156对Native数据已经完整真读验收；不再等待11,010对VLM/VAE缓存全部生成。固定描述文件绑定全部输入，每pair缓存独立SHA/commit，checkpoint绑定已使用缓存，缺失时按原采样顺序等待编码，不跳样本。S0标准Body资格复用已通过Joint资格并逐项对照；S1/S2/S3保留各自真实资格/梯度门禁。编码器仅编码时上GPU，随后退CPU；40GiB资源门槛保证显存余量，训练精度/loss/LR/B1累积4及20k预算均不变。实际开训以正式metrics中optimizer_updated=true为准。
+
+## 只读健康巡检
+
+服务器工具保存在运行代码目录之外的 `control_checks/scripts/inspect_training_health.py`，不会修改已固定的训练代码、参数或进程。它检查当前segment的连续更新计数、完整累积窗口、训练/验证来源隔离、有限loss/梯度、固定验证样本、最近committed checkpoint及全部已使用缓存的SHA、冻结摘要、optimizer/RNG和验证guard。检查读取checkpoint元数据，不构建模型或optimizer。
+
+```bash
+"$PY" "$RUN/control_checks/scripts/inspect_training_health.py" --run-root "$RUN" \
+  --output "$RUN/source/health_$(date -u +%Y%m%dT%H%M%SZ).json"
+```
+
+输出区分 `observed_successful_updates`（当前日志已记录的更新）与 `committed_updates`（可恢复断点），两者在每100步提交前可能不同。报告中的验证loss来自固定10对验证样本；首批生成图在1000步，因此数值巡检不能宣称画质验收完成。
