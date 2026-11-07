@@ -495,7 +495,7 @@ def run(args):
             if rows or plan_path.exists():
                 raise ValueError('Existing run: use resume to retain its committed state')
             authorization_path = Path(args.authorization_json or root/'authorization.json')
-            authorization = json.loads(authorization_path.read_text(encoding='utf8-sig'))
+            authorization = json.loads(authorization_path.read_text(encoding='utf-8-sig'))
             plan = make_plan(str(root), str(Path(args.repo_root).resolve()), authorization)
             plan['authorization_ref'] = file_ref(authorization_path)
             # The private repo also carries the exact third_party and HIA helpers
