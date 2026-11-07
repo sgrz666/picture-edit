@@ -13,7 +13,7 @@ from supervisor import (DEFAULT_RUN, audit_references, file_ref, read_ref, resou
 
 TESTS = ('test_native_spatial_masks.py','test_native_spatial_weights.py','test_native_spatial_audit.py',
          'test_qwen21_native_v5_training.py','test_native_unattended_core.py','test_single_spatial_data_prepare.py',
-         'test_single_spatial_supervisor.py','test_qwen21_fixedpair_training_v5.py','test_native_training_throughput.py')
+         'test_single_spatial_supervisor.py','test_qwen21_fixedpair_training_v5.py','test_native_training_throughput.py','test_native_frozen_inputs.py')
 
 
 def main():

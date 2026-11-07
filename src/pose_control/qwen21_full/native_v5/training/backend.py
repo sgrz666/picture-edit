@@ -35,7 +35,8 @@ def asset_identity(config,data_plan):
             raise ValueError('Frozen legacy cache prompt identity differs')
     else:
         from ..conditioning import CACHE_SCHEMA
-        conditions={s+'\0'+data_plan.datasets[s].rows[i]['pair_id']:ref['sha256'] for (s,i),(ref,_) in data_plan.conditions.items()}
+        conditions=getattr(data_plan,'condition_bindings',None)
+        if conditions is None:conditions={s+'\0'+data_plan.datasets[s].rows[i]['pair_id']:ref['sha256'] for (s,i),(ref,_) in data_plan.conditions.items()}
         if (cache.get('schema')!=CACHE_SCHEMA or cache.get('profile')!=config.qwen_condition_profile or cache.get('condition_bindings')!=conditions):
             raise ValueError('Frozen multi-reference cache condition/Prompt identity differs')
     if cache.get('model_manifest_sha256')!=bound['sha256']:raise ValueError('Frozen cache model identity differs')
@@ -68,7 +69,10 @@ class NativeBackend:
         if self.runtime.config.verification_only and purpose!='grad':raise ValueError('Verification-only checkpoint cannot start training')
         if (self.runtime.config.min_spatial_cells,self.runtime.config.feather_px)!=(config.eligibility_min_spatial_cells,config.eligibility_feather_px):
             raise ValueError('Data eligibility rules differ from the checkpoint local configuration')
-        for dataset in data_plan.datasets.values():
+        from .data import route_options
+        needs_local=any((o.face and o.face_strength>0) or (o.hand and o.hand_strength>0)
+                        for r in config.stage.routes for o,_ in (route_options(r,'single'),route_options(r,'dual')))
+        for dataset in data_plan.datasets.values() if needs_local else ():
             for i in range(len(dataset)):
                 sample=dataset[i];c=sample['local_condition_v4']
                 from .data import route_options
@@ -95,6 +99,17 @@ class NativeBackend:
         self.evaluators=[None,None]
         from diffusers.models.transformers.transformer_qwenimage21 import QwenImage21Transformer2DModel
         self.identity['native_qwen_implementation']=file_sha(__import__('inspect').getfile(QwenImage21Transformer2DModel))
+        self.on_demand=None
+        if self.cache.get('loading_mode')=='on_demand':
+            from .streaming import OnDemandCache
+            state=saved.get('training_state',{}).get('frozen_cache_state')
+            if 'training_state' in saved and state is None:raise ValueError('Streaming checkpoint lacks used-cache state')
+            self.on_demand=OnDemandCache(config,data_plan,self.cache,state)
+
+    def ensure_cache_pairs(self,pairs):
+        if getattr(self,'on_demand',None) is not None:self.on_demand.ensure(pairs)
+
+    def cache_state(self):return self.on_demand.state() if getattr(self,'on_demand',None) is not None else None
 
     def ensure_evaluators(self,required):
         if not required:return tuple(self.evaluators)
@@ -122,7 +137,7 @@ class NativeBackend:
 
     def pair(self,source,index):
         sample=self.data.sample(source,index);key=source+'\0'+sample['pair_metadata']['pair_id']
-        entry=self.cache.get('entries',{}).get(key)
+        entry=self.on_demand.read(source,index) if getattr(self,'on_demand',None) is not None else self.cache.get('entries',{}).get(key)
         if entry is None:raise ValueError('Missing frozen latent cache; run explicit cache preparation first: '+key)
         ref=verify(entry['file']);p=Path(ref['path']);root=Path(self.config.cache_root).resolve()
         if root not in p.resolve().parents:raise ValueError('Cache entry escapes declared cache root')
@@ -169,38 +184,62 @@ def encode_frozen_pair(pipe,sample,config,spec=None):
     pair['target_latent']=pipe._encode_vae_image(pixels,torch.Generator(device=device).manual_seed(0)).flatten(3).squeeze(2).transpose(1,2)
     return pair
 
-def prepare_cache(config,data_plan,output,*,resume=False):
+def prepare_cache(config,data_plan,output,*,resume=False,mode='eager'):
     """Explicit future frozen preprocessing, separate from training and preflight."""
     from .cache_store import FrozenCacheStore
+    from .frozen_inputs import progress
     root=Path(output).resolve()
     if not str(root).startswith('/data/shangguanrz/'):raise ValueError('New cache must use persistent data volume')
     manifest,_=model_identity(config)
     identity={'model_manifest_sha256':manifest['sha256'],'profile':config.qwen_condition_profile,
         'prompt_sha256':digest(config.prompt),'sources':data_plan.identity['sources']}
     store=FrozenCacheStore(root,identity,resume=resume)
+    if mode=='on_demand':
+        from ..conditioning import CACHE_SCHEMA
+        if not hasattr(data_plan,'qualification'):raise ValueError('On-demand encoding requires full data qualification')
+        value={'schema':CACHE_SCHEMA,'model_manifest_sha256':manifest['sha256'],'profile':config.qwen_condition_profile,
+               'condition_bindings':data_plan.condition_bindings,'entries':{},'loading_mode':'on_demand',
+               'entry_preparation':verify({'path':str(root/'preparation.json')}),'qualification':data_plan.qualification,
+               'pair_count':sum(len(dataset) for dataset in data_plan.datasets.values())}
+        path=root/'on_demand_index.json'
+        if path.exists():
+            if json.loads(path.read_text(encoding='utf8'))!=value:raise ValueError('On-demand descriptor changed')
+            return verify({'path':str(path)})
+        progress('on_demand_cache_ready',pairs=value['pair_count'],all_pairs_preencoded=False)
+        return write_json(path,value)
+    if mode!='eager':raise ValueError('Unknown frozen encoding mode')
     # Audit every committed pair before loading any GPU component or adding files.
     pending=[]
     entries={};conditions={}
+    total=sum(len(dataset) for dataset in data_plan.datasets.values());scanned=0
     for source,dataset in data_plan.datasets.items():
         for i in range(len(dataset)):
-            sample=dataset[i];key=source+'\0'+sample['pair_metadata']['pair_id'];c=sample['local_condition_v4'].metadata[0]
             ref,spec=data_plan.conditions[(source,i)] if config.qwen_condition_profile!='legacy_single' else (None,None)
-            binding={'key':key,**{k:c[k] for k in ('source_rgb_sha256','driver_rgb_sha256','source_canvas_id','target_canvas_id')},
-                'source_token_hw':list(sample['source_token_hw']),'target_token_hw':list(sample['target_token_hw']),
-                'model_manifest_sha256':manifest['sha256'],'condition_sha256':ref['sha256'] if ref else None,
-                'prompt_sha256':spec['prompt']['sha256'] if spec else digest(config.prompt)}
+            if hasattr(data_plan,'binding'):
+                binding=data_plan.binding(source,i,manifest['sha256'],digest(config.prompt));key=binding['key']
+            else:
+                sample=dataset[i];key=source+'\0'+sample['pair_metadata']['pair_id'];c=sample['local_condition_v4'].metadata[0]
+                binding={'key':key,**{k:c[k] for k in ('source_rgb_sha256','driver_rgb_sha256','source_canvas_id','target_canvas_id')},
+                    'source_token_hw':list(sample['source_token_hw']),'target_token_hw':list(sample['target_token_hw']),
+                    'model_manifest_sha256':manifest['sha256'],'condition_sha256':ref['sha256'] if ref else None,
+                    'prompt_sha256':spec['prompt']['sha256'] if spec else digest(config.prompt)}
             if ref:conditions[key]=ref['sha256']
             entry=store.get(binding)
             if entry is None:pending.append((source,i,binding,spec))
             else:entries[key]=entry
+            scanned+=1
+            if scanned==1 or scanned%250==0 or scanned==total:progress('frozen_cache_scan',completed=scanned,total=total,reused=len(entries))
     if (root/'index.json').exists() and pending:raise ValueError('Published frozen index is missing pair commits')
     if pending:
+        progress('loading_frozen_text_encoder_vae',pending=len(pending),total=total)
         pipe=load_cache_pipeline(config)
         pipe.text_encoder.requires_grad_(False).eval();pipe.vae.requires_grad_(False).eval()
         with torch.no_grad():
             for source,i,binding,spec in pending:
                 pair=encode_frozen_pair(pipe,data_plan.datasets[source][i],config,spec)
                 entries[binding['key']]=store.put(binding,pair)
+                done=len(entries)
+                if done==1 or done%20==0 or done==total:progress('frozen_cache_encoded',completed=done,total=total)
     if config.qwen_condition_profile!='legacy_single':
         from ..conditioning import CACHE_SCHEMA
         return store.publish({'schema':CACHE_SCHEMA,'model_manifest_sha256':manifest['sha256'],

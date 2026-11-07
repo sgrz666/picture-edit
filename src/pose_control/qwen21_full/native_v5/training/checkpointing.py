@@ -34,7 +34,7 @@ def environment():
         'matmul_tf32':torch.backends.cuda.matmul.allow_tf32,'cudnn_tf32':torch.backends.cudnn.allow_tf32}
 
 def save_snapshot(root,runtime,optimizer,scheduler,sampler,noise_generator,*,config,identity,catalog,active,
-                  global_update,stage_update,attempts,journal,micro_position,gradient_report,stage_origin,parent=None,frozen_state=None,validation_state=None):
+                  global_update,stage_update,attempts,journal,micro_position,gradient_report,stage_origin,parent=None,frozen_state=None,validation_state=None,frozen_cache_state=None):
     if micro_position!=0:raise ValueError('Only optimizer-update boundary snapshots are supported')
     root=Path(root);root.mkdir(parents=True,exist_ok=True)
     payload=runtime.checkpoint_payload(metadata={'training_interface':SCHEMA})
@@ -48,6 +48,7 @@ def save_snapshot(root,runtime,optimizer,scheduler,sampler,noise_generator,*,con
         'stage_origin':stage_origin,'parent':parent}
     payload['training_state']['frozen_state']=frozen_state
     if validation_state is not None:payload['training_state']['validation_state']=validation_state
+    if frozen_cache_state is not None:payload['training_state']['frozen_cache_state']=frozen_cache_state
     path=root/(f'update_{global_update:08d}_'+uuid.uuid4().hex+'.pt')
     with path.open('xb') as f:
         import os
@@ -57,6 +58,7 @@ def save_snapshot(root,runtime,optimizer,scheduler,sampler,noise_generator,*,con
     commit={'schema':'native_v5_training_commit_v1','checkpoint':ref,'global_update':global_update,'stage_update':stage_update,
         'training_state_sha256':digest({'config':config.signature(),'identity':digest(identity),'catalog':catalog.signature(),'journal':journal.state_dict()})}
     if validation_state is not None:commit['validation_state_sha256']=digest(validation_state)
+    if frozen_cache_state is not None:commit['frozen_cache_state_sha256']=digest(frozen_cache_state)
     marker=write_json(path.with_suffix('.commit.json'),commit)
     return {'checkpoint':ref,'commit':marker}
 
@@ -74,6 +76,8 @@ def load_committed(reference):
     if commit.get('training_state_sha256')!=expected:raise ValueError('Training commit signature differs')
     if 'validation_state_sha256' in commit and commit['validation_state_sha256']!=digest(state.get('validation_state')):
         raise ValueError('Training validation state signature differs')
+    if 'frozen_cache_state_sha256' in commit and commit['frozen_cache_state_sha256']!=digest(state.get('frozen_cache_state')):
+        raise ValueError('Used frozen cache checkpoint state signature differs')
     tail=verify_prefix(state['journal'])
     return saved,ref,tail
 

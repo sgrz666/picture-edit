@@ -18,8 +18,8 @@ class NativeV5Trainer:
         return result
 
     def preflight_data(self,output):
-        from .data import DataPlan
-        try:result=DataPlan(self.config).report()
+        from .streaming import training_data_plan
+        try:result=training_data_plan(self.config).report()
         except Exception as error:
             write_json(output,{'level':'data','passed':False,'error':str(error),'sources':[asdict(s) for s in self.config.sources],
                 'original_manifests_preserved':True,'model_constructed':False,'gradient_passed':False})
@@ -27,22 +27,26 @@ class NativeV5Trainer:
         write_json(output,result);return result
 
     def preflight_grad(self,output):
-        from .data import DataPlan
+        from .streaming import training_data_plan
         from .backend import NativeBackend
         from .validation import gradient_preflight
-        self.config.require_ready();data=DataPlan(self.config);backend=NativeBackend(self.config,data,purpose='grad')
+        self.config.require_ready();data=training_data_plan(self.config);backend=NativeBackend(self.config,data,purpose='grad')
         result=gradient_preflight(backend,self.config,data);write_json(output,result);return result
 
-    def cache_prepare(self,output,*,resume=False):
+    def cache_prepare(self,output,*,resume=False,qualification=None,mode='eager'):
         from .data import DataPlan
         from .backend import prepare_cache
-        return prepare_cache(self.config,DataPlan(self.config),output,resume=resume)
+        if qualification is not None:
+            from .frozen_inputs import FrozenInputPlan
+            data=FrozenInputPlan(self.config,qualification,lazy=mode=='on_demand')
+        else:data=DataPlan(self.config)
+        return prepare_cache(self.config,data,output,resume=resume,mode=mode)
 
     def _start(self,mode,checkpoint=None):
         import random
         import numpy as np
         import torch
-        from .data import DataPlan
+        from .streaming import training_data_plan
         from .backend import NativeBackend
         from .sampling import DeterministicSampler,derived_seed
         from .parameters import UpdateScheduler
@@ -55,7 +59,7 @@ class NativeV5Trainer:
         if mode!='train':
             saved,parent,tail=load_committed(checkpoint)
             if mode=='advance-stage' and verify(config.initialization)!=parent:raise ValueError('Advance initialization must be the exact parent checkpoint')
-        data=DataPlan(config);backend=NativeBackend(config,data,saved=saved,purpose='train')
+        data=training_data_plan(config);backend=NativeBackend(config,data,saved=saved,purpose='train')
         catalog=backend.catalog;active=backend.active
         if backend.runtime.config.local_mode=='static' and any(r.role=='head' and r.runtime_group in ('face_heads','hand_heads') and r.name in active for r in catalog.rows):
             body_frozen=all(not p.requires_grad for p in backend.runtime.body.parameters())
@@ -150,7 +154,8 @@ class NativeV5Trainer:
             return save_snapshot(Path(config.output_root)/'checkpoints',runtime,ctx['optimizer'],ctx['scheduler'],ctx['sampler'],ctx['noise_generator'],
                 config=config,identity=backend.identity,catalog=ctx['catalog'],active=ctx['active'],global_update=ctx['global_update'],
                 stage_update=ctx['stage_update'],attempts=ctx['attempts'],journal=ctx['journal'],micro_position=micro_position,
-                gradient_report=ctx['gradient'],stage_origin=ctx['origin'],parent=ctx['parent'],frozen_state=ctx['frozen'],validation_state=guard.state)
+                gradient_report=ctx['gradient'],stage_origin=ctx['origin'],parent=ctx['parent'],frozen_state=ctx['frozen'],validation_state=guard.state,
+                frozen_cache_state=backend.cache_state() if hasattr(backend,'cache_state') else None)
         if guard.state['enabled'] and guard.state['baseline_loss'] is None:
             try:probe_loss()
             except Exception as error:failure(error);raise
@@ -175,6 +180,7 @@ class NativeV5Trainer:
             if len(window)!=config.stage.accumulation:
                 ctx['journal'].append({'optimizer_updated':False,'reason':'partial_window_discarded_at_attempt_bound','entries':window});break
             counts=counts_for_window(window,routes,ctx['global_update']+1);ctx['optimizer'].zero_grad(set_to_none=True)
+            if hasattr(backend,'ensure_cache_pairs'):backend.ensure_cache_pairs([(entry['source'],entry['index']) for entry in window])
             values=[]
             try:
                 for i,entry in enumerate(window):

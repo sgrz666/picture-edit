@@ -208,6 +208,8 @@ def replay(rows):
             state.update(status='running', task=row['task'])
         elif event == 'accepted':
             state['accepted'][row['task']] = read_ref(row['result'])
+        elif event == 'task_superseded':
+            state['accepted'].pop(row['task'],None)
         elif event == 'attempt_failed':
             state['failure_counts'][row['task']] = state['failure_counts'].get(row['task'], 0)+1
             if row.get('failure_class') == 'terminal':
@@ -571,7 +573,8 @@ def run(args):
                 previous_attempt = state['attempts'].get(task, 0)
                 if state['failure_counts'].get(task, 0) >= 3:
                     raise IntegrityError('Retry budget exhausted for '+task)
-                if action != 'export_final':
+                cpu_action=action=='export_final' or plan.get('cache_mode')=='on_demand' and action in ('prepare_cache','data_preflight')
+                if not cpu_action:
                     await_resources(plan, journal, ignored, args.gpu)
                 attempt = previous_attempt+1
                 identifier = task+'_'+uuid.uuid4().hex
@@ -584,7 +587,7 @@ def run(args):
                 request_ref = write_new_json(root/'requests'/(identifier+'.json'), request)
                 journal.append({'event':'attempt', 'task':task, 'attempt':attempt, 'request':request_ref,
                                 'log':str(logs/(identifier+'.log')), 'result_path':str(result_path),
-                                'resources':resources(args.gpu) if action != 'export_final' else {'device':'cpu'}})
+                                'resources':resources(args.gpu) if not cpu_action else {'device':'cpu'}})
                 command = [args.python, str(Path(__file__).with_name('stage_worker.py')),
                            '--input', request_ref['path'], '--input-sha256', request_ref['sha256'], '--result', str(result_path)]
                 started = time.monotonic()

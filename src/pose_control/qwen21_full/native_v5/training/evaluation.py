@@ -23,7 +23,7 @@ def fixed_evaluation_selection(config,data):
         source,index=row['source_id'],row['index'];raw=data.datasets[source].rows[index]
         value=raw.get('target_rgb_sha256') or raw.get('driver_rgb_sha256')
         if value is None:
-            value=data.sample(source,index)['local_condition_v4'].metadata[0]['driver_rgb_sha256']
+            value=data.target_rgb_sha(source,index) if hasattr(data,'target_rgb_sha') else data.sample(source,index)['local_condition_v4'].metadata[0]['driver_rgb_sha256']
         return value
     while len(selected)<config.probe_samples and any(groups.values()):
         for group in ordered:

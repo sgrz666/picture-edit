@@ -2,7 +2,7 @@
 
 目的：在 Bilibili 原视频隔离的 train/val/test 上执行 S0/S1/S2/S3 共 20,000 次成功 optimizer 更新。使用 Sapiens2 v1 几何和全量 `visible_region_v2` 空间监督；保留所有样本及原质量标记，不做冒烟训练。
 
-运行根为 `/data/shangguanrz/pic-edit-experiments/bilibili-single-spatial-train-20261107-v1`；本地隔离分支为 `codex/bilibili-single-spatial-20k`。本目录的 `scripts/` 提供后台主管、数据准备和阶段 worker；`source/legacy/` 保存既有数据装配工具原样副本。服务器 `source/remote-baseline-20261107T0113/` 固定了实施前代码，正式版本是独立的 `source/runtime_repo_v6/`，不修改远端主工作区。早期 `source/runtime_repo/` 与根 `scripts/` 保留原样，只作历史快照，启动使用下面的 v6 路径。
+运行根为 `/data/shangguanrz/pic-edit-experiments/bilibili-single-spatial-train-20261107-v1`；本地隔离分支为 `codex/bilibili-single-spatial-20k`。本目录的 `scripts/` 提供后台主管、数据准备和阶段 worker；`source/legacy/` 保存既有数据装配工具原样副本。服务器 `source/remote-baseline-20261107T0113/` 固定了实施前代码，正式版本是独立的 `source/runtime_repo_v7/`，不修改远端主工作区。早期 `source/runtime_repo/` 与根 `scripts/` 保留原样，只作历史快照，启动使用下面的 v6 路径。
 
 已确认划分为 train 9,520 对、val 1,490 对、test 1,146 对；已有 1,960 帧物理资产和 Source 参考特征，561 对 Native 配对产物可校验后复用。全量 v2 空间索引已生成并通过独立审计，Body Mask 保持原样。
 
@@ -17,7 +17,7 @@
 ```bash
 RUN=/data/shangguanrz/pic-edit-experiments/bilibili-single-spatial-train-20261107-v1
 PY=/home/shangguanrz/nihaochen/envs/qwen21/bin/python
-REPO="$RUN/source/runtime_repo_v6"
+REPO="$RUN/source/runtime_repo_v7"
 SCRIPTS="$REPO/experiments/bilibili-single-spatial-training/scripts"
 bash "$SCRIPTS/launch.sh" run --run-root "$RUN" --repo-root "$REPO" --python "$PY" --gpu 0
 ```
@@ -74,7 +74,7 @@ cd "$REPO"
 
 真实旧产物复用检查命令是 `"$PY" "$SCRIPTS/data_prepare.py" verify-reuse --run-root "$RUN" --repo-root "$REPO"`，只用 CPU 和真实 Native reader；全量 12,156 对读取由 `prepare_data` 门禁执行。运行时数据准备使用原 CUDA 几何 rasterizer，不重新拟合 SMPL-X。空间图和旧产物先校验再复用，已匹配旧缓存的任何 SHA/Canvas/读取失败直接停止，不重建掩盖错误。保留局部浮点遮挡修正及原精细手部有效标记。NPZ 仅采用标准无损 DEFLATE level 3，数组/精度不变。
 
-交付验证命令为 `"$PY" "$SCRIPTS/verify_delivery.py" --run-root "$RUN" --repo-root "$REPO" --deployment-manifest "$RUN/source/deploy_20261107_final_v6_manifest.json" --report-path "$RUN/source/delivery_verification_v6.json"`。首次执行验证部署 SHA、语法和上述 CPU 回归，并生成本版本独立的 `source/runtime_code_manifest_*.json`、`source/delivery_verification_v6.json`；再次执行校验既有交付闭包，不创建训练作业。监管 agent 可直接查看记录中的测试摘要和未完成门禁。
+交付验证命令为 `"$PY" "$SCRIPTS/verify_delivery.py" --run-root "$RUN" --repo-root "$REPO" --deployment-manifest "$RUN/source/deploy_20261107_final_v7_manifest.json" --report-path "$RUN/source/delivery_verification_v7.json"`。首次执行验证部署 SHA、语法和上述 CPU 回归，并生成本版本独立的 `source/runtime_code_manifest_*.json`、`source/delivery_verification_v7.json`；再次执行校验既有交付闭包，不创建训练作业。监管 agent 可直接查看记录中的测试摘要和未完成门禁。
 
 交给监管 agent 时先读 `HANDOFF.md` 和最新状态，关注 `prepare_data`、`prepare_cache`、阶段切换、首批 optimizer 更新与终态。不要额外启动冒烟训练、重复数据作业或修改已固定的运行代码。GPU 查询在该机 NVML 版本不匹配时使用 CUDA runtime；仅对本运行设置 `cudaMallocAsync`，不修改驱动或环境包。
 
@@ -98,3 +98,6 @@ ls -lt "$RUN"/logs/code_update_* "$RUN"/control/code_update_*
 ```
 
 如已在后台等待接续，不要再启动第二个主管。主管状态多出 `active_plan`、`active_repo_root`；旧脚本不能解析版本更新，后续恢复使用v6入口。`code_update_completed_*.json` 表示代码接续成功，不能冒充20k训练完成。
+
+
+v7采用按需冻结输入。所有12,156对Native数据已经完整真读验收；不再等待11,010对VLM/VAE缓存全部生成。固定描述文件绑定全部输入，每pair缓存独立SHA/commit，checkpoint绑定已使用缓存，缺失时按原采样顺序等待编码，不跳样本。S0标准Body资格复用已通过Joint资格并逐项对照；S1/S2/S3保留各自真实资格/梯度门禁。编码器仅编码时上GPU，随后退CPU；40GiB资源门槛保证显存余量，训练精度/loss/LR/B1累积4及20k预算均不变。实际开训以正式metrics中optimizer_updated=true为准。

@@ -120,14 +120,20 @@ def prepare_cache_action(request, output):
     from src.pose_control.qwen21_full.native_v5.training.trainer import NativeV5Trainer
     raw = config_for_phase(request, 'S0', cache=False)
     config = TrainingConfig.from_dict(raw)
-    identity = NativeV5Trainer(config).cache_prepare(config.cache_root, resume=Path(config.cache_root).exists())
+    prepared=prepared_inputs(request)
+    native_audit=read_ref(prepared['audits']['native_data'])
+    if native_audit.get('passed') is not True or native_audit.get('pairs_read')!=12156:
+        raise IntegrityError('Full Native data qualification required before frozen encoding')
+    qualification=checked_ref(native_audit['train_val_route_audit'])
+    identity = NativeV5Trainer(config).cache_prepare(config.cache_root,resume=Path(config.cache_root).exists(),qualification=qualification,mode='on_demand')
     checked_ref(identity)
     index = read_ref(identity)
     expected = sum(len(json.loads(Path(s['groups']['path']).read_text(encoding='utf8'))) for s in raw['sources'])
-    if len(index.get('entries', {})) != expected:
+    if index.get('loading_mode')!='on_demand' or index.get('pair_count')!=expected or len(index['condition_bindings'])!=expected:
         raise IntegrityError('Frozen train/validation cache count differs')
-    return {'passed': True, 'cache_identity': identity, 'entries': expected,
-            'test_included': False, 'optimizer_created': False}
+    cached=sum(1 for _ in (Path(config.cache_root)/'entries').glob('*.json'))
+    return {'passed': True, 'cache_identity': identity, 'entries': cached,'declared_pairs':expected,
+            'test_included': False, 'optimizer_created': False,'loading_mode':'on_demand','all_pairs_preencoded':False}
 
 
 def data_preflight_configs(plan, prepared, identity):
@@ -145,6 +151,7 @@ def data_preflight(request, output):
     phases = {}
     for raw in data_preflight_configs(plan, prepared, identity):
         config = TrainingConfig.from_dict(raw)
+        if config.stage.phase!='S0':continue  # Local stages retain their own real data/gradient gate at entry.
         phase = config.stage.phase
         report = output/(phase+'_data_preflight.json')
         result = NativeV5Trainer(config).preflight_data(report)
@@ -160,17 +167,17 @@ def data_preflight(request, output):
                          'model_constructed':False,'optimizer_created':False,'training_ready_claimed':False}
     report_ref = write_new_json(output/'all_stage_data_preflight.json', {
         'schema':'bilibili_all_stage_data_preflight_v1','passed':True,'phases':phases,
-        'all_rows_retained':True,'future_stage_initialization_for_data_only':True})
+        'all_rows_retained':True,'future_stage_initialization_for_data_only':True,'deferred_phase_gates':['S1','S2','S3']})
     return {'passed':True,'report':report_ref,'all_rows_retained':True,'phases':list(phases)}
 
 
 def stage_grad(request, output):
     from src.pose_control.qwen21_full.native_v5.training.config import TrainingConfig
-    from src.pose_control.qwen21_full.native_v5.training.data import DataPlan
+    from src.pose_control.qwen21_full.native_v5.training.streaming import training_data_plan
     from src.pose_control.qwen21_full.native_v5.training.trainer import NativeV5Trainer
     raw = config_for_phase(request, request['phase'])
     config = TrainingConfig.from_dict(raw)
-    data = DataPlan(config)
+    data = training_data_plan(config)
     required = required_gradient_cases(data, [r.name for r in config.stage.routes])
     raw['gradient_case_budget'] = max(required.values())
     config = TrainingConfig.from_dict(raw)

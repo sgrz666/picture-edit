@@ -10,6 +10,7 @@ def loss_probe(backend,config,data,update):
     fixed=fixed_evaluation_selection(config,data)
     with preserved_rng(),torch.no_grad():
         try:
+            if hasattr(backend,'ensure_cache_pairs'):backend.ensure_cache_pairs([(r['source_id'],r['index']) for r in fixed])
             backend.runtime.eval()
             for route_index,route in enumerate(config.stage.routes):
                 role='observation' if config.experiment_mode=='fixed_pair_overfit' else 'validation'

@@ -57,6 +57,9 @@ def record_update(root,repo,authorization_ref,audit_ref):
             actual=file_ref(repo/'src/pose_control/qwen21_full/native_v5/training'/name)
             if report['new_code'][name]!=actual:raise IntegrityError('Audited code changed: '+name)
         updated=deepcopy(plan);updated['repo_root']=str(repo)
+        if report.get('cache_mode')=='on_demand':
+            updated['cache_mode']='on_demand'
+            updated['gpu_free_gib']=40  # Admit encoder + frozen DiT weights with a memory margin.
         roots=[repo,Path(__file__).resolve().parent]
         if (root/'source/legacy').is_dir():roots.append(root/'source/legacy')
         updated['runtime_code_manifest']=snapshot_runtime_code(roots,runtime_manifest_path(root,roots))
@@ -65,6 +68,10 @@ def record_update(root,repo,authorization_ref,audit_ref):
         revision=write_new_json(root/'source'/('run_plan_code_update_'+uuid.uuid4().hex+'.json'),updated)
         journal.append({'event':'code_revision','plan':revision,'parent':previous,'successful_updates':0,
                         'authorization':authorization_ref,'audit':audit_ref})
+        if report.get('cache_mode')=='on_demand':
+            for task in ('prepare_cache','data_preflight'):
+                if task in state['accepted']:
+                    journal.append({'event':'task_superseded','task':task,'reason':'Authorized on-demand cache protocol; historical result preserved','plan':revision})
         return revision
 
 

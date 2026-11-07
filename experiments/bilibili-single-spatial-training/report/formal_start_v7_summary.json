@@ -1,0 +1,32 @@
+{
+  "status": "S0_formal_training_running",
+  "recorded_at": "2026-11-07T13:48:07.242465+00:00",
+  "runtime": "runtime_repo_v7",
+  "total_budget": 20000,
+  "stage_budget": 10000,
+  "observed_successful_updates": 13,
+  "committed_checkpoint_updates": 0,
+  "checkpoint_interval": 100,
+  "recent_update_seconds": [
+    27.278898695949465,
+    27.667906002141535,
+    27.88557830825448,
+    27.44576993677765,
+    26.505807049106807
+  ],
+  "finite_gradient_norms": true,
+  "finite_train_objectives": true,
+  "latest_update_objective": 0.11442679725587368,
+  "validation_baseline": 0.22513546645641327,
+  "production_gradient": {
+    "passed": true,
+    "production_passed": true,
+    "optimizer_created": false,
+    "optimizer_step_executed": false
+  },
+  "mode": "on_demand_frozen_inputs",
+  "sampling_order_and_rng_preserved": true,
+  "extra_smoke_optimizer_updates": 0,
+  "supervisor_pid": 3394445,
+  "metrics": "stages/S0/segments/train_848fcf1883e94df6b83e9900a9f2b91a/metrics.jsonl"
+}

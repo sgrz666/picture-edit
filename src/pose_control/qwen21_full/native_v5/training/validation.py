@@ -227,6 +227,7 @@ def gradient_preflight(backend,config,data):
             if not representatives or len(representatives)>(config.gradient_case_budget or config.probe_samples):
                 passed=False;records.append({'route':route.name,'status':'not_exercised_or_budget_too_small','required_cases':len(representatives)});continue
             cases.extend((route,source,i) for source,i in representatives.values())
+        if hasattr(backend,'ensure_cache_pairs'):backend.ensure_cache_pairs([(source,index) for _,source,index in cases])
         for route,source,index in cases:
             sample,batch,pair=backend.pair(source,index)
             options,base=route_options(route,sample['native_scene_kind'])
