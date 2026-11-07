@@ -42,6 +42,8 @@ def bank_record(path, bank_sha, pair_id):
                 row = json.loads(line)
             except json.JSONDecodeError:
                 continue
+            if not isinstance(row,dict):
+                continue
             has_v5 |= row.get('schema') == SCHEMA
             if row.get('pair_id') == pair_id:
                 found.append(row)
@@ -129,6 +131,11 @@ def verify_grounded_hi4d(spec, sample=None):
     prompt = spec['prompt']
     bound = prompt['bank']
     bank = verified(bound)
+    # Single-person conditions have their own SHA-bound JSON prompt banks;
+    # they are not Hi4D JSONL records. General prompt/source/canvas validation
+    # is already performed by read_condition before this specialized verifier.
+    if spec.get('profile')!='dual_4ref' and prompt.get('schema')!=SCHEMA:
+        return
     row, has_v5 = bank_record(str(bank), bound['sha256'], spec['pair_id'])
     if prompt.get('schema') != SCHEMA and not has_v5:
         return

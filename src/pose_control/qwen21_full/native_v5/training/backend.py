@@ -47,9 +47,18 @@ def asset_identity(config,data_plan):
     return {'data':data_plan.identity,'model_manifest':bound,'model_files':model_files,'cache_identity':cache_ref,
         'evaluators':evaluators,'code':code_identity()},cache
 
+def load_training_pipeline(config):
+    from diffusers import QwenImage21Pipeline
+    return QwenImage21Pipeline.from_pretrained(config.model_path,text_encoder=None,vae=None,
+        device_map='cuda',dtype=torch.bfloat16,low_cpu_mem_usage=True,local_files_only=True)
+
+def load_cache_pipeline(config):
+    from diffusers import QwenImage21Pipeline
+    return QwenImage21Pipeline.from_pretrained(config.model_path,transformer=None,
+        device_map='cuda',dtype=torch.bfloat16,low_cpu_mem_usage=True,local_files_only=True)
+
 class NativeBackend:
     def __init__(self,config,data_plan,*,saved=None,purpose='train'):
-        from diffusers import QwenImage21Pipeline
         self.config=config;self.data=data_plan;self.device=torch.device('cuda')
         self.identity,self.cache=asset_identity(config,data_plan)
         self.initialization=verify(config.initialization)
@@ -75,9 +84,9 @@ class NativeBackend:
                                 raise ValueError('Active Face expression requires an explicitly bound encoder basis')
         self.runtime.to(self.device)
         self.catalog=ParameterCatalog(self.runtime);self.active=self.catalog.apply(config.stage)
-        self.pipe=QwenImage21Pipeline.from_pretrained(config.model_path,dtype=torch.bfloat16,local_files_only=True)
+        self.pipe=load_training_pipeline(config)
         self.pipe.transformer.requires_grad_(False).eval().to(self.device)
-        self.pipe.text_encoder.requires_grad_(False).eval().to('cpu');self.pipe.vae.requires_grad_(False).eval().to('cpu')
+        self.lazy_frozen_components=True;self.frozen_component_digests={}
         self.runtime.train()
         self.base_state_names=set(self.pipe.transformer.state_dict())
         self.installation=install_native_full_v5(self.pipe.transformer,self.runtime)
@@ -97,8 +106,19 @@ class NativeBackend:
                 sha=[verify(r)['sha256'] if r else None for r in refs])
             for i,m in enumerate(models):
                 if m is not None:self.evaluators[i]=m
-        self.pipe.vae.to(self.device)
+        self.ensure_vae().to(self.device)
         return tuple(self.evaluators)
+
+    def ensure_vae(self):
+        if self.pipe.vae is None:
+            from diffusers import AutoencoderKLQwenImage21
+            from .validation import tensor_digest
+            vae=AutoencoderKLQwenImage21.from_pretrained(self.config.model_path,subfolder='vae',
+                torch_dtype=torch.bfloat16,low_cpu_mem_usage=True,local_files_only=True)
+            vae.requires_grad_(False).eval()
+            self.pipe.vae=vae
+            self.frozen_component_digests['vae']=tensor_digest(vae.state_dict().items())
+        return self.pipe.vae
 
     def pair(self,source,index):
         sample=self.data.sample(source,index);key=source+'\0'+sample['pair_metadata']['pair_id']
@@ -119,7 +139,11 @@ class NativeBackend:
             ref,spec=self.data.conditions[(source,index)]
             if entry.get('condition_sha256')!=ref['sha256'] or pair.get('prompt_sha256')!=spec['prompt']['sha256']:
                 raise ValueError('Frozen pair uses another prompt or reference order')
-        return sample,collate_native_full_v5([sample]),pair
+        spatial=sample.get('spatial_weights_v5')
+        batch=collate_native_full_v5([{k:v for k,v in sample.items() if k!='spatial_weights_v5'}])
+        if spatial is not None:
+            batch['spatial_weights_v5']={**spatial,'target_token_hw':tuple(pair['target_token_hw'])}
+        return sample,batch,pair
 
     def forward(self,batch,pair,route,sigma,noise,options,base):
         from torch.nn import functional as F
@@ -133,37 +157,53 @@ class NativeBackend:
                 output=self.pipe.transformer(**transformer_inputs(pair,noisy.to(target.dtype),sigma))[0]
         return output[:,-target.shape[1]:],noise.float()-target.float(),coverage,noisy
 
-def prepare_cache(config,data_plan,output):
+def encode_frozen_pair(pipe,sample,config,spec=None):
+    if spec is not None:
+        from ..conditioning import encode_pair
+        return encode_pair(pipe,sample,spec)
+    from ..conditioning import encode_legacy_source
+    pair=encode_legacy_source(pipe,sample,config.prompt)
+    image=dataset_image_to_pil(sample['tgt_image']);device=next(pipe.vae.parameters()).device
+    pixels=pipe.image_processor.preprocess(image.convert('RGBA'),width=image.width,height=image.height)
+    pixels=pixels.unsqueeze(2).to(device=device,dtype=pipe.vae.dtype)
+    pair['target_latent']=pipe._encode_vae_image(pixels,torch.Generator(device=device).manual_seed(0)).flatten(3).squeeze(2).transpose(1,2)
+    return pair
+
+def prepare_cache(config,data_plan,output,*,resume=False):
     """Explicit future frozen preprocessing, separate from training and preflight."""
-    from diffusers import QwenImage21Pipeline
-    from ...qwen_runtime import Qwen21IPERCache
+    from .cache_store import FrozenCacheStore
     root=Path(output).resolve()
     if not str(root).startswith('/data/shangguanrz/'):raise ValueError('New cache must use persistent data volume')
-    root.mkdir(parents=True,exist_ok=False)
     manifest,_=model_identity(config)
-    pipe=QwenImage21Pipeline.from_pretrained(config.model_path,dtype=torch.bfloat16,local_files_only=True)
-    pipe.text_encoder.requires_grad_(False).eval().to('cuda');pipe.vae.requires_grad_(False).eval().to('cuda')
-    cache=Qwen21IPERCache(root/'frozen',resolution='native',prompt=config.prompt,canvas_policy='native_pad') if config.qwen_condition_profile=='legacy_single' else None
+    identity={'model_manifest_sha256':manifest['sha256'],'profile':config.qwen_condition_profile,
+        'prompt_sha256':digest(config.prompt),'sources':data_plan.identity['sources']}
+    store=FrozenCacheStore(root,identity,resume=resume)
+    # Audit every committed pair before loading any GPU component or adding files.
+    pending=[]
     entries={};conditions={}
-    with torch.no_grad():
-        for source,dataset in data_plan.datasets.items():
-            for i in range(len(dataset)):
-                sample=dataset[i]
-                if cache is None:
-                    from ..conditioning import encode_pair
-                    ref,spec=data_plan.conditions[(source,i)];pair=encode_pair(pipe,sample,spec)
-                    conditions[source+'\0'+sample['pair_metadata']['pair_id']]=ref['sha256']
-                else:
-                    batch=collate_native_full_v5([sample]);pair=cache.pair(pipe,batch,torch.device('cuda'))
-                path=root/('pair_'+digest([source,sample['pair_metadata']['pair_id']])[:24]+'.pt')
-                with path.open('xb') as f:torch.save({k:v.cpu() if torch.is_tensor(v) else v for k,v in pair.items()},f)
-                c=sample['local_condition_v4'].metadata[0]
-                entries[source+'\0'+sample['pair_metadata']['pair_id']]={'file':{'path':str(path),'sha256':file_sha(path)},
-                    **{k:c[k] for k in ('source_rgb_sha256','driver_rgb_sha256','source_canvas_id','target_canvas_id')}}
-                if cache is None:entries[source+'\0'+sample['pair_metadata']['pair_id']]['condition_sha256']=ref['sha256']
-    if cache is None:
+    for source,dataset in data_plan.datasets.items():
+        for i in range(len(dataset)):
+            sample=dataset[i];key=source+'\0'+sample['pair_metadata']['pair_id'];c=sample['local_condition_v4'].metadata[0]
+            ref,spec=data_plan.conditions[(source,i)] if config.qwen_condition_profile!='legacy_single' else (None,None)
+            binding={'key':key,**{k:c[k] for k in ('source_rgb_sha256','driver_rgb_sha256','source_canvas_id','target_canvas_id')},
+                'source_token_hw':list(sample['source_token_hw']),'target_token_hw':list(sample['target_token_hw']),
+                'model_manifest_sha256':manifest['sha256'],'condition_sha256':ref['sha256'] if ref else None,
+                'prompt_sha256':spec['prompt']['sha256'] if spec else digest(config.prompt)}
+            if ref:conditions[key]=ref['sha256']
+            entry=store.get(binding)
+            if entry is None:pending.append((source,i,binding,spec))
+            else:entries[key]=entry
+    if (root/'index.json').exists() and pending:raise ValueError('Published frozen index is missing pair commits')
+    if pending:
+        pipe=load_cache_pipeline(config)
+        pipe.text_encoder.requires_grad_(False).eval();pipe.vae.requires_grad_(False).eval()
+        with torch.no_grad():
+            for source,i,binding,spec in pending:
+                pair=encode_frozen_pair(pipe,data_plan.datasets[source][i],config,spec)
+                entries[binding['key']]=store.put(binding,pair)
+    if config.qwen_condition_profile!='legacy_single':
         from ..conditioning import CACHE_SCHEMA
-        return write_json(root/'index.json',{'schema':CACHE_SCHEMA,'model_manifest_sha256':manifest['sha256'],
+        return store.publish({'schema':CACHE_SCHEMA,'model_manifest_sha256':manifest['sha256'],
             'profile':config.qwen_condition_profile,'condition_bindings':conditions,'entries':entries})
-    return write_json(root/'index.json',{'schema':'native_v5_frozen_cache_index_v1','model_manifest_sha256':manifest['sha256'],
+    return store.publish({'schema':'native_v5_frozen_cache_index_v1','model_manifest_sha256':manifest['sha256'],
         'prompt_sha256':digest(config.prompt),'entries':entries})

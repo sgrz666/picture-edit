@@ -19,6 +19,11 @@ def restore_rng(state):
         if torch.cuda.device_count()!=len(state['cuda']):raise ValueError('CUDA RNG topology changed')
         torch.cuda.set_rng_state_all([x.cpu() for x in state['cuda']])
 
+def restore_training_randomness(state,noise_generator):
+    """Continue global and FM-noise streams after resume or stage construction."""
+    noise_generator.set_state(state['noise_generator_state'].cpu())
+    restore_rng(state['rng'])
+
 def environment():
     import diffusers,transformers
     return {'python':sys.version,'platform':platform.system(),'torch':str(torch.__version__),'cuda':torch.version.cuda,
@@ -29,7 +34,7 @@ def environment():
         'matmul_tf32':torch.backends.cuda.matmul.allow_tf32,'cudnn_tf32':torch.backends.cudnn.allow_tf32}
 
 def save_snapshot(root,runtime,optimizer,scheduler,sampler,noise_generator,*,config,identity,catalog,active,
-                  global_update,stage_update,attempts,journal,micro_position,gradient_report,stage_origin,parent=None,frozen_state=None):
+                  global_update,stage_update,attempts,journal,micro_position,gradient_report,stage_origin,parent=None,frozen_state=None,validation_state=None):
     if micro_position!=0:raise ValueError('Only optimizer-update boundary snapshots are supported')
     root=Path(root);root.mkdir(parents=True,exist_ok=True)
     payload=runtime.checkpoint_payload(metadata={'training_interface':SCHEMA})
@@ -42,6 +47,7 @@ def save_snapshot(root,runtime,optimizer,scheduler,sampler,noise_generator,*,con
         'attempts':attempts,'micro_position':0,'journal':journal.state_dict(),'gradient_report':gradient_report,
         'stage_origin':stage_origin,'parent':parent}
     payload['training_state']['frozen_state']=frozen_state
+    if validation_state is not None:payload['training_state']['validation_state']=validation_state
     path=root/(f'update_{global_update:08d}_'+uuid.uuid4().hex+'.pt')
     with path.open('xb') as f:
         import os
@@ -50,6 +56,7 @@ def save_snapshot(root,runtime,optimizer,scheduler,sampler,noise_generator,*,con
     ref={'path':str(path.resolve()),'sha256':file_sha(path)}
     commit={'schema':'native_v5_training_commit_v1','checkpoint':ref,'global_update':global_update,'stage_update':stage_update,
         'training_state_sha256':digest({'config':config.signature(),'identity':digest(identity),'catalog':catalog.signature(),'journal':journal.state_dict()})}
+    if validation_state is not None:commit['validation_state_sha256']=digest(validation_state)
     marker=write_json(path.with_suffix('.commit.json'),commit)
     return {'checkpoint':ref,'commit':marker}
 
@@ -65,6 +72,8 @@ def load_committed(reference):
     if state.get('micro_position')!=0:raise ValueError('Mid-accumulation resume is not supported')
     expected=digest({'config':state['config_sha256'],'identity':state['identity_sha256'],'catalog':state['catalog_sha256'],'journal':state['journal']})
     if commit.get('training_state_sha256')!=expected:raise ValueError('Training commit signature differs')
+    if 'validation_state_sha256' in commit and commit['validation_state_sha256']!=digest(state.get('validation_state')):
+        raise ValueError('Training validation state signature differs')
     tail=verify_prefix(state['journal'])
     return saved,ref,tail
 

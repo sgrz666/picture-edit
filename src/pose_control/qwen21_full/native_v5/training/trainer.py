@@ -33,10 +33,10 @@ class NativeV5Trainer:
         self.config.require_ready();data=DataPlan(self.config);backend=NativeBackend(self.config,data,purpose='grad')
         result=gradient_preflight(backend,self.config,data);write_json(output,result);return result
 
-    def cache_prepare(self,output):
+    def cache_prepare(self,output,*,resume=False):
         from .data import DataPlan
         from .backend import prepare_cache
-        return prepare_cache(self.config,DataPlan(self.config),output)
+        return prepare_cache(self.config,DataPlan(self.config),output,resume=resume)
 
     def _start(self,mode,checkpoint=None):
         import random
@@ -46,7 +46,7 @@ class NativeV5Trainer:
         from .backend import NativeBackend
         from .sampling import DeterministicSampler,derived_seed
         from .parameters import UpdateScheduler
-        from .checkpointing import load_committed,validate_resume,restore_rng
+        from .checkpointing import load_committed,validate_resume,restore_training_randomness
         from .validation import validate_gate,check_body_baseline,check_warmed_heads,frozen_digest,assert_optimizer_fp32
         config=self.config;config.require_ready();random.seed(config.seed);np.random.seed(config.seed%(2**32));torch.manual_seed(config.seed);torch.cuda.manual_seed_all(config.seed)
         if mode!='resume' and not config.gradient_report:raise ValueError('Explicit matching gradient report required before model/optimizer construction')
@@ -93,7 +93,6 @@ class NativeV5Trainer:
         noise_generator=torch.Generator(device=backend.device).manual_seed(derived_seed(config.seed,config.stage.stage_id+':noise'))
         if mode=='resume':
             scheduler.load_state_dict(saved['training_state']['scheduler_state']);sampler.load_state_dict(saved['training_state']['sampler_state'])
-            noise_generator.set_state(saved['training_state']['noise_generator_state'].cpu())
         assert_optimizer_fp32(optimizer);optimizer.zero_grad(set_to_none=True);catalog.assert_flags(active)
         backend.ensure_evaluators({k for r in config.stage.routes for k in ('identity','perceptual') if getattr(r.loss,k)>0})
         segment=new_segment(config.output_root,mode,parent)
@@ -105,32 +104,58 @@ class NativeV5Trainer:
             'manual_command':config.continuous_stage_authorization is None,
             'continuous_stage_authorization':config.continuous_stage_authorization,'new_gradient_report':gradient})
         journal=Journal(segment/'metrics.jsonl')
-        if mode=='resume':restore_rng(saved['training_state']['rng'])
+        if mode!='train':restore_training_randomness(saved['training_state'],noise_generator)
         frozen=frozen_digest(backend)
         if mode=='resume' and saved['training_state'].get('frozen_state')!=frozen:raise ValueError('Resumed frozen digest differs')
         return dict(backend=backend,data=data,catalog=catalog,active=active,optimizer=optimizer,scheduler=scheduler,sampler=sampler,
             noise_generator=noise_generator,segment=segment,journal=journal,gradient=gradient,origin=origin,parent=parent,
-            global_update=global_update,stage_update=stage_update,attempts=attempts,frozen=frozen)
+            global_update=global_update,stage_update=stage_update,attempts=attempts,frozen=frozen,
+            validation_state=saved['training_state'].get('validation_state') if mode=='resume' else None)
 
     def run(self,*,mode='train',checkpoint=None,stop_after_update=None):
         if mode not in ('train','resume','advance-stage'):raise ValueError('Explicit execution mode required')
         import torch
+        import time
         from .data import route_options
         from .objective import counts_for_window,compute_micro_loss
         from .validation import audit_gradients,assert_optimizer_fp32,frozen_digest
         from .checkpointing import save_snapshot
+        from .evaluation import ValidationGuard,fixed_evaluation_selection
         config=self.config;ctx=self._start(mode,checkpoint);backend=ctx['backend'];runtime=backend.runtime
         if stop_after_update is not None and (type(stop_after_update)!=int or stop_after_update<=ctx['global_update']):raise ValueError('Stop boundary must be beyond restored global update')
         routes={r.name:r for r in config.stage.routes};budget=config.stage.budget_updates
         max_attempts=config.stage.max_attempts or budget*config.stage.accumulation*10
-        micro_position=0;last_snapshot=None
+        micro_position=0;last_snapshot={'checkpoint':ctx['parent']} if mode=='resume' else None
+        has_loss=config.validation_loss_limit_ratio is not None or config.probe_every_updates>0
+        if mode=='resume' and config.validation_loss_limit_ratio is not None and not ctx.get('validation_state'):
+            raise ValueError('Enabled guard requires the committed validation state on resume')
+        selection=fixed_evaluation_selection(config,ctx['data']) if has_loss or config.generation_every_updates else []
+        guard=ValidationGuard(config,selection=selection,state=ctx.get('validation_state'))
+        def probe_loss():
+            from .probes import loss_probe
+            report=loss_probe(backend,config,ctx['data'],ctx['global_update'])
+            if guard.state['enabled']:guard.observe(report)
+            else:guard.state['last_probe_update']=ctx['global_update']
+            ctx['journal'].append(report)
+        def generate():
+            from .observations import generation_probe
+            ctx['journal'].append(generation_probe(backend,config,ctx['data'],ctx['global_update'],Path(config.output_root)/'output/images'))
+            guard.state['last_generation_update']=ctx['global_update']
+        def failure(error):
+            write_json(ctx['segment']/'failure.json',{'error':str(error),'micro_position':micro_position,
+                'last_committed_snapshot':last_snapshot,'partial_window_not_checkpointed':micro_position!=0,
+                'validation_state':guard.state})
         def save():
             if frozen_digest(backend)!=ctx['frozen']:raise RuntimeError('Frozen state changed')
             return save_snapshot(Path(config.output_root)/'checkpoints',runtime,ctx['optimizer'],ctx['scheduler'],ctx['sampler'],ctx['noise_generator'],
                 config=config,identity=backend.identity,catalog=ctx['catalog'],active=ctx['active'],global_update=ctx['global_update'],
                 stage_update=ctx['stage_update'],attempts=ctx['attempts'],journal=ctx['journal'],micro_position=micro_position,
-                gradient_report=ctx['gradient'],stage_origin=ctx['origin'],parent=ctx['parent'],frozen_state=ctx['frozen'])
+                gradient_report=ctx['gradient'],stage_origin=ctx['origin'],parent=ctx['parent'],frozen_state=ctx['frozen'],validation_state=guard.state)
+        if guard.state['enabled'] and guard.state['baseline_loss'] is None:
+            try:probe_loss()
+            except Exception as error:failure(error);raise
         while ctx['stage_update']<budget and ctx['attempts']<max_attempts and (stop_after_update is None or ctx['global_update']<stop_after_update):
+            update_started=time.perf_counter()
             window=[]
             while len(window)<config.stage.accumulation and ctx['attempts']<max_attempts:
                 route_name,source,index=ctx['sampler'].draw();route=routes[route_name];ctx['attempts']+=1
@@ -160,7 +185,8 @@ class NativeV5Trainer:
                     prediction,target,coverage,noisy=backend.forward(batch,pair,route,sigma,noise,options,base)
                     supervision=batch['training_supervision_v5'].to(backend.device)
                     loss,parts=compute_micro_loss(backend.pipe,prediction,target,coverage,supervision,noisy,sigma,
-                        (batch['tgt_image'].to(backend.device).float()+1)*.5,route.loss,counts,ctx['global_update']+1,evaluators)
+                        (batch['tgt_image'].to(backend.device).float()+1)*.5,route.loss,counts,ctx['global_update']+1,evaluators,
+                        spatial=batch.get('spatial_weights_v5'))
                     if not torch.isfinite(loss) or not loss.requires_grad:raise FloatingPointError('Invalid/no-gradient objective for an eligible route')
                     loss.backward();values.append({k:float(v.detach()) if torch.is_tensor(v) else v for k,v in parts.items()})
                 gradients=audit_gradients(backend);active_params=[ctx['catalog'].parameters[n] for n in sorted(ctx['active'])]
@@ -169,22 +195,27 @@ class NativeV5Trainer:
                 ctx['optimizer'].step();ctx['scheduler'].step();assert_optimizer_fp32(ctx['optimizer'])
                 ctx['global_update']+=1;ctx['stage_update']+=1;micro_position=0
                 ctx['journal'].append({'global_update':ctx['global_update'],'stage_update':ctx['stage_update'],'attempts':ctx['attempts'],
-                    'optimizer_updated':True,'window':window,'losses':values,'gradient_norm':float(norm),'gradients':gradients,
+                    'optimizer_updated':True,'update_seconds':time.perf_counter()-update_started,'window':window,'losses':values,'gradient_norm':float(norm),'gradients':gradients,
                     'learning_rates':{g['name']:g['lr'] for g in ctx['optimizer'].param_groups}})
+                finished=ctx['stage_update']==budget
+                due_loss=(config.probe_every_updates and ctx['stage_update']%config.probe_every_updates==0) or (has_loss and finished)
+                # Enabled guard also validates every save, before it can be committed.
+                if guard.state['enabled'] and ctx['stage_update']%config.save_every_updates==0:due_loss=True
+                if due_loss and guard.state['last_probe_update']!=ctx['global_update']:probe_loss()
+                if config.generation_every_updates and (ctx['stage_update']%config.generation_every_updates==0 or finished):
+                    if guard.state['last_generation_update']!=ctx['global_update']:generate()
                 if ctx['stage_update']%config.save_every_updates==0:last_snapshot=save()
-                if config.probe_every_updates and ctx['stage_update']%config.probe_every_updates==0:
-                    from .probes import loss_probe
-                    ctx['journal'].append(loss_probe(backend,config,ctx['data'],ctx['global_update']))
-                if config.generation_every_updates and ctx['global_update']%config.generation_every_updates==0:
-                    from .observations import generation_probe
-                    ctx['journal'].append(generation_probe(backend,config,ctx['data'],ctx['global_update'],Path(config.output_root)/'output/images'))
             except Exception as error:
-                write_json(ctx['segment']/'failure.json',{'error':str(error),'micro_position':micro_position,
-                    'last_committed_snapshot':last_snapshot,'partial_window_not_checkpointed':micro_position!=0})
+                failure(error)
                 raise
-        ctx['optimizer'].zero_grad(set_to_none=True);micro_position=0;last_snapshot=save()
+        ctx['optimizer'].zero_grad(set_to_none=True);micro_position=0
+        try:
+            if has_loss and guard.state['last_probe_update']!=ctx['global_update']:probe_loss()
+            if config.generation_every_updates and ctx['stage_update']==budget and guard.state['last_generation_update']!=ctx['global_update']:generate()
+            last_snapshot=save()
+        except Exception as error:failure(error);raise
         write_json(ctx['segment']/'summary.json',{'requested_updates':budget,'completed_stage_updates':ctx['stage_update'],
             'global_updates':ctx['global_update'],'attempts':ctx['attempts'],'checkpoint':last_snapshot,'automatic_stage_advance':False,
-            'budget_completed':ctx['stage_update']==budget,'requested_stop_boundary':stop_after_update})
+            'budget_completed':ctx['stage_update']==budget,'requested_stop_boundary':stop_after_update,'validation_state':guard.state})
         if ctx['stage_update']!=budget and (stop_after_update is None or ctx['global_update']<stop_after_update):raise RuntimeError('Attempt bound reached before requested updates; partial immutable checkpoint retained')
         return last_snapshot

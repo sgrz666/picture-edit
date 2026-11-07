@@ -21,6 +21,7 @@
 | **8. ControlNet Union 控制** | `6.qwen-controlnet union` | `/data/shangguanrz/pic-edit-experiments/qwen21_union_migration_v1` | 官方 Qwen-Image-2.1-Fun-Controlnet-Union (7.1GB) | 180 权重键全部通过审计；TikTok 8 对实测：对齐布局下 PCK@0.2=0.976 打平基线；纯控制模式 ID 降至 0.01~0.08 |
 | **9. Qwen 2.1 Pro 适配器** | `qwen21_pro_adapter_v1` | `/data/shangguanrz/pic-edit-experiments/qwen21_pro_adapter_v1` | 官方 16 个原生控制块 (4096维) + 14.6M FP32 ProTaskAdapter | 零初始化安全相加；独立外观 Bank (`visible_owner`)；200步过拟合门禁：Face loss -31.86%, Contact -64.37%, Hand -29.44% |
 | **10. Native V5 固定样本训练** | `native_v5_fixedpair` | `/data/shangguanrz/pic-edit-experiments/` (tiktok & hi4d fixedpair-v5) | Qwen 2.1 Native V5 模块化全量训练架构 | 单人 (TikTok 0374/0126) 与双人 (Hi4D 0082/0112) 300 步训练；全套审计与无检测器 ROI 过程观察 |
+| **11. Bilibili 单人空间加权训练** | [`bilibili-single-spatial-training`](bilibili-single-spatial-training/README.md) | `/data/shangguanrz/pic-edit-experiments/bilibili-single-spatial-train-20261107-v1` | Native V5 + Sapiens2 v1 + visible_region_v2 | 12,156 对全量划分；20k 四阶段自动流程，交付启动/恢复/验收入口；未启动训练 |
 
 ---
 

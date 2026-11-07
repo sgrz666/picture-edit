@@ -29,8 +29,14 @@ def sync_directory(path):
 
 def write_json(path,value):
     p=Path(path);p.parent.mkdir(parents=True,exist_ok=True)
-    with p.open('xb') as f:
-        f.write((canonical(value)+'\n').encode());f.flush();os.fsync(f.fileno())
+    if p.exists():raise FileExistsError('Never overwrite an artifact: '+str(p))
+    raw=(canonical(value)+'\n').encode()
+    pending=p.with_name('.'+p.name+'.'+uuid.uuid4().hex+'.pending')
+    with pending.open('xb') as f:
+        f.write(raw);f.flush();os.fsync(f.fileno())
+    # An immutable complete inode becomes visible at the final name in one
+    # operation. Interrupted pending files remain available for audit.
+    os.link(pending,p)
     sync_directory(p.parent)
     return {'path':str(p.resolve()),'sha256':file_sha(p)}
 

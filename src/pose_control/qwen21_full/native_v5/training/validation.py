@@ -23,6 +23,11 @@ def frozen_digest(backend):
     auxiliary=[]
     for scope,model in (('vae',backend.pipe.vae),('text_encoder',backend.pipe.text_encoder),
         *[('evaluator_'+str(i),m) for i,m in enumerate(backend.evaluators) if m is not None]):
+        if model is None:continue
+        if scope in ('vae','text_encoder') and getattr(backend,'lazy_frozen_components',False):
+            expected=getattr(backend,'frozen_component_digests',{}).get(scope)
+            if expected is not None and tensor_digest(model.state_dict().items())!=expected:raise RuntimeError('Frozen lazy component changed: '+scope)
+            continue
         auxiliary.extend((scope+':'+n,t) for n,t in model.state_dict().items() if torch.is_tensor(t))
     return {'native':tensor_digest(native),'qwen':tensor_digest(base),'frozen_auxiliary':tensor_digest(auxiliary),'architecture':digest(backend.runtime.get_extra_state())}
 
@@ -32,6 +37,7 @@ def audit_gradients(backend,*,require_any=True):
     unexpected += ['qwen:'+n for n,p in backend.base_parameters.items() if p.requires_grad or p.grad is not None]
     for scope,model in (('vae',backend.pipe.vae),('text_encoder',backend.pipe.text_encoder),
         *[('evaluator_'+str(i),m) for i,m in enumerate(backend.evaluators) if m is not None]):
+        if model is None:continue
         unexpected.extend(scope+':'+n for n,p in model.named_parameters() if p.requires_grad or p.grad is not None)
     if unexpected:raise RuntimeError('Frozen parameter received gradient: '+str(unexpected[:8]))
     rows={};nonzero=False
@@ -104,6 +110,11 @@ def check_body_baseline(config,initialization):
     if not config.body_baseline_report:raise ValueError('Starting beyond S0 requires a bound Body baseline report and manual acceptance')
     report,bound=read_json_ref(config.body_baseline_report)
     accepted=report.get('manual_acknowledgment') is True
+    if report.get('acceptance_kind')=='technical_training_gate_v1':
+        accepted=False
+        if config.continuous_stage_authorization is not None and report.get('continuous_stage_authorization')==config.continuous_stage_authorization:
+            rebuilt=build_automatic_body_gate(report['s0_checkpoint'],report['s0_gradient_report'],config.continuous_stage_authorization)
+            accepted=rebuilt==report
     if not accepted and config.continuous_stage_authorization is not None:
         if (report.get('continuous_stage_authorization')==config.continuous_stage_authorization and
                 report.get('acceptance_kind')=='technical_pilot_gate'):
@@ -112,6 +123,52 @@ def check_body_baseline(config,initialization):
     if report.get('body_accepted') is not True or not accepted or report.get('checkpoint_sha256')!=initialization['sha256']:
         raise ValueError('Body baseline was not accepted for this initialization')
     return bound
+
+def build_automatic_body_gate(checkpoint_ref,gradient_report_ref,authorization):
+    """Bind completed production S0 evidence; this never invents a human acknowledgment."""
+    import math
+    from types import SimpleNamespace
+    from .config import TrainingConfig
+    from .checkpointing import load_committed
+    from .parameters import ParameterCatalog
+    if (not isinstance(authorization,dict) or authorization.get('source')!='direct_user_message' or
+            not isinstance(authorization.get('text'),str) or not authorization['text'].strip()):
+        raise ValueError('Explicit continuous stage authorization required')
+    saved,checkpoint,_=load_committed(checkpoint_ref);state=saved['training_state']
+    config=TrainingConfig.from_dict(state['config'])
+    if (config.stage.phase!='S0' or config.stage.budget_updates!=10000 or state['stage_update']!=10000 or
+            state['global_update']<state['stage_update'] or config.continuous_stage_authorization!=authorization):
+        raise ValueError('Automatic Body gate requires completed authorized S0 budget 10000')
+    if (config.signature()!=state['config_sha256'] or digest(state['identity'])!=state['identity_sha256'] or
+            digest(state['catalog'])!=state['catalog_sha256']):raise ValueError('Checkpoint config/data/catalog binding differs')
+    expected=ParameterCatalog.active_names(SimpleNamespace(rows=[SimpleNamespace(**r) for r in state['catalog']]),config.stage)
+    if state['active_names']!=sorted(expected):raise ValueError('Checkpoint frozen mask differs')
+    gradient,gradient_ref=read_json_ref(gradient_report_ref)
+    from .io import verify
+    if verify(state['gradient_report'])!=gradient_ref:raise ValueError('Checkpoint gradient report binding differs')
+    checks={'schema':'native_v5_gradient_preflight_v1','level':'grad','passed':True,'production_passed':True,
+        'config_sha256':config.signature(),'data_signature':digest(state['identity']['data']),
+        'identity_sha256':state['identity_sha256'],'catalog_sha256':state['catalog_sha256'],
+        'initialization_sha256':state['stage_origin']['sha256'],'optimizer_created':False,'optimizer_step_executed':False}
+    if any(gradient.get(k)!=v for k,v in checks.items()) or gradient.get('verification_only') is not False:
+        raise ValueError('Missing or mismatched production gradient evidence')
+    frozen=state.get('frozen_state')
+    if not frozen or gradient.get('frozen_before')!=frozen or gradient.get('frozen_after')!=frozen:
+        raise ValueError('Frozen production state changed')
+    validation=state.get('validation_state',{})
+    if (validation.get('enabled') is not True or validation.get('passed') is not True or
+            validation.get('finite') is not True or validation.get('triggered') is not False or
+            validation.get('last_probe_update')!=state['global_update'] or
+            validation.get('loss_limit_ratio')!=config.validation_loss_limit_ratio or
+            validation.get('failure_patience')!=config.validation_failure_patience or
+            validation.get('consecutive_failures',config.validation_failure_patience)>=config.validation_failure_patience or
+            any(type(validation.get(k)) not in (int,float) or not math.isfinite(validation[k]) for k in ('baseline_loss','last_loss'))):
+        raise ValueError('Missing passed finite final validation state')
+    return {'schema':'native_v5_body_acceptance_v1','acceptance_kind':'technical_training_gate_v1','body_accepted':True,
+        'checkpoint_sha256':checkpoint['sha256'],'s0_checkpoint':checkpoint,'s0_gradient_report':gradient_ref,
+        'continuous_stage_authorization':authorization,'completed_stage_updates':state['stage_update'],
+        'config_sha256':state['config_sha256'],'identity_sha256':state['identity_sha256'],
+        'data_signature':gradient['data_signature'],'frozen_state':frozen,'validation_state':validation}
 
 @contextmanager
 def prefix_trace(backend,pair,noisy,sigma):
@@ -148,7 +205,7 @@ def gradient_preflight(backend,config,data):
                     key=(source,status['bucket'][2],status['bucket'][3],tuple(k for k,v in status['branch_usable'].items() if v),
                         digest(status['capabilities']),bool(status['auxiliary_faces']))
                     representatives.setdefault(key,(source,i))
-            if not representatives or len(representatives)>config.probe_samples:
+            if not representatives or len(representatives)>(config.gradient_case_budget or config.probe_samples):
                 passed=False;records.append({'route':route.name,'status':'not_exercised_or_budget_too_small','required_cases':len(representatives)});continue
             cases.extend((route,source,i) for source,i in representatives.values())
         for route,source,index in cases:
@@ -171,7 +228,8 @@ def gradient_preflight(backend,config,data):
                 if baseline_prefix!=controlled_prefix:raise RuntimeError('Native control changed a text/reference prefix')
                 supervision=batch['training_supervision_v5'].to(backend.device)
                 loss,_=compute_micro_loss(backend.pipe,output,target,coverage,supervision,actual_noisy,sigma,
-                    (batch['tgt_image'].to(backend.device).float()+1)*.5,route.loss,counts,route.loss.auxiliary_every,evaluators)
+                    (batch['tgt_image'].to(backend.device).float()+1)*.5,route.loss,counts,route.loss.auxiliary_every,evaluators,
+                    spatial=batch.get('spatial_weights_v5'))
                 if not torch.isfinite(loss):raise FloatingPointError('Nonfinite preflight objective')
                 loss.backward();return audit_gradients(backend)
             first=backward_once()

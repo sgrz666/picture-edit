@@ -62,6 +62,7 @@ def main(argv=None):
     p.add_argument('--steps',type=int);p.add_argument('--accumulation',type=int);p.add_argument('--seed',type=int);p.add_argument('--lr',type=float)
     p.add_argument('--freeze-group',action='append');p.add_argument('--unfreeze-group',action='append');p.add_argument('--group-lr',action='append')
     p.add_argument('--loss-profile',choices=('velocity_only','local_velocity','local_aux'));p.add_argument('--stop-after-update',type=int)
+    p.add_argument('--resume-cache',action='store_true',help='Verify and reuse independently committed frozen pairs; never overwrite')
     a=p.parse_args(argv)
     if a.preflight_only:a.action='preflight';a.level='data'
     if a.action in ('resume','advance-stage') and a.checkpoint is None:p.error('Explicit committed --checkpoint required')
@@ -75,5 +76,5 @@ def main(argv=None):
         print(canonical({'level':a.level,'passed':result['passed'],'report':str(a.report)}));return
     if a.action=='prepare-cache':
         if a.cache_output is None:p.error('--cache-output must be a new directory')
-        print(canonical(trainer.cache_prepare(a.cache_output)));return
+        print(canonical(trainer.cache_prepare(a.cache_output,resume=a.resume_cache)));return
     print(canonical(trainer.run(mode=a.action,checkpoint=ref(a.checkpoint),stop_after_update=a.stop_after_update)))

@@ -1,6 +1,6 @@
 """Pure-stdlib training configuration. Resolve is not permission to train."""
 from dataclasses import dataclass,field,asdict
-from pathlib import Path
+from pathlib import Path,PurePosixPath
 import hashlib,json,math
 
 SCHEMA='native_v5_training_v1'
@@ -19,9 +19,13 @@ def construct(cls,raw):
 
 def reference_syntax(ref):
     if ref is None:return
-    if not isinstance(ref,dict) or not ref.get('path') or not Path(ref['path']).is_absolute():raise ValueError('Artifact reference needs an absolute path')
+    if not isinstance(ref,dict) or not ref.get('path') or not absolute_syntax(ref['path']):raise ValueError('Artifact reference needs an absolute path')
     sha=ref.get('sha256')
     if sha is not None and (not isinstance(sha,str) or len(sha)!=64 or any(c not in '0123456789abcdef' for c in sha)):raise ValueError('Invalid SHA256 reference')
+
+def absolute_syntax(path):
+    """Config can describe a Linux deployment when prepared on Windows."""
+    return isinstance(path,str) and (Path(path).is_absolute() or PurePosixPath(path).is_absolute())
 
 @dataclass(frozen=True)
 class LossSpec:
@@ -32,10 +36,20 @@ class LossSpec:
     perceptual: float=0.
     auxiliary_every: int=4
     auxiliary_sigma_max: float=.35
+    spatial_body: float=0.
+    spatial_joint: float=0.
+    spatial_hand: float=0.
+    spatial_max: float=2.5
 
     def __post_init__(self):
-        for k in ('velocity','face','hand','identity','perceptual'):positive(getattr(self,k),k,zero=True)
+        for k in ('velocity','face','hand','identity','perceptual','spatial_body','spatial_joint','spatial_hand'):positive(getattr(self,k),k,zero=True)
+        positive(self.spatial_max,'spatial_max')
+        if self.spatial_max<1:raise ValueError('spatial_max must be at least one')
+        if any(self.spatial_coefficients) and (self.face or self.hand):raise ValueError('Spatial weighting cannot duplicate legacy Face/Hand velocity loss')
         if self.velocity<=0 or type(self.auxiliary_every)!=int or self.auxiliary_every<1 or not 0<self.auxiliary_sigma_max<=1:raise ValueError('Invalid loss/gate')
+
+    @property
+    def spatial_coefficients(self):return (self.spatial_body,self.spatial_joint,self.spatial_hand)
 
 @dataclass(frozen=True)
 class RouteSpec:
@@ -75,6 +89,7 @@ class SourceSpec:
     data_profile: str='auto'
     scene_kind: str='any'
     weight: float | None=None
+    spatial_weights: dict | None=None     # Hash-pinned offline GT/Canvas component index
 
     def __post_init__(self):
         if not self.source_id or '\0' in self.source_id or self.role not in ('train','validation','observation') or self.data_profile not in ('auto','full_smplx','hybrid_hi4d') or self.scene_kind not in ('any','single','dual'):
@@ -82,6 +97,8 @@ class SourceSpec:
         if self.source_id=='champ_motions_example':raise ValueError('Unpaired CHAMP motion examples are not supervised training data')
         if self.weight is not None:positive(self.weight,'source weight')
         reference_syntax(self.manifest);reference_syntax(self.groups)
+        reference_syntax(self.spatial_weights)
+        if self.spatial_weights is not None and not self.spatial_weights.get('sha256'):raise ValueError('Spatial index requires a pinned SHA256')
 
 @dataclass(frozen=True)
 class OptimizerSpec:
@@ -145,6 +162,9 @@ class TrainingConfig:
     save_every_updates: int=100
     probe_every_updates: int=0
     probe_samples: int=8
+    gradient_case_budget: int | None=None
+    validation_loss_limit_ratio: float | None=None
+    validation_failure_patience: int=3
     num_workers: int=0
     micro_batch: int=1
     world_size: int=1
@@ -158,6 +178,9 @@ class TrainingConfig:
     continuous_stage_authorization: dict | None=None
 
     def __post_init__(self):
+        if self.gradient_case_budget is not None and (type(self.gradient_case_budget)!=int or self.gradient_case_budget<1):raise ValueError('Invalid gradient case budget')
+        if self.validation_loss_limit_ratio is not None:positive(self.validation_loss_limit_ratio,'validation loss limit ratio')
+        if type(self.validation_failure_patience)!=int or self.validation_failure_patience<1:raise ValueError('Invalid validation failure patience')
         if self.continuous_stage_authorization is not None:
             a=self.continuous_stage_authorization
             if not isinstance(a,dict) or a.get('source')!='direct_user_message' or not isinstance(a.get('text'),str) or not a['text'].strip():
@@ -174,7 +197,7 @@ class TrainingConfig:
         if type(self.seed)!=int or not 0<=self.seed<2**63 or any(type(x)!=int for x in (self.save_every_updates,self.probe_every_updates,self.probe_samples)) or self.save_every_updates<1 or self.probe_every_updates<0 or self.probe_samples<1:raise ValueError('Invalid seed/interval')
         for ref in (self.initialization,self.model_manifest,self.cache_identity,self.gradient_report,self.body_baseline_report):reference_syntax(ref)
         for name in ('model_path','cache_root','output_root'):
-            if getattr(self,name) is not None and not Path(getattr(self,name)).is_absolute():raise ValueError('Absolute '+name+' required')
+            if getattr(self,name) is not None and not absolute_syntax(getattr(self,name)):raise ValueError('Absolute '+name+' required')
         if self.evaluators:
             for ref in self.evaluators.values():reference_syntax(ref)
         if len({s.source_id for s in self.sources})!=len(self.sources):raise ValueError('Duplicate source IDs')
@@ -196,10 +219,13 @@ class TrainingConfig:
         for s in self.sources:
             if not s.manifest:missing.append(s.source_id+'.manifest')
             if not s.groups:missing.append(s.source_id+'.groups')
+            if not s.spatial_weights and any(any(r.loss.spatial_coefficients) and
+                (s.role!='train' or not r.source_ids or s.source_id in r.source_ids) for r in self.stage.routes):
+                missing.append(s.source_id+'.spatial_weights')
         return missing
     def require_ready(self):
         if self.missing():raise ValueError('Preparation is not train-ready: '+', '.join(self.missing()))
-        if not str(Path(self.output_root)).startswith('/data/shangguanrz/'):raise ValueError('New training artifacts belong under /data/shangguanrz/')
+        if not self.output_root.startswith('/data/shangguanrz/'):raise ValueError('New training artifacts belong under /data/shangguanrz/')
 
     @classmethod
     def from_dict(cls,raw):
