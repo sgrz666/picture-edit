@@ -87,7 +87,8 @@ class ParameterCatalog:
         return active
 
     def assert_flags(self,active):
-        if any(dict(self.runtime.named_parameters()).get(n) is not p for n,p in self.parameters.items()):raise RuntimeError('Parameter objects changed after catalog binding')
+        current=dict(self.runtime.named_parameters())
+        if any(current.get(n) is not p for n,p in self.parameters.items()):raise RuntimeError('Parameter objects changed after catalog binding')
         wrong=[n for n,p in self.parameters.items() if p.requires_grad!=(n in active)]
         if wrong:raise RuntimeError('Frozen mask changed after installation: '+str(wrong[:8]))
 

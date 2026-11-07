@@ -223,6 +223,11 @@ def replay(rows):
     return state
 
 
+def active_plan_reference(rows):
+    """Only an explicit append-only code revision supersedes the initial plan."""
+    return next((row['plan'] for row in reversed(rows) if row['event'] in ('plan','code_revision')),None)
+
+
 def next_task(state):
     accepted = state['accepted']
     for task in ('prepare_data', 'prepare_cache', 'data_preflight'):
@@ -433,20 +438,24 @@ def validate_result(action, result):
 
 def status(root, *, verify_checkpoints=False):
     root = Path(root)
-    state = replay(EventJournal(root).read())
+    rows = EventJournal(root).read()
+    state = replay(rows)
     state['ignored_stops'] = sorted(state['ignored_stops'])
     state['terminal_tasks'] = sorted(state['terminal_tasks'])
     state['run_root'] = str(root)
     state['owner_alive'] = bool(state.get('pid') and Path('/proc',str(state['pid'])).exists()) if os.name=='posix' else None
     if verify_checkpoints:
         for row in EventJournal(root).read():
-            if row['event'] == 'plan':
+            if row['event'] in ('plan','code_revision'):
                 audit_references(row['plan'])
         audit_references(state['accepted'])
         state['artifact_closure_verified'] = True
-    plan_path = root/'run_plan.json'
+    active_ref=active_plan_reference(rows)
+    plan_path = Path(active_ref['path']) if active_ref else root/'run_plan.json'
     if plan_path.exists():
         plan = json.loads(plan_path.read_text(encoding='utf8'))
+        state['active_plan']=active_ref
+        state['active_repo_root']=plan['repo_root']
         state['total_budget'] = plan['total_updates']
         checkpoints = {phase: latest_committed(root, phase) for phase in PHASES} if verify_checkpoints else {}
         # Cheap status reads commit counters; verify additionally hashes every checkpoint.
@@ -508,9 +517,9 @@ def run(args):
             plan_ref = write_new_json(plan_path, plan)
             journal.append({'event': 'plan', 'plan': plan_ref})
         else:
-            plan = json.loads(plan_path.read_text(encoding='utf8'))
-            recorded = next((r['plan'] for r in rows if r['event'] == 'plan'), None)
-            checked_ref(recorded)
+            recorded = active_plan_reference(rows)
+            plan = read_ref(recorded)
+            plan_path = Path(recorded['path'])
             state = replay(rows)
             if state['status'] in ('failed', 'completed'):
                 raise ValueError('Terminal '+state['status']+' run cannot resume')

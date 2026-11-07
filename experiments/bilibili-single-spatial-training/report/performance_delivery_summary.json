@@ -1,0 +1,56 @@
+{
+  "status": "deployed_waiting_accepted_data",
+  "recorded_at": "2026-11-07T09:06:49.406773+00:00",
+  "current_runtime": "runtime_repo_v5",
+  "target_runtime": "runtime_repo_v6",
+  "run_root": "/data/shangguanrz/pic-edit-experiments/bilibili-single-spatial-train-20261107-v1",
+  "successful_optimizer_updates_at_observation": 0,
+  "total_budget": 20000,
+  "cpu_regression": {
+    "passed": 177,
+    "skipped": 2
+  },
+  "isolated_cuda_tests": {
+    "passed": 7,
+    "optimizer_updates": 0
+  },
+  "real_native_samples_bitwise_equal": 3,
+  "audit_timing_only": [
+    {
+      "phase": "S0",
+      "before_seconds": 1.3980262489058077,
+      "after_seconds": 0.019213267136365175,
+      "metrics_exact": true,
+      "gradient_bytes_unchanged": true
+    },
+    {
+      "phase": "S1",
+      "before_seconds": 1.2667677700519562,
+      "after_seconds": 0.004959583282470703,
+      "metrics_exact": true,
+      "gradient_bytes_unchanged": true
+    },
+    {
+      "phase": "S2",
+      "before_seconds": 1.7887305859476328,
+      "after_seconds": 0.042442076839506626,
+      "metrics_exact": true,
+      "gradient_bytes_unchanged": true
+    },
+    {
+      "phase": "S3",
+      "before_seconds": 2.037568333093077,
+      "after_seconds": 0.06217787088826299,
+      "metrics_exact": true,
+      "gradient_bytes_unchanged": true
+    }
+  ],
+  "handoff": {
+    "pid": 696694,
+    "sid": 696694,
+    "log": "logs/code_update_20261107T090137Z_696686_2026.log",
+    "wait_for": "accepted prepare_data",
+    "done_marker": "control/code_update_completed_*.json"
+  },
+  "scope": "Engineering optimization deployed and verified; production activation pending data gate; no end-to-end training speedup claim."
+}

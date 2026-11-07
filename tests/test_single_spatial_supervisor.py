@@ -389,3 +389,62 @@ def test_full_loss_evaluation_rejects_missing_or_duplicate_pairs(monkeypatch):
     monkeypatch.setattr(probes,'loss_probe',lambda *a:{'records':[{'source_id':'val','index':i,'objective':1.} for i in (0,1,1)]})
     with pytest.raises(ValueError,match='coverage'):
         w.full_evaluation_loss(None,config,data,20000)
+
+
+def test_active_plan_changes_only_through_append_only_revision(tmp_path):
+    s=module('supervisor');j=s.EventJournal(tmp_path)
+    first=s.write_new_json(tmp_path/'run_plan.json',{'repo_root':'old','total_updates':20000})
+    j.append({'event':'plan','plan':first})
+    assert s.active_plan_reference(j.read())==first
+    second=s.write_new_json(tmp_path/'revision.json',{'repo_root':'new','total_updates':20000})
+    j.append({'event':'code_revision','plan':second,'parent':first,'successful_updates':0})
+    assert s.active_plan_reference(j.read())==second
+    assert s.read_ref(first)['repo_root']=='old'
+    assert len(j.read())==2
+
+
+@pytest.mark.parametrize('status,attempts,checkpoint',[
+    ('running',{},False),('failed',{},False),('stopped',{'S0.stage_grad':1},False),
+    ('stopped',{'S0.stage_train':1},False),('stopped',{},True)])
+def test_code_update_refuses_running_terminal_or_production_started(status,attempts,checkpoint):
+    u=module('update_training_code')
+    state={'status':status,'attempts':attempts,'accepted':{'prepare_data':{'passed':True}}}
+    with pytest.raises(ValueError):u.validate_pretraining_update(state,checkpoint)
+
+
+def test_pretraining_update_requires_accepted_data_and_retains_prefix():
+    u=module('update_training_code')
+    with pytest.raises(ValueError):u.validate_pretraining_update({'status':'stopped','attempts':{},'accepted':{}},False)
+    state={'status':'stopped','attempts':{'prepare_data':1,'prepare_cache':1},
+           'accepted':{'prepare_data':{'passed':True,'prepared':{'path':'fixed','sha256':'a'*64}}}}
+    before=json.dumps(state,sort_keys=True)
+    u.validate_pretraining_update(state,False)
+    assert json.dumps(state,sort_keys=True)==before
+
+
+def test_recorded_code_update_preserves_original_plan_budget_and_data(tmp_path,monkeypatch):
+    from contextlib import nullcontext
+    s,u,p=module('supervisor'),module('update_training_code'),module('run_plan')
+    monkeypatch.setattr(u,'single_owner',lambda *a:nullcontext())
+    monkeypatch.setattr(u,'idle_worker',lambda *a:nullcontext())
+    old,new=tmp_path/'old',tmp_path/'new';old.mkdir();new.mkdir()
+    for name in ('trainer.py','validation.py','parameters.py'):
+        target=new/'src/pose_control/qwen21_full/native_v5/training'/name
+        target.parent.mkdir(parents=True,exist_ok=True);target.write_text('x=1\n')
+    auth=s.write_new_json(tmp_path/'auth.json',{'source':'direct_user_message','text':'允许本次代码更新，预算不变'})
+    plan=p.make_plan(str(tmp_path),str(old),s.read_ref(auth))
+    original=s.write_new_json(tmp_path/'run_plan.json',plan)
+    report=s.write_new_json(tmp_path/'audit.json',{'passed':True,'optimizer_step_executed':False,
+        'baseline_repo':str(old),'repo_root':str(new),'new_code':{name:s.file_ref(new/'src/pose_control/qwen21_full/native_v5/training'/name)
+        for name in ('trainer.py','validation.py','parameters.py')}})
+    accepted=s.write_new_json(tmp_path/'prepared_result.json',{'passed':True,'prepared':{'binding':'unchanged'}})
+    journal=s.EventJournal(tmp_path);journal.append({'event':'plan','plan':original})
+    journal.append({'event':'accepted','task':'prepare_data','result':accepted})
+    journal.append({'event':'stopped'})
+    revision=u.record_update(tmp_path,new,auth,report)
+    assert s.read_ref(original)==plan
+    changed=s.read_ref(revision)
+    assert changed['repo_root']==str(new) and changed['stages']==plan['stages'] and changed['total_updates']==20000
+    assert s.replay(journal.read())['accepted']['prepare_data']==s.read_ref(accepted)
+    assert s.active_plan_reference(journal.read())==revision
+    assert u.record_update(tmp_path,new,auth,report)==revision

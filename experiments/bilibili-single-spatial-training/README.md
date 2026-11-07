@@ -2,13 +2,13 @@
 
 目的：在 Bilibili 原视频隔离的 train/val/test 上执行 S0/S1/S2/S3 共 20,000 次成功 optimizer 更新。使用 Sapiens2 v1 几何和全量 `visible_region_v2` 空间监督；保留所有样本及原质量标记，不做冒烟训练。
 
-运行根为 `/data/shangguanrz/pic-edit-experiments/bilibili-single-spatial-train-20261107-v1`；本地隔离分支为 `codex/bilibili-single-spatial-20k`。本目录的 `scripts/` 提供后台主管、数据准备和阶段 worker；`source/legacy/` 保存既有数据装配工具原样副本。服务器 `source/remote-baseline-20261107T0113/` 固定了实施前代码，正式版本是独立的 `source/runtime_repo_v4/`，不修改远端主工作区。早期 `source/runtime_repo/` 与根 `scripts/` 保留原样，只作历史快照，启动使用下面的 v4 路径。
+运行根为 `/data/shangguanrz/pic-edit-experiments/bilibili-single-spatial-train-20261107-v1`；本地隔离分支为 `codex/bilibili-single-spatial-20k`。本目录的 `scripts/` 提供后台主管、数据准备和阶段 worker；`source/legacy/` 保存既有数据装配工具原样副本。服务器 `source/remote-baseline-20261107T0113/` 固定了实施前代码，正式版本是独立的 `source/runtime_repo_v6/`，不修改远端主工作区。早期 `source/runtime_repo/` 与根 `scripts/` 保留原样，只作历史快照，启动使用下面的 v6 路径。
 
 已确认划分为 train 9,520 对、val 1,490 对、test 1,146 对；已有 1,960 帧物理资产和 Source 参考特征，561 对 Native 配对产物可校验后复用。全量 v2 空间索引已生成并通过独立审计，Body Mask 保持原样。
 
 阶段预算固定为 10,000/2,000/4,000/4,000，seed=42、micro-batch=1、accumulation=4、单 GPU、workers=0，long-side=512；Loss 为 velocity=1、Body=.5、Joint=.5、Hand=1、max=2.5，旧 Face/Hand 局部 velocity 和 ID/perceptual=0。训练对象是 Native Adapter，权重图保持冻结；Interaction 关闭。
 
-按最后一次用户指令，本次交付训练流程，**没有启动主管、冻结 Qwen 缓存或 optimizer 训练**。完整 Native 清单、剩余配对装配、冻结缓存和真实梯度验收由下列正式启动命令顺序完成；尚不能声称全部数据已训练就绪。CPU 回归不代替生产模型验收。
+2026-11-07 性能更新实施时，现行主管已在运行 `prepare_data`，optimizer 更新为0。v6 在完整数据准备被验收后自动接续，复用原产物；实际生效版本以 `status.active_repo_root` 和 journal 的 `code_revision` 为准。完整 Native 清单、冻结缓存和真实梯度验收由主管顺序完成，CPU 回归不代替生产模型验收。
 
 ## 启动、查看与恢复
 
@@ -17,7 +17,7 @@
 ```bash
 RUN=/data/shangguanrz/pic-edit-experiments/bilibili-single-spatial-train-20261107-v1
 PY=/home/shangguanrz/nihaochen/envs/qwen21/bin/python
-REPO="$RUN/source/runtime_repo_v4"
+REPO="$RUN/source/runtime_repo_v6"
 SCRIPTS="$REPO/experiments/bilibili-single-spatial-training/scripts"
 bash "$SCRIPTS/launch.sh" run --run-root "$RUN" --repo-root "$REPO" --python "$PY" --gpu 0
 ```
@@ -74,8 +74,27 @@ cd "$REPO"
 
 真实旧产物复用检查命令是 `"$PY" "$SCRIPTS/data_prepare.py" verify-reuse --run-root "$RUN" --repo-root "$REPO"`，只用 CPU 和真实 Native reader；全量 12,156 对读取由 `prepare_data` 门禁执行。运行时数据准备使用原 CUDA 几何 rasterizer，不重新拟合 SMPL-X。空间图和旧产物先校验再复用，已匹配旧缓存的任何 SHA/Canvas/读取失败直接停止，不重建掩盖错误。保留局部浮点遮挡修正及原精细手部有效标记。NPZ 仅采用标准无损 DEFLATE level 3，数组/精度不变。
 
-交付验证命令为 `"$PY" "$SCRIPTS/verify_delivery.py" --run-root "$RUN" --repo-root "$REPO" --deployment-manifest "$RUN/source/deploy_20261107_final_v4_manifest.json" --report-path "$RUN/source/delivery_verification_v4.json"`。首次执行验证部署 SHA、语法和上述 CPU 回归，并生成本版本独立的 `source/runtime_code_manifest_*.json`、`source/delivery_verification_v4.json`；再次执行校验既有交付闭包，不创建训练作业。监管 agent 可直接查看记录中的测试摘要和未完成门禁。
+交付验证命令为 `"$PY" "$SCRIPTS/verify_delivery.py" --run-root "$RUN" --repo-root "$REPO" --deployment-manifest "$RUN/source/deploy_20261107_final_v6_manifest.json" --report-path "$RUN/source/delivery_verification_v6.json"`。首次执行验证部署 SHA、语法和上述 CPU 回归，并生成本版本独立的 `source/runtime_code_manifest_*.json`、`source/delivery_verification_v6.json`；再次执行校验既有交付闭包，不创建训练作业。监管 agent 可直接查看记录中的测试摘要和未完成门禁。
 
 交给监管 agent 时先读 `HANDOFF.md` 和最新状态，关注 `prepare_data`、`prepare_cache`、阶段切换、首批 optimizer 更新与终态。不要额外启动冒烟训练、重复数据作业或修改已固定的运行代码。GPU 查询在该机 NVML 版本不匹配时使用 CUDA runtime；仅对本运行设置 `cudaMallocAsync`，不修改驱动或环境包。
 
 上游是 `/data/shangguanrz/datasets/bilibili`、既有 Bilibili Native 准备目录及 `native-spatial-supervision-20261106-v1`；下游复用仓级 `native_v5/training` 正式接口。
+
+## v6 等价提速与授权代码更新
+
+只改变三处工程实现：采样阶段利用已验收的 scene kind，完整样本在前向时只读一次；梯度finite/nonzero/norm逐项照旧计算，在同一device汇集标量后一次回传；参数绑定/冻结检查每轮只枚举一次模型参数。B1累积4、全部20k成功更新、sigma/noise序列、FP32 Adapter和AdamW moments、loss/LR、验证/出图/保存频率均不变。SHA与场景失配仍停机。
+
+`audit_throughput.py` 将v5/v6源码差异限定为上述3个核心文件，比较3对真实Native样本所有字段，并用真实Adapter参数形状的合成CUDA梯度缓冲比较四阶段审计结果、缓冲区SHA和耗时。它不加载Qwen、不创建optimizer、不执行训练更新；此计时仅代表审计环节，不能当作整程训练倍速。结果在运行根 `source/throughput_audit_v6.json`。生产梯度验收仍由新版本正式入口重新执行。
+
+用户已明确授权解除旧代码SHA对本次修改的限制。实现为追加新代码指纹/plan引用，原 `run_plan.json`、日志和旧版本全部保留；数据、模型、缓存、checkpoint SHA继续严格。`update_training_code.py` 等待prepare_data验收通过后停止旧主管，确认无生产grad/train尝试或checkpoint，再追加 `code_revision` 并 `resume` 同一run，已验收任务不重做。只允许训练前切换；若已开训则拒绝，避免丢失optimizer/RNG或重新计数。
+
+一次性后台接续命令（相同控制锁拒绝重复接续）：
+
+```bash
+bash "$SCRIPTS/launch_code_update.sh" --run-root "$RUN" --repo-root "$REPO" \
+  --authorization-json "$RUN/source/performance_update_authorization.json" \
+  --audit-report "$RUN/source/throughput_audit_v6.json"
+ls -lt "$RUN"/logs/code_update_* "$RUN"/control/code_update_*
+```
+
+如已在后台等待接续，不要再启动第二个主管。主管状态多出 `active_plan`、`active_repo_root`；旧脚本不能解析版本更新，后续恢复使用v6入口。`code_update_completed_*.json` 表示代码接续成功，不能冒充20k训练完成。

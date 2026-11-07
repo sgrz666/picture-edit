@@ -211,7 +211,7 @@ def trainer_context(tmp_path,monkeypatch,c):
     runtime.strength=lambda *a:torch.ones(1)
     p=runtime.weight
     optimizer=torch.optim.SGD([p],lr=.01)
-    status={'face_area':0,'hand_area':0,'auxiliary_faces':0}
+    status={'face_area':0,'hand_area':0,'auxiliary_faces':0,'bucket':[[1,4],[1,4],'single','full_smplx',512]}
     data=selection_data();data.status={('body','train',0):status};data.sample=lambda *a:{'native_scene_kind':'single'}
     backend=SimpleNamespace(runtime=runtime,device='cpu',ensure_evaluators=lambda r:(),
         pair=lambda *a:({'native_scene_kind':'single'},{'training_supervision_v5':torch.ones(1),'tgt_image':torch.zeros(1,3,16,16)},
@@ -235,6 +235,36 @@ def trainer_context(tmp_path,monkeypatch,c):
     monkeypatch.setattr(trainer,'write_json',lambda path,value:writes.update({path.name:value}))
     optimizer.param_groups[0]['name']='test'
     return NativeV5Trainer(c),events,writes,context
+
+
+def test_training_reads_each_micro_once_and_preserves_noise_sequence(tmp_path,monkeypatch):
+    c=replace(TrainingConfig(),stage=replace(stage_preset('S0',budget=2),accumulation=4),
+              output_root='/data/shangguanrz/test',probe_every_updates=0,save_every_updates=100)
+    t,events,writes,ctx=trainer_context(tmp_path,monkeypatch,c)
+    original_sample=ctx['data'].sample; reads=[]; observed=[]
+    def sample(source,index):
+        reads.append((source,index));return original_sample(source,index)
+    ctx['data'].sample=sample
+    original_pair=ctx['backend'].pair
+    def pair(source,index):
+        _,batch,latent=original_pair(source,index)
+        return sample(source,index),batch,latent
+    ctx['backend'].pair=pair
+    forward=ctx['backend'].forward
+    def capture(batch,pair,route,sigma,noise,options,base):
+        observed.append((sigma.clone(),noise.clone()))
+        return forward(batch,pair,route,sigma,noise,options,base)
+    ctx['backend'].forward=capture
+    t.run()
+    assert reads==[('train',0)]*8
+    expected=[];generator=torch.Generator()
+    for update in range(2):
+        sigmas=[torch.rand(1,generator=generator) for _ in range(4)]
+        expected.extend((sigma,torch.randn((1,4,64),generator=generator)) for sigma in sigmas)
+    for actual,wanted in zip(observed,expected):
+        assert all(torch.equal(a,b) for a,b in zip(actual,wanted))
+    assert len(observed)==8 and ctx['global_update']==ctx['stage_update']==2
+    assert torch.equal(ctx['noise_generator'].get_state(),generator.get_state())
 
 
 def test_trainer_validates_before_commits_and_probes_stage_end_without_duplicate_generation(tmp_path,monkeypatch):

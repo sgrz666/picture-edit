@@ -31,6 +31,11 @@ def frozen_digest(backend):
         auxiliary.extend((scope+':'+n,t) for n,t in model.state_dict().items() if torch.is_tensor(t))
     return {'native':tensor_digest(native),'qwen':tensor_digest(base),'frozen_auxiliary':tensor_digest(auxiliary),'architecture':digest(backend.runtime.get_extra_state())}
 
+def _gradient_metrics_to_cpu(packed):
+    """One scalar-result transfer per device, without changing gradient buffers."""
+    return packed.detach().cpu().tolist()
+
+
 def audit_gradients(backend,*,require_any=True):
     backend.catalog.assert_flags(backend.active)
     unexpected=[n for n,p in backend.catalog.parameters.items() if n not in backend.active and p.grad is not None]
@@ -40,14 +45,28 @@ def audit_gradients(backend,*,require_any=True):
         if model is None:continue
         unexpected.extend(scope+':'+n for n,p in model.named_parameters() if p.requires_grad or p.grad is not None)
     if unexpected:raise RuntimeError('Frozen parameter received gradient: '+str(unexpected[:8]))
+    groups={};metrics={}
+    for r in backend.catalog.rows:
+        p=backend.catalog.parameters[r.name]
+        # Preserve the old parameter-order error precedence. Earlier nonfinite
+        # gradients still fail before a later illegal parameter dtype.
+        if p.dtype!=torch.float32:break
+        if p.grad is None:continue
+        g=p.grad.detach()
+        value=torch.stack((torch.isfinite(g).all().to(torch.float32),
+                           g.count_nonzero().ne(0).to(torch.float32),g.norm()))
+        groups.setdefault(g.device,[]).append((r.name,value))
+    for values in groups.values():
+        packed=_gradient_metrics_to_cpu(torch.stack([value for _,value in values]))
+        metrics.update((name,value) for (name,_),value in zip(values,packed))
     rows={};nonzero=False
     for r in backend.catalog.rows:
         p=backend.catalog.parameters[r.name];g=p.grad
         if p.dtype!=torch.float32:raise ValueError('Adapter parameters must be FP32')
-        if g is not None and not torch.isfinite(g).all():raise FloatingPointError('Nonfinite gradient: '+r.name)
-        status='not_called_or_no_gradient' if g is None else 'zero' if not g.count_nonzero() else 'nonzero'
+        if g is not None and not metrics[r.name][0]:raise FloatingPointError('Nonfinite gradient: '+r.name)
+        status='not_called_or_no_gradient' if g is None else 'zero' if not metrics[r.name][1] else 'nonzero'
         if status=='nonzero':nonzero=True
-        rows[r.name]={'status':status,'norm':None if g is None else float(g.norm()),'active':r.name in backend.active,'group':r.runtime_group,'role':r.role}
+        rows[r.name]={'status':status,'norm':None if g is None else metrics[r.name][2],'active':r.name in backend.active,'group':r.runtime_group,'role':r.role}
     if require_any and not nonzero:raise RuntimeError('No active finite nonzero gradient')
     return rows
 

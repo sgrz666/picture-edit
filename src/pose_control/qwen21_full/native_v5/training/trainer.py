@@ -159,9 +159,11 @@ class NativeV5Trainer:
             window=[]
             while len(window)<config.stage.accumulation and ctx['attempts']<max_attempts:
                 route_name,source,index=ctx['sampler'].draw();route=routes[route_name];ctx['attempts']+=1
-                sample=ctx['data'].sample(source,index);options,base=route_options(route,sample['native_scene_kind'])
-                sigma=torch.rand(1,device=backend.device,generator=ctx['noise_generator'])
                 status=ctx['data'].status[(route_name,source,index)]
+                # Data preflight already verified this scene kind. Decode the full
+                # sample once, in backend.pair, rather than twice per micro-batch.
+                options,base=route_options(route,status['bucket'][2])
+                sigma=torch.rand(1,device=backend.device,generator=ctx['noise_generator'])
                 branch_names={'body':('body',),'face':('face_identity','face_texture','face_geometry'),
                     'hand':('hand_geometry','hand_texture'),'detail':('detail',),'interaction':('interaction',),
                     'joint':('body','interaction','detail','face_identity','face_texture','face_geometry','hand_geometry','hand_texture')}[route.branch]
@@ -177,7 +179,9 @@ class NativeV5Trainer:
             try:
                 for i,entry in enumerate(window):
                     micro_position=i+1;route=routes[entry['route']]
-                    sample,batch,pair=backend.pair(entry['source'],entry['index']);options,base=route_options(route,sample['native_scene_kind'])
+                    sample,batch,pair=backend.pair(entry['source'],entry['index'])
+                    if sample['native_scene_kind']!=entry['status']['bucket'][2]:raise ValueError('Sample scene kind differs from verified preflight')
+                    options,base=route_options(route,sample['native_scene_kind'])
                     sigma=torch.tensor([entry['sigma']],device=backend.device)
                     noise=torch.randn(pair['target_latent'].shape,device=backend.device,dtype=pair['target_latent'].dtype,generator=ctx['noise_generator'])
                     required={k for k in ('identity','perceptual') if getattr(route.loss,k)>0 and counts[k]}

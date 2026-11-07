@@ -13,7 +13,7 @@ from supervisor import (DEFAULT_RUN, audit_references, file_ref, read_ref, resou
 
 TESTS = ('test_native_spatial_masks.py','test_native_spatial_weights.py','test_native_spatial_audit.py',
          'test_qwen21_native_v5_training.py','test_native_unattended_core.py','test_single_spatial_data_prepare.py',
-         'test_single_spatial_supervisor.py','test_qwen21_fixedpair_training_v5.py')
+         'test_single_spatial_supervisor.py','test_qwen21_fixedpair_training_v5.py','test_native_training_throughput.py')
 
 
 def main():
@@ -56,6 +56,7 @@ def main():
     env = os.environ.copy()
     env.pop('NATIVE_V5_TRAINING_ACCEPTANCE_CONFIG',None)
     env.pop('NATIVE_SPATIAL_ABLATION_SCRIPT',None)
+    env.pop('NATIVE_TRAINING_SPEED_CUDA',None)
     with log.open('xb') as stream:
         result = subprocess.run([sys.executable,'-m','pytest',*[str(Path('tests')/name) for name in TESTS],'-q'],
                                 cwd=repo,env=env,stdout=stream,stderr=subprocess.STDOUT)
