@@ -155,6 +155,29 @@ def test_failure_classes_and_two_retry_ceiling_are_explicit():
     assert not s.may_retry('terminal', 1)
 
 
+def test_typed_oom_is_recoverable_even_when_pytorch_message_has_no_oom_words():
+    s=module('supervisor')
+    result={'error_type':'OutOfMemoryError','error':'Allocation on device ','failure_class':'terminal'}
+    assert s.worker_failure_class(result,'',1)=='resource'
+    assert s.worker_failure_class({'error_type':'ValueError','failure_class':'terminal'},'SHA differs',1)=='terminal'
+
+
+def test_oom_reclassification_is_append_only_and_does_not_reset_retry_count(tmp_path):
+    s=module('supervisor')
+    failed={'event':'attempt_failed','task':'S0.stage_train','attempt':1,'failure_class':'terminal'}
+    result=s.write_new_json(tmp_path/'worker.json',{'passed':False,'error_type':'OutOfMemoryError','error':'Allocation on device '})
+    evidence=s.write_new_json(tmp_path/'proof.json',{'schema':'native_oom_reclassification_v1','failure_record_sha256':s.digest(failed),'worker_result':result})
+    rows=[{'event':'attempt','task':'S0.stage_train','attempt':1},failed,{'event':'failed','error':'Terminal worker failure: S0.stage_train (terminal)'},
+          {'event':'resource_failure_reclassified','task':'S0.stage_train','attempt':1,'evidence':evidence}]
+    state=s.replay(rows)
+    assert state['status']=='stopped' and not state['terminal_tasks']
+    assert state['failure_counts']['S0.stage_train']==1
+    assert rows[1]['failure_class']=='terminal'
+    bad=s.write_new_json(tmp_path/'bad_worker.json',{'passed':False,'error_type':'ValueError','error':'SHA differs'})
+    proof=s.write_new_json(tmp_path/'bad_proof.json',{'schema':'native_oom_reclassification_v1','failure_record_sha256':s.digest(failed),'worker_result':bad})
+    with pytest.raises(ValueError):s.replay(rows[:-1]+[dict(rows[-1],evidence=proof)])
+
+
 def test_gradient_case_budget_counts_every_representative_without_truncation():
     w = module('stage_worker')
     from types import SimpleNamespace

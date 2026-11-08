@@ -1,0 +1,24 @@
+{
+  "status": "training_paused_recovery_waiting_resources",
+  "checked_at_utc": "2026-11-08T03:18:24.345111+00:00",
+  "actual_updates_before_failure": 570,
+  "committed_updates": 500,
+  "validation_loss_at_500": 0.21712749525904657,
+  "failure_type": "torch.OutOfMemoryError during Qwen3-VL frozen encoding",
+  "classification_bug": "short Allocation on device message misclassified terminal",
+  "checkpoint_sha_and_optimizer_rng_verified": true,
+  "used_cache_files_sha_verified": 2010,
+  "cache_audit": {
+    "total": 11010,
+    "reused": 3542,
+    "missing": 7468
+  },
+  "gpu_free_gib": 24.63995361328125,
+  "encoder_minimum_free_gib": 28,
+  "recovery_pid": 3209724,
+  "recovery_log": "logs/resource_recovery_20261108T030554Z_3209718_13533.log",
+  "training_resumed": false,
+  "training_core_code_unchanged": "runtime_repo_v7",
+  "test_result": "186 passed, 2 skipped",
+  "recovery_policy": "Complete frozen encoding in an isolated process, release encoder, append typed-OOm proof, resume checkpoint500 with original optimizer/RNG/Sampler; preserve retry count and 20000 budget."
+}

@@ -112,3 +112,20 @@ v7采用按需冻结输入。所有12,156对Native数据已经完整真读验收
 ```
 
 输出区分 `observed_successful_updates`（当前日志已记录的更新）与 `committed_updates`（可恢复断点），两者在每100步提交前可能不同。报告中的验证loss来自固定10对验证样本；首批生成图在1000步，因此数值巡检不能宣称画质验收完成。
+
+## 2026-11-08 OOM 资源恢复
+
+01:02 的错误发生于 Qwen3-VL 冻结编码，不是训练loss发散。实际更新570，最近committed checkpoint为500；500步固定验证loss=0.2171275，optimizer/RNG、冻结摘要及2010个已使用缓存SHA校验通过。未提交的501–570按原恢复策略回滚，预算仍为20k。
+
+旧控制器仅检查错误字符串，漏识别消息为 `Allocation on device ` 的 `OutOfMemoryError`，误记terminal。修复控制器按typed worker result识别OOM；SHA/数值/资格失败保持terminal。纠正通过追加 `resource_failure_reclassified` 证据事件完成，不删除原failed记录、不重置重试次数。
+
+恢复程序位于 `source/resource_controller_20261108_v1/`。它在训练暂停期间单独补齐冻结VLM/VAE缓存，避免与DiT共占显存；只读取真实图像/Guide/Prompt，原3D条件和训练代码均保留。完成后使用原v7 worker，从500 checkpoint严格恢复optimizer/RNG/Sampler。修复控制器有独立代码manifest；训练代码身份保持v7，未降低分辨率、batch或loss。
+
+```bash
+CONTROL="$RUN/source/resource_controller_20261108_v1"
+"$PY" "$CONTROL/supervisor.py" status --run-root "$RUN"
+ls -lt "$RUN"/logs/resource_recovery_* "$RUN"/logs/resource_resume_*
+ls -dt "$RUN"/source/oom_recovery_*
+```
+
+修复控制器支持OOM证据事件，后续状态查看应使用该控制器。恢复命令及固定控制器manifest SHA保存在对应 `source/oom_recovery_*/resume_launched.json`；不要使用旧v7控制器绕过失败状态。缓存补齐期间原运行仍显示failed；只有 `resource_recovery_resumed` 与新成功optimizer记录出现后才视为恢复。

@@ -201,6 +201,7 @@ class EventJournal:
 
 def replay(rows):
     state = {'accepted': {}, 'attempts': {}, 'failure_counts':{}, 'terminal_tasks':set(), 'status': 'new', 'ignored_stops': set()}
+    failures={}
     for row in rows:
         event = row['event']
         if event == 'attempt':
@@ -211,9 +212,22 @@ def replay(rows):
         elif event == 'task_superseded':
             state['accepted'].pop(row['task'],None)
         elif event == 'attempt_failed':
+            failures[(row['task'],row.get('attempt',state['attempts'].get(row['task'],0)))]={'record':row,'effective_class':row.get('failure_class')}
             state['failure_counts'][row['task']] = state['failure_counts'].get(row['task'], 0)+1
             if row.get('failure_class') == 'terminal':
                 state['terminal_tasks'].add(row['task'])
+        elif event == 'resource_failure_reclassified':
+            key=(row['task'],row['attempt']);failure=failures.get(key)
+            proof=read_ref(row['evidence']);worker=read_ref(proof['worker_result'])
+            if (failure is None or proof.get('schema')!='native_oom_reclassification_v1' or
+                proof.get('failure_record_sha256')!=digest(failure['record']) or
+                worker.get('passed') is not False or worker.get('error_type') not in ('OutOfMemoryError','CUDAOutOfMemoryError') or
+                state.get('last_event',{}).get('error')!='Terminal worker failure: '+row['task']+' (terminal)'):
+                raise IntegrityError('Resource reclassification lacks matching typed OOM failure evidence')
+            failure['effective_class']='resource'
+            state['terminal_tasks']={task for (task,attempt),value in failures.items() if value['effective_class']=='terminal'}
+            if state['status']=='failed' and not state['terminal_tasks']:
+                state.update(status='stopped',last_event=row)
         elif event in ('failed', 'completed', 'stopped'):
             state['status'] = event
             state['last_event'] = row
@@ -307,6 +321,11 @@ def classify_failure(message, returncode=1):
     if returncode in (-9, -15, 137, 143) or any(word in text for word in ('temporarily unavailable', 'resource busy', 'input/output error')):
         return 'transient'
     return 'terminal'
+
+
+def worker_failure_class(result,message,returncode=1):
+    if result.get('error_type') in ('OutOfMemoryError','CUDAOutOfMemoryError'):return 'resource'
+    return result.get('failure_class') or classify_failure(message,returncode)
 
 
 def may_retry(failure_class, attempt):
@@ -549,6 +568,8 @@ def run(args):
         env = child_environment(args.gpu)
         try:
             while True:
+                if getattr(args,'controller_manifest',None):
+                    verify_runtime_code({'runtime_code_manifest':{'path':args.controller_manifest,'sha256':args.controller_manifest_sha256}})
                 verify_runtime_code(plan)
                 state = replay(journal.read())
                 action, phase = next_task(state)
@@ -588,7 +609,10 @@ def run(args):
                 journal.append({'event':'attempt', 'task':task, 'attempt':attempt, 'request':request_ref,
                                 'log':str(logs/(identifier+'.log')), 'result_path':str(result_path),
                                 'resources':resources(args.gpu) if not cpu_action else {'device':'cpu'}})
-                command = [args.python, str(Path(__file__).with_name('stage_worker.py')),
+                worker=Path(args.worker_script) if getattr(args,'worker_script',None) else Path(__file__).with_name('stage_worker.py')
+                if getattr(args,'worker_script',None) and worker.resolve()!=(Path(plan['repo_root'])/'experiments/bilibili-single-spatial-training/scripts/stage_worker.py').resolve():
+                    raise IntegrityError('Recovery worker must be the exact pinned runtime worker')
+                command = [args.python, str(worker),
                            '--input', request_ref['path'], '--input-sha256', request_ref['sha256'], '--result', str(result_path)]
                 started = time.monotonic()
                 returncode = launch_child(command, logs/(identifier+'.log'), env, root, ignored)
@@ -602,7 +626,7 @@ def run(args):
                 with (logs/(identifier+'.log')).open('rb') as log:
                     log.seek(max(0, log.seek(0, 2)-16384))
                     tail = log.read().decode('utf8', errors='replace')
-                failure = result.get('failure_class') or classify_failure(tail, returncode)
+                failure = worker_failure_class(result,tail,returncode)
                 journal.append({'event':'attempt_failed', 'task':task, 'attempt':attempt, 'returncode':returncode,
                                 'failure_class':failure, 'error':result.get('error', tail[-4000:]), 'result_path':str(result_path)})
                 failures = state['failure_counts'].get(task, 0)+1
@@ -624,6 +648,9 @@ def main(argv=None):
     parser.add_argument('--authorization-json')
     parser.add_argument('--python', default=sys.executable)
     parser.add_argument('--gpu', default='0')
+    parser.add_argument('--worker-script')
+    parser.add_argument('--controller-manifest')
+    parser.add_argument('--controller-manifest-sha256')
     args = parser.parse_args(argv)
     if args.action in ('run','resume'):
         run(args)
