@@ -1,6 +1,6 @@
 {
-  "status": "training_paused_recovery_waiting_resources",
-  "checked_at_utc": "2026-11-08T03:18:24.345111+00:00",
+  "status": "training_paused_frozen_encoding_in_progress",
+  "checked_at_utc": "2026-11-08T03:19:00.748912+00:00",
   "actual_updates_before_failure": 570,
   "committed_updates": 500,
   "validation_loss_at_500": 0.21712749525904657,
@@ -13,12 +13,14 @@
     "reused": 3542,
     "missing": 7468
   },
-  "gpu_free_gib": 24.63995361328125,
   "encoder_minimum_free_gib": 28,
   "recovery_pid": 3209724,
   "recovery_log": "logs/resource_recovery_20261108T030554Z_3209718_13533.log",
   "training_resumed": false,
   "training_core_code_unchanged": "runtime_repo_v7",
   "test_result": "186 passed, 2 skipped",
-  "recovery_policy": "Complete frozen encoding in an isolated process, release encoder, append typed-OOm proof, resume checkpoint500 with original optimizer/RNG/Sampler; preserve retry count and 20000 budget."
+  "recovery_policy": "Complete frozen encoding in an isolated process, release encoder, append typed-OOm proof, resume checkpoint500 with original optimizer/RNG/Sampler; preserve retry count and 20000 budget.",
+  "last_resource_wait_gpu_free_gib": 24.63995361328125,
+  "encoded_pairs_observed": 3640,
+  "resource_wait_ended": true
 }
