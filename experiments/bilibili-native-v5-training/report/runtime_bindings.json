@@ -1,0 +1,362 @@
+{
+  "modules": {
+    "smplx": true,
+    "nvdiffrast": true,
+    "numpy": true,
+    "diffusers": true,
+    "cv2": true
+  },
+  "parameters": {
+    "smplest": {
+      "file": "/data/shangguanrz/datasets/bilibili/geometry/smplx/smplest/BV1Mfsd6qEtC/BV1Mfsd6qEtC_000389.pt",
+      "fields": {
+        "global_orient": {
+          "shape": [
+            1,
+            3
+          ],
+          "dtype": "torch.float32"
+        },
+        "body_pose": {
+          "shape": [
+            1,
+            63
+          ],
+          "dtype": "torch.float32"
+        },
+        "left_hand_pose": {
+          "shape": [
+            1,
+            45
+          ],
+          "dtype": "torch.float32"
+        },
+        "right_hand_pose": {
+          "shape": [
+            1,
+            45
+          ],
+          "dtype": "torch.float32"
+        },
+        "jaw_pose": {
+          "shape": [
+            1,
+            3
+          ],
+          "dtype": "torch.float32"
+        },
+        "betas": {
+          "shape": [
+            1,
+            10
+          ],
+          "dtype": "torch.float32"
+        },
+        "expression": {
+          "shape": [
+            1,
+            10
+          ],
+          "dtype": "torch.float32"
+        },
+        "mesh_cam": {
+          "shape": [
+            1,
+            10475,
+            3
+          ],
+          "dtype": "torch.float32"
+        },
+        "joint_proj_model": {
+          "shape": [
+            1,
+            137,
+            2
+          ],
+          "dtype": "torch.float32"
+        },
+        "transl": {
+          "shape": [
+            1,
+            3
+          ],
+          "dtype": "torch.float32"
+        },
+        "focal_length_xy": {
+          "shape": [
+            1,
+            2
+          ],
+          "dtype": "torch.float32"
+        },
+        "princpt": {
+          "shape": [
+            1,
+            2
+          ],
+          "dtype": "torch.float32"
+        },
+        "width": {
+          "shape": [
+            1,
+            1
+          ],
+          "dtype": "torch.float32"
+        },
+        "height": {
+          "shape": [
+            1,
+            1
+          ],
+          "dtype": "torch.float32"
+        },
+        "render_bbox": {
+          "shape": [
+            1,
+            4
+          ],
+          "dtype": "torch.float32"
+        }
+      }
+    },
+    "sapiens_v3": {
+      "file": "/data/shangguanrz/datasets/bilibili/geometry/smplx/sapiens_v3/BV1Mfsd6qEtC/BV1Mfsd6qEtC_000389.pt",
+      "fields": {
+        "global_orient": {
+          "shape": [
+            1,
+            3
+          ],
+          "dtype": "torch.float32"
+        },
+        "body_pose": {
+          "shape": [
+            1,
+            63
+          ],
+          "dtype": "torch.float32"
+        },
+        "left_hand_pose": {
+          "shape": [
+            1,
+            45
+          ],
+          "dtype": "torch.float32"
+        },
+        "right_hand_pose": {
+          "shape": [
+            1,
+            45
+          ],
+          "dtype": "torch.float32"
+        },
+        "jaw_pose": {
+          "shape": [
+            1,
+            3
+          ],
+          "dtype": "torch.float32"
+        },
+        "betas": {
+          "shape": [
+            1,
+            10
+          ],
+          "dtype": "torch.float32"
+        },
+        "expression": {
+          "shape": [
+            1,
+            10
+          ],
+          "dtype": "torch.float32"
+        },
+        "mesh_cam": {
+          "shape": [
+            1,
+            10475,
+            3
+          ],
+          "dtype": "torch.float32"
+        },
+        "joint_proj_model": {
+          "shape": [
+            1,
+            137,
+            2
+          ],
+          "dtype": "torch.float32"
+        },
+        "transl": {
+          "shape": [
+            1,
+            3
+          ],
+          "dtype": "torch.float32"
+        },
+        "focal_length_xy": {
+          "shape": [
+            1,
+            2
+          ],
+          "dtype": "torch.float32"
+        },
+        "princpt": {
+          "shape": [
+            1,
+            2
+          ],
+          "dtype": "torch.float32"
+        },
+        "width": {
+          "shape": [
+            1,
+            1
+          ],
+          "dtype": "torch.float32"
+        },
+        "height": {
+          "shape": [
+            1,
+            1
+          ],
+          "dtype": "torch.float32"
+        },
+        "render_bbox": {
+          "shape": [
+            1,
+            4
+          ],
+          "dtype": "torch.float32"
+        }
+      }
+    },
+    "wilor": {
+      "file": "/data/shangguanrz/datasets/bilibili/geometry/smplx/wilor/BV1Mfsd6qEtC/BV1Mfsd6qEtC_000389.pt",
+      "fields": {
+        "global_orient": {
+          "shape": [
+            1,
+            3
+          ],
+          "dtype": "torch.float32"
+        },
+        "body_pose": {
+          "shape": [
+            1,
+            63
+          ],
+          "dtype": "torch.float32"
+        },
+        "left_hand_pose": {
+          "shape": [
+            1,
+            45
+          ],
+          "dtype": "torch.float32"
+        },
+        "right_hand_pose": {
+          "shape": [
+            1,
+            45
+          ],
+          "dtype": "torch.float32"
+        },
+        "jaw_pose": {
+          "shape": [
+            1,
+            3
+          ],
+          "dtype": "torch.float32"
+        },
+        "expression": {
+          "shape": [
+            1,
+            10
+          ],
+          "dtype": "torch.float32"
+        },
+        "betas": {
+          "shape": [
+            1,
+            10
+          ],
+          "dtype": "torch.float32"
+        },
+        "transl": {
+          "shape": [
+            1,
+            3
+          ],
+          "dtype": "torch.float32"
+        },
+        "mesh_cam": {
+          "shape": [
+            1,
+            10475,
+            3
+          ],
+          "dtype": "torch.float32"
+        },
+        "joint_proj_model": {
+          "shape": [
+            1,
+            137,
+            2
+          ],
+          "dtype": "torch.float32"
+        },
+        "focal_length_xy": {
+          "shape": [
+            1,
+            2
+          ],
+          "dtype": "torch.float32"
+        },
+        "princpt": {
+          "shape": [
+            1,
+            2
+          ],
+          "dtype": "torch.float32"
+        },
+        "width": {
+          "shape": [
+            1,
+            1
+          ],
+          "dtype": "torch.float32"
+        },
+        "height": {
+          "shape": [
+            1,
+            1
+          ],
+          "dtype": "torch.float32"
+        }
+      }
+    }
+  },
+  "bindings": {
+    "baseline_initialization": {
+      "path": "/data/shangguanrz/pic-edit-experiments/qwen21_full_native_v1/tiktok-fixedpair-v5_20261025_v1/initialization/native_v5_init_v2.pt",
+      "exists": true
+    },
+    "qwen_manifest": {
+      "path": "/data/shangguanrz/pic-edit-experiments/qwen21_full_native_v1/tiktok-fixedpair-v5_20261025_v1/source/qwen_model_files.json",
+      "exists": true
+    },
+    "base_model": {
+      "path": "/data/shangguanrz/pic-edit-models/Qwen-Image-2.1",
+      "exists": true
+    },
+    "smplx_model": {
+      "path": "/home/shangguanrz/project/pic-edit/add/tools/SMPLest-X/human_models/human_model_files/smplx/SMPLX_NEUTRAL.npz",
+      "exists": true
+    },
+    "hia_tool": {
+      "path": "/home/shangguanrz/project/pic-edit/experiments/6.qwen-controlnet union/hia_geometry_training_20261029/scripts/hia_training.py",
+      "exists": true
+    }
+  }
+}

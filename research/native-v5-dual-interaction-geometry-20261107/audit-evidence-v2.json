@@ -1,0 +1,447 @@
+{
+  "snapshot_utc": "2026-11-06T17:30:21.388521+00:00",
+  "root": "/home/shangguanrz/project/pic-edit",
+  "git_head": "bbc729d006ed6b2301e81f5cda8033f4f8b74ca0",
+  "scope": "current remote working tree; CPU synthetic encoder probes and two cached targets; no generation",
+  "source": {
+    "src/pose_control/qwen21_full/native_v5/frontend.py": {
+      "sha256": "2e91d160a44f858c2a228a94e6093041d3ab78a5e166af4d7563493d8e86af4e",
+      "definitions": {
+        "identity_update": 16,
+        "encode_frontend": 47
+      }
+    },
+    "src/pose_control/qwen21_full/native_v5/runtime.py": {
+      "sha256": "66770e102b0727656eea9b3f911e700ca08f3417965cf41457a9c029c63ce2d1",
+      "definitions": {
+        "NativeInteractionResidualHead": 21,
+        "NativeFullRuntimeV5": 37,
+        "__init__": 38,
+        "forward": 30,
+        "get_extra_state": 56,
+        "set_extra_state": 65,
+        "_validate_sources": 68,
+        "named_parameter_groups": 117,
+        "set_trainability": 139,
+        "encode": 168,
+        "checkpoint_payload": 206,
+        "from_checkpoint": 215
+      }
+    },
+    "src/pose_control/qwen21_full/native_v5/integration.py": {
+      "sha256": "afa4878842f643e0f747e8e07dabb69eaeef50aa843faeeaba69341c64f1b669",
+      "definitions": {
+        "Binding": 16,
+        "Execution": 24,
+        "body_delta": 31,
+        "BlockMixin": 40,
+        "TransformerMixin": 79,
+        "install_native_full_v5": 124,
+        "bind_native_full_v5": 151,
+        "forward": 80,
+        "checkpoint_bound": 116
+      }
+    },
+    "src/pose_control/qwen21_full/native_v5/training/objective.py": {
+      "sha256": "d166206cf8357d726c673e96ed2678af9edced020cb947b3450b7c57219bec24",
+      "definitions": {
+        "counts_for_window": 7,
+        "compute_micro_loss": 19
+      }
+    },
+    "src/pose_control/qwen21_full/native_v5/spatial_weights.py": {
+      "sha256": "08c3a49d46d96c010339396015726cea3d83793bcf82d0f51f1edf7537bc62e2",
+      "definitions": {
+        "_coefficients": 22,
+        "_pixels": 38,
+        "spatial_token_weights": 52,
+        "spatial_velocity_loss": 79,
+        "_pinned": 92,
+        "_metadata": 99,
+        "read_spatial_components": 121,
+        "read_spatial_index": 146
+      }
+    },
+    "src/pose_control/qwen21_full/native_dual_depth.py": {
+      "sha256": "c23cb21280ede4e7a38e0ac790202407cb54d5b00f17c80173aadee58b3f6fa5",
+      "definitions": {
+        "NativeDualConfig": 17,
+        "DualControlOptions": 35,
+        "interaction_context": 60,
+        "NativeDualDepth": 72,
+        "RelationRasterEncoder": 99,
+        "PartRelationEncoder": 116,
+        "GatedNativeResidual": 154,
+        "__post_init__": 47,
+        "depth_config": 29,
+        "pool": 61,
+        "get_extra_state": 74,
+        "forward": 165,
+        "__init__": 155
+      }
+    },
+    "src/pose_control/qwen21_full/dual_depth_geometry.py": {
+      "sha256": "72cb3290d2a58c6cc7cfdfcd6c450166b5ee0ac6ca3e9222ed7ea271b8a69591",
+      "definitions": {
+        "relative_depth": 12,
+        "ownership": 22,
+        "person_condition": 36,
+        "build_dual_condition": 88,
+        "relative11": 147,
+        "warp_person": 109
+      }
+    },
+    "src/pose_control/qwen21_full/dual_hi4d_geometry.py": {
+      "sha256": "53f0ffca509049157f70930d65bf965f4478fef930836cb893854e8b2dd97c6b",
+      "definitions": {
+        "decode_contact": 14,
+        "face_partition": 29,
+        "body21_from_smpl": 40,
+        "part_distances": 92,
+        "IndependentMeshRasterizer": 140,
+        "__init__": 141,
+        "render": 146
+      }
+    },
+    "src/pose_control/qwen21_full/dual_data_runtime.py": {
+      "sha256": "e69c4606e7c87a683a544d539203d40e6fdbf29705251645751230f89c64093a",
+      "definitions": {
+        "pair_canvases": 22,
+        "_rgb": 33,
+        "_box": 41,
+        "_uv": 49,
+        "NativeDualDataset": 56,
+        "collate_native_dual": 242,
+        "identity_from_reference": 269,
+        "__init__": 57,
+        "__len__": 79,
+        "verify": 82,
+        "geometry_record": 95,
+        "__getitem__": 143
+      }
+    },
+    "src/pose_control/qwen21_full/dual_depth_condition.py": {
+      "sha256": "5bb5c15864d411eb26149d14b189e15ed7474ee007d6ab8e8e2b8cd53829ad31",
+      "definitions": {
+        "DualContactRelations": 16,
+        "DualDepthConditionV3": 55,
+        "NativeDualIdentityCondition": 183,
+        "validate": 191,
+        "stack": 43,
+        "person_camera_z": 77,
+        "person_depth_valid": 82,
+        "person_normal": 86,
+        "person_part": 90,
+        "body_height": 94,
+        "root_z": 98,
+        "camera_available": 102
+      }
+    },
+    "src/pose_control/qwen21_full/native_dual_runtime.py": {
+      "sha256": "439fd9b8986e68618e93aa77d31b69276db0c638725add1f8bf4e814c3ad3ae6",
+      "definitions": {
+        "DualTrainability": 26,
+        "NativeDualRuntime": 49,
+        "__post_init__": 40,
+        "all_native": 45,
+        "__init__": 50,
+        "get_extra_state": 72,
+        "set_extra_state": 81,
+        "named_parameter_groups": 85,
+        "set_trainability": 112,
+        "train": 122,
+        "encode": 143,
+        "checkpoint_payload": 218,
+        "from_checkpoint": 226,
+        "from_depth_v2": 245
+      }
+    },
+    "src/pose_control/qwen21_full/condition_injector.py": {
+      "sha256": "7d5fe5df5fd9098b48479ff083478a8f7078649ecb913636550fe981a74bf566",
+      "definitions": {
+        "SMPLXConditionInjector": 21,
+        "__init__": 28,
+        "_require_floating": 82,
+        "_validate_person": 89,
+        "_same_device": 138,
+        "forward": 143
+      }
+    },
+    "src/pose_control/qwen21_full/token_encoders.py": {
+      "sha256": "f287ba0cf8b080bae41782fc0c7fac85f845da54f36e40ccef27c304259b501f",
+      "definitions": {
+        "SkeletonAttentionLayer": 11,
+        "BodyPoseTokenEncoder": 31,
+        "AppearanceTokenEncoder": 75,
+        "PersonTokenBinder": 100,
+        "GlobalConditionTokenEncoder": 182,
+        "RelativeGeometryTokenEncoder": 205,
+        "ContactRasterEncoder": 222,
+        "StructuredContactRelationEncoder": 244,
+        "ExplicitTaskTokenEncoder": 292,
+        "__init__": 293,
+        "forward": 297,
+        "binding_for": 108
+      }
+    },
+    "src/pose_control/qwen21_full/native_full_data.py": {
+      "sha256": "cd12e15324b1fa3912996d0c9bff5bdc3bd29910fdcc8eabcce2e39bcdd71e76",
+      "definitions": {
+        "_verified": 24,
+        "_rgb": 29,
+        "NativeFullDatasetV4": 35,
+        "collate_native_full_v4": 89,
+        "identity_from_reference_v4": 107,
+        "assemble_full_cache": 119,
+        "__init__": 36,
+        "__len__": 50,
+        "__getitem__": 52,
+        "zeros": 229
+      }
+    },
+    "src/pose_control/qwen21_full/reasoning/cross_person.py": {
+      "sha256": "46f390c93fe213a00dbbc633f6b180156e92b94f37b3e9fc9c4ed8cbdc533b96",
+      "definitions": {
+        "BidirectionalCrossPersonReasoner": 10,
+        "__init__": 13,
+        "forward": 28
+      }
+    },
+    "src/pose_control/qwen21_full/reasoning/contact.py": {
+      "sha256": "a1d91617cc39ea4cbf3e9ee041aa626bcbc5a73e964027a501520128e5a0113c",
+      "definitions": {
+        "ContactReasoningOutput": 13,
+        "ContactConditionReasoner": 20,
+        "__init__": 23,
+        "_apply_relation_attention": 45,
+        "forward": 94
+      }
+    },
+    "src/pose_control/qwen21_full/reasoning/reasoner.py": {
+      "sha256": "e253764d3d794d1d62d0c6b9c8956b10e748524386073969339631006ab28ea2",
+      "definitions": {
+        "SMPLXAdapterReasoner": 17,
+        "__init__": 20,
+        "_role_bind": 34,
+        "_token_map": 43,
+        "_single_geometry": 46,
+        "_encode_person_a": 68,
+        "_encode_person_b": 80,
+        "forward": 98
+      }
+    },
+    "src/pose_control/qwen21_full/native_geometry.py": {
+      "sha256": "6a67793763a7f424f2292f5769b42854e863c1c8976baa80aec077e5c24d896f",
+      "definitions": {
+        "NativeGeometryFeatures": 33,
+        "Qwen21NativeGeometry": 42,
+        "__init__": 51,
+        "get_extra_state": 67,
+        "pose_parameters": 76,
+        "set_extra_state": 79,
+        "from_full_adapter": 84,
+        "from_full_checkpoint": 103,
+        "forward": 152,
+        "project_state": 155
+      }
+    },
+    "scripts/data/build_qwen21_native_dual_cache.py": {
+      "sha256": "44dfcecbd068912f893c050e789563a6bc6f47997f22694003465c72c8719282"
+    }
+  },
+  "cache": [
+    {
+      "pair_id": "train_pair12_highfive12_cam4_000011_000082",
+      "path": "/data/shangguanrz/pic-edit-experiments/qwen21_hi4d_dual/hi4d-fixedpair-v5_20261025_v1/data/geometry_v3_v3/420d68945a93a5b29d7a116a.npz",
+      "sha_matches": true,
+      "units": "model_unit",
+      "scale_status": "model_scale",
+      "model_family_indices": [
+        1,
+        1
+      ],
+      "vertex_counts": [
+        6890,
+        6890
+      ],
+      "camera_id": "hi4d:pair12:highfive12:4",
+      "scale_group_id": "hi4d:pair12:release_model_scale",
+      "mesh_errors": [
+        2.384185791015625e-7,
+        2.384185791015625e-7
+      ],
+      "camera_mesh_errors": [
+        4.732731833101411e-7,
+        4.291067574602181e-7
+      ],
+      "shapes": {
+        "z": [
+          2,
+          1280,
+          940
+        ],
+        "normal": [
+          2,
+          1280,
+          940,
+          3
+        ],
+        "part": [
+          2,
+          1280,
+          940
+        ],
+        "joints_cam": [
+          2,
+          22,
+          3
+        ],
+        "root_rotation": [
+          2,
+          3,
+          3
+        ],
+        "part_distance": [
+          14,
+          14
+        ],
+        "closest_points": [
+          14,
+          14,
+          2,
+          3
+        ],
+        "contact_indices": [
+          2616,
+          4
+        ],
+        "contact_raster": [
+          2,
+          1280,
+          940
+        ]
+      },
+      "raw_contact_records": 2616,
+      "contact_distance_height_normalized_quantiles_0_50_95_100": [
+        0.0004135998315177858,
+        0.004561509471386671,
+        0.01019354909658432,
+        0.011687840335071087
+      ],
+      "positive_part_pairs": 3,
+      "known_part_pairs": 3,
+      "avoid_known_part_pairs": 0,
+      "surface_intersect_part_pairs": 0,
+      "part_distance_valid": 196,
+      "closest_points_valid": 196,
+      "independent_projection_overlap_pixels": 2439
+    },
+    {
+      "pair_id": "train_pair12_highfive12_cam4_000011_000112",
+      "path": "/data/shangguanrz/pic-edit-experiments/qwen21_hi4d_dual/hi4d-fixedpair-v5_20261025_v1/data/geometry_v3_v3/c2622325492f093c4f669d1c.npz",
+      "sha_matches": true,
+      "units": "model_unit",
+      "scale_status": "model_scale",
+      "model_family_indices": [
+        1,
+        1
+      ],
+      "vertex_counts": [
+        6890,
+        6890
+      ],
+      "camera_id": "hi4d:pair12:highfive12:4",
+      "scale_group_id": "hi4d:pair12:release_model_scale",
+      "mesh_errors": [
+        2.384185791015625e-7,
+        2.384185791015625e-7
+      ],
+      "camera_mesh_errors": [
+        3.5201768788795107e-7,
+        4.57142337761951e-7
+      ],
+      "shapes": {
+        "z": [
+          2,
+          1280,
+          940
+        ],
+        "normal": [
+          2,
+          1280,
+          940,
+          3
+        ],
+        "part": [
+          2,
+          1280,
+          940
+        ],
+        "joints_cam": [
+          2,
+          22,
+          3
+        ],
+        "root_rotation": [
+          2,
+          3,
+          3
+        ],
+        "part_distance": [
+          14,
+          14
+        ],
+        "closest_points": [
+          14,
+          14,
+          2,
+          3
+        ],
+        "contact_indices": [
+          0,
+          4
+        ],
+        "contact_raster": [
+          2,
+          1280,
+          940
+        ]
+      },
+      "raw_contact_records": 0,
+      "contact_distance_height_normalized_quantiles_0_50_95_100": [],
+      "positive_part_pairs": 0,
+      "known_part_pairs": 0,
+      "avoid_known_part_pairs": 0,
+      "surface_intersect_part_pairs": 0,
+      "part_distance_valid": 196,
+      "closest_points_valid": 196,
+      "independent_projection_overlap_pixels": 0
+    }
+  ],
+  "manifest": {
+    "path": "/data/shangguanrz/pic-edit-experiments/qwen21_hi4d_dual/hi4d-fixedpair-v5_20261025_v1/data/geometry_v3_v3/pairs.jsonl",
+    "sha256": "4637a2bd2be3bea050b0039e2d35e4391782bcbd7f5ef08216acad61f3952f87",
+    "rows": 2
+  },
+  "part_encoder_synthetic_probe": {
+    "scope": "PartRelationEncoder only, fixed geometry/interaction; not a whole-Adapter invariance claim",
+    "raw_indices_only_max_abs_delta": 0,
+    "normal_only_max_abs_delta": 0,
+    "same_displacement_shift_both_witnesses_max_abs_delta": 3.725290298461914e-7,
+    "distance_positive_control_max_abs_delta": 0.008139103651046753
+  },
+  "relative11_swap_probe": {
+    "translation_negates": true,
+    "box_center_delta_negates": true,
+    "box_log_ratio_negates": true,
+    "root_distance_invariant": true
+  },
+  "legacy_directed_contact_probe": {
+    "scope": "legacy StructuredContactRelationEncoder only; typed PartRelationEncoder uses separate A/B part embeddings",
+    "edge_1": "A.left_hand -> B.torso",
+    "edge_2": "A.torso -> B.left_hand",
+    "same_type_and_distance": true,
+    "token_max_abs_delta": 1.7881393432617188e-7,
+    "allclose_at_1e_6": true
+  }
+}

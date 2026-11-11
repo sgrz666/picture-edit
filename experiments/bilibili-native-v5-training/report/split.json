@@ -1,0 +1,129 @@
+{
+  "schema": "bilibili_video_split_v1",
+  "created_at": "2026-11-06T13:18:26.777437+00:00",
+  "seed": 42,
+  "ratio_by_video": [
+    0.8,
+    0.1,
+    0.1
+  ],
+  "clip_to_split": {
+    "BV19vxY6mE8j": "val",
+    "BV1Aynt6zEQd": "val",
+    "BV19H4y1d75w": "val",
+    "BV1XssX6AEsR": "val",
+    "BV1tqhz6uE2u": "val",
+    "BV1zT4g6aEQo": "test",
+    "BV1ey4y1f7pe": "test",
+    "BV1CKJy61EEK": "test",
+    "BV1tB4c6nEq9": "test",
+    "BV1cxxq63E8K": "test",
+    "BV1EwsZ6sEcr": "train",
+    "BV1Qt4vzNEY2": "train",
+    "BV1pexF6gEzf": "train",
+    "BV18Wxw6RE4A": "train",
+    "BV1Qp4y1r7Nv": "train",
+    "BV1DtJ96HEUo": "train",
+    "BV15r4F6bEi8": "train",
+    "BV1B8Hd61E2X": "train",
+    "BV1f54A6CEiQ": "train",
+    "BV1rFJb6eEZE": "train",
+    "BV1aExF6nEWw": "train",
+    "BV1XR4y1A7im": "train",
+    "BV1SeDcB1EaY": "train",
+    "BV1Wqxe6KEbe": "train",
+    "BV14NHK6SE9d": "train",
+    "BV1hS4y1N7jv": "train",
+    "BV16g411h71h": "train",
+    "BV1dNxn6SEcs": "train",
+    "BV1kHxx65EMT": "train",
+    "BV19i4y1U7D8": "train",
+    "BV1Mfsd6qEtC": "train",
+    "BV1FW411N7WY": "train",
+    "BV1mX436SEvL": "train",
+    "BV1c6xp6vEJm": "train",
+    "BV1z2HC6jEkq": "train",
+    "BV1aAQ4BoEfb": "train",
+    "BV1Mh41137VU": "train",
+    "BV1dQx364Ex2": "train",
+    "BV1dLx46TEt3": "train",
+    "BV1Kyn867EpW": "train",
+    "BV1xN4y1C7Fw": "train",
+    "BV1Rhxk6GEWT": "train",
+    "BV1HeGV66EXT": "train",
+    "BV1DH4y1Z7f2": "train",
+    "BV1WMgo68EqU": "train",
+    "BV1xaxe6zERg": "train",
+    "BV1sk4y187r4": "train",
+    "BV19cWw6XEgX": "train",
+    "BV1T3Hy6FErW": "train"
+  },
+  "source_sha256": {
+    "/data/shangguanrz/datasets/bilibili/frames/frames.jsonl": "57b940b7ab0be1ff4aa5e22cdf32af8707dbf5777e6fa2300268c48b5cbca825",
+    "/data/shangguanrz/datasets/bilibili/pairs/pairs.jsonl": "32dafa963d84e614a61d7702cdef4efa5a77638f34aa16f2719a827bc968ec20"
+  },
+  "artifacts": {
+    "train": {
+      "frames": {
+        "path": "/data/shangguanrz/datasets/bilibili/train/frames.jsonl",
+        "sha256": "c4cb6f3a9cd385845e5c2568eb69f70613b962ee56ef544522c24c8581e8efe2"
+      },
+      "pairs": {
+        "path": "/data/shangguanrz/datasets/bilibili/train/pairs.jsonl",
+        "sha256": "318754c93ee7974913d5b290742071910c982aa923f8175231a40359b9bd44db"
+      },
+      "groups": {
+        "path": "/data/shangguanrz/datasets/bilibili/train/groups.json",
+        "sha256": "7f8a8310b017044511dcb4b2ad95c16a54b3bb2b89871b06762136cbae1469ab"
+      }
+    },
+    "val": {
+      "frames": {
+        "path": "/data/shangguanrz/datasets/bilibili/val/frames.jsonl",
+        "sha256": "1ba9182abd19fed4154faeb8f21c249fc0716930626fcb05a04353ddfc206c71"
+      },
+      "pairs": {
+        "path": "/data/shangguanrz/datasets/bilibili/val/pairs.jsonl",
+        "sha256": "15d41f638ddae2b92225db75a8a9c1a02dbb7aabc440808979956640d4324fae"
+      },
+      "groups": {
+        "path": "/data/shangguanrz/datasets/bilibili/val/groups.json",
+        "sha256": "ddab4bf388879bff33a8e48dba7ab523e12e717a29055c4553d549b121a5940a"
+      }
+    },
+    "test": {
+      "frames": {
+        "path": "/data/shangguanrz/datasets/bilibili/test/frames.jsonl",
+        "sha256": "84018d02e0e5a6d56b432994dfcc7176182f18fbd05c0d316e389a62e4c1043f"
+      },
+      "pairs": {
+        "path": "/data/shangguanrz/datasets/bilibili/test/pairs.jsonl",
+        "sha256": "233183dead2b1cce92f6a0090d2b0d732d3e9c739c314d6845cc78cc59914c14"
+      },
+      "groups": {
+        "path": "/data/shangguanrz/datasets/bilibili/test/groups.json",
+        "sha256": "e5e5734abe71f08ab24e5b4665bd2acc13636bcc35c5c14927b6d4796445d944"
+      }
+    }
+  },
+  "splits": {
+    "train": {
+      "clips": 39,
+      "frames": 1560,
+      "pairs": 9520
+    },
+    "val": {
+      "clips": 5,
+      "frames": 200,
+      "pairs": 1490
+    },
+    "test": {
+      "clips": 5,
+      "frames": 200,
+      "pairs": 1146
+    }
+  },
+  "quality_filter_applied": false,
+  "strict_subset_created": false,
+  "training_started": false
+}

@@ -1,0 +1,52 @@
+{
+  "schema": "bilibili_sapiens_v1_asset_binding_v1",
+  "passed": true,
+  "geometry_method": "sapiens_v1",
+  "frames_verified": 1960,
+  "geometry_files_verified": 5880,
+  "rgb_files_sha256_verified": 1960,
+  "pairs_preserved": 12156,
+  "quality_filter_applied": false,
+  "strict_subset_created": false,
+  "artifacts": {
+    "train": {
+      "frames": {
+        "path": "/data/shangguanrz/datasets/bilibili/train/frames_sapiens_v1.jsonl",
+        "sha256": "bb3fa2a54e10174c532ecc814cb0848a3d713b41972c668355a6001cfa934c3a"
+      },
+      "pairs": {
+        "path": "/data/shangguanrz/datasets/bilibili/train/pairs_sapiens_v1.jsonl",
+        "sha256": "29d24bf8188624d66d675ee21f08f9eaa34e2c75bdc3824baa8eaad826336883"
+      },
+      "frame_count": 1560,
+      "pair_count": 9520
+    },
+    "val": {
+      "frames": {
+        "path": "/data/shangguanrz/datasets/bilibili/val/frames_sapiens_v1.jsonl",
+        "sha256": "50af979e8b02802ffed74e50de453d06c73ba0fedd74cfbe3c5f7708c09f5516"
+      },
+      "pairs": {
+        "path": "/data/shangguanrz/datasets/bilibili/val/pairs_sapiens_v1.jsonl",
+        "sha256": "393af005c2521790a74931810f811dd9c4fc9a2a2f5116ec6d4bd65817607953"
+      },
+      "frame_count": 200,
+      "pair_count": 1490
+    },
+    "test": {
+      "frames": {
+        "path": "/data/shangguanrz/datasets/bilibili/test/frames_sapiens_v1.jsonl",
+        "sha256": "c01e69f15fc76b25f8fba7c755ae99fb3d2b3ec34928da3a4dd5439440ca2f21"
+      },
+      "pairs": {
+        "path": "/data/shangguanrz/datasets/bilibili/test/pairs_sapiens_v1.jsonl",
+        "sha256": "a6e228b023d66ab2ea8ecd3d40ea01d939da57e3b18e94cf61f347d6568d0d57"
+      },
+      "frame_count": 200,
+      "pair_count": 1146
+    }
+  },
+  "native_v5_manifest": false,
+  "native_v5_sidecars_required": true,
+  "training_started": false
+}

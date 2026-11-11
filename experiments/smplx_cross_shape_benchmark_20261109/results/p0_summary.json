@@ -1,0 +1,76 @@
+{
+  "n_subjects": 10,
+  "n_pairs_same": 42,
+  "n_pairs_cross": 48,
+  "n_pose": 6,
+  "n_views": 3,
+  "n_pair_rows": 8100,
+  "n_measurement_rows": 450,
+  "arms": {
+    "G0": {
+      "v2v_mm": 23.6156,
+      "p2p20k_mm": 27.6424,
+      "iou": 0.82807,
+      "chamfer_norm": 0.008023
+    },
+    "G1": {
+      "v2v_mm": 19.1557,
+      "p2p20k_mm": 22.6113,
+      "iou": 0.8518,
+      "chamfer_norm": 0.006647
+    },
+    "G2": {
+      "v2v_mm": 17.2131,
+      "p2p20k_mm": 18.7932,
+      "iou": 0.87025,
+      "chamfer_norm": 0.005601
+    },
+    "G3": {
+      "v2v_mm": 17.7818,
+      "p2p20k_mm": 19.1004,
+      "iou": 0.86783,
+      "chamfer_norm": 0.005718
+    },
+    "G4": {
+      "v2v_mm": 0.0,
+      "p2p20k_mm": 0.0,
+      "iou": 1.0,
+      "chamfer_norm": 0.0
+    }
+  },
+  "identity_v2v_max_mm": 0.0,
+  "identity_iou_min": 1.0,
+  "mask_area_min": 10282,
+  "mask_area_max": 31441,
+  "gt_fit_floor_canonical_mm": {
+    "012": 4.2273,
+    "017": 3.1972,
+    "018": 3.2352,
+    "020": 4.027,
+    "022": 4.2548,
+    "023": 5.1682,
+    "026": 4.1325,
+    "027": 6.5778,
+    "029": 3.9241,
+    "033": 4.4625
+  },
+  "g0_vs_shape_difference_spearman": {
+    "rho": 0.5949206800374653,
+    "p": 1.0921398478873063e-155,
+    "n": 1620
+  },
+  "g0_vs_shape_difference_spearman_by_pair": {
+    "rho": 0.6064423279926857,
+    "p": 2.3777708183978854e-10,
+    "n": 90
+  },
+  "gates": {
+    "pairs_same_42": true,
+    "pairs_cross_48": true,
+    "rows_complete": true,
+    "identity_zero": true,
+    "identity_iou_one": true,
+    "g0_positive_shape_corr": "True",
+    "mask_area_sane": true
+  }
+}

@@ -1,0 +1,144 @@
+"""Read-only CPU audit. No checkpoint loading, estimators, target RGB or GPU work."""
+import ast
+import hashlib
+import json
+from pathlib import Path
+import subprocess
+import sys
+from datetime import datetime, timezone
+from types import SimpleNamespace
+
+import numpy as np
+
+ROOT = Path('/home/shangguanrz/project/pic-edit')
+sys.path.insert(0, str(ROOT))
+BASE = ROOT / 'src/pose_control/qwen21_full'
+DATA = Path('/data/shangguanrz/pic-edit-experiments/qwen21_hi4d_dual/hi4d-fixedpair-v5_20261025_v1')
+
+def sha(path):
+    return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+
+files = [
+    'native_v5/frontend.py', 'native_v5/runtime.py', 'native_v5/integration.py',
+    'native_v5/training/objective.py', 'native_v5/spatial_weights.py',
+    'native_dual_depth.py', 'dual_depth_geometry.py', 'dual_hi4d_geometry.py',
+    'dual_data_runtime.py', 'dual_depth_condition.py', 'native_dual_runtime.py',
+    'condition_injector.py', 'token_encoders.py', 'native_full_data.py', 'reasoning/cross_person.py',
+    'reasoning/contact.py', 'reasoning/reasoner.py', 'native_geometry.py',
+]
+result = {
+    'snapshot_utc': datetime.now(timezone.utc).isoformat(),
+    'root': str(ROOT),
+    'git_head': subprocess.check_output(['git', '-C', str(ROOT), 'rev-parse', 'HEAD'], text=True).strip(),
+    'scope': 'current remote working tree; CPU synthetic encoder probes and two cached targets; no generation',
+    'source': {}, 'cache': [],
+}
+for name in files:
+    path = BASE / name
+    code = path.read_text(encoding='utf-8-sig')
+    tree = ast.parse(code)
+    defs = {node.name: node.lineno for node in ast.walk(tree) if isinstance(node, (ast.FunctionDef, ast.ClassDef))}
+    result['source'][str(path.relative_to(ROOT))] = {'sha256': sha(path), 'definitions': defs}
+export = ROOT / 'scripts/data/build_qwen21_native_dual_cache.py'
+result['source'][str(export.relative_to(ROOT))] = {'sha256': sha(export)}
+manifest = DATA / 'data/geometry_v3_v3/pairs.jsonl'
+rows = [json.loads(line) for line in manifest.read_text().splitlines() if line.strip()]
+result['manifest'] = {'path': str(manifest), 'sha256': sha(manifest), 'rows': len(rows)}
+for row in rows:
+    ref = row['target_geometry']
+    with np.load(ref['path'], allow_pickle=False) as data:
+        meta = json.loads(data['metadata_json'].item())
+        dist = data['contact_distance']
+        both = data['valid'][0] & data['valid'][1]
+        contact = data['part_contact']
+        result['cache'].append({
+            'pair_id': row['pair_id'], 'path': ref['path'],
+            'sha_matches': sha(ref['path']) == ref['sha256'],
+            'units': meta['units'], 'scale_status': meta['scale_status'],
+            'model_family_indices': meta['model_family_indices'],
+            'vertex_counts': meta['vertex_counts'],
+            'camera_id': meta['camera_id'], 'scale_group_id': meta['scale_group_id'],
+            'mesh_errors': meta['mesh_errors'], 'camera_mesh_errors': meta['camera_mesh_errors'],
+            'shapes': {key: list(data[key].shape) for key in ('z','normal','part','joints_cam','root_rotation','part_distance','closest_points','contact_indices','contact_raster')},
+            'raw_contact_records': int(len(dist)),
+            'contact_distance_height_normalized_quantiles_0_50_95_100': np.quantile(dist, [0,.5,.95,1]).tolist() if len(dist) else [],
+            'positive_part_pairs': int((contact[...,0] > 0).sum()),
+            'known_part_pairs': int((contact[...,1] > 0).sum()),
+            'avoid_known_part_pairs': int((contact[...,3] > 0).sum()),
+            'surface_intersect_part_pairs': int(data['surface_intersection'].sum()),
+            'part_distance_valid': int(data['part_distance_valid'].sum()),
+            'closest_points_valid': int(data['closest_points_valid'].sum()),
+            'independent_projection_overlap_pixels': int(both.sum()),
+        })
+
+import torch
+torch.set_num_threads(2)
+from src.pose_control.qwen21_full.native_dual_depth import PartRelationEncoder
+from src.pose_control.qwen21_full.dual_depth_geometry import relative11
+from src.pose_control.qwen21_full.token_encoders import StructuredContactRelationEncoder
+from src.pose_control.qwen21_full.conditions import ContactRelationBatch
+
+torch.manual_seed(7)
+module = PartRelationEncoder().float().eval()
+condition = SimpleNamespace(
+    body_height=torch.ones(1,2),
+    closest_points=torch.randn(1,14,14,2,3),
+    closest_points_valid=torch.ones(1,14,14,dtype=torch.bool),
+    part_distance=torch.rand(1,14,14),
+    part_distance_valid=torch.ones(1,14,14,dtype=torch.bool),
+    part_contact=torch.zeros(1,14,14,4),
+    scene_depth=torch.zeros(1,1,32,32),
+    person_part=torch.ones(1,2,14,32,32)/14,
+    projected=torch.ones(1,2,1,32,32,dtype=torch.bool),
+    contacts=SimpleNamespace(indices=torch.zeros(1,2,4,dtype=torch.long)),
+    person_normal=torch.randn(1,2,3,32,32),
+)
+geometry=torch.randn(1,4,512)
+interaction=torch.randn(1,4,512)
+with torch.no_grad():
+    original=module(geometry,interaction,condition)
+    condition.contacts.indices.fill_(100)
+    raw_changed=module(geometry,interaction,condition)
+    condition.person_normal.neg_()
+    normal_changed=module(geometry,interaction,condition)
+    condition.closest_points += torch.tensor([1.,2.,3.])
+    midpoint_changed=module(geometry,interaction,condition)
+    condition.part_distance += .1
+    distance_changed=module(geometry,interaction,condition)
+result['part_encoder_synthetic_probe']={
+    'scope':'PartRelationEncoder only, fixed geometry/interaction; not a whole-Adapter invariance claim',
+    'raw_indices_only_max_abs_delta': float((raw_changed-original).abs().max()),
+    'normal_only_max_abs_delta': float((normal_changed-original).abs().max()),
+    'same_displacement_shift_both_witnesses_max_abs_delta': float((midpoint_changed-original).abs().max()),
+    'distance_positive_control_max_abs_delta': float((distance_changed-original).abs().max()),
+}
+joints=torch.randn(2,22,3)
+rot=torch.eye(3).repeat(2,1,1)
+height=torch.tensor([1.6,1.8])
+boxes=torch.tensor([[.1,.2,.4,.8],[.4,.1,.8,.9]])
+a,_=relative11(joints,rot,height,boxes)
+b,_=relative11(joints.flip(0),rot.flip(0),height.flip(0),boxes.flip(0))
+result['relative11_swap_probe']={
+    'translation_negates': bool(torch.allclose(a[:3],-b[:3])),
+    'box_center_delta_negates': bool(torch.allclose(a[3:5],-b[3:5])),
+    'box_log_ratio_negates': bool(torch.allclose(a[5:7],-b[5:7])),
+    'root_distance_invariant': bool(torch.allclose(a[7],b[7])),
+}
+directed=StructuredContactRelationEncoder().float().eval()
+idx=torch.zeros(1,8,dtype=torch.long)
+valid=torch.zeros(1,8,dtype=torch.bool);valid[:,0]=True
+edge=ContactRelationBatch(idx.clone(),idx.clone(),idx.clone(),idx.clone(),idx.clone(),torch.zeros(1,8,1),valid)
+edge.dst_person[:,0]=1
+edge.src_part[:,0]=4;edge.dst_part[:,0]=1
+with torch.no_grad():
+    t1,_=directed(edge,torch.ones(1,dtype=torch.bool))
+    edge.src_part[:,0]=1;edge.dst_part[:,0]=4
+    t2,_=directed(edge,torch.ones(1,dtype=torch.bool))
+result['legacy_directed_contact_probe']={
+    'scope':'legacy StructuredContactRelationEncoder only; typed PartRelationEncoder uses separate A/B part embeddings',
+    'edge_1':'A.left_hand -> B.torso', 'edge_2':'A.torso -> B.left_hand',
+    'same_type_and_distance':True,
+    'token_max_abs_delta':float((t1-t2).abs().max()),
+    'allclose_at_1e_6':bool(torch.allclose(t1,t2,atol=1e-6,rtol=1e-6)),
+}
+print(json.dumps(result,ensure_ascii=False,indent=2))

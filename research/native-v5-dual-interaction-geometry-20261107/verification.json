@@ -1,0 +1,64 @@
+{
+  "verified_at_client_date": "2026-11-07",
+  "scope": "只读代码/缓存审计、模块级 CPU 探针；没有生成或训练",
+  "regression": {
+    "command": "cd /home/shangguanrz/project/pic-edit && CUDA_VISIBLE_DEVICES= OMP_NUM_THREADS=2 /home/shangguanrz/nihaochen/envs/qwen21/bin/python -B -m pytest -q -p no:cacheprovider tests/test_qwen21_native_dual_v3.py tests/test_qwen21_native_full_v5.py::test_interaction_zero_head_first_gradient_and_upstream_probe tests/test_qwen21_native_full_v5.py::test_reused_body_query_matches_original_body_algebra",
+    "exit_code": 0,
+    "summary": "8 passed in 7.31s",
+    "counts": {
+      "passed": 8,
+      "failed": 0
+    },
+    "meaning": "接触索引、Owner/tie、相对朝向、梯度、身份映射、消融开关与 Body Query 代数；不证明生成质量"
+  },
+  "source_audit": {
+    "hashed_files": 19,
+    "ast_parsed_files": 18,
+    "source_snapshot_files": [
+      "dual_data_runtime.py",
+      "dual_depth_geometry.py",
+      "dual_hi4d_geometry.py",
+      "frontend.py",
+      "native_dual_depth.py",
+      "native_full_data.py",
+      "objective.py",
+      "runtime.py",
+      "token_encoders.py"
+    ],
+    "source_snapshot_sha_matches": 9
+  },
+  "cache_audit": {
+    "targets": 2,
+    "all_manifest_sha_match": true,
+    "same_camera_and_scale": true
+  },
+  "probes": {
+    "part_relation": {
+      "scope": "PartRelationEncoder only, fixed geometry/interaction; not a whole-Adapter invariance claim",
+      "raw_indices_only_max_abs_delta": 0,
+      "normal_only_max_abs_delta": 0,
+      "same_displacement_shift_both_witnesses_max_abs_delta": 3.725290298461914e-7,
+      "distance_positive_control_max_abs_delta": 0.008139103651046753
+    },
+    "legacy_direction": {
+      "scope": "legacy StructuredContactRelationEncoder only; typed PartRelationEncoder uses separate A/B part embeddings",
+      "edge_1": "A.left_hand -> B.torso",
+      "edge_2": "A.torso -> B.left_hand",
+      "same_type_and_distance": true,
+      "token_max_abs_delta": 1.7881393432617188e-7,
+      "allclose_at_1e_6": true
+    },
+    "relative11": {
+      "translation_negates": true,
+      "box_center_delta_negates": true,
+      "box_log_ratio_negates": true,
+      "root_distance_invariant": true
+    }
+  },
+  "limitations": [
+    "只抽查 pair12 highfive12 的两帧；未进行完整数据分布审计。",
+    "模块探针固定其他输入；不能外推为整套 Adapter 不用 Normal 或 Contact。",
+    "没有加载训练 checkpoint；没有验证已训练权重的质量或收益。",
+    "nvidia-smi 返回 NVML driver/library mismatch；本次仅使用 CPU，未修改环境。"
+  ]
+}

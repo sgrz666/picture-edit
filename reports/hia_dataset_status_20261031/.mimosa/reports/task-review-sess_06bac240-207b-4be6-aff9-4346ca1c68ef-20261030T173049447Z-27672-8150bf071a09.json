@@ -1,0 +1,290 @@
+{
+  "schema_version": "mimosa-task-review/v2",
+  "run_id": "20261030T173049447Z-27672-8150bf071a09",
+  "run_status": "inconclusive",
+  "errors": [
+    {
+      "stage": "baseline",
+      "target": ".",
+      "reason": "baseline_partial: baseline capture had enumeration or snapshot errors"
+    },
+    {
+      "stage": "scan",
+      "target": "generate_report.js",
+      "reason": "scanner_failed: batch scanner status 1"
+    },
+    {
+      "stage": "scan",
+      "target": "patch_footers.py",
+      "reason": "scanner_failed: batch scanner status 1"
+    },
+    {
+      "stage": "scan",
+      "target": "remove_toc_stub.py",
+      "reason": "scanner_failed: batch scanner status 1"
+    },
+    {
+      "stage": "scan",
+      "target": "fix_toc_first_entry.py",
+      "reason": "scanner_failed: batch scanner status 1"
+    },
+    {
+      "stage": "supply-chain-check",
+      "target": ".",
+      "reason": "empty scanner output (status 1)"
+    }
+  ],
+  "coverage": {
+    "schema_version": "mimosa-hook-coverage/v1",
+    "status": "partial",
+    "scope": "hook_observed_diff",
+    "baseline": {
+      "complete": false,
+      "captured_files": 5,
+      "candidate_limit": 5000,
+      "truncated": false,
+      "enumeration_error_count": 0,
+      "snapshot_error_count": 0,
+      "compensated_target_count": 5
+    },
+    "change_tracking": {
+      "touched_observed": 5,
+      "touched_retained": 5,
+      "truncated": false,
+      "bash_mutation": true,
+      "bash_discovered": 5,
+      "bash_discovery_limit": 80,
+      "bash_discovery_truncated": false
+    },
+    "candidates": {
+      "eligible_files": 5,
+      "selected_files": 5,
+      "limit": 20,
+      "truncated": false
+    },
+    "scanning": {
+      "required_files": 4,
+      "scanned_files": 0,
+      "skipped_files": 0,
+      "failed_files": 4,
+      "project_checks_required": 1,
+      "project_checks_completed": 0
+    },
+    "notification": {
+      "eligible_findings": 0,
+      "detailed_findings": 0,
+      "detail_limit": 3,
+      "truncated": false
+    },
+    "reason_counts": {
+      "baseline_partial": 1,
+      "scanner_failed": 4,
+      "project_check_failed": 6,
+      "finding_ledger_read_failed": 1
+    },
+    "reasons": [
+      {
+        "code": "baseline_partial",
+        "stage": "baseline",
+        "target": ".",
+        "detail": "baseline capture had enumeration or snapshot errors",
+        "affects_completion": true
+      },
+      {
+        "code": "scanner_failed",
+        "stage": "scan",
+        "target": "generate_report.js",
+        "detail": "batch scanner status 1",
+        "affects_completion": true
+      },
+      {
+        "code": "scanner_failed",
+        "stage": "scan",
+        "target": "patch_footers.py",
+        "detail": "batch scanner status 1",
+        "affects_completion": true
+      },
+      {
+        "code": "scanner_failed",
+        "stage": "scan",
+        "target": "remove_toc_stub.py",
+        "detail": "batch scanner status 1",
+        "affects_completion": true
+      },
+      {
+        "code": "scanner_failed",
+        "stage": "scan",
+        "target": "fix_toc_first_entry.py",
+        "detail": "batch scanner status 1",
+        "affects_completion": true
+      },
+      {
+        "code": "project_check_failed",
+        "stage": "baseline",
+        "target": ".",
+        "detail": "baseline_partial: baseline capture had enumeration or snapshot errors",
+        "affects_completion": true
+      },
+      {
+        "code": "project_check_failed",
+        "stage": "scan",
+        "target": "generate_report.js",
+        "detail": "scanner_failed: batch scanner status 1",
+        "affects_completion": true
+      },
+      {
+        "code": "project_check_failed",
+        "stage": "scan",
+        "target": "patch_footers.py",
+        "detail": "scanner_failed: batch scanner status 1",
+        "affects_completion": true
+      },
+      {
+        "code": "project_check_failed",
+        "stage": "scan",
+        "target": "remove_toc_stub.py",
+        "detail": "scanner_failed: batch scanner status 1",
+        "affects_completion": true
+      },
+      {
+        "code": "project_check_failed",
+        "stage": "scan",
+        "target": "fix_toc_first_entry.py",
+        "detail": "scanner_failed: batch scanner status 1",
+        "affects_completion": true
+      },
+      {
+        "code": "project_check_failed",
+        "stage": "supply-chain-check",
+        "target": ".",
+        "detail": "empty scanner output (status 1)",
+        "affects_completion": true
+      },
+      {
+        "code": "finding_ledger_read_failed",
+        "stage": "finding-ledger",
+        "target": ".",
+        "detail": "file:///D:/temp/zcode/.zcode/cli/plugins/cache/zcode-plugins-official/mimosa/1.0.3/payload/dist/cli.js:3 const path = require(\"node:path\"); ^ ReferenceError: require is not defined in ES module scope, you can use import instead This file is being treated as an ES module because it has a '.js' file e",
+        "affects_completion": false
+      }
+    ],
+    "reasons_truncated": false
+  },
+  "generated_at": "2026-10-30T17:30:49.447Z",
+  "session_id": "sess_06bac240-207b-4be6-aff9-4346ca1c68ef",
+  "target": ".",
+  "revision": "f86817656c4870dc41c1140ea567ac2b286c7427",
+  "rules_version": "unavailable",
+  "diff_hash": "7422191d8a4b752897a4fb7b4314476d612912030f8d829e88e1fe15d145e891",
+  "diff": {
+    "algorithm": "sha256",
+    "changed_file_count": 5,
+    "changed_files": [
+      {
+        "file": "fix_toc_first_entry.py",
+        "ranges": [
+          {
+            "start": 1,
+            "end": 65
+          }
+        ],
+        "before_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "after_hash": "87b79426c110eddd667ba36310aaf01933fdeaa46c5c38dfd3af1b37ddf98291"
+      },
+      {
+        "file": "generate_report.js",
+        "ranges": [
+          {
+            "start": 1,
+            "end": 513
+          }
+        ],
+        "before_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "after_hash": "0d20d7b3db41e8ca8a4e2f26c7cd9668f5c0360b34bcd386940aa81f17143c14"
+      },
+      {
+        "file": "package.json",
+        "ranges": [
+          {
+            "start": 3,
+            "end": 3
+          }
+        ],
+        "before_hash": "4e56e91bbe93d05cf13d7dfa932dd26de794d8c27978492b9c65b4eaa412db68",
+        "after_hash": "384fbe638c39c5d6b1fa4950298cba4a704db33fba541eaf8b0d9a862161e899"
+      },
+      {
+        "file": "patch_footers.py",
+        "ranges": [
+          {
+            "start": 1,
+            "end": 61
+          }
+        ],
+        "before_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "after_hash": "a64c7f117e9989d5f1377fd55005fb6c30d7e328e7169708bb0a24144fdd66fe"
+      },
+      {
+        "file": "remove_toc_stub.py",
+        "ranges": [
+          {
+            "start": 1,
+            "end": 41
+          }
+        ],
+        "before_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "after_hash": "2903ca0db4e629d60f4eb3374e94f4133ca0fab7d28e242aa73893eee3e01dc6"
+      }
+    ]
+  },
+  "timing": {
+    "started_at": "2026-10-30T17:30:48.306Z",
+    "completed_at": "2026-10-30T17:30:49.447Z",
+    "duration_ms": 1141,
+    "measurement": "hook_wall_clock"
+  },
+  "tokens": {
+    "input": 0,
+    "output": 0,
+    "total": 0,
+    "model_calls": 0,
+    "measurement": "known-zero"
+  },
+  "telemetry": {
+    "schemaVersion": "mimosa-gate-telemetry/v1",
+    "profile": "gate",
+    "operation": "Stop",
+    "outcome": "partial/INCONCLUSIVE",
+    "latencyMs": 1141,
+    "peakMemoryBytes": 98590720,
+    "memoryMeasurement": "max-observed-process-rss",
+    "scannedFiles": 0,
+    "cache": {
+      "hits": 0,
+      "misses": 0,
+      "measurement": "not-applicable"
+    },
+    "denyCount": 0,
+    "tokens": {
+      "input": 0,
+      "output": 0,
+      "total": 0,
+      "modelCalls": 0,
+      "measurement": "known-zero"
+    }
+  },
+  "finding_count": 0,
+  "rewake_finding_count": 0,
+  "evidence_boundary": {
+    "scan": "candidate",
+    "static_fix_verification": "observed_static_only",
+    "runtime_verification": "not_performed"
+  },
+  "finding_events": [],
+  "findings": [],
+  "artifacts": {
+    "immutable_report": ".mimosa/reports/task-review-sess_06bac240-207b-4be6-aff9-4346ca1c68ef-20261030T173049447Z-27672-8150bf071a09.json",
+    "latest_report": ".mimosa/reports/task-review-sess_06bac240-207b-4be6-aff9-4346ca1c68ef.json",
+    "history_summary": ".mimosa/history/run-20261030T173049447Z-27672-8150bf071a09.json"
+  }
+}
