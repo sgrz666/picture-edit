@@ -1,0 +1,86 @@
+[
+  {
+    "stage": "output/pilot_20261111_v1/resources_000000_000100.json",
+    "pid": 1749131,
+    "error": null,
+    "violation": null,
+    "peak_cuda_allocated_mib": 15638.3134765625,
+    "peak_cuda_reserved_mib": 16022.0,
+    "peak_host_gpu_used_mib": 35424.0,
+    "min_gpu_free_mib": 49617.0,
+    "peak_process_rss_mib": 8690.625,
+    "min_ram_available_mib": 105276.79296875
+  },
+  {
+    "stage": "output/pilot_20261111_v1/resources_000100_000300.json",
+    "pid": 1755756,
+    "error": null,
+    "violation": null,
+    "peak_cuda_allocated_mib": 15638.3134765625,
+    "peak_cuda_reserved_mib": 16022.0,
+    "peak_host_gpu_used_mib": 38071.0,
+    "min_gpu_free_mib": 46970.0,
+    "peak_process_rss_mib": 8853.2109375,
+    "min_ram_available_mib": 102387.0625
+  },
+  {
+    "stage": "output/comparison_20261111_v1/resources.json",
+    "pid": 1768551,
+    "error": null,
+    "violation": null,
+    "peak_cuda_allocated_mib": 16990.52880859375,
+    "peak_cuda_reserved_mib": 17640.0,
+    "peak_host_gpu_used_mib": 39517.0,
+    "min_gpu_free_mib": 45524.0,
+    "peak_process_rss_mib": 6122.1953125,
+    "min_ram_available_mib": 102921.50390625
+  },
+  {
+    "stage": "report/pilot_report_20261111_v1/resources.json",
+    "pid": 1777175,
+    "error": null,
+    "violation": null,
+    "peak_cuda_allocated_mib": 0.0,
+    "peak_cuda_reserved_mib": 0.0,
+    "peak_host_gpu_used_mib": 21704.0,
+    "min_gpu_free_mib": 63337.0,
+    "peak_process_rss_mib": 2082.06640625,
+    "min_ram_available_mib": 100882.75
+  },
+  {
+    "stage": "cache/cache_20261111_v1/resources.json",
+    "pid": 1731145,
+    "error": null,
+    "violation": null,
+    "peak_cuda_allocated_mib": 17220.80517578125,
+    "peak_cuda_reserved_mib": 17524.0,
+    "peak_host_gpu_used_mib": 36928.0,
+    "min_gpu_free_mib": 48113.0,
+    "peak_process_rss_mib": 18883.4140625,
+    "min_ram_available_mib": 88619.4921875
+  },
+  {
+    "stage": "output/preflight_20261111_v1/resources_000000_000001.json",
+    "pid": 1743815,
+    "error": null,
+    "violation": null,
+    "peak_cuda_allocated_mib": 15510.31298828125,
+    "peak_cuda_reserved_mib": 16020.0,
+    "peak_host_gpu_used_mib": 35422.0,
+    "min_gpu_free_mib": 49619.0,
+    "peak_process_rss_mib": 8055.21484375,
+    "min_ram_available_mib": 105084.390625
+  },
+  {
+    "stage": "output/probe_inference_20261111_v1/resources.json",
+    "pid": 1746893,
+    "error": null,
+    "violation": null,
+    "peak_cuda_allocated_mib": 16990.52880859375,
+    "peak_cuda_reserved_mib": 17640.0,
+    "peak_host_gpu_used_mib": 37583.0,
+    "min_gpu_free_mib": 47458.0,
+    "peak_process_rss_mib": 10579.6953125,
+    "min_ram_available_mib": 103891.921875
+  }
+]

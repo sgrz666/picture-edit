@@ -23,6 +23,25 @@ __pycache__/
 !/experiments/bilibili-native-v5-training/report/
 /experiments/bilibili-native-v5-training/report/*
 !/experiments/bilibili-native-v5-training/report/*.json
+
+# 双图 Edit LoRA：只提交实现、配置、上游源码快照与精选轻量报告
+!/experiments/bilibili-dwpose-edit-lora/
+/experiments/bilibili-dwpose-edit-lora/*
+!/experiments/bilibili-dwpose-edit-lora/.gitignore
+!/experiments/bilibili-dwpose-edit-lora/.gitattributes
+!/experiments/bilibili-dwpose-edit-lora/README.md
+!/experiments/bilibili-dwpose-edit-lora/workspace_README.md
+!/experiments/bilibili-dwpose-edit-lora/configs/
+!/experiments/bilibili-dwpose-edit-lora/scripts/
+!/experiments/bilibili-dwpose-edit-lora/tests/
+!/experiments/bilibili-dwpose-edit-lora/source/
+!/experiments/bilibili-dwpose-edit-lora/report/
+/experiments/bilibili-dwpose-edit-lora/report/*
+!/experiments/bilibili-dwpose-edit-lora/report/*.md
+!/experiments/bilibili-dwpose-edit-lora/report/*.json
+!/experiments/bilibili-dwpose-edit-lora/report/*.jsonl
+!/experiments/bilibili-dwpose-edit-lora/report/validation_overview.png
+!/experiments/bilibili-dwpose-edit-lora/report/training_curves.png
 evidence.zip
 
 # 上游官方仓库（目录内仅保留 README 说明）

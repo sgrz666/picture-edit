@@ -1,0 +1,65 @@
+{
+  "pass": true,
+  "real_updates": 300,
+  "generated_images": 40,
+  "cache_samples_verified": 43,
+  "upstream_blobs": {
+    "train_dreambooth_lora_qwenimage21_img2img.py": "27eaf4b75649fef4bf0b858d7efb0ebf05209efc",
+    "README_qwenimage21.md": "fed23c281c681fb3f9851d5cf5e452d624a73d1c",
+    "LICENSE": "038e32f6445e8f265bde482613cf0d2f43d86dbc",
+    "pipeline_qwenimage21.py": "7cb519cde4a2e79a0bfc97abefc892490bde137e"
+  },
+  "trainable_parameters": 16777216,
+  "resume": {
+    "step": 100,
+    "lora_exact": true,
+    "optimizer_states": 256,
+    "scheduler_step": 100,
+    "rng_restored": true
+  },
+  "lora_reload": {
+    "exact_after_dtype_cast": true,
+    "max_absolute_weight_difference": 0.0009756088256835938,
+    "tensors": 256,
+    "saved_tensors": 256,
+    "adapter_sha256": "087ace442877a64049114b4c5ea6b4859cbfb3d63f7e724ef327b940156c370f"
+  },
+  "checkpoints": {
+    "100": {
+      "step": 100,
+      "config_sha256": "5ef33da3b3a24c744a3dcb7b7bada1b37bf031724311647d4212d7f1804e1a10",
+      "cache_index_sha256": "e506ad820125fd3ca834a0afa8b8f7047d5aea99809053d7d2f31ad07d90c9eb",
+      "lora_delta_l2": 3.392424844881915,
+      "lora_sha256": "5b2f13b7281ff8e82d4d76a2a1844d624d5ce4f7a7a0c28f85fc552055f4566b",
+      "training_state_sha256": "ec2dfb10cf110a3271fecfab947b35a3272634b0482d7572f24561d35ddc893d"
+    },
+    "200": {
+      "step": 200,
+      "config_sha256": "5ef33da3b3a24c744a3dcb7b7bada1b37bf031724311647d4212d7f1804e1a10",
+      "cache_index_sha256": "e506ad820125fd3ca834a0afa8b8f7047d5aea99809053d7d2f31ad07d90c9eb",
+      "lora_delta_l2": 4.384622446199102,
+      "lora_sha256": "af2391acb9632dfd2b64659d383d114b7fbf22c9785ceb9fc85d4ab754d55f79",
+      "training_state_sha256": "67415461852474abdc6d80dfa227c93200d105e6992f0367d64a9770686c96ac"
+    },
+    "300": {
+      "step": 300,
+      "config_sha256": "5ef33da3b3a24c744a3dcb7b7bada1b37bf031724311647d4212d7f1804e1a10",
+      "cache_index_sha256": "e506ad820125fd3ca834a0afa8b8f7047d5aea99809053d7d2f31ad07d90c9eb",
+      "lora_delta_l2": 5.593014480940977,
+      "lora_sha256": "087ace442877a64049114b4c5ea6b4859cbfb3d63f7e724ef327b940156c370f",
+      "training_state_sha256": "054b69ab4b6fe32ab442fb858af23ef1f19fdcc0f9ec49e0411eaf347ee0854d"
+    }
+  },
+  "versions": {
+    "diffusers": "0.41.0.dev0",
+    "torch": "2.8.0",
+    "peft": "0.20.0",
+    "accelerate": "1.10.1",
+    "transformers": "5.17.0",
+    "safetensors": "0.8.0"
+  },
+  "min_gpu_free_mib_all_stages": 45524.0,
+  "min_available_ram_mib_all_stages": 88619.4921875,
+  "metrics_sha256": "9a556138d4a537ad276a43c1a81a5fee92555723026a150063254cc47c4d93dd",
+  "original_manifests_unchanged": true
+}

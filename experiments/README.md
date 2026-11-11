@@ -27,6 +27,8 @@
 
 ## 二、最新重点实验物理落点与产物说明
 
+Bilibili 双图 Edit LoRA 见 [`bilibili-dwpose-edit-lora/README.md`](bilibili-dwpose-edit-lora/README.md)。已完成 32 对训练、10 对验证、300 次 LoRA 更新及 40 张对照/诊断图；服务器工作区 `/data/shangguanrz/LoRA/`。验证集 PCK@0.05 均为 0.975，Face ID 从 0.5106 到 0.5026，首轮尚无稳定综合收益。基座/VLM/VAE 冻结，未接入 Native V5。
+
 Bilibili 全量数据划分及 Sapiens2 v1 → Native V5 对齐见 [`bilibili-native-v5-training/README.md`](bilibili-native-v5-training/README.md)。2026-11-06 已按原视频划为 39/5/5 个视频、9,520/1,490/1,146 对；未追加质量筛选、未启动训练。缓存落在 `/data/shangguanrz/pic-edit-experiments/bilibili-native-v5-training-20261106-v1/`。
 
 HBW 跨体型 β 基准见 [`smplx_cross_shape_benchmark_20261109/README.md`](smplx_cross_shape_benchmark_20261109/README.md)。单图 SHAPY 相对 SMPLest-X 的 P2P 改善 −2.76mm（CI 含 0），跨图 ICC 0.539 vs 0.246；P0 受控替换 G0→G1→G2 的 v2v 为 23.6→19.2→17.2mm。运行根 `/data/shangguanrz/shape`。

@@ -1,0 +1,46 @@
+[
+  {
+    "method": "baseline",
+    "case": "swap_pose",
+    "source_A_unchanged": true,
+    "prompt_unchanged": true,
+    "seed_unchanged": true,
+    "rgb_mae_0_255": 7.905880451202393,
+    "output_pose_change_diagonal": 0.03789651320613507,
+    "guide_pose_change_diagonal": 0.036996735737127785,
+    "matched_output_joints": 17
+  },
+  {
+    "method": "baseline",
+    "case": "blank_pose",
+    "source_A_unchanged": true,
+    "prompt_unchanged": true,
+    "seed_unchanged": true,
+    "rgb_mae_0_255": 2.5868818759918213,
+    "output_pose_change_diagonal": 0.0020718710041171214,
+    "guide_pose_change_diagonal": null,
+    "matched_output_joints": 17
+  },
+  {
+    "method": "lora",
+    "case": "swap_pose",
+    "source_A_unchanged": true,
+    "prompt_unchanged": true,
+    "seed_unchanged": true,
+    "rgb_mae_0_255": 7.226171016693115,
+    "output_pose_change_diagonal": 0.03765451419874835,
+    "guide_pose_change_diagonal": 0.036996735737127785,
+    "matched_output_joints": 17
+  },
+  {
+    "method": "lora",
+    "case": "blank_pose",
+    "source_A_unchanged": true,
+    "prompt_unchanged": true,
+    "seed_unchanged": true,
+    "rgb_mae_0_255": 4.300543785095215,
+    "output_pose_change_diagonal": 0.0064356170662199005,
+    "guide_pose_change_diagonal": null,
+    "matched_output_joints": 17
+  }
+]
