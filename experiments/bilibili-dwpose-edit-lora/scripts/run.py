@@ -16,6 +16,7 @@ def main():
     parser.add_argument('--name', required=True, help='New immutable data/cache/run/output name')
     parser.add_argument('--data', type=Path)
     parser.add_argument('--cache', type=Path)
+    parser.add_argument('--reuse-cache', type=Path, help='Reuse hash-verified frozen sample encodings')
     parser.add_argument('--resume', type=Path)
     parser.add_argument('--until-step', type=int)
     parser.add_argument('--adapter', type=Path)
@@ -35,7 +36,7 @@ def main():
         result = prepare_data(config, args.name)
     elif args.command == 'cache':
         from runtime import cache_data
-        result = cache_data(config, args.data, args.name)
+        result = cache_data(config, args.data, args.name, args.reuse_cache)
     elif args.command == 'train':
         from runtime import train
         result = train(config, args.data, args.cache, args.name, args.until_step, args.resume)

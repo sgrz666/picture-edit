@@ -1,0 +1,25 @@
+{
+  "pid": 1899081,
+  "created_at": 1794404610.4268718,
+  "python": "/home/shangguanrz/nihaochen/envs/qwen21/bin/python",
+  "script_sha256": {
+    "audit.py": "c5d7331503353d03b4a7c28e704b9b697a252252fae33a20ab86215c0d116c01",
+    "build_report.py": "67b758d3d59d9a0e3c6dbb267a88548095d7a22ce9866558b28e93ab8cbb73cb",
+    "campaign.py": "277d85274aa49131a8bd2c47b8fe8d7700f5db03eb925fd56b5cabf3d550ae0d",
+    "core.py": "ed71029a0cf9f26c8e66890fa872ae10a4d2314fb96c55def88ae6e153cacb23",
+    "full_training.py": "b4a54fda6adace77d5e6494b5157ed122730a5f72bd4b3b8bd48cf4ea867f37e",
+    "inference.py": "a3fd4275872537dd5bc4cb6c0f33597787f8e0f8118970d64805bdb3c3bbdbdc",
+    "prepare.py": "c1a9aa54c9d8b7c470cba4352aa6d0cedc71be31a1d3c25835fadb2af68d58c8",
+    "resources.py": "fb6767f834aaafe0a8208add56b7c3e12d697e4b298965eca014f889368cbd45",
+    "run.py": "de8bc163ae51189c9d1669fd9e03c20601fd1c01811431a856d4a502b7abd809",
+    "runtime.py": "b71848a6c8960139e079ffc4dede2fb4abb0c330a9c27cc3f4b6e4c9c1587c18"
+  },
+  "config_sha256": "fb30ab4724bd1114a59c65fce78dc41d82ba673c97ed4e5b7b9cba45a88bbcf3",
+  "data": "/data/shangguanrz/LoRA/experiments/bilibili-dwpose-edit-lora/data/data_20261111_v1",
+  "data_index_sha256": "fc94b3fd0d4006f2bcf309301c2b7b2ea42e5c85d67e2164c2ea9a8fb9b6cb31",
+  "train_manifest_sha256": "0455d0715ef9889d6148911ee9efb67a766861daa9ec9ff78912c8049e3e16a1",
+  "train_pairs": 9520,
+  "train_videos": 39,
+  "initialization": "base_and_fresh_lora",
+  "reuse_cache": "/data/shangguanrz/LoRA/experiments/bilibili-dwpose-edit-lora/cache/cache_20261111_v1"
+}

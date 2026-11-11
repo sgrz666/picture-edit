@@ -11,6 +11,7 @@ import os
 from pathlib import Path
 import platform
 import random
+import shutil
 import time
 
 import numpy as np
@@ -23,7 +24,8 @@ from diffusers import (AutoencoderKLQwenImage21, FlowMatchEulerDiscreteScheduler
 from diffusers.training_utils import compute_density_for_timestep_sampling, compute_loss_weighting_for_sd3
 from peft import LoraConfig, get_peft_model_state_dict, set_peft_model_state_dict
 
-from core import cache_key, digest, joint_layout, read_json, read_jsonl, sha256, verify_row_assets, write_json
+from core import (cache_key, cache_manifest_names, digest, joint_layout, load_training_rows,
+                  read_json, read_jsonl, sha256, training_permutation, verify_row_assets, write_json)
 from resources import ResourceMonitor
 
 
@@ -92,16 +94,29 @@ def validate_model_identity(identity, config):
         raise ValueError('Installed Qwen pipeline/transformer changed since cache creation')
 
 
-def cache_data(config, data, name):
+def cache_data(config, data, name, reuse_cache=None):
     versions = setup(config)
     data = Path(data)
     out = Path(config['workspace_root']) / 'cache' / name
     out.mkdir(parents=True, exist_ok=False)
     with ResourceMonitor(config, out / 'resources.json') as monitor:
-        rows = [*read_jsonl(data / 'pilot_train.jsonl'), *read_jsonl(data / 'pilot_val.jsonl'),
-                *read_jsonl(data / 'diagnostics.jsonl')]
-        print('Fingerprinting model weights/configs', flush=True)
-        identity = model_identity(config)
+        manifests = cache_manifest_names(config)
+        rows = [row for manifest in manifests for row in read_jsonl(data / manifest)]
+        if len({r['pair_id'] for r in rows}) != len(rows):
+            raise ValueError('Duplicate pair IDs in cache manifests')
+        reuse_index = read_json(Path(reuse_cache) / 'index.json') if reuse_cache else None
+        if reuse_index:
+            identity = reuse_index['identity']
+            validate_model_identity(identity, config)
+            if reuse_index['versions'] != versions or identity['canvas_wh'] != config['canvas_wh']:
+                raise ValueError('Cannot reuse encodings from a different runtime or canvas')
+            print('Reusing verified frozen model identity; checking cached sample hashes', flush=True)
+        else:
+            print('Fingerprinting model weights/configs', flush=True)
+            identity = model_identity(config)
+        if any(r['prompt'] != config['prompt'] or r['canvas_wh'] != config['canvas_wh'] for r in rows):
+            raise ValueError('Data Prompt/canvas differs from cache configuration')
+        print(f'Cache manifests={manifests}, samples={len(rows)}', flush=True)
         write_json(out / 'model_identity.json', identity)
         all_paths = {path: expected for row in rows for path, expected in
                      zip([*row['condition_images'], row['target_image']],
@@ -139,10 +154,19 @@ def cache_data(config, data, name):
         pipeline = QwenImage21Pipeline.from_pretrained(config['model_root'], vae=None, transformer=None,
                                                       scheduler=None, torch_dtype=torch.bfloat16).to('cuda')
         pipeline.text_encoder.requires_grad_(False).eval()
-        entries = {}
+        entries, reused = {}, 0
         for i, row in enumerate(rows):
             monitor.check()
             key = cache_key(row, identity)
+            previous = reuse_index['entries'].get(row['pair_id']) if reuse_index else None
+            if previous and previous['key'] == key:
+                source = Path(reuse_cache) / previous['file']
+                if sha256(source) != previous['sha256']:
+                    raise ValueError(f'Reused cache content changed: {source}')
+                shutil.copyfile(source, out / f'{key}.pt')
+                entries[row['pair_id']] = {'key': key, 'file': f'{key}.pt', 'sha256': previous['sha256']}
+                reused += 1
+                continue
             images = [Image.open(p).convert('RGBA') for p in row['condition_images']]
             with torch.no_grad():
                 embeds, attention_mask, image_pad_mask = pipeline.encode_prompt(prompt=row['prompt'], image=images)
@@ -158,7 +182,8 @@ def cache_data(config, data, name):
                     'condition_images': row['condition_images'], 'prompt': row['prompt']}
             torch.save(item, out / f'{key}.pt')
             entries[row['pair_id']] = {'key': key, 'file': f'{key}.pt', 'sha256': sha256(out / f'{key}.pt')}
-            print(f'VLM {i+1}/{len(rows)} {row["split"]} {row["pair_id"][:12]} slots={int(image_pad_mask.sum())}', flush=True)
+            if len(rows) < 100 or i % 25 == 0 or i+1 == len(rows):
+                print(f'VLM {i+1}/{len(rows)} {row["split"]} {row["pair_id"][:12]} slots={int(image_pad_mask.sum())}', flush=True)
             del embeds, attention_mask, image_pad_mask, item, latents, target, images
         pipeline.to('cpu')
         del pipeline
@@ -166,8 +191,9 @@ def cache_data(config, data, name):
         write_json(out / 'index.json', {'schema': 'dual_edit_disk_cache_v1', 'data': str(data.resolve()),
                    'data_index_sha256': sha256(data / 'index.json'), 'config_sha256': digest(config),
                    'versions': versions, 'identity': identity, 'entries': entries,
-                   'manifest_sha256': {n: sha256(data / n) for n in
-                                      ['pilot_train.jsonl', 'pilot_val.jsonl', 'diagnostics.jsonl']}})
+                   'reused_samples': reused, 'reuse_cache': str(reuse_cache) if reuse_cache else None,
+                   'manifest_sha256': {n: sha256(data / n) for n in sorted(set(manifests +
+                                      ['pilot_train.jsonl', 'pilot_val.jsonl', 'diagnostics.jsonl']))}})
     return out
 
 
@@ -204,11 +230,12 @@ def load_cached(row, index, cache, device='cuda'):
     return {k: move(v) for k, v in value.items()}
 
 
-def forward_loss(model, item, scheduler):
+def forward_loss(model, item, scheduler, density_value=None):
     # Same native normalization, flattening, timestep and target-only velocity loss as upstream.
     clean = item['target_mean'] + item['target_std'] * torch.randn_like(item['target_mean'])
     noise = torch.randn_like(clean)
-    u = compute_density_for_timestep_sampling(weighting_scheme='none', batch_size=1)
+    u = (compute_density_for_timestep_sampling(weighting_scheme='none', batch_size=1)
+         if density_value is None else torch.tensor([density_value]))
     position = int((u * scheduler.config.num_train_timesteps).long().item())
     timestep = scheduler.timesteps[position].reshape(1).to('cuda')
     sigma = scheduler.sigmas[position].to('cuda', dtype=clean.dtype).reshape(1, 1, 1, 1, 1)
@@ -238,6 +265,37 @@ def adapter_state(model):
     return {k: cpu(v).clone() for k, v in get_peft_model_state_dict(model).items()}
 
 
+def validate(model, config, data, cache, index, scheduler, out, step, monitor):
+    rows = read_jsonl(Path(data) / config['validation_manifest'])
+    if not rows or any(row['split'] != 'val' for row in rows):
+        raise ValueError('Validation must use only val samples')
+    was_training = model.training
+    values = []
+    try:
+        model.eval()
+        # Keep validation from perturbing the following training noise/timestep stream.
+        with torch.no_grad(), torch.random.fork_rng(devices=[torch.cuda.current_device()]):
+            for i, row in enumerate(rows):
+                item = load_cached(row, index, cache)
+                for density in config['validation_density_values']:
+                    monitor.check()
+                    torch.manual_seed(config['validation_seed'] + i)
+                    with torch.autocast('cuda', dtype=torch.bfloat16):
+                        loss, details = forward_loss(model, item, scheduler, density_value=density)
+                    if not torch.isfinite(loss):
+                        raise RuntimeError('Non-finite validation loss')
+                    values.append({'pair_id': row['pair_id'], 'density': density,
+                                   'loss': float(loss), **details})
+                del item
+    finally:
+        model.train(was_training)
+    result = {'step': step, 'samples': len(rows), 'seed': config['validation_seed'],
+              'mean_loss': float(np.mean([v['loss'] for v in values])), 'records': values,
+              'training_rng_preserved': True}
+    write_json(out / f'validation_{step:06d}.json', result)
+    print(f'Validation step={step} samples={len(rows)} mean_loss={result["mean_loss"]:.6f}', flush=True)
+
+
 def save_checkpoint(model, optimizer, lr_scheduler, config, cache, out, step, initial):
     checkpoint = out / f'checkpoint-{step:06d}'
     checkpoint.mkdir(exist_ok=False)
@@ -260,9 +318,9 @@ def save_checkpoint(model, optimizer, lr_scheduler, config, cache, out, step, in
 def train(config, data, cache, name, until_step=None, resume=None):
     versions = setup(config)
     index = open_cache(config, data, cache)
-    rows = read_jsonl(Path(data) / 'pilot_train.jsonl')
-    if any(row['split'] != 'train' for row in rows):
-        raise ValueError('Training accepts only train samples')
+    rows = load_training_rows(config, data)
+    if any(row['pair_id'] not in index['entries'] for row in rows):
+        raise ValueError('The selected train dataset is not fully cached')
     limit = config['steps'] if until_step is None else until_step
     if not 1 <= limit <= config['steps']:
         raise ValueError('until-step must be within the approved update budget')
@@ -332,13 +390,16 @@ def train(config, data, cache, name, until_step=None, resume=None):
         model.train()
         last_checkpoint = None
         losses = []
+        current_epoch, order = None, None
         log_path = out / f'updates_{starting_step:06d}_{limit:06d}.jsonl'
         import json
         with log_path.open('x', encoding='utf-8', buffering=1) as log:
             for step in range(starting_step, limit):
                 monitor.check()
                 epoch, offset = divmod(step, len(rows))
-                order = random.Random(config['seed'] + epoch).sample(range(len(rows)), len(rows))
+                if epoch != current_epoch:
+                    order = training_permutation(len(rows), config['seed'], epoch)
+                    current_epoch = epoch
                 row = rows[order[offset]]
                 item = load_cached(row, index, cache)
                 start = time.monotonic()
@@ -367,6 +428,9 @@ def train(config, data, cache, name, until_step=None, resume=None):
                 if step == starting_step or (step+1) % 10 == 0:
                     print(json.dumps(record, allow_nan=False), flush=True)
                 del loss, item
+                validation_every = config.get('validation_every', 0)
+                if validation_every and ((step+1) % validation_every == 0 or step+1 == limit):
+                    validate(model, config, data, cache, index, scheduler, out, step+1, monitor)
                 if (step+1) % config['save_every'] == 0 or step+1 == limit:
                     last_checkpoint = save_checkpoint(model, optimizer, lr_scheduler, config, cache, out, step+1, initial)
                     print(f'Checkpoint committed: {last_checkpoint}', flush=True)

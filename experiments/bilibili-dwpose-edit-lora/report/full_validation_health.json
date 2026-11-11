@@ -1,0 +1,14 @@
+{
+  "pass": true,
+  "cpu_rng_exact": true,
+  "cuda_rng_exact": true,
+  "no_gradients": true,
+  "training_mode_restored": true,
+  "samples": 10,
+  "density_values": [
+    0.1,
+    0.5,
+    0.9
+  ],
+  "scope": "frozen full-run validation implementation; existing held-out cache only"
+}

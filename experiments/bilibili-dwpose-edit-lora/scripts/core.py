@@ -40,6 +40,31 @@ def read_jsonl(path):
         return [json.loads(line) for line in stream if line.strip()]
 
 
+def load_training_rows(config, data):
+    rows = read_jsonl(Path(data) / config.get('training_manifest', 'pilot_train.jsonl'))
+    if not rows or any(row['split'] != 'train' for row in rows):
+        raise ValueError('Training accepts only nonempty train samples')
+    if len({r['pair_id'] for r in rows}) != len(rows):
+        raise ValueError('Duplicate train pair IDs')
+    expected = config.get('expected_train_pairs')
+    if expected is not None and len(rows) != expected:
+        raise ValueError(f'Train rows={len(rows)}, expected {expected}')
+    return rows
+
+
+def cache_manifest_names(config):
+    names = config.get('cache_manifests', ['pilot_train.jsonl', 'pilot_val.jsonl', 'diagnostics.jsonl'])
+    if any('test' in name or Path(name).name != name for name in names):
+        raise ValueError('Cache may not include test data or nonlocal manifest names')
+    if config.get('training_manifest', 'pilot_train.jsonl') not in names:
+        raise ValueError('Cache must include the configured train manifest')
+    return list(names)
+
+
+def training_permutation(count, seed, epoch):
+    return random.Random(seed + epoch).sample(range(count), count)
+
+
 def write_jsonl(path, rows):
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
