@@ -15,6 +15,14 @@ __pycache__/
 !/data/README.md
 /experiments/*
 !/experiments/README.md
+!/experiments/bilibili-native-v5-training/
+/experiments/bilibili-native-v5-training/*
+!/experiments/bilibili-native-v5-training/README.md
+!/experiments/bilibili-native-v5-training/scripts/
+!/experiments/bilibili-native-v5-training/tests/
+!/experiments/bilibili-native-v5-training/report/
+/experiments/bilibili-native-v5-training/report/*
+!/experiments/bilibili-native-v5-training/report/*.json
 evidence.zip
 
 # 上游官方仓库（目录内仅保留 README 说明）
@@ -76,3 +84,18 @@ reports/qwen_union_controlnet_20261027/_docimg/
 reports/hia_dataset_status_20261031/assets/
 reports/hia_dataset_status_20261031/render/
 experiments/**/cookies*.txt
+
+# SMPL-X cross-shape benchmark (2026-11-09)
+!/experiments/smplx_cross_shape_benchmark_20261109/
+/experiments/smplx_cross_shape_benchmark_20261109/*
+!/experiments/smplx_cross_shape_benchmark_20261109/README.md
+!/experiments/smplx_cross_shape_benchmark_20261109/scripts/
+!/experiments/smplx_cross_shape_benchmark_20261109/tests/
+!/experiments/smplx_cross_shape_benchmark_20261109/report/
+/experiments/smplx_cross_shape_benchmark_20261109/report/*
+!/experiments/smplx_cross_shape_benchmark_20261109/report/REPORT.md
+!/experiments/smplx_cross_shape_benchmark_20261109/report/figures/
+!/experiments/smplx_cross_shape_benchmark_20261109/report/figures/*.png
+!/experiments/smplx_cross_shape_benchmark_20261109/results/
+!/experiments/smplx_cross_shape_benchmark_20261109/results/*.json
+!/experiments/smplx_cross_shape_benchmark_20261109/results/*.csv

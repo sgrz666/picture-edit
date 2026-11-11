@@ -1,0 +1,2111 @@
+{
+  "schema": "npz_io_readonly_profile_v1",
+  "created_at": "2026-11-06T16:28:53.586524+00:00",
+  "source": {
+    "path": "/data/shangguanrz/pic-edit-experiments/bilibili-native-v5-training-20261106-v1/native_sapiens_v1/pairs/501707d6ad2d180e1ede5fbe2828a26ea2cccb9cc84d5e0660b164b8dcf0369c/eed9258b697daf3c/build_84826a4917f1/body.npz",
+    "sha256": "8b8c4c8ffcd1cad998dfd94edfd23476fbae480e9ad111767e21e1be426b7efa",
+    "bytes": 2424242,
+    "mtime_ns": 1793982071584536723
+  },
+  "environment": {
+    "python": "3.12.14 | packaged by Anaconda, Inc. | (main, Aug 27 2026, 14:46:43) [GCC 14.3.0]",
+    "numpy": "2.1.2",
+    "platform": "Linux-7.0.0-34-generic-x86_64-with-glibc2.39",
+    "zlib": "1.3.2",
+    "max_rss_kib_linux": 180184
+  },
+  "protocol": {
+    "source_archives_loaded": 1,
+    "source_changed": false,
+    "body_files_created": 0,
+    "all_recompression_outputs": "BytesIO only",
+    "model_loaded": false,
+    "gpu_used": false,
+    "training_started": false,
+    "dtype_changed": false,
+    "fields_removed": false,
+    "read_cache_state": "OS page-cache state is uncontrolled; no cold-disk claim",
+    "deflate_levels": [
+      1,
+      3,
+      6
+    ],
+    "repetitions_np_savez_compressed": 2
+  },
+  "timings": {
+    "read_archive_bytes": {
+      "wall_s": 0.04385269107297063,
+      "cpu_s": 0.015451649999999262
+    },
+    "sha_archive_memory": {
+      "wall_s": 0.010075789876282215,
+      "cpu_s": 0.01009649100000054
+    },
+    "sha_archive_read_stream": {
+      "wall_s": 0.025659131817519665,
+      "cpu_s": 0.025661471999999463
+    },
+    "inflate_npy_from_memory": {
+      "wall_s": 0.6075674737803638,
+      "cpu_s": 0.6067946010000078
+    },
+    "parse_npy": {
+      "wall_s": 0.1667583156377077,
+      "cpu_s": 0.1660165689999964
+    },
+    "serialize_npy": {
+      "wall_s": 0.39115282613784075,
+      "cpu_s": 0.39108623999999637
+    },
+    "sha_all_npy": {
+      "wall_s": 0.14884161110967398,
+      "cpu_s": 0.14710939599999762
+    },
+    "np_load_all_from_memory": {
+      "wall_s": 0.2095764009281993,
+      "cpu_s": 0.20953298500000095
+    },
+    "np_savez_compressed": [
+      {
+        "iteration": 1,
+        "wall_s": 0.7671580500900745,
+        "cpu_s": 0.7670030780000001,
+        "bytes": 2424242,
+        "all_member_sha256_identical": true
+      },
+      {
+        "iteration": 2,
+        "wall_s": 0.5440198718570173,
+        "cpu_s": 0.543880863,
+        "bytes": 2424242,
+        "all_member_sha256_identical": true
+      }
+    ]
+  },
+  "totals": {
+    "members": 40,
+    "array_bytes": 53559023,
+    "npy_bytes": 53564143,
+    "compressed_payload_bytes": 2419434,
+    "zip_overhead_bytes": 4808
+  },
+  "deflate_levels": {
+    "1": {
+      "wall_s": 0.25513503793627024,
+      "cpu_s": 0.25504339799999975,
+      "compressed_bytes": 2778140
+    },
+    "3": {
+      "wall_s": 0.2511794143356383,
+      "cpu_s": 0.25113111499999796,
+      "compressed_bytes": 2696615
+    },
+    "6": {
+      "wall_s": 0.466840083245188,
+      "cpu_s": 0.466616812999991,
+      "compressed_bytes": 2419434
+    }
+  },
+  "within_archive_duplicate_npy_groups": [
+    [
+      "array_4.npy",
+      "array_37.npy"
+    ],
+    [
+      "array_18.npy",
+      "array_22.npy",
+      "array_23.npy"
+    ],
+    [
+      "array_20.npy",
+      "array_34.npy"
+    ],
+    [
+      "array_25.npy",
+      "array_35.npy"
+    ],
+    [
+      "array_30.npy",
+      "array_32.npy",
+      "array_33.npy"
+    ]
+  ],
+  "redundant_identical_members": {
+    "count": 7,
+    "npy_bytes": 590730,
+    "level6_deflate_wall_s": 0.004353331867605448
+  },
+  "members": [
+    {
+      "member": "array_0.npy",
+      "shape": [
+        1,
+        512,
+        288
+      ],
+      "dtype": "float32",
+      "array_bytes": 589824,
+      "npy_bytes": 589952,
+      "compressed_bytes": 681,
+      "zip_method": 8,
+      "npy_sha256": "f4bebbc7cc6e4009b45f0eae204fc3c53695301d1c1e713e0a256be1fbaa253b",
+      "inflate_from_memory": {
+        "wall_s": 0.005951724015176296,
+        "cpu_s": 0.005941720000000927
+      },
+      "parse_npy": {
+        "wall_s": 0.004601243883371353,
+        "cpu_s": 0.004605905000000021
+      },
+      "serialize_npy": {
+        "wall_s": 0.003486551344394684,
+        "cpu_s": 0.0034899189999997304
+      },
+      "sha_npy": {
+        "wall_s": 0.0009461031295359135,
+        "cpu_s": 0.0009419010000009109
+      },
+      "deflate": {
+        "1": {
+          "wall_s": 0.0017050951719284058,
+          "cpu_s": 0.001705889000000127,
+          "bytes": 2970
+        },
+        "3": {
+          "wall_s": 0.0022490322589874268,
+          "cpu_s": 0.002251165999998861,
+          "bytes": 2970
+        },
+        "6": {
+          "wall_s": 0.004086657892912626,
+          "cpu_s": 0.0040887309999995125,
+          "bytes": 681
+        }
+      },
+      "record_paths": [
+        "sample.valid_image_mask"
+      ]
+    },
+    {
+      "member": "array_1.npy",
+      "shape": [
+        2,
+        1,
+        512,
+        288
+      ],
+      "dtype": "bool",
+      "array_bytes": 294912,
+      "npy_bytes": 295040,
+      "compressed_bytes": 2161,
+      "zip_method": 8,
+      "npy_sha256": "c6852be5ea707072735b457d330d4ac48bce3cabf3ed32ce4ead9e5e901bba8f",
+      "inflate_from_memory": {
+        "wall_s": 0.002289223950356245,
+        "cpu_s": 0.0022875570000007173
+      },
+      "parse_npy": {
+        "wall_s": 0.003017343580722809,
+        "cpu_s": 0.0030199959999990256
+      },
+      "serialize_npy": {
+        "wall_s": 0.0010401168838143349,
+        "cpu_s": 0.0010489109999998192
+      },
+      "sha_npy": {
+        "wall_s": 0.0005713910795748234,
+        "cpu_s": 0.0005811050000001927
+      },
+      "deflate": {
+        "1": {
+          "wall_s": 0.0012508179061114788,
+          "cpu_s": 0.0012545409999997759,
+          "bytes": 4069
+        },
+        "3": {
+          "wall_s": 0.0014312071725726128,
+          "cpu_s": 0.0014324459999990324,
+          "bytes": 3762
+        },
+        "6": {
+          "wall_s": 0.003816105891019106,
+          "cpu_s": 0.0038169959999994063,
+          "bytes": 2161
+        }
+      },
+      "record_paths": [
+        "sample.source_person_mask"
+      ]
+    },
+    {
+      "member": "array_2.npy",
+      "shape": [
+        2,
+        1,
+        512,
+        288
+      ],
+      "dtype": "bool",
+      "array_bytes": 294912,
+      "npy_bytes": 295040,
+      "compressed_bytes": 654,
+      "zip_method": 8,
+      "npy_sha256": "451e8875e318c8bb1896fa21c88cb9e384f37f3594f42a4e554f464745a7d469",
+      "inflate_from_memory": {
+        "wall_s": 0.0012224270030856133,
+        "cpu_s": 0.0012209580000011044
+      },
+      "parse_npy": {
+        "wall_s": 0.0015313164331018925,
+        "cpu_s": 0.0015323150000003949
+      },
+      "serialize_npy": {
+        "wall_s": 0.0008606109768152237,
+        "cpu_s": 0.0008621319999999599
+      },
+      "sha_npy": {
+        "wall_s": 0.00044140685349702835,
+        "cpu_s": 0.0004416109999993978
+      },
+      "deflate": {
+        "1": {
+          "wall_s": 0.0012195762246847153,
+          "cpu_s": 0.0012140750000000367,
+          "bytes": 2004
+        },
+        "3": {
+          "wall_s": 0.0012935018166899681,
+          "cpu_s": 0.0012944589999985823,
+          "bytes": 1806
+        },
+        "6": {
+          "wall_s": 0.0022862697951495647,
+          "cpu_s": 0.002286605000000108,
+          "bytes": 654
+        }
+      },
+      "record_paths": [
+        "sample.source_head_mask"
+      ]
+    },
+    {
+      "member": "array_3.npy",
+      "shape": [
+        2
+      ],
+      "dtype": "int64",
+      "array_bytes": 16,
+      "npy_bytes": 144,
+      "compressed_bytes": 73,
+      "zip_method": 8,
+      "npy_sha256": "5ee85a92bc918c8f22c8a7a04b6b4566c0533db09fd8fdef700ab84d7d8f12d1",
+      "inflate_from_memory": {
+        "wall_s": 0.0005994853563606739,
+        "cpu_s": 0.000602781000001329
+      },
+      "parse_npy": {
+        "wall_s": 0.0010287370532751083,
+        "cpu_s": 0.0010270710000011007
+      },
+      "serialize_npy": {
+        "wall_s": 0.00037006521597504616,
+        "cpu_s": 0.0003656950000010539
+      },
+      "sha_npy": {
+        "wall_s": 6.297370418906212e-05,
+        "cpu_s": 6.403899999973817e-05
+      },
+      "deflate": {
+        "1": {
+          "wall_s": 6.170198321342468e-05,
+          "cpu_s": 6.0154999999895153e-05,
+          "bytes": 73
+        },
+        "3": {
+          "wall_s": 5.1212962716817856e-05,
+          "cpu_s": 4.2980999999997493e-05,
+          "bytes": 73
+        },
+        "6": {
+          "wall_s": 4.9413181841373444e-05,
+          "cpu_s": 4.7072999999286935e-05,
+          "bytes": 73
+        }
+      },
+      "record_paths": [
+        "sample.source_indices"
+      ]
+    },
+    {
+      "member": "array_4.npy",
+      "shape": [],
+      "dtype": "int64",
+      "array_bytes": 8,
+      "npy_bytes": 136,
+      "compressed_bytes": 69,
+      "zip_method": 8,
+      "npy_sha256": "867f503d3215fde7cde441e502ae50aa8666855541d12f7fe9611319a618b982",
+      "inflate_from_memory": {
+        "wall_s": 0.0003411192446947098,
+        "cpu_s": 0.00034154100000094445
+      },
+      "parse_npy": {
+        "wall_s": 0.0004250430501997471,
+        "cpu_s": 0.0004375479999989551
+      },
+      "serialize_npy": {
+        "wall_s": 0.0001798868179321289,
+        "cpu_s": 0.00017883699999998726
+      },
+      "sha_npy": {
+        "wall_s": 2.525513991713524e-05,
+        "cpu_s": 2.7784000000252718e-05
+      },
+      "deflate": {
+        "1": {
+          "wall_s": 5.66910021007061e-05,
+          "cpu_s": 5.5621999999644345e-05,
+          "bytes": 69
+        },
+        "3": {
+          "wall_s": 3.0433759093284607e-05,
+          "cpu_s": 2.890199999860954e-05,
+          "bytes": 69
+        },
+        "6": {
+          "wall_s": 2.9915012419223785e-05,
+          "cpu_s": 2.6433000000380957e-05,
+          "bytes": 69
+        }
+      },
+      "record_paths": [
+        "sample.task_id"
+      ]
+    },
+    {
+      "member": "array_5.npy",
+      "shape": [
+        3,
+        512,
+        288
+      ],
+      "dtype": "float32",
+      "array_bytes": 1769472,
+      "npy_bytes": 1769600,
+      "compressed_bytes": 386404,
+      "zip_method": 8,
+      "npy_sha256": "2398a4b0f94e21bff3c372e3b1b70826ae0ebacb65870ee158f7f7d3521c614a",
+      "inflate_from_memory": {
+        "wall_s": 0.02650159364566207,
+        "cpu_s": 0.026504930999999843
+      },
+      "parse_npy": {
+        "wall_s": 0.010038856882601976,
+        "cpu_s": 0.010038686999999769
+      },
+      "serialize_npy": {
+        "wall_s": 0.01750379940494895,
+        "cpu_s": 0.017499101000000294
+      },
+      "sha_npy": {
+        "wall_s": 0.006916221231222153,
+        "cpu_s": 0.006920811000000526
+      },
+      "deflate": {
+        "1": {
+          "wall_s": 0.03524599689990282,
+          "cpu_s": 0.03524452800000155,
+          "bytes": 400546
+        },
+        "3": {
+          "wall_s": 0.027503594290465117,
+          "cpu_s": 0.027508831999998762,
+          "bytes": 397114
+        },
+        "6": {
+          "wall_s": 0.04498811112716794,
+          "cpu_s": 0.04502453199999934,
+          "bytes": 386404
+        }
+      },
+      "record_paths": [
+        "sample.normal"
+      ]
+    },
+    {
+      "member": "array_6.npy",
+      "shape": [
+        25,
+        512,
+        288
+      ],
+      "dtype": "float32",
+      "array_bytes": 14745600,
+      "npy_bytes": 14745728,
+      "compressed_bytes": 726895,
+      "zip_method": 8,
+      "npy_sha256": "ecf127cd2bea330f6ab37a461dce2e1f6bec446e1cff1d8a0ca6cbf506133c80",
+      "inflate_from_memory": {
+        "wall_s": 0.22368372092023492,
+        "cpu_s": 0.22369766399999946
+      },
+      "parse_npy": {
+        "wall_s": 0.053010718896985054,
+        "cpu_s": 0.05221258899999981
+      },
+      "serialize_npy": {
+        "wall_s": 0.11614571791142225,
+        "cpu_s": 0.11604062199999987
+      },
+      "sha_npy": {
+        "wall_s": 0.054856053087860346,
+        "cpu_s": 0.05303032800000018
+      },
+      "deflate": {
+        "1": {
+          "wall_s": 0.06102980626747012,
+          "cpu_s": 0.06102395599999966,
+          "bytes": 781954
+        },
+        "3": {
+          "wall_s": 0.05552382720634341,
+          "cpu_s": 0.055504090999999534,
+          "bytes": 781519
+        },
+        "6": {
+          "wall_s": 0.09088331460952759,
+          "cpu_s": 0.09066587699999928,
+          "bytes": 726895
+        }
+      },
+      "record_paths": [
+        "sample.pose_heatmap"
+      ]
+    },
+    {
+      "member": "array_7.npy",
+      "shape": [
+        14,
+        512,
+        288
+      ],
+      "dtype": "float32",
+      "array_bytes": 8257536,
+      "npy_bytes": 8257664,
+      "compressed_bytes": 12787,
+      "zip_method": 8,
+      "npy_sha256": "023ef9859b1ac34e1305c6988f2e407e3585d15dfb477aef04f34fd094a8b9e7",
+      "inflate_from_memory": {
+        "wall_s": 0.12549909809604287,
+        "cpu_s": 0.12478966399999969
+      },
+      "parse_npy": {
+        "wall_s": 0.027400169987231493,
+        "cpu_s": 0.027392834999998783
+      },
+      "serialize_npy": {
+        "wall_s": 0.06802940601482987,
+        "cpu_s": 0.06804211699999918
+      },
+      "sha_npy": {
+        "wall_s": 0.02351813204586506,
+        "cpu_s": 0.023537948999999614
+      },
+      "deflate": {
+        "1": {
+          "wall_s": 0.034917276818305254,
+          "cpu_s": 0.03491067099999867,
+          "bytes": 44903
+        },
+        "3": {
+          "wall_s": 0.03556750202551484,
+          "cpu_s": 0.035555654999999575,
+          "bytes": 43940
+        },
+        "6": {
+          "wall_s": 0.04649241408333182,
+          "cpu_s": 0.04647757999999946,
+          "bytes": 12787
+        }
+      },
+      "record_paths": [
+        "sample.part_onehot"
+      ]
+    },
+    {
+      "member": "array_8.npy",
+      "shape": [
+        1,
+        512,
+        288
+      ],
+      "dtype": "float32",
+      "array_bytes": 589824,
+      "npy_bytes": 589952,
+      "compressed_bytes": 3721,
+      "zip_method": 8,
+      "npy_sha256": "c194312b318d95e35e6b6ac0cc206d4660a8d62116aa11f3803186b212f3e778",
+      "inflate_from_memory": {
+        "wall_s": 0.00769638828933239,
+        "cpu_s": 0.007687035000000009
+      },
+      "parse_npy": {
+        "wall_s": 0.0027000252157449722,
+        "cpu_s": 0.0027061980000002706
+      },
+      "serialize_npy": {
+        "wall_s": 0.0052643041126430035,
+        "cpu_s": 0.005267495000000011
+      },
+      "sha_npy": {
+        "wall_s": 0.0007912241853773594,
+        "cpu_s": 0.0007913280000000356
+      },
+      "deflate": {
+        "1": {
+          "wall_s": 0.0023780791088938713,
+          "cpu_s": 0.0023722260000003104,
+          "bytes": 7696
+        },
+        "3": {
+          "wall_s": 0.0015442217700183392,
+          "cpu_s": 0.0015420050000010121,
+          "bytes": 7037
+        },
+        "6": {
+          "wall_s": 0.0029442068189382553,
+          "cpu_s": 0.0029463389999992984,
+          "bytes": 3721
+        }
+      },
+      "record_paths": [
+        "sample.human_mask"
+      ]
+    },
+    {
+      "member": "array_9.npy",
+      "shape": [
+        26
+      ],
+      "dtype": "float32",
+      "array_bytes": 104,
+      "npy_bytes": 232,
+      "compressed_bytes": 167,
+      "zip_method": 8,
+      "npy_sha256": "cefa4611667618faed74bac87913134652e52f497ee7c8ad6a5b6765afe35120",
+      "inflate_from_memory": {
+        "wall_s": 0.0006515979766845703,
+        "cpu_s": 0.0006498939999985964
+      },
+      "parse_npy": {
+        "wall_s": 0.0012285271659493446,
+        "cpu_s": 0.0012252540000012857
+      },
+      "serialize_npy": {
+        "wall_s": 0.00035386206582188606,
+        "cpu_s": 0.0003539410000001908
+      },
+      "sha_npy": {
+        "wall_s": 0.00011756876483559608,
+        "cpu_s": 0.00011751299999929188
+      },
+      "deflate": {
+        "1": {
+          "wall_s": 5.7987868785858154e-05,
+          "cpu_s": 5.85520000004891e-05,
+          "bytes": 167
+        },
+        "3": {
+          "wall_s": 1.7757993191480637e-05,
+          "cpu_s": 1.777099999955567e-05,
+          "bytes": 167
+        },
+        "6": {
+          "wall_s": 1.4193356037139893e-05,
+          "cpu_s": 1.4228000001281771e-05,
+          "bytes": 167
+        }
+      },
+      "record_paths": [
+        "sample.smplx_global"
+      ]
+    },
+    {
+      "member": "array_10.npy",
+      "shape": [
+        63
+      ],
+      "dtype": "float32",
+      "array_bytes": 252,
+      "npy_bytes": 380,
+      "compressed_bytes": 335,
+      "zip_method": 8,
+      "npy_sha256": "a64434f22b75010f4604dbcaf281d3807fc632e0a009b44008dac3c928cd987a",
+      "inflate_from_memory": {
+        "wall_s": 0.00014287559315562248,
+        "cpu_s": 0.00014288800000095137
+      },
+      "parse_npy": {
+        "wall_s": 0.00012047402560710907,
+        "cpu_s": 0.00012053999999928067
+      },
+      "serialize_npy": {
+        "wall_s": 2.35801562666893e-05,
+        "cpu_s": 2.3651000001123634e-05
+      },
+      "sha_npy": {
+        "wall_s": 3.9371661841869354e-06,
+        "cpu_s": 3.904999999804204e-06
+      },
+      "deflate": {
+        "1": {
+          "wall_s": 3.769388422369957e-05,
+          "cpu_s": 3.774400000011724e-05,
+          "bytes": 335
+        },
+        "3": {
+          "wall_s": 3.979913890361786e-05,
+          "cpu_s": 3.9834000000738e-05,
+          "bytes": 335
+        },
+        "6": {
+          "wall_s": 2.0531006157398224e-05,
+          "cpu_s": 2.109100000069475e-05,
+          "bytes": 335
+        }
+      },
+      "record_paths": [
+        "sample.body_pose"
+      ]
+    },
+    {
+      "member": "array_11.npy",
+      "shape": [
+        22,
+        3
+      ],
+      "dtype": "float32",
+      "array_bytes": 264,
+      "npy_bytes": 392,
+      "compressed_bytes": 349,
+      "zip_method": 8,
+      "npy_sha256": "a6982b8112ce1d0df777f59cdde445ad800b6baf4905b309f614f72bfb0e04cd",
+      "inflate_from_memory": {
+        "wall_s": 6.30388967692852e-05,
+        "cpu_s": 6.300200000097789e-05
+      },
+      "parse_npy": {
+        "wall_s": 0.00028750114142894745,
+        "cpu_s": 0.0002876799999995683
+      },
+      "serialize_npy": {
+        "wall_s": 4.8533082008361816e-05,
+        "cpu_s": 4.857199999896977e-05
+      },
+      "sha_npy": {
+        "wall_s": 3.843102604150772e-06,
+        "cpu_s": 3.8510000006652945e-06
+      },
+      "deflate": {
+        "1": {
+          "wall_s": 4.2621977627277374e-05,
+          "cpu_s": 4.26440000005357e-05,
+          "bytes": 349
+        },
+        "3": {
+          "wall_s": 2.4569686502218246e-05,
+          "cpu_s": 2.4596999999459968e-05,
+          "bytes": 349
+        },
+        "6": {
+          "wall_s": 1.80867500603199e-05,
+          "cpu_s": 1.813899999980606e-05,
+          "bytes": 349
+        }
+      },
+      "record_paths": [
+        "sample.joints_cam"
+      ]
+    },
+    {
+      "member": "array_12.npy",
+      "shape": [
+        21,
+        2
+      ],
+      "dtype": "float32",
+      "array_bytes": 168,
+      "npy_bytes": 296,
+      "compressed_bytes": 245,
+      "zip_method": 8,
+      "npy_sha256": "4a2d84e09475888ac103fca3b21d3ff0dc523f7f073e51a93cc5ecf4644c3e14",
+      "inflate_from_memory": {
+        "wall_s": 5.371682345867157e-05,
+        "cpu_s": 5.36820000007765e-05
+      },
+      "parse_npy": {
+        "wall_s": 0.0002667023800313473,
+        "cpu_s": 0.0002668359999997705
+      },
+      "serialize_npy": {
+        "wall_s": 2.384837716817856e-05,
+        "cpu_s": 2.39310000011983e-05
+      },
+      "sha_npy": {
+        "wall_s": 4.794914275407791e-06,
+        "cpu_s": 4.769000000237611e-06
+      },
+      "deflate": {
+        "1": {
+          "wall_s": 3.317277878522873e-05,
+          "cpu_s": 3.322699999941392e-05,
+          "bytes": 245
+        },
+        "3": {
+          "wall_s": 1.9047409296035767e-05,
+          "cpu_s": 1.9098000000994375e-05,
+          "bytes": 245
+        },
+        "6": {
+          "wall_s": 1.4942139387130737e-05,
+          "cpu_s": 1.5003999999763096e-05,
+          "bytes": 245
+        }
+      },
+      "record_paths": [
+        "sample.joint_uv"
+      ]
+    },
+    {
+      "member": "array_13.npy",
+      "shape": [
+        22
+      ],
+      "dtype": "bool",
+      "array_bytes": 22,
+      "npy_bytes": 150,
+      "compressed_bytes": 72,
+      "zip_method": 8,
+      "npy_sha256": "db819444d48e1cb52a95a48d5e1e5dc0239dfc00b052913615853ed0a61a27f8",
+      "inflate_from_memory": {
+        "wall_s": 3.333529457449913e-05,
+        "cpu_s": 3.332800000066527e-05
+      },
+      "parse_npy": {
+        "wall_s": 8.715875446796417e-05,
+        "cpu_s": 8.971599999973989e-05
+      },
+      "serialize_npy": {
+        "wall_s": 4.05418686568737e-05,
+        "cpu_s": 4.0627999998932296e-05
+      },
+      "sha_npy": {
+        "wall_s": 3.5106204450130463e-06,
+        "cpu_s": 3.090999999955102e-06
+      },
+      "deflate": {
+        "1": {
+          "wall_s": 1.4738179743289948e-05,
+          "cpu_s": 1.4800000000647628e-05,
+          "bytes": 72
+        },
+        "3": {
+          "wall_s": 8.774921298027039e-06,
+          "cpu_s": 8.811999999025488e-06,
+          "bytes": 72
+        },
+        "6": {
+          "wall_s": 8.201226592063904e-06,
+          "cpu_s": 8.249000000404294e-06,
+          "bytes": 72
+        }
+      },
+      "record_paths": [
+        "sample.fk_valid"
+      ]
+    },
+    {
+      "member": "array_14.npy",
+      "shape": [
+        21
+      ],
+      "dtype": "bool",
+      "array_bytes": 21,
+      "npy_bytes": 149,
+      "compressed_bytes": 77,
+      "zip_method": 8,
+      "npy_sha256": "013d9ca51aecf690148aef723b11b3cfa0e9acfc7c0e971582752abd0815f595",
+      "inflate_from_memory": {
+        "wall_s": 2.8549693524837494e-05,
+        "cpu_s": 2.8568999999478706e-05
+      },
+      "parse_npy": {
+        "wall_s": 7.980316877365112e-05,
+        "cpu_s": 7.989000000030444e-05
+      },
+      "serialize_npy": {
+        "wall_s": 1.8315855413675308e-05,
+        "cpu_s": 1.837199999954464e-05
+      },
+      "sha_npy": {
+        "wall_s": 3.313180059194565e-06,
+        "cpu_s": 3.3249999997764235e-06
+      },
+      "deflate": {
+        "1": {
+          "wall_s": 1.3431068509817123e-05,
+          "cpu_s": 1.351000000049396e-05,
+          "bytes": 78
+        },
+        "3": {
+          "wall_s": 1.112883910536766e-05,
+          "cpu_s": 1.1205999999930327e-05,
+          "bytes": 77
+        },
+        "6": {
+          "wall_s": 8.652918040752411e-06,
+          "cpu_s": 8.702000000582188e-06,
+          "bytes": 77
+        }
+      },
+      "record_paths": [
+        "sample.projection_valid"
+      ]
+    },
+    {
+      "member": "array_15.npy",
+      "shape": [],
+      "dtype": "float32",
+      "array_bytes": 4,
+      "npy_bytes": 132,
+      "compressed_bytes": 70,
+      "zip_method": 8,
+      "npy_sha256": "ec17819e4ee2ed7cdc886145e8ad7f143ecfd003a7216b9e18460e6caedfa05e",
+      "inflate_from_memory": {
+        "wall_s": 3.2417941838502884e-05,
+        "cpu_s": 3.24599999999009e-05
+      },
+      "parse_npy": {
+        "wall_s": 5.230121314525604e-05,
+        "cpu_s": 5.2365000000165196e-05
+      },
+      "serialize_npy": {
+        "wall_s": 2.7189962565898895e-05,
+        "cpu_s": 2.7257000001057463e-05
+      },
+      "sha_npy": {
+        "wall_s": 2.7636997401714325e-06,
+        "cpu_s": 2.8150000002113984e-06
+      },
+      "deflate": {
+        "1": {
+          "wall_s": 1.2717209756374359e-05,
+          "cpu_s": 1.2854000001283339e-05,
+          "bytes": 70
+        },
+        "3": {
+          "wall_s": 8.254311978816986e-06,
+          "cpu_s": 8.3040000014023e-06,
+          "bytes": 70
+        },
+        "6": {
+          "wall_s": 8.44523310661316e-06,
+          "cpu_s": 8.464000000429905e-06,
+          "bytes": 70
+        }
+      },
+      "record_paths": [
+        "sample.body_height"
+      ]
+    },
+    {
+      "member": "array_16.npy",
+      "shape": [],
+      "dtype": "float32",
+      "array_bytes": 4,
+      "npy_bytes": 132,
+      "compressed_bytes": 70,
+      "zip_method": 8,
+      "npy_sha256": "e6da571f9e1e969e5b177b92a74fa7bc0e48907cff31e20d15bf8afdf185e4e4",
+      "inflate_from_memory": {
+        "wall_s": 3.008730709552765e-05,
+        "cpu_s": 3.014199999995526e-05
+      },
+      "parse_npy": {
+        "wall_s": 3.7128105759620667e-05,
+        "cpu_s": 3.718199999980243e-05
+      },
+      "serialize_npy": {
+        "wall_s": 1.750187948346138e-05,
+        "cpu_s": 1.7215999999820042e-05
+      },
+      "sha_npy": {
+        "wall_s": 2.961140125989914e-06,
+        "cpu_s": 2.932999999316621e-06
+      },
+      "deflate": {
+        "1": {
+          "wall_s": 1.1848285794258118e-05,
+          "cpu_s": 1.1994999999487277e-05,
+          "bytes": 70
+        },
+        "3": {
+          "wall_s": 8.211005479097366e-06,
+          "cpu_s": 8.256000000983477e-06,
+          "bytes": 70
+        },
+        "6": {
+          "wall_s": 7.591675966978073e-06,
+          "cpu_s": 7.6799999995103e-06,
+          "bytes": 70
+        }
+      },
+      "record_paths": [
+        "sample.smpl_bbox_height"
+      ]
+    },
+    {
+      "member": "array_17.npy",
+      "shape": [
+        1,
+        1,
+        512,
+        288
+      ],
+      "dtype": "float32",
+      "array_bytes": 589824,
+      "npy_bytes": 589952,
+      "compressed_bytes": 100108,
+      "zip_method": 8,
+      "npy_sha256": "2d6f70cc0368b0639790c629aa81ea0bc88766595d5c9d444258cc596eaf00d9",
+      "inflate_from_memory": {
+        "wall_s": 0.0029344731010496616,
+        "cpu_s": 0.002940034999999952
+      },
+      "parse_npy": {
+        "wall_s": 0.0077737970277667046,
+        "cpu_s": 0.007781045999999847
+      },
+      "serialize_npy": {
+        "wall_s": 0.0008375532925128937,
+        "cpu_s": 0.0008384990000003256
+      },
+      "sha_npy": {
+        "wall_s": 0.0011334381997585297,
+        "cpu_s": 0.00113341699999836
+      },
+      "deflate": {
+        "1": {
+          "wall_s": 0.00417521083727479,
+          "cpu_s": 0.0040891080000005076,
+          "bytes": 107758
+        },
+        "3": {
+          "wall_s": 0.004473336040973663,
+          "cpu_s": 0.004472568000000621,
+          "bytes": 105558
+        },
+        "6": {
+          "wall_s": 0.006531280931085348,
+          "cpu_s": 0.006529994000000983,
+          "bytes": 100108
+        }
+      },
+      "record_paths": [
+        "sample.depth_condition_v2.relative"
+      ]
+    },
+    {
+      "member": "array_18.npy",
+      "shape": [
+        1,
+        1,
+        512,
+        288
+      ],
+      "dtype": "bool",
+      "array_bytes": 147456,
+      "npy_bytes": 147584,
+      "compressed_bytes": 1832,
+      "zip_method": 8,
+      "npy_sha256": "d08a4db8cec99f78ced5edf10c983e106ea3f5357b4140cf5501ca0b890ac22e",
+      "inflate_from_memory": {
+        "wall_s": 0.0009812633506953716,
+        "cpu_s": 0.000979826000000017
+      },
+      "parse_npy": {
+        "wall_s": 0.0011568618938326836,
+        "cpu_s": 0.0011568620000002028
+      },
+      "serialize_npy": {
+        "wall_s": 0.0003526899963617325,
+        "cpu_s": 0.0003528010000000137
+      },
+      "sha_npy": {
+        "wall_s": 0.0001816009171307087,
+        "cpu_s": 0.00018166799999974614
+      },
+      "deflate": {
+        "1": {
+          "wall_s": 0.0003330688923597336,
+          "cpu_s": 0.00033305300000030513,
+          "bytes": 4338
+        },
+        "3": {
+          "wall_s": 0.00030280789360404015,
+          "cpu_s": 0.00030277599999983806,
+          "bytes": 3603
+        },
+        "6": {
+          "wall_s": 0.001037835143506527,
+          "cpu_s": 0.0010376779999994312,
+          "bytes": 1832
+        }
+      },
+      "record_paths": [
+        "sample.depth_condition_v2.valid"
+      ]
+    },
+    {
+      "member": "array_19.npy",
+      "shape": [
+        1,
+        1,
+        512,
+        288
+      ],
+      "dtype": "bool",
+      "array_bytes": 147456,
+      "npy_bytes": 147584,
+      "compressed_bytes": 250,
+      "zip_method": 8,
+      "npy_sha256": "c25951c3efd63955663c33e614ae432caec05852171f16a0fec3ccbc0090c6c0",
+      "inflate_from_memory": {
+        "wall_s": 0.00028277793899178505,
+        "cpu_s": 0.000282690000000585
+      },
+      "parse_npy": {
+        "wall_s": 0.00024229101836681366,
+        "cpu_s": 0.0002426979999992085
+      },
+      "serialize_npy": {
+        "wall_s": 7.362803444266319e-05,
+        "cpu_s": 7.373000000043817e-05
+      },
+      "sha_npy": {
+        "wall_s": 0.000186028890311718,
+        "cpu_s": 0.00018601000000018075
+      },
+      "deflate": {
+        "1": {
+          "wall_s": 0.0002165408805012703,
+          "cpu_s": 0.00021648099999893589,
+          "bytes": 751
+        },
+        "3": {
+          "wall_s": 0.00017334893345832825,
+          "cpu_s": 0.00017332699999883516,
+          "bytes": 751
+        },
+        "6": {
+          "wall_s": 0.0004093591123819351,
+          "cpu_s": 0.00040931300000046633,
+          "bytes": 250
+        }
+      },
+      "record_paths": [
+        "sample.depth_condition_v2.canvas_valid"
+      ]
+    },
+    {
+      "member": "array_20.npy",
+      "shape": [
+        1
+      ],
+      "dtype": "bool",
+      "array_bytes": 1,
+      "npy_bytes": 129,
+      "compressed_bytes": 69,
+      "zip_method": 8,
+      "npy_sha256": "d13bab448a58cfff3fb7336525998915b7cde741811292a048f4f925e89edb8f",
+      "inflate_from_memory": {
+        "wall_s": 0.00012166006490588188,
+        "cpu_s": 0.00012156100000026981
+      },
+      "parse_npy": {
+        "wall_s": 0.00016889814287424088,
+        "cpu_s": 0.00016895699999963654
+      },
+      "serialize_npy": {
+        "wall_s": 6.321491673588753e-05,
+        "cpu_s": 6.3260999999315e-05
+      },
+      "sha_npy": {
+        "wall_s": 1.0314863175153732e-05,
+        "cpu_s": 1.0291000000606232e-05
+      },
+      "deflate": {
+        "1": {
+          "wall_s": 1.621432602405548e-05,
+          "cpu_s": 1.630399999896781e-05,
+          "bytes": 69
+        },
+        "3": {
+          "wall_s": 8.88807699084282e-06,
+          "cpu_s": 8.940000000734472e-06,
+          "bytes": 69
+        },
+        "6": {
+          "wall_s": 9.636860340833664e-06,
+          "cpu_s": 9.657999999745925e-06,
+          "bytes": 69
+        }
+      },
+      "record_paths": [
+        "sample.depth_condition_v2.available"
+      ]
+    },
+    {
+      "member": "array_21.npy",
+      "shape": [
+        1,
+        1,
+        512,
+        288
+      ],
+      "dtype": "float32",
+      "array_bytes": 589824,
+      "npy_bytes": 589952,
+      "compressed_bytes": 39505,
+      "zip_method": 8,
+      "npy_sha256": "e2469d8e9ca49137af8adb140e57c2ca6cde91a34d5f53310b5ba109ce0aa6d8",
+      "inflate_from_memory": {
+        "wall_s": 0.0018412116914987564,
+        "cpu_s": 0.0018411579999995098
+      },
+      "parse_npy": {
+        "wall_s": 0.0005438700318336487,
+        "cpu_s": 0.0005523739999997446
+      },
+      "serialize_npy": {
+        "wall_s": 0.0003817449323832989,
+        "cpu_s": 0.00038241399999883186
+      },
+      "sha_npy": {
+        "wall_s": 0.0006219358183443546,
+        "cpu_s": 0.0006220379999994918
+      },
+      "deflate": {
+        "1": {
+          "wall_s": 0.002442259807139635,
+          "cpu_s": 0.0024421080000003315,
+          "bytes": 49636
+        },
+        "3": {
+          "wall_s": 0.0035640220157802105,
+          "cpu_s": 0.0035614549999998246,
+          "bytes": 47011
+        },
+        "6": {
+          "wall_s": 0.006484287790954113,
+          "cpu_s": 0.00648169799999998,
+          "bytes": 39505
+        }
+      },
+      "record_paths": [
+        "sample.depth_condition_v2.camera_z"
+      ]
+    },
+    {
+      "member": "array_22.npy",
+      "shape": [
+        1,
+        1,
+        512,
+        288
+      ],
+      "dtype": "bool",
+      "array_bytes": 147456,
+      "npy_bytes": 147584,
+      "compressed_bytes": 1832,
+      "zip_method": 8,
+      "npy_sha256": "d08a4db8cec99f78ced5edf10c983e106ea3f5357b4140cf5501ca0b890ac22e",
+      "inflate_from_memory": {
+        "wall_s": 0.0007311268709599972,
+        "cpu_s": 0.0007311060000017022
+      },
+      "parse_npy": {
+        "wall_s": 0.00098467618227005,
+        "cpu_s": 0.0009846749999997684
+      },
+      "serialize_npy": {
+        "wall_s": 0.00025115907192230225,
+        "cpu_s": 0.0002513979999996252
+      },
+      "sha_npy": {
+        "wall_s": 0.0001821420155465603,
+        "cpu_s": 0.00018214199999988523
+      },
+      "deflate": {
+        "1": {
+          "wall_s": 0.00032519688829779625,
+          "cpu_s": 0.0003252019999990807,
+          "bytes": 4338
+        },
+        "3": {
+          "wall_s": 0.0003090556710958481,
+          "cpu_s": 0.00030908400000129177,
+          "bytes": 3603
+        },
+        "6": {
+          "wall_s": 0.0010396349243819714,
+          "cpu_s": 0.0010393419999985554,
+          "bytes": 1832
+        }
+      },
+      "record_paths": [
+        "sample.depth_condition_v2.camera_z_valid"
+      ]
+    },
+    {
+      "member": "array_23.npy",
+      "shape": [
+        1,
+        1,
+        512,
+        288
+      ],
+      "dtype": "bool",
+      "array_bytes": 147456,
+      "npy_bytes": 147584,
+      "compressed_bytes": 1832,
+      "zip_method": 8,
+      "npy_sha256": "d08a4db8cec99f78ced5edf10c983e106ea3f5357b4140cf5501ca0b890ac22e",
+      "inflate_from_memory": {
+        "wall_s": 0.0002696411684155464,
+        "cpu_s": 0.00026953300000087665
+      },
+      "parse_npy": {
+        "wall_s": 0.0002473611384630203,
+        "cpu_s": 0.0002476149999992572
+      },
+      "serialize_npy": {
+        "wall_s": 6.730807945132256e-05,
+        "cpu_s": 6.753999999986604e-05
+      },
+      "sha_npy": {
+        "wall_s": 0.00011467188596725464,
+        "cpu_s": 0.00011467800000097839
+      },
+      "deflate": {
+        "1": {
+          "wall_s": 0.00028257304802536964,
+          "cpu_s": 0.00028252899999969827,
+          "bytes": 4338
+        },
+        "3": {
+          "wall_s": 0.00029516080394387245,
+          "cpu_s": 0.0002950589999990427,
+          "bytes": 3603
+        },
+        "6": {
+          "wall_s": 0.0010511172004044056,
+          "cpu_s": 0.0010510489999990824,
+          "bytes": 1832
+        }
+      },
+      "record_paths": [
+        "sample.depth_condition_v2.geometry_valid"
+      ]
+    },
+    {
+      "member": "array_24.npy",
+      "shape": [
+        1,
+        1,
+        512,
+        288
+      ],
+      "dtype": "float32",
+      "array_bytes": 589824,
+      "npy_bytes": 589952,
+      "compressed_bytes": 3730,
+      "zip_method": 8,
+      "npy_sha256": "68e324ce8b4e14a67af71bc9daff17d83795e9e01050cc1033cf881ee0bcd7c1",
+      "inflate_from_memory": {
+        "wall_s": 0.0013455040752887726,
+        "cpu_s": 0.0013466900000000948
+      },
+      "parse_npy": {
+        "wall_s": 0.0005157189443707466,
+        "cpu_s": 0.0005163069999998271
+      },
+      "serialize_npy": {
+        "wall_s": 0.002032496966421604,
+        "cpu_s": 0.002032616999999348
+      },
+      "sha_npy": {
+        "wall_s": 0.0004858439788222313,
+        "cpu_s": 0.00048559899999922607
+      },
+      "deflate": {
+        "1": {
+          "wall_s": 0.0009625894017517567,
+          "cpu_s": 0.0009622279999987882,
+          "bytes": 7663
+        },
+        "3": {
+          "wall_s": 0.0012757680378854275,
+          "cpu_s": 0.0012751949999998402,
+          "bytes": 6646
+        },
+        "6": {
+          "wall_s": 0.003067751880735159,
+          "cpu_s": 0.0030669849999984677,
+          "bytes": 3730
+        }
+      },
+      "record_paths": [
+        "sample.depth_condition_v2.confidence"
+      ]
+    },
+    {
+      "member": "array_25.npy",
+      "shape": [
+        1
+      ],
+      "dtype": "bool",
+      "array_bytes": 1,
+      "npy_bytes": 129,
+      "compressed_bytes": 69,
+      "zip_method": 8,
+      "npy_sha256": "abab529d1b1d87bda52d7f044212cde776c26e9adfcd63251fdde8c877a2a8f9",
+      "inflate_from_memory": {
+        "wall_s": 0.00031819986179471016,
+        "cpu_s": 0.00031808900000029894
+      },
+      "parse_npy": {
+        "wall_s": 0.0003977883607149124,
+        "cpu_s": 0.0003981470000002929
+      },
+      "serialize_npy": {
+        "wall_s": 0.00010892469435930252,
+        "cpu_s": 0.00010900300000038499
+      },
+      "sha_npy": {
+        "wall_s": 2.56318598985672e-05,
+        "cpu_s": 2.5697999999962917e-05
+      },
+      "deflate": {
+        "1": {
+          "wall_s": 2.939719706773758e-05,
+          "cpu_s": 2.9484000000579158e-05,
+          "bytes": 69
+        },
+        "3": {
+          "wall_s": 9.017996490001678e-06,
+          "cpu_s": 8.997000000121602e-06,
+          "bytes": 69
+        },
+        "6": {
+          "wall_s": 1.1247117072343826e-05,
+          "cpu_s": 1.1296000000271533e-05,
+          "bytes": 69
+        }
+      },
+      "record_paths": [
+        "sample.depth_condition_v2.confidence_available"
+      ]
+    },
+    {
+      "member": "array_26.npy",
+      "shape": [
+        1,
+        3,
+        3
+      ],
+      "dtype": "float32",
+      "array_bytes": 36,
+      "npy_bytes": 164,
+      "compressed_bytes": 95,
+      "zip_method": 8,
+      "npy_sha256": "708f4e0fb520ce16e0f076e38fd29f551fc2b54fac998a13cf17318760dc99d8",
+      "inflate_from_memory": {
+        "wall_s": 5.5796001106500626e-05,
+        "cpu_s": 5.589999999955353e-05
+      },
+      "parse_npy": {
+        "wall_s": 0.0001705731265246868,
+        "cpu_s": 0.00017068500000050335
+      },
+      "serialize_npy": {
+        "wall_s": 3.370828926563263e-05,
+        "cpu_s": 3.381599999841001e-05
+      },
+      "sha_npy": {
+        "wall_s": 3.54694202542305e-06,
+        "cpu_s": 3.570000000507889e-06
+      },
+      "deflate": {
+        "1": {
+          "wall_s": 3.9204955101013184e-05,
+          "cpu_s": 3.9274999998895055e-05,
+          "bytes": 97
+        },
+        "3": {
+          "wall_s": 2.0721927285194397e-05,
+          "cpu_s": 1.4550999999585201e-05,
+          "bytes": 95
+        },
+        "6": {
+          "wall_s": 1.1119060218334198e-05,
+          "cpu_s": 1.1151000000708677e-05,
+          "bytes": 95
+        }
+      },
+      "record_paths": [
+        "sample.depth_condition_v2.context.intrinsics"
+      ]
+    },
+    {
+      "member": "array_27.npy",
+      "shape": [
+        1
+      ],
+      "dtype": "float32",
+      "array_bytes": 4,
+      "npy_bytes": 132,
+      "compressed_bytes": 72,
+      "zip_method": 8,
+      "npy_sha256": "af1b859ab37401cf5f4fea8f33ba9090a325fabf57a207d295b4172c551b3823",
+      "inflate_from_memory": {
+        "wall_s": 3.4248922020196915e-05,
+        "cpu_s": 3.427800000110892e-05
+      },
+      "parse_npy": {
+        "wall_s": 9.215809404850006e-05,
+        "cpu_s": 9.229399999988175e-05
+      },
+      "serialize_npy": {
+        "wall_s": 2.1671876311302185e-05,
+        "cpu_s": 2.1873999999755256e-05
+      },
+      "sha_npy": {
+        "wall_s": 3.1902454793453217e-06,
+        "cpu_s": 3.202000000257499e-06
+      },
+      "deflate": {
+        "1": {
+          "wall_s": 1.4808960258960724e-05,
+          "cpu_s": 1.486000000028298e-05,
+          "bytes": 72
+        },
+        "3": {
+          "wall_s": 9.512994438409805e-06,
+          "cpu_s": 9.53199999997878e-06,
+          "bytes": 72
+        },
+        "6": {
+          "wall_s": 8.128117769956589e-06,
+          "cpu_s": 8.146999999070204e-06,
+          "bytes": 72
+        }
+      },
+      "record_paths": [
+        "sample.depth_condition_v2.context.root_z"
+      ]
+    },
+    {
+      "member": "array_28.npy",
+      "shape": [
+        1
+      ],
+      "dtype": "float32",
+      "array_bytes": 4,
+      "npy_bytes": 132,
+      "compressed_bytes": 72,
+      "zip_method": 8,
+      "npy_sha256": "33a804b75c0b4d4a346f547cc65e291735e104509fd51122cafc6aac4731ffd8",
+      "inflate_from_memory": {
+        "wall_s": 3.533996641635895e-05,
+        "cpu_s": 3.537099999917359e-05
+      },
+      "parse_npy": {
+        "wall_s": 6.623100489377975e-05,
+        "cpu_s": 6.635999999993203e-05
+      },
+      "serialize_npy": {
+        "wall_s": 1.8924009054899216e-05,
+        "cpu_s": 1.8993999999494804e-05
+      },
+      "sha_npy": {
+        "wall_s": 3.0212104320526123e-06,
+        "cpu_s": 3.0879999997068808e-06
+      },
+      "deflate": {
+        "1": {
+          "wall_s": 1.2161675840616226e-05,
+          "cpu_s": 1.2248000000880666e-05,
+          "bytes": 72
+        },
+        "3": {
+          "wall_s": 8.473638445138931e-06,
+          "cpu_s": 8.500999999938585e-06,
+          "bytes": 72
+        },
+        "6": {
+          "wall_s": 7.743947207927704e-06,
+          "cpu_s": 7.788999999647217e-06,
+          "bytes": 72
+        }
+      },
+      "record_paths": [
+        "sample.depth_condition_v2.context.body_height"
+      ]
+    },
+    {
+      "member": "array_29.npy",
+      "shape": [
+        1,
+        3,
+        512,
+        288
+      ],
+      "dtype": "float32",
+      "array_bytes": 1769472,
+      "npy_bytes": 1769600,
+      "compressed_bytes": 386734,
+      "zip_method": 8,
+      "npy_sha256": "ea74ac721160273b707fb2262bf4898fa09622a744b0371823f5565868ef5d31",
+      "inflate_from_memory": {
+        "wall_s": 0.011777643114328384,
+        "cpu_s": 0.011778276999999449
+      },
+      "parse_npy": {
+        "wall_s": 0.0014293529093265533,
+        "cpu_s": 0.001429717999998914
+      },
+      "serialize_npy": {
+        "wall_s": 0.009184493217617273,
+        "cpu_s": 0.00918383399999989
+      },
+      "sha_npy": {
+        "wall_s": 0.0015556947328150272,
+        "cpu_s": 0.0015557700000012886
+      },
+      "deflate": {
+        "1": {
+          "wall_s": 0.02084690658375621,
+          "cpu_s": 0.020862335000000343,
+          "bytes": 400901
+        },
+        "3": {
+          "wall_s": 0.017657607793807983,
+          "cpu_s": 0.01765917500000036,
+          "bytes": 397477
+        },
+        "6": {
+          "wall_s": 0.022611376829445362,
+          "cpu_s": 0.022612452999998922,
+          "bytes": 386734
+        }
+      },
+      "record_paths": [
+        "sample.depth_condition_v2.context.normal_cam"
+      ]
+    },
+    {
+      "member": "array_30.npy",
+      "shape": [
+        1,
+        1,
+        512,
+        288
+      ],
+      "dtype": "bool",
+      "array_bytes": 147456,
+      "npy_bytes": 147584,
+      "compressed_bytes": 1849,
+      "zip_method": 8,
+      "npy_sha256": "54d7c6a22e57f2493c12c38aba9bb1bc7f1188fe895e2e4ca896e93cf2c137ad",
+      "inflate_from_memory": {
+        "wall_s": 0.0011184359900653362,
+        "cpu_s": 0.0011144149999999797
+      },
+      "parse_npy": {
+        "wall_s": 0.0013374770060181618,
+        "cpu_s": 0.0013373810000008035
+      },
+      "serialize_npy": {
+        "wall_s": 0.00040710996836423874,
+        "cpu_s": 0.00040715899999987926
+      },
+      "sha_npy": {
+        "wall_s": 0.0003725830465555191,
+        "cpu_s": 0.00037255199999997046
+      },
+      "deflate": {
+        "1": {
+          "wall_s": 0.0004127458669245243,
+          "cpu_s": 0.00041269899999996085,
+          "bytes": 4415
+        },
+        "3": {
+          "wall_s": 0.0003309100866317749,
+          "cpu_s": 0.00033084700000074463,
+          "bytes": 3383
+        },
+        "6": {
+          "wall_s": 0.0011193756945431232,
+          "cpu_s": 0.0011190350000003235,
+          "bytes": 1849
+        }
+      },
+      "record_paths": [
+        "sample.depth_condition_v2.context.normal_valid"
+      ]
+    },
+    {
+      "member": "array_31.npy",
+      "shape": [
+        1,
+        14,
+        512,
+        288
+      ],
+      "dtype": "float32",
+      "array_bytes": 8257536,
+      "npy_bytes": 8257664,
+      "compressed_bytes": 12791,
+      "zip_method": 8,
+      "npy_sha256": "34b9e5f4db05436214e5ecb2af5a5419b3120e91c5b99adaeb4febe849a87c55",
+      "inflate_from_memory": {
+        "wall_s": 0.057484742254018784,
+        "cpu_s": 0.05745522099999967
+      },
+      "parse_npy": {
+        "wall_s": 0.01307585695758462,
+        "cpu_s": 0.013081009000000421
+      },
+      "serialize_npy": {
+        "wall_s": 0.060247164219617844,
+        "cpu_s": 0.06025251099999984
+      },
+      "sha_npy": {
+        "wall_s": 0.019364808220416307,
+        "cpu_s": 0.01938202700000069
+      },
+      "deflate": {
+        "1": {
+          "wall_s": 0.02197351213544607,
+          "cpu_s": 0.021975450999999424,
+          "bytes": 44907
+        },
+        "3": {
+          "wall_s": 0.021252902690321207,
+          "cpu_s": 0.021257153000000528,
+          "bytes": 43945
+        },
+        "6": {
+          "wall_s": 0.06315213907510042,
+          "cpu_s": 0.0631640849999986,
+          "bytes": 12791
+        }
+      },
+      "record_paths": [
+        "sample.depth_condition_v2.context.part_onehot"
+      ]
+    },
+    {
+      "member": "array_32.npy",
+      "shape": [
+        1,
+        1,
+        512,
+        288
+      ],
+      "dtype": "bool",
+      "array_bytes": 147456,
+      "npy_bytes": 147584,
+      "compressed_bytes": 1849,
+      "zip_method": 8,
+      "npy_sha256": "54d7c6a22e57f2493c12c38aba9bb1bc7f1188fe895e2e4ca896e93cf2c137ad",
+      "inflate_from_memory": {
+        "wall_s": 0.0015246057882905006,
+        "cpu_s": 0.0015069729999996895
+      },
+      "parse_npy": {
+        "wall_s": 0.001308695413172245,
+        "cpu_s": 0.0013086900000001123
+      },
+      "serialize_npy": {
+        "wall_s": 0.0003329929895699024,
+        "cpu_s": 0.0003330579999989425
+      },
+      "sha_npy": {
+        "wall_s": 0.00039387866854667664,
+        "cpu_s": 0.00039382699999990223
+      },
+      "deflate": {
+        "1": {
+          "wall_s": 0.0006096260622143745,
+          "cpu_s": 0.0006110850000009549,
+          "bytes": 4415
+        },
+        "3": {
+          "wall_s": 0.0003062901087105274,
+          "cpu_s": 0.00030626300000058393,
+          "bytes": 3383
+        },
+        "6": {
+          "wall_s": 0.0011075199581682682,
+          "cpu_s": 0.0011081519999986966,
+          "bytes": 1849
+        }
+      },
+      "record_paths": [
+        "sample.depth_condition_v2.context.part_valid"
+      ]
+    },
+    {
+      "member": "array_33.npy",
+      "shape": [
+        1,
+        1,
+        512,
+        288
+      ],
+      "dtype": "bool",
+      "array_bytes": 147456,
+      "npy_bytes": 147584,
+      "compressed_bytes": 1849,
+      "zip_method": 8,
+      "npy_sha256": "54d7c6a22e57f2493c12c38aba9bb1bc7f1188fe895e2e4ca896e93cf2c137ad",
+      "inflate_from_memory": {
+        "wall_s": 0.0006592837162315845,
+        "cpu_s": 0.000659276000000375
+      },
+      "parse_npy": {
+        "wall_s": 0.0010866480879485607,
+        "cpu_s": 0.0010866510000013818
+      },
+      "serialize_npy": {
+        "wall_s": 0.00024222908541560173,
+        "cpu_s": 0.00024098200000111092
+      },
+      "sha_npy": {
+        "wall_s": 0.00019072182476520538,
+        "cpu_s": 0.0001907459999994643
+      },
+      "deflate": {
+        "1": {
+          "wall_s": 0.0005127396434545517,
+          "cpu_s": 0.000512737999999402,
+          "bytes": 4415
+        },
+        "3": {
+          "wall_s": 0.0003027399070560932,
+          "cpu_s": 0.000302610000000314,
+          "bytes": 3383
+        },
+        "6": {
+          "wall_s": 0.001100077759474516,
+          "cpu_s": 0.0010998399999984088,
+          "bytes": 1849
+        }
+      },
+      "record_paths": [
+        "sample.depth_condition_v2.context.smpl_mask"
+      ]
+    },
+    {
+      "member": "array_34.npy",
+      "shape": [
+        1
+      ],
+      "dtype": "bool",
+      "array_bytes": 1,
+      "npy_bytes": 129,
+      "compressed_bytes": 69,
+      "zip_method": 8,
+      "npy_sha256": "d13bab448a58cfff3fb7336525998915b7cde741811292a048f4f925e89edb8f",
+      "inflate_from_memory": {
+        "wall_s": 0.00016568787395954132,
+        "cpu_s": 0.0001656680000010624
+      },
+      "parse_npy": {
+        "wall_s": 0.0002896208316087723,
+        "cpu_s": 0.0002897760000006855
+      },
+      "serialize_npy": {
+        "wall_s": 7.75698572397232e-05,
+        "cpu_s": 7.766999999958557e-05
+      },
+      "sha_npy": {
+        "wall_s": 2.2666994482278824e-05,
+        "cpu_s": 2.2616999999058862e-05
+      },
+      "deflate": {
+        "1": {
+          "wall_s": 2.8516165912151337e-05,
+          "cpu_s": 2.8592999999688118e-05,
+          "bytes": 69
+        },
+        "3": {
+          "wall_s": 9.23406332731247e-06,
+          "cpu_s": 9.392999999136009e-06,
+          "bytes": 69
+        },
+        "6": {
+          "wall_s": 8.665956556797028e-06,
+          "cpu_s": 8.68700000111744e-06,
+          "bytes": 69
+        }
+      },
+      "record_paths": [
+        "sample.depth_condition_v2.context.camera_available"
+      ]
+    },
+    {
+      "member": "array_35.npy",
+      "shape": [
+        1
+      ],
+      "dtype": "bool",
+      "array_bytes": 1,
+      "npy_bytes": 129,
+      "compressed_bytes": 69,
+      "zip_method": 8,
+      "npy_sha256": "abab529d1b1d87bda52d7f044212cde776c26e9adfcd63251fdde8c877a2a8f9",
+      "inflate_from_memory": {
+        "wall_s": 0.00016344105824828148,
+        "cpu_s": 0.00016346999999861112
+      },
+      "parse_npy": {
+        "wall_s": 8.36048275232315e-05,
+        "cpu_s": 8.373300000030781e-05
+      },
+      "serialize_npy": {
+        "wall_s": 2.50842422246933e-05,
+        "cpu_s": 2.514400000031003e-05
+      },
+      "sha_npy": {
+        "wall_s": 3.5231932997703552e-06,
+        "cpu_s": 3.529999998974631e-06
+      },
+      "deflate": {
+        "1": {
+          "wall_s": 1.3724900782108307e-05,
+          "cpu_s": 1.3784000000072183e-05,
+          "bytes": 69
+        },
+        "3": {
+          "wall_s": 7.9423189163208e-06,
+          "cpu_s": 7.999999999341867e-06,
+          "bytes": 69
+        },
+        "6": {
+          "wall_s": 7.72206112742424e-06,
+          "cpu_s": 7.75900000071772e-06,
+          "bytes": 69
+        }
+      },
+      "record_paths": [
+        "sample.depth_condition_v2.context.metric_available"
+      ]
+    },
+    {
+      "member": "array_36.npy",
+      "shape": [
+        1,
+        23,
+        512,
+        288
+      ],
+      "dtype": "float32",
+      "array_bytes": 13565952,
+      "npy_bytes": 13566080,
+      "compressed_bytes": 723003,
+      "zip_method": 8,
+      "npy_sha256": "b4944c6e7b91e446b608d2555d549a7143d82d56dbaf57c0d2fb991bb696d9ea",
+      "inflate_from_memory": {
+        "wall_s": 0.12599231209605932,
+        "cpu_s": 0.1259943400000001
+      },
+      "parse_npy": {
+        "wall_s": 0.02444159099832177,
+        "cpu_s": 0.024459999999999482
+      },
+      "serialize_npy": {
+        "wall_s": 0.09906839579343796,
+        "cpu_s": 0.09907624799999937
+      },
+      "sha_npy": {
+        "wall_s": 0.03477491904050112,
+        "cpu_s": 0.03481804900000007
+      },
+      "deflate": {
+        "1": {
+          "wall_s": 0.06157799903303385,
+          "cpu_s": 0.06158166600000037,
+          "bytes": 880717
+        },
+        "3": {
+          "wall_s": 0.07320309989154339,
+          "cpu_s": 0.07319245800000118,
+          "bytes": 823637
+        },
+        "6": {
+          "wall_s": 0.15587550308555365,
+          "cpu_s": 0.15584227599999956,
+          "bytes": 723003
+        }
+      },
+      "record_paths": [
+        "sample.depth_condition_v2.detail_features"
+      ]
+    },
+    {
+      "member": "array_37.npy",
+      "shape": [],
+      "dtype": "int64",
+      "array_bytes": 8,
+      "npy_bytes": 136,
+      "compressed_bytes": 69,
+      "zip_method": 8,
+      "npy_sha256": "867f503d3215fde7cde441e502ae50aa8666855541d12f7fe9611319a618b982",
+      "inflate_from_memory": {
+        "wall_s": 0.001008911058306694,
+        "cpu_s": 0.000991546999999926
+      },
+      "parse_npy": {
+        "wall_s": 0.001105175819247961,
+        "cpu_s": 0.0011035539999983968
+      },
+      "serialize_npy": {
+        "wall_s": 0.0004084380343556404,
+        "cpu_s": 0.00040850799999958554
+      },
+      "sha_npy": {
+        "wall_s": 0.0001355428248643875,
+        "cpu_s": 0.00013552499999924805
+      },
+      "deflate": {
+        "1": {
+          "wall_s": 0.00031005870550870895,
+          "cpu_s": 0.000305584999999553,
+          "bytes": 69
+        },
+        "3": {
+          "wall_s": 4.823785275220871e-05,
+          "cpu_s": 4.882400000028042e-05,
+          "bytes": 69
+        },
+        "6": {
+          "wall_s": 3.859400749206543e-05,
+          "cpu_s": 3.867299999882334e-05,
+          "bytes": 69
+        }
+      },
+      "record_paths": [
+        "sample.model_family_a"
+      ]
+    },
+    {
+      "member": "array_38.npy",
+      "shape": [
+        1,
+        512,
+        288
+      ],
+      "dtype": "float32",
+      "array_bytes": 589824,
+      "npy_bytes": 589952,
+      "compressed_bytes": 3727,
+      "zip_method": 8,
+      "npy_sha256": "7028f401ad6147c2ff2bd2ac127f6bba6160fa884dd01f2231f9ae27e3f11d48",
+      "inflate_from_memory": {
+        "wall_s": 0.0030743228271603584,
+        "cpu_s": 0.003075494999999151
+      },
+      "parse_npy": {
+        "wall_s": 0.0032873060554265976,
+        "cpu_s": 0.0032874039999999383
+      },
+      "serialize_npy": {
+        "wall_s": 0.0029543773271143436,
+        "cpu_s": 0.002954838000000848
+      },
+      "sha_npy": {
+        "wall_s": 0.0006873640231788158,
+        "cpu_s": 0.0006872490000002784
+      },
+      "deflate": {
+        "1": {
+          "wall_s": 0.0014355899766087532,
+          "cpu_s": 0.001433808999999897,
+          "bytes": 7660
+        },
+        "3": {
+          "wall_s": 0.0019409158267080784,
+          "cpu_s": 0.0019406740000000866,
+          "bytes": 6643
+        },
+        "6": {
+          "wall_s": 0.005487679969519377,
+          "cpu_s": 0.005485058999999737,
+          "bytes": 3727
+        }
+      },
+      "record_paths": [
+        "sample.single_owner_weights"
+      ]
+    },
+    {
+      "member": "record_json.npy",
+      "shape": [],
+      "dtype": "<U7894",
+      "array_bytes": 31576,
+      "npy_bytes": 31704,
+      "compressed_bytes": 3129,
+      "zip_method": 8,
+      "npy_sha256": "f986285ad157c6326c36ea81e9f513302d5bb7942b14692aef83d3e7848568eb",
+      "inflate_from_memory": {
+        "wall_s": 0.0008264449425041676,
+        "cpu_s": 0.0008258660000013407
+      },
+      "parse_npy": {
+        "wall_s": 0.0010397108271718025,
+        "cpu_s": 0.0010380259999998032
+      },
+      "serialize_npy": {
+        "wall_s": 0.0005281153135001659,
+        "cpu_s": 0.0005319440000004505
+      },
+      "sha_npy": {
+        "wall_s": 0.0001170886680483818,
+        "cpu_s": 0.00011704499999964924
+      },
+      "deflate": {
+        "1": {
+          "wall_s": 0.000475139357149601,
+          "cpu_s": 0.00047578400000070076,
+          "bytes": 5632
+        },
+        "3": {
+          "wall_s": 0.0003373431973159313,
+          "cpu_s": 0.0003373179999996978,
+          "bytes": 3730
+        },
+        "6": {
+          "wall_s": 0.0009852340444922447,
+          "cpu_s": 0.0009849710000011669,
+          "bytes": 3129
+        }
+      },
+      "record_paths": [
+        "record_json"
+      ]
+    }
+  ]
+}

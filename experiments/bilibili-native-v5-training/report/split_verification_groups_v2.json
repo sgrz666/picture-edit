@@ -1,0 +1,24 @@
+{
+  "passed": true,
+  "all_rows_preserved": true,
+  "original_quality_flags_preserved": true,
+  "video_frame_pixel_leakage": false,
+  "media_moved_or_deleted": false,
+  "splits": {
+    "train": {
+      "clips": 39,
+      "frames": 1560,
+      "pairs": 9520
+    },
+    "val": {
+      "clips": 5,
+      "frames": 200,
+      "pairs": 1490
+    },
+    "test": {
+      "clips": 5,
+      "frames": 200,
+      "pairs": 1146
+    }
+  }
+}

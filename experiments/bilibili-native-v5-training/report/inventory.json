@@ -1,0 +1,801 @@
+{
+  "root": "/data/shangguanrz/datasets/bilibili",
+  "frames": 1960,
+  "pairs": 12156,
+  "clips": 49,
+  "frame_schema": {
+    "body_scope": "knee_up",
+    "candidate": {
+      "length": 134,
+      "first": {
+        "length": 2,
+        "first": 606.960319519043
+      }
+    },
+    "clip_id": "BV14NHK6SE9d",
+    "confidence": {
+      "length": 134,
+      "first": 0.9189873933792114
+    },
+    "cpu_stage_sec": 0.17867854796350002,
+    "curated_duration_sec": 11.23,
+    "curated_qc": {
+      "ankle_ratio": 0.3,
+      "box_area_ratio_med": 0.58,
+      "box_h_ratio_med": 0.778,
+      "hand_ratio": 0.95,
+      "knee_ratio": 1.0,
+      "nose_ratio": 1.0,
+      "single_ratio": 1.0,
+      "wrist_ratio": 0.95
+    },
+    "detection": {
+      "area_share": 0.5700051048981085,
+      "detector_found": true,
+      "face": {
+        "bbox_xyxy": {
+          "length": 4,
+          "first": 493.1690673828125
+        },
+        "landmarks5": {
+          "length": 5,
+          "first": {
+            "length": 2,
+            "first": 564.8712158203125
+          }
+        },
+        "score": 0.9029358625411987
+      },
+      "face_candidate_count": 1,
+      "face_candidates": {
+        "length": 1,
+        "first": {
+          "bbox_xyxy": {
+            "length": 4,
+            "first": 493.1690673828125
+          },
+          "landmarks5": {
+            "length": 5,
+            "first": {
+              "length": 2,
+              "first": 564.8712158203125
+            }
+          },
+          "score": 0.9029358625411987
+        }
+      },
+      "face_total_detections": 1,
+      "face_unique": true,
+      "n_persons": 1,
+      "person_boxes": {
+        "length": 1,
+        "first": {
+          "length": 4,
+          "first": 196.53208923339844
+        }
+      },
+      "primary_area_share": 1.0,
+      "primary_box": {
+        "length": 4,
+        "first": 196.53208923339844
+      },
+      "primary_image_area_share": 0.5700051048981085,
+      "primary_index": 0,
+      "second_to_primary_ratio": 0.0,
+      "timings": {
+        "face_sec": 0.007723880000412464,
+        "person_sec": 0.016735233832150698,
+        "pose_sec": 0.009469602257013321,
+        "total_sec": 0.03394129313528538
+      }
+    },
+    "effective_confidence": {
+      "length": 134,
+      "first": 0.9189873933792114
+    },
+    "face_usable": true,
+    "fps": 30.00005563808538,
+    "frame_id": "BV14NHK6SE9d_000087",
+    "frame_idx": 87,
+    "hand_a_present": true,
+    "hand_a_raw_inframe_points": 20,
+    "hand_a_status": "unknown",
+    "hand_a_usable": false,
+    "hand_b_present": true,
+    "hand_b_raw_inframe_points": 10,
+    "hand_b_status": "unknown",
+    "hand_b_usable": false,
+    "hand_block_slices": {
+      "hand_a": {
+        "length": 2,
+        "first": 113
+      },
+      "hand_b": {
+        "length": 2,
+        "first": 92
+      }
+    },
+    "hand_body_wrist_indices": {
+      "hand_a": 4,
+      "hand_b": 7
+    },
+    "hand_landmarks21": {
+      "hand_a": null,
+      "hand_b": null
+    },
+    "hand_landmarks_source": "mediapipe_native_crop",
+    "hand_presence": {
+      "hand_a": {
+        "present": true,
+        "raw_inframe_points": 20
+      },
+      "hand_b": {
+        "present": true,
+        "raw_inframe_points": 10
+      }
+    },
+    "hand_raw_alignment_evidence": {
+      "hand_a": {
+        "reason": "hand_not_mediapipe_trainable"
+      },
+      "hand_b": {
+        "reason": "hand_not_mediapipe_trainable"
+      }
+    },
+    "hand_raw_pose_usable": {
+      "hand_a": false,
+      "hand_b": false
+    },
+    "hq_status": "replaced",
+    "independent_hands": {
+      "hand_a": {
+        "expected_roi": {
+          "length": 4,
+          "first": 349
+        },
+        "landmarks21": null,
+        "matched_wrist": 4,
+        "presence_evidence": {
+          "detections": 0,
+          "method": "mediapipe_primary_and_wrist_crops"
+        },
+        "visibility_evidence": {
+          "elbow_response": 0.6904438138008118,
+          "method": "independent_detector_missing_not_absence",
+          "raw_hand_inframe_points": 20,
+          "wrist_response": 0.5266705751419067,
+          "wrist_xy": {
+            "length": 2,
+            "first": 424.15875667333603
+          }
+        }
+      },
+      "hand_b": {
+        "expected_roi": {
+          "length": 4,
+          "first": 524
+        },
+        "landmarks21": null,
+        "matched_wrist": 7,
+        "presence_evidence": {
+          "detections": 0,
+          "method": "mediapipe_primary_and_wrist_crops"
+        },
+        "visibility_evidence": {
+          "elbow_response": 0.4990801513195038,
+          "method": "independent_detector_missing_not_absence",
+          "raw_hand_inframe_points": 10,
+          "wrist_response": 0.3673403561115265,
+          "wrist_xy": {
+            "length": 2,
+            "first": 740.5460769832134
+          }
+        }
+      }
+    },
+    "keypoint_visibility_policy": "bili_relaxed_v2_dwpose_presence",
+    "loss_mask": {
+      "body": true,
+      "face": true,
+      "hand_a": false,
+      "hand_b": false
+    },
+    "motion": {
+      "motion_max_joint": 1.9773233815645337,
+      "motion_percentile": 0.9938650306748467,
+      "motion_score": 0.9293060823894406,
+      "motion_source": "two_sided",
+      "motion_window_sec": 0.5333749999999999,
+      "scale_source": "shoulder_torso"
+    },
+    "n_frames": 337,
+    "original_hw": {
+      "length": 2,
+      "first": 1920
+    },
+    "path": "/data/shangguanrz/bili_vertical_dance_20261103/clips_hq/knee_only/BV14NHK6SE9d.mp4",
+    "person_id": "BV14NHK6SE9d",
+    "phash64": "182572729f8739d8",
+    "pixel_sha256": "b5a1792d8b6235603768a0b5f55c6db5e98d67e66737918f1078c4072828f3a6",
+    "pose_path": "/data/shangguanrz/datasets/bilibili/frames/poses/BV14NHK6SE9d/BV14NHK6SE9d_000087.json",
+    "quality": {
+      "audit_stratum": "body:knee_up|face_present|hand_a:unknown:present|hand_b:unknown:present",
+      "body": {
+        "area_share": 0.5700051048981085,
+        "body_scope": "knee_up",
+        "body_span_ratio": 0.6615815108331541,
+        "body_visible": true,
+        "box_bottom_frac": 0.9930238723754883,
+        "full_above_knee": true,
+        "hip_a": {
+          "length": 2,
+          "first": 475.7181718349457
+        },
+        "hip_b": {
+          "length": 2,
+          "first": 693.6738813817501
+        },
+        "hip_mid_y": 1388.1993516087532,
+        "knee_a": {
+          "length": 2,
+          "first": 515.5595380961895
+        },
+        "knee_a_confidence": 0.8699876070022583,
+        "knee_a_source": "direct",
+        "knee_b": {
+          "length": 2,
+          "first": 696.0174911618233
+        },
+        "knee_b_confidence": 0.8550592064857483,
+        "knee_b_source": "direct",
+        "knee_points": {
+          "length": 2,
+          "first": 9
+        },
+        "knee_span_ratio": 0.6615815108331541,
+        "nose_y": 610.1209046244621,
+        "reasons": {
+          "length": 0,
+          "first": null
+        },
+        "required_body_points": {
+          "length": 6,
+          "first": 0
+        },
+        "required_missing": {
+          "length": 0,
+          "first": null
+        },
+        "second_to_primary_ratio": 0.0,
+        "thigh_span_ratio": 0.4052491911376516,
+        "trusted_inframe_body_points": 16
+      },
+      "effective_config": {
+        "body": {
+          "confidence_min": 0.3,
+          "max_second_to_primary_ratio": 0.35,
+          "min_area_share": 0.06,
+          "min_trusted_points": 6,
+          "outside_margin_px": 2
+        },
+        "face": {
+          "mask_erosion_px": 0,
+          "min_eye_distance_px": 6,
+          "min_gradient_mean": 0.0,
+          "min_height_px": 24,
+          "min_hf_ratio": 0.0,
+          "min_laplacian_var": 0.0,
+          "min_metric_pixels": 12,
+          "min_multiscale_ratio": 0.0,
+          "min_normalized_laplacian": 0.0,
+          "min_score": 0.5,
+          "min_width_px": 48
+        },
+        "hand": {
+          "mask_erosion_px": 0,
+          "max_aspect_ratio": 3.5,
+          "min_gradient_mean": 1.65,
+          "min_handedness_score": 0.78,
+          "min_hf_ratio": 0.008,
+          "min_laplacian_var": 32.0,
+          "min_long_side_px": 28,
+          "min_metric_pixels": 16,
+          "min_multiscale_ratio": 5.4,
+          "min_normalized_laplacian": 0.09,
+          "min_short_side_px": 18,
+          "strict_min_long_side_px": 48,
+          "strict_min_short_side_px": 24
+        }
+      },
+      "face": {
+        "bbox_xyxy": {
+          "length": 4,
+          "first": 493
+        },
+        "evidence": {
+          "eye_distance_px": 68.86639795418732,
+          "scrfd_score": 0.9029358625411987
+        },
+        "landmarks5": {
+          "length": 5,
+          "first": {
+            "length": 2,
+            "first": 564.8712158203125
+          }
+        },
+        "metrics": {
+          "evaluated_pixels": 1383,
+          "gradient_mean": 8.152335346561065,
+          "gradient_p90": 17.86826795964424,
+          "hf_ratio": 0.00835230511904343,
+          "intensity_std": 40.6228118905366,
+          "intensity_var": 1650.2128458939221,
+          "laplacian_mean_abs": 6.835140997830803,
+          "laplacian_retention_sigma1": 0.20165663813025123,
+          "laplacian_retention_sigma2": 0.04496320492588293,
+          "laplacian_var": 115.52283617462119,
+          "mask_erosion_px": 0,
+          "mask_pixels": 1383,
+          "mask_retained_fraction": 1.0,
+          "multiscale_ratio": 4.754819281837487,
+          "native_height_px": 204,
+          "native_width_px": 164,
+          "normalized_laplacian": 0.06996241366574413,
+          "support_type": "scrfd5_eye_mouth_patches",
+          "valid": true
+        },
+        "passed": true,
+        "presence_only": true,
+        "quality_score": 1.0,
+        "reasons": {
+          "length": 0,
+          "first": null
+        },
+        "support_type": "presence_only",
+        "usable": true
+      },
+      "gate_config_sha256": "41697fb2571b951f1a543c0ca5f4a4cbf7fae1adfd558302ca1480d2cc235ba2",
+      "gate_id": "bili_thighup_hand_presence_v2",
+      "hand_any_present": true,
+      "hand_any_trainable": false,
+      "hands": {
+        "hand_a": {
+          "bbox_xyxy": null,
+          "evidence": {
+            "expected_body_wrist": 4,
+            "expected_roi": {
+              "length": 4,
+              "first": 349
+            },
+            "occlusion_evidence": null,
+            "presence_evidence": {
+              "detections": 0,
+              "method": "mediapipe_primary_and_wrist_crops"
+            },
+            "raw_wrist_elbow": {
+              "elbow_response": 0.6904438138008118,
+              "elbow_xy": {
+                "length": 2,
+                "first": 325.72714591026306
+              },
+              "trusted": true,
+              "wrist_clearly_outside": false,
+              "wrist_response": 0.5266705751419067,
+              "wrist_xy": {
+                "length": 2,
+                "first": 424.15875667333603
+              }
+            },
+            "visibility_evidence": {
+              "elbow_response": 0.6904438138008118,
+              "method": "independent_detector_missing_not_absence",
+              "raw_hand_inframe_points": 20,
+              "wrist_response": 0.5266705751419067,
+              "wrist_xy": {
+                "length": 2,
+                "first": 424.15875667333603
+              }
+            }
+          },
+          "landmarks21": null,
+          "metrics": {},
+          "present": true,
+          "quality_score": 0.0,
+          "raw_bbox_xyxy": {
+            "length": 4,
+            "first": 431.1895860135555
+          },
+          "raw_inframe_points": 20,
+          "reasons": {
+            "length": 1,
+            "first": "no_independent_hand_or_verified_visibility"
+          },
+          "status": "unknown",
+          "trainable": false,
+          "usable": false
+        },
+        "hand_b": {
+          "bbox_xyxy": null,
+          "evidence": {
+            "expected_body_wrist": 7,
+            "expected_roi": {
+              "length": 4,
+              "first": 524
+            },
+            "occlusion_evidence": null,
+            "presence_evidence": {
+              "detections": 0,
+              "method": "mediapipe_primary_and_wrist_crops"
+            },
+            "raw_wrist_elbow": {
+              "elbow_response": 0.4990801513195038,
+              "elbow_xy": {
+                "length": 2,
+                "first": 958.5017865300179
+              },
+              "trusted": true,
+              "wrist_clearly_outside": false,
+              "wrist_response": 0.3673403561115265,
+              "wrist_xy": {
+                "length": 2,
+                "first": 740.5460769832134
+              }
+            },
+            "visibility_evidence": {
+              "elbow_response": 0.4990801513195038,
+              "method": "independent_detector_missing_not_absence",
+              "raw_hand_inframe_points": 10,
+              "wrist_response": 0.3673403561115265,
+              "wrist_xy": {
+                "length": 2,
+                "first": 740.5460769832134
+              }
+            }
+          },
+          "landmarks21": null,
+          "metrics": {},
+          "present": true,
+          "quality_score": 0.0,
+          "raw_bbox_xyxy": {
+            "length": 4,
+            "first": 234.3263644874096
+          },
+          "raw_inframe_points": 10,
+          "reasons": {
+            "length": 1,
+            "first": "no_independent_hand_or_verified_visibility"
+          },
+          "status": "unknown",
+          "trainable": false,
+          "usable": false
+        }
+      },
+      "loss_mask": {
+        "body": true,
+        "face": true,
+        "hand_a": false,
+        "hand_b": false
+      },
+      "main_pass": true,
+      "quality_score": 0.0,
+      "quality_score_semantics": "heuristic_not_probability",
+      "reasons": {
+        "length": 2,
+        "first": "hand_a:no_independent_hand_or_verified_visibility"
+      },
+      "required_calibration_strata": {
+        "length": 0,
+        "first": null
+      },
+      "strict_subset": false,
+      "threshold_status": "bili_relaxed_v2_dwpose_presence"
+    },
+    "rgb_mean": {
+      "length": 3,
+      "first": 71.07514274691358
+    },
+    "rgb_path": "/data/shangguanrz/datasets/bilibili/frames/images/BV14NHK6SE9d/BV14NHK6SE9d_000087.png",
+    "rgb_sha256": "7a094b31e190bb77c1e31a43804c699fcd6a9acf77e7d76e73f89b4536bf7104",
+    "scene_cut_score": 0.08406792503635184,
+    "selection": {
+      "motion_score": 0.9293060823894406,
+      "rank": 1,
+      "reason": "motion_top"
+    },
+    "shard": "raw1",
+    "shot_id": "BV14NHK6SE9d:s000",
+    "source_key": "clips/knee_only/BV14NHK6SE9d.mp4",
+    "source_video_sha256": "0c8fbb17c44f36709a6e5085e4ab86eeae8f917668e6a7c359e0380bd2fb41f0",
+    "split": "raw1",
+    "tier": "knee_only",
+    "timestamp_sec": 2.9,
+    "timestamp_source": "cap_prop_pos_msec",
+    "uncompressed_bytes": 3178518,
+    "valid_keypoint_mask": {
+      "length": 134,
+      "first": true
+    }
+  },
+  "pair_schema": {
+    "background_distance": 0.20521679135590246,
+    "body_distance": 0.4812561092185129,
+    "center_distance": 0.14221706804896672,
+    "chest_distance": 0.2959920481365273,
+    "clip_id": "BV14NHK6SE9d",
+    "cross_shot": false,
+    "distance": 0.4812561092185129,
+    "face_distance": 0.09322306472512865,
+    "facing_same": true,
+    "hand_a_distance": null,
+    "hand_b_distance": null,
+    "pair_id": "1fd04cc6f12c470391ba03f6109034f1f8b6bd2e439b37679d025dd4722123a7",
+    "pair_policy_id": "bili_appearance_view_v3",
+    "person_id": "BV14NHK6SE9d",
+    "same_person_proxy": "same_clip",
+    "schema": "hia_rgb_pose_v3",
+    "selection_reason": [
+      "body",
+      "face"
+    ],
+    "source_frame_id": "BV14NHK6SE9d_000165",
+    "source_loss_mask": {
+      "body": true,
+      "face": true,
+      "hand_a": false,
+      "hand_b": false
+    },
+    "source_motion_score": 0.3547294992070544,
+    "source_n_persons": 1,
+    "source_pose_path": "/data/shangguanrz/bili_vertical_dance_20261103/pairs/raw1,v3/persons/BV14NHK6SE9d/poses/BV14NHK6SE9d_000165.json",
+    "source_rgb_path": "/data/shangguanrz/bili_vertical_dance_20261103/pairs/raw1,v3/persons/BV14NHK6SE9d/frames/BV14NHK6SE9d_000165.png",
+    "split": "raw1",
+    "target_frame_id": "BV14NHK6SE9d_000087",
+    "target_loss_mask": {
+      "body": true,
+      "face": true,
+      "hand_a": false,
+      "hand_b": false
+    },
+    "target_motion_score": 0.9293060823894406,
+    "target_n_persons": 1,
+    "target_pose_path": "/data/shangguanrz/bili_vertical_dance_20261103/pairs/raw1,v3/persons/BV14NHK6SE9d/poses/BV14NHK6SE9d_000087.json",
+    "target_rgb_path": "/data/shangguanrz/bili_vertical_dance_20261103/pairs/raw1,v3/persons/BV14NHK6SE9d/frames/BV14NHK6SE9d_000087.png",
+    "time_gap_sec": 2.6
+  },
+  "pair_counts": {
+    "BV14NHK6SE9d": 294,
+    "BV15r4F6bEi8": 272,
+    "BV16g411h71h": 312,
+    "BV18Wxw6RE4A": 312,
+    "BV19H4y1d75w": 234,
+    "BV19cWw6XEgX": 108,
+    "BV19i4y1U7D8": 320,
+    "BV19vxY6mE8j": 312,
+    "BV1Aynt6zEQd": 320,
+    "BV1B8Hd61E2X": 109,
+    "BV1CKJy61EEK": 34,
+    "BV1DH4y1Z7f2": 145,
+    "BV1DtJ96HEUo": 272,
+    "BV1EwsZ6sEcr": 250,
+    "BV1FW411N7WY": 92,
+    "BV1HeGV66EXT": 64,
+    "BV1Kyn867EpW": 270,
+    "BV1Mfsd6qEtC": 307,
+    "BV1Mh41137VU": 288,
+    "BV1Qp4y1r7Nv": 257,
+    "BV1Qt4vzNEY2": 320,
+    "BV1Rhxk6GEWT": 255,
+    "BV1SeDcB1EaY": 159,
+    "BV1T3Hy6FErW": 244,
+    "BV1WMgo68EqU": 262,
+    "BV1Wqxe6KEbe": 320,
+    "BV1XR4y1A7im": 233,
+    "BV1XssX6AEsR": 304,
+    "BV1aAQ4BoEfb": 269,
+    "BV1aExF6nEWw": 270,
+    "BV1c6xp6vEJm": 304,
+    "BV1cxxq63E8K": 200,
+    "BV1dLx46TEt3": 139,
+    "BV1dNxn6SEcs": 320,
+    "BV1dQx364Ex2": 320,
+    "BV1ey4y1f7pe": 288,
+    "BV1f54A6CEiQ": 268,
+    "BV1hS4y1N7jv": 320,
+    "BV1kHxx65EMT": 142,
+    "BV1mX436SEvL": 40,
+    "BV1pexF6gEzf": 320,
+    "BV1rFJb6eEZE": 319,
+    "BV1sk4y187r4": 271,
+    "BV1tB4c6nEq9": 304,
+    "BV1tqhz6uE2u": 320,
+    "BV1xN4y1C7Fw": 271,
+    "BV1xaxe6zERg": 239,
+    "BV1z2HC6jEkq": 243,
+    "BV1zT4g6aEQo": 320
+  },
+  "frame_counts": {
+    "BV14NHK6SE9d": 40,
+    "BV15r4F6bEi8": 40,
+    "BV16g411h71h": 40,
+    "BV18Wxw6RE4A": 40,
+    "BV19H4y1d75w": 40,
+    "BV19cWw6XEgX": 40,
+    "BV19i4y1U7D8": 40,
+    "BV19vxY6mE8j": 40,
+    "BV1Aynt6zEQd": 40,
+    "BV1B8Hd61E2X": 40,
+    "BV1CKJy61EEK": 40,
+    "BV1DH4y1Z7f2": 40,
+    "BV1DtJ96HEUo": 40,
+    "BV1EwsZ6sEcr": 40,
+    "BV1FW411N7WY": 40,
+    "BV1HeGV66EXT": 40,
+    "BV1Kyn867EpW": 40,
+    "BV1Mfsd6qEtC": 40,
+    "BV1Mh41137VU": 40,
+    "BV1Qp4y1r7Nv": 40,
+    "BV1Qt4vzNEY2": 40,
+    "BV1Rhxk6GEWT": 40,
+    "BV1SeDcB1EaY": 40,
+    "BV1T3Hy6FErW": 40,
+    "BV1WMgo68EqU": 40,
+    "BV1Wqxe6KEbe": 40,
+    "BV1XR4y1A7im": 40,
+    "BV1XssX6AEsR": 40,
+    "BV1aAQ4BoEfb": 40,
+    "BV1aExF6nEWw": 40,
+    "BV1c6xp6vEJm": 40,
+    "BV1cxxq63E8K": 40,
+    "BV1dLx46TEt3": 40,
+    "BV1dNxn6SEcs": 40,
+    "BV1dQx364Ex2": 40,
+    "BV1ey4y1f7pe": 40,
+    "BV1f54A6CEiQ": 40,
+    "BV1hS4y1N7jv": 40,
+    "BV1kHxx65EMT": 40,
+    "BV1mX436SEvL": 40,
+    "BV1pexF6gEzf": 40,
+    "BV1rFJb6eEZE": 40,
+    "BV1sk4y187r4": 40,
+    "BV1tB4c6nEq9": 40,
+    "BV1tqhz6uE2u": 40,
+    "BV1xN4y1C7Fw": 40,
+    "BV1xaxe6zERg": 40,
+    "BV1z2HC6jEkq": 40,
+    "BV1zT4g6aEQo": 40
+  },
+  "path_count": 7418,
+  "missing_paths": [],
+  "duplicate_frame_ids": 0,
+  "duplicate_pair_ids": 0,
+  "pair_frame_refs_missing": 0,
+  "original_loss_masks": {
+    "body": {
+      "True": 1960
+    },
+    "face": {
+      "True": 1960
+    },
+    "hand_a": {
+      "False": 1867,
+      "True": 93
+    },
+    "hand_b": {
+      "False": 1841,
+      "True": 119
+    }
+  },
+  "geometry_counts": {
+    "smplx": {
+      "sapiens_v2": 1960,
+      "smplest": 1960,
+      "sapiens_v3": 1960,
+      "sapiens_v1": 1960,
+      "wilor": 1960
+    },
+    "depth": {
+      "sapiens_v2": 1960,
+      "smplest": 1960,
+      "sapiens_v3": 1960,
+      "sapiens_v1": 1960,
+      "wilor": 1960
+    },
+    "normal": {
+      "sapiens_v2": 1960,
+      "smplest": 1960,
+      "sapiens_v3": 1960,
+      "sapiens_v1": 1960,
+      "wilor": 1960
+    }
+  },
+  "geometry_record_count": 1960,
+  "geometry_example": {
+    "fid": "BV14NHK6SE9d_000087",
+    "bvid": "BV14NHK6SE9d",
+    "strip_path": "/data/shangguanrz/bili_vertical_dance_20261103/pairs/raw1,v3/geometry/comparisons/strips/BV14NHK6SE9d/BV14NHK6SE9d_000087_5way.jpg",
+    "normals": {
+      "smplest": "/data/shangguanrz/bili_vertical_dance_20261103/pairs/raw1,v3/geometry/normal/smplest/BV14NHK6SE9d/BV14NHK6SE9d_000087_normal.png",
+      "sapiens_v1": "/data/shangguanrz/bili_vertical_dance_20261103/pairs/raw1,v3/geometry/normal/sapiens_v1/BV14NHK6SE9d/BV14NHK6SE9d_000087_normal.png",
+      "sapiens_v2": "/data/shangguanrz/bili_vertical_dance_20261103/pairs/raw1,v3/geometry/normal/sapiens_v2/BV14NHK6SE9d/BV14NHK6SE9d_000087_normal.png",
+      "sapiens_v3": "/data/shangguanrz/bili_vertical_dance_20261103/pairs/raw1,v3/geometry/normal/sapiens_v3/BV14NHK6SE9d/BV14NHK6SE9d_000087_normal.png",
+      "wilor": "/data/shangguanrz/bili_vertical_dance_20261103/pairs/raw1,v3/geometry/normal/wilor/BV14NHK6SE9d/BV14NHK6SE9d_000087_normal.png"
+    },
+    "depths": {
+      "smplest": "/data/shangguanrz/bili_vertical_dance_20261103/pairs/raw1,v3/geometry/depth/smplest/BV14NHK6SE9d/BV14NHK6SE9d_000087_depth.png",
+      "sapiens_v1": "/data/shangguanrz/bili_vertical_dance_20261103/pairs/raw1,v3/geometry/depth/sapiens_v1/BV14NHK6SE9d/BV14NHK6SE9d_000087_depth.png",
+      "sapiens_v2": "/data/shangguanrz/bili_vertical_dance_20261103/pairs/raw1,v3/geometry/depth/sapiens_v2/BV14NHK6SE9d/BV14NHK6SE9d_000087_depth.png",
+      "sapiens_v3": "/data/shangguanrz/bili_vertical_dance_20261103/pairs/raw1,v3/geometry/depth/sapiens_v3/BV14NHK6SE9d/BV14NHK6SE9d_000087_depth.png",
+      "wilor": "/data/shangguanrz/bili_vertical_dance_20261103/pairs/raw1,v3/geometry/depth/wilor/BV14NHK6SE9d/BV14NHK6SE9d_000087_depth.png"
+    },
+    "smplx": {
+      "smplest": "/data/shangguanrz/bili_vertical_dance_20261103/pairs/raw1,v3/geometry/smplx/smplest/BV14NHK6SE9d/BV14NHK6SE9d_000087.pt",
+      "sapiens_v1": "/data/shangguanrz/bili_vertical_dance_20261103/pairs/raw1,v3/geometry/smplx/sapiens_v1/BV14NHK6SE9d/BV14NHK6SE9d_000087.pt",
+      "sapiens_v2": "/data/shangguanrz/bili_vertical_dance_20261103/pairs/raw1,v3/geometry/smplx/sapiens_v2/BV14NHK6SE9d/BV14NHK6SE9d_000087.pt",
+      "sapiens_v3": "/data/shangguanrz/bili_vertical_dance_20261103/pairs/raw1,v3/geometry/smplx/sapiens_v3/BV14NHK6SE9d/BV14NHK6SE9d_000087.pt",
+      "wilor": "/data/shangguanrz/bili_vertical_dance_20261103/pairs/raw1,v3/geometry/smplx/wilor/BV14NHK6SE9d/BV14NHK6SE9d_000087.pt"
+    },
+    "elapsed_sec": 6.778898000717163
+  },
+  "geometry_summary_keys": [
+    "dataset",
+    "split",
+    "processed_frames",
+    "total_time_sec",
+    "avg_time_per_frame_sec",
+    "methods",
+    "records"
+  ],
+  "pose_example": {
+    "candidate": {
+      "length": 134,
+      "first": {
+        "length": 2,
+        "first": 596.8061290085316
+      }
+    },
+    "confidence": {
+      "length": 134,
+      "first": 0.9219780564308167
+    },
+    "valid_keypoint_mask": {
+      "length": 134,
+      "first": true
+    },
+    "effective_confidence": {
+      "length": 134,
+      "first": 0.9219780564308167
+    },
+    "hand_block_slices": {
+      "hand_a": {
+        "length": 2,
+        "first": 113
+      },
+      "hand_b": {
+        "length": 2,
+        "first": 92
+      }
+    },
+    "hand_raw_pose_usable": {
+      "hand_a": false,
+      "hand_b": false
+    },
+    "hand_landmarks21": {
+      "hand_a": null,
+      "hand_b": null
+    },
+    "hand_landmarks_source": "mediapipe_native_crop",
+    "coordinate_space": "original_pixel",
+    "raw_response_semantics": "dwpose_simcc_not_probability",
+    "keypoint_visibility_policy": "bili_relaxed_v2_dwpose_presence"
+  },
+  "source_sha256": {
+    "/data/shangguanrz/datasets/bilibili/frames/frames.jsonl": "57b940b7ab0be1ff4aa5e22cdf32af8707dbf5777e6fa2300268c48b5cbca825",
+    "/data/shangguanrz/datasets/bilibili/pairs/pairs.jsonl": "32dafa963d84e614a61d7702cdef4efa5a77638f34aa16f2719a827bc968ec20"
+  },
+  "torch": {
+    "version": "2.8.0+cu128",
+    "cuda_build": "12.8",
+    "cuda_available": true,
+    "device": "NVIDIA RTX 6000D"
+  }
+}

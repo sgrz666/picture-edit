@@ -1,0 +1,15 @@
+{
+  "passed": true,
+  "frames_decoded": 1960,
+  "split_counts": {
+    "train": 1560,
+    "val": 200,
+    "test": 200
+  },
+  "unique_pixel_images": 1960,
+  "hash_method": "sha256(repr((width,height))+NUL+decoded_RGB_bytes)",
+  "declared_pixel_sha256_fields_trusted": false,
+  "cross_split_pixel_conflicts": [],
+  "input_images_modified": false,
+  "training_started": false
+}

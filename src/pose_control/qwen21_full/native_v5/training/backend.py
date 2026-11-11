@@ -119,7 +119,11 @@ class NativeBackend:
             ref,spec=self.data.conditions[(source,index)]
             if entry.get('condition_sha256')!=ref['sha256'] or pair.get('prompt_sha256')!=spec['prompt']['sha256']:
                 raise ValueError('Frozen pair uses another prompt or reference order')
-        return sample,collate_native_full_v5([sample]),pair
+        spatial=sample.get('spatial_weights_v5')
+        batch=collate_native_full_v5([{k:v for k,v in sample.items() if k!='spatial_weights_v5'}])
+        if spatial is not None:
+            batch['spatial_weights_v5']={**spatial,'target_token_hw':tuple(pair['target_token_hw'])}
+        return sample,batch,pair
 
     def forward(self,batch,pair,route,sigma,noise,options,base):
         from torch.nn import functional as F
