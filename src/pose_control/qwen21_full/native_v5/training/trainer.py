@@ -160,7 +160,8 @@ class NativeV5Trainer:
                     prediction,target,coverage,noisy=backend.forward(batch,pair,route,sigma,noise,options,base)
                     supervision=batch['training_supervision_v5'].to(backend.device)
                     loss,parts=compute_micro_loss(backend.pipe,prediction,target,coverage,supervision,noisy,sigma,
-                        (batch['tgt_image'].to(backend.device).float()+1)*.5,route.loss,counts,ctx['global_update']+1,evaluators)
+                        (batch['tgt_image'].to(backend.device).float()+1)*.5,route.loss,counts,ctx['global_update']+1,evaluators,
+                        spatial=batch.get('spatial_weights_v5'))
                     if not torch.isfinite(loss) or not loss.requires_grad:raise FloatingPointError('Invalid/no-gradient objective for an eligible route')
                     loss.backward();values.append({k:float(v.detach()) if torch.is_tensor(v) else v for k,v in parts.items()})
                 gradients=audit_gradients(backend);active_params=[ctx['catalog'].parameters[n] for n in sorted(ctx['active'])]
