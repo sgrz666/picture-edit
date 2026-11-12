@@ -19,7 +19,7 @@
 - [x] Runtime／integration：新 Prepared 类型、继承 V6 权重的显式初始化、严格 V6.1 回读、同一原始 Hidden 的 Target-only 残差、非重入 checkpoint 上下文；旧 V6 不改。
 - [x] 数据／训练／推理：可选原始 repair 侧车贯通 reader/collator/cache identity，参数目录完整；独立 V6.1 schema、迁移和 CLI；默认 prepare 不构建模型／optimizer。
 - [x] CPU 验证：原 70 项＋空间支持、背景污染、Gate、预算与双人公平性、缺失／失配、2／4／5Ref、前缀、梯度、重算、版本／冻结／全部关闭等价。
-- [ ] 审查与交付：中文 README；独立规格／代码审查；新文件 py_compile；提交 main 并推送；远端源码／index／diff 时间戳快照，定向同步与 main 索引核对，不改训练快照、不全仓 checkout/reset/clean。
+- [x] 审查与交付：中文 README；独立规格／代码审查；新文件 py_compile；提交 main 并推送；远端源码／index／diff 时间戳快照，定向同步与 main 索引核对，不改训练快照、不全仓 checkout/reset/clean。
 
 ## 验证命令
 
@@ -32,3 +32,7 @@ python scripts/train/train_qwen21_native_full_v61.py prepare
 所有测试只用 CPU 合成张量／随机初始化小 Qwen，不使用真实 checkpoint 或数据。权重初始化工具只实现，不实际迁移真实权重。收益结论等待另行实验。
 
 本地结果：原 V6 70 passed；完整 V6.1 65 passed（新增全套一次运行）。已修复 Gate-only 消融额外改变 Attention、Combined Pose 稀疏 Key 人物边界串扰、配置可突破 256 上限及空间 schema 不一致；相应 CPU 回归通过。规格和独立代码质量复审通过。
+
+交付结果：实现提交 `2b0f198` 已推送 main，服务器从 `0d48cfa` 接纳同一 main；37 个任务文件 SHA 相符、33 个 Python 文件编译通过、39 个已有 V6 文件核对后纳入索引。141 个旧 V5／V6／runtime_repo_v7 文件内容不变，原有已跟踪工作区路径不变；未执行 checkout，历史缺失／未跟踪文件保留。服务器 prepare 输出 `native_v61_training_v1`，model_constructed／optimizer_created／training_started 均 false。
+
+带时间戳的源码、索引、差异与交付证据位于 `/data/shangguanrz/code-snapshots/native-full-v61-20261112T200901/`；此验收记录的主线同步另保留同名前缀的 `-final` 快照。
