@@ -21,10 +21,12 @@
 - [x] TDD：独立 Runtime／Prepared／integration，Body／Interaction Gate、局部不重复权重、同原 Hidden、前缀与重算。
 - [x] 版本化数据／训练／推理／迁移与可选诊断；旧 Loss 与固定 Token 预算复用。
 - [x] 旧135＋新增完整 CPU 套件；初始化／严格回读／冻结／数值和梯度零依赖／关系许可等验收。
-- [ ] 中文 README，独立规格／质量审查；py_compile／安全 prepare；main 提交推送；服务器时间戳快照、定向同步、索引核对。
+- [x] 中文 README，独立规格／质量审查；py_compile／安全 prepare；main 提交推送；服务器时间戳快照、定向同步、索引核对。
 
 ## 验证界限
 
 只证明 Adapter 内直接 Key 读取权限和残差空间契约。Qwen 原生 Attention 与继承 Reasoner 仍可混合上下文，不据此宣称身份绝不串位或生成质量改善。所有测试用合成 CPU 张量和随机小 Qwen；不安装依赖或运行真实资产。
 
 本地完整验收：192 passed（原135＋新增57）。规格／质量审查发现并修复双人部位图子记录 Driver SHA 未核对、新功能关闭时额外绑定旧局部身份、contact消融仍可能开放路由等边界；新增 static 同 Hidden full/base 对照保留局部贡献。诊断接入配置／CLI，Windows旧编码下 prepare 输出UTF-8、迁移帮助可用。所有新Python已编译核对；远端交付前快照为 `/data/shangguanrz/code-snapshots/native-full-v62-20261115T064701Z/`。
+
+交付结果：实现提交 `a7d7339` 已推送 main 并同步服务器；37 个新任务文件 SHA 相符、34 个 Python 文件编译通过。75 个已有 V6／V6.1 文件核对后保持原内容；168 个旧 V5／V6／V6.1／runtime_repo_v7 文件摘要不变。未 checkout 工作区、未删移文件；既有已跟踪路径状态保留，main 索引／引用一致。服务器安全 prepare 为 `native_v62_training_v1`，model_constructed／optimizer_created／training_started 均 false。此验收记录同步另保留同名 `-final` 快照。
