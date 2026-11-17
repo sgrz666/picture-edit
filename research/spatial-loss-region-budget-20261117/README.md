@@ -11,6 +11,7 @@
 - `input/downstream_comparison.json`、`input/region_loss_comparison.json`：通过 `scp` 新取回的原服务器消融指标，保留原字节。
 - [output/checked-v1/checks.json](output/checked-v1/checks.json)：计算结果、输入 SHA、代码快照 SHA、Git HEAD 和采集时间。
 - `output/checked-v1/source_snapshot/`：本次读取的 V6 空间 loss、V6.2 配置及 V7 loss/training 原文副本，仅作证据，不用作训练入口。
+- `.gitattributes`：禁止 Git 转换输入和源码证据的换行符，确保重新 checkout 后仍能按原始字节验证 SHA。
 - [output/checked-v1/loss_budget_comparison.png](output/checked-v1/loss_budget_comparison.png)：数学示意图，未使用训练后模型的预测结果。
 
 ## 现有证据说明了什么
