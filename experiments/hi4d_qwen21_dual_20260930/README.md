@@ -1,5 +1,7 @@
 # hi4d_qwen21_dual_20260930 目录说明
 
+2026-11-17 新增 [Native V7 单配对真实训练](native-v7-singlepair-overfit-20261117/README.md)：1 个训练配对与 1 个同人物观察配对；已补齐真实五点资格、Source repair、四图冻结缓存及生产迁移。原生尺寸完整 ID 反向的三种内存方案均触发显存限制，当前 optimizer updates 为 0；不会将预检或 CPU 测试当作过拟合结果。
+
 **路径**: `experiments/hi4d_qwen21_dual_20260930`
 
 ## 1. 目录定位与职责

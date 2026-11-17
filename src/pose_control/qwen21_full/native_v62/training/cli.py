@@ -28,7 +28,12 @@ def parse_config(a,*,config_type=TrainingConfig,stage_factory=stage_preset):
         if getattr(a,arg) is not None:updates[key]=str(getattr(a,arg).resolve())
     for arg in ('model_manifest','cache_identity','gradient_report','body_baseline_report'):
         if getattr(a,arg) is not None:updates[arg]=ref(getattr(a,arg))
-    if a.checkpoint is not None and a.action!='resume':updates['initialization']=ref(a.checkpoint)
+    if a.checkpoint is not None and a.action!='resume':
+        # Naming the already-bound parent must not discard its SHA and change
+        # the configuration signature accepted by the real gradient preflight.
+        existing=cfg.initialization
+        same=existing is not None and Path(existing['path']).resolve()==a.checkpoint.resolve()
+        updates['initialization']=dict(existing) if same else ref(a.checkpoint)
     if a.seed is not None:updates['seed']=a.seed
     if a.evaluators:updates['evaluators']=json.loads(a.evaluators.read_text(encoding='utf8'))
     stage=cfg.stage

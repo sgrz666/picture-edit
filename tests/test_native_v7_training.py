@@ -161,3 +161,17 @@ def test_gradient_gate_selects_sigma_inside_requested_auxiliary_interval():
     counts=backend.window_counts([{'route':'poselink','sigma':sigma,'status':{'face_area':1.,'hand_area':0.,'auxiliary_faces':2}}],{'poselink':route},4)
     assert counts['paper_identity']==2
     assert backend.preflight_sigma(replace(route,loss=LossSpec()))==.2
+
+
+def test_cli_keeps_bound_initialization_when_checkpoint_names_same_file(tmp_path,capsys):
+    import json
+    from dataclasses import replace
+    from src.pose_control.qwen21_full.native_v7.training import TrainingConfigV7,main
+    checkpoint=tmp_path/'parent.pt'
+    bound={'path':str(checkpoint.resolve()),'sha256':'a'*64}
+    config=replace(TrainingConfigV7(),initialization=bound)
+    path=tmp_path/'config.json';path.write_text(json.dumps(config.record()),encoding='utf8')
+    main(['prepare','--config',str(path),'--checkpoint',str(checkpoint)])
+    report=json.loads(capsys.readouterr().out)
+    assert report['config']['initialization']==bound
+    assert report['config_sha256']==config.signature()
