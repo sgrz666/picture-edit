@@ -1,0 +1,1390 @@
+{
+  "schema": "ablation_downstream_v1",
+  "total_images_evaluated": 150,
+  "benchmarks": {
+    "val_fixed10": {
+      "base_no_adapter": {
+        "count": 10,
+        "person_detected_rate": 1.0,
+        "valid_ssim_mean": 0.7082945466041565,
+        "lpips_alex_mean": 0.19383108988404274,
+        "pixel": {
+          "valid": {
+            "active_images": 10,
+            "mse_mean": 0.01680028289556503,
+            "psnr_mean": 19.17408050844577,
+            "mse_area_weighted": 0.01637602043968564,
+            "psnr_from_mean_mse": 17.74683405241492
+          },
+          "bg": {
+            "active_images": 10,
+            "mse_mean": 0.007423965178895741,
+            "psnr_mean": 22.928388032612116,
+            "mse_area_weighted": 0.006554322980910197,
+            "psnr_from_mean_mse": 21.293640737839272
+          },
+          "fg": {
+            "active_images": 10,
+            "mse_mean": 0.04086783202365041,
+            "psnr_mean": 14.72344431307639,
+            "mse_area_weighted": 0.04363351975028153,
+            "psnr_from_mean_mse": 13.886184003392684
+          },
+          "body": {
+            "active_images": 10,
+            "mse_mean": 0.04100129846483469,
+            "psnr_mean": 14.700980892216927,
+            "mse_area_weighted": 0.043953595561617605,
+            "psnr_from_mean_mse": 13.872023894465265
+          },
+          "hand_v2": {
+            "active_images": 9,
+            "mse_mean": 0.05216603079396817,
+            "psnr_mean": 16.32730208367774,
+            "mse_area_weighted": 0.05213034564327515,
+            "psnr_from_mean_mse": 12.826122065947779
+          }
+        },
+        "pose": {
+          "body17": {
+            "active_images": 10,
+            "kp_recall_mean": 0.9933333333333334,
+            "pck_002_mean": 0.7688278388278388,
+            "pck_005_mean": 0.9147274294333118,
+            "nme_diag_mean": 0.020727447420358657,
+            "l2_px_mean": 12.17036030292511,
+            "pred_conf_mean": 0.8069574415683747,
+            "ungated_nme_diag_mean": 0.02096051350235939
+          },
+          "arm6": {
+            "active_images": 10,
+            "kp_recall_mean": 1.0,
+            "pck_002_mean": 0.6933333333333334,
+            "pck_005_mean": 0.8800000000000001,
+            "nme_diag_mean": 0.03015622477978468,
+            "l2_px_mean": 17.69283583164215,
+            "pred_conf_mean": 0.7454556405544281,
+            "ungated_nme_diag_mean": 0.03015622477978468
+          },
+          "wrist2": {
+            "active_images": 10,
+            "kp_recall_mean": 1.0,
+            "pck_002_mean": 0.5,
+            "pck_005_mean": 0.7,
+            "nme_diag_mean": 0.04803057163953781,
+            "l2_px_mean": 28.147869110107422,
+            "pred_conf_mean": 0.6889207184314727,
+            "ungated_nme_diag_mean": 0.04803057163953781
+          },
+          "face68": {
+            "active_images": 10,
+            "kp_recall_mean": 1.0,
+            "pck_002_mean": 1.0,
+            "pck_005_mean": 1.0,
+            "nme_diag_mean": 0.005188765050843358,
+            "l2_px_mean": 3.0487558841705322,
+            "pred_conf_mean": 0.9596939027309418,
+            "ungated_nme_diag_mean": 0.005188765050843358
+          },
+          "hand42": {
+            "active_images": 10,
+            "kp_recall_mean": 0.9853479853479854,
+            "pck_002_mean": 0.4809523809523809,
+            "pck_005_mean": 0.6904761904761905,
+            "nme_diag_mean": 0.055141113325953485,
+            "l2_px_mean": 32.200660824775696,
+            "pred_conf_mean": 0.7090034693479538,
+            "ungated_nme_diag_mean": 0.05567597411572933
+          },
+          "hand_usable_only": {
+            "active_images": 2,
+            "kp_recall_mean": 1.0,
+            "pck_002_mean": 1.0,
+            "pck_005_mean": 1.0,
+            "nme_diag_mean": 0.005908088991418481,
+            "l2_px_mean": 3.4706591367721558,
+            "pred_conf_mean": 0.8863512277603149,
+            "ungated_nme_diag_mean": 0.005908088991418481
+          }
+        },
+        "identity": {
+          "src_face_detected_rate": 1.0,
+          "tgt_face_detected_rate": 1.0,
+          "gen_face_detected_rate": 1.0,
+          "gen_unique_face_rate": 1.0,
+          "id_cos_src": 0.5210352167487144,
+          "id_cos_tgt": 0.47810773104429244,
+          "id_cos_src_tgt_oracle": 0.7301447540521622,
+          "landmark5_nme_iod": 0.21957211568951607
+        }
+      },
+      "s0_10k_body": {
+        "count": 10,
+        "person_detected_rate": 1.0,
+        "valid_ssim_mean": 0.656160306930542,
+        "lpips_alex_mean": 0.2341320976614952,
+        "pixel": {
+          "valid": {
+            "active_images": 10,
+            "mse_mean": 0.018509190483018755,
+            "psnr_mean": 18.120132398412878,
+            "mse_area_weighted": 0.017928176708112507,
+            "psnr_from_mean_mse": 17.32612575112355
+          },
+          "bg": {
+            "active_images": 10,
+            "mse_mean": 0.009901522030122577,
+            "psnr_mean": 21.1709516475617,
+            "mse_area_weighted": 0.00953033707132056,
+            "psnr_from_mean_mse": 20.042980419199438
+          },
+          "fg": {
+            "active_images": 10,
+            "mse_mean": 0.03919377001002431,
+            "psnr_mean": 15.026522396765424,
+            "mse_area_weighted": 0.04123413947777853,
+            "psnr_from_mean_mse": 14.067829601554038
+          },
+          "body": {
+            "active_images": 10,
+            "mse_mean": 0.039249122515320777,
+            "psnr_mean": 15.020575351065485,
+            "mse_area_weighted": 0.04150775392080467,
+            "psnr_from_mean_mse": 14.061700482439274
+          },
+          "hand_v2": {
+            "active_images": 9,
+            "mse_mean": 0.05685268960789674,
+            "psnr_mean": 16.270911338321113,
+            "mse_area_weighted": 0.055554996333331594,
+            "psnr_from_mean_mse": 12.452489847275643
+          }
+        },
+        "pose": {
+          "body17": {
+            "active_images": 10,
+            "kp_recall_mean": 0.9807843137254902,
+            "pck_002_mean": 0.7637297996121525,
+            "pck_005_mean": 0.9236802413273001,
+            "nme_diag_mean": 0.015845740819349884,
+            "l2_px_mean": 9.313460540771484,
+            "pred_conf_mean": 0.79106365442276,
+            "ungated_nme_diag_mean": 0.019632082944735885
+          },
+          "arm6": {
+            "active_images": 10,
+            "kp_recall_mean": 0.9666666666666666,
+            "pck_002_mean": 0.6566666666666666,
+            "pck_005_mean": 0.8833333333333334,
+            "nme_diag_mean": 0.020203176001086832,
+            "l2_px_mean": 11.866033387184142,
+            "pred_conf_mean": 0.7177787989377975,
+            "ungated_nme_diag_mean": 0.028090392844751476
+          },
+          "wrist2": {
+            "active_images": 10,
+            "kp_recall_mean": 0.9,
+            "pck_002_mean": 0.4,
+            "pck_005_mean": 0.75,
+            "nme_diag_mean": 0.027370546106249095,
+            "l2_px_mean": 16.07985076904297,
+            "pred_conf_mean": 0.6237142264842988,
+            "ungated_nme_diag_mean": 0.04958915645256638
+          },
+          "face68": {
+            "active_images": 10,
+            "kp_recall_mean": 1.0,
+            "pck_002_mean": 1.0,
+            "pck_005_mean": 1.0,
+            "nme_diag_mean": 0.0045303184073418375,
+            "l2_px_mean": 2.6682804107666014,
+            "pred_conf_mean": 0.939747428894043,
+            "ungated_nme_diag_mean": 0.0045303184073418375
+          },
+          "hand42": {
+            "active_images": 10,
+            "kp_recall_mean": 0.9038461538461539,
+            "pck_002_mean": 0.4597069597069597,
+            "pck_005_mean": 0.7274725274725274,
+            "nme_diag_mean": 0.030916011007502676,
+            "l2_px_mean": 18.10354721546173,
+            "pred_conf_mean": 0.6213568300008774,
+            "ungated_nme_diag_mean": 0.04681098335422575
+          },
+          "hand_usable_only": {
+            "active_images": 2,
+            "kp_recall_mean": 1.0,
+            "pck_002_mean": 0.9285714285714286,
+            "pck_005_mean": 1.0,
+            "nme_diag_mean": 0.009400484850630164,
+            "l2_px_mean": 5.522238254547119,
+            "pred_conf_mean": 0.757553219795227,
+            "ungated_nme_diag_mean": 0.009400484850630164
+          }
+        },
+        "identity": {
+          "src_face_detected_rate": 1.0,
+          "tgt_face_detected_rate": 1.0,
+          "gen_face_detected_rate": 1.0,
+          "gen_unique_face_rate": 1.0,
+          "id_cos_src": 0.397030246257782,
+          "id_cos_tgt": 0.38662070482969285,
+          "id_cos_src_tgt_oracle": 0.7301447540521622,
+          "landmark5_nme_iod": 0.22969616688787936
+        }
+      },
+      "s1_base_10500_joint": {
+        "count": 10,
+        "person_detected_rate": 1.0,
+        "valid_ssim_mean": 0.6577921569347381,
+        "lpips_alex_mean": 0.228799444437027,
+        "pixel": {
+          "valid": {
+            "active_images": 10,
+            "mse_mean": 0.018926490703597663,
+            "psnr_mean": 18.070734465069773,
+            "mse_area_weighted": 0.018351683525714146,
+            "psnr_from_mean_mse": 17.229299042268195
+          },
+          "bg": {
+            "active_images": 10,
+            "mse_mean": 0.009623209270648659,
+            "psnr_mean": 21.27485901110564,
+            "mse_area_weighted": 0.009246000406266441,
+            "psnr_from_mean_mse": 20.166800697395317
+          },
+          "fg": {
+            "active_images": 10,
+            "mse_mean": 0.040942841302603485,
+            "psnr_mean": 14.871503692560571,
+            "mse_area_weighted": 0.043622078960792586,
+            "psnr_from_mean_mse": 13.878220219757944
+          },
+          "body": {
+            "active_images": 10,
+            "mse_mean": 0.04101157635450363,
+            "psnr_mean": 14.86343285874788,
+            "mse_area_weighted": 0.043931816168787975,
+            "psnr_from_mean_mse": 13.870935374936584
+          },
+          "hand_v2": {
+            "active_images": 9,
+            "mse_mean": 0.0576533152618342,
+            "psnr_mean": 15.849073457825122,
+            "mse_area_weighted": 0.0568934032568605,
+            "psnr_from_mean_mse": 12.391757142405195
+          }
+        },
+        "pose": {
+          "body17": {
+            "active_images": 10,
+            "kp_recall_mean": 0.9749019607843138,
+            "pck_002_mean": 0.7696121525533289,
+            "pck_005_mean": 0.9196078431372549,
+            "nme_diag_mean": 0.016616325872018934,
+            "l2_px_mean": 9.780319786071777,
+            "pred_conf_mean": 0.785373967885971,
+            "ungated_nme_diag_mean": 0.01906238873489201
+          },
+          "arm6": {
+            "active_images": 10,
+            "kp_recall_mean": 0.95,
+            "pck_002_mean": 0.64,
+            "pck_005_mean": 0.85,
+            "nme_diag_mean": 0.02363665928132832,
+            "l2_px_mean": 13.93406057357788,
+            "pred_conf_mean": 0.7001485228538513,
+            "ungated_nme_diag_mean": 0.027718153642490508
+          },
+          "wrist2": {
+            "active_images": 10,
+            "kp_recall_mean": 0.85,
+            "pck_002_mean": 0.4,
+            "pck_005_mean": 0.7,
+            "nme_diag_mean": 0.0288314622361213,
+            "l2_px_mean": 16.93545424938202,
+            "pred_conf_mean": 0.5928285211324692,
+            "ungated_nme_diag_mean": 0.04047310114838183
+          },
+          "face68": {
+            "active_images": 10,
+            "kp_recall_mean": 1.0,
+            "pck_002_mean": 1.0,
+            "pck_005_mean": 1.0,
+            "nme_diag_mean": 0.005287588643841446,
+            "l2_px_mean": 3.1116284847259523,
+            "pred_conf_mean": 0.9553889214992524,
+            "ungated_nme_diag_mean": 0.005287588643841446
+          },
+          "hand42": {
+            "active_images": 10,
+            "kp_recall_mean": 0.9452380952380952,
+            "pck_002_mean": 0.4642857142857143,
+            "pck_005_mean": 0.7723443223443224,
+            "nme_diag_mean": 0.03977477471344173,
+            "l2_px_mean": 23.16684219837189,
+            "pred_conf_mean": 0.6015334904193879,
+            "ungated_nme_diag_mean": 0.046050803689286116
+          },
+          "hand_usable_only": {
+            "active_images": 2,
+            "kp_recall_mean": 1.0,
+            "pck_002_mean": 0.9523809523809523,
+            "pck_005_mean": 1.0,
+            "nme_diag_mean": 0.008570431033149362,
+            "l2_px_mean": 5.034630537033081,
+            "pred_conf_mean": 0.7328142523765564,
+            "ungated_nme_diag_mean": 0.008570431033149362
+          }
+        },
+        "identity": {
+          "src_face_detected_rate": 1.0,
+          "tgt_face_detected_rate": 1.0,
+          "gen_face_detected_rate": 1.0,
+          "gen_unique_face_rate": 1.0,
+          "id_cos_src": 0.35396711304783823,
+          "id_cos_tgt": 0.365875717997551,
+          "id_cos_src_tgt_oracle": 0.7301447540521622,
+          "landmark5_nme_iod": 0.22672397419810295
+        }
+      },
+      "s1_bg035_10500_joint": {
+        "count": 10,
+        "person_detected_rate": 1.0,
+        "valid_ssim_mean": 0.6575497925281525,
+        "lpips_alex_mean": 0.22764804512262343,
+        "pixel": {
+          "valid": {
+            "active_images": 10,
+            "mse_mean": 0.0189059775788337,
+            "psnr_mean": 18.066206596044587,
+            "mse_area_weighted": 0.018341375731851073,
+            "psnr_from_mean_mse": 17.234008614849134
+          },
+          "bg": {
+            "active_images": 10,
+            "mse_mean": 0.009677574480883777,
+            "psnr_mean": 21.18492391328007,
+            "mse_area_weighted": 0.009320692446261351,
+            "psnr_from_mean_mse": 20.14233477563917
+          },
+          "fg": {
+            "active_images": 10,
+            "mse_mean": 0.04065105849877,
+            "psnr_mean": 14.907475925246137,
+            "mse_area_weighted": 0.04337587225135599,
+            "psnr_from_mean_mse": 13.909281414797563
+          },
+          "body": {
+            "active_images": 10,
+            "mse_mean": 0.040716887824237345,
+            "psnr_mean": 14.898773938775099,
+            "mse_area_weighted": 0.04368345610842846,
+            "psnr_from_mean_mse": 13.902254244928496
+          },
+          "hand_v2": {
+            "active_images": 9,
+            "mse_mean": 0.05720211914740503,
+            "psnr_mean": 16.239584017108733,
+            "mse_area_weighted": 0.05674597070435916,
+            "psnr_from_mean_mse": 12.42587881749345
+          }
+        },
+        "pose": {
+          "body17": {
+            "active_images": 10,
+            "kp_recall_mean": 0.9807843137254902,
+            "pck_002_mean": 0.7767550096961862,
+            "pck_005_mean": 0.9447058823529412,
+            "nme_diag_mean": 0.014353011269122362,
+            "l2_px_mean": 8.435367774963378,
+            "pred_conf_mean": 0.7934613287448883,
+            "ungated_nme_diag_mean": 0.015692054573446513
+          },
+          "arm6": {
+            "active_images": 10,
+            "kp_recall_mean": 0.9666666666666666,
+            "pck_002_mean": 0.6599999999999999,
+            "pck_005_mean": 0.9166666666666666,
+            "nme_diag_mean": 0.018007877096533776,
+            "l2_px_mean": 10.584284806251526,
+            "pred_conf_mean": 0.7114708840847015,
+            "ungated_nme_diag_mean": 0.019632360711693764
+          },
+          "wrist2": {
+            "active_images": 10,
+            "kp_recall_mean": 0.9,
+            "pck_002_mean": 0.4,
+            "pck_005_mean": 0.8,
+            "nme_diag_mean": 0.02478955490514636,
+            "l2_px_mean": 14.568213987350465,
+            "pred_conf_mean": 0.6090023875236511,
+            "ungated_nme_diag_mean": 0.0286123757250607
+          },
+          "face68": {
+            "active_images": 10,
+            "kp_recall_mean": 1.0,
+            "pck_002_mean": 1.0,
+            "pck_005_mean": 1.0,
+            "nme_diag_mean": 0.004117497277911752,
+            "l2_px_mean": 2.413461410999298,
+            "pred_conf_mean": 0.9576179683208466,
+            "ungated_nme_diag_mean": 0.004117497277911752
+          },
+          "hand42": {
+            "active_images": 10,
+            "kp_recall_mean": 0.95,
+            "pck_002_mean": 0.4666666666666667,
+            "pck_005_mean": 0.7895604395604396,
+            "nme_diag_mean": 0.039805451035499574,
+            "l2_px_mean": 23.201547813415527,
+            "pred_conf_mean": 0.6192238599061965,
+            "ungated_nme_diag_mean": 0.042170374747365715
+          },
+          "hand_usable_only": {
+            "active_images": 2,
+            "kp_recall_mean": 1.0,
+            "pck_002_mean": 0.9523809523809523,
+            "pck_005_mean": 1.0,
+            "nme_diag_mean": 0.00843429914675653,
+            "l2_px_mean": 4.954661011695862,
+            "pred_conf_mean": 0.7652289569377899,
+            "ungated_nme_diag_mean": 0.00843429914675653
+          }
+        },
+        "identity": {
+          "src_face_detected_rate": 1.0,
+          "tgt_face_detected_rate": 1.0,
+          "gen_face_detected_rate": 1.0,
+          "gen_unique_face_rate": 1.0,
+          "id_cos_src": 0.3586374819278717,
+          "id_cos_tgt": 0.36007885783910754,
+          "id_cos_src_tgt_oracle": 0.7301447540521622,
+          "landmark5_nme_iod": 0.18276695422828199
+        }
+      },
+      "s1_base_12000_joint": {
+        "count": 10,
+        "person_detected_rate": 1.0,
+        "valid_ssim_mean": 0.6667274951934814,
+        "lpips_alex_mean": 0.2137998327612877,
+        "pixel": {
+          "valid": {
+            "active_images": 10,
+            "mse_mean": 0.018863741820678116,
+            "psnr_mean": 18.172620394553796,
+            "mse_area_weighted": 0.018299203158394943,
+            "psnr_from_mean_mse": 17.243721561963007
+          },
+          "bg": {
+            "active_images": 10,
+            "mse_mean": 0.008742250548675657,
+            "psnr_mean": 21.671765946176823,
+            "mse_area_weighted": 0.008435536584055584,
+            "psnr_from_mean_mse": 20.58376750998045
+          },
+          "fg": {
+            "active_images": 10,
+            "mse_mean": 0.04241589698940516,
+            "psnr_mean": 14.868645289197655,
+            "mse_area_weighted": 0.04567317396174585,
+            "psnr_from_mean_mse": 13.72471344330598
+          },
+          "body": {
+            "active_images": 10,
+            "mse_mean": 0.04252175260335207,
+            "psnr_mean": 14.858401169801926,
+            "mse_area_weighted": 0.046050846631073894,
+            "psnr_from_mean_mse": 13.713888436247847
+          },
+          "hand_v2": {
+            "active_images": 9,
+            "mse_mean": 0.05067950947624114,
+            "psnr_mean": 16.388909536502783,
+            "mse_area_weighted": 0.05266238475605682,
+            "psnr_from_mean_mse": 12.951675972770074
+          }
+        },
+        "pose": {
+          "body17": {
+            "active_images": 10,
+            "kp_recall_mean": 0.9866666666666667,
+            "pck_002_mean": 0.814878258995906,
+            "pck_005_mean": 0.9362292609351434,
+            "nme_diag_mean": 0.014300173800438642,
+            "l2_px_mean": 8.386201548576356,
+            "pred_conf_mean": 0.796732348203659,
+            "ungated_nme_diag_mean": 0.014998328406363726
+          },
+          "arm6": {
+            "active_images": 10,
+            "kp_recall_mean": 0.9833333333333334,
+            "pck_002_mean": 0.7633333333333334,
+            "pck_005_mean": 0.9333333333333333,
+            "nme_diag_mean": 0.01645165146328509,
+            "l2_px_mean": 9.642466163635254,
+            "pred_conf_mean": 0.7184360444545745,
+            "ungated_nme_diag_mean": 0.01651547118090093
+          },
+          "wrist2": {
+            "active_images": 10,
+            "kp_recall_mean": 0.95,
+            "pck_002_mean": 0.55,
+            "pck_005_mean": 0.85,
+            "nme_diag_mean": 0.024142714217305183,
+            "l2_px_mean": 14.138873505592347,
+            "pred_conf_mean": 0.6140139758586883,
+            "ungated_nme_diag_mean": 0.024308491870760916
+          },
+          "face68": {
+            "active_images": 10,
+            "kp_recall_mean": 1.0,
+            "pck_002_mean": 1.0,
+            "pck_005_mean": 1.0,
+            "nme_diag_mean": 0.0033684477210044863,
+            "l2_px_mean": 1.9719341218471527,
+            "pred_conf_mean": 0.9643957853317261,
+            "ungated_nme_diag_mean": 0.0033684477210044863
+          },
+          "hand42": {
+            "active_images": 10,
+            "kp_recall_mean": 0.9523809523809523,
+            "pck_002_mean": 0.5738095238095238,
+            "pck_005_mean": 0.7507326007326007,
+            "nme_diag_mean": 0.03374875243753195,
+            "l2_px_mean": 19.661224269866942,
+            "pred_conf_mean": 0.6079024851322175,
+            "ungated_nme_diag_mean": 0.03420829568058252
+          },
+          "hand_usable_only": {
+            "active_images": 2,
+            "kp_recall_mean": 1.0,
+            "pck_002_mean": 0.9761904761904762,
+            "pck_005_mean": 1.0,
+            "nme_diag_mean": 0.006257918430492282,
+            "l2_px_mean": 3.6761637926101685,
+            "pred_conf_mean": 0.7424146234989166,
+            "ungated_nme_diag_mean": 0.006257918430492282
+          }
+        },
+        "identity": {
+          "src_face_detected_rate": 1.0,
+          "tgt_face_detected_rate": 1.0,
+          "gen_face_detected_rate": 1.0,
+          "gen_unique_face_rate": 1.0,
+          "id_cos_src": 0.3767541080713272,
+          "id_cos_tgt": 0.39034082982689144,
+          "id_cos_src_tgt_oracle": 0.7301447540521622,
+          "landmark5_nme_iod": 0.18687875457108022
+        }
+      },
+      "s3_20k_joint": {
+        "count": 10,
+        "person_detected_rate": 1.0,
+        "valid_ssim_mean": 0.654199555516243,
+        "lpips_alex_mean": 0.22570590078830718,
+        "pixel": {
+          "valid": {
+            "active_images": 10,
+            "mse_mean": 0.018206581799313427,
+            "psnr_mean": 18.13412273884275,
+            "mse_area_weighted": 0.01763186486385213,
+            "psnr_from_mean_mse": 17.39771583312274
+          },
+          "bg": {
+            "active_images": 10,
+            "mse_mean": 0.01029753084294498,
+            "psnr_mean": 21.055600219446525,
+            "mse_area_weighted": 0.010138715053951164,
+            "psnr_from_mean_mse": 19.87266898580018
+          },
+          "fg": {
+            "active_images": 10,
+            "mse_mean": 0.03671357175335288,
+            "psnr_mean": 15.273540958847736,
+            "mse_area_weighted": 0.038427102249757275,
+            "psnr_from_mean_mse": 14.351733622322165
+          },
+          "body": {
+            "active_images": 10,
+            "mse_mean": 0.03671983983367681,
+            "psnr_mean": 15.277491008747736,
+            "mse_area_weighted": 0.0386422356291884,
+            "psnr_from_mean_mse": 14.350992217927466
+          },
+          "hand_v2": {
+            "active_images": 9,
+            "mse_mean": 0.05671553070553475,
+            "psnr_mean": 16.5489839740506,
+            "mse_area_weighted": 0.05661596206578494,
+            "psnr_from_mean_mse": 12.46297999729065
+          }
+        },
+        "pose": {
+          "body17": {
+            "active_images": 10,
+            "kp_recall_mean": 0.9866666666666667,
+            "pck_002_mean": 0.7939258780435251,
+            "pck_005_mean": 0.9244645550527902,
+            "nme_diag_mean": 0.015307802986353636,
+            "l2_px_mean": 8.989108633995055,
+            "pred_conf_mean": 0.8021534740924835,
+            "ungated_nme_diag_mean": 0.016194447036832572
+          },
+          "arm6": {
+            "active_images": 10,
+            "kp_recall_mean": 0.9833333333333334,
+            "pck_002_mean": 0.6733333333333333,
+            "pck_005_mean": 0.9,
+            "nme_diag_mean": 0.019920959929004313,
+            "l2_px_mean": 11.691074013710022,
+            "pred_conf_mean": 0.7261695206165314,
+            "ungated_nme_diag_mean": 0.020571346627548337
+          },
+          "wrist2": {
+            "active_images": 10,
+            "kp_recall_mean": 0.95,
+            "pck_002_mean": 0.45,
+            "pck_005_mean": 0.75,
+            "nme_diag_mean": 0.030834882240742444,
+            "l2_px_mean": 18.118021154403685,
+            "pred_conf_mean": 0.6232250928878784,
+            "ungated_nme_diag_mean": 0.03254791097715497
+          },
+          "face68": {
+            "active_images": 10,
+            "kp_recall_mean": 1.0,
+            "pck_002_mean": 1.0,
+            "pck_005_mean": 1.0,
+            "nme_diag_mean": 0.0030606059706769885,
+            "l2_px_mean": 1.7906660676002502,
+            "pred_conf_mean": 0.9587900757789611,
+            "ungated_nme_diag_mean": 0.0030606059706769885
+          },
+          "hand42": {
+            "active_images": 10,
+            "kp_recall_mean": 0.9564102564102563,
+            "pck_002_mean": 0.5027472527472527,
+            "pck_005_mean": 0.7611721611721611,
+            "nme_diag_mean": 0.03950140387751162,
+            "l2_px_mean": 23.152898812294005,
+            "pred_conf_mean": 0.6098713934421539,
+            "ungated_nme_diag_mean": 0.037947205314412716
+          },
+          "hand_usable_only": {
+            "active_images": 2,
+            "kp_recall_mean": 1.0,
+            "pck_002_mean": 1.0,
+            "pck_005_mean": 1.0,
+            "nme_diag_mean": 0.008011861937120557,
+            "l2_px_mean": 4.706503868103027,
+            "pred_conf_mean": 0.7068106532096863,
+            "ungated_nme_diag_mean": 0.008011861937120557
+          }
+        },
+        "identity": {
+          "src_face_detected_rate": 1.0,
+          "tgt_face_detected_rate": 1.0,
+          "gen_face_detected_rate": 1.0,
+          "gen_unique_face_rate": 1.0,
+          "id_cos_src": 0.4111900083720684,
+          "id_cos_tgt": 0.43168435990810394,
+          "id_cos_src_tgt_oracle": 0.7301447540521622,
+          "landmark5_nme_iod": 0.14243539851158857
+        }
+      }
+    },
+    "val_hand_active15": {
+      "base_no_adapter": {
+        "count": 15,
+        "person_detected_rate": 1.0,
+        "valid_ssim_mean": 0.7708951552708944,
+        "lpips_alex_mean": 0.17330510318279266,
+        "pixel": {
+          "valid": {
+            "active_images": 15,
+            "mse_mean": 0.014349875723322232,
+            "psnr_mean": 20.40813643325059,
+            "mse_area_weighted": 0.013729986428027864,
+            "psnr_from_mean_mse": 18.431518601083233
+          },
+          "bg": {
+            "active_images": 15,
+            "mse_mean": 0.00786378742971768,
+            "psnr_mean": 23.551643026567753,
+            "mse_area_weighted": 0.006760264873130054,
+            "psnr_from_mean_mse": 21.043682346657945
+          },
+          "fg": {
+            "active_images": 15,
+            "mse_mean": 0.03595542125403881,
+            "psnr_mean": 15.227867162730144,
+            "mse_area_weighted": 0.0418583776848015,
+            "psnr_from_mean_mse": 14.442356186828018
+          },
+          "body": {
+            "active_images": 15,
+            "mse_mean": 0.035672823215524355,
+            "psnr_mean": 15.25531403245837,
+            "mse_area_weighted": 0.041768093052106714,
+            "psnr_from_mean_mse": 14.47662518404737
+          },
+          "hand_v2": {
+            "active_images": 15,
+            "mse_mean": 0.03610517544051011,
+            "psnr_mean": 15.587183337287485,
+            "mse_area_weighted": 0.04046432482249474,
+            "psnr_from_mean_mse": 14.42430540361566
+          }
+        },
+        "pose": {
+          "body17": {
+            "active_images": 15,
+            "kp_recall_mean": 1.0,
+            "pck_002_mean": 0.8726797385620915,
+            "pck_005_mean": 0.9803921568627451,
+            "nme_diag_mean": 0.012029590706030527,
+            "l2_px_mean": 7.06089202562968,
+            "pred_conf_mean": 0.8403947631518046,
+            "ungated_nme_diag_mean": 0.012029590706030527
+          },
+          "arm6": {
+            "active_images": 15,
+            "kp_recall_mean": 1.0,
+            "pck_002_mean": 0.8111111111111111,
+            "pck_005_mean": 0.9666666666666667,
+            "nme_diag_mean": 0.01374070782524844,
+            "l2_px_mean": 8.069815937678019,
+            "pred_conf_mean": 0.7915627002716065,
+            "ungated_nme_diag_mean": 0.01374070782524844
+          },
+          "wrist2": {
+            "active_images": 15,
+            "kp_recall_mean": 1.0,
+            "pck_002_mean": 0.8333333333333334,
+            "pck_005_mean": 0.9333333333333333,
+            "nme_diag_mean": 0.012267549677441517,
+            "l2_px_mean": 7.189595834414164,
+            "pred_conf_mean": 0.7450657765070597,
+            "ungated_nme_diag_mean": 0.012267549677441517
+          },
+          "face68": {
+            "active_images": 15,
+            "kp_recall_mean": 1.0,
+            "pck_002_mean": 1.0,
+            "pck_005_mean": 1.0,
+            "nme_diag_mean": 0.005797594296745956,
+            "l2_px_mean": 3.4083893934885663,
+            "pred_conf_mean": 0.9390652815500895,
+            "ungated_nme_diag_mean": 0.005797594296745956
+          },
+          "hand42": {
+            "active_images": 15,
+            "kp_recall_mean": 0.9837301587301588,
+            "pck_002_mean": 0.853968253968254,
+            "pck_005_mean": 0.9455555555555556,
+            "nme_diag_mean": 0.013646943184236685,
+            "l2_px_mean": 7.994516324996948,
+            "pred_conf_mean": 0.7283082207043966,
+            "ungated_nme_diag_mean": 0.013493691571056843
+          },
+          "hand_usable_only": {
+            "active_images": 15,
+            "kp_recall_mean": 0.9920634920634921,
+            "pck_002_mean": 0.8412698412698413,
+            "pck_005_mean": 0.9222222222222223,
+            "nme_diag_mean": 0.014491648475329081,
+            "l2_px_mean": 8.482674050331116,
+            "pred_conf_mean": 0.7691988666852315,
+            "ungated_nme_diag_mean": 0.014472333838542302
+          }
+        },
+        "identity": {
+          "src_face_detected_rate": 1.0,
+          "tgt_face_detected_rate": 1.0,
+          "gen_face_detected_rate": 1.0,
+          "gen_unique_face_rate": 1.0,
+          "id_cos_src": 0.42985858420530954,
+          "id_cos_tgt": 0.4108287304639816,
+          "id_cos_src_tgt_oracle": 0.682599671681722,
+          "landmark5_nme_iod": 0.41942087436715764
+        }
+      },
+      "s0_10k_body": {
+        "count": 15,
+        "person_detected_rate": 1.0,
+        "valid_ssim_mean": 0.6443695942560832,
+        "lpips_alex_mean": 0.25003348191579183,
+        "pixel": {
+          "valid": {
+            "active_images": 15,
+            "mse_mean": 0.018195116116354864,
+            "psnr_mean": 18.171229106733854,
+            "mse_area_weighted": 0.017668892019125877,
+            "psnr_from_mean_mse": 17.40045168517907
+          },
+          "bg": {
+            "active_images": 15,
+            "mse_mean": 0.013914852775633335,
+            "psnr_mean": 19.900316496435842,
+            "mse_area_weighted": 0.012897449464297037,
+            "psnr_from_mean_mse": 18.565213843043033
+          },
+          "fg": {
+            "active_images": 15,
+            "mse_mean": 0.032749004662036896,
+            "psnr_mean": 15.436077785294218,
+            "mse_area_weighted": 0.03692547051175029,
+            "psnr_from_mean_mse": 14.8480189495018
+          },
+          "body": {
+            "active_images": 15,
+            "mse_mean": 0.03232963494956494,
+            "psnr_mean": 15.495064362793034,
+            "mse_area_weighted": 0.03661493153294523,
+            "psnr_from_mean_mse": 14.903991992017641
+          },
+          "hand_v2": {
+            "active_images": 15,
+            "mse_mean": 0.03821794930845499,
+            "psnr_mean": 15.42511469074197,
+            "mse_area_weighted": 0.04290183008422749,
+            "psnr_from_mean_mse": 14.177326199475571
+          }
+        },
+        "pose": {
+          "body17": {
+            "active_images": 15,
+            "kp_recall_mean": 1.0,
+            "pck_002_mean": 0.8551633986928106,
+            "pck_005_mean": 0.9754248366013072,
+            "nme_diag_mean": 0.01250108058253924,
+            "l2_px_mean": 7.342514944076538,
+            "pred_conf_mean": 0.8410285234451294,
+            "ungated_nme_diag_mean": 0.01250108058253924
+          },
+          "arm6": {
+            "active_images": 15,
+            "kp_recall_mean": 1.0,
+            "pck_002_mean": 0.7222222222222222,
+            "pck_005_mean": 0.9555555555555556,
+            "nme_diag_mean": 0.01720774161318938,
+            "l2_px_mean": 10.110291226704915,
+            "pred_conf_mean": 0.7564146637916564,
+            "ungated_nme_diag_mean": 0.01720774161318938
+          },
+          "wrist2": {
+            "active_images": 15,
+            "kp_recall_mean": 1.0,
+            "pck_002_mean": 0.7333333333333333,
+            "pck_005_mean": 0.9666666666666667,
+            "nme_diag_mean": 0.016905620383719604,
+            "l2_px_mean": 9.929084555308025,
+            "pred_conf_mean": 0.6817402462164561,
+            "ungated_nme_diag_mean": 0.016905620383719604
+          },
+          "face68": {
+            "active_images": 15,
+            "kp_recall_mean": 1.0,
+            "pck_002_mean": 1.0,
+            "pck_005_mean": 1.0,
+            "nme_diag_mean": 0.005249639057243864,
+            "l2_px_mean": 3.074324067433675,
+            "pred_conf_mean": 0.9212028423945109,
+            "ungated_nme_diag_mean": 0.005249639057243864
+          },
+          "hand42": {
+            "active_images": 15,
+            "kp_recall_mean": 0.9920634920634921,
+            "pck_002_mean": 0.6906349206349206,
+            "pck_005_mean": 0.9349206349206349,
+            "nme_diag_mean": 0.01801566748569409,
+            "l2_px_mean": 10.569377899169922,
+            "pred_conf_mean": 0.6284857034683228,
+            "ungated_nme_diag_mean": 0.017930804379284383
+          },
+          "hand_usable_only": {
+            "active_images": 15,
+            "kp_recall_mean": 0.9920634920634921,
+            "pck_002_mean": 0.8476190476190476,
+            "pck_005_mean": 0.9920634920634921,
+            "nme_diag_mean": 0.01218544205961128,
+            "l2_px_mean": 7.1800313552220665,
+            "pred_conf_mean": 0.6659023622671764,
+            "ungated_nme_diag_mean": 0.012100578953201572
+          }
+        },
+        "identity": {
+          "src_face_detected_rate": 1.0,
+          "tgt_face_detected_rate": 1.0,
+          "gen_face_detected_rate": 0.9333333333333333,
+          "gen_unique_face_rate": 0.9333333333333333,
+          "id_cos_src": 0.3919112671698843,
+          "id_cos_tgt": 0.38159090812717167,
+          "id_cos_src_tgt_oracle": 0.682599671681722,
+          "landmark5_nme_iod": 0.306901325072561
+        }
+      },
+      "s1_base_10500_joint": {
+        "count": 15,
+        "person_detected_rate": 1.0,
+        "valid_ssim_mean": 0.6525634884834289,
+        "lpips_alex_mean": 0.243134136001269,
+        "pixel": {
+          "valid": {
+            "active_images": 15,
+            "mse_mean": 0.017725064791738986,
+            "psnr_mean": 18.25893203294788,
+            "mse_area_weighted": 0.017175271221834175,
+            "psnr_from_mean_mse": 17.51412168633286
+          },
+          "bg": {
+            "active_images": 15,
+            "mse_mean": 0.012808242548877994,
+            "psnr_mean": 20.142184982392816,
+            "mse_area_weighted": 0.011932770745137315,
+            "psnr_from_mean_mse": 18.925104568037852
+          },
+          "fg": {
+            "active_images": 15,
+            "mse_mean": 0.033634850506981215,
+            "psnr_mean": 15.304419201242528,
+            "mse_area_weighted": 0.03833294446908938,
+            "psnr_from_mean_mse": 14.73210498236491
+          },
+          "body": {
+            "active_images": 15,
+            "mse_mean": 0.03326909095048904,
+            "psnr_mean": 15.35329595128328,
+            "mse_area_weighted": 0.03814390691243367,
+            "psnr_from_mean_mse": 14.779590656950505
+          },
+          "hand_v2": {
+            "active_images": 15,
+            "mse_mean": 0.034901621472090485,
+            "psnr_mean": 15.736636766165981,
+            "mse_area_weighted": 0.038842086797547706,
+            "psnr_from_mean_mse": 14.571543959627887
+          }
+        },
+        "pose": {
+          "body17": {
+            "active_images": 15,
+            "kp_recall_mean": 1.0,
+            "pck_002_mean": 0.9043137254901961,
+            "pck_005_mean": 0.9803921568627451,
+            "nme_diag_mean": 0.010904697887599468,
+            "l2_px_mean": 6.403932094573975,
+            "pred_conf_mean": 0.8605827808380127,
+            "ungated_nme_diag_mean": 0.010904697887599468
+          },
+          "arm6": {
+            "active_images": 15,
+            "kp_recall_mean": 1.0,
+            "pck_002_mean": 0.8111111111111112,
+            "pck_005_mean": 0.9666666666666667,
+            "nme_diag_mean": 0.01422218739365538,
+            "l2_px_mean": 8.350348440806071,
+            "pred_conf_mean": 0.7881198088328044,
+            "ungated_nme_diag_mean": 0.01422218739365538
+          },
+          "wrist2": {
+            "active_images": 15,
+            "kp_recall_mean": 1.0,
+            "pck_002_mean": 0.8666666666666667,
+            "pck_005_mean": 0.9333333333333333,
+            "nme_diag_mean": 0.014473830567051966,
+            "l2_px_mean": 8.504155127207438,
+            "pred_conf_mean": 0.7209723591804504,
+            "ungated_nme_diag_mean": 0.014473830567051966
+          },
+          "face68": {
+            "active_images": 15,
+            "kp_recall_mean": 1.0,
+            "pck_002_mean": 1.0,
+            "pck_005_mean": 1.0,
+            "nme_diag_mean": 0.004286256983565787,
+            "l2_px_mean": 2.516763957341512,
+            "pred_conf_mean": 0.9416835705439249,
+            "ungated_nme_diag_mean": 0.004286256983565787
+          },
+          "hand42": {
+            "active_images": 15,
+            "kp_recall_mean": 1.0,
+            "pck_002_mean": 0.7906349206349206,
+            "pck_005_mean": 0.9333333333333333,
+            "nme_diag_mean": 0.014687293333311875,
+            "l2_px_mean": 8.61716210047404,
+            "pred_conf_mean": 0.6772069096565246,
+            "ungated_nme_diag_mean": 0.014687293333311875
+          },
+          "hand_usable_only": {
+            "active_images": 15,
+            "kp_recall_mean": 1.0,
+            "pck_002_mean": 0.8952380952380953,
+            "pck_005_mean": 0.9333333333333333,
+            "nme_diag_mean": 0.011712308212493857,
+            "l2_px_mean": 6.8685492992401125,
+            "pred_conf_mean": 0.7230574091275533,
+            "ungated_nme_diag_mean": 0.011712308212493857
+          }
+        },
+        "identity": {
+          "src_face_detected_rate": 1.0,
+          "tgt_face_detected_rate": 1.0,
+          "gen_face_detected_rate": 1.0,
+          "gen_unique_face_rate": 1.0,
+          "id_cos_src": 0.3763893028100332,
+          "id_cos_tgt": 0.3570205589135488,
+          "id_cos_src_tgt_oracle": 0.682599671681722,
+          "landmark5_nme_iod": 0.3038023367524147
+        }
+      },
+      "s1_bg035_10500_joint": {
+        "count": 15,
+        "person_detected_rate": 1.0,
+        "valid_ssim_mean": 0.6509505152702332,
+        "lpips_alex_mean": 0.24603663583596547,
+        "pixel": {
+          "valid": {
+            "active_images": 15,
+            "mse_mean": 0.017864555741349857,
+            "psnr_mean": 18.22171431155225,
+            "mse_area_weighted": 0.017314093045573666,
+            "psnr_from_mean_mse": 17.480077794323947
+          },
+          "bg": {
+            "active_images": 15,
+            "mse_mean": 0.012969669109831253,
+            "psnr_mean": 20.084978705039074,
+            "mse_area_weighted": 0.012094075679624342,
+            "psnr_from_mean_mse": 18.870711037622975
+          },
+          "fg": {
+            "active_images": 15,
+            "mse_mean": 0.033667057380080224,
+            "psnr_mean": 15.308593073428833,
+            "mse_area_weighted": 0.038381031639521355,
+            "psnr_from_mean_mse": 14.727948408272704
+          },
+          "body": {
+            "active_images": 15,
+            "mse_mean": 0.033280057832598686,
+            "psnr_mean": 15.360541147533475,
+            "mse_area_weighted": 0.03817185126542905,
+            "psnr_from_mean_mse": 14.778159276830966
+          },
+          "hand_v2": {
+            "active_images": 15,
+            "mse_mean": 0.03492577811703086,
+            "psnr_mean": 15.739936884851623,
+            "mse_area_weighted": 0.03870061597835848,
+            "psnr_from_mean_mse": 14.568539093893474
+          }
+        },
+        "pose": {
+          "body17": {
+            "active_images": 15,
+            "kp_recall_mean": 1.0,
+            "pck_002_mean": 0.8954248366013072,
+            "pck_005_mean": 0.9803921568627451,
+            "nme_diag_mean": 0.011010328369836012,
+            "l2_px_mean": 6.465099779764811,
+            "pred_conf_mean": 0.8619147817293803,
+            "ungated_nme_diag_mean": 0.011010328369836012
+          },
+          "arm6": {
+            "active_images": 15,
+            "kp_recall_mean": 1.0,
+            "pck_002_mean": 0.7777777777777778,
+            "pck_005_mean": 0.9666666666666667,
+            "nme_diag_mean": 0.014544610306620598,
+            "l2_px_mean": 8.538537041346233,
+            "pred_conf_mean": 0.7823865095774333,
+            "ungated_nme_diag_mean": 0.014544610306620598
+          },
+          "wrist2": {
+            "active_images": 15,
+            "kp_recall_mean": 1.0,
+            "pck_002_mean": 0.8,
+            "pck_005_mean": 0.9333333333333333,
+            "nme_diag_mean": 0.014706004597246646,
+            "l2_px_mean": 8.63965589205424,
+            "pred_conf_mean": 0.7146776775519054,
+            "ungated_nme_diag_mean": 0.014706004597246646
+          },
+          "face68": {
+            "active_images": 15,
+            "kp_recall_mean": 1.0,
+            "pck_002_mean": 1.0,
+            "pck_005_mean": 1.0,
+            "nme_diag_mean": 0.004615744901821017,
+            "l2_px_mean": 2.712543495496114,
+            "pred_conf_mean": 0.9582450826962788,
+            "ungated_nme_diag_mean": 0.004615744901821017
+          },
+          "hand42": {
+            "active_images": 15,
+            "kp_recall_mean": 1.0,
+            "pck_002_mean": 0.7760317460317461,
+            "pck_005_mean": 0.9333333333333333,
+            "nme_diag_mean": 0.014837884406248728,
+            "l2_px_mean": 8.698696247736613,
+            "pred_conf_mean": 0.6681821922461192,
+            "ungated_nme_diag_mean": 0.014837884406248728
+          },
+          "hand_usable_only": {
+            "active_images": 15,
+            "kp_recall_mean": 1.0,
+            "pck_002_mean": 0.8920634920634921,
+            "pck_005_mean": 0.9333333333333333,
+            "nme_diag_mean": 0.011656847720344862,
+            "l2_px_mean": 6.8328626950581866,
+            "pred_conf_mean": 0.7151638329029083,
+            "ungated_nme_diag_mean": 0.011656847720344862
+          }
+        },
+        "identity": {
+          "src_face_detected_rate": 1.0,
+          "tgt_face_detected_rate": 1.0,
+          "gen_face_detected_rate": 1.0,
+          "gen_unique_face_rate": 1.0,
+          "id_cos_src": 0.37177786231040955,
+          "id_cos_tgt": 0.33292056024074557,
+          "id_cos_src_tgt_oracle": 0.682599671681722,
+          "landmark5_nme_iod": 0.3108007237315178
+        }
+      },
+      "s1_base_12000_joint": {
+        "count": 15,
+        "person_detected_rate": 1.0,
+        "valid_ssim_mean": 0.6620893478393555,
+        "lpips_alex_mean": 0.23505760629971822,
+        "pixel": {
+          "valid": {
+            "active_images": 15,
+            "mse_mean": 0.017376773990690708,
+            "psnr_mean": 18.365571609110653,
+            "mse_area_weighted": 0.016917790130577776,
+            "psnr_from_mean_mse": 17.60030847454979
+          },
+          "bg": {
+            "active_images": 15,
+            "mse_mean": 0.011736207525245845,
+            "psnr_mean": 20.526293269874355,
+            "mse_area_weighted": 0.01109742328843033,
+            "psnr_from_mean_mse": 19.3047221969372
+          },
+          "fg": {
+            "active_images": 15,
+            "mse_mean": 0.03512079939246178,
+            "psnr_mean": 15.243142996503222,
+            "mse_area_weighted": 0.040407616079443515,
+            "psnr_from_mean_mse": 14.544356075784643
+          },
+          "body": {
+            "active_images": 15,
+            "mse_mean": 0.03482532352209091,
+            "psnr_mean": 15.281939009319883,
+            "mse_area_weighted": 0.040314964572132836,
+            "psnr_from_mean_mse": 14.581048403539278
+          },
+          "hand_v2": {
+            "active_images": 15,
+            "mse_mean": 0.037595338312288125,
+            "psnr_mean": 15.437329573169299,
+            "mse_area_weighted": 0.04143226621246948,
+            "psnr_from_mean_mse": 14.248660026990045
+          }
+        },
+        "pose": {
+          "body17": {
+            "active_images": 15,
+            "kp_recall_mean": 1.0,
+            "pck_002_mean": 0.9087581699346405,
+            "pck_005_mean": 0.9843137254901961,
+            "nme_diag_mean": 0.010557821268836658,
+            "l2_px_mean": 6.204573154449463,
+            "pred_conf_mean": 0.8536330223083496,
+            "ungated_nme_diag_mean": 0.010557821268836658
+          },
+          "arm6": {
+            "active_images": 15,
+            "kp_recall_mean": 1.0,
+            "pck_002_mean": 0.8222222222222223,
+            "pck_005_mean": 0.9777777777777777,
+            "nme_diag_mean": 0.013653939372549455,
+            "l2_px_mean": 8.028068606058756,
+            "pred_conf_mean": 0.78597385485967,
+            "ungated_nme_diag_mean": 0.013653939372549455
+          },
+          "wrist2": {
+            "active_images": 15,
+            "kp_recall_mean": 1.0,
+            "pck_002_mean": 0.7666666666666667,
+            "pck_005_mean": 0.9666666666666667,
+            "nme_diag_mean": 0.014116231600443523,
+            "l2_px_mean": 8.313729127248129,
+            "pred_conf_mean": 0.736354664961497,
+            "ungated_nme_diag_mean": 0.014116231600443523
+          },
+          "face68": {
+            "active_images": 15,
+            "kp_recall_mean": 1.0,
+            "pck_002_mean": 1.0,
+            "pck_005_mean": 1.0,
+            "nme_diag_mean": 0.0045935539218286674,
+            "l2_px_mean": 2.693312740325928,
+            "pred_conf_mean": 0.9473414500554402,
+            "ungated_nme_diag_mean": 0.0045935539218286674
+          },
+          "hand42": {
+            "active_images": 15,
+            "kp_recall_mean": 1.0,
+            "pck_002_mean": 0.7951587301587302,
+            "pck_005_mean": 0.965,
+            "nme_diag_mean": 0.013044746468464534,
+            "l2_px_mean": 7.662501796086629,
+            "pred_conf_mean": 0.6914301812648773,
+            "ungated_nme_diag_mean": 0.013044746468464534
+          },
+          "hand_usable_only": {
+            "active_images": 15,
+            "kp_recall_mean": 1.0,
+            "pck_002_mean": 0.873015873015873,
+            "pck_005_mean": 0.9301587301587302,
+            "nme_diag_mean": 0.012324741777653496,
+            "l2_px_mean": 7.232754985491435,
+            "pred_conf_mean": 0.7334215104579925,
+            "ungated_nme_diag_mean": 0.012324741777653496
+          }
+        },
+        "identity": {
+          "src_face_detected_rate": 1.0,
+          "tgt_face_detected_rate": 1.0,
+          "gen_face_detected_rate": 1.0,
+          "gen_unique_face_rate": 1.0,
+          "id_cos_src": 0.37556539475917816,
+          "id_cos_tgt": 0.36006421490261953,
+          "id_cos_src_tgt_oracle": 0.682599671681722,
+          "landmark5_nme_iod": 0.26172131647666297
+        }
+      },
+      "s3_20k_joint": {
+        "count": 15,
+        "person_detected_rate": 1.0,
+        "valid_ssim_mean": 0.6328400413195292,
+        "lpips_alex_mean": 0.2536492278178533,
+        "pixel": {
+          "valid": {
+            "active_images": 15,
+            "mse_mean": 0.018040522156904142,
+            "psnr_mean": 18.037638188864562,
+            "mse_area_weighted": 0.017673625621554168,
+            "psnr_from_mean_mse": 17.437508965845225
+          },
+          "bg": {
+            "active_images": 15,
+            "mse_mean": 0.013757234462536872,
+            "psnr_mean": 19.870298762930084,
+            "mse_area_weighted": 0.013319716264188488,
+            "psnr_from_mean_mse": 18.614688610403686
+          },
+          "fg": {
+            "active_images": 15,
+            "mse_mean": 0.031319114131232104,
+            "psnr_mean": 15.592811671116865,
+            "mse_area_weighted": 0.03524512055171273,
+            "psnr_from_mean_mse": 15.041905305655181
+          },
+          "body": {
+            "active_images": 15,
+            "mse_mean": 0.030971067647139233,
+            "psnr_mean": 15.650064284524499,
+            "mse_area_weighted": 0.03507077307215812,
+            "psnr_from_mean_mse": 15.090438232105646
+          },
+          "hand_v2": {
+            "active_images": 15,
+            "mse_mean": 0.03418108839541674,
+            "psnr_mean": 15.764118264566275,
+            "mse_area_weighted": 0.03879721848657752,
+            "psnr_from_mean_mse": 14.662141125749681
+          }
+        },
+        "pose": {
+          "body17": {
+            "active_images": 15,
+            "kp_recall_mean": 1.0,
+            "pck_002_mean": 0.908235294117647,
+            "pck_005_mean": 0.9803921568627451,
+            "nme_diag_mean": 0.01040661782026291,
+            "l2_px_mean": 6.111681779225667,
+            "pred_conf_mean": 0.8694503704706827,
+            "ungated_nme_diag_mean": 0.01040661782026291
+          },
+          "arm6": {
+            "active_images": 15,
+            "kp_recall_mean": 1.0,
+            "pck_002_mean": 0.8222222222222223,
+            "pck_005_mean": 0.9666666666666667,
+            "nme_diag_mean": 0.01369468222061793,
+            "l2_px_mean": 8.053278398513793,
+            "pred_conf_mean": 0.8010096629460652,
+            "ungated_nme_diag_mean": 0.01369468222061793
+          },
+          "wrist2": {
+            "active_images": 15,
+            "kp_recall_mean": 1.0,
+            "pck_002_mean": 0.8666666666666667,
+            "pck_005_mean": 0.9666666666666667,
+            "nme_diag_mean": 0.013104684744030237,
+            "l2_px_mean": 7.709728272755941,
+            "pred_conf_mean": 0.7383204658826192,
+            "ungated_nme_diag_mean": 0.013104684744030237
+          },
+          "face68": {
+            "active_images": 15,
+            "kp_recall_mean": 1.0,
+            "pck_002_mean": 1.0,
+            "pck_005_mean": 1.0,
+            "nme_diag_mean": 0.0041935534604514635,
+            "l2_px_mean": 2.457460431257884,
+            "pred_conf_mean": 0.9506789127985636,
+            "ungated_nme_diag_mean": 0.0041935534604514635
+          },
+          "hand42": {
+            "active_images": 15,
+            "kp_recall_mean": 1.0,
+            "pck_002_mean": 0.8723809523809524,
+            "pck_005_mean": 0.9761904761904762,
+            "nme_diag_mean": 0.012117076696207126,
+            "l2_px_mean": 7.132001113891602,
+            "pred_conf_mean": 0.6949987808863322,
+            "ungated_nme_diag_mean": 0.012117076696207126
+          },
+          "hand_usable_only": {
+            "active_images": 15,
+            "kp_recall_mean": 1.0,
+            "pck_002_mean": 0.9079365079365079,
+            "pck_005_mean": 0.9523809523809524,
+            "nme_diag_mean": 0.0107239267633607,
+            "l2_px_mean": 6.317837150891622,
+            "pred_conf_mean": 0.7477726181348164,
+            "ungated_nme_diag_mean": 0.0107239267633607
+          }
+        },
+        "identity": {
+          "src_face_detected_rate": 1.0,
+          "tgt_face_detected_rate": 1.0,
+          "gen_face_detected_rate": 1.0,
+          "gen_unique_face_rate": 1.0,
+          "id_cos_src": 0.41810407588879267,
+          "id_cos_tgt": 0.405419942488273,
+          "id_cos_src_tgt_oracle": 0.682599671681722,
+          "landmark5_nme_iod": 0.3026043804983298
+        }
+      }
+    }
+  }
+}
