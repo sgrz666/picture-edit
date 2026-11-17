@@ -77,23 +77,29 @@ def _feature(model,image):
     value=model(image.float());return (value[-1] if isinstance(value,(tuple,list)) else value).flatten(1)
 
 
-def auxiliary_loss(pipe,noisy,prediction,sigma,target_pixels,supervision,config,*,step,evaluators):
+def auxiliary_loss(pipe,noisy,prediction,sigma,target_pixels,supervision,config,*,step,evaluators,identity_regularizer=None):
     zero=prediction.sum()*0;_,_,identity_weight,perceptual_weight=config.coefficients
     eligible=supervision.auxiliary_valid & (sigma[:,None]<=config.auxiliary_sigma_max)
-    if not (identity_weight or perceptual_weight) or step%config.auxiliary_every or not eligible.any(): return zero,{'identity':zero,'perceptual':zero,'eligible':0}
-    if (evaluators is None or (identity_weight and evaluators[0] is None) or (perceptual_weight and evaluators[1] is None)
+    if not (identity_weight or perceptual_weight or identity_regularizer is not None) or step%config.auxiliary_every or not eligible.any(): return zero,{'identity':zero,'perceptual':zero,'eligible':0}
+    wants_identity=bool(identity_weight or identity_regularizer is not None)
+    if (evaluators is None or (wants_identity and evaluators[0] is None) or (perceptual_weight and evaluators[1] is None)
         or any(p.requires_grad for model in evaluators if model is not None for p in model.parameters())): raise ValueError('Auxiliary losses require explicitly frozen evaluators')
     x0=noisy.float()-sigma[:,None,None]*prediction.float()
     decoded=decode_qwen64(pipe,x0,target_pixels.shape[-2:])
-    ii=[];pp=[]
+    ii=[];pp=[];generated_ids=[];reference_ids=[];slots=[]
     for row,person in eligible.nonzero().tolist():
         grid=build_arcface_alignment_grid(supervision.landmarks5[row:row+1,person],decoded.shape[-2:],device=decoded.device)
         generated=align_face_rgb(decoded[row:row+1],grid=grid)*2-1
         reference=align_face_rgb(target_pixels[row:row+1].float(),grid=grid)*2-1
         with torch.no_grad():
-            target_id=_feature(evaluators[0],reference) if identity_weight else None
+            target_id=_feature(evaluators[0],reference) if wants_identity else None
             target_perc=_feature(evaluators[1],reference) if perceptual_weight else None
-        if identity_weight:ii.append((1-F.cosine_similarity(_feature(evaluators[0],generated),target_id)).mean())
+        if wants_identity:
+            generated_id=_feature(evaluators[0],generated)
+            if identity_weight:ii.append((1-F.cosine_similarity(generated_id,target_id)).mean())
+            if identity_regularizer is not None:
+                generated_ids.append(generated_id);reference_ids.append(target_id);slots.append((row,person))
         if perceptual_weight:pp.append((_feature(evaluators[1],generated)-target_perc).square().mean())
     identity=torch.stack(ii).mean() if ii else zero;perceptual=torch.stack(pp).mean() if pp else zero
-    return identity_weight*identity+perceptual_weight*perceptual,{'identity':identity,'perceptual':perceptual,'eligible':int(eligible.sum())}
+    extra=identity_regularizer(torch.cat(generated_ids),torch.cat(reference_ids),slots) if identity_regularizer is not None else {}
+    return identity_weight*identity+perceptual_weight*perceptual,{'identity':identity,'perceptual':perceptual,'eligible':int(eligible.sum()),**extra}

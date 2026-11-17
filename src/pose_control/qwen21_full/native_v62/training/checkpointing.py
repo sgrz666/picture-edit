@@ -32,8 +32,9 @@ def save_snapshot(root,runtime,optimizer,scheduler,sampler,noise_generator,*,con
                   global_update,stage_update,attempts,journal,micro_position,gradient_report,stage_origin,parent=None,frozen_state=None):
     if micro_position!=0:raise ValueError('Only optimizer-update boundary snapshots are supported')
     root=Path(root);root.mkdir(parents=True,exist_ok=True)
-    payload=runtime.checkpoint_payload(metadata={'training_interface':SCHEMA})
-    payload['training_schema']=SCHEMA
+    schema=config.schema
+    payload=runtime.checkpoint_payload(metadata={'training_interface':schema})
+    payload['training_schema']=schema
     payload['training_state']={'config':config.record(),'config_sha256':config.signature(),'identity':identity,
         'identity_sha256':digest(identity),'catalog':catalog.record(),'catalog_sha256':catalog.signature(),
         'active_names':sorted(active),'optimizer_state':optimizer.state_dict(),'scheduler_state':scheduler.state_dict(),
@@ -48,19 +49,19 @@ def save_snapshot(root,runtime,optimizer,scheduler,sampler,noise_generator,*,con
         torch.save(payload,f);f.flush();os.fsync(f.fileno())
     sync_directory(root)
     ref={'path':str(path.resolve()),'sha256':file_sha(path)}
-    commit={'schema':'native_v62_training_commit_v1','checkpoint':ref,'global_update':global_update,'stage_update':stage_update,
+    commit={'schema':schema.replace('_training_v1','_training_commit_v1'),'checkpoint':ref,'global_update':global_update,'stage_update':stage_update,
         'training_state_sha256':digest({'config':config.signature(),'identity':digest(identity),'catalog':catalog.signature(),'journal':journal.state_dict()})}
     marker=write_json(path.with_suffix('.commit.json'),commit)
     return {'checkpoint':ref,'commit':marker}
 
-def load_committed(reference):
+def load_committed(reference,*,schema=SCHEMA):
     ref=verify(reference);marker=Path(ref['path']).with_suffix('.commit.json')
     if not marker.is_file():raise ValueError('Checkpoint has no completed commit record; use explicit initialization for model-only files')
     import json
     commit=json.loads(marker.read_text())
-    if commit.get('schema')!='native_v62_training_commit_v1' or commit['checkpoint']!=ref:raise ValueError('Checkpoint/commit SHA mismatch')
+    if commit.get('schema')!=schema.replace('_training_v1','_training_commit_v1') or commit['checkpoint']!=ref:raise ValueError('Checkpoint/commit SHA mismatch')
     saved=torch.load(ref['path'],map_location='cpu',weights_only=True,mmap=True)
-    if saved.get('training_schema')!=SCHEMA or 'training_state' not in saved:raise ValueError('Old V5 optimizer-only snapshots are initialization-only')
+    if saved.get('training_schema')!=schema or 'training_state' not in saved:raise ValueError('Other-version/optimizer-only snapshots are initialization-only')
     state=saved['training_state']
     if state.get('micro_position')!=0:raise ValueError('Mid-accumulation resume is not supported')
     expected=digest({'config':state['config_sha256'],'identity':state['identity_sha256'],'catalog':state['catalog_sha256'],'journal':state['journal']})
@@ -71,7 +72,8 @@ def load_committed(reference):
 def validate_resume(saved,config,identity,catalog):
     state=saved['training_state']
     from .config import TrainingConfig
-    if state['config_sha256']!=config.signature() or TrainingConfig.from_dict(state['config']).signature()!=config.signature():raise ValueError('Resume config differs; use explicit advance-stage/revision')
+    if saved.get('training_schema')!=config.schema:raise ValueError('Resume training schema differs')
+    if state['config_sha256']!=config.signature() or type(config).from_dict(state['config']).signature()!=config.signature():raise ValueError('Resume config differs; use explicit advance-stage/revision')
     if state['identity_sha256']!=digest(identity) or digest(state['identity'])!=digest(identity):raise ValueError('Resume data/model/code/cache/evaluator identity differs')
     if state['catalog_sha256']!=catalog.signature():raise ValueError('Resume optimizer parameter catalog differs')
     if digest(state['environment'])!=digest(environment()):raise ValueError('Strict resume environment/backend/topology differs')

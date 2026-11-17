@@ -101,6 +101,13 @@ def _repair(batch, geometry):
     return mask
 
 
+def part_contact_permissions(flags):
+    """Shared 14-part evidence semantics for routing, loss qualification and audit."""
+    positive=(flags[...,0]>0)&(flags[...,1]>0)
+    forbidden=((flags[...,1]>0)&~positive)|((flags[...,2]>0)&(flags[...,3]>0))
+    return positive&~forbidden,forbidden
+
+
 def _parts_contacts(batch, geometry, local, spatial):
     b, n = geometry.coverage.shape
     device = geometry.geometry.device
@@ -134,9 +141,7 @@ def _parts_contacts(batch, geometry, local, spatial):
         raw = dual.person_part * known_parts * spatial.valid_pixels[:, None]
         parts = F.avg_pool2d(raw.flatten(0, 1), 16).flatten(2).transpose(1, 2).reshape(b, 2, n, 14)
         flags = dual.part_contact
-        positive = (flags[..., 0] > 0) & (flags[..., 1] > 0)
-        forbidden = ((flags[..., 1] > 0) & ~positive) | ((flags[..., 2] > 0) & (flags[..., 3] > 0))
-        positive = positive & ~forbidden
+        positive,forbidden = part_contact_permissions(flags)
         # Raw vertex indices have no stable 14-part correspondence in this input.
         # They remain diagnostic records and never relax a part permission.
         ignored = dual.contacts.valid.sum(1).cpu().tolist()

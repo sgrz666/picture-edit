@@ -16,7 +16,7 @@ def counts_for_window(entries,routes,update):
             counts['perceptual']+=status['auxiliary_faces'] if loss.perceptual>0 else 0
     return counts
 
-def compute_micro_loss(pipe,prediction,target_velocity,coverage,supervision,noisy,sigma,target_rgb,loss_spec,counts,update,evaluators,spatial=None):
+def compute_micro_loss(pipe,prediction,target_velocity,coverage,supervision,noisy,sigma,target_rgb,loss_spec,counts,update,evaluators,spatial=None,identity_regularizer=None):
     cfg=LocalLossConfig(auxiliary_every=loss_spec.auxiliary_every,auxiliary_sigma_max=loss_spec.auxiliary_sigma_max,
         weights=(loss_spec.face,loss_spec.hand,loss_spec.identity,loss_spec.perceptual))
     _,parts=local_velocity_loss(prediction,target_velocity,coverage,supervision,cfg)
@@ -41,7 +41,7 @@ def compute_micro_loss(pipe,prediction,target_velocity,coverage,supervision,nois
     result=loss_spec.velocity*parts['velocity']/counts['velocity']
     for name,key,area in (('face','face_velocity','face_area'),('hand','hand_velocity','hand_area')):
         if counts[name] and bool(parts[area]>0):result=result+getattr(loss_spec,name)*parts[key]/counts[name]
-    _,aux=auxiliary_loss(pipe,noisy,prediction,sigma,target_rgb,supervision,cfg,step=update,evaluators=evaluators)
+    _,aux=auxiliary_loss(pipe,noisy,prediction,sigma,target_rgb,supervision,cfg,step=update,evaluators=evaluators,identity_regularizer=identity_regularizer)
     for name in ('identity','perceptual'):
         if counts[name] and aux['eligible']:result=result+getattr(loss_spec,name)*aux[name]*aux['eligible']/counts[name]
     return result,{**parts,**aux,'weighted_micro_objective':result,'window_denominators':counts}

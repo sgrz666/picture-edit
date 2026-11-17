@@ -6,11 +6,23 @@ from .io import write_json,new_segment,Journal,verify
 
 
 class NativeV62Trainer:
+    config_type=TrainingConfig
+    backend_type=None
+    data_plan_type=None
+
     def __init__(self,config):
-        self.config=config if isinstance(config,TrainingConfig) else TrainingConfig.from_dict(config)
+        self.config=config if isinstance(config,self.config_type) else self.config_type.from_dict(config)
+
+    def _data(self):
+        from .data import DataPlan
+        return (self.data_plan_type or DataPlan)(self.config)
+
+    def _backend(self,data,**kwargs):
+        from .backend import NativeBackend
+        return (self.backend_type or NativeBackend)(self.config,data,**kwargs)
 
     def prepare(self,output=None):
-        result={'schema':SCHEMA,'action':'prepare','config':self.config.record(),'config_sha256':self.config.signature(),
+        result={'schema':self.config.schema,'action':'prepare','config':self.config.record(),'config_sha256':self.config.signature(),
             'missing_bindings':self.config.missing(),'assets_checked':False,'training_ready':False,
             'model_constructed':False,'optimizer_created':False,'training_started':False,
             'policy':{'manual_stage_transitions':True,'stable_optimizer_superset':True,'checkpoint_boundary_only':True}}
@@ -19,7 +31,7 @@ class NativeV62Trainer:
 
     def preflight_data(self,output):
         from .data import DataPlan
-        try:result=DataPlan(self.config).report()
+        try:result=self._data().report()
         except Exception as error:
             write_json(output,{'level':'data','passed':False,'error':str(error),'sources':[asdict(s) for s in self.config.sources],
                 'original_manifests_preserved':True,'model_constructed':False,'gradient_passed':False})
@@ -30,13 +42,13 @@ class NativeV62Trainer:
         from .data import DataPlan
         from .backend import NativeBackend
         from .validation import gradient_preflight
-        self.config.require_ready();data=DataPlan(self.config);backend=NativeBackend(self.config,data,purpose='grad')
+        self.config.require_ready();data=self._data();backend=self._backend(data,purpose='grad')
         result=gradient_preflight(backend,self.config,data);write_json(output,result);return result
 
     def cache_prepare(self,output):
         from .data import DataPlan
         from .backend import prepare_cache
-        return prepare_cache(self.config,DataPlan(self.config),output)
+        return prepare_cache(self.config,self._data(),output)
 
     def _start(self,mode,checkpoint=None):
         import random
@@ -53,9 +65,9 @@ class NativeV62Trainer:
         if mode=='train' and config.stage.phase not in ('S0','S1'):raise ValueError('S2/S3 start through explicit advance-stage')
         saved=parent=tail=None
         if mode!='train':
-            saved,parent,tail=load_committed(checkpoint)
+            saved,parent,tail=load_committed(checkpoint,schema=config.schema)
             if mode=='advance-stage' and verify(config.initialization)!=parent:raise ValueError('Advance initialization must be the exact parent checkpoint')
-        data=DataPlan(config);backend=NativeBackend(config,data,saved=saved,purpose='train')
+        data=self._data();backend=self._backend(data,saved=saved,purpose='train')
         catalog=backend.catalog;active=backend.active
         if backend.runtime.config.local_mode=='static' and any(r.role=='head' and r.runtime_group in ('face_heads','hand_heads') and r.name in active for r in catalog.rows):
             body_frozen=all(not p.requires_grad for p in backend.runtime.body.parameters())
@@ -70,7 +82,7 @@ class NativeV62Trainer:
             origin=state['stage_origin'];gradient=validate_gate(state['gradient_report'],backend,config,data,stage_origin=origin)
             global_update=state['global_update'];stage_update=state['stage_update'];attempts=state['attempts']
         else:
-            state=saved['training_state'];previous=TrainingConfig.from_dict(state['config'])
+            state=saved['training_state'];previous=self.config_type.from_dict(state['config'])
             allowed={'S0':('S0','S1'),'S1':('S1','S2'),'S2':('S2','S3'),'S3':('S3',)}
             if config.stage.phase not in allowed[previous.stage.phase]:raise ValueError('Invalid manual stage transition')
             if config.stage.phase=='S1' and previous.stage.phase=='S0':check_body_baseline(config,parent)
@@ -95,7 +107,7 @@ class NativeV62Trainer:
             scheduler.load_state_dict(saved['training_state']['scheduler_state']);sampler.load_state_dict(saved['training_state']['sampler_state'])
             noise_generator.set_state(saved['training_state']['noise_generator_state'].cpu())
         assert_optimizer_fp32(optimizer);optimizer.zero_grad(set_to_none=True);catalog.assert_flags(active)
-        backend.ensure_evaluators({k for r in config.stage.routes for k in ('identity','perceptual') if getattr(r.loss,k)>0})
+        backend.ensure_evaluators(backend.required_evaluators)
         segment=new_segment(config.output_root,mode,parent)
         write_json(segment/'resolved.json',{'config':config.record(),'identity':backend.identity,'catalog':catalog.record(),
             'active_names':sorted(active),'optimizer_groups':catalog.group_spec(config.stage.optimizer),'gradient_gate':gradient,
@@ -148,7 +160,7 @@ class NativeV62Trainer:
                 window.append({'route':route_name,'source':source,'index':index,'sigma':float(sigma[0]),'status':status})
             if len(window)!=config.stage.accumulation:
                 ctx['journal'].append({'optimizer_updated':False,'reason':'partial_window_discarded_at_attempt_bound','entries':window});break
-            counts=counts_for_window(window,routes,ctx['global_update']+1);ctx['optimizer'].zero_grad(set_to_none=True)
+            counts=backend.window_counts(window,routes,ctx['global_update']+1);ctx['optimizer'].zero_grad(set_to_none=True)
             values=[]
             try:
                 for i,entry in enumerate(window):
@@ -160,7 +172,7 @@ class NativeV62Trainer:
                     evaluators=backend.ensure_evaluators(required)
                     prediction,target,coverage,noisy=backend.forward(batch,pair,route,sigma,noise,options,base)
                     supervision=batch['training_supervision_v5'].to(backend.device)
-                    loss,parts=compute_micro_loss(backend.pipe,prediction,target,coverage,supervision,noisy,sigma,
+                    loss,parts=backend.compute_loss(prediction,target,coverage,supervision,noisy,sigma,
                         (batch['tgt_image'].to(backend.device).float()+1)*.5,route.loss,counts,ctx['global_update']+1,evaluators,
                         spatial=batch.get('spatial_weights_v5'))
                     if not torch.isfinite(loss) or not loss.requires_grad:raise FloatingPointError('Invalid/no-gradient objective for an eligible route')

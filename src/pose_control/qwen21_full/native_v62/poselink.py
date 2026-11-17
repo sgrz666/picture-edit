@@ -34,6 +34,17 @@ class PoseLinkAttentionV62(PoseLinkAttentionV61):
         probability=probability/probability.sum(-1,keepdim=True).clamp_min(1.)
         return torch.matmul(probability,value).transpose(1,2).flatten(2)
 
+    def _pose_key_features(self,features,samples):
+        """Version extension point; V6.2 preserves its exact sampled features."""
+        return features
+
+    def _pose_contact_positive(self,routing):
+        return routing.contact_positive if self.config.use_contact else torch.zeros_like(routing.contact_positive)
+
+    def _merge_side_attention(self,delta,has_keys,query,samples,geometry,spatial,routing,xy,layer):
+        """No parameters or arithmetic changes for the V6.2 implementation."""
+        return delta,has_keys
+
     def forward(self,target_hidden,joint_hidden,layout,geometry,*,layer,sigma,strength=1.,spatial=None,routing=None):
         cfg=self.config
         if not cfg.person_routing:
@@ -60,7 +71,7 @@ class PoseLinkAttentionV62(PoseLinkAttentionV61):
         dtype=self.query_projection.weight.dtype
         target,joint=target_hidden.to(dtype),joint_hidden.to(dtype)
         samples=self.build_pose_keys(joint,layout,geometry,spatial,routing)
-        keys=self.pose_projection(self.pose_norm(samples.hidden))
+        keys=self._pose_key_features(self.pose_projection(self.pose_norm(samples.hidden)),samples)
         if cfg.use_geometry:
             persons=self.person_projection(samples.person_tokens)
             keys=keys+self.geometry_projection(samples.geometry)+(persons*samples.person_weights[...,None]).sum(2)
@@ -75,7 +86,7 @@ class PoseLinkAttentionV62(PoseLinkAttentionV61):
         value=self.value_projection(keys).reshape(b,-1,heads,dim).transpose(1,2)
         xy=_grid(geometry.target_token_hw,b,target);active=geometry.person_valid[:,None].to(dtype)
         owner,contact=geometry.owner.to(dtype)*active,geometry.contact.to(dtype)*active
-        positive=routing.contact_positive if cfg.use_contact else torch.zeros_like(routing.contact_positive)
+        positive=self._pose_contact_positive(routing)
         chunks=[];has_keys=[]
         for start in range(0,n,cfg.query_chunk_size):
             stop=start+cfg.query_chunk_size
@@ -89,7 +100,9 @@ class PoseLinkAttentionV62(PoseLinkAttentionV61):
             chunks.append(checkpoint(self._routed_chunk,*args,use_reentrant=False)
                 if self.training and torch.is_grad_enabled() else self._routed_chunk(*args))
         delta=self.output_heads[str(layer)](torch.cat(chunks,1))
+        delta,has_keys=self._merge_side_attention(delta,torch.cat(has_keys,1),query,samples,
+            geometry,spatial,routing,xy,layer)
         gain=gain.to(dtype)*self.layer_log_gains[str(layer)].exp()
         if gain.ndim:gain=gain[:,None,None]
-        result=delta*gain*geometry.coverage.to(dtype)[...,None]*torch.cat(has_keys,1)[...,None]
+        result=delta*gain*geometry.coverage.to(dtype)[...,None]*has_keys[...,None]
         return result*spatial.edit_gate[...,None].to(dtype) if cfg.edit_region_gate else result

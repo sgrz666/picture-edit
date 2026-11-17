@@ -7,15 +7,17 @@ sys.path.insert(0,str(Path(__file__).resolve().parents[2]))
 from src.pose_control.qwen21_full.native_v5.cli import add_controls,options_for
 
 
-def main():
-    p=argparse.ArgumentParser(description=__doc__)
+def main(argv=None,*,runtime_type=None,installer=None,architecture='native_full_v62',add_arguments=None,configure_runtime=None):
+    p=argparse.ArgumentParser(description=__doc__ if architecture=='native_full_v62' else 'Native Full V7 explicit multi-reference inference.')
     for name in ('checkpoint','manifest','output'): p.add_argument('--'+name,type=Path,required=True)
     p.add_argument('--model',type=Path,default=Path(__file__).resolve().parents[2]/'models/Qwen-Image-2.1')
     p.add_argument('--pair-index',type=int,default=0);p.add_argument('--steps',type=int,default=20);p.add_argument('--seed',type=int,default=42)
     p.add_argument('--prompt',default=None,help='Optional assertion; must equal the locked per-pair Prompt')
     p.add_argument('--poselink-strength',type=float,default=1.)
     p.add_argument('--diagnostics',action='store_true')
-    add_controls(p);args=p.parse_args()
+    add_controls(p)
+    if add_arguments is not None:add_arguments(p)
+    args=p.parse_args(argv)
     if args.output.exists(): raise FileExistsError('Use a new V6.2 inference directory')
     if args.steps<=0 or args.pair_index<0: raise ValueError('Positive steps and valid pair index required')
     if not math.isfinite(args.poselink_strength) or args.poselink_strength<0: raise ValueError('Finite nonnegative PoseLink strength required')
@@ -26,13 +28,15 @@ def main():
     from src.pose_control.qwen21_full.native_v62.integration import install_native_full_v62
     from src.pose_control.qwen21_full.native_v6.conditioning import read_condition,encode_pair
     from src.pose_control.qwen21_full.native_v62.generation import generate_native
-    runtime=NativeFullRuntimeV62.from_checkpoint(torch.load(args.checkpoint,map_location='cpu',mmap=True,weights_only=True)).eval().to('cuda')
+    runtime=(runtime_type or NativeFullRuntimeV62).from_checkpoint(torch.load(args.checkpoint,map_location='cpu',mmap=True,weights_only=True))
+    extra_metadata={} if configure_runtime is None else configure_runtime(runtime,args)
+    runtime.eval().to('cuda')
     if runtime.config.verification_only: raise ValueError('Verification checkpoints cannot run production inference')
     reader=NativeFullDatasetV62(args.manifest,load_target=False,data_profile=args.data_profile)
     sample=reader[args.pair_index]
     batch=collate_native_full_v62([sample]);options,base=options_for(args,batch['native_scene_kind'])
     pipe=QwenImage21Pipeline.from_pretrained(str(args.model),dtype=torch.bfloat16,local_files_only=True).to('cuda')
-    install=install_native_full_v62(pipe.transformer,runtime);h,w=sample['target_canvas']['canvas_hw']
+    install=(installer or install_native_full_v62)(pipe.transformer,runtime);h,w=sample['target_canvas']['canvas_hw']
     condition=reader.rows[args.pair_index].get('qwen_condition')
     if condition is not None:
         spec=read_condition(condition,sample)
@@ -54,9 +58,9 @@ def main():
     if observer is not None:
         with (args.output/'diagnostics.json').open('x',encoding='utf8') as f:json.dump({'diagnostics':observer.report(),'sampling':sampling},f,ensure_ascii=False,indent=2)
     with (args.output/'request.json').open('x') as f:
-        json.dump({'architecture':'native_full_v62','pose_config':runtime.pose_config.to_dict(),'poselink_strength':args.poselink_strength,'data_profile':sample['data_profile'],'pair':sample['pair_metadata'],
+        json.dump({'architecture':architecture,'pose_config':runtime.pose_config.to_dict(),'poselink_strength':args.poselink_strength,'data_profile':sample['data_profile'],'pair':sample['pair_metadata'],
             'controls':asdict(options),'base':asdict(base),'installation':install,'qwen_condition_profile':protocol,'prompt_sha256':prompt_sha,
-            'target_rgb_loaded':False,'steps':args.steps,'seed':args.seed},f,indent=2)
+            'target_rgb_loaded':False,'steps':args.steps,'seed':args.seed,**extra_metadata},f,indent=2)
 
 
 if __name__=='__main__': main()

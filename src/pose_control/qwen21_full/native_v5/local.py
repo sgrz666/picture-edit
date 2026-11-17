@@ -144,6 +144,10 @@ class NativeLocalControllerV5(NativeLocalController):
         value=value+self.shared_attention(n,n,n,need_weights=False)[0]
         return value+self.shared_ffn(value)
 
+    def _modality_query(self,query,prepared,row,region,modality):
+        """Optional later-version source modulation; V5 is an exact identity."""
+        return query
+
     def _updates(self,q,p,row,region,cells,grid,slot,sigma,strength,options,layer):
         result=torch.zeros_like(q);family='hand' if self.hand else 'face'
         for mi,name in ((0,'identity'),(1,'texture'),(2,'geometry'),(3,'detail')):
@@ -160,7 +164,7 @@ class NativeLocalControllerV5(NativeLocalController):
                 update=self.detail_projection(sampled.squeeze(-1).transpose(1,2))
             else:
                 if not valid.any() and not (mi==2 and p.spatial_valid[row,region]): continue
-                query=q
+                query=self._modality_query(q,p,row,region,mi)
                 if self.hand_fusions is not None and mi==1 and p.token_valid[row,region,2].any():
                     geometry=p.tokens[row:row+1,region,2];gv=p.token_valid[row:row+1,region,2]
                     for fusion in self.hand_fusions: geometry=geometry+fusion(geometry,context,valid,gv)

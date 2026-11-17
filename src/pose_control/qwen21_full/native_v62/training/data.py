@@ -137,6 +137,7 @@ class DataPlan:
                 identities[spec.source_id]['spatial_weights']={'index':spatial_ref,'entries':spatial_index['entries']}
             for index in range(len(dataset)):
                 sample=dataset[index]
+                extra_status=self.sample_metadata(sample)
                 if spatial_index is not None:
                     meta=sample['local_condition_v4'].metadata[0];key=meta['driver_rgb_sha256']+':'+meta['target_canvas_id']
                     entry=spatial_index['entries'].get(key)
@@ -153,7 +154,7 @@ class DataPlan:
                     self.conditions[(spec.source_id,index)]=(ref,condition)
                 if spec.scene_kind!='any' and spec.scene_kind!=sample['native_scene_kind']:raise ValueError('Source scene kind assertion differs')
                 for route in config.stage.routes:
-                    status=sample_status(sample,route,config)
+                    status={**sample_status(sample,route,config),**extra_status}
                     if spec.role=='train' and route.source_ids and spec.source_id not in route.source_ids:status={**status,'eligible':False,'reasons':status['reasons']+['source_not_selected_for_route']}
                     self.status[(route.name,spec.source_id,index)]=status
                     self.records.append({'source_id':spec.source_id,'role':spec.role,'index':index,'pair_id':dataset.rows[index]['pair_id'],'route':route.name,**status})
@@ -173,6 +174,9 @@ class DataPlan:
             for term,field in (('face','face_area'),('hand','hand_area'),('identity','auxiliary_faces'),('perceptual','auxiliary_faces')):
                 if getattr(route.loss,term)>0 and not any(row[field]>0 for row in selected):raise ValueError('Requested loss has no eligible data: '+route.name+'/'+term)
             if config.experiment_mode=='standard' and not any(row['role']=='validation' and row['route']==route.name and row['eligible'] for row in self.records):raise ValueError('Route has no eligible held-out validation samples: '+route.name)
+    def sample_metadata(self,sample):
+        return {}
+
     def _attach_spatial(self,source,index,sample):
         entry=self.spatial[(source,index)];meta=sample['local_condition_v4'].metadata[0]
         maps=read_spatial_components(entry['file'],gt_rgb_sha256=meta['driver_rgb_sha256'],

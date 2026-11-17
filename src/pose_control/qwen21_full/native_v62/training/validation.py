@@ -93,7 +93,7 @@ def head_probe(backend):
 def validate_gate(report_ref,backend,config,data,*,stage_origin=None):
     report,bound=read_json_ref(report_ref)
     expected=stage_origin or backend.initialization
-    checks={'schema':'native_v62_gradient_preflight_v1','level':'grad','passed':True,'production_passed':True,
+    checks={'schema':config.schema.replace('_training_v1','_gradient_preflight_v1'),'level':'grad','passed':True,'production_passed':True,
         'initialization_sha256':expected['sha256'],'config_sha256':config.signature(),
         'data_signature':data.signature,'identity_sha256':digest(backend.identity),'catalog_sha256':backend.catalog.signature()}
     checks['environment_sha256']=digest(environment())
@@ -137,7 +137,7 @@ def gradient_preflight(backend,config,data):
     from .objective import compute_micro_loss,counts_for_window
     routes={r.name:r for r in config.stage.routes};records=[];passed=True
     with preserved_rng():
-        backend.ensure_evaluators({k for r in config.stage.routes for k in ('identity','perceptual') if getattr(r.loss,k)>0})
+        backend.ensure_evaluators(backend.required_evaluators)
         before=frozen_digest(backend)
         cases=[]
         for route in config.stage.routes:
@@ -147,7 +147,7 @@ def gradient_preflight(backend,config,data):
                 for i in pool:
                     status=data.status[(name,source,i)]
                     key=(source,status['bucket'][2],status['bucket'][3],tuple(k for k,v in status['branch_usable'].items() if v),
-                        digest(status['capabilities']),bool(status['auxiliary_faces']))
+                        digest(status['capabilities']),backend.gradient_case_key(status))
                     representatives.setdefault(key,(source,i))
             if not representatives or len(representatives)>config.probe_samples:
                 passed=False;records.append({'route':route.name,'status':'not_exercised_or_budget_too_small','required_cases':len(representatives)});continue
@@ -155,14 +155,14 @@ def gradient_preflight(backend,config,data):
         for route,source,index in cases:
             sample,batch,pair=backend.pair(source,index)
             options,base=route_options(route,sample['native_scene_kind'])
-            sigma=torch.tensor([.2 if route.loss.identity or route.loss.perceptual else .5],device=backend.device)
+            sigma=torch.tensor([backend.preflight_sigma(route)],device=backend.device)
             generator=torch.Generator(device=backend.device).manual_seed(24042)
             noise=torch.randn(pair['target_latent'].shape,device=backend.device,dtype=pair['target_latent'].dtype,generator=generator)
             noisy=(1-sigma[:,None,None])*pair['target_latent'].float()+sigma[:,None,None]*noise.float()
             with torch.no_grad(),prefix_trace(backend,pair,noisy,sigma) as (baseline_prefix,values):
                 with torch.autocast('cuda',dtype=torch.bfloat16):backend.pipe.transformer(**values,native_enabled=False)
             entry={'route':route.name,'sigma':float(sigma[0]),'status':data.status[(route.name,source,index)]}
-            counts=counts_for_window([entry],routes,route.loss.auxiliary_every)
+            counts=backend.window_counts([entry],routes,route.loss.auxiliary_every)
             required={k for k in ('identity','perceptual') if counts[k]}
             evaluators=backend.ensure_evaluators(required)
             def backward_once():
@@ -171,7 +171,7 @@ def gradient_preflight(backend,config,data):
                     output,target,coverage,actual_noisy=backend.forward(batch,pair,route,sigma,noise,options,base)
                 if baseline_prefix!=controlled_prefix:raise RuntimeError('Native control changed a text/reference prefix')
                 supervision=batch['training_supervision_v5'].to(backend.device)
-                loss,_=compute_micro_loss(backend.pipe,output,target,coverage,supervision,actual_noisy,sigma,
+                loss,_=backend.compute_loss(output,target,coverage,supervision,actual_noisy,sigma,
                     (batch['tgt_image'].to(backend.device).float()+1)*.5,route.loss,counts,route.loss.auxiliary_every,evaluators,
                     spatial=batch.get('spatial_weights_v5'))
                 if not torch.isfinite(loss):raise FloatingPointError('Nonfinite preflight objective')
@@ -216,7 +216,7 @@ def gradient_preflight(backend,config,data):
                 'head_gradient_observed':bool(active_head),'upstream_probe_groups':sorted({v['group'] for v in probe.values() if v['role'] not in ('head','strength') and v['status']=='nonzero'})})
         after=frozen_digest(backend)
         if before!=after:raise RuntimeError('Frozen weights/buffers or architecture changed during validation')
-    return {'schema':'native_v62_gradient_preflight_v1','level':'grad','passed':passed,'production_passed':passed and not backend.runtime.config.verification_only,
+    return {'schema':config.schema.replace('_training_v1','_gradient_preflight_v1'),'level':'grad','passed':passed,'production_passed':passed and not backend.runtime.config.verification_only,
         'initialization_sha256':backend.initialization['sha256'],'config_sha256':config.signature(),'data_signature':data.signature,
         'identity_sha256':digest(backend.identity),'catalog_sha256':backend.catalog.signature(),'records':records,
         'environment_sha256':digest(environment()),

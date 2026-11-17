@@ -1,6 +1,7 @@
 """Pure-stdlib training configuration. Resolve is not permission to train."""
 from dataclasses import dataclass,field,asdict
 from pathlib import Path, PurePosixPath
+from typing import ClassVar
 import hashlib,json,math
 
 SCHEMA='native_v62_training_v1'
@@ -150,6 +151,7 @@ class StageSpec:
 
 @dataclass(frozen=True)
 class TrainingConfig:
+    expected_schema: ClassVar[str]=SCHEMA
     schema: str=SCHEMA
     stage: StageSpec=field(default_factory=lambda:stage_preset('S1','poselink'))
     sources: tuple=()
@@ -193,7 +195,7 @@ class TrainingConfig:
         if (type(self.generation_every_updates)!=int or self.generation_every_updates<0 or
                 type(self.generation_steps)!=int or self.generation_steps<=0 or type(self.generation_seed)!=int):
             raise ValueError('Invalid fixed generation settings')
-        if self.schema!=SCHEMA or self.num_workers!=0 or self.micro_batch!=1 or self.world_size!=1:raise ValueError('V5 preparation supports one process/GPU, B1, workers0')
+        if self.schema!=self.expected_schema or self.num_workers!=0 or self.micro_batch!=1 or self.world_size!=1:raise ValueError('Versioned preparation supports one process/GPU, B1, workers0')
         if self.eligibility_min_spatial_cells<1 or not 0<=self.eligibility_feather_px<=32:raise ValueError('Invalid eligibility grid rules')
         if type(self.seed)!=int or not 0<=self.seed<2**63 or any(type(x)!=int for x in (self.save_every_updates,self.probe_every_updates,self.probe_samples)) or self.save_every_updates<1 or self.probe_every_updates<0 or self.probe_samples<1:raise ValueError('Invalid seed/interval')
         for ref in (self.initialization,self.model_manifest,self.cache_identity,self.gradient_report,self.body_baseline_report):reference_syntax(ref)

@@ -42,6 +42,7 @@ def asset_identity(config,data_plan):
     if cache.get('model_manifest_sha256')!=bound['sha256']:raise ValueError('Frozen cache model identity differs')
     evaluators={}
     required={name for r in config.stage.routes for name in ('identity','perceptual') if getattr(r.loss,name)>0}
+    required.update(getattr(config,'additional_evaluators',()))
     for name in required:
         if not config.evaluators or name not in config.evaluators:raise ValueError('Missing requested frozen evaluator: '+name)
         evaluators[name]=verify(config.evaluators[name])
@@ -49,6 +50,21 @@ def asset_identity(config,data_plan):
         'evaluators':evaluators,'code':code_identity()},cache
 
 class NativeBackend:
+    runtime_type=NativeFullRuntimeV62
+    installer=staticmethod(install_native_full_v62)
+
+    @property
+    def required_evaluators(self):
+        required={name for route in self.config.stage.routes for name in ('identity','perceptual') if getattr(route.loss,name)>0}
+        return required | set(getattr(self.config,'additional_evaluators',()))
+
+    def gradient_case_key(self,status):
+        return bool(status['auxiliary_faces'])
+
+    def preflight_sigma(self,route):
+        auxiliary=route.loss.identity or route.loss.perceptual or getattr(self,'extra_auxiliary',False)
+        return min(.2,.9*route.loss.auxiliary_sigma_max) if auxiliary else .5
+
     def __init__(self,config,data_plan,*,saved=None,purpose='train'):
         from diffusers import QwenImage21Pipeline
         self.config=config;self.data=data_plan;self.device=torch.device('cuda')
@@ -56,7 +72,7 @@ class NativeBackend:
         self.initialization=verify(config.initialization)
         self.identity['initialization']=self.initialization
         saved=saved if saved is not None else torch.load(self.initialization['path'],map_location='cpu',mmap=True,weights_only=True)
-        self.runtime=NativeFullRuntimeV62.from_checkpoint(saved)
+        self.runtime=self.runtime_type.from_checkpoint(saved)
         if self.runtime.config.verification_only and purpose!='grad':raise ValueError('Verification-only checkpoint cannot start training')
         if (self.runtime.config.min_spatial_cells,self.runtime.config.feather_px)!=(config.eligibility_min_spatial_cells,config.eligibility_feather_px):
             raise ValueError('Data eligibility rules differ from the checkpoint local configuration')
@@ -81,7 +97,7 @@ class NativeBackend:
         self.pipe.text_encoder.requires_grad_(False).eval().to('cpu');self.pipe.vae.requires_grad_(False).eval().to('cpu')
         self.runtime.train()
         self.base_state_names=set(self.pipe.transformer.state_dict())
-        self.installation=install_native_full_v62(self.pipe.transformer,self.runtime)
+        self.installation=self.installer(self.pipe.transformer,self.runtime)
         self.pipe.transformer.enable_gradient_checkpointing();self.catalog.assert_flags(self.active)
         self.base_parameters={n:p for n,p in self.pipe.transformer.named_parameters() if not n.startswith(('native_body.','native_v62_'))}
         self.evaluators=[None,None]
@@ -138,6 +154,7 @@ class NativeBackend:
         target=pair['target_latent'];noisy=(1-sigma[:,None,None])*target.float()+sigma[:,None,None]*noise.float()
         prepared=self.runtime.encode(batch,target_token_hw=tuple(pair['target_token_hw']),identity=identity,
             source_latent=pair['source_latent'],source_bank=bank,options=options,base_options=base)
+        self.loss_context=self.prepare_loss_context(prepared)
         from ..observation import DiagnosticsV62
         observer=DiagnosticsV62() if self.config.diagnostics else None
         self.last_diagnostics=None
@@ -147,6 +164,17 @@ class NativeBackend:
         if observer is not None:
             self.last_diagnostics={**observer.report(),'routing_conditions':list(prepared.routing.metadata),'branch_gates':list(prepared.gates.metadata)}
         return output[:,-target.shape[1]:],noise.float()-target.float(),coverage,noisy
+
+    def prepare_loss_context(self,prepared):
+        return None
+
+    def window_counts(self,entries,routes,update):
+        from .objective import counts_for_window
+        return counts_for_window(entries,routes,update)
+
+    def compute_loss(self,*args,**kwargs):
+        from .objective import compute_micro_loss
+        return compute_micro_loss(self.pipe,*args,**kwargs)
 
 def prepare_cache(config,data_plan,output):
     """Explicit future frozen preprocessing, separate from training and preflight."""

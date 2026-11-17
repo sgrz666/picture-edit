@@ -23,11 +23,15 @@ def loss_probe(backend,config,data,update):
                     generator=torch.Generator(device=backend.device).manual_seed(24042+100*route_index+i)
                     noise=torch.randn(pair['target_latent'].shape,device=backend.device,dtype=pair['target_latent'].dtype,generator=generator)
                     entry={'route':route.name,'sigma':float(sigma[0]),'status':row}
-                    counts=counts_for_window([entry],{route.name:route},update)
+                    count_function=getattr(backend,'window_counts',counts_for_window)
+                    counts=count_function([entry],{route.name:route},update)
                     required={k for k in ('identity','perceptual') if counts[k]}
                     evaluators=backend.ensure_evaluators(required)
                     output,target,coverage,noisy=backend.forward(batch,pair,route,sigma,noise,options,base)
-                    loss,parts=compute_micro_loss(backend.pipe,output,target,coverage,batch['training_supervision_v5'].to(backend.device),
+                    objective=getattr(backend,'compute_loss',None)
+                    if objective is None:
+                        objective=lambda *args,**kwargs:compute_micro_loss(backend.pipe,*args,**kwargs)
+                    loss,parts=objective(output,target,coverage,batch['training_supervision_v5'].to(backend.device),
                         noisy,sigma,(batch['tgt_image'].to(backend.device).float()+1)*.5,route.loss,counts,update,evaluators,
                         spatial=batch.get('spatial_weights_v5'))
                     records.append({'route':route.name,'source_id':source,'index':index,'sigma':float(sigma[0]),'objective':float(loss),

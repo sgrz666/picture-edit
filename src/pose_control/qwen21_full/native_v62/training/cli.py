@@ -6,22 +6,22 @@ from .config import TrainingConfig,SourceSpec,LossSpec,stage_preset,canonical
 
 def ref(path):return None if path is None else {'path':str(Path(path).resolve()),'sha256':None}
 
-def parse_config(a):
+def parse_config(a,*,config_type=TrainingConfig,stage_factory=stage_preset):
     if a.config:
         if a.profile or a.phase:raise ValueError('Choose config stage or legacy profile/phase')
-        cfg=TrainingConfig.from_dict(json.loads(a.config.read_text(encoding='utf8')))
+        cfg=config_type.from_dict(json.loads(a.config.read_text(encoding='utf8')))
     elif a.action=='resume':
         from .checkpointing import load_committed
-        saved,_,_=load_committed(ref(a.checkpoint));cfg=TrainingConfig.from_dict(saved['training_state']['config'])
+        saved,_,_=load_committed(ref(a.checkpoint),schema=config_type.expected_schema);cfg=config_type.from_dict(saved['training_state']['config'])
     else:
         phase=a.phase or ('S3' if a.profile in ('joint','all-native') else 'S1' if a.profile and a.profile.endswith('heads') else 'S2' if a.profile else 'S1')
         branch=a.branch or (a.profile.split('-')[0] if a.profile and a.profile not in ('joint','all-native') else 'poselink')
-        stage=stage_preset(phase,branch,budget=a.steps)
+        stage=stage_factory(phase,branch,budget=a.steps)
         if a.profile=='all-native':stage=replace(stage,unfreeze_geometry=True)
         sources=[]
         if a.manifest:sources.append(SourceSpec('train',manifest=ref(a.manifest),groups=ref(a.groups),weight=1.))
         if a.validation_manifest:sources.append(SourceSpec('validation',role='validation',manifest=ref(a.validation_manifest),groups=ref(a.validation_groups),weight=1.))
-        cfg=TrainingConfig(stage=stage,sources=tuple(sources))
+        cfg=config_type(stage=stage,sources=tuple(sources))
     updates={}
     if a.diagnostics is not None:updates['diagnostics']=a.diagnostics
     for arg,key in (('output','output_root'),('model','model_path'),('cache_root','cache_root')):
@@ -51,9 +51,11 @@ def parse_config(a):
             loss=LossSpec() if a.loss_profile=='velocity_only' else LossSpec(face=f,hand=h,identity=.1 if a.loss_profile=='local_aux' else 0.,perceptual=.05 if a.loss_profile=='local_aux' else 0.)
             routes.append(replace(r,loss=loss))
         stage=replace(stage,routes=tuple(routes))
+        if a.loss_profile=='velocity_only' and hasattr(cfg,'paper_loss'):
+            updates['paper_loss']=replace(cfg.paper_loss,person_fm=0.,contact_fm=0.,identity_contrastive=0.)
     return replace(cfg,stage=stage,**updates)
 
-def main(argv=None):
+def main(argv=None,*,config_type=TrainingConfig,trainer_type=None,stage_factory=stage_preset):
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument('action',nargs='?',default='prepare',choices=('prepare','preflight','prepare-cache','train','resume','advance-stage'))
     p.add_argument('--level',choices=('data','grad'),default='data');p.add_argument('--preflight-only',action='store_true')
@@ -67,9 +69,9 @@ def main(argv=None):
     a=p.parse_args(argv)
     if a.preflight_only:a.action='preflight';a.level='data'
     if a.action in ('resume','advance-stage') and a.checkpoint is None:p.error('Explicit committed --checkpoint required')
-    cfg=parse_config(a)
+    cfg=parse_config(a,config_type=config_type,stage_factory=stage_factory)
     from .trainer import NativeV62Trainer
-    trainer=NativeV62Trainer(cfg)
+    trainer=(trainer_type or NativeV62Trainer)(cfg)
     if a.action=='prepare':print(canonical(trainer.prepare(a.report)));return
     if a.action=='preflight':
         if a.report is None:p.error('--report required')
