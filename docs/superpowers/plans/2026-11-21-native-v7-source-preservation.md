@@ -14,7 +14,7 @@ Files：新增`src/pose_control/qwen21_full/native_v7/preservation.py`、`tests/
 
 - [ ] 先写并运行失败测试：`source_identity_loss`应吸引Source而非GT，swap mapping影响结果，reference无梯度；`source_background_loss`排除foreground/padding，sigma变化下x0公式正确，Source-only／empty有效性有明确计数。
 - [ ] 实现`PreservationConfig(source_identity,background)`；`source_identity_loss(generated, source, valid)`返回loss/count；`source_background_loss(prediction,noisy,sigma,source_latent,support,coverage)`返回loss/area。有限值、shape、dtype、device严格校验。
-- [ ] `python -m pytest tests/test_native_v7_preservation.py -q`通过，提供红绿证据；保持独立模块，不修改训练集成文件。
+- [x] `python -m pytest tests/test_native_v7_preservation.py -q`通过，提供红绿证据；保持独立模块，不修改训练集成文件。59 passed。
 
 ## Task 2：资产绑定与准备
 
@@ -22,7 +22,7 @@ Files：新增`src/pose_control/qwen21_full/native_v7/preservation_assets.py`、
 
 - [ ] 先写失败测试覆盖记录读写、Source／Canvas／person／evaluator／grid错配拒绝、index SHA闭包以及BG几何mask膨胀与padding。
 - [ ] 提供`sample_binding(sample,evaluator_sha)`、`background_support(sample,margin_px=16)`、`write_record(path,features,valid,support,metadata)`、`read_record(ref,sample,evaluator_sha)`和`read_index(ref)`，协议见spec。文件只新建，读时校验SHA。
-- [ ] `python -m pytest tests/test_native_v7_preservation_assets.py -q`通过，Source特征不从Target提取，支持仅从Source Mask／Target geometry计算。
+- [x] `python -m pytest tests/test_native_v7_preservation_assets.py -q`通过，Source特征不从Target提取，支持仅从Source Mask／Target geometry计算。31 passed；真实CPU准备及三份data检查通过。
 
 ## Task 3：训练闭环集成
 
@@ -32,7 +32,7 @@ Files：修改`native_v7/training.py`，新增`tests/test_native_v7_preservation
 - [ ] 新config仅启用时序列化；DataPlan加载／验证sidecar并把闭包纳入identity，记录每条preservation资格。
 - [ ] Backend.pair给batch挂Source记录，forward保留当前pair的Source latent与记录；compute_loss复用callback返回Source项，背景只使用x0和Source latent。
 - [ ] `required_evaluators`、`extra_auxiliary`、`preflight_sigma`和真实grad case选择包含Source-only；缺资产／模型SHA不符不绕门禁。
-- [ ] 运行V7、V5辅助loss、V6/V62训练回归与新测试；做规格审查，再做质量审查，修复后复核。
+- [x] 运行V7、V5辅助loss、V6/V62训练回归与新测试；做规格审查，再做质量审查，修复后复核。V7 213 passed／1 skip；旧V5 Linux24 passed／1 skip，Windows原POSIX路径限制9失败不改旧模块。Source-only／联合一次decode探针、disabled旧record签名逐值检查及两级审查通过。另修复CLI velocity_only残留Source项，先红后绿。
 
 ## Task 4：真实原生试验与交付
 

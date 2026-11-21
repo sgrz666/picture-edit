@@ -58,6 +58,8 @@ def parse_config(a,*,config_type=TrainingConfig,stage_factory=stage_preset):
         stage=replace(stage,routes=tuple(routes))
         if a.loss_profile=='velocity_only' and hasattr(cfg,'paper_loss'):
             updates['paper_loss']=replace(cfg.paper_loss,person_fm=0.,contact_fm=0.,identity_contrastive=0.)
+        if a.loss_profile=='velocity_only' and hasattr(cfg,'preservation'):
+            updates.update(preservation=None,preservation_index=None)
     return replace(cfg,stage=stage,**updates)
 
 def main(argv=None,*,config_type=TrainingConfig,trainer_type=None,stage_factory=stage_preset):

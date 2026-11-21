@@ -79,6 +79,33 @@ $PY scripts/data/migrate_qwen21_native_full_v7.py \
 
 这是合并到完整配置的片段；只给这个片段会停在缺失绑定。冻结 ArcFace evaluator 使用现有 TorchScript 路径/SHA 声明，数据必须提供可靠的训练专用五点资格侧车。Target RGB/GT 人脸位置仅用于训练监督，推理不读取它们。
 
+### 显式 Source 身份／背景保持
+
+原生300步实验发现姿态提高而Source身份相似度下降。`preservation.py`增加两个可选目标，保持现有网络结构：
+
+```json
+{
+  "preservation": {"source_identity": 0.2, "background": 0.1},
+  "preservation_index": {
+    "path": "/data/shangguanrz/pic-edit-experiments/qwen21_hi4d_dual/native-v7-source-preservation-20261121-v1/data/assets-v1/index.json",
+    "sha256": "5c2611bda05b6fb8993a68f71aac62ef5655ebe434aee24f09834742b43a7fbe"
+  }
+}
+```
+
+Source ID直接计算本人物生成特征与Source特征的`1-cos`；Source使用真实检测五点、相同SHA的冻结evaluator重新提取，按source_indices映射到target槽位。它与原GT ID／GT contrastive共用一次辅助VAE解码，参考不反传，按有效人脸window归一化。ID gate仍由每条route的`auxiliary_every`／`auxiliary_sigma_max`显式控制；实验新配置采用1／0.5，旧配置仍为原值。
+
+背景在Source／Target人物并集膨胀16px外约束`x0=noisy-sigma*prediction`到同一缓存的Source latent，不增加解码。支持已含valid coverage，不能再次相乘；首轮仅支持Source与Target Canvas一致的单场景4Ref，不自动resize或为多Source任选背景。
+
+`preservation_assets.py`负责记录／索引SHA、RGB／Canvas／人物ID与映射／driver／evaluator／grid绑定和支持重算。缺少索引、特征模型不符或全数据无有效请求区域均拒绝，不能静默关loss。默认`preservation=None`，旧record与signature保持不变；显式`--loss-profile velocity_only`也同时关闭这些新目标。模型没有新增参数，不需要迁移权重，继续训练仍须从已提交父checkpoint经过新的真实grad gate。
+
+准备、短程对照与真实结果见 `experiments/hi4d_qwen21_dual_20260930/native-v7-source-preservation-20261121/README.md`。以下独立测试覆盖Source方向、参考无梯度、mask/padding、错误绑定、一次decode、window分母与关闭配置兼容：
+
+```bash
+python -m pytest tests/test_native_v7_preservation.py tests/test_native_v7_preservation_assets.py \
+  tests/test_native_v7_preservation_training.py tests/test_native_v7_preservation_pilot.py -q
+```
+
 ```bash
 $PY scripts/train/train_qwen21_native_full_v7.py preflight --level data \
   --config /data/shangguanrz/新V7目录/config.json --report /data/shangguanrz/新V7目录/data-preflight.json
@@ -116,7 +143,7 @@ CUDA_VISIBLE_DEVICES="" OMP_NUM_THREADS=2 MKL_NUM_THREADS=2 $PY -c 'import sys,t
 
 V7 是 V6.2 的显式新版本，不替换 V5/V6/V6.1/V6.2 的 checkpoint 或入口。新增学习路径复用旧编码器；原版本仅获得默认无状态扩展点，共用训练引擎仍保留原版本 schema。
 
-CPU 验收使用合成条件、可微小解码器与随机初始化的真实小型 Qwen Blocks，覆盖独立人物污染/梯度、接触禁止、无 Key bias、初始化、真实 optimizer 更新、2/4/5Ref 和 checkpoint 反向。它不证明真实 7B 显存、训练速度或图像质量。当前核对的 Hi4D r4 pilot 只有 2 条 typed 样本，两条均无辅助 ID 资格和 repair；需补齐可靠资格侧车后才适合默认 ID 训练，不能只调大 Loss 权重。
+架构阶段的CPU验收使用合成条件、可微小解码器与随机初始化的真实小型 Qwen Blocks，覆盖独立人物污染/梯度、接触禁止、无 Key bias、初始化、真实 optimizer 更新、2/4/5Ref和checkpoint反向。随后`native-v7-singlepair-overfit-20261117`已补齐真实ID资格与Source repair，完成原生7B的300步及生成：姿态改善，但身份与背景退步。该实验与本轮Source保持试验的结果记录各自独立，不将CPU测试或新增目标冒充生成效果已改善。
 
 2026-11-17 服务器最终相关套件 **296 passed、3 skipped**（299 项，包含旧 V5/V6/V6.1/V6.2 回归与 V7）；跳过的 3 项需要另行绑定真实资产实验。33 个本次 Python 文件编译通过，36 个交付文件 SHA256 一致，V6.2→V7 合成 checkpoint 的 CLI 迁移与实际文件严格读回通过。Windows 单独 V7 套件 57 项通过，随后补充的未路由配置边界 5 项通过；旧 V5 在 Windows 的 POSIX 绝对路径限制可在未修改基线复现，不据此改动旧训练版本。
 
