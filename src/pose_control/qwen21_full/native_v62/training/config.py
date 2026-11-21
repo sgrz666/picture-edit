@@ -102,8 +102,9 @@ class SourceSpec:
     region_supervision: dict | None=None
 
     def __post_init__(self):
-        if not self.source_id or '\0' in self.source_id or self.role not in ('train','validation','observation') or self.data_profile not in ('auto','full_smplx','hybrid_hi4d') or self.scene_kind not in ('any','single','dual'):
+        if not self.source_id or '\0' in self.source_id or self.role not in ('train','validation','observation','test') or self.data_profile not in ('auto','full_smplx','hybrid_hi4d') or self.scene_kind not in ('any','single','dual'):
             raise ValueError('Invalid source declaration')
+        if self.role=='test' and self.weight is not None:raise ValueError('A test source cannot receive training weight')
         if self.source_id=='champ_motions_example':raise ValueError('Unpaired CHAMP motion examples are not supervised training data')
         if self.weight is not None:positive(self.weight,'source weight')
         reference_syntax(self.manifest);reference_syntax(self.groups)

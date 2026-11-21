@@ -104,19 +104,25 @@ def sample_status(sample,route,config):
             'bps':c.mesh_valid.tolist(),'hand_2d':c.hand_point_valid.any(-1).tolist(),'face_2d':c.face_point_valid.any(-1).tolist()},
         'bucket':[list(sample['target_token_hw']),list(sample['source_token_hw']),sample['native_scene_kind'],sample['data_profile'],r.arcface.shape[2]]}
 
-def validate_evaluation_split(config,groups,targets):
+def validate_evaluation_split(config,groups,targets,images=None):
     if groups['train'] & groups['validation']:
         raise ValueError('Original-video/sequence leakage between train and validation')
     if config.experiment_mode=='standard' and groups['observation']:
         raise ValueError('Same-scene observation requires fixed_pair_overfit')
     if config.experiment_mode=='fixed_pair_overfit' and (targets.get('train',set()) & targets.get('observation',set())):
         raise ValueError('Observation target must never be a training target')
+    others=set().union(*(v for k,v in groups.items() if k!='test'))
+    if groups.get('test',set()) & others:raise ValueError('Original note/sequence leakage into test')
+    if images is not None:
+        others=set().union(*(v for k,v in images.items() if k!='test'))
+        if images.get('test',set()) & others:raise ValueError('Source/Target RGB leakage into test')
 
 
 class DataPlan:
     def __init__(self,config):
         self.config=config;self.datasets={};self.group_indices={};self.bindings={};self.status={};self.records=[];self.conditions={};self.spatial={};self.regional={}
-        split_groups={'train':set(),'validation':set(),'observation':set()};targets={k:set() for k in split_groups};identities={}
+        split_groups={'train':set(),'validation':set(),'observation':set(),'test':set()}
+        targets={k:set() for k in split_groups};images={k:set() for k in split_groups};identities={}
         for spec in config.sources:
             manifest=verify(spec.manifest);groups,bound=read_json_ref(spec.groups)
             dataset=NativeFullDatasetV62(manifest['path'],load_target=True,data_profile=spec.data_profile)
@@ -155,6 +161,10 @@ class DataPlan:
                     if key not in self.regional[spec.source_id]['entries']:raise ValueError('Regional index misses target GT/Canvas')
                     attach_region(sample,self.regional[spec.source_id]['entries'][key])
                 targets[spec.role].add(sample['local_condition_v4'].metadata[0]['driver_rgb_sha256'])
+                meta=sample['local_condition_v4'].metadata[0]
+                images[spec.role].update(meta[k] for k in ('driver_rgb_sha256','source_rgb_sha256') if meta.get(k))
+                if sample.get('source_bank_v5') is not None:
+                    images[spec.role].update(s.rgb_sha256 for s in sample['source_bank_v5'].sources)
                 if config.qwen_condition_profile!='legacy_single':
                     from ..conditioning import read_condition
                     ref=dataset.rows[index].get('qwen_condition')
@@ -170,7 +180,7 @@ class DataPlan:
                     if spec.role=='train' and route.source_ids and spec.source_id not in route.source_ids:status={**status,'eligible':False,'reasons':status['reasons']+['source_not_selected_for_route']}
                     self.status[(route.name,spec.source_id,index)]=status
                     self.records.append({'source_id':spec.source_id,'role':spec.role,'index':index,'pair_id':dataset.rows[index]['pair_id'],'route':route.name,**status})
-        validate_evaluation_split(config,split_groups,targets)
+        validate_evaluation_split(config,split_groups,targets,images)
         if config.experiment_mode=='fixed_pair_overfit' and not split_groups['observation']:
             raise ValueError('Fixed-pair experiment requires explicitly declared observation samples')
         self.identity={'sources':identities,'config_sha256':config.signature()};self.signature=digest(self.identity)

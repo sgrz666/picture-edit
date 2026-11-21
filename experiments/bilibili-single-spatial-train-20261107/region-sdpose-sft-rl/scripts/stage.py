@@ -16,8 +16,10 @@ def read(path):return json.loads(Path(path).read_text())
 def reference(path):return {'path':str(Path(path).resolve()),'sha256':file_sha(path)}
 
 
-def configure_gpu(fraction=.9):
+def configure_gpu(fraction=None):
     import torch
+    fraction=float(os.environ.get('REGION_PILOT_MEMORY_FRACTION','.9')) if fraction is None else fraction
+    if not 0<fraction<=.95:raise ValueError('Explicit GPU memory fraction must be in (0,.95]')
     torch.set_num_threads(4)
     if not torch.cuda.is_available():raise RuntimeError('CUDA unavailable')
     torch.cuda.set_per_process_memory_fraction(fraction)
@@ -25,7 +27,14 @@ def configure_gpu(fraction=.9):
     print(json.dumps({'free_gib':free/2**30,'total_gib':total/2**30,'memory_fraction':fraction}),flush=True)
 
 
-def generate(config,root,label,output):
+def generation_source_id(config,split):
+    role={'val':'validation','test':'test'}[split]
+    sources=[s.source_id for s in config.sources if s.role==role]
+    if len(sources)!=1:raise ValueError('One explicit '+role+' source required')
+    return sources[0]
+
+
+def generate(config,root,label,output,split='val'):
     import torch
     from src.pose_control.qwen21_full.native_v7.training import DataPlanV7,NativeBackendV7
     from src.pose_control.qwen21_full.native_v62.training.config import RouteSpec
@@ -33,9 +42,7 @@ def generate(config,root,label,output):
     from src.pose_control.qwen21_full.native_v62.generation import generate_native
     data=DataPlanV7(config);backend=NativeBackendV7(config,data,purpose='train');backend.runtime.eval()
     evaluation={x['pair_id']:x for x in read(root/'data/evaluation.json')}
-    validation=[s.source_id for s in config.sources if s.role=='validation']
-    if len(validation)!=1:raise ValueError('One explicit held-out validation source required')
-    validation_source=validation[0]
+    validation_source=generation_source_id(config,split)
     chosen=list(range(len(data.datasets[validation_source])))
     records=[];route=RouteSpec('fixed_generation','joint',1.,controls={'interaction':False},
         base_controls={'interaction':False,'raster':False,'part_contact':False})
@@ -49,7 +56,7 @@ def generate(config,root,label,output):
             if path.exists() and marker.exists():
                 existing=read(marker)
                 if (existing['sha256']!=file_sha(path) or existing['config_sha256']!=config.signature() or
-                        existing['model_sha256']!=config.initialization['sha256']):
+                        existing['model_sha256']!=config.initialization['sha256'] or existing.get('split','val')!=split):
                     raise ValueError('Saved generation provenance differs')
                 records.append(existing);continue
             if path.exists() or marker.exists():
@@ -58,11 +65,11 @@ def generate(config,root,label,output):
                 seed=42,steps=20,enabled=True,poselink_strength=route.poselink_strength)
             with path.open('xb') as f:image.save(f,format='PNG')
             record={'pair_id':sample['pair_metadata']['pair_id'],'path':str(path),'sha256':file_sha(path),
-                    'seed':42,'steps':20,'label':label,'target_rgb_used_as_condition':False,
+                    'seed':42,'steps':20,'label':label,'split':split,'source_id':validation_source,'target_rgb_used_as_condition':False,
                     'config_sha256':config.signature(),'model_sha256':config.initialization['sha256']}
             write_json(marker,record);records.append(record)
             print(json.dumps({'generated':str(path),'label':label}),flush=True)
-    return write_json(output/'manifest.json',{'schema':'bilibili_region_generated_images_v1','label':label,'records':records})
+    return write_json(output/'manifest.json',{'schema':'bilibili_region_generated_images_v1','label':label,'split':split,'records':records})
 
 
 def main():
@@ -71,6 +78,7 @@ def main():
     ap.add_argument('--root',type=Path,required=True);ap.add_argument('--config',type=Path,required=True)
     ap.add_argument('--report',type=Path);ap.add_argument('--output',type=Path)
     ap.add_argument('--parent',type=Path);ap.add_argument('--resume',type=Path);ap.add_argument('--label',default='baseline')
+    ap.add_argument('--split',choices=['val','test'],default='val')
     args=ap.parse_args()
     import torch
     torch.set_num_threads(4)
@@ -101,7 +109,7 @@ def main():
             checkpoint=reference(args.resume) if args.resume else reference(args.parent) if args.parent else None)
         write_json(args.report,result);print(json.dumps(result),flush=True)
     else:
-        result=generate(config,args.root,args.label,args.output)
+        result=generate(config,args.root,args.label,args.output,args.split)
         print(json.dumps(result),flush=True)
 
 

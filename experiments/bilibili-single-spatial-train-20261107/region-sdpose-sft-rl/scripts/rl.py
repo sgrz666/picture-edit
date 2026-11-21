@@ -153,7 +153,9 @@ def main():
     p.add_argument('--resume',type=Path);args=p.parse_args()
     if args.report.exists():raise FileExistsError('A terminal RL report already exists')
     import torch
-    torch.set_num_threads(4);torch.cuda.set_per_process_memory_fraction(.9)
+    fraction=float(os.environ.get('REGION_PILOT_MEMORY_FRACTION','.9'))
+    if not 0<fraction<=.95:raise ValueError('GPU memory fraction must be in (0,.95]')
+    torch.set_num_threads(4);torch.cuda.set_per_process_memory_fraction(fraction)
     from src.pose_control.qwen21_full.native_v7.training import TrainingConfigV7,NativeV7Trainer
     from src.pose_control.qwen21_full.native_v62.training.io import file_sha,verify,verify_prefix
     from src.pose_control.qwen21_full.native_v62.training.checkpointing import capture_rng,restore_rng

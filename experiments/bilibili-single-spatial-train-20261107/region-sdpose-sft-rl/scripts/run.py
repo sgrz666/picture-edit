@@ -30,8 +30,10 @@ def live(pid):
 def main():
     ap=argparse.ArgumentParser(description=__doc__);ap.add_argument('--root',type=Path,required=True)
     ap.add_argument('--repo',type=Path,required=True);ap.add_argument('--wait-pid',type=int)
-    ap.add_argument('--until',choices=['cache','sft','all'],default='all');ap.add_argument('--rl-updates',type=int,default=10)
+    ap.add_argument('--until',choices=['cache','sft','all'],default='all');ap.add_argument('--rl-updates',type=int)
     args=ap.parse_args();root=args.root.resolve();repo=args.repo.resolve();scripts=Path(__file__).resolve().parent
+    prepared=read(root/'prepared.json')
+    if args.rl_updates is None:args.rl_updates=prepared.get('followup_updates',10)
     os.environ['PICTUREEDIT_REPO']=str(repo);sys.path.insert(0,str(repo))
     from src.pose_control.qwen21_full.native_v62.training.io import file_sha
     from src.pose_control.qwen21_full.native_v7.training import TrainingConfigV7
@@ -56,9 +58,9 @@ def main():
             code=process.wait()
         if code:raise RuntimeError(f'{label} failed with exit {code}; inspect {log}')
         event('finished',label=label)
-    def stage(action,config,*,report=None,output=None,parent=None,resume=None,label=None):
+    def stage(action,config,*,report=None,output=None,parent=None,resume=None,label=None,split=None):
         cmd=[PY,str(scripts/'stage.py'),action,'--root',str(root),'--config',str(config)]
-        for key,value in (('--report',report),('--output',output),('--parent',parent),('--resume',resume),('--label',label)):
+        for key,value in (('--report',report),('--output',output),('--parent',parent),('--resume',resume),('--label',label),('--split',split)):
             if value is not None:cmd.extend((key,str(value)))
         child(action+'_'+(label or Path(config).stem),cmd)
     def evaluate(manifest,label):
@@ -68,12 +70,16 @@ def main():
         if not full.exists():child('identity_'+label,[PY,str(scripts/'evaluate.py'),'identity','--root',str(root),
             '--input',str(pose),'--output',str(full)])
         return full
-    def generate(config,label):
-        folder=root/f'output/generation/{label}';manifest=folder/'manifest.json'
-        if not manifest.exists():stage('generate',config,output=folder,label=label)
+    def generate(config,label,split='val'):
+        folder=root/f'output/generation/{label}' if split=='val' else root/f'output/generation/test/{label}'
+        metric_label=label if split=='val' else 'test_'+label;manifest=folder/'manifest.json'
+        if not manifest.exists():stage('generate',config,output=folder,label=metric_label,split=split)
         saved=read(manifest)
         if any(file_sha(x['path'])!=x['sha256'] for x in saved['records']):raise ValueError('Saved generated image changed')
-        evaluate(manifest,label)
+        expected={r['pair_id'] for r in read(root/'data/evaluation.json') if r['split']==split}
+        if len(saved['records'])!=len(expected) or {x['pair_id'] for x in saved['records']}!=expected:
+            raise ValueError('Generation does not cover the exact locked '+split+' set')
+        evaluate(manifest,metric_label)
         return manifest
     def ready_and_train(raw,label,parent=None):
         config_path=root/f'configs/run/{label}.json';gradient=root/f'report/{label}-gradient.json'
@@ -137,10 +143,10 @@ def main():
                     'scope':'completed bounded S0 with real gradients/frozen checks; not a human image-quality approval'})
                 gate=ref(gate_path)
         final[arm]=parent
-    if not (root/'sft_complete.json').exists():write(root/'sft_complete.json',{'checkpoints':final,'updates_per_arm':300})
+    if not (root/'sft_complete.json').exists():write(root/'sft_complete.json',{'checkpoints':final,'updates_per_arm':prepared['updates_per_sft_arm']})
     if args.until=='sft':event('sft_complete');return
     raw=read(root/'configs/cache-ready/regional/S3.json');raw['initialization']=final['regional']
-    raw['stage']['stage_id']='S3_bilibili_region_followup';raw['stage']['budget_updates']=args.rl_updates
+    raw['stage']['stage_id']='S3_region_followup';raw['stage']['budget_updates']=args.rl_updates
     raw['save_every_updates']=min(5,args.rl_updates);raw['probe_every_updates']=args.rl_updates
     raw['output_root']=str(root/'output/continue_sft');raw['body_baseline_report']=None
     continued,_,_=ready_and_train(raw,'continue_sft',final['regional']['path'])
@@ -162,13 +168,25 @@ def main():
     rl_result=read(rl_report);generation=root/'configs/generation/grpo.json'
     if not generation.exists():write(generation,{**read(ready),'initialization':rl_result['checkpoint'],'gradient_report':None})
     generate(generation,'grpo')
-    result={'sft':final,'continue_sft':continued,'grpo':rl_result,'scope':'single-seed bounded integration pilot'}
+    test_manifests={}
+    if prepared.get('test_pairs',0):
+        # Test is evaluated once all optimization has finished; no feedback to training.
+        for label in ('initial','uniform_S3','regional_S3','continue_sft','grpo'):
+            cfg=root/'configs/cache-ready/uniform/S0.json' if label=='initial' else root/f'configs/generation/{label}.json'
+            test_manifests[label]=ref(generate(cfg,label,'test'))
+    result={'sft':final,'continue_sft':continued,'grpo':rl_result,'test_manifests':test_manifests,
+            'scope':'single-seed fixed-budget experiment; test excluded from optimization and selection'}
     if not (root/'complete.json').exists():write(root/'complete.json',result)
     comparison=root/'report/comparison-ready.json'
     if not comparison.exists():
         output=root/('report/comparison_'+datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%S%fZ'))
         child('comparison',[PY,str(scripts/'summarize.py'),'--root',str(root),'--output',str(output)])
         write(comparison,{'output':str(output),'metrics':ref(output/'comparison.json'),
+            'overview':ref(output/'overview.png'),'readme':ref(output/'README.md')})
+    if prepared.get('test_pairs',0) and not (root/'report/test-comparison-ready.json').exists():
+        output=root/('report/test-comparison_'+datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%S%fZ'))
+        child('test_comparison',[PY,str(scripts/'summarize.py'),'--root',str(root),'--output',str(output),'--split','test'])
+        write(root/'report/test-comparison-ready.json',{'output':str(output),'metrics':ref(output/'comparison.json'),
             'overview':ref(output/'overview.png'),'readme':ref(output/'README.md')})
     for name in ('metrics','overview','readme'):
         asset=read(comparison)[name]

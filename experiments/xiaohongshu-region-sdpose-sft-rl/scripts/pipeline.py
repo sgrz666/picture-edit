@@ -1,14 +1,13 @@
 """Finish the new dataset interface, then execute the existing paired pilot."""
 import argparse
 from datetime import datetime,timezone
-import fcntl
 import json
 import os
 from pathlib import Path
 import subprocess
-import time
 
 from prepare import read,ref,write
+from waiting import wait_for_dependency,wait_for_gpu
 
 PY='/home/shangguanrz/nihaochen/envs/qwen21/bin/python'
 
@@ -16,11 +15,14 @@ PY='/home/shangguanrz/nihaochen/envs/qwen21/bin/python'
 def main():
     p=argparse.ArgumentParser(description=__doc__);p.add_argument('--root',type=Path,required=True)
     p.add_argument('--repo',type=Path,required=True);a=p.parse_args();root=a.root.resolve();repo=a.repo.resolve()
+    import fcntl
     scripts=Path(__file__).resolve().parent;root.joinpath('logs').mkdir(exist_ok=True)
+    request=read(root/'launch_request.json') if (root/'launch_request.json').exists() else {}
     lock=(root/'pipeline.lock').open('a');fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)
     env=dict(os.environ,PICTUREEDIT_REPO=str(repo),PYTHONPATH=str(repo),CUDA_HOME='/home/shangguanrz/nihaochen/envs/qwen21',
         OMP_NUM_THREADS='4',MKL_NUM_THREADS='4',OPENBLAS_NUM_THREADS='4',PYTHONUNBUFFERED='1',
-        PYTORCH_CUDA_ALLOC_CONF='backend:cudaMallocAsync',LD_LIBRARY_PATH='/data/shangguanrz/仪表盘/compat')
+        PYTORCH_CUDA_ALLOC_CONF='backend:cudaMallocAsync',LD_LIBRARY_PATH='/data/shangguanrz/仪表盘/compat',
+        REGION_PILOT_MEMORY_FRACTION=str(request.get('memory_fraction',.9)),YOLO_CONFIG_DIR=str(root/'logs/yolo-settings'))
     def event(kind,**fields):
         row={'event':kind,'pid':os.getpid(),'time_utc':datetime.now(timezone.utc).isoformat(),**fields}
         with (root/'logs/events.jsonl').open('a') as f:f.write(json.dumps(row)+'\n')
@@ -34,18 +36,19 @@ def main():
         if code:raise RuntimeError(f'{label} failed with exit {code}; {log}')
         event('pipeline_finished',label=label)
     def free_gpu():
-        # The short-lived probe releases its CUDA context before the real child.
-        command=[PY,'-c','import json,torch; f,t=torch.cuda.mem_get_info(); print(json.dumps([f,t]))']
-        waited=False
-        while True:
-            output=subprocess.check_output(command,env=env,text=True);free,total=json.loads(output.strip().splitlines()[-1])
-            if free>=70*2**30:break
-            if not waited:event('waiting_for_free_gpu',free_gib=free/2**30,total_gib=total/2**30);waited=True
-            time.sleep(30)
-        event('gpu_available',free_gib=free/2**30,total_gib=total/2**30)
+        wait_for_gpu(request.get('minimum_free_gpu_gib',70),env,event)
     event('xiaohongshu_pipeline',repo=str(repo),selection=ref(root/'data/selection.json'))
+    if request.get('dependency'):wait_for_dependency(request['dependency'],event)
+    for name in ('initialization','source_checkpoint','reuse_geometry'):
+        bound=request.get(name)
+        if bound is not None and ref(bound['path'])!=bound:raise ValueError('Pinned launch input changed: '+name)
     if not (root/'data/initialization.json').exists():
         child('migrate_bilibili20k',[PY,str(scripts/'initialization.py'),'--root',str(root),'--repo',str(repo)])
+    if not (root/'data/geometry.json').exists():
+        free_gpu();command=['/home/shangguanrz/project/pic-edit/add/envs/smplestx_bw/bin/python',str(scripts/'geometry.py'),
+            '--root',str(root),'--repo',str(repo),'--smplest-root','/home/shangguanrz/project/pic-edit/add/tools/SMPLest-X']
+        if request.get('reuse_geometry'):command.extend(('--reuse-index',request['reuse_geometry']['path']))
+        child('new_frame_geometry',command)
     if not (root/'prepared.json').exists():
         free_gpu();child('prepare_native_assets',[PY,str(scripts/'assets.py'),'--root',str(root),'--repo',str(repo)])
     common=repo/'experiments/bilibili-single-spatial-train-20261107/region-sdpose-sft-rl/scripts'
@@ -54,10 +57,11 @@ def main():
         child('preflight_data',[PY,str(common/'stage.py'),'data','--root',str(root),
               '--config',str(root/'configs/templates/regional/S3.json'),'--report',str(report)])
     if read(report).get('passed') is not True:raise RuntimeError('Actual dataset preflight did not pass')
-    free_gpu();child('paired_sft_rl',[PY,str(common/'run.py'),'--root',str(root),'--repo',str(repo),'--until','all'])
+    free_gpu();child('paired_sft_rl',[PY,str(common/'run.py'),'--root',str(root),'--repo',str(repo),'--until','all',
+        '--rl-updates',str(request.get('followup_updates',10))])
     comparison=read(root/'report/comparison-ready.json')
     write(root/'pipeline-complete.json',{'comparison':comparison,'prepared':ref(root/'prepared.json'),
-          'scope':'one-seed 78/10 Xiaohongshu pilot initialized from Bilibili20k; extra RL rollout cost is separate'})
+          'scope':'fixed-budget one-seed Xiaohongshu experiment from Bilibili20k; test excluded from optimization; RL rollout cost separate'})
     event('xiaohongshu_complete',report=str(root/'pipeline-complete.json'))
 
 

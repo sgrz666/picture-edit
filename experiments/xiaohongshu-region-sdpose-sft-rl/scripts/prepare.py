@@ -76,11 +76,43 @@ def select_pilot(pairs, poses, count, seed):
     return sorted(chosen, key=lambda p: p['pair_id'])
 
 
+def pair_qualified(pair,poses):
+    for key in ('source_frame_id','target_frame_id'):
+        valid=poses[pair[key]]['valid_mask134']
+        if len(valid)!=134:raise ValueError('SDPose geometry-order 134 slots required')
+        if sum(valid[:18])<3:return False
+    valid=poses[pair['target_frame_id']]['valid_mask134']
+    return sum(valid[2:14])>=8 and max(sum(valid[92:113]),sum(valid[113:134]))>=8
+
+
+def select_balanced(pairs,poses,count,seed):
+    groups=defaultdict(list);rng=random.Random(seed)
+    for pair in sorted(pairs,key=lambda x:x['pair_id']):
+        if pair_qualified(pair,poses):groups[pair['note_id']].append(pair)
+    notes=sorted(groups);rng.shuffle(notes)
+    for rows in groups.values():
+        rng.shuffle(rows)
+        rows.sort(key=lambda p:min(sum(poses[p['target_frame_id']]['valid_mask134'][92:113]),
+                                  sum(poses[p['target_frame_id']]['valid_mask134'][113:134])),reverse=True)
+    chosen=[];seen=set()
+    while len(chosen)<count:
+        progress=False
+        for note in notes:
+            while groups[note]:
+                pair=groups[note].pop(0);key=(pair['source_frame_id'],pair['target_frame_id'])
+                if key in seen:continue
+                seen.add(key);chosen.append(pair);progress=True;break
+            if len(chosen)==count:break
+        if not progress:raise ValueError('Too few qualified distinct pairs for expanded selection')
+    return sorted(chosen,key=lambda p:p['pair_id'])
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--root', type=Path, required=True)
     parser.add_argument('--data-root', type=Path, default=Path('/data/shangguanrz/datasets/xiaohongshu(single)'))
-    parser.add_argument('--train-pairs', type=int, default=78); parser.add_argument('--val-pairs', type=int, default=10)
+    parser.add_argument('--train-pairs', type=int); parser.add_argument('--val-pairs', type=int)
+    parser.add_argument('--test-pairs',type=int);parser.add_argument('--expanded',action='store_true')
     args = parser.parse_args(); root = args.root.resolve()
     if not str(root).startswith('/data/shangguanrz/'): raise ValueError('Persistent run root required')
     if (root/'data/selection.json').exists(): raise FileExistsError('Selection already locked')
@@ -89,8 +121,11 @@ def main():
     split = split_pairs(pairs, frames, 42)
     poses = {fid: read(args.data_root/'geometry/skeleton/sdpose_2d_kp'/f['clip_id']/(fid+'_keypoints.json'))
              for fid, f in frames.items()}
-    chosen = [*select_pilot(split['train'], poses, args.train_pairs, 42),
-              *select_pilot(split['val'], poses, args.val_pairs, 43)]
+    counts={'train':args.train_pairs if args.train_pairs is not None else 512 if args.expanded else 78,
+            'val':args.val_pairs if args.val_pairs is not None else 40 if args.expanded else 10,
+            'test':args.test_pairs if args.test_pairs is not None else 64 if args.expanded else 0}
+    selector=select_balanced if args.expanded else select_pilot
+    chosen=[p for i,s in enumerate(('train','val','test')) for p in selector(split[s],poses,counts[s],42+i) if counts[s]]
     ids = {p[k] for p in chosen for k in ('source_frame_id', 'target_frame_id')}
     locked = {}
     for fid in sorted(ids):
@@ -105,7 +140,12 @@ def main():
     receipt = {'schema': 'xiaohongshu_region_selection_v1', 'data_root': str(args.data_root), 'seed': 42,
         'pairs': chosen, 'frames': locked, 'dataset_inputs': [ref(args.data_root/p) for p in ('frames/frames.jsonl','pairs/pairs.jsonl')],
         'full_split_counts': {s: {'pairs': len(split[s]), 'notes': len({p['note_id'] for p in split[s]})} for s in ('train','val','test')},
-        'pilot_counts': {s: sum(p['split']==s for p in chosen) for s in ('train','val')},
+        'pilot_counts': {s: sum(p['split']==s for p in chosen) for s in ('train','val','test')},
+        'qualification_counts':{s:sum(pair_qualified(p,poses) for p in split[s]) for s in ('train','val','test')},
+        'selection_policy':'note-round-robin; body/visible-hand weak annotation qualification' if args.expanded else 'one qualified pair per note',
+        'experiment':{'budgets':{'S0':200,'S1':150,'S2':400,'S3':250},'followup_updates':50,
+                      'probe_samples':256,'probe_every_updates':0,'save_every_updates':100,
+                      'memory_fraction':.75,'minimum_free_gpu_gib':64} if args.expanded else {},
         'policy': 'note-disjoint; duplicate-image SHA components cannot cross split; no val/test training rewards',
         'geometry_status': 'not_prepared', 'canvas_long_side': 512}
     write(root/'data/selection.json', receipt)

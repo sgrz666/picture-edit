@@ -56,6 +56,22 @@ def test_pair_cannot_claim_a_different_note_than_its_rgb():
         m.split_pairs(pairs, frames, 42)
 
 
+def test_expanded_selection_balances_notes_and_checks_source_pose():
+    from collections import Counter
+    m=module();pairs=[];poses={}
+    for note in ('a','b','c'):
+        poses[note+'source']={'valid_mask134':[True]*134}
+        for i in range(5):
+            fid=note+str(i);poses[fid]={'valid_mask134':[True]*134}
+            pairs.append({'pair_id':fid,'note_id':note,'source_frame_id':note+'source','target_frame_id':fid})
+    selected=m.select_balanced(pairs,poses,8,42)
+    assert selected==m.select_balanced(list(reversed(pairs)),poses,8,42)
+    counts=Counter(p['note_id'] for p in selected)
+    assert max(counts.values())-min(counts.values())<=1
+    poses['asource']['valid_mask134'][:18]=[False]*18
+    assert not m.pair_qualified(pairs[0],poses)
+
+
 def test_estimator_crop_binding_only_replaces_the_bbox_detector(tmp_path, monkeypatch):
     path = Path(__file__).parents[1] / 'experiments/xiaohongshu-region-sdpose-sft-rl/scripts/geometry.py'
     monkeypatch.syspath_prepend(str(path.parent))
@@ -68,6 +84,19 @@ def test_estimator_crop_binding_only_replaces_the_bbox_detector(tmp_path, monkey
     assert 'allow_pickle=False' in rewritten and 'frame-1:frame' in rewritten
     with pytest.raises(ValueError, match='detector'):
         m.bind_sdpose_boxes('output = model(image)\n', tmp_path/'boxes.npy')
+
+
+def test_geometry_reuse_checks_rgb_and_parameter_bytes(tmp_path,monkeypatch):
+    path=Path(__file__).parents[1]/'experiments/xiaohongshu-region-sdpose-sft-rl/scripts/geometry.py'
+    monkeypatch.syspath_prepend(str(path.parent));spec=importlib.util.spec_from_file_location('xhs_geometry_reuse',path)
+    m=importlib.util.module_from_spec(spec);spec.loader.exec_module(m)
+    f=tmp_path/'parameters.pt';f.write_bytes(b'immutable test parameters')
+    selection={'frames':{'one':{'rgb_sha256':'rgb'}}}
+    previous={'frames':{'one':{'rgb_sha256':'rgb','parameters':m.ref(f)}}}
+    assert m.reusable_geometry(selection,previous)==previous['frames']
+    f.write_bytes(b'changed')
+    with pytest.raises(ValueError,match='geometry'):
+        m.reusable_geometry(selection,previous)
 
 
 @pytest.mark.parametrize('score', [.9, 1.2])

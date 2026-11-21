@@ -26,19 +26,36 @@ def bind_sdpose_boxes(source, boxes):
     return ''.join(lines)
 
 
+def reusable_geometry(selection,previous):
+    values={}
+    for fid,frame in selection['frames'].items():
+        old=previous.get('frames',{}).get(fid)
+        if old is None:continue
+        if old['rgb_sha256']!=frame['rgb_sha256'] or ref(old['parameters']['path'])!=old['parameters']:
+            raise ValueError('Reused geometry RGB or parameter SHA differs: '+fid)
+        values[fid]=old
+    return values
+
+
 def main():
     p = argparse.ArgumentParser(description=__doc__); p.add_argument('--root', type=Path, required=True)
     p.add_argument('--repo', type=Path, required=True); p.add_argument('--smplest-root', type=Path, required=True)
+    p.add_argument('--reuse-index',type=Path)
     a = p.parse_args(); sys.path.insert(0, str(a.repo))
     import torch
     from src.pose_edit.common import create_estimator_sandbox
     from src.pose_edit.estimator import REQUIRED_PARAMETER_KEYS
     selection = read(a.root/'data/selection.json')
     if (a.root/'data/geometry.json').exists(): raise FileExistsError('Geometry is already locked')
+    outputs={} if a.reuse_index is None else reusable_geometry(selection,read(a.reuse_index))
+    reuse_count=len(outputs)
     attempt = a.root/('geometry/smplestx_'+uuid.uuid4().hex[:12])
     sandbox = create_estimator_sandbox(a.smplest_root, attempt/'estimator')
     name = 'xhs'; inputs = sandbox/'demo/input_frames'/name; inputs.mkdir()
-    frames = sorted(selection['frames'].values(), key=lambda x: x['frame_id']); staged = []
+    frames = sorted((v for k,v in selection['frames'].items() if k not in outputs), key=lambda x: x['frame_id']); staged = []
+    if not frames:
+        write(a.root/'data/geometry.json',{'schema':'xhs_smplestx_geometry_v1','frames':outputs,
+              'reused_index':ref(a.reuse_index),'reused_frames':reuse_count,'training_started':False});return
     for i, frame in enumerate(frames, 1):
         if sha(frame['rgb_path']) != frame['rgb_sha256']: raise ValueError('Selected original RGB changed')
         target = inputs/f'{i:06d}.jpg'
@@ -65,7 +82,7 @@ def main():
           'camera_retargeting': False, 'crop_backend': 'locked_SDpose_YOLO11x_bbox', 'boxes': ref(boxes_path),
           'change_scope': 'run-local detector bbox assignment only; SMPLest-X model, crop processing and outputs unchanged'})
     env = dict(os.environ, PYTHONPATH=str(sandbox), PYTHONDONTWRITEBYTECODE='1', SMPLESTX_DET_CONF='.1',
-               OMP_NUM_THREADS='4', MKL_NUM_THREADS='4', OPENBLAS_NUM_THREADS='4')
+               OMP_NUM_THREADS='4', MKL_NUM_THREADS='4', OPENBLAS_NUM_THREADS='4',YOLO_CONFIG_DIR=str(a.root/'logs/yolo-settings'))
     for key in ('CUDA_HOME', 'CUDA_PATH', 'CUDACXX', 'LD_LIBRARY_PATH'): env.pop(key, None)
     subprocess.run(command, cwd=sandbox, env=env, check=True)
     result = sandbox/f'demo/output_frames/{name}/{name}_params.pt'
@@ -73,7 +90,7 @@ def main():
     for key in REQUIRED_PARAMETER_KEYS:
         if params[key].shape[0] != len(frames) or not torch.isfinite(params[key]).all():
             raise ValueError('Missing/reordered/invalid estimator frame: '+key)
-    outputs = {}; directory = attempt/'parameters'; directory.mkdir()
+    directory = attempt/'parameters'; directory.mkdir()
     for index, frame in enumerate(frames):
         value = {key: tensor[index:index+1] for key, tensor in params.items()
                  if torch.is_tensor(tensor) and tensor.shape[0] == len(frames)}
@@ -84,7 +101,8 @@ def main():
         outputs[frame['frame_id']] = {'parameters': ref(path), 'input': staged[index],
                                     'rgb_sha256': frame['rgb_sha256']}
     write(a.root/'data/geometry.json', {'schema': 'xhs_smplestx_geometry_v1', 'request': ref(attempt/'request.json'),
-          'batch_output': ref(result), 'frames': outputs, 'training_started': False})
+          'batch_output': ref(result), 'frames': outputs, 'training_started': False,
+          'reused_index':None if a.reuse_index is None else ref(a.reuse_index),'reused_frames':reuse_count})
     print(json.dumps({'geometry_frames': len(outputs), 'receipt': str(a.root/'data/geometry.json')}), flush=True)
 
 

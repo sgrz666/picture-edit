@@ -98,7 +98,9 @@ def main():
     from src.pose_control.qwen21_full.region_supervision import write_region_sidecar
     from src.pose_control.qwen21_full.native_v7.training import TrainingConfigV7
     from scripts.data.build_native_spatial_weights import SamForeground
-    torch.set_num_threads(4); torch.cuda.set_per_process_memory_fraction(.9)
+    fraction=float(os.environ.get('REGION_PILOT_MEMORY_FRACTION','.9'))
+    if not 0<fraction<=.95:raise ValueError('GPU memory fraction must be in (0,.95]')
+    torch.set_num_threads(4); torch.cuda.set_per_process_memory_fraction(fraction)
     selection=read(root/'data/selection.json'); geometry=read(root/'data/geometry.json'); initial=read(root/'data/initialization.json')
     base_path=Path('/data/shangguanrz/pic-edit-experiments/one/bilibili-region-sdpose-sft-rl-20261120-v1/configs/templates/uniform/S0.json')
     base=read(base_path); manifest=base['model_manifest']
@@ -175,7 +177,8 @@ def main():
         write(marker,item); built[fid]=item; entries[key]=item['region_entry']
         print(json.dumps({'native_frame':number,'total':len(selection['frames']),'frame_id':fid}),flush=True)
     region_index=write(root/'data/region_index.json',{'schema':'native_region_index_v1','entries':entries})
-    rows={'train':[],'val':[]}; groups={'train':{},'val':{}}; evaluation=[]
+    splits=[s for s in ('train','val','test') if any(p['split']==s for p in selection['pairs'])]
+    rows={s:[] for s in splits}; groups={s:{} for s in splits}; evaluation=[]
     for pair in selection['pairs']:
         source=built[pair['source_frame_id']]; target=built[pair['target_frame_id']]; frame=target['frame']; pair_id=pair['pair_id']
         directory=root/f'data/native_pairs/{pair_id}'; directory.mkdir(parents=True)
@@ -223,15 +226,16 @@ def main():
             'target_scores134':sd['scores134_raw'],'target_valid134':valid.tolist(),'sdpose_keypoints':frame['sdpose'],
             'region':target['artifacts']['region'],'native_hand_condition':bool(local.hand_roi_valid.any())})
     sources=[]
-    for split in ('train','val'):
+    for split in splits:
         path=root/f'data/{split}.jsonl'
         with path.open('x') as f:
             for row in rows[split]:f.write(json.dumps(row)+'\n')
-        sources.append({'source_id':'xiaohongshu_'+split,'role':'train' if split=='train' else 'validation',
+        sources.append({'source_id':'xiaohongshu_'+split,'role':'validation' if split=='val' else split,
             'manifest':ref(path),'groups':write(root/f'data/{split}_groups.json',groups[split]),
-            'data_profile':'full_smplx','scene_kind':'single','weight':1.,'region_supervision':region_index})
+            'data_profile':'full_smplx','scene_kind':'single','weight':1. if split=='train' else None,'region_supervision':region_index})
     write(root/'data/evaluation.json',evaluation)
-    budgets={'S0':100,'S1':50,'S2':100,'S3':50}
+    experiment=selection.get('experiment',{})
+    budgets=experiment.get('budgets',{'S0':100,'S1':50,'S2':100,'S3':50})
     for arm,mode in (('uniform','uniform'),('regional','region_balanced_v1')):
         for phase,budget in budgets.items():
             branches=['body'] if phase=='S0' else ['joint'] if phase=='S3' else ['face','hand','detail','poselink']
@@ -244,16 +248,20 @@ def main():
                 'stage':{'stage_id':phase+'_xiaohongshu_region_pilot','phase':phase,'routes':routes,'budget_updates':budget,'accumulation':4,
                   'exclude_groups':['geometry_dual','relation_raster','relation_tokens','interaction_controller','interaction_heads','strength_interaction'],
                   'optimizer':{'preset':'protect_inherited','multiplier':.1 if phase=='S3' else 1.}},
-                'probe_every_updates':25,'probe_samples':5,'save_every_updates':25,'generation_every_updates':0,
+                'probe_every_updates':experiment.get('probe_every_updates',25),'probe_samples':experiment.get('probe_samples',5),
+                'save_every_updates':experiment.get('save_every_updates',25),'generation_every_updates':0,
                 'generation_steps':20,'generation_seed':42,'diagnostics':False,
-                'continuous_stage_authorization':{'source':'direct_user_message','text':'换成小红书数据集进行实验；用最新架构和最新大规模训练权重(bilibili20000步训练)；沿用已授权空间加权和RL对照预算'}}
+                'continuous_stage_authorization':{'source':'direct_user_message','text':'小红书；最新架构和Bilibili20000步权重；开启自动化训练程序，等待1916769结束；测试集出图评测，扩大规模；空间加权和RL对照'}}
             write(root/f'configs/templates/{arm}/{phase}.json',TrainingConfigV7.from_dict(raw).record())
     write(root/'prepared.json',{'schema':'xiaohongshu_region_sdpose_pilot_v1','root':str(root),'data_root':selection['data_root'],
         'dataset_label':'Xiaohongshu','train_pairs':len(rows['train']),'val_pairs':len(rows['val']),
-        'train_videos':len(groups['train']),'val_videos':len(groups['val']),'group_unit':'note',
+        'test_pairs':len(rows.get('test',[])),'train_videos':len(set(groups['train'].values())),
+        'val_videos':len(set(groups['val'].values())),'test_notes':len(set(groups.get('test',{}).values())),'group_unit':'note',
         'validation_source_id':'xiaohongshu_val','initialization':initial['initialization'],'initialization_source':initial['source'],
-        'region_index':region_index,'region_targets':len(entries),'budgets':budgets,'updates_per_sft_arm':300,
-        'pose_backend':'sdpose','cache_prepared':False,'old_data_modified':False,'scope':'single-seed 78/10 integration pilot'})
+        'region_index':region_index,'region_targets':len(entries),'budgets':budgets,'updates_per_sft_arm':sum(budgets.values()),
+        'followup_updates':experiment.get('followup_updates',10),'test_source_id':'xiaohongshu_test' if 'test' in splits else None,
+        'pose_backend':'sdpose','cache_prepared':False,'old_data_modified':False,
+        'scope':'fixed-budget single-seed experiment; qualified body/hand subset; no test optimization'})
     print(json.dumps({'prepared':str(root/'prepared.json'),'train':len(rows['train']),'val':len(rows['val'])}),flush=True)
 
 
