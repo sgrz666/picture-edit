@@ -4,6 +4,8 @@
 
 上一轮300步姿态改善，但检测五点对齐的Source身份与背景保真下降。新实验复用原生4Ref、同一训练／观察配对和180步已提交权重，显式加入Source绝对cosine和Source背景x0约束；不改变Qwen或PoseLink架构。
 
+权重选择说明：此对照有意锁定180步父权重，两组各续训12步；当时已有旧目标的300步权重，并非漏接。两组生成／评价分别使用各自实际192步产物。当前Source保持分支的后续常规续训／测试默认候选为SourceBG192：`output/training/checkpoints/update_00000192_19203500495047c59007c90e347049af.pt`，SHA256 `eca8f5ece61683b8d00871211d196c328de4af99eaf4696902df76eeaf1e3f02`。192与旧300属于不同分支，不能按数字大小判断新旧；后续运行前仍须核对是否有更新的兼容、合格权重。
+
 ## 内容与使用
 
 `scripts/prepare_assets.py`只从真实Source检测五点并用同一固定SHA的TorchScript提取Source特征，按source_indices映射到target人物槽位；背景排除Source／Target人物并集膨胀16px和padding。输出到新的`data/assets-v1/`，生成control、source、source-background三份配置到`configs/pilot-v1/`，每份默认12步。
