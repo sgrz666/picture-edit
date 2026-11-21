@@ -4,7 +4,25 @@
 
 上一轮300步姿态改善，但检测五点对齐的Source身份与背景保真下降。新实验复用原生4Ref、同一训练／观察配对和180步已提交权重，显式加入Source绝对cosine和Source背景x0约束；不改变Qwen或PoseLink架构。
 
-权重选择说明：此对照有意锁定180步父权重，两组各续训12步；当时已有旧目标的300步权重，并非漏接。两组生成／评价分别使用各自实际192步产物。当前Source保持分支的后续常规续训／测试默认候选为SourceBG192：`output/training/checkpoints/update_00000192_19203500495047c59007c90e347049af.pt`，SHA256 `eca8f5ece61683b8d00871211d196c328de4af99eaf4696902df76eeaf1e3f02`。192与旧300属于不同分支，不能按数字大小判断新旧；后续运行前仍须核对是否有更新的兼容、合格权重。
+权重选择说明：此对照锁定180步父权重，两组各续训12步；当时已有旧目标的300步权重。两组生成／评价分别使用各自192步产物。SourceBG192的SHA256为`eca8f5ece61683b8d00871211d196c328de4af99eaf4696902df76eeaf1e3f02`，是本单配对分支的新产物，**没有继承Bilibili20000步结果**，不能称为全项目最新预训练能力。审计后不再把它直接作为扩大训练的默认完整初始化；须先完成Bilibili20k→V7兼容迁移与继承检查。
+
+### 上游继承审计修正
+
+实读checkpoint内部metadata、stage_origin／parent和各迁移报告，并重新计算文件SHA，得到两条分叉：
+
+```text
+早期 native_v5_init_v2.pt (f68a2a88…)
+├─ Bilibili Native V5 20000步 (d1a655a8…)
+└─ V6→V6.1→V6.2→V7初始化→双人180步→SourceBG192 (eca8f5ec…)
+```
+
+两条线共享较早V5初始化来源，当前双人192没有接上Bilibili20k已学习的增量。前述单样本指标与公平对照依然是该初始化链上的真实结果，不能当作“继承20k后的效果”。此前只核对分支最新、未审计全项目上游是初始化审计遗漏。
+
+Bilibili完整20000步checkpoint实际位于`/data/shangguanrz/pic-edit-experiments/one/bilibili-single-spatial-train-20261108-ungated-v1/stages/S3/checkpoints/update_00020000_f51df6cd2ace4a97b06ab037bd03b939.pt`，SHA256 `d1a655a86079194def922b13fdd39888f5c7f6db4ea6734e9c617d364f9db7f3`，architecture=`native_full_v5`、global_update=20000，与commit／summary一致。它需要显式迁移到V7，逐模块核对真实继承／新增／重置，不能改文件名后直接当V7 resume，也不能用当前192整包覆盖而丢失20k参数。
+
+可复核工具为`scripts/audit_weight_ancestry.py --input <checkpoint或migration.json> ... --report <新文件>`，只读CPU、验证实际文件SHA和内部引用。报告在服务器本实验`report/weight-ancestry-audit-v1.json`（原始完整提取）及精简v2，未更改或训练权重。
+
+服务器数据目录已于本次核对前归类：本实验现存`/data/shangguanrz/pic-edit-experiments/two/qwen21_hi4d_dual/native-v7-source-preservation-20261121-v1`。下面命令与历史JSON中的旧绝对路径保留为历史记录；复用前必须按新目录核对并重新绑定，不能直接沿用断开的旧路径。
 
 ## 内容与使用
 
