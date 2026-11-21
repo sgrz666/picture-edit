@@ -8,6 +8,7 @@ from dataclasses import replace
 import argparse
 import gc
 import hashlib
+import inspect
 import json
 import math
 import sys
@@ -19,6 +20,7 @@ BODY21_COMMON = (16, 18, 20, 15, 17, 19, 1, 4, 7, 0, 3, 6)
 BODY18_COMMON = tuple(range(2, 14))
 SIGMAS = (.2, .5, .8)
 NOISE_SEED = 24042
+DETECTION_SEED = 24042
 
 
 def read(path):
@@ -62,6 +64,29 @@ def valid_points(points, scores, hw):
     return (np.isfinite(points).all(-1) & np.isfinite(scores) & (np.asarray(scores) >= .30)
             & (points[..., 0] >= 0) & (points[..., 0] < hw[1])
             & (points[..., 1] >= 0) & (points[..., 1] < hw[0]))
+
+
+def seeded_detect_people(sdpose, image, runtime, **options):
+    """Repeat each SDPose latent sample while restoring the caller's RNG states."""
+    import torch
+    device = torch.device(runtime.device)
+    devices = [] if device.type == 'cpu' else [device.index if device.index is not None else torch.cuda.current_device()]
+    with torch.random.fork_rng(devices=devices):
+        # torch.manual_seed also seeds unrelated CUDA devices. Seed only the
+        # CPU generator and this runtime's CUDA generator inside their fork.
+        torch.random.default_generator.manual_seed(DETECTION_SEED)
+        if devices:
+            with torch.cuda.device(devices[0]):
+                torch.cuda.manual_seed(DETECTION_SEED)
+        return sdpose.detect_people(image, runtime, **options)
+
+
+def pose_rng_provenance(runtime, prior_reports=()):
+    return {'per_detection_call_seed': DETECTION_SEED,
+        'detection_rng_policy': 'fork_rng_cpu_and_runtime_cuda_reset_per_full_or_region_call_restore_caller_v1',
+        'seed_basis': 'SDPose VAE latent_dist.sample() has no explicit generator; every detection call must reset independently of image/region order.',
+        'pose_pipeline_implementation': reference(inspect.getfile(type(runtime.pipe))),
+        'prior_unseeded_reports': [{'report': reference(path), 'status': 'unseeded_exploratory_not_final_baseline'} for path in prior_reports]}
 
 
 def summarize(errors, normalized):
@@ -290,7 +315,7 @@ def image_metrics(args, config):
         requested = np.stack([sample['joint_uv' + suffix].numpy() for suffix in ('', '_b')])
         projected_valid = np.stack([sample['projection_valid' + suffix].numpy() for suffix in ('', '_b')])
         bgr = cv2.cvtColor(pixels, cv2.COLOR_RGB2BGR)
-        people, raw = sdpose.detect_people(bgr, runtime, order='geometry', sort_by='score', return_stats=True, min_area=args.min_area)
+        people, raw = seeded_detect_people(sdpose, bgr, runtime, order='geometry', sort_by='score', return_stats=True, min_area=args.min_area)
         pose = pose_metrics(requested, projected_valid, people, canvas.canvas_hw, raw_count=raw)
         pose['detections'] = [{'box_xyxy': person['box_xyxy'], 'box_score': person['box_score'],
             'confident_points': [{'slot134': int(joint), 'xy': person['points'][joint].tolist(), 'score': float(person['scores'][joint])}
@@ -303,7 +328,7 @@ def image_metrics(args, config):
             left, right, top, bottom = int(xx.min()), int(xx.max()) + 1, int(yy.min()), int(yy.max()) + 1
             dx, dy = int(.2 * (right - left)), int(.2 * (bottom - top))
             crop = bgr[max(0, top - dy):min(bgr.shape[0], bottom + dy), max(0, left - dx):min(bgr.shape[1], right + dx)]
-            region_people, region_raw = sdpose.detect_people(crop, runtime, order='geometry', sort_by='score', return_stats=True, min_area=args.min_area)
+            region_people, region_raw = seeded_detect_people(sdpose, crop, runtime, order='geometry', sort_by='score', return_stats=True, min_area=args.min_area)
             region_counts.append({'foreground': len(region_people), 'raw': region_raw})
         pose.update(region_count=region_counts, pose_basis='full_image_common12', common_body21_slots=BODY21_COMMON)
         source = ((sample['src_image'].permute(1, 2, 0).numpy() + 1) * 127.5).round().clip(0, 255).astype(np.uint8)
@@ -327,6 +352,7 @@ def image_metrics(args, config):
         print(json.dumps({'image_metrics_progress': number + 1, 'total': len(records), 'source_id': record['source_id'],
                           'variant': record['variant'], 'fg_persons_detected': len(people)}), flush=True)
     return {'kind': 'generated_image_metrics', 'pose_backend': 'sdpose_yolo11x_wholebody_geometry', 'pose_device': str(runtime.device),
+            **pose_rng_provenance(runtime, getattr(args, 'prior_unseeded_report', ())),
             'pose_code': reference(sdpose.__file__), 'pose_spec': reference(Path(sdpose.__file__).parents[2] / 'docs/SDPOSE_POSE_EVAL_SPEC.md'),
             'pose_checkpoint_dir': str(runtime.ckpt_dir), 'yolo': reference(runtime.ckpt_dir / 'yolo11x.pt'),
             'score_threshold': .30, 'foreground_min_area_px2': args.min_area, 'records': results}
@@ -343,6 +369,7 @@ def main(argv=None):
     parser.add_argument('--identity-model', type=Path)
     parser.add_argument('--memory-fraction', type=float, default=.9)
     parser.add_argument('--pose-device', choices=('cuda', 'cpu'), default='cuda')
+    parser.add_argument('--prior-unseeded-report', type=Path, action='append', default=[])
     parser.add_argument('--min-area', type=float, default=0)
     args = parser.parse_args(argv)
     if not math.isfinite(args.min_area) or args.min_area < 0:

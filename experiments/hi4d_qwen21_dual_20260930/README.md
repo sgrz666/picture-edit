@@ -1,6 +1,6 @@
 # hi4d_qwen21_dual_20260930 目录说明
 
-新增 [Native V7 单配对真实训练](native-v7-singlepair-overfit-20261117/README.md)：1 个训练配对与 1 个同人物观察配对；已补齐真实五点资格、Source repair、四图缓存和生产迁移。用户暂停 ComfyUI 后，原生尺寸、90% 显存预算的 S0 预检、四张基线与30步真实更新已通过，进入 S1；基线 CPU SDPose／身份正对照已完成。300步进度与结果见实验 README 和服务器报告。
+新增 [Native V7 单配对真实训练](native-v7-singlepair-overfit-20261117/README.md)：1 个训练配对与 1 个同人物观察配对；已补齐真实五点资格、Source repair、四图缓存和生产迁移。用户暂停 ComfyUI 后，原生尺寸、90% 显存预算的 Body／Head 两阶段60步已通过，PoseLink Full 已开始更新；四张基线、身份／姿态GT正对照和逐检测锁seed的CPU SDPose评价已完成。300步进度与结果见实验 README 和服务器报告。
 
 **路径**: `experiments/hi4d_qwen21_dual_20260930`
 

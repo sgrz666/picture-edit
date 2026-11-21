@@ -27,7 +27,7 @@
 3. 从未对本实验目标配对训练的生产初始化迁移到 V7，不用旧 Hi4D 300 步结果或 CPU 合成权重冒充新实验。
 4. 看固定噪声 FM、逐人物 ID/对比项、SDPose 姿态与可视化生成；记录训练与观察样本的差异。Loss 下降不单独证明成功，观察样本改善也不证明跨身份泛化。
 
-真实数据资格、生产迁移和四图缓存均已完成，当前完整通过 **S0 的 30 步**及 S1 四路梯度预检，S1 正在训练；尚不能宣称已经过拟合。先前 50% 显存预算的尝试均为 0 次更新，失败记录如下：
+真实数据资格、生产迁移和四图缓存均已完成，当前完整通过 **S0 30 步、S1 30 步**，S2 真实梯度预检也已通过并开始训练；尚不能宣称已经过拟合。先前 50% 显存预算的尝试均为 0 次更新，失败记录如下：
 
 |预检方式|实测结果|
 |---|---|
@@ -41,7 +41,7 @@
 
 本轮 S0 完整通过 **30 个真实 optimizer updates**，4 次更新对两个人脸执行 ID／contrastive；阶段用时 **1537.8 秒**。S0 peak allocated **58,555,066,368 字节（54.53GiB）**、reserved **68,371,349,504 字节（63.68GiB）**。提交的阶段 checkpoint 为 `update_00000030_782f5d3a6bc140de8b1396fde54977dc.pt`，SHA256 `112c7209beabe7591ac96880c810a3e9e274cd84e8174aab76df141b3fd1b2cd`。首次更新单独峰值不代表整个阶段峰值。
 
-训练前四张 20-step／seed42 对照均已保存，原图 940×1280，仅右侧补齐到 Canvas 960×1280（宽×高），未缩放。可见旧手臂残留与击掌不齐。CPU SDPose 全部检出两人、24/24 个共同关节有效；基线 `baseline-sdpose-cpu-v1/evaluation.json` 如下，PCK 阈值以各人物 GT torso 长度归一化：
+训练前四张 20-step／seed42 对照均已保存，原图 940×1280，仅右侧补齐到 Canvas 960×1280（宽×高），未缩放。可见旧手臂残留与击掌不齐。CPU SDPose 全部检出两人、24/24 个共同关节有效；正式基线 `baseline-sdpose-cpu-seeded-v2/evaluation.json` 如下，PCK 阈值以各人物 GT torso 长度归一化：
 
 | 样本／配置 | PCK@0.1 | PCK@0.2 | NME | 关节误差 px | 背景 MAE |
 |---|---:|---:|---:|---:|---:|
@@ -50,9 +50,11 @@
 |观察／Qwen only|29.17%|58.33%|0.23411|47.30|4.6459|
 |观察／初始 Native|29.17%|58.33%|0.26940|53.62|4.5734|
 
-GT 姿态正对照在 `pose-gt-control-cpu-v1/evaluation.json`：训练／观察均检出 2 人，分别 24／23 个共同点有效，PCK@0.2 均为 **100%**，关节误差 **12.06／11.71px**。观察样本有一个 right_elbow 未通过检测有效条件，保留该缺失。该约 12px 误差包含几何拟合、遮挡与估计器差异，不能从生成误差中直接相减。
+GT 姿态正对照在 `pose-gt-control-cpu-seeded-v2/evaluation.json`：训练／观察均检出 2 人，分别 24／23 个共同点有效，PCK@0.2 均为 **100%**，关节误差 **12.06／11.71px**。观察样本有一个 right_elbow 未通过检测有效条件，保留该缺失。该约 12px 误差包含几何拟合、遮挡与估计器差异，不能从生成误差中直接相减。
 
-S1 四路预检通过，用时 **561.1 秒**，peak allocated **51,990,664,192 字节**；后续仍从 S0 精确 checkpoint 继续，未重置 optimizer 父链。全部阶段是否完成以各自 commit／summary 和最终 `completed.json` 为准。
+SDPose 的 VAE 内部有 `latent_dist.sample()`；正式评价每次全图／区域检测都独立固定 seed **24042**，用 `fork_rng` 恢复调用方状态，只处理 CPU 和当前 runtime 的 CUDA 设备。原 `*-cpu-v1` 未逐调用锁 seed，保留为探索记录，不作为最终比较基线。新报告绑定实际 pipeline SHA `fa39f7f6e53547f5b14ed31458a6dbf47f812afd2ae89218473b741c6da48d20`；本次复测的 PCK 与 v1 相同，浮点末位略有变化。
+
+S1 四路预检通过，用时 **561.1 秒**；S1 的 30 步也已完成（**1434.8 秒**）。累计 60 步 checkpoint 为 `update_00000060_5042c056c9b64d08b0d34d3b16313df6.pt`，SHA256 `09b19daa36e4f429db2f2aa4c5ecde78dfe9493dddd53f5583c87438f2c5d8a0`，保留 optimizer 父链。S2 预检通过，用时 **260.3 秒**，peak allocated **51,989,270,016 字节**，已完成首个真实更新。全部阶段是否完成以各自 commit／summary 和最终 `completed.json` 为准。
 
 `identity-positive-control-v1/evaluation.json` 验证真实 GT 的对齐路径：训练两人 Source–GT 为 **0.83778／0.83196**，观察两人为 **0.86517／0.80939**，相对准备阶段最大差 **0.00347**；人物槽位与 Canvas 一致。生成图的分数同时受 GT 位置对齐误差与身份还原影响，需要结合图像判断。
 
@@ -84,13 +86,12 @@ $PY "$RUN/scripts/launch.py" --root "$RUN" \
 
 查看当前结果：`output/pilot300-native-fullgpu-v2/baseline/` 与 `final/`；四阶段 checkpoint 位于 `output/training/`，准确 SHA、累计更新数及父链见 `report/pilot300-native-fullgpu-v2/`。最终生成尚未完成时，`final/` 不存在属于预期状态。
 
-300 步和最终生成完成后顺序评价（新的 `report-dir` 不得已存在，GPU 评价与训练错开）：
+300 步和最终生成完成后顺序评价（新的 `report-dir` 不得已存在，GPU 评价与训练错开）。下列命令只评最终两张图，与已保存的 seeded-v2 基线比较，避免重复检测：
 
 ```bash
 NAME=pilot300-native-fullgpu-v2
 EVAL="$RUN/scripts/evaluate_run.py"
 CFG="$RUN/configs/$NAME/final-generation.json"
-BASE="$RUN/report/$NAME/baseline-generation.json"
 FINAL="$RUN/report/$NAME/final-generation.json"
 $PY "$EVAL" --action fixed-probe --config "$CFG" \
   --initial-checkpoint "$RUN/initialization/v7.pt" \
@@ -99,10 +100,10 @@ env CUDA_VISIBLE_DEVICES=-1 OMP_NUM_THREADS=4 MKL_NUM_THREADS=4 \
   CUDA_HOME=/home/shangguanrz/nihaochen/envs/qwen21 \
   /data/shangguanrz/pic-edit-experiments/four-skeleton-compair/.venv/bin/python \
   "$EVAL" --action image-metrics --pose-device cpu --config "$CFG" \
-  --generation-report "$BASE" --generation-report "$FINAL" \
+  --generation-report "$FINAL" \
   --report-dir "$RUN/report/$NAME/eval-sdpose-v1"
 $PY "$EVAL" --action identity-metrics --config "$CFG" \
-  --generation-report "$BASE" --generation-report "$FINAL" \
+  --generation-report "$FINAL" \
   --prepared "$RUN/data-v2/prepared.json" \
   --identity-model /home/shangguanrz/project/pic-edit/models/face_eval/identity_encoder.ts \
   --report-dir "$RUN/report/$NAME/eval-identity-v1"
@@ -112,7 +113,7 @@ GT 姿态控制可单独复测：在同一 SDPose CPU 环境运行 `audit_pose_c
 
 固定噪声比较使用相同 Joint 目标、sigma 0.2／0.5／0.8、每样本 noise seed 24042。姿态由 SDPose-Wholebody + YOLO11x 提取，score≥0.30，`order=geometry`，只比较 Body21／Body18 对应的 12 个身体关节；未检测到两人会显式记录，不能从均值里丢掉。身份指标是在目标五点位置对齐后的 Source→Generated 2×2 余弦矩阵，位置不准也会影响分数，需要结合姿态和图像解释。
 
-私有脚本回归：`python -m pytest tests/test_native_v7_singlepair_preparation.py tests/test_native_v7_singlepair_driver.py tests/test_native_v7_singlepair_eval.py -q`，**48 passed、1 skipped**。跳过项为本地 CPU-only 机器上的真实 CUDA 暂存测试，之前已在服务器核验输出/梯度逐值一致。服务器可用 `V7_PILOT_SCRIPT_ROOT` 指定实验脚本路径后复测。
+私有脚本回归：`python -m pytest tests/test_native_v7_singlepair_preparation.py tests/test_native_v7_singlepair_driver.py tests/test_native_v7_singlepair_eval.py -q`，**52 passed、1 skipped**。跳过项为本地 CPU-only 机器上的真实 CUDA 暂存测试，之前已在服务器核验输出/梯度逐值一致。服务器可用 `V7_PILOT_SCRIPT_ROOT` 指定实验脚本路径后复测。
 
 ## 与其他实验的关系
 

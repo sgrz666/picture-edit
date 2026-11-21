@@ -1,14 +1,17 @@
 """真实 Target GT 的 CPU 姿态正对照；不设分数通过阈值。
 
 复用所指定 evaluate_run.py 的 pose_metrics，保持共同12关节、geometry序、
-置信度0.30、请求torso归一化和髋心分配。每个typed样本仅跑一次全图检测，
+置信度0.30、请求torso归一化和髋心分配。每次检测局部固定seed24042并恢复RNG。
+旧v1未逐调用锁seed，仅作探索记录；seeded-v2作为后续比较口径。
+每个typed样本仅跑一次全图检测，
 不裁区域，不生成图像，不改训练或既有产物。白圈为请求投影，绿/蓝点为检测。
 
 在既有SDPose环境运行（报告目录必须新建）：
 CUDA_VISIBLE_DEVICES=-1 OMP_NUM_THREADS=4 MKL_NUM_THREADS=4 \
 CUDA_HOME=/home/shangguanrz/nihaochen/envs/qwen21 python audit_pose_control.py \
-  --config /absolute/S0-ready.json --evaluator /absolute/evaluate_run-cpu-pose-v1.py \
-  --report-dir /absolute/pose-gt-control-cpu-v1
+  --config /absolute/S0-ready.json --evaluator /absolute/evaluate_run-cpu-pose-seeded-v2.py \
+  --prior-unseeded-report /absolute/pose-gt-control-cpu-v1/evaluation.json \
+  --report-dir /absolute/pose-gt-control-cpu-seeded-v2
 
 GT分数反映几何拟合、投影、遮挡和估计器误差，不是生成模型的质量分数，
 也不能从生成图的误差中直接减去。失败检测保留null指标及原因。
@@ -47,7 +50,7 @@ def run(args, evaluation):
                     raise ValueError('Typed Target RGB differs from its canonical Canvas')
                 requested = np.stack([sample['joint_uv' + suffix].numpy() for suffix in ('', '_b')])
                 valid = np.stack([sample['projection_valid' + suffix].numpy() for suffix in ('', '_b')])
-                people, raw = sdpose.detect_people(cv2.cvtColor(pixels, cv2.COLOR_RGB2BGR), runtime,
+                people, raw = evaluation.seeded_detect_people(sdpose, cv2.cvtColor(pixels, cv2.COLOR_RGB2BGR), runtime,
                     order='geometry', sort_by='score', return_stats=True, min_area=0.)
                 pose = evaluation.pose_metrics(requested, valid, people, target_canvas.canvas_hw, raw_count=raw)
                 pose['pose_basis'] = 'true_target_gt_full_image_common12'
@@ -79,6 +82,7 @@ def run(args, evaluation):
                         if np.isfinite(requested[slot, joint]).all() else None, 'projection_valid': bool(valid[slot, joint])}
                         for joint in evaluation.BODY21_COMMON] for slot in range(2)]})
         report = {'kind': 'true_target_gt_pose_control', 'pose_backend': 'sdpose_yolo11x_wholebody_geometry',
+            **evaluation.pose_rng_provenance(runtime, getattr(args, 'prior_unseeded_report', ())),
             'execution': {'device': str(runtime.device), 'dtype': str(runtime.dtype),
                 'cuda_visible_devices': os.environ.get('CUDA_VISIBLE_DEVICES'), 'omp_num_threads': os.environ.get('OMP_NUM_THREADS'),
                 'mkl_num_threads': os.environ.get('MKL_NUM_THREADS')}, 'score_threshold': .30, 'full_image_only': True,
@@ -100,6 +104,7 @@ def main(argv=None):
     parser.add_argument('--config', type=Path, required=True)
     parser.add_argument('--report-dir', type=Path, required=True)
     parser.add_argument('--evaluator', type=Path, default=Path(__file__).with_name('evaluate_run.py'))
+    parser.add_argument('--prior-unseeded-report', type=Path, action='append', default=[])
     args = parser.parse_args(argv)
     spec = importlib.util.spec_from_file_location('native_pilot_evaluation', args.evaluator)
     evaluation = importlib.util.module_from_spec(spec); spec.loader.exec_module(evaluation)

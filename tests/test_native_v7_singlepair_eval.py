@@ -3,11 +3,16 @@ import importlib.util
 import json
 from pathlib import Path
 from types import SimpleNamespace
+from contextlib import contextmanager, nullcontext
 import weakref
 import sys
 
 import numpy as np
 import pytest
+
+
+class FakePosePipeline:
+    pass
 
 
 def evaluator():
@@ -259,13 +264,69 @@ def test_image_metrics_forwards_cpu_to_sdpose_runtime(tmp_path, monkeypatch):
     calls = []
     def load_runtime(*, device):
         calls.append(device)
-        return SimpleNamespace(device=device, ckpt_dir=weights)
+        return SimpleNamespace(device=device, ckpt_dir=weights, pipe=FakePosePipeline())
     sdpose = SimpleNamespace(__file__=str(code), load_runtime=load_runtime)
     monkeypatch.setitem(sys.modules, 'src.evaluation.sdpose', sdpose)
     monkeypatch.setattr(src.evaluation, 'sdpose', sdpose, raising=False)
     monkeypatch.setattr(module, 'generation_records', lambda _: [])
     result = module.image_metrics(SimpleNamespace(generation_report=['unused'], pose_device='cpu', min_area=0), {'sources': []})
     assert calls == ['cpu'] and result['pose_device'] == 'cpu'
+    assert result['per_detection_call_seed'] == 24042
+    assert result['pose_pipeline_implementation']['path'] == str(Path(__file__).resolve())
+
+
+def test_per_detection_seed_repeats_same_image_and_restores_callers_rng():
+    import torch
+    module = evaluator()
+    sdpose = SimpleNamespace(detect_people=lambda image, runtime, **kwargs: torch.rand(8))
+    runtime = SimpleNamespace(device='cpu')
+    image = np.zeros((16, 16, 3), np.uint8)
+    assert not torch.equal(sdpose.detect_people(image, runtime), sdpose.detect_people(image, runtime))
+    before = torch.random.get_rng_state().clone()
+    first = module.seeded_detect_people(sdpose, image, runtime, return_stats=True)
+    second = module.seeded_detect_people(sdpose, image, runtime, return_stats=True)
+    assert torch.equal(first, second)
+    assert torch.equal(before, torch.random.get_rng_state())
+
+
+def test_per_detection_seed_restores_rng_when_detector_fails():
+    import torch
+    module = evaluator()
+    def fail(*args, **kwargs):
+        torch.rand(8)
+        raise RuntimeError('real detector failed')
+    before = torch.random.get_rng_state().clone()
+    with pytest.raises(RuntimeError, match='real detector failed'):
+        module.seeded_detect_people(SimpleNamespace(detect_people=fail), None, SimpleNamespace(device='cpu'))
+    assert torch.equal(before, torch.random.get_rng_state())
+
+
+@pytest.mark.parametrize('device,index', [('cuda:3', 3), ('cuda', 2)])
+def test_detection_seed_selects_only_runtime_cuda_rng_without_gpu(device, index, monkeypatch):
+    import torch
+    module = evaluator()
+    original_fork = torch.random.fork_rng
+    devices_seen, devices_entered, seeds = [], [], []
+    @contextmanager
+    def cpu_fork(*, devices):
+        devices_seen.append(devices)
+        with original_fork(devices=[]):
+            yield
+    def cuda_device(selected):
+        devices_entered.append(selected)
+        return nullcontext()
+    monkeypatch.setattr(torch.random, 'fork_rng', cpu_fork)
+    monkeypatch.setattr(torch.cuda, 'current_device', lambda: 2)
+    monkeypatch.setattr(torch.cuda, 'device', cuda_device)
+    monkeypatch.setattr(torch.cuda, 'manual_seed', seeds.append)
+    monkeypatch.setattr(torch.cuda, 'manual_seed_all', lambda *a: pytest.fail('Other CUDA RNGs must remain untouched'))
+    before = torch.random.get_rng_state().clone()
+    sdpose = SimpleNamespace(detect_people=lambda *a, **k: torch.rand(8))
+    first = module.seeded_detect_people(sdpose, None, SimpleNamespace(device=device))
+    second = module.seeded_detect_people(sdpose, None, SimpleNamespace(device=device))
+    assert torch.equal(first, second) and torch.equal(before, torch.random.get_rng_state())
+    assert devices_seen == [[index], [index]] and devices_entered == [index, index]
+    assert seeds == [24042, 24042]
 
 
 def test_gt_pose_audit_reads_true_target_and_keeps_failed_case(tmp_path, monkeypatch):
@@ -308,15 +369,16 @@ def test_gt_pose_audit_reads_true_target_and_keeps_failed_case(tmp_path, monkeyp
     weights = tmp_path / 'weights'
     weights.mkdir()
     (weights / 'yolo11x.pt').write_bytes(b'YOLO')
-    calls = []
+    calls, random_values = [], []
     def detect(image, runtime, **options):
         assert image.dtype == np.uint8 and image.shape == (256, 256, 3) and image[0, 0, 0] == 128
         assert options == {'order': 'geometry', 'sort_by': 'score', 'return_stats': True, 'min_area': 0.}
         calls.append(1)
+        random_values.append(float(torch.rand(())))
         return ([detection(points[1]), detection(points[0])], 2) if len(calls) == 1 else ([], 0)
     def load(*, device):
         assert device == 'cpu'
-        return SimpleNamespace(device='cpu', dtype=torch.float32, ckpt_dir=weights)
+        return SimpleNamespace(device='cpu', dtype=torch.float32, ckpt_dir=weights, pipe=FakePosePipeline())
     sdpose = SimpleNamespace(__file__=str(code), load_runtime=load, detect_people=detect)
     monkeypatch.setitem(sys.modules, 'src.evaluation.sdpose', sdpose)
     monkeypatch.setattr(src.evaluation, 'sdpose', sdpose, raising=False)
@@ -324,6 +386,8 @@ def test_gt_pose_audit_reads_true_target_and_keeps_failed_case(tmp_path, monkeyp
     args = SimpleNamespace(config=config, report_dir=tmp_path / 'report', evaluator=Path(evaluation.__file__))
     result = audit.run(args, evaluation)
     assert len(calls) == 2 and len(result['records']) == 2
+    assert random_values[0] == random_values[1]
+    assert result['per_detection_call_seed'] == 24042
     assert result['execution']['device'] == 'cpu'
     assert result['records'][0]['pose']['all']['pck@0.1'] == 1
     assert result['records'][1]['pose']['all'] is None
