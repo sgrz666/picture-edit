@@ -115,7 +115,7 @@ def validate_evaluation_split(config,groups,targets):
 
 class DataPlan:
     def __init__(self,config):
-        self.config=config;self.datasets={};self.group_indices={};self.bindings={};self.status={};self.records=[];self.conditions={};self.spatial={}
+        self.config=config;self.datasets={};self.group_indices={};self.bindings={};self.status={};self.records=[];self.conditions={};self.spatial={};self.regional={}
         split_groups={'train':set(),'validation':set(),'observation':set()};targets={k:set() for k in split_groups};identities={}
         for spec in config.sources:
             manifest=verify(spec.manifest);groups,bound=read_json_ref(spec.groups)
@@ -144,6 +144,16 @@ class DataPlan:
                     if entry is None:raise ValueError('Spatial index misses GT/Canvas for source/pair: '+spec.source_id+'/'+dataset.rows[index]['pair_id'])
                     self.spatial[(spec.source_id,index)]=entry
                     self._attach_spatial(spec.source_id,index,sample)
+                if getattr(spec,'region_supervision',None) is not None:
+                    from ...region_supervision import read_region_index,attach_region
+                    if spec.source_id not in self.regional:
+                        idx,regional_ref=read_region_index(spec.region_supervision)
+                        self.regional[spec.source_id]=idx
+                        identities[spec.source_id]['region_supervision']={'index':regional_ref,'entries':idx['entries']}
+                    meta=sample['local_condition_v4'].metadata[0]
+                    key=meta['driver_rgb_sha256']+':'+meta['target_canvas_id']
+                    if key not in self.regional[spec.source_id]['entries']:raise ValueError('Regional index misses target GT/Canvas')
+                    attach_region(sample,self.regional[spec.source_id]['entries'][key])
                 targets[spec.role].add(sample['local_condition_v4'].metadata[0]['driver_rgb_sha256'])
                 if config.qwen_condition_profile!='legacy_single':
                     from ..conditioning import read_condition
@@ -155,6 +165,8 @@ class DataPlan:
                 if spec.scene_kind!='any' and spec.scene_kind!=sample['native_scene_kind']:raise ValueError('Source scene kind assertion differs')
                 for route in config.stage.routes:
                     status={**sample_status(sample,route,config),**extra_status}
+                    from ...region_supervision import attach_region_status
+                    status=attach_region_status(sample,status)
                     if spec.role=='train' and route.source_ids and spec.source_id not in route.source_ids:status={**status,'eligible':False,'reasons':status['reasons']+['source_not_selected_for_route']}
                     self.status[(route.name,spec.source_id,index)]=status
                     self.records.append({'source_id':spec.source_id,'role':spec.role,'index':index,'pair_id':dataset.rows[index]['pair_id'],'route':route.name,**status})
@@ -189,7 +201,12 @@ class DataPlan:
         return sample
     def sample(self,source,index):
         sample=self.datasets[source][index]
-        return self._attach_spatial(source,index,sample) if (source,index) in self.spatial else sample
+        if (source,index) in self.spatial:sample=self._attach_spatial(source,index,sample)
+        if source in self.regional:
+            from ...region_supervision import attach_region
+            meta=sample['local_condition_v4'].metadata[0]
+            sample=attach_region(sample,self.regional[source]['entries'][meta['driver_rgb_sha256']+':'+meta['target_canvas_id']])
+        return sample
     def report(self):return {'schema':'native_v62_data_preflight_v1','level':'data','passed':True,'signature':self.signature,'identity':self.identity,
         'experiment_mode':self.config.experiment_mode,'evaluation_kind':'same_scene_observation' if self.config.experiment_mode=='fixed_pair_overfit' else 'held_out_validation',
         'rows':self.records,'all_rows_retained':True,'model_constructed':False,'gradient_passed':False}

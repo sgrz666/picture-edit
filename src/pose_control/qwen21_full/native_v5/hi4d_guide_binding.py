@@ -34,17 +34,22 @@ def bank_record(path, bank_sha, pair_id):
     """Bounded row cache; callers verify the whole bank SHA before every lookup."""
     found = []
     has_v5 = False
-    with Path(path).open(encoding='utf8') as stream:
-        for line in stream:
-            if not line.strip():
-                continue
-            try:
-                row = json.loads(line)
-            except json.JSONDecodeError:
-                continue
-            has_v5 |= row.get('schema') == SCHEMA
-            if row.get('pair_id') == pair_id:
-                found.append(row)
+    text = Path(path).read_text(encoding='utf8')
+    try:
+        document = json.loads(text)
+        rows = document if isinstance(document, list) else [document]
+    except json.JSONDecodeError:
+        rows = []
+        for line in text.splitlines():
+            if line.strip():
+                try:rows.append(json.loads(line))
+                except json.JSONDecodeError:continue
+    for row in rows:
+        if not isinstance(row, dict):
+            continue
+        has_v5 |= row.get('schema') == SCHEMA
+        if row.get('pair_id') == pair_id:
+            found.append(row)
     if len(found) > 1:
         raise ValueError('Duplicate pair_id in the bound prompt bank')
     return (found[0] if found else None), has_v5

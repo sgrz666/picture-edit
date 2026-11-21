@@ -36,12 +36,15 @@ class LossSpec:
     spatial_joint: float=0.
     spatial_hand: float=0.
     spatial_max: float=2.5
+    region_mode: str='legacy'
 
     def __post_init__(self):
         for k in ('velocity','face','hand','identity','perceptual','spatial_body','spatial_joint','spatial_hand'):positive(getattr(self,k),k,zero=True)
         positive(self.spatial_max,'spatial_max')
         if self.spatial_max<1:raise ValueError('spatial_max must be at least one')
         if any(self.spatial_coefficients) and (self.face or self.hand):raise ValueError('Spatial weighting cannot duplicate legacy Face/Hand velocity loss')
+        from ...region_config import validate_region_mode
+        validate_region_mode(self)
         if self.velocity<=0 or type(self.auxiliary_every)!=int or self.auxiliary_every<1 or not 0<self.auxiliary_sigma_max<=1:raise ValueError('Invalid loss/gate')
 
     @property
@@ -86,6 +89,7 @@ class SourceSpec:
     scene_kind: str='any'
     weight: float | None=None
     spatial_weights: dict | None=None     # Hash-pinned offline GT/Canvas component index
+    region_supervision: dict | None=None   # Independent visible ROI sidecar index
 
     def __post_init__(self):
         if not self.source_id or '\0' in self.source_id or self.role not in ('train','validation','observation') or self.data_profile not in ('auto','full_smplx','hybrid_hi4d') or self.scene_kind not in ('any','single','dual'):
@@ -95,6 +99,8 @@ class SourceSpec:
         reference_syntax(self.manifest);reference_syntax(self.groups)
         reference_syntax(self.spatial_weights)
         if self.spatial_weights is not None and not self.spatial_weights.get('sha256'):raise ValueError('Spatial index requires a pinned SHA256')
+        reference_syntax(self.region_supervision)
+        if self.region_supervision is not None and not self.region_supervision.get('sha256'):raise ValueError('Regional index requires a pinned SHA256')
 
 @dataclass(frozen=True)
 class OptimizerSpec:
@@ -196,7 +202,9 @@ class TrainingConfig:
         ids={s.source_id for s in train}
         if any(set(r.source_ids)-ids for r in self.stage.routes):raise ValueError('Route references unknown training sources')
 
-    def record(self):return asdict(self)
+    def record(self):
+        from ...region_config import compatible_record
+        return compatible_record(asdict(self))
     def signature(self):
         value=self.record();value.pop('gradient_report');value.pop('body_baseline_report')
         return digest(value)
@@ -209,6 +217,9 @@ class TrainingConfig:
         for s in self.sources:
             if not s.manifest:missing.append(s.source_id+'.manifest')
             if not s.groups:missing.append(s.source_id+'.groups')
+            if not s.region_supervision and any(r.loss.region_mode!='legacy' and
+                (s.role!='train' or not r.source_ids or s.source_id in r.source_ids) for r in self.stage.routes):
+                missing.append(s.source_id+'.region_supervision')
             if not s.spatial_weights and any(any(r.loss.spatial_coefficients) and
                 (s.role!='train' or not r.source_ids or s.source_id in r.source_ids) for r in self.stage.routes):
                 missing.append(s.source_id+'.spatial_weights')

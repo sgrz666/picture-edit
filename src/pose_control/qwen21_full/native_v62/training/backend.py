@@ -146,12 +146,17 @@ class NativeBackend:
         return sample,batch,pair
 
     def forward(self,batch,pair,route,sigma,noise,options,base):
+        target=pair['target_latent'];noisy=(1-sigma[:,None,None])*target.float()+sigma[:,None,None]*noise.float()
+        prediction,coverage=self.predict_velocity(batch,pair,route,sigma,noisy,options,base)
+        return prediction,noise.float()-target.float(),coverage,noisy
+
+    def predict_velocity(self,batch,pair,route,sigma,noisy,options,base):
+        """Predict at an actual rollout state; target RGB/latent never supplies input."""
         from torch.nn import functional as F
         bank=batch.get('source_bank_v5')
         bank=None if bank is None else bank.with_pair(pair)
         identity=identity_from_reference_v4(batch,pair['source_latent'],pair['source_token_hw']) if bank is None and base.identity and base.identity_strength else None
         coverage=F.avg_pool2d(batch['valid_image_mask'].to(self.device).float(),16).flatten(1)
-        target=pair['target_latent'];noisy=(1-sigma[:,None,None])*target.float()+sigma[:,None,None]*noise.float()
         prepared=self.runtime.encode(batch,target_token_hw=tuple(pair['target_token_hw']),identity=identity,
             source_latent=pair['source_latent'],source_bank=bank,options=options,base_options=base)
         self.loss_context=self.prepare_loss_context(prepared)
@@ -163,7 +168,8 @@ class NativeBackend:
                 output=self.pipe.transformer(**transformer_inputs(pair,noisy.to(target.dtype),sigma))[0]
         if observer is not None:
             self.last_diagnostics={**observer.report(),'routing_conditions':list(prepared.routing.metadata),'branch_gates':list(prepared.gates.metadata)}
-        return output[:,-target.shape[1]:],noise.float()-target.float(),coverage,noisy
+        count=pair['target_token_hw'][0]*pair['target_token_hw'][1]
+        return output[:,-count:],coverage
 
     def prepare_loss_context(self,prepared):
         return None

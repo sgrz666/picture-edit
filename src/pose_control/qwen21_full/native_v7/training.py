@@ -30,6 +30,8 @@ class TrainingConfigV7(TrainingConfig):
         if not isinstance(self.paper_loss, PaperLossConfig):
             raise ValueError('Explicit PaperLossConfig required')
         super().__post_init__()
+        if any(r.loss.region_mode != 'legacy' for r in self.stage.routes) and (self.paper_loss.person_fm or self.paper_loss.contact_fm):
+            raise ValueError('Regional FM replaces V7 additive Person/Contact FM; set both explicitly to zero')
 
     @property
     def additional_evaluators(self):

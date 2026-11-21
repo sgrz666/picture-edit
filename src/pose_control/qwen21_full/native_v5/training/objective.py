@@ -14,7 +14,8 @@ def counts_for_window(entries,routes,update):
         if aux:
             counts['identity']+=status['auxiliary_faces'] if loss.identity>0 else 0
             counts['perceptual']+=status['auxiliary_faces'] if loss.perceptual>0 else 0
-    return counts
+    from ...region_objective import regional_counts
+    return regional_counts(entries,routes,counts)
 
 def compute_micro_loss(pipe,prediction,target_velocity,coverage,supervision,noisy,sigma,target_rgb,loss_spec,counts,update,evaluators,spatial=None):
     cfg=LocalLossConfig(auxiliary_every=loss_spec.auxiliary_every,auxiliary_sigma_max=loss_spec.auxiliary_sigma_max,
@@ -39,6 +40,12 @@ def compute_micro_loss(pipe,prediction,target_velocity,coverage,supervision,nois
         parts['spatial_weight_sum']=weights.sum()
         parts['spatial_weight_max']=weights.max()
     result=loss_spec.velocity*parts['velocity']/counts['velocity']
+    if getattr(loss_spec,'region_mode','legacy')!='legacy':
+        from ...region_objective import regional_micro_loss
+        regional=spatial.get('regional') if isinstance(spatial,dict) else None
+        result,regional_parts=regional_micro_loss(prediction,target_velocity,coverage,regional,loss_spec.region_mode,counts)
+        result=result*loss_spec.velocity
+        parts.update(regional_parts)
     for name,key,area in (('face','face_velocity','face_area'),('hand','hand_velocity','hand_area')):
         if counts[name] and bool(parts[area]>0):result=result+getattr(loss_spec,name)*parts[key]/counts[name]
     _,aux=auxiliary_loss(pipe,noisy,prediction,sigma,target_rgb,supervision,cfg,step=update,evaluators=evaluators)

@@ -1,0 +1,40 @@
+{
+  "schema": "bilibili_region_input_audit_v1",
+  "passed": true,
+  "initialization_chain": [
+    {
+      "version": "v6",
+      "source_sha256": "f68a2a881e57a9537ae68d69b51c660fa503a3b48cbf9f6b4ad88f29fa259e45",
+      "output_sha256": "7d62cadbddc7eff1710b12410010b0ef52535568b67cbb604fa3fa0c555ae884",
+      "report_sha256": "f88d97808b43248e8dae813458fbe6cfc99391b72bb6f1fa4e6efb2c24c56e84"
+    },
+    {
+      "version": "v61",
+      "source_sha256": "7d62cadbddc7eff1710b12410010b0ef52535568b67cbb604fa3fa0c555ae884",
+      "output_sha256": "6b1dd19b6b500b4dc014ceed00a1ad7391e662691eb942d8aba0a27099defbd3",
+      "report_sha256": "c9ca21ddbfac35c871b4b94ad1f7dab1fc771b9dec689c310e1387bd688a39af"
+    },
+    {
+      "version": "v62",
+      "source_sha256": "6b1dd19b6b500b4dc014ceed00a1ad7391e662691eb942d8aba0a27099defbd3",
+      "output_sha256": "b5ab405362a73bfb82ec4332382cad0076e9b091db389b23b83f76098c3b811b",
+      "report_sha256": "3f4a2da2ab4d78f61549f4824ca39c19e105f4bcc6fd207921941d80685efa3a"
+    },
+    {
+      "version": "v7",
+      "source_sha256": "b5ab405362a73bfb82ec4332382cad0076e9b091db389b23b83f76098c3b811b",
+      "output_sha256": "efe9162c3027ebebdf8801eb6ef31d4efb3e4b684f7ec9625ace47ea9ab3912e",
+      "report_sha256": "3b0b940897a9db0295132af0917e3a728f4791f19a7d67a2878e5c84ea6e1df5"
+    }
+  ],
+  "evaluation_manifest": {
+    "path": "/data/shangguanrz/pic-edit-experiments/bilibili-region-sdpose-sft-rl-20261120-v1/data/evaluation.json",
+    "sha256": "9273db19d79a46a923fb1ed3306bf23578396ad9fcf7bbcb456585f440164617"
+  },
+  "train_pairs": 78,
+  "val_pairs": 10,
+  "train_videos": 39,
+  "val_videos": 5,
+  "original_video_overlap": false,
+  "scope": "read-only input and pre-spatial initialization proof; no models or optimizer constructed"
+}

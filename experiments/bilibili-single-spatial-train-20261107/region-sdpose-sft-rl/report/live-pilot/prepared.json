@@ -1,0 +1,29 @@
+{
+  "schema": "bilibili_region_sdpose_pilot_v1",
+  "root": "/data/shangguanrz/pic-edit-experiments/bilibili-region-sdpose-sft-rl-20261120-v1",
+  "data_root": "/data/shangguanrz/datasets/bilibili",
+  "train_pairs": 78,
+  "val_pairs": 10,
+  "train_videos": 39,
+  "val_videos": 5,
+  "region_targets": 88,
+  "initialization": {
+    "path": "/data/shangguanrz/pic-edit-experiments/qwen21_hi4d_dual/native-v7-singlepair-overfit-20261117-v1/initialization/v7.pt",
+    "sha256": "efe9162c3027ebebdf8801eb6ef31d4efb3e4b684f7ec9625ace47ea9ab3912e"
+  },
+  "region_index": {
+    "path": "/data/shangguanrz/pic-edit-experiments/bilibili-region-sdpose-sft-rl-20261120-v1/data/region_index.json",
+    "sha256": "9a13b6a632fb15188ea5288664cd25ec34d527fd7f2415b9279eb10afd7d490d"
+  },
+  "budgets": {
+    "S0": 100,
+    "S1": 50,
+    "S2": 100,
+    "S3": 50
+  },
+  "updates_per_sft_arm": 300,
+  "cache_prepared": false,
+  "pose_backend": "sdpose",
+  "old_data_modified": false,
+  "scope": "video-balanced integration pilot; not full-data or multi-seed efficacy"
+}
