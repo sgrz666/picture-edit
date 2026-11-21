@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 from types import SimpleNamespace
 import weakref
+import sys
 
 import numpy as np
 import pytest
@@ -224,6 +225,113 @@ def test_identity_metrics_gt_control_uses_loaded_canvas_once_per_pair(tmp_path, 
     assert control['source_indices'] == [1, 0]
     assert control['gt_identity']['diagonal'] == [.83, .82]
     assert control['diagonal_delta_vs_preparation'] == [0., 0.]
+
+
+@pytest.mark.parametrize('options,uses_budget,device', [(['--pose-device', 'cpu'], False, 'cpu'), ([], True, 'cuda')])
+def test_image_metrics_cpu_bypasses_cuda_budget_and_default_keeps_it(tmp_path, monkeypatch, options, uses_budget, device):
+    module = evaluator()
+    config = tmp_path / 'config.json'
+    config.write_text('{}')
+    budget_calls = []
+    def budget(fraction):
+        budget_calls.append(fraction)
+        return {'device': 'cuda', 'memory_fraction': fraction}
+    monkeypatch.setattr(module, 'gpu_budget', budget)
+    monkeypatch.setattr(module, 'image_metrics', lambda args, config: {'pose_device': args.pose_device})
+    output = tmp_path / 'report'
+    module.main(['--action', 'image-metrics', '--config', str(config), '--report-dir', str(output)] + options)
+    report = json.loads((output / 'evaluation.json').read_text())
+    assert bool(budget_calls) is uses_budget
+    assert report['execution']['device'] == report['pose_device'] == device
+
+
+def test_image_metrics_forwards_cpu_to_sdpose_runtime(tmp_path, monkeypatch):
+    import src.evaluation
+    module = evaluator()
+    code = tmp_path / 'src/evaluation/sdpose.py'
+    code.parent.mkdir(parents=True)
+    code.write_text('# test SDPose interface')
+    (tmp_path / 'docs').mkdir()
+    (tmp_path / 'docs/SDPOSE_POSE_EVAL_SPEC.md').write_text('test spec')
+    weights = tmp_path / 'weights'
+    weights.mkdir()
+    (weights / 'yolo11x.pt').write_bytes(b'YOLO')
+    calls = []
+    def load_runtime(*, device):
+        calls.append(device)
+        return SimpleNamespace(device=device, ckpt_dir=weights)
+    sdpose = SimpleNamespace(__file__=str(code), load_runtime=load_runtime)
+    monkeypatch.setitem(sys.modules, 'src.evaluation.sdpose', sdpose)
+    monkeypatch.setattr(src.evaluation, 'sdpose', sdpose, raising=False)
+    monkeypatch.setattr(module, 'generation_records', lambda _: [])
+    result = module.image_metrics(SimpleNamespace(generation_report=['unused'], pose_device='cpu', min_area=0), {'sources': []})
+    assert calls == ['cpu'] and result['pose_device'] == 'cpu'
+
+
+def test_gt_pose_audit_reads_true_target_and_keeps_failed_case(tmp_path, monkeypatch):
+    import torch
+    import src.evaluation
+    from src.data.canvas_contract import CanvasSpec
+    from src.pose_control.qwen21_full.native_v62 import data
+    evaluation = evaluator()
+    path = Path(evaluation.__file__).with_name('audit_pose_control.py')
+    spec = importlib.util.spec_from_file_location('audit_gt_pose', path)
+    audit = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(audit)
+    points, valid = requested()
+    canvas = CanvasSpec((256, 256), (256, 256), (256, 256)).metadata()
+    class Dataset:
+        def __init__(self, manifest, *, load_target, data_profile):
+            assert load_target is True
+            self.source = Path(manifest).stem
+            self.rows = [{'pair_id': self.source + '-pair'}]
+        def __len__(self):
+            return 1
+        def __getitem__(self, index):
+            return {'src_image': torch.zeros(3, 256, 256), 'tgt_image': torch.zeros(3, 256, 256),
+                    'source_canvas': canvas, 'target_canvas': canvas,
+                    'joint_uv': torch.tensor(points[0]), 'joint_uv_b': torch.tensor(points[1]),
+                    'projection_valid': torch.tensor(valid[0]), 'projection_valid_b': torch.tensor(valid[1]),
+                    'pair_metadata': {'pair_id': self.rows[0]['pair_id'], 'target_rgb_sha256': 'actual-GT'},
+                    'local_condition_v4': SimpleNamespace(source_indices=torch.tensor([[0, 1]]),
+                        metadata=[{'target_person_ids': ['A', 'B']}])}
+    sources = []
+    for source in ('train', 'observation'):
+        manifest = tmp_path / (source + '.jsonl')
+        manifest.write_text('{}\n')
+        sources.append({'source_id': source, 'manifest': evaluation.reference(manifest), 'data_profile': 'hybrid_hi4d'})
+    config = tmp_path / 'config.json'
+    config.write_text(json.dumps({'sources': sources}))
+    code = tmp_path / 'src/evaluation/sdpose.py'
+    code.parent.mkdir(parents=True)
+    code.write_text('# test SDPose')
+    weights = tmp_path / 'weights'
+    weights.mkdir()
+    (weights / 'yolo11x.pt').write_bytes(b'YOLO')
+    calls = []
+    def detect(image, runtime, **options):
+        assert image.dtype == np.uint8 and image.shape == (256, 256, 3) and image[0, 0, 0] == 128
+        assert options == {'order': 'geometry', 'sort_by': 'score', 'return_stats': True, 'min_area': 0.}
+        calls.append(1)
+        return ([detection(points[1]), detection(points[0])], 2) if len(calls) == 1 else ([], 0)
+    def load(*, device):
+        assert device == 'cpu'
+        return SimpleNamespace(device='cpu', dtype=torch.float32, ckpt_dir=weights)
+    sdpose = SimpleNamespace(__file__=str(code), load_runtime=load, detect_people=detect)
+    monkeypatch.setitem(sys.modules, 'src.evaluation.sdpose', sdpose)
+    monkeypatch.setattr(src.evaluation, 'sdpose', sdpose, raising=False)
+    monkeypatch.setattr(data, 'NativeFullDatasetV62', Dataset)
+    args = SimpleNamespace(config=config, report_dir=tmp_path / 'report', evaluator=Path(evaluation.__file__))
+    result = audit.run(args, evaluation)
+    assert len(calls) == 2 and len(result['records']) == 2
+    assert result['execution']['device'] == 'cpu'
+    assert result['records'][0]['pose']['all']['pck@0.1'] == 1
+    assert result['records'][1]['pose']['all'] is None
+    assert result['records'][1]['pose']['reason'] == 'foreground_person_count_not_two'
+    assert 'passed' not in result
+    assert (args.report_dir / 'evaluation.json').is_file()
+    with pytest.raises(FileExistsError):
+        audit.run(args, evaluation)
 
 
 def test_fixed_probe_real_count_and_evaluator_contracts_and_model_release(tmp_path, monkeypatch):

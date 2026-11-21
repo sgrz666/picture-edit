@@ -35,8 +35,11 @@ def main():
                     continue  # A concurrent append may be incomplete.
                 if row.get('optimizer_updated'):
                     metric = {key: row[key] for key in ('global_update', 'stage_update', 'gradient_norm')}
-                    metric['losses'] = [{key: value for key, value in parts.items()
-                        if isinstance(value, (int, float))} for parts in row['losses']]
+                    metric['sigmas'] = [entry['sigma'] for entry in row['window']]
+                    keys = ('velocity', 'person_fm', 'contact_fm', 'identity', 'identity_contrastive',
+                            'eligible', 'contrastive_eligible', 'weighted_micro_objective')
+                    metric['losses'] = [{key: parts[key] for key in keys if key in parts}
+                                        for parts in row['losses']]
                     if any(parts.get('eligible', 0) for parts in row['losses']):
                         auxiliary_updates += 1
                         latest_auxiliary = metric

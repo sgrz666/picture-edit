@@ -17,6 +17,7 @@
 - `scripts/rebind_paths.py`：数据别名失效后，只为本实验重绑到实存路径；每个引用必须匹配原 SHA256，重新验证 grounded 条件与缓存语义，不修改数据集或恢复全局软链。
 - `scripts/audit_rebound.py`：只读核对原 SHA 与新旧缓存所有值逐项相等；本轮 `path-rebind-audit.json` 已通过，唯一允许改变的缓存字段为条件文件 SHA。
 - `scripts/evaluate_run.py`：固定噪声 Joint Loss、SDPose 姿态及 CPU 身份评价；分别使用现有 qwen21／SDPose 环境，每次必须使用新的报告目录。
+- `scripts/audit_pose_control.py`：真实 Target GT 的 CPU 姿态正对照，每样本一次全图检测；复用同一套共同 12 关节、投影和身份槽位匹配。
 - 服务器实验根目录：`/data/shangguanrz/pic-edit-experiments/qwen21_hi4d_dual/native-v7-singlepair-overfit-20261117-v1/`。新增合格监督与 repair 在 `data-v2/`；四图缓存在 `cache/native-4ref/`；生产迁移在 `initialization/`；所有实际日志、失败和资源峰值在 `logs/`、`report/`，不会覆盖旧 pilot。
 
 ## 检查标准与当前状态
@@ -26,7 +27,7 @@
 3. 从未对本实验目标配对训练的生产初始化迁移到 V7，不用旧 Hi4D 300 步结果或 CPU 合成权重冒充新实验。
 4. 看固定噪声 FM、逐人物 ID/对比项、SDPose 姿态与可视化生成；记录训练与观察样本的差异。Loss 下降不单独证明成功，观察样本改善也不证明跨身份泛化。
 
-截至原生尺寸新 run 的 S0 预检完成，优化更新次数仍为 **0**，不能宣称已经过拟合。已完成真实数据资格、生产迁移和四图缓存。先前 50% 显存预算的失败如下：
+真实数据资格、生产迁移和四图缓存均已完成，当前完整通过 **S0 的 30 步**及 S1 四路梯度预检，S1 正在训练；尚不能宣称已经过拟合。先前 50% 显存预算的尝试均为 0 次更新，失败记录如下：
 
 |预检方式|实测结果|
 |---|---|
@@ -38,7 +39,20 @@
 
 用户已暂停原先占约 35GiB 的 ComfyUI。`pilot300-native-fullgpu-v2` 使用原生尺寸、90% 上限、不开 tiling／Hidden 暂存；S0 真实梯度预检通过，用时 **304.8 秒**，peak allocated **58,168,345,600 字节（54.17GiB）**、reserved **66,985,132,032 字节（62.38GiB）**。程序随后生成未训练对照，再进入真实 optimizer 更新；是否完成以 `completed.json`／阶段保存为准。
 
-本轮已核验前 **6 个真实 optimizer updates**；第 4 步两个人脸均触发 ID／contrastive，未关闭监督。首次更新 peak allocated **36,543,667,200 字节（34.03GiB）**、reserved **39,864,762,368 字节（37.13GiB）**，不代表含 ID 更新或后续阶段的最高峰值。训练前四张 20-step／seed42 对照均已保存，原生 Canvas 960×1280（宽×高）；可见旧手臂残留与击掌不齐，尚不能宣称过拟合成功。
+本轮 S0 完整通过 **30 个真实 optimizer updates**，4 次更新对两个人脸执行 ID／contrastive；阶段用时 **1537.8 秒**。S0 peak allocated **58,555,066,368 字节（54.53GiB）**、reserved **68,371,349,504 字节（63.68GiB）**。提交的阶段 checkpoint 为 `update_00000030_782f5d3a6bc140de8b1396fde54977dc.pt`，SHA256 `112c7209beabe7591ac96880c810a3e9e274cd84e8174aab76df141b3fd1b2cd`。首次更新单独峰值不代表整个阶段峰值。
+
+训练前四张 20-step／seed42 对照均已保存，原图 940×1280，仅右侧补齐到 Canvas 960×1280（宽×高），未缩放。可见旧手臂残留与击掌不齐。CPU SDPose 全部检出两人、24/24 个共同关节有效；基线 `baseline-sdpose-cpu-v1/evaluation.json` 如下，PCK 阈值以各人物 GT torso 长度归一化：
+
+| 样本／配置 | PCK@0.1 | PCK@0.2 | NME | 关节误差 px | 背景 MAE |
+|---|---:|---:|---:|---:|---:|
+|训练／Qwen only|54.17%|66.67%|0.23365|52.35|4.8349|
+|训练／初始 Native|54.17%|62.50%|0.23269|52.18|4.8764|
+|观察／Qwen only|29.17%|58.33%|0.23411|47.30|4.6459|
+|观察／初始 Native|29.17%|58.33%|0.26940|53.62|4.5734|
+
+GT 姿态正对照在 `pose-gt-control-cpu-v1/evaluation.json`：训练／观察均检出 2 人，分别 24／23 个共同点有效，PCK@0.2 均为 **100%**，关节误差 **12.06／11.71px**。观察样本有一个 right_elbow 未通过检测有效条件，保留该缺失。该约 12px 误差包含几何拟合、遮挡与估计器差异，不能从生成误差中直接相减。
+
+S1 四路预检通过，用时 **561.1 秒**，peak allocated **51,990,664,192 字节**；后续仍从 S0 精确 checkpoint 继续，未重置 optimizer 父链。全部阶段是否完成以各自 commit／summary 和最终 `completed.json` 为准。
 
 `identity-positive-control-v1/evaluation.json` 验证真实 GT 的对齐路径：训练两人 Source–GT 为 **0.83778／0.83196**，观察两人为 **0.86517／0.80939**，相对准备阶段最大差 **0.00347**；人物槽位与 Canvas 一致。生成图的分数同时受 GT 位置对齐误差与身份还原影响，需要结合图像判断。
 
@@ -81,10 +95,10 @@ FINAL="$RUN/report/$NAME/final-generation.json"
 $PY "$EVAL" --action fixed-probe --config "$CFG" \
   --initial-checkpoint "$RUN/initialization/v7.pt" \
   --report-dir "$RUN/report/$NAME/eval-fixed-v1"
-env LD_LIBRARY_PATH=/data/shangguanrz/仪表盘/compat \
+env CUDA_VISIBLE_DEVICES=-1 OMP_NUM_THREADS=4 MKL_NUM_THREADS=4 \
   CUDA_HOME=/home/shangguanrz/nihaochen/envs/qwen21 \
   /data/shangguanrz/pic-edit-experiments/four-skeleton-compair/.venv/bin/python \
-  "$EVAL" --action image-metrics --config "$CFG" \
+  "$EVAL" --action image-metrics --pose-device cpu --config "$CFG" \
   --generation-report "$BASE" --generation-report "$FINAL" \
   --report-dir "$RUN/report/$NAME/eval-sdpose-v1"
 $PY "$EVAL" --action identity-metrics --config "$CFG" \
@@ -94,9 +108,11 @@ $PY "$EVAL" --action identity-metrics --config "$CFG" \
   --report-dir "$RUN/report/$NAME/eval-identity-v1"
 ```
 
+GT 姿态控制可单独复测：在同一 SDPose CPU 环境运行 `audit_pose_control.py --config "$CFG" --evaluator "$EVAL" --report-dir <新的绝对目录>`。这只读取真实 GT，不把 Target RGB 用作生成条件。
+
 固定噪声比较使用相同 Joint 目标、sigma 0.2／0.5／0.8、每样本 noise seed 24042。姿态由 SDPose-Wholebody + YOLO11x 提取，score≥0.30，`order=geometry`，只比较 Body21／Body18 对应的 12 个身体关节；未检测到两人会显式记录，不能从均值里丢掉。身份指标是在目标五点位置对齐后的 Source→Generated 2×2 余弦矩阵，位置不准也会影响分数，需要结合姿态和图像解释。
 
-私有脚本回归：`python -m pytest tests/test_native_v7_singlepair_preparation.py tests/test_native_v7_singlepair_driver.py tests/test_native_v7_singlepair_eval.py -q`。跳过项为本地 CPU-only 机器上的真实 CUDA 暂存测试，之前已在服务器核验输出/梯度逐值一致。服务器可用 `V7_PILOT_SCRIPT_ROOT` 指定实验脚本路径后复测。
+私有脚本回归：`python -m pytest tests/test_native_v7_singlepair_preparation.py tests/test_native_v7_singlepair_driver.py tests/test_native_v7_singlepair_eval.py -q`，**48 passed、1 skipped**。跳过项为本地 CPU-only 机器上的真实 CUDA 暂存测试，之前已在服务器核验输出/梯度逐值一致。服务器可用 `V7_PILOT_SCRIPT_ROOT` 指定实验脚本路径后复测。
 
 ## 与其他实验的关系
 

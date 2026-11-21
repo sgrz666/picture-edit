@@ -275,7 +275,7 @@ def image_metrics(args, config):
     records = generation_records(args.generation_report)
     datasets = {source['source_id']: NativeFullDatasetV62(verify(source['manifest'])['path'], load_target=False,
                 data_profile=source['data_profile']) for source in config['sources']}
-    runtime = sdpose.load_runtime()
+    runtime = sdpose.load_runtime(device=args.pose_device)
     results = []
     for number, item in enumerate(records):
         record = item['record']; dataset = datasets[record['source_id']]
@@ -324,7 +324,9 @@ def image_metrics(args, config):
             overlay.save(file, format='PNG')
         results.append({**item, 'pose': pose, 'background': background, 'overlay': reference(overlay_path),
                         'target_canvas': sample['target_canvas'], 'pair_metadata': sample['pair_metadata']})
-    return {'kind': 'generated_image_metrics', 'pose_backend': 'sdpose_yolo11x_wholebody_geometry',
+        print(json.dumps({'image_metrics_progress': number + 1, 'total': len(records), 'source_id': record['source_id'],
+                          'variant': record['variant'], 'fg_persons_detected': len(people)}), flush=True)
+    return {'kind': 'generated_image_metrics', 'pose_backend': 'sdpose_yolo11x_wholebody_geometry', 'pose_device': str(runtime.device),
             'pose_code': reference(sdpose.__file__), 'pose_spec': reference(Path(sdpose.__file__).parents[2] / 'docs/SDPOSE_POSE_EVAL_SPEC.md'),
             'pose_checkpoint_dir': str(runtime.ckpt_dir), 'yolo': reference(runtime.ckpt_dir / 'yolo11x.pt'),
             'score_threshold': .30, 'foreground_min_area_px2': args.min_area, 'records': results}
@@ -340,13 +342,15 @@ def main(argv=None):
     parser.add_argument('--prepared', type=Path)
     parser.add_argument('--identity-model', type=Path)
     parser.add_argument('--memory-fraction', type=float, default=.9)
+    parser.add_argument('--pose-device', choices=('cuda', 'cpu'), default='cuda')
     parser.add_argument('--min-area', type=float, default=0)
     args = parser.parse_args(argv)
     if not math.isfinite(args.min_area) or args.min_area < 0:
         parser.error('--min-area must be finite and nonnegative')
     new_report(args.report_dir)
     try:
-        budget = {'device': 'cpu'} if args.action == 'identity-metrics' else gpu_budget(args.memory_fraction)
+        cpu = args.action == 'identity-metrics' or (args.action == 'image-metrics' and args.pose_device == 'cpu')
+        budget = {'device': 'cpu'} if cpu else gpu_budget(args.memory_fraction)
         config = read(args.config)
         result = {'fixed-probe': fixed_probe, 'image-metrics': image_metrics, 'identity-metrics': identity_metrics}[args.action](args, config)
         result.update(config=reference(args.config), config_record=config, execution=budget, implementation=reference(__file__))
