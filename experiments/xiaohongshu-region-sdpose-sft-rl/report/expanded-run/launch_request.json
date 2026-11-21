@@ -1,0 +1,78 @@
+{
+  "schema": "xiaohongshu_expanded_automatic_request_v1",
+  "dependency": {
+    "pid": 1916769,
+    "boot_id": "7f0bf9bb-f9e4-4697-acc5-3b2d78edfa92",
+    "start_ticks": "366098433",
+    "command": "/home/shangguanrz/nihaochen/envs/qwen21/bin/python scripts/run_beach14_arms_multirun.py --runs 3 ",
+    "command_sha256": "09818c3b0d38874239af5e5645a5bbcb37a82c49e049e777208344d8b6ba56ca"
+  },
+  "observed_at_binding": {
+    "pid": 1916769,
+    "boot_id": "7f0bf9bb-f9e4-4697-acc5-3b2d78edfa92",
+    "start_ticks": "366098433",
+    "state": "R",
+    "command": "/home/shangguanrz/nihaochen/envs/qwen21/bin/python scripts/run_beach14_arms_multirun.py --runs 3 ",
+    "command_sha256": "09818c3b0d38874239af5e5645a5bbcb37a82c49e049e777208344d8b6ba56ca"
+  },
+  "selection": {
+    "path": "/data/shangguanrz/pic-edit-experiments/one/xiaohongshu-region-sdpose-sft-rl-20261121-expanded-v1/data/selection.json",
+    "sha256": "b2a0b7d579d37cab58c86e10296fee36b34d089ba7fa02a3a51c9d1d690deb15"
+  },
+  "initialization": {
+    "path": "/data/shangguanrz/pic-edit-experiments/one/xiaohongshu-region-sdpose-sft-rl-20261121-v1/initialization/v7.pt",
+    "sha256": "57022f5cdcae2931f30ec93090c6e53626089eb69f8893761d8e9c901448060e"
+  },
+  "source_checkpoint": {
+    "path": "/data/shangguanrz/pic-edit-experiments/one/bilibili-single-spatial-train-20261108-ungated-v1/stages/S3/checkpoints/update_00020000_f51df6cd2ace4a97b06ab037bd03b939.pt",
+    "sha256": "d1a655a86079194def922b13fdd39888f5c7f6db4ea6734e9c617d364f9db7f3"
+  },
+  "initialization_manifest": {
+    "path": "/data/shangguanrz/pic-edit-experiments/one/xiaohongshu-region-sdpose-sft-rl-20261121-expanded-v1/data/initialization.json",
+    "sha256": "ba42ff091bc65ea8f1e255a36b70e086912c26776aa3d46210ee56e6cb0bf056"
+  },
+  "reuse_geometry": {
+    "path": "/data/shangguanrz/pic-edit-experiments/one/xiaohongshu-region-sdpose-sft-rl-20261121-v1/data/geometry.json",
+    "sha256": "630f557f37e598060bf2b30fb9f3ba4e18424402ef2b3dd5a1af042f1cd6d675"
+  },
+  "budgets": {
+    "S0": 200,
+    "S1": 150,
+    "S2": 400,
+    "S3": 250
+  },
+  "followup_updates": 50,
+  "probe_samples": 256,
+  "probe_every_updates": 0,
+  "save_every_updates": 100,
+  "memory_fraction": 0.75,
+  "minimum_free_gpu_gib": 64,
+  "counts": {
+    "train": 512,
+    "val": 40,
+    "test": 64
+  },
+  "notes": {
+    "train": 141,
+    "val": 16,
+    "test": 20
+  },
+  "unique_frames": 747,
+  "reusable_geometry_frames": 172,
+  "new_geometry_frames": 575,
+  "generation": {
+    "seed": 42,
+    "steps": 20,
+    "test_after_all_optimization": true,
+    "test_models": [
+      "initial",
+      "uniform_S3",
+      "regional_S3",
+      "continue_sft",
+      "grpo"
+    ],
+    "expected_test_images": 320
+  },
+  "authorization": "User: wait for PID 1916769, automatically train, generate test images, enlarge experiment",
+  "test_policy": "64 fixed qualified held-out pairs; never optimizer, RL reward, validation probe, checkpoint selection or tuning"
+}

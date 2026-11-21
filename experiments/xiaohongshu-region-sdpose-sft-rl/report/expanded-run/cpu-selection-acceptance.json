@@ -1,0 +1,25 @@
+{
+  "passed": true,
+  "counts": {
+    "train": 512,
+    "val": 40,
+    "test": 64
+  },
+  "notes": {
+    "train": 141,
+    "val": 16,
+    "test": 20
+  },
+  "source_target_sha_disjoint": true,
+  "note_disjoint": true,
+  "initialization": {
+    "path": "/data/shangguanrz/pic-edit-experiments/one/xiaohongshu-region-sdpose-sft-rl-20261121-v1/initialization/v7.pt",
+    "sha256": "57022f5cdcae2931f30ec93090c6e53626089eb69f8893761d8e9c901448060e"
+  },
+  "source_checkpoint": {
+    "path": "/data/shangguanrz/pic-edit-experiments/one/bilibili-single-spatial-train-20261108-ungated-v1/stages/S3/checkpoints/update_00020000_f51df6cd2ace4a97b06ab037bd03b939.pt",
+    "sha256": "d1a655a86079194def922b13fdd39888f5c7f6db4ea6734e9c617d364f9db7f3"
+  },
+  "new_geometry_frames": 575,
+  "reusable_geometry_frames": 172
+}

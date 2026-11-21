@@ -12,6 +12,8 @@
 
 当前扩大版根为 `/data/shangguanrz/pic-edit-experiments/one/xiaohongshu-region-sdpose-sft-rl-20261121-expanded-v1`。`launch_request.json` 固定 PID **1916769**（start ticks `366098433`）、起始权重、样本、预算和资源限制；结束后检查至少 64 GiB 空闲显存再自动接续，Torch 单进程上限为总显存 75%。启动凭据为 `logs/automatic-v1.pid.json`，阶段事件为 `logs/events.jsonl`；文件锁拒绝重复程序。旧 78／10 根 `...-20261121-v1` 原样保留，其旧 CUDA 显存探针曾因 OOM 退出，不再作为有效等待器。
 
+扩大版实际启动器为 **PID 2226038**，已核对 `launcher_alive=true`、`dependency_still_running=true`；尚未执行 GPU 准备或训练。冻结源码 `source/runtime-v1` 包 SHA256 `1eace7a3e9d793230bcb51c282b220f7dee969b0ed0dd7a9d1d9df00078bea70`，938 个文件校验与编译通过，本地／服务器各 **98 项回归通过**。旧等待进程已退出，旧目录的 `report/superseded-expanded-v1.json` 记录新落点。实际状态仍以当前进程和新目录事件为准。
+
 测试源有独立 `test` 角色，不进入 optimizer pools、训练路由、validation loss probe、RL reward、checkpoint 选择或调参。所有优化完成后，initial／uniform_S3／regional_S3／continue_sft／grpo 各生成固定 **64 对 test 图，共 320 张**（seed42、20 steps），然后用 SDPose＋身份／背景评价。val 的阶段图与 test 最终图分别存放；汇总逐图检查 split、pair ID、真实 checkpoint SHA 和图片 SHA，输出各自的 8 列面板（Source、SDPose、GT、五份权重）。
 
 ## 先前 pilot 的准备证据
