@@ -52,7 +52,7 @@ experiments/mete-test/dual_mesh_refine_20261103_v1/
 └── report/               # 小型文字报告与面板索引
 ```
 
-大产物写 `/data/shangguanrz/pic-edit-experiments/mete-test/dual_mesh_refine_20261103_v1/`，不改写原始 `predictions.pkl`、Sapiens2 缓存和旧 benchmark 汇总。每帧输出独立目录，包含所选两人参数、重建网格、逐次指标、状态、输入哈希和配置哈希；已存在产物默认拒绝覆盖。
+大产物写 `/data/shangguanrz/pic-edit-experiments/姿态估计/mete-test/dual_mesh_refine_20261103_v1/`，不改写原始 `predictions.pkl`、Sapiens2 缓存和旧 benchmark 汇总。每帧输出独立目录，包含所选两人参数、重建网格、逐次指标、状态、输入哈希和配置哈希；已存在产物默认拒绝覆盖。
 
 模块边界如下：
 

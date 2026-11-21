@@ -36,7 +36,7 @@
 
 落盘：运行时 `/data/shangguanrz/tools/llama-cpp/b11617-cuda12.8/`（llama.cpp b11617、commit `14310190c`、预编译 CUDA 12.8 + 配套 cudart）；
 权重 `/data/shangguanrz/pic-edit-models/Qwen-Image-2.1-PE-I2I-GGUF/`（`mtp.Q8_0.gguf` 9,786,060,352 B、`mmproj.bf16.gguf` 921,704,640 B，与 HF API 公布字节数一致，SHA256 见同目录 `SHA256SUMS`）。
-执行位置在仓外 `/data/shangguanrz/pic-edit-experiments/pe_i2i_gguf_selection_20261014/`（避免与在跑会话抢 git 工作树）。
+执行位置在仓外 `/data/shangguanrz/pic-edit-experiments/one/pe_i2i_gguf_selection_20261014/`（避免与在跑会话抢 git 工作树）。
 
 - **CUDA 能用**：`llama-cli --list-devices` → `CUDA0: NVIDIA RTX 6000D (85040 MiB, 40883 MiB free)`。
   **坑**：cudart 解在**兄弟目录**，`LD_LIBRARY_PATH` 只给主目录时 `--list-devices` 返回 `(none)`——我第一趟就把它误判成"不支持 sm_120"。
@@ -84,7 +84,7 @@
 ```bash
 /home/shangguanrz/nihaochen/envs/qwen21/bin/python scripts/thinking_switch_benchmark_v2.py \
   --run /home/shangguanrz/project/pic-edit/workflow/runs/test/q8s_hard_02 \
-  --out /data/shangguanrz/pic-edit-experiments/pe_i2i_gguf_selection_20261014/output/thinking_switch_20261016_<时间戳> \
+  --out /data/shangguanrz/pic-edit-experiments/one/pe_i2i_gguf_selection_20261014/output/thinking_switch_20261016_<时间戳> \
   --dry-run
 ```
 

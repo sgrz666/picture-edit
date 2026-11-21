@@ -124,7 +124,7 @@
 
 - 本地：`D:/codeplus/pictureedit/experiments/qwen21_union_dataset_adaptation_v1/`。
 - sg：`/home/shangguanrz/project/pic-edit/experiments/2.qwen-test/qwen21_union_dataset_adaptation_v1/`。
-- 大产物：`/data/shangguanrz/pic-edit-experiments/qwen21_union_dataset_adaptation_v1/`，下设 data、cache、runs、report；每个 runs 子目录带时间戳。公开官方源码原样放独立 source checkout，不修改其已固定提交。
+- 大产物：`/data/shangguanrz/pic-edit-experiments/one/qwen21_union_dataset_adaptation_v1/`，下设 data、cache、runs、report；每个 runs 子目录带时间戳。公开官方源码原样放独立 source checkout，不修改其已固定提交。
 
 新增包有中文 README；主树的旧 Adapter、训练器、workflow 不为本实验改变默认行为。不存在的路径和函数在本文中均为待实现接口，不代表当前已经可用。
 
@@ -440,9 +440,9 @@ checkpoint 包含 LoRA tensors、optimizer、LR scheduler、Python/NumPy/torch C
 
 ```bash
 cd /home/shangguanrz/project/pic-edit
-UNION_PY=/data/shangguanrz/pic-edit-experiments/qwen21_union_dataset_adaptation_v1/env/bin/python
+UNION_PY=/data/shangguanrz/pic-edit-experiments/one/qwen21_union_dataset_adaptation_v1/env/bin/python
 UNION_CLI='experiments/2.qwen-test/qwen21_union_dataset_adaptation_v1/scripts/run.py'
-UNION_WORK=/data/shangguanrz/pic-edit-experiments/qwen21_union_dataset_adaptation_v1
+UNION_WORK=/data/shangguanrz/pic-edit-experiments/one/qwen21_union_dataset_adaptation_v1
 UNION_SESSION=$(date +%Y%m%dT%H%M%S)
 
 # 1. 审计和选数；默认协议即本文的 1536/72/128。

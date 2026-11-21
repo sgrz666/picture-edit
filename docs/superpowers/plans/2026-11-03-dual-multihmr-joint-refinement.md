@@ -4,7 +4,7 @@
 
 **Goal:** 在 Hi4D 冻结的 127 帧上，实现并验证“MultiHMR 共享相机初值 + Sapiens2 可见二维监督 + 双人联合优化 + 有符号网格穿透约束”，用四臂对照证明穿透下降且二维、三维和双人相对位置不退化。
 
-**Architecture:** 新实验放在 `experiments/mete-test/dual_mesh_refine_20261103_v1/`，不修改生产拟合代码和既有 benchmark 产物。纯 NumPy 模块负责输入契约、候选选择、可见性和统计；`smplx` 负责可微人体重建；Warp 1.18.0 在 kernel 内做双向有符号点到网格查询；Torch 以半隐式最近面约束优化两人。拟合 worker 只接收 RGB、真实 K 和模型预测，GT 仅由独立 evaluator 读取。大产物写 `/data/shangguanrz/pic-edit-experiments/mete-test/dual_mesh_refine_20261103_v1/`。
+**Architecture:** 新实验放在 `experiments/mete-test/dual_mesh_refine_20261103_v1/`，不修改生产拟合代码和既有 benchmark 产物。纯 NumPy 模块负责输入契约、候选选择、可见性和统计；`smplx` 负责可微人体重建；Warp 1.18.0 在 kernel 内做双向有符号点到网格查询；Torch 以半隐式最近面约束优化两人。拟合 worker 只接收 RGB、真实 K 和模型预测，GT 仅由独立 evaluator 读取。大产物写 `/data/shangguanrz/pic-edit-experiments/姿态估计/mete-test/dual_mesh_refine_20261103_v1/`。
 
 **Tech Stack:** Python 3.10、NumPy、PyTorch、SMPL-X、NVIDIA Warp 1.18.0、pytest、Matplotlib；远端统一使用 `/data/shangguanrz/models/two-man/M4_MultiHMR2/env/bin/python`，不改动 `qwen21` 环境。
 
@@ -206,7 +206,7 @@ def project(xyz, k):
   "predictions_pkl": "/data/shangguanrz/models/two-man/benchmark_results/M2_MultiHMR_672/predictions.pkl",
   "observations_dir": "/data/shangguanrz/models/two-man/benchmark_results/M3_Sapiens2_detr",
   "smplx_model": "/home/shangguanrz/project/pic-edit/add/tools/multi-hmr/models/smplx/SMPLX_NEUTRAL.npz",
-  "out_dir": "/data/shangguanrz/pic-edit-experiments/mete-test/dual_mesh_refine_20261103_v1",
+  "out_dir": "/data/shangguanrz/pic-edit-experiments/姿态估计/mete-test/dual_mesh_refine_20261103_v1",
   "device": "cuda:0",
   "seed": 20261103,
   "selection": {
@@ -254,7 +254,7 @@ def project(xyz, k):
 
 `scripts/common.py` 固定 body-12 与输入防火墙；`body.py` 重建 MultiHMR 的 SMPL-X；`select_candidates.py` 生成四臂共享的两人选择；`collision.py` 提供 Warp 有符号查询和 Torch 半隐式穿透项；`refine.py` 跑四臂并逐帧回退；`evaluate.py` 独立读取 GT、做演员组 bootstrap；`visualize.py` 生成双色网格前后对照。
 
-大产物位于 `/data/shangguanrz/pic-edit-experiments/mete-test/dual_mesh_refine_20261103_v1/`。原始 predictions、Sapiens2 缓存和旧报告均只读。所有帧以 127 为状态分母；不足两名可靠不同候选时明确失败，不复制人体。穿透指标是顶点—网格近似，不等同于三角面相交体积或服装级碰撞。
+大产物位于 `/data/shangguanrz/pic-edit-experiments/姿态估计/mete-test/dual_mesh_refine_20261103_v1/`。原始 predictions、Sapiens2 缓存和旧报告均只读。所有帧以 127 为状态分母；不足两名可靠不同候选时明确失败，不复制人体。穿透指标是顶点—网格近似，不等同于三角面相交体积或服装级碰撞。
 
 先运行 `python -m pytest tests -q`，再在远端运行 Warp/CUDA 测试。train 仅用于筛选，val 仅用于选择配置，test 冻结后只跑一次。最终是否可接生产由穿透改善、二维/三维非劣效、覆盖率和全部反向探针共同决定。
 ```
@@ -1598,7 +1598,7 @@ Run on `sg`：
 
 ```bash
 /data/shangguanrz/models/two-man/M4_MultiHMR2/env/bin/python -m py_compile scripts/*.py
-/data/shangguanrz/models/two-man/M4_MultiHMR2/env/bin/python scripts/refine.py --request data/request.json --arm selected-init --split train --limit 1 --out-root /data/shangguanrz/pic-edit-experiments/mete-test/dual_mesh_refine_20261103_v1/pilot
+/data/shangguanrz/models/two-man/M4_MultiHMR2/env/bin/python scripts/refine.py --request data/request.json --arm selected-init --split train --limit 1 --out-root /data/shangguanrz/pic-edit-experiments/姿态估计/mete-test/dual_mesh_refine_20261103_v1/pilot
 ```
 
 Expected: 退出码 0，输出一个帧目录或一个明确 selection failure 状态；同命令第二次必须因已有输出失败，不覆盖。
@@ -2126,7 +2126,7 @@ if __name__ == '__main__':
 `choose_panels` 只从两臂共同有效帧中选取 selected-init 穿透最大的样本，选择仅用于展示，不改变统计。运行：
 
 ```bash
-/data/shangguanrz/models/two-man/M4_MultiHMR2/env/bin/python scripts/visualize.py --results /data/shangguanrz/pic-edit-experiments/mete-test/dual_mesh_refine_20261103_v1/final/evaluation/results.json --run-root /data/shangguanrz/pic-edit-experiments/mete-test/dual_mesh_refine_20261103_v1/final --output-dir /data/shangguanrz/pic-edit-experiments/mete-test/dual_mesh_refine_20261103_v1/final/evaluation/report/panels
+/data/shangguanrz/models/two-man/M4_MultiHMR2/env/bin/python scripts/visualize.py --results /data/shangguanrz/pic-edit-experiments/姿态估计/mete-test/dual_mesh_refine_20261103_v1/final/evaluation/results.json --run-root /data/shangguanrz/pic-edit-experiments/姿态估计/mete-test/dual_mesh_refine_20261103_v1/final --output-dir /data/shangguanrz/pic-edit-experiments/姿态估计/mete-test/dual_mesh_refine_20261103_v1/final/evaluation/report/panels
 ```
 
 Expected: 恰好生成 separated、hug、severe 三张 PNG；缺任一类共同有效帧时明确失败，不拿其他类别替代。
@@ -2145,7 +2145,7 @@ git commit -m "docs(dual-refine): add dual-colour mesh comparison renderer"
 **Files:**
 - Create: `experiments/mete-test/dual_mesh_refine_20261103_v1/scripts/probes.py`
 - Modify: `experiments/mete-test/dual_mesh_refine_20261103_v1/README.md`
-- Create on remote only: `/data/shangguanrz/pic-edit-experiments/mete-test/dual_mesh_refine_20261103_v1/pilot/probes.json`
+- Create on remote only: `/data/shangguanrz/pic-edit-experiments/姿态估计/mete-test/dual_mesh_refine_20261103_v1/pilot/probes.json`
 
 - [ ] **Step 1: 在本地运行全部 CPU 可执行测试并检查变更**
 
@@ -2174,7 +2174,7 @@ Expected: 全部通过；远端目录缺失或本地/远端 SHA256 不一致都�
 
 ```bash
 PY=/data/shangguanrz/models/two-man/M4_MultiHMR2/env/bin/python
-ROOT=/data/shangguanrz/pic-edit-experiments/mete-test/dual_mesh_refine_20261103_v1/pilot
+ROOT=/data/shangguanrz/pic-edit-experiments/姿态估计/mete-test/dual_mesh_refine_20261103_v1/pilot
 $PY scripts/refine.py --request data/request.json --arm selected-init --split train --limit 6 --out-root "$ROOT"
 $PY scripts/refine.py --request data/request.json --arm reproj-only --split train --limit 6 --out-root "$ROOT"
 $PY scripts/refine.py --request data/request.json --arm collision-only --split train --limit 6 --out-root "$ROOT"
@@ -2230,7 +2230,7 @@ if __name__ == '__main__':
 运行：
 
 ```bash
-/data/shangguanrz/models/two-man/M4_MultiHMR2/env/bin/python scripts/probes.py --output /data/shangguanrz/pic-edit-experiments/mete-test/dual_mesh_refine_20261103_v1/pilot/probes.json
+/data/shangguanrz/models/two-man/M4_MultiHMR2/env/bin/python scripts/probes.py --output /data/shangguanrz/pic-edit-experiments/姿态估计/mete-test/dual_mesh_refine_20261103_v1/pilot/probes.json
 ```
 
 六项均由独立 pytest 进程的实际退出码决定。反向验证使用 `test_artificially_deeper_query_has_larger_torch_loss` 和 `test_effect_gate_must_fail_when_direction_is_reversed`：前者加深重叠必须增大损失，后者把区间方向反转必须让门失败；任何一项恒真或恒假都停止全量实验。
@@ -2283,7 +2283,7 @@ PY
 ```bash
 set -e
 PY=/data/shangguanrz/models/two-man/M4_MultiHMR2/env/bin/python
-OUT=/data/shangguanrz/pic-edit-experiments/mete-test/dual_mesh_refine_20261103_v1
+OUT=/data/shangguanrz/pic-edit-experiments/姿态估计/mete-test/dual_mesh_refine_20261103_v1
 SOURCE=/home/shangguanrz/project/pic-edit/experiments/9.hi4d/mete-test/dual_pose_compare_20261029_v1/data/request.json
 for lr in 0.001 0.003; do
   for cw in 1 5 20; do
@@ -2375,7 +2375,7 @@ README 只从最终 `summary.json` 提取：各 split 有效帧数、四臂穿�
 ls experiments/mete-test/dual_mesh_refine_20261103_v1
 mkdir -p experiments/mete-test/dual_mesh_refine_20261103_v1/report
 test ! -e experiments/mete-test/dual_mesh_refine_20261103_v1/report/FINAL.md
-scp sg:/data/shangguanrz/pic-edit-experiments/mete-test/dual_mesh_refine_20261103_v1/final/evaluation/report/FINAL.md experiments/mete-test/dual_mesh_refine_20261103_v1/report/FINAL.md
+scp sg:/data/shangguanrz/pic-edit-experiments/姿态估计/mete-test/dual_mesh_refine_20261103_v1/final/evaluation/report/FINAL.md experiments/mete-test/dual_mesh_refine_20261103_v1/report/FINAL.md
 ```
 
 - [ ] **Step 5: 提交最终实验并报告限制**

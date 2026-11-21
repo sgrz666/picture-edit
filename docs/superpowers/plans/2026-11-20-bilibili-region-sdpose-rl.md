@@ -20,7 +20,7 @@ GPU 上已检测到另一项 Hi4D Native V7 作业。先开展独立 CPU 工作�
 
 ## 已核对的执行状态
 
-- 运行根：`/data/shangguanrz/pic-edit-experiments/bilibili-region-sdpose-sft-rl-20261120-v1`。
+- 运行根：`/data/shangguanrz/pic-edit-experiments/one/bilibili-region-sdpose-sft-rl-20261120-v1`。
 - 78 train pairs / 39 train videos；10 val pairs / 5 val videos；88 个独立 GT/Canvas 区域侧车。
 - 真实 S1 数据预检通过：352 条样本×路由，344 条具备手部 ROI。失败的首轮报告保留；JSON/JSONL prompt bank 兼容缺陷经失败回归修复，53 项相关测试通过。
 - 本轮相关 CPU/Native V7 集成回归 94 项通过；后续补充的 ROI 有效系数日志和 RL 参考状态异常恢复也已单独回归。

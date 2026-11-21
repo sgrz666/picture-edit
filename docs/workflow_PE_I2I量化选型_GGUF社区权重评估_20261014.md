@@ -174,7 +174,7 @@
 
 **落盘位置**：运行时 `/data/shangguanrz/tools/llama-cpp/b11617-cuda12.8/`（llama.cpp **b11617**，commit `14310190c`，预编译 CUDA 12.8 包 + 配套 cudart 包，**不需要 nvcc**）；
 权重 `/data/shangguanrz/pic-edit-models/Qwen-Image-2.1-PE-I2I-GGUF/`：`…pe_i2i.mtp.Q8_0.gguf` **9,786,060,352 B**、`…mmproj.bf16.gguf` **921,704,640 B**，两者**字节数与 HF API 公布值逐位相符**，SHA256 记在同目录 `SHA256SUMS`。
-脚本在 `/data/shangguanrz/pic-edit-experiments/pe_i2i_gguf_selection_20261014/`（仓外，避免与在跑会话抢 git）。
+脚本在 `/data/shangguanrz/pic-edit-experiments/one/pe_i2i_gguf_selection_20261014/`（仓外，避免与在跑会话抢 git）。
 
 跑通的东西：
 

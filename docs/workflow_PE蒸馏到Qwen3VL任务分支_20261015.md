@@ -245,7 +245,7 @@ ssh sg
 
 合计约 **10.71 GB**，相对原 PE safetensors 的约 **18.82 GB** 减少约 **43.1% 磁盘权重体积**，不是 GPU 峰值显存实测。量化版还包含额外 MTP 头，二者并非逐模块完全同构的体积对照。
 
-运行时为 llama.cpp b11617 CUDA 12.8。已有输出在 `/data/shangguanrz/pic-edit-experiments/pe_i2i_gguf_selection_20261014/output/`，本次保存了小型取证副本到本报告对应 research 目录。
+运行时为 llama.cpp b11617 CUDA 12.8。已有输出在 `/data/shangguanrz/pic-edit-experiments/one/pe_i2i_gguf_selection_20261014/output/`，本次保存了小型取证副本到本报告对应 research 目录。
 
 | 已完成观测 | 结果及口径 |
 |---|---|
@@ -294,8 +294,8 @@ ssh sg
 
 ```bash
 ssh sg
-tail -n 30 /data/shangguanrz/pic-edit-experiments/pe_i2i_gguf_selection_20261014/logs/gate1.log
-find /data/shangguanrz/pic-edit-experiments/pe_i2i_gguf_selection_20261014/output/gate1/records -maxdepth 1 -type f -name '*.json' -print
+tail -n 30 /data/shangguanrz/pic-edit-experiments/one/pe_i2i_gguf_selection_20261014/logs/gate1.log
+find /data/shangguanrz/pic-edit-experiments/one/pe_i2i_gguf_selection_20261014/output/gate1/records -maxdepth 1 -type f -name '*.json' -print
 ```
 
 以上只显示已存在的进度和记录，不会重跑或覆盖产物。当前快照能回答“模型在位、三图可推理、MTP 生效、hard_02 首答失败后重试通过文本契约”；最终出图质量、稳定通过率、净提速与峰值显存节省尚未证明。

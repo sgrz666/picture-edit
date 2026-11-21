@@ -153,7 +153,7 @@ epoch0=原512顺序；epoch1=random.Random(1709) 产生的512排列，写入 loc
 修改现有文件仅限：joint_training.py、data_runtime.py、train_qwen21_joint_pilot.py、eval_qwen21_joint_pilot.py 及其对应回归测试。qwen_runtime.py 现有 prompts 接口可以满足本轮要求，优先不改。
 
 远端新结果根目录：
-/data/shangguanrz/pic-edit-experiments/pei2i_body_face_8arm_20261009。
+/data/shangguanrz/pic-edit-experiments/one/pei2i_body_face_8arm_20261009。
 
 本地结果根目录：
 D:/codeplus/pictureedit/research/pei2i_body_face_8arm_20261009。
@@ -1291,7 +1291,7 @@ cd /home/shangguanrz/project/pic-edit
 ssh sg
 cd /home/shangguanrz/project/pic-edit
 export STUDY_PY=/home/shangguanrz/nihaochen/envs/qwen21/bin/python
-export STUDY_RUN=/data/shangguanrz/pic-edit-experiments/pei2i_body_face_8arm_20261009
+export STUDY_RUN=/data/shangguanrz/pic-edit-experiments/one/pei2i_body_face_8arm_20261009
 
 $STUDY_PY scripts/run/run_qwen21_pei2i_study.py --run "$STUDY_RUN" --phase lock
 $STUDY_PY scripts/run/run_qwen21_pei2i_study.py --run "$STUDY_RUN" --phase rewrite-qa
@@ -1367,7 +1367,7 @@ $STUDY_PY scripts/run/run_qwen21_pei2i_study.py --run "$STUDY_RUN" --phase expor
 ~~~powershell
 $studyLocal = "D:\codeplus\pictureedit\research\pei2i_body_face_8arm_20261009"
 New-Item -ItemType Directory -Path $studyLocal -Force
-scp sg:/data/shangguanrz/pic-edit-experiments/pei2i_body_face_8arm_20261009/export/results.tar.gz "$studyLocal/results.tar.gz"
+scp sg:/data/shangguanrz/pic-edit-experiments/one/pei2i_body_face_8arm_20261009/export/results.tar.gz "$studyLocal/results.tar.gz"
 tar -xzf "$studyLocal/results.tar.gz" -C "$studyLocal"
 Start-Process "$studyLocal/report/index.html"
 ~~~

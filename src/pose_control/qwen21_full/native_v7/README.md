@@ -46,7 +46,7 @@ $PY scripts/train/train_qwen21_native_full_v7.py prepare --diagnostics
 
 # 真实输入资格审计：读取 paired RGB/几何，不加载 Qwen。
 $PY scripts/audit/audit_qwen21_native_full_v7.py \
-  --manifest /data/shangguanrz/pic-edit-experiments/qwen21_hi4d_dual/hi4d-v5-grounded-binding-pilot_20261030_r4/data/typed_v5_pairs.jsonl \
+  --manifest /data/shangguanrz/pic-edit-experiments/two/qwen21_hi4d_dual/hi4d-v5-grounded-binding-pilot_20261030_r4/data/typed_v5_pairs.jsonl \
   --data-profile hybrid_hi4d
 ```
 
@@ -87,7 +87,7 @@ $PY scripts/data/migrate_qwen21_native_full_v7.py \
 {
   "preservation": {"source_identity": 0.2, "background": 0.1},
   "preservation_index": {
-    "path": "/data/shangguanrz/pic-edit-experiments/qwen21_hi4d_dual/native-v7-source-preservation-20261121-v1/data/assets-v1/index.json",
+    "path": "/data/shangguanrz/pic-edit-experiments/two/qwen21_hi4d_dual/native-v7-source-preservation-20261121-v1/data/assets-v1/index.json",
     "sha256": "5c2611bda05b6fb8993a68f71aac62ef5655ebe434aee24f09834742b43a7fbe"
   }
 }

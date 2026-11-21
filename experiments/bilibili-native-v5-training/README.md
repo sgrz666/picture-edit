@@ -2,7 +2,7 @@
 
 目的：按用户确认的原视频 80/10/10 隔离 train、val、test，保留全部 1,960 帧、12,156 对及原质量标记；不新增严格双手子集，不重筛数据，不做冒烟。本轮只准备数据与正式训练配置，训练由用户以后启动。
 
-远端数据根为 `/data/shangguanrz/datasets/bilibili`；本轮工作根为 `/data/shangguanrz/pic-edit-experiments/bilibili-native-v5-training-20261106-v1`，以下记为 `$RUN`。原图片、视频和原 `frames/frames.jsonl`、`pairs/pairs.jsonl` 保留。训练几何已按用户指定锁定 **Sapiens2 v1**，目录名 `sapiens_v1`。
+远端数据根为 `/data/shangguanrz/datasets/bilibili`；本轮工作根为 `/data/shangguanrz/pic-edit-experiments/one/bilibili-native-v5-training-20261106-v1`，以下记为 `$RUN`。原图片、视频和原 `frames/frames.jsonl`、`pairs/pairs.jsonl` 保留。训练几何已按用户指定锁定 **Sapiens2 v1**，目录名 `sapiens_v1`。
 
 | 划分 | 原视频 | 帧 | 配对 |
 |---|---:|---:|---:|
@@ -46,7 +46,7 @@ python -m unittest discover -s experiments/bilibili-native-v5-training/tests -v
 
 ```bash
 ssh sg
-RUN=/data/shangguanrz/pic-edit-experiments/bilibili-native-v5-training-20261106-v1
+RUN=/data/shangguanrz/pic-edit-experiments/one/bilibili-native-v5-training-20261106-v1
 QPY=/home/shangguanrz/nihaochen/envs/qwen21/bin/python
 REPO=/home/shangguanrz/project/pic-edit
 tail -f "$RUN/report/native_preparation_20261106T225408.log"

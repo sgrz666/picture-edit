@@ -6,7 +6,7 @@
 
 ## 1. 为什么切换为 SDPose
 
-依据同库实测对比（`/data/shangguanrz/pic-edit-experiments/four-skeleton-compair/`）：
+依据同库实测对比（`/data/shangguanrz/pic-edit-experiments/姿态估计/four-skeleton-compair/`）：
 - **单人 50 样本（Bilibili）**：LOO 3 方法中位数下，`SDPose` 取得最高 `pose_reward = 0.8693`、`PCK@0.02 = 98.24%`、`NME = 0.00390`，且全 134 点平均有效检出 `132.1 / 134`（手部 `Hands42 PCK@0.02 = 98.30%`，显著优于 DWPose 的 `91.97%`）。
 - **双人 10 样本（Hi4D 含遮挡/拥抱）**：`YOLO11x` 在双人紧密交互下的双人检出率（`90%`）与目标召回率（`95%`）优于 YOLOX（`80%` / `90%`），`SDPose` 的 `GT Pose Reward = 0.6449`（DWPose `0.5414`）、`WholeBody134 PCK@0.05 = 91.83%`。
 
@@ -20,7 +20,7 @@
 | 姿态模型权重 | `/data/shangguanrz/models/SDpose/SDPose-Wholebody`（133 COCO-WholeBody 点） |
 | 人体检测器权重 | `/data/shangguanrz/models/SDpose/SDPose-Wholebody/yolo11x.pt` |
 | 上游推理代码 | `/data/shangguanrz/models/SDpose/SDPose-OOD` |
-| 推荐 Python 环境 | `/data/shangguanrz/pic-edit-experiments/four-skeleton-compair/.venv/bin/python`（同时支持 `SDPose-OOD` 与 `DINOv2` CUDA 推理；禁止往 `nihaochen/envs/qwen21` 混装冲突包） |
+| 推荐 Python 环境 | `/data/shangguanrz/pic-edit-experiments/姿态估计/four-skeleton-compair/.venv/bin/python`（同时支持 `SDPose-OOD` 与 `DINOv2` CUDA 推理；禁止往 `nihaochen/envs/qwen21` 混装冲突包） |
 
 > ⚠️ **必须设置 `CUDA_HOME`**（2026-11-17 实测）：本机没有 `/usr/local/cuda`，而 `mmengine._strategy` 会 import `deepspeed`，其版本探测在找不到 CUDA toolkit 时直接抛 `MissingCUDAException`，导致 `from src.evaluation import sdpose` 之前就崩在 `pipelines.SDPose_D_Pipeline` 的 import 链上。统一用 qwen21 环境自带的 nvcc：
 >
@@ -93,4 +93,4 @@
 
 - 不可测指标（如缺髋心、无共同有效关键点、`mse == 0` 时的 PSNR）一律写 `null`（经 `finite()` 转换），严禁用 `0` 或 `0.0` 替代“测不出”。
 - 新增/重跑 SDPose 评测不得直接覆盖历史 DWPose 对照结果文件；优先独立命名为 `eval_sdpose.json` / `evaluation_sdpose_*.json` 或记录 `pose_backend: "sdpose"`。
-- `AGENTS.md` 中的 `smplestx_bw` / `qwen21` 既有环境不得擅自升级或降级以迁就 SDPose；统一通过 `/data/shangguanrz/pic-edit-experiments/four-skeleton-compair/.venv/bin/python` 执行 SDPose 评测。
+- `AGENTS.md` 中的 `smplestx_bw` / `qwen21` 既有环境不得擅自升级或降级以迁就 SDPose；统一通过 `/data/shangguanrz/pic-edit-experiments/姿态估计/four-skeleton-compair/.venv/bin/python` 执行 SDPose 评测。

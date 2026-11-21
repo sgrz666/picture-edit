@@ -24,7 +24,7 @@
 | 基座 | `/data/shangguanrz/pic-edit-models/Qwen-Image-2.1`（复用现有，不重复下载） |
 | 计算环境 | `$WORK/env`，由 `qwen21` 解释器建 `--system-site-packages` venv |
 | torch / diffusers / transformers | `2.8.0+cu128` / `0.41.0.dev0` / `5.17.0`，装包前后逐字一致（见 `versions.json`） |
-| 大产物根 `$WORK` | `/data/shangguanrz/pic-edit-experiments/qwen21_union_migration_v1` |
+| 大产物根 `$WORK` | `/data/shangguanrz/pic-edit-experiments/one/qwen21_union_migration_v1` |
 | 代码（服务器） | `experiments/6.qwen-controlnet union/qwen21_union_migration_v1/`（2026-10-19 被并入新的「6.qwen-controlnet union」族目录；旧路径 `experiments/2.qwen-test/qwen21_union_migration_v1` 保留为符号链接，本次已把它修好指向新位置） |
 | 代码（本地） | `experiments/qwen21_union_migration_v1/` |
 
@@ -199,7 +199,7 @@ Inpaint 满足"白色区域平均变化 > 黑色区域平均变化"。
 
 ```bash
 # 在 sg 上，仓库根 /home/shangguanrz/project/pic-edit
-PY=/data/shangguanrz/pic-edit-experiments/qwen21_union_migration_v1/env/bin/python
+PY=/data/shangguanrz/pic-edit-experiments/one/qwen21_union_migration_v1/env/bin/python
 CLI="experiments/6.qwen-controlnet union/qwen21_union_migration_v1/scripts/run.py"
 
 # 1) 官方样例复现（先 --mode smoke 低分辨率短步数，再 formal 40 步 seed 43 CFG 1）

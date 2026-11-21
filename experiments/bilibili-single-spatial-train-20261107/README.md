@@ -1,7 +1,7 @@
 # bilibili-single-spatial-train-20261107（服务器技术验证跑的本地报告镜像）
 
 这个目录只放**报告与复现脚本**，不放训练代码和数据。训练本体在服务器
-`/data/shangguanrz/pic-edit-experiments/bilibili-single-spatial-train-20261107-v1`，
+`/data/shangguanrz/pic-edit-experiments/one/bilibili-single-spatial-train-20261107-v1`，
 `run_plan.json` 标 `technical_only=True`，S0–S3 预算 10000/2000/4000/4000 共 20000 updates。
 **它不是全量训练线**：全量在 `bilibili-native-v5-training-20261106-v1`，那边装配断在 560/9520 对，训练尚不可启动。
 

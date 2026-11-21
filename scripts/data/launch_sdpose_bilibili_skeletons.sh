@@ -11,10 +11,10 @@
 set -euo pipefail
 
 REPO=/home/shangguanrz/project/pic-edit
-PY=/data/shangguanrz/pic-edit-experiments/four-skeleton-compair/.venv/bin/python
+PY=/data/shangguanrz/pic-edit-experiments/姿态估计/four-skeleton-compair/.venv/bin/python
 OUT_ROOT=${OUT_ROOT:-/data/shangguanrz/datasets/bilibili/geometry/skeleton}
 IMAGES_ROOT=${IMAGES_ROOT:-/data/shangguanrz/datasets/bilibili/frames/images}
-LOG_DIR=${LOG_DIR:-/data/shangguanrz/pic-edit-experiments/sdpose_bilibili/logs}
+LOG_DIR=${LOG_DIR:-/data/shangguanrz/pic-edit-experiments/姿态估计/sdpose_bilibili/logs}
 STAMP=$(date +%Y%m%d_%H%M%S)
 LOG="$LOG_DIR/run_${STAMP}.log"
 

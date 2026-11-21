@@ -7,7 +7,7 @@
 服务器：SSH `sg`，实际主机名 `node01`。独立实验目录：
 
 ```text
-/data/shangguanrz/pic-edit-experiments/pei2i_body_face_8arm_20261009
+/data/shangguanrz/pic-edit-experiments/one/pei2i_body_face_8arm_20261009
 ```
 
 运行代码在该目录的 `code/`；Python 为 `/home/shangguanrz/nihaochen/envs/qwen21/bin/python`。`code/datasets`、模型视图及旧实验路径映射指向现有只读资产。原项目的训练结果不需要移动或删除。
@@ -80,9 +80,9 @@ Qwen revision: 790c92633540aa0cb11d9abf19eb46d861714758
 
 ```bash
 ssh sg
-cd /data/shangguanrz/pic-edit-experiments/pei2i_body_face_8arm_20261009/code
+cd /data/shangguanrz/pic-edit-experiments/one/pei2i_body_face_8arm_20261009/code
 PY=/home/shangguanrz/nihaochen/envs/qwen21/bin/python
-RUN=/data/shangguanrz/pic-edit-experiments/pei2i_body_face_8arm_20261009
+RUN=/data/shangguanrz/pic-edit-experiments/one/pei2i_body_face_8arm_20261009
 
 # 只预览，不创建文件、加载模型或启动训练
 $PY scripts/run/run_qwen21_pei2i_study.py --run "$RUN" --phase train --resume --dry-run
@@ -104,7 +104,7 @@ from pathlib import Path
 from scripts.precompute_qwen21_pei2i_prompts import qa8_review_provenance
 from src.pose_control.qwen21_full.prompt_study.prompts import request_sha256
 from src.pose_control.qwen21_full.prompt_study.protocol import atomic_json
-run = Path('/data/shangguanrz/pic-edit-experiments/pei2i_body_face_8arm_20261009')
+run = Path('/data/shangguanrz/pic-edit-experiments/one/pei2i_body_face_8arm_20261009')
 payload = qa8_review_provenance(run)
 payload.update(reviewed=True, notes=['逐条检查后填写真实结论'])
 payload['review_signature_sha256'] = request_sha256(payload)
