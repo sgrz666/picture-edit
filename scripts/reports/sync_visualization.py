@@ -7,8 +7,8 @@
   3. 调用 plot_training_dashboard.py 生成训练动态曲线与监控简报
 
 用法：
-  python scripts/sync_visualization.py                 # 使用默认路径与实验名
-  python scripts/sync_visualization.py --hours-only    # 只刷新训练曲线，不重拉图像
+  python scripts/reports/sync_visualization.py                 # 使用默认路径与实验名
+  python scripts/reports/sync_visualization.py --hours-only    # 只刷新训练曲线，不重拉图像
 """
 from __future__ import annotations
 

@@ -32,3 +32,14 @@
 
 - **`scripts/`**（本目录）：仓级、跨实验的**通用**工具，面向 `experiments/` 下任意 run，与特定流水线解耦。
 - **`workflow/scripts/`**：`workflow/` 流水线**内部私有**的工序（如 `six-picture-create/`），服务于单一流水线步骤，不进入仓级通用分类。
+
+---
+
+## 四、2026-11-21 根目录清理归类
+
+根目录散置的 57 个脚本已完成归类（完整映射见 `/data/shangguanrz/pic-edit-cleanup-20261120/scripts_moves.tsv` 与 `cleanup_manifest.json`）：
+
+- **39 个 `git mv` 归入子目录**：audit 10 个（审计巡检与全仓 README 工具）、data 5 个（条件/提示词预计算与数据说明）、eval 7 个（TikTok 评测系列与评测面板）、run 2 个（`run_tiktok_sample_00001_inference.py`、`run_tiktok_qwen21_full.sh`）、reports 14 个（对比条图、Word 报告、可视化与同步）、weights 1 个（`download_models.py`）。另有 `code/qwen21/edit.py` 归入 `run/qwen21_edit.py`，`code/` 目录撤销。
+- **14 个根目录副本删除**：8 个与子目录逐字节一致（`eval_qwen21_face_repair.py`、`finalize_qwen21_face_single_sample.py`、`probe_qwen21_face_single_sample.py`、`run_qwen21_face_single_sample.py`、`verify_qwen21_face_repair.py`、`verify_qwen21_face_single_sample.py`、`verify_qwen21_full_resume.py`、`write_qwen21_face_single_sample_report.py`）；6 个子目录版含 `parents[2]` 路径适配且功能更新（`precompute_iper_face_features_v65.py`、`precompute_qwen21_face_features.py`、`split_iper_train_val.py`、`smoke_adapter_reasoner.py`、`smoke_adapter_v6.py`、`smoke_deepgen_control_interface.py`）。一律以子目录为准。
+- **根目录仅保留 4 个软链目标**：`build_tiktok_v6_conditions.py`、`precompute_tiktok_face_features_v65.py`、`prepare_tiktok_qwen21_face.py`、`prepare_tiktok_qwen21_training.py`——它们是 `data/` 内 4 个相对软链接的目标，按原架构「改原文件即可」保留在根。
+- 同批修复 13 个文件里的旧路径引用（含 `run/run_qwen21_pei2i_study.py` 运行时拼接的 `scripts/precompute_qwen21_pei2i_prompts.py` → `scripts/data/...`），被改的 .py 全部通过 `py_compile`。

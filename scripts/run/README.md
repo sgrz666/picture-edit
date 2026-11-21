@@ -85,3 +85,8 @@ V4.1沿用该入口和V4权重，新增`--data-profile hybrid_hi4d|full_smplx|au
 ## Native Full V5（未运行生成）
 
 `run_qwen21_native_full_v5.py`使用显式V5 checkpoint／manifest，一张主Source、实际64通道前缀、B=1、KV关闭。Body Identity、Source Detail、CHAMP Detail、Interaction及Face／Hand五种模态Gain分别控制；推理不读取目标RGB或训练侧车。使用与阶段性验收见`src/pose_control/qwen21_full/native_v5/README.md`。
+
+## 2026-11-21 从 scripts/ 根目录归入
+
+- `run_tiktok_sample_00001_inference.py`（TikTok 00001 单样本推理）、`run_tiktok_qwen21_full.sh`（TikTok Qwen2.1 全流程启动器）、`qwen21_edit.py`（Qwen-Image-2.1 基座单图编辑最小推理脚本；原 `code/qwen21/edit.py`，`code/` 目录已撤销）。
+- 同日去重：根目录旧副本 `run_qwen21_face_single_sample.py`、`finalize_qwen21_face_single_sample.py`（与子目录逐字节一致）已删除，以子目录为准。

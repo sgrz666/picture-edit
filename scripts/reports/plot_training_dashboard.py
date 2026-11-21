@@ -11,10 +11,10 @@
 
 用法：
   # 自动从远端拉取最新日志后绘图
-  python scripts/plot_training_dashboard.py --fetch
+  python scripts/reports/plot_training_dashboard.py --fetch
 
   # 使用本地已有日志
-  python scripts/plot_training_dashboard.py --log .codex_tmp/vis_pull/train_20k_v1.log
+  python scripts/reports/plot_training_dashboard.py --log .codex_tmp/vis_pull/train_20k_v1.log
 """
 from __future__ import annotations
 
@@ -193,7 +193,7 @@ def write_monitor_md(d: dict, out_md: Path, sec_per_step: float, eta: str, accum
     md = [
         f"# 训练监控简报 · {run_name}",
         "",
-        f"> 生成时间：{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}　自动更新：重新运行 `scripts/plot_training_dashboard.py --fetch`",
+        f"> 生成时间：{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}　自动更新：重新运行 `scripts/reports/plot_training_dashboard.py --fetch`",
         "",
         "## 进度与吞吐",
         "",

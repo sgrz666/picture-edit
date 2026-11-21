@@ -90,3 +90,9 @@
 ## Native Full V5（工具未执行）
 
 `prepare_qwen21_native_full_v5.py`提供V4 manifest提升为V5侧车、Source-only R1–R3外观、Hand质量审计和离线修复I/O；不自动检测、渲染或调用Refiner。`migrate_qwen21_native_full_v5.py`显式严格继承V4并初始化新分流Head，未确认Hand／新Source Detail需显式允许fresh，不恢复optimizer。完整契约与命令见`src/pose_control/qwen21_full/native_v5/README.md`。本轮两个工具均未运行。
+
+## 2026-11-21 从 scripts/ 根目录归入与去重
+
+- 新归入：`build_iper_v6_conditions.py`、`build_iper_v6_detail_conditions.py`（iPER V6 条件构建）、`precompute_qwen21_pei2i_prompts.py`、`precompute_qwen21_prompt_study_cache.py`（PE-I2I 提示词与 prompt study 缓存预计算；`scripts/run/run_qwen21_pei2i_study.py` 的运行时引用路径已同步改为 `scripts/data/`）、`dataset_notes.py`（数据盘构成说明，供 `scripts/audit/gen_folder_docs.py` 注入）。
+- 去重：根目录旧副本 `precompute_iper_face_features_v65.py`、`precompute_qwen21_face_features.py`、`split_iper_train_val.py` 已删除；子目录版含 `parents[2]` 适配（iper 版另含 `full_image` 参数 fallback），以子目录为准。
+- 根目录仍保留 4 个软链目标（`build_tiktok_v6_conditions.py`、`precompute_tiktok_face_features_v65.py`、`prepare_tiktok_qwen21_face.py`、`prepare_tiktok_qwen21_training.py`），本目录对应软链接继续有效；要改逻辑就改 scripts 根下的原文件。

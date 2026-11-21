@@ -5,7 +5,7 @@
 文件说明来自实际读取文件内容（Python 模块 docstring、Markdown 首个标题、JSON 顶层键、
 Shell 注释等），二进制文件按扩展名与体积归类说明。已存在的 README.md 一律不覆盖。
 
-刷新全仓：python3 scripts/gen_folder_docs.py --dataset-profile（约半分钟；--only <相对路径> 可局部刷新）。
+刷新全仓：python3 scripts/audit/gen_folder_docs.py --dataset-profile（约半分钟；--only <相对路径> 可局部刷新）。
 """
 
 import os
@@ -286,7 +286,7 @@ PURPOSE.update({
     "experiments/champ_deepgen_formal_v1": "CHAMP 姿态引导 + DeepGen 基座的正式单样本过拟合实验。",
     "experiments/deepgen_no_control_ablation_v1": "无控制信号消融基线实验，用于确认适配器接入前后基座输出一致性。",
     "experiments/iper_v6_native_20k_v1": "DeepGen V6 原生分辨率 20k 步主线训练实验目录。",
-    "experiments/iper_v6_comparative_3000": "DeepGen V6 3000 步横向对照实验。",
+    "experiments/iper_v6_comparative_3000": "DeepGen V6 3000 步横向对照实验（目录已于 2026-11-18 随冷归档清理删除）。",
     "experiments/iper_v64_detail_overfit_024_6": "V6.4 细节控制分支过拟合实验（24 源 × 6 目标）。",
     "experiments/iper_v65_face_overfit_024_6": "V6.5 人脸保持过拟合实验（24 源 × 6 目标）。",
     "experiments/qwen21_iper_body": "Qwen 2.1 简化版 Body 控制器在 iPER 上的训练实验。",
@@ -300,7 +300,7 @@ PURPOSE.update({
     "experiments/v6_condition_inspection": "V6 控制条件可视化检查实验：核对姿态/法线/深度/掩码渲染是否对齐。",
     "experiments/hi4d_overfit_archive": "Hi4D 早期过拟合实验归档。",
     "experiments/qwen_edit_results": "Qwen-Edit 基线对照结果目录。",
-    "caches/qwen21_hi4d_controls": "Qwen 2.1 在 Hi4D 上的预计算控制条件张量缓存。",
+    "caches/qwen21_hi4d_controls": "Qwen 2.1 在 Hi4D 上的预计算控制条件张量缓存（2026-11-18 已删除，可再生）。",
     "data/champ_overfit": "CHAMP 单样本过拟合调试数据（深度/DWPose/法线/语义图条件）。",
     "data/debug_samples": "合成调试样本：控制图与图像对，由 `create_debug_samples.py` 生成。",
     "data/iper_debug_001": "iPER 单条调试样本的控制条件与图像切片。",
@@ -321,11 +321,11 @@ PURPOSE.update({
     "pic-edit-models/Qwen-Image-2.1": "Qwen-Image-2.1 基座权重实体（DiT transformer、VAE、text encoder 分片）。",
     "pic-edit-models/Qwen-Image-2.1-PE-I2I": "PE-I2I 报告流水线所用的 Qwen-Image-2.1 权重副本，与主线训练分开存放。",
     "pic-edit-caches": "预计算控制条件缓存实体区：训练时直接读取的 SMPL-X 几何条件张量缓存，可重复生成因此单独存放。",
-    "pic-edit-caches/qwen21_hi4d_controls": "Qwen 2.1 在 Hi4D 上的预计算控制条件缓存实体。",
+    "pic-edit-caches/qwen21_hi4d_controls": "Qwen 2.1 在 Hi4D 上的预计算控制条件缓存实体（2026-11-18 已删除，空目录留作重生成落点）。",
     "pic-edit-experiments": "进行中的实验产物区：一次训练/评测运行的代码快照、输入清单、日志与审计记录，内容与规模随运行持续变化，因此只按目录实际内容自动画像，不做人工核定描述。",
-    "pic-edit-archive": "2026-10-03 目录整理时移出的冷归档：旧实验、旧模型与原始数据快照，仓库内原路径以符号链接保持可访问。",
-    "pic-edit-archive/cleanup_20261003": "10-03 清理移出内容：`experiments/` 为旧实验产物，`models/` 为 Qwen-Image-Edit-20B 权重，`raw/` 为原始数据。",
-    "pic-edit-archive/SynBody_inspection_20261003": "SynBody 合成人体数据的视觉质量检查留档（纹理真实感与多视角一致性评估）。",
+    "pic-edit-archive": "（2026-11-18 已整体删除）曾为 2026-10-03 目录整理时移出的冷归档；20B 模型已改放 /data/shangguanrz/models/Qwen-Image-Edit-20B。",
+    "pic-edit-archive/cleanup_20261003": "（已删除）10-03 清理移出内容：旧实验产物、Qwen-Image-Edit-20B 权重与 3DPW 原始数据。",
+    "pic-edit-archive/SynBody_inspection_20261003": "（已删除）SynBody 合成人体数据的视觉质量检查留档。",
     "dataset_samples": "公开人体数据集抽样展示区：ABC、MVHumanNet、HumanVid 等数据集的样本切片与清单，用于选型调研。",
     "dataset_samples/MANIFEST.txt": "抽样展示区各数据集样本的来源、规模与许可说明清单。",
     "add_migration": "`add/` 数据从 AutoDL 实例迁移到本数据盘的脚本与传输日志。",
@@ -862,7 +862,7 @@ def build_doc(relpath, dnames, fnames, absdir):
     up = link_target(relpath)
 
     lines = ["# `%s` 目录说明" % (relpath if relpath != "." else "/"), ""]
-    lines.append("> 本文件由 `scripts/gen_folder_docs.py` 依据目录实际内容自动生成（"
+    lines.append("> 本文件由 `scripts/audit/gen_folder_docs.py` 依据目录实际内容自动生成（"
                  "生成时间：%s）；如需补充人工说明，请写在本目录 `README.md` 中（生成器不会覆盖 README）。" % _GEN_TS)
     lines.append("")
     crumb = "- **路径**：`%s`" % (relpath if relpath != "." else "./")
@@ -1023,7 +1023,7 @@ def build_index(root, tree_lines, n_docs):
     out = [
         "# %s 层级目录总览" % os.path.basename(root.rstrip("/")),
         "",
-        "> 由 `scripts/gen_folder_docs.py` 依据目录实际内容生成。本%s中每一个非隐藏目录都有一份" % scope,
+        "> 由 `scripts/audit/gen_folder_docs.py` 依据目录实际内容生成。本%s中每一个非隐藏目录都有一份" % scope,
         "> `目录说明.md`，内含该目录的定位说明、层级子目录清单，以及逐个文件读取内容后得到的摘要。",
         profile_line.rstrip("\n"),
         "",

@@ -8,6 +8,7 @@ import numpy as np
 from PIL import Image
 
 PROJECT_ROOT = Path("/home/shangguanrz/project/pic-edit")
+# 该实验目录已于 2026-11-18 随 pic-edit-archive 清理删除；如需重建产物，先跑 scripts/run/run_v6_comparative_3000.sh
 SHOWCASE_DIR = PROJECT_ROOT / "experiments" / "iper_v6_comparative_3000" / "multistage_evolution_showcase"
 SAMPLED_ROOT = PROJECT_ROOT / "datasets" / "iPER" / "iper_sampled_6src64tgt"
 ASSETS_ROOT = PROJECT_ROOT / "datasets" / "iPER" / "iper_assets_512_nvdiffrast"

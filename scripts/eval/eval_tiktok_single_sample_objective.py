@@ -22,7 +22,7 @@ Two metric families are reported:
 
 Usage::
 
-    python scripts/eval_tiktok_single_sample_objective.py \
+    python scripts/eval/eval_tiktok_single_sample_objective.py \
         --output-dir experiments/tiktok_objective_eval
 """
 

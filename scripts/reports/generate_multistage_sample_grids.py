@@ -43,6 +43,7 @@ def parse_args():
     parser.add_argument(
         "--exp_dir",
         type=str,
+        # 默认实验目录已于 2026-11-18 随 pic-edit-archive 清理删除；重建需先跑 scripts/run/run_v6_comparative_3000.sh
         default=str(DEFAULT_PROJECT_ROOT / "experiments" / "iper_v6_comparative_3000"),
     )
     parser.add_argument(

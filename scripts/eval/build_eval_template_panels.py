@@ -9,7 +9,7 @@
 条件图按需从远端批量拉取（单次 tar 流式传输，避免逐文件 scp）。
 
 用法：
-  python scripts/build_eval_template_panels.py --src .codex_tmp/vis_pull --out 可视化 [--limit 10]
+  python scripts/eval/build_eval_template_panels.py --src .codex_tmp/vis_pull --out 可视化 [--limit 10]
 """
 from __future__ import annotations
 

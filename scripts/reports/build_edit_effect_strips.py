@@ -7,8 +7,8 @@
   ③ 后半段训练阶段（… | Step 3000 最终）
 
 用法：
-  python scripts/build_edit_effect_strips.py --src .codex_tmp/vis_pull --out 可视化 [--cell 360]
-  python scripts/build_edit_effect_strips.py --showcase-dir .codex_tmp/vis_pull/iper_v6_showcase_expanded --out 可视化
+  python scripts/reports/build_edit_effect_strips.py --src .codex_tmp/vis_pull --out 可视化 [--cell 360]
+  python scripts/reports/build_edit_effect_strips.py --showcase-dir .codex_tmp/vis_pull/iper_v6_showcase_expanded --out 可视化
 """
 from __future__ import annotations
 

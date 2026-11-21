@@ -67,3 +67,10 @@
 `audit_qwen21_native_full_v5.py`为V5准备显式state容器的FakeTensor键／尺寸清单，分别记录结构、权重证据、运行、控制和质量结论；不构造模型或执行迁移。本轮工具未执行，源码／日志账本和后续顺序见`src/pose_control/qwen21_full/native_v5/README.md`。
 
 V5训练层另有显式`preflight --level data|grad`：data不构造模型；grad后续才执行有界前反向、冻结／prefix／梯度审计且不创建optimizer。静态报告不能充当梯度通过门禁。入口仍为`train_qwen21_native_full_v5.py`，说明见`src/pose_control/qwen21_full/native_v5/training/README.md`；本轮两级preflight均未运行。
+
+## 2026-11-21 从 scripts/ 根目录归入
+
+- `audit_all_prompts.py`、`check_other_diffs.py`、`check_other_diffs_precise.py`、`parse_audit.py`：审计产物解析与跨 run 差异核对。
+- `inspect_deep_metrics.py`、`inspect_experiments.py`：实验目录与指标巡检。
+- `sync_folder_readmes.py`、`gen_folder_docs.py`、`make_folder_readmes.py`、`generate_master_readme.py`：全仓 README/目录说明一致性与再生成工具（文档基建，与巡检同族归此；docstring 内旧根路径已同步）。
+- 同日去重：根目录副本 `probe_qwen21_face_single_sample.py`、`verify_qwen21_face_repair.py`、`verify_qwen21_face_single_sample.py`、`verify_qwen21_full_resume.py`（与子目录逐字节一致）及 `smoke_adapter_reasoner.py`、`smoke_adapter_v6.py`、`smoke_deepgen_control_interface.py`（子目录版含 `parents[2]` 路径适配，更新）已删除，一律以子目录为准。

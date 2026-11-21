@@ -12,7 +12,7 @@ where it hurts.
 
 Usage::
 
-    python scripts/eval_tiktok_timestep_sweep.py \
+    python scripts/eval/eval_tiktok_timestep_sweep.py \
         --output-dir experiments/tiktok_objective_eval
 """
 

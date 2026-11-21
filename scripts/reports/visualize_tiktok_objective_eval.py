@@ -6,7 +6,7 @@ numeric metric: whether a face actually exists inside the target box.
 
 Usage::
 
-    python scripts/visualize_tiktok_objective_eval.py \
+    python scripts/reports/visualize_tiktok_objective_eval.py \
         --output experiments/tiktok_objective_eval/objective_roi_sheet.png
 """
 

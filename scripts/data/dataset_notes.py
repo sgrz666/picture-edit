@@ -17,16 +17,16 @@ NOTES["/data/shangguanrz"] = r"""
 | `datasets/TikTokDataset` | `pic-edit-datasets/TikTokDataset` | TikTok 单人舞蹈数据集全部构建层 |
 | `datasets/Hi4D-origin` | `pic-edit-datasets/Hi4D-origin` | Hi4D 官方原始 tar.gz |
 | `models/Qwen-Image-2.1` | `pic-edit-models/Qwen-Image-2.1` | Qwen-Image-2.1 基座权重 |
-| `caches/qwen21_hi4d_controls` | `pic-edit-caches/qwen21_hi4d_controls` | Hi4D 双人控制条件张量缓存 |
-| `experiments/review_20260908_v2`、`experiments/iper_v6_comparative_3000`、`models/Qwen-Image-Edit-20B`、`archive/cleanup_20261003` | `pic-edit-archive/cleanup_20261003/*` | 2026-10-03 清理移出的冷归档 |
+| `caches/qwen21_hi4d_controls` | `pic-edit-caches/qwen21_hi4d_controls` | Hi4D 双人控制条件张量缓存（2026-11-18 已删除，空目录留作重生成落点） |
+| `models/Qwen-Image-Edit-20B` | `models/Qwen-Image-Edit-20B` | Qwen 20B 编辑模型（2026-11-18 自已删除的冷归档区迁入） |
 
 **容量分布（子树累计）**：
 
 | 区域 | 文件数 | 体积 | 性质 |
 |---|---:|---:|---|
 | `pic-edit-datasets/` | 545,360 | 495.53 GB | 数据集实体，不可再生，需长期保留 |
-| `pic-edit-archive/` | 3,304 | 102.86 GB | 冷归档，只读 |
-| `pic-edit-caches/` | 1,389 | 逻辑 66.28 GB；实占仅 10.2 GB | 条件缓存，可由脚本重生成 |
+| `models/Qwen-Image-Edit-20B/` | 38 | 54.0 GB | Qwen 20B 编辑模型（下载不完整，未接入主线） |
+| `pic-edit-caches/` | 0 | 0（原逻辑 66.28 GB / 实占约 9.6 GB） | 2026-11-18 已因冗余删除，可由训练脚本按需重生成 |
 | `pic-edit-models/` | 41 | 51.97 GB | 官方权重，可重新下载 |
 | `dataset_samples/` | 453 | 7.46 GB | 选型调研样片 |
 | `pic-edit-experiments/` | 变动中 | 变动中 | 进行中的实验产物区，数值随运行变化 |
@@ -34,7 +34,7 @@ NOTES["/data/shangguanrz"] = r"""
 
 表中文件数不含各目录的 `目录说明.md`，与自动「构成画像」同一口径；体积按十进制（1 GB = 10⁹ 字节）计。
 
-**写入约定**：本目录所有 `目录说明.md` 由 `scripts/gen_folder_docs.py` 生成；人工补充请写入同目录 `README.md`，生成器不会覆盖 README，也不会覆盖不含生成标记的说明文件。
+**写入约定**：本目录所有 `目录说明.md` 由 `scripts/audit/gen_folder_docs.py` 生成；人工补充请写入同目录 `README.md`，生成器不会覆盖 README，也不会覆盖不含生成标记的说明文件。
 """
 
 NOTES["/data/shangguanrz/pic-edit-datasets"] = r"""
@@ -284,7 +284,7 @@ NOTES["/data/shangguanrz/pic-edit-datasets/Hi4D-origin"] = r"""
 
 **逐帧 `smpl/NNNNNN.npz` 字段**（首维 2 = 两个人）：`betas (2,10)`、`global_orient (2,3)`、`body_pose (2,69)`、`transl (2,3)`、`verts (2,6890,3)`、`joints_3d (2,24,3)`、`contact (2,6890)`——`contact` 是逐顶点的接触标注，是本数据集对双人交互最关键、其他数据集没有的监督信号。`meta.npz` 提供 `betas、genders、num_persons、start、end、contact_ids`（接触区间帧号）、`mono_cam`（训练使用的单视角相机编号）。
 
-**流向**：仓库 `datasets/Hi4D_pilot_v1/raw/` 按需只解包训练用到的 pair 与 `mono_cam` 视角，`final_assets_v4_2/` 再以符号链接组织成资产农场，`pic-edit-caches/qwen21_hi4d_controls/` 保存由此派生的控制条件张量缓存。本目录保持官方原样，任何处理都不回写这里。
+**流向**：仓库 `datasets/Hi4D_pilot_v1/raw/` 按需只解包训练用到的 pair 与 `mono_cam` 视角，`final_assets_v4_2/` 再以符号链接组织成资产农场，控制条件张量缓存曾存于 `pic-edit-caches/qwen21_hi4d_controls/`（2026-11-18 已删除，可由训练脚本按需重生成）。本目录保持官方原样，任何处理都不回写这里。
 """
 
 NOTES["/data/shangguanrz/pic-edit-models"] = r"""
@@ -320,11 +320,11 @@ NOTES["/data/shangguanrz/pic-edit-models/Qwen-Image-2.1-PE-I2I"] = r"""
 """
 
 NOTES["/data/shangguanrz/pic-edit-caches"] = r"""
-预计算控制条件缓存实体区（1,389 个 `.pt`，逻辑体积 66.28 GB，实际只占盘约 10.2 GB）。与数据集实体的区别在于：这里的内容**可以重生成**，代价只是 GPU 时间，因此允许在空间紧张时删除重建，也允许与仓库分离存放。当前只有 Hi4D 双人控制条件缓存一项。
+预计算控制条件缓存实体区。**2026-11-18 已清空**：原 1,389 个 `.pt`（逻辑 66.28 GB、实占约 9.6 GB）的 Hi4D 双人控制条件缓存已删除，目录保留作重生成落点。这类内容**可以重生成**，代价只是 GPU 时间，空间紧张时可直接删除重建。
 """
 
 NOTES["/data/shangguanrz/pic-edit-caches/qwen21_hi4d_controls"] = r"""
-**Qwen 2.1 在 Hi4D 上的双人控制条件张量缓存**：`control_<24位十六进制>.pt`，1,389 个，每个 47.7 MB，合计 66.28 GB（即每个缓存对应一对源/目标图像的全部几何条件）。
+**Qwen 2.1 在 Hi4D 上的双人控制条件张量缓存（2026-11-18 已删除，空目录保留作重生成落点）**：原 1,389 个 `control_<24位十六进制>.pt`，每个 47.7 MB，逻辑合计 66.28 GB（每个缓存对应一对源/目标图像的全部几何条件）；删后目录为空。
 
 **文件名哈希怎么来的**（`src/pose_control/qwen21_full/qwen_runtime.py`）：
 `sha256( MODEL_REVISION + prompt + kind + str(resolution) + RGB 像素字节 )`，取前 24 位；`kind` 为 `control`/`latent` 等类别，`resolution ∈ {512, 1024, native}`。换提示词、换分辨率、换模型修订号或预处理策略都会自然换键；当目录内已有 `cache_policy.json` 且策略不一致时，运行时会直接报错要求换新目录，避免读到语义不匹配的缓存。
@@ -348,53 +348,23 @@ NOTES["/data/shangguanrz/pic-edit-caches/qwen21_hi4d_controls"] = r"""
 | `contact_valid_mask` | (8,) bool | 该槽位是否有效 |
 | `person_b_valid` | 标量 bool | 是否为双人样本（单人样本 B 路为零填充） |
 
-**消费方**：`train_hi4d_qwen21_dual.py`、`eval_hi4d_qwen21_dual.py`（`--control-cache` 默认仍写兼容路径 `/home/shangguanrz/nihaochen/qwen21_hi4d_controls`，实体已迁到本目录，仓库 `caches/qwen21_hi4d_controls` 为链接入口）。配对来源清单是 `datasets/Hi4D_pilot_v1/final_assets_v4_2/manifests/main_pairs_{train,val,test}.jsonl`。
+**消费方**：`train_hi4d_qwen21_dual.py`、`eval_hi4d_qwen21_dual.py`（`--control-cache` 默认兼容路径 `/home/shangguanrz/nihaochen/qwen21_hi4d_controls`，软链指向数据盘本空目录；缓存在重跑时按运行时策略重建）。配对来源清单是 `datasets/Hi4D_pilot_v1/final_assets_v4_2/manifests/main_pairs_{train,val,test}.jsonl`。
+"""
+
+NOTES["/data/shangguanrz/models/Qwen-Image-Edit-20B"] = r"""
+**Qwen-Image-Edit-20B（20B 教师/质量上界模型）**，38 个文件、约 54 GB，2026-11-18 自 `pic-edit-archive/cleanup_20261003/models/` 迁入。Diffusers 组件式布局：`transformer/`（39 GB，5 分片）、`text_encoder/`（16.6 GB，4 分片）、`vae/`、`processor/`、`tokenizer/`、`scheduler/`，加 `model_index.json`。
+
+仓库入口链 `models/Qwen-Image-Edit-20B -> ../model-qwen-edit -> /data/shangguanrz/models/Qwen-Image-Edit-20B`，已于迁移当日重指到本目录。
+
+**重要状态**：本副本下载并未完成（保留 `_download.py`、`_start.sh`、`download.log`、`download.pid`）。项目对 20B 只做过显存可行性分析（单卡 84 GB 不足以稳定训练），未接入主线，仅作离线对照采样；真要使用需重新完整下载。
 """
 
 NOTES["/data/shangguanrz/pic-edit-archive"] = r"""
-冷归档区（3,304 个文件、102.86 GB），含两项：`cleanup_20261003/`（2026-10-03 目录整理时移出仓库工作区的旧实验、旧模型与原始数据）与 `SynBody_inspection_20261003/`（SynBody 合成数据视觉质量审计打包）。归档只读：不再作为训练输入，仅供复核与再取证。
-"""
-
-NOTES["/data/shangguanrz/pic-edit-archive/cleanup_20261003"] = r"""
-**2026-10-03 清理批次移出内容**（3,303 个文件、102.84 GB）。仓库内 `experiments/`、`models/`、`archive/` 的对应原路径保留符号链接，旧命令依旧可用。
-
-| 子目录 | 文件数 | 体积 | 内容 |
-|---|---:|---:|---|
-| `experiments/` | 3,262 | 40.08 GB | 两个定案实验的完整产物 |
-| `models/` | 38 | 57.72 GB | Qwen-Image-Edit-20B 权重（下载不完整即被归档） |
-| `raw/` | 3 | 5.04 GB | 3DPW 原始压缩包 |
-
-迁移与验收证据：仓库 `archive/cleanup_20261003/tooling/{migrate_assets.py,finalize_migration.py}`、`docs/目录清理执行记录_20261003.md`，以及本批次自带的 `assets.json` 实体切换登记（`asset_registry.json` 明确以它为准）。
-"""
-
-NOTES["/data/shangguanrz/pic-edit-archive/cleanup_20261003/experiments"] = r"""
-两个已完成阶段性使命的实验产物：
-
-1. **`iper_v6_comparative_3000/`（12.82 GB，156 文件）**：DeepGen V6 在 iPER 上 3000 步横向对照。
-   - 权重：`adapter_step_{500,1000,1500,2000,2500,3000}.pt` + `checkpoint_best.pt` + `checkpoint_last.pt`，单个 1.59 GB（8 个共 12.7 GB，是本目录体积主体）；
-   - 日志：`eval.log`、`launcher.log`、`train.log` 等 4 份；
-   - `eval_results/`（51 个文件、27.3 MB）：`eval_metrics.json`（33 KB，逐步数量化指标）与 49 份逐配置评测留档；
-   - `multistage_evolution_showcase/`（72 个文件）：每个样本的 `*_source.png`、`*_cond_{depth,dwpose,normal,part}.png`、`*_step_<n>.png`、`*_evolution_strip.png`；
-   - `stage_evolution/`（20 个文件）：`multi_stage_evolution_grid.png` 与 `pair*_step_<n>.png` 对照。
-2. **`review_20260908_v2/`（27.31 GB，3,106 文件）**：2026-09-08 正式验收评审工作区。
-   - 结论文档：`EXPERIMENT_CONCLUSION.md`、`MEMORY_REPORT.md`、`QUALITY_REVIEW.md`、`RUNBOOK.md`、`ACCEPTANCE.json`；
-   - `runs/`（2,695 文件、27.0 GB）：120 个运行记录的逐条产物与显存测量；
-   - `logs/`（240）、`configs/`（120）、`cache/`（12）、`review_sheets/`（12、12.6 MB 评审联系表）。
-
-这两项对应仓库入口 `experiments/iper_v6_comparative_3000`、`experiments/review_20260908_v2`（`asset_registry.json` 的 `cold_runs`）。
-"""
-
-NOTES["/data/shangguanrz/pic-edit-archive/cleanup_20261003/models"] = r"""
-**Qwen-Image-Edit-20B（20B 教师/质量上界模型）归档**，38 个文件、57.72 GB。目录仍是 Diffusers 组件式布局：`text_encoder/`（16.58 GB，4 分片）、`transformer/`、`vae/`、`processor/`（15.9 MB）、`tokenizer/`（5.1 MB）、`scheduler/`，加 `model_index.json`、`README.md`。
-
-**重要状态**：本副本下载并未完成即被归档——目录里保留着 `_download.py`、`_start.sh`、`download.log`（15 KB）、`download.pid`，可作为「当时中断」的直接证据。项目对 20B 只做了显存可行性分析（结论：单卡 84 GB 不足以稳定训练，仅作离线对照采样），因此不影响主线；如需使用请重新完整下载，仓库兼容链接为 `model-qwen-edit` / `models/Qwen-Image-Edit-20B`。
-"""
-
-NOTES["/data/shangguanrz/pic-edit-archive/cleanup_20261003/raw"] = r"""
-**3DPW 原始数据归档**（`raw/3dpw/`）：3 个文件、5.04 GB，主体是 3 个 `.zip` 官方压缩包。3DPW 用于单人在动态序列上的几何/深度条件补充实验；处理后的定稿数据在仓库 `datasets/3dpw_single_final_v2/`，接入期快照在仓库 `add/data/3DPW` 与 `add/outputs`。本目录只保存官方原包，不解压、不修改。
+**已于 2026-11-18 整体删除**（删除前 3,304 个文件、实占约 95 GB）。原为冷归档区，含 2026-10-03 清理移出的 `review_20260908_v2`（27 GB）与 `iper_v6_comparative_3000`（12 GB）旧实验、3DPW 原始 zip（4.7 GB）、workflow runs 备份、文档/README 备份、git bundle 快照与 SynBody 审查留档。唯一保留项 Qwen-Image-Edit-20B 已迁至 `/data/shangguanrz/models/Qwen-Image-Edit-20B`；仓库内指向该区的 5 个软链接已同步删除，其余内容不可再取得。
 """
 
 NOTES["/data/shangguanrz/pic-edit-archive/SynBody_inspection_20261003"] = r"""
+（所属归档区已于 2026-11-18 整体删除，本条为历史记录）
 **SynBody 合成人体数据视觉质量审计留档**（1 个文件、24.1 MB）。实体是单个 `inspection_archive.tgz`，解开后包含：`SynBody_report.md`（审计报告）、`annotation_audit.log`（标注核查日志）、`visual_quality_20261003/`（含 `sampling_manifest.json` 采样清单、`S100K_0*.jpg`、`HumanNeRF_0*.jpg`、`SMPLX_0*.jpg` 分来源样图与 `S100K_contact_sheet.png` 联系表）。
 
 结论用途：SynBody 合成人体在纹理真实感与边缘光影上存在系统性缺陷，未纳入正式训练集，因此本目录以归档形式保留判定证据。注意仓库 `MANIFEST`（`dataset_samples/MANIFEST.txt`）中登记的 `SynBody/...` 样本切片与本归档同属一次调研，样本区那份已不在当前目录树中。
@@ -561,9 +531,9 @@ NOTES["/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1"] = r"""
 
 **根级清单（20 个文件、62.8 MB）**：`frames.jsonl`、`frames_1500.jsonl`（2,385→1,500 帧库存）、`frames_mini600.jsonl`、`pairs_1500{,_train,_val,_test}.jsonl`（6,600 对：train 5,400 / val 600 / test 600）、`processed_frames_1500{,_train,_val,_test}.jsonl`（1,500 帧：900/300/300）、`processed_sequences_1500.jsonl`（30 段：18/6/6）、`sequences.jsonl`、`split.json`、`summary.json`、`*_summary.json`、`_strong_contact_test.jsonl`（强接触测试集）。
 
-**接触信号怎么来的**：官方 `smpl/NNNNNN.npz` 里的 `contact (2,6890)` 是逐顶点接触标注（两人各 6,890 个 SMPL 顶点），本项目把它投影为「接触三元组」（主体人物、身体部位、接触类型 + 距离 + 有效位），落到 `pic-edit-caches/qwen21_hi4d_controls/control_*.pt` 的 `contact_src_person / contact_src_part / contact_dst_person / contact_dst_part / contact_contact_type / contact_distance / contact_valid_mask`（各 8 槽位）与 `contact_raster (2,512,512)`。
+**接触信号怎么来的**：官方 `smpl/NNNNNN.npz` 里的 `contact (2,6890)` 是逐顶点接触标注（两人各 6,890 个 SMPL 顶点），本项目把它投影为「接触三元组」（主体人物、身体部位、接触类型 + 距离 + 有效位），落到控制缓存 `control_*.pt`（原存于 `pic-edit-caches/qwen21_hi4d_controls/`，2026-11-18 已删除）的 `contact_src_person / contact_src_part / contact_dst_person / contact_dst_part / contact_contact_type / contact_distance / contact_valid_mask`（各 8 槽位）与 `contact_raster (2,512,512)`。
 
-**消费方**：`train_hi4d_qwen21_dual.py`、`eval_hi4d_qwen21_dual.py`（`--control-cache` 指向 `caches/qwen21_hi4d_controls`，实体在数据盘）；控制条件张量的字段表见数据盘 `pic-edit-caches/qwen21_hi4d_controls` 的构成详解。
+**消费方**：`train_hi4d_qwen21_dual.py`、`eval_hi4d_qwen21_dual.py`（`--control-cache` 默认 `~/nihaochen/qwen21_hi4d_controls` → 数据盘空目录；缓存已于 2026-11-18 删除，重跑时按需重建）；控制条件张量的字段表见 `pic-edit-caches/qwen21_hi4d_controls` 的 NOTES（字段说明保留）。
 """
 
 NOTES["/home/shangguanrz/project/pic-edit/datasets/3dpw_single_final_v2"] = r"""
@@ -577,7 +547,7 @@ NOTES["/home/shangguanrz/project/pic-edit/datasets/3dpw_single_final_v2"] = r"""
 
 **另有五个可视化目录**：`visualization_20_pairs/`、`visualization_20_pairs_diverse/`、`visualization_60_pairs_diverse_dinov2_v2/`、`visualization_60_pairs_large_pose/`、`visualization_60_pairs_report_style_v1/`（22/22/63/62/60 个文件），是配对抽样面板。
 
-**消费方**：目前只被报告脚本读取——`scripts/reports/visualize_3dpw_*.py`、`render_3dpw_60_pairs_report_style_v1`；未接入主线训练。原始官方压缩包归档在 `pic-edit-archive/cleanup_20261003/raw/3dpw/`，接入期快照在仓库 `add/data/3DPW` 与 `add/outputs`。数据获取渠道为 3DPW 官方发布，外部下载链接未在此登记，需以官方页面为准。
+**消费方**：目前只被报告脚本读取——`scripts/reports/visualize_3dpw_*.py`、`render_3dpw_60_pairs_report_style_v1`；未接入主线训练。原始官方压缩包曾归档在 `pic-edit-archive/cleanup_20261003/raw/3dpw/`（2026-11-18 随归档区删除，如需请从 3DPW 官方重新获取），接入期快照在仓库 `add/data/3DPW` 与 `add/outputs`。数据获取渠道为 3DPW 官方发布，外部下载链接未在此登记，需以官方页面为准。
 """
 
 NOTES["/home/shangguanrz/project/pic-edit/datasets/champ_motions_example"] = r"""

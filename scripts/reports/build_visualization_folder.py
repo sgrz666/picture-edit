@@ -12,7 +12,7 @@
   └── 03_最终评测四联图/ 50 样本 Source|GT|OFF|ON 四联图，文件名含 PSNR/SSIM
 
 用法：
-  python scripts/build_visualization_folder.py \
+  python scripts/reports/build_visualization_folder.py \
       --src  .codex_tmp/vis_pull \
       --out  可视化
 """

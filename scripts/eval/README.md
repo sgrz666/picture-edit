@@ -94,3 +94,9 @@
   这些脚本的竖图结论在接上之前不要引用。
 - `eval_iper_qwen21_full.py` 与多数旧入口**没有 repo-root `sys.path` 兜底**，按路径直接执行会
   `ModuleNotFoundError: No module named 'src'`，必须带 `PYTHONPATH=.`（与 `scripts/train/` 同类问题）。
+
+## 2026-11-21 从 scripts/ 根目录归入
+
+- `build_1500_stages_stitch.py`（TikTok 1500 步评测/纯推理/多阶段拼图）、`build_eval_template_panels.py`（四联评测图扩为 04 模板样式）、`build_face_eval_models.py`（面部评测模型构建）、`eval_tiktok_full_overfit_and_generate_panels.py`、`eval_tiktok_single_sample_objective.py`、`eval_tiktok_timestep_sweep.py`、`process_v65_overfit_results.py`（V6.5 过拟合结果汇总出报告）。docstring 用法示例中的旧根路径已同步。
+- 同日去重：根目录旧副本 `eval_qwen21_face_repair.py`（与子目录逐字节一致）已删除，以子目录为准。
+- **默认姿态对齐评测口径（2026-11-15 起）**：新评测脚本统一使用 `SDPose-Wholebody + YOLO11x`（共享模块 [`src/evaluation/sdpose.py`](../../src/evaluation/sdpose.py)，完整评测细则见 [`docs/SDPOSE_POSE_EVAL_SPEC.md`](../../docs/SDPOSE_POSE_EVAL_SPEC.md)），不再新建以旧 DWPose ONNX 为主口径的姿态对齐评测。

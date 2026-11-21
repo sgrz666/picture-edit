@@ -72,3 +72,10 @@
 - 本目录脚本普遍**只读产物、不重跑模型**；但 `build_*` 系列若依赖 `scripts/eval/` 尚未生成的对照图，需先跑对应 `eval_*`。
 - 多个报告脚本强调「图从预提交选择中挑、不按质量排序」，改动选图逻辑会破坏汇报的客观性，需谨慎。
 - `write_qwen21_full_report.py` 的 `--require-complete` 是最终交付闸门，中间报告可无它先出。
+
+## 2026-11-21 从 scripts/ 根目录归入
+
+- 对比条图与可视化：`build_edit_effect_strips.py`、`build_two_row_testdata_strips.py`、`build_visual_html_report.py`、`build_visualization_folder.py`、`export_condition_visuals.py`、`generate_multistage_sample_grids.py`、`make_tiktok_overfit_comparisons.py`、`plot_training_dashboard.py`、`polish_figures.py`、`visualize_tiktok_input_conditions.py`、`visualize_tiktok_objective_eval.py`。
+- Word 报告：`build_pei2i_word_report.py`。
+- 远端产物同步：`sync_visualization.py`（远端实验产物→本地可视化文件夹）、`sync_report_to_local.ps1`。
+- 同日去重：根目录旧副本 `write_qwen21_face_single_sample_report.py`（与子目录逐字节一致）已删除；docstring 用法示例中的旧根路径已同步。

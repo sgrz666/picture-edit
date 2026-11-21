@@ -8,7 +8,7 @@ OUT="${2:-}"
 STEPS="${3:-200}"
 case "$MODE" in
   help|-h|--help)
-    echo 'Usage: bash scripts/run_tiktok_qwen21_full.sh MODE ABSOLUTE_RUN_DIR [TOTAL_STEPS]'
+    echo 'Usage: bash scripts/run/run_tiktok_qwen21_full.sh MODE ABSOLUTE_RUN_DIR [TOTAL_STEPS]'
     echo 'Modes: prepare, smoke, body, face-prepare, face, resume-body, resume-face, eval'
     echo 'Use a new run directory for smoke or a new pilot. Resume keeps the original settings.'
     exit 0 ;;
