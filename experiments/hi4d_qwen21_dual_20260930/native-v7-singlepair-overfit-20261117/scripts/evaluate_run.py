@@ -235,18 +235,31 @@ def identity_metrics(args, config):
     model_ref = reference(args.identity_model)
     model, _ = frozen_evaluators(model_ref['path'], None, device='cpu', sha=[model_ref['sha256'], None])
     qualifications = {row['pair_id']: row for row in read(args.prepared)['qualification']}
-    datasets = {source['source_id']: NativeFullDatasetV62(verify(source['manifest'])['path'], load_target=False,
+    datasets = {source['source_id']: NativeFullDatasetV62(verify(source['manifest'])['path'], load_target=True,
                 data_profile=source['data_profile']) for source in config['sources']}
-    results = []
+    results, controls = [], {}
     for item in generation_records(args.generation_report):
         record = item['record']; dataset = datasets[record['source_id']]
         sample = dataset[next(i for i, row in enumerate(dataset.rows) if row['pair_id'] == record['pair_id'])]
         pixels = np.asarray(Image.open(record['path']).convert('RGB'))
         if pixels.shape[:2] != CanvasSpec.from_record(sample['target_canvas']).canvas_hw:
             raise ValueError('Identity input differs from target Canvas')
+        key = (record['source_id'], record['pair_id'])
+        if key not in controls:
+            qualification = qualifications[record['pair_id']]
+            # Target RGB is an evaluation-only positive control, never a generation condition.
+            target = ((sample['tgt_image'].permute(1, 2, 0).numpy() + 1) * 127.5).round().clip(0, 255).astype(np.uint8)
+            gt_identity = aligned_identity(sample, target, qualification, model)
+            preparation = np.asarray(qualification['source_target_similarity'])
+            controls[key] = {'source_id': key[0], 'pair_id': key[1], 'gt_identity': gt_identity,
+                'preparation_source_to_gt_2x2': preparation.tolist(),
+                'diagonal_delta_vs_preparation': (np.asarray(gt_identity['diagonal']) - preparation.diagonal()).tolist(),
+                'source_indices': sample['local_condition_v4'].source_indices[0].tolist(),
+                'target_person_ids': sample['local_condition_v4'].metadata[0]['target_person_ids'],
+                'pair_metadata': sample['pair_metadata'], 'target_canvas': sample['target_canvas']}
         results.append({**item, 'identity': aligned_identity(sample, pixels, qualifications[record['pair_id']], model)})
     return {'kind': 'target_aligned_source_identity', 'identity_model': model_ref,
-            'prepared': reference(args.prepared), 'records': results}
+            'prepared': reference(args.prepared), 'positive_controls': list(controls.values()), 'records': results}
 
 
 def image_metrics(args, config):

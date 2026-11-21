@@ -180,6 +180,52 @@ def test_identity_metrics_loads_torchscript_without_module_requires_grad(tmp_pat
     assert all(not parameter.requires_grad for parameter in loaded[0].parameters())
 
 
+def test_identity_metrics_gt_control_uses_loaded_canvas_once_per_pair(tmp_path, monkeypatch):
+    import torch
+    from PIL import Image
+    from src.data.canvas_contract import CanvasSpec
+    from src.pose_control.qwen21_full.native_v62 import data
+    from src.pose_control.qwen21_full.native_v5 import losses
+    module = evaluator()
+    model_path = tmp_path / 'identity.ts'
+    model_path.write_bytes(b'test evaluator')
+    manifest = tmp_path / 'manifest.jsonl'
+    manifest.write_text('{}\n')
+    generated = tmp_path / 'generated.png'
+    Image.fromarray(np.full((32, 32, 3), 128, np.uint8)).save(generated)
+    canvas = CanvasSpec((32, 30), (32, 30), (32, 32)).metadata()
+    sample = {'tgt_image': torch.full((3, 32, 32), -.5), 'target_canvas': canvas,
+              'local_condition_v4': SimpleNamespace(source_indices=torch.tensor([[1, 0]]),
+                  metadata=[{'target_person_ids': ['A', 'B']}]),
+              'pair_metadata': {'pair_id': 'p', 'target_rgb_sha256': 'target-sha'}}
+    class Dataset:
+        rows = [{'pair_id': 'p'}]
+        def __init__(self, manifest, *, load_target, data_profile):
+            assert load_target is True, 'GT must come from the SHA-verified typed reader'
+        def __getitem__(self, index):
+            return sample
+    prepared = tmp_path / 'prepared.json'
+    expected = [[.83, .02], [.01, .82]]
+    prepared.write_text(json.dumps({'qualification': [{'pair_id': 'p', 'source_target_similarity': expected}]}))
+    calls = []
+    def aligned(sample, pixels, qualification, model):
+        calls.append(int(pixels[0, 0, 0]))
+        return module.identity_summary(np.array(expected if calls[-1] == 64 else [[.1, .02], [.01, .2]]))
+    monkeypatch.setattr(module, 'aligned_identity', aligned)
+    monkeypatch.setattr(data, 'NativeFullDatasetV62', Dataset)
+    monkeypatch.setattr(losses, 'frozen_evaluators', lambda *a, **k: (object(), None))
+    monkeypatch.setattr(module, 'generation_records', lambda _: [
+        {'record': {'path': str(generated), 'source_id': 'train', 'pair_id': 'p', 'variant': variant}}
+        for variant in ('qwen_only', 'native')])
+    result = module.identity_metrics(SimpleNamespace(identity_model=model_path, prepared=prepared,
+        generation_report=['unused']), {'sources': [{'source_id': 'train', 'manifest': module.reference(manifest), 'data_profile': 'hybrid_hi4d'}]})
+    assert calls.count(64) == 1 and calls.count(128) == 2
+    control = result['positive_controls'][0]
+    assert control['source_indices'] == [1, 0]
+    assert control['gt_identity']['diagonal'] == [.83, .82]
+    assert control['diagonal_delta_vs_preparation'] == [0., 0.]
+
+
 def test_fixed_probe_real_count_and_evaluator_contracts_and_model_release(tmp_path, monkeypatch):
     import torch
     from src.pose_control.qwen21_full.native_v7 import training
