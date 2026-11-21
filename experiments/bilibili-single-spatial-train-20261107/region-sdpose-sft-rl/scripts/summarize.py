@@ -99,16 +99,16 @@ def main():
             'All checkpoints are fixed-budget endpoints; no best-val checkpoint selection']}
     with (a.output/'comparison.json').open('x') as f:json.dump(result,f,indent=2)
     unit=prepared.get('group_unit','video')
-    lines=[f'# {dataset} Regional FM / SDPose / GRPO pilot','',
-        f"{ntrain} train pairs / {prepared['train_videos']} {unit}s; {nval} val pairs / {prepared['val_videos']} {unit}s. One seed; bounded integration pilot.",'',
-        '| Model | Body PCK@.02 | Hand PCK@.02 | Body L2 incl failures | Hand L2 incl failures | Source ID cosine | BG MSE |',
+    lines=[f'# {dataset} 区域 FM / SDPose / GRPO pilot','',
+        f"训练 {ntrain} 对／{prepared['train_videos']} 个 {unit}；验证 {nval} 对／{prepared['val_videos']} 个 {unit}。单 seed 的有限预算集成 pilot。",'',
+        '| 权重 | Body PCK@.02 | Hand PCK@.02 | Body L2（含失败） | Hand L2（含失败） | Source ID cosine | BG MSE |',
         '|---|---:|---:|---:|---:|---:|---:|']
     def fmt(x):return 'n/a' if x is None else f'{x:.5f}'
     for row in table:lines.append('| '+row['label']+' | '+' | '.join(fmt(row[k]) for k in
         ('body_pck002','hand_pck002','body_l2_all','hand_l2_all','id_cos_src','background_mse'))+' |')
-    lines+=['','SFT route/source/index/sigma/LR traces match in all four stages (300 updates / 1200 microsteps per arm).',
-        'RL uses the same RN SFT parent as the continued-SFT control; additional rollout cost is not called equal compute.','',
-        '![Preserved paired generated panels](overview.png)','','Detailed fixed-pair images are in `panels/`; original generations and all RL candidates remain under the run output tree.']
+    lines+=['','两个 SFT 臂四阶段的 route/source/index/sigma/LR 轨迹完全一致（各 300 updates／1200 microsteps）。',
+        'RL 和继续 SFT 使用同一 RN SFT 父权重；仅 optimizer-update 数相同，额外 rollout 成本另计。','',
+        '![保存的逐对生成图对比](overview.png)','','单对大图在 `panels/`；全部原始生成图与 RL 候选图保留在 run 的 output 中。']
     with (a.output/'README.md').open('x') as f:f.write('\n'.join(lines)+'\n')
     print(json.dumps({'output':str(a.output),'models':len(table),'paired_validation_images':len(images['initial']),'sft_trace_alignment':True}))
 

@@ -70,7 +70,8 @@ def test_estimator_crop_binding_only_replaces_the_bbox_detector(tmp_path, monkey
         m.bind_sdpose_boxes('output = model(image)\n', tmp_path/'boxes.npy')
 
 
-def test_sdpose_hands_keep_anatomical_slots_and_intersect_sam_before_pooling(monkeypatch):
+@pytest.mark.parametrize('score', [.9, 1.2])
+def test_sdpose_hands_keep_anatomical_slots_and_intersect_sam_before_pooling(monkeypatch,score):
     import numpy as np
     from src.data.canvas_contract import native_pad
     path = Path(__file__).parents[1] / 'experiments/xiaohongshu-region-sdpose-sft-rl/scripts/assets.py'
@@ -81,7 +82,7 @@ def test_sdpose_hands_keep_anatomical_slots_and_intersect_sam_before_pooling(mon
     points = np.full((134,2), [45.,30.]); points[7] = [25,35]; points[4] = [70,35]
     for start,x in ((92,25),(113,70)):
         points[start:start+21] = [[x+(i%5)*2,35+(i//5)*2] for i in range(21)]
-    sd = {'points134_raw': points.tolist(), 'scores134_raw': [.9]*134, 'valid_mask134': [True]*134,
+    sd = {'points134_raw': points.tolist(), 'scores134_raw': [score]*134, 'valid_mask134': [True]*134,
           'bbox_xyxy': [5,5,90,60], 'height':64, 'width':96}
     arrays,meta = m.build_regions(sd,body,canvas,['person','__inactive__'],'a'*64,'b'*64,.8)
     assert arrays['hands'][0].sum()>0 and arrays['hands'][1].sum()>0
@@ -90,3 +91,4 @@ def test_sdpose_hands_keep_anatomical_slots_and_intersect_sam_before_pooling(mon
     assert np.all(arrays['hands'] <= body[None])
     assert np.array_equal(arrays['background'][0],canvas.valid_mask()[0].numpy()-body)
     assert meta['hand_slot_order']==['A-left','A-right','B-left','B-right']
+    assert arrays['joint_quality'].max()<=1 and arrays['hands_quality'].max()<=1

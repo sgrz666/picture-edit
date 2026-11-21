@@ -1,0 +1,157 @@
+{
+  "schema": "xhs_bilibili20k_source_audit_v1",
+  "selected": {
+    "path": "/data/shangguanrz/pic-edit-experiments/one/bilibili-single-spatial-train-20261108-ungated-v1/stages/S3/checkpoints/update_00020000_f51df6cd2ace4a97b06ab037bd03b939.pt",
+    "sha256": "d1a655a86079194def922b13fdd39888f5c7f6db4ea6734e9c617d364f9db7f3"
+  },
+  "passed": true,
+  "lineage": [
+    {
+      "checkpoint": {
+        "path": "/data/shangguanrz/pic-edit-experiments/one/bilibili-single-spatial-train-20261108-ungated-v1/stages/S3/checkpoints/update_00020000_f51df6cd2ace4a97b06ab037bd03b939.pt",
+        "sha256": "d1a655a86079194def922b13fdd39888f5c7f6db4ea6734e9c617d364f9db7f3"
+      },
+      "original_commit": {
+        "checkpoint": {
+          "path": "/data/shangguanrz/pic-edit-experiments/bilibili-single-spatial-train-20261108-ungated-v1/stages/S3/checkpoints/update_00020000_f51df6cd2ace4a97b06ab037bd03b939.pt",
+          "sha256": "d1a655a86079194def922b13fdd39888f5c7f6db4ea6734e9c617d364f9db7f3"
+        },
+        "frozen_cache_state_sha256": "aa62db9f4569d0d69bb935c640f04f7df62f07ca5c067fbd9d478a76ab2f31f6",
+        "global_update": 20000,
+        "schema": "native_v5_training_commit_v1",
+        "stage_update": 4000,
+        "training_state_sha256": "d299ed9257b5e66f97f641f29b66a3b71f23adc4d5c3070ed27b88ffb509db4b",
+        "validation_state_sha256": "6b539c59e583af24990fb21b2930bb674d0e28ef42c3c76137295692c012dd46"
+      },
+      "phase": "S3",
+      "global_update": 20000,
+      "stage_update": 4000,
+      "budget": 4000,
+      "journal_verified": {
+        "committed_records": 4045,
+        "uncommitted_tail_bytes": 0,
+        "uncommitted_tail_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "tail_preserved": true,
+        "original_log": "/data/shangguanrz/pic-edit-experiments/one/bilibili-single-spatial-train-20261108-ungated-v1/stages/S3/segments/advance-stage_f5fc744d48ba43ea9a7526be24a51514/metrics.jsonl"
+      },
+      "parent": {
+        "path": "/data/shangguanrz/pic-edit-experiments/bilibili-single-spatial-train-20261108-ungated-v1/stages/S2/checkpoints/update_00016000_b19eb82892b54ae087d1fa3c808a0022.pt",
+        "sha256": "394992a90f81a964b31aa0cc17c80479de7240e9a2a37ee04b034cc2684afd6c"
+      },
+      "gradient_report": {
+        "path": "/data/shangguanrz/pic-edit-experiments/bilibili-single-spatial-train-20261108-ungated-v1/attempts/S3stage_grad_a38c4c5a1c7d4e54b344b02ef7a325e8/gradient_preflight.json",
+        "sha256": "bec8705a5c696404e77fc380cbd5c10a248e776847c25b8bb7698a1997878eb3"
+      }
+    },
+    {
+      "checkpoint": {
+        "path": "/data/shangguanrz/pic-edit-experiments/one/bilibili-single-spatial-train-20261108-ungated-v1/stages/S2/checkpoints/update_00016000_b19eb82892b54ae087d1fa3c808a0022.pt",
+        "sha256": "394992a90f81a964b31aa0cc17c80479de7240e9a2a37ee04b034cc2684afd6c"
+      },
+      "original_commit": {
+        "checkpoint": {
+          "path": "/data/shangguanrz/pic-edit-experiments/bilibili-single-spatial-train-20261108-ungated-v1/stages/S2/checkpoints/update_00016000_b19eb82892b54ae087d1fa3c808a0022.pt",
+          "sha256": "394992a90f81a964b31aa0cc17c80479de7240e9a2a37ee04b034cc2684afd6c"
+        },
+        "frozen_cache_state_sha256": "aa62db9f4569d0d69bb935c640f04f7df62f07ca5c067fbd9d478a76ab2f31f6",
+        "global_update": 16000,
+        "schema": "native_v5_training_commit_v1",
+        "stage_update": 4000,
+        "training_state_sha256": "7a47e8dbcf6b6bae3bac193c54d98116e15d0033eb09923c59dd713207efa9ad",
+        "validation_state_sha256": "a7865f0452d7b6d2f7b25d4f02f660cb013cd16e1e1f6f89d033805739d87786"
+      },
+      "phase": "S2",
+      "global_update": 16000,
+      "stage_update": 4000,
+      "budget": 4000,
+      "journal_verified": {
+        "committed_records": 4045,
+        "uncommitted_tail_bytes": 0,
+        "uncommitted_tail_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "tail_preserved": true,
+        "original_log": "/data/shangguanrz/pic-edit-experiments/one/bilibili-single-spatial-train-20261108-ungated-v1/stages/S2/segments/advance-stage_08a7fc02c0954025acd10bbb001b5d6a/metrics.jsonl"
+      },
+      "parent": {
+        "path": "/data/shangguanrz/pic-edit-experiments/bilibili-single-spatial-train-20261108-ungated-v1/stages/S1/checkpoints/update_00012000_bbfe3a9d2f234120b73f76d33a0877c9.pt",
+        "sha256": "bef05bc3c595099695672be65032006430091fb0b50b34767a3f983f41472278"
+      },
+      "gradient_report": {
+        "path": "/data/shangguanrz/pic-edit-experiments/bilibili-single-spatial-train-20261108-ungated-v1/attempts/S2stage_grad_b614a420141a4fd48b144e341f3bdf1f/gradient_preflight.json",
+        "sha256": "c363e146ae59b35881669b970028dd4bee5c994db197d94ab0cd7b57978c6060"
+      }
+    },
+    {
+      "checkpoint": {
+        "path": "/data/shangguanrz/pic-edit-experiments/one/bilibili-single-spatial-train-20261108-ungated-v1/stages/S1/checkpoints/update_00012000_bbfe3a9d2f234120b73f76d33a0877c9.pt",
+        "sha256": "bef05bc3c595099695672be65032006430091fb0b50b34767a3f983f41472278"
+      },
+      "original_commit": {
+        "checkpoint": {
+          "path": "/data/shangguanrz/pic-edit-experiments/bilibili-single-spatial-train-20261108-ungated-v1/stages/S1/checkpoints/update_00012000_bbfe3a9d2f234120b73f76d33a0877c9.pt",
+          "sha256": "bef05bc3c595099695672be65032006430091fb0b50b34767a3f983f41472278"
+        },
+        "frozen_cache_state_sha256": "aa62db9f4569d0d69bb935c640f04f7df62f07ca5c067fbd9d478a76ab2f31f6",
+        "global_update": 12000,
+        "schema": "native_v5_training_commit_v1",
+        "stage_update": 2000,
+        "training_state_sha256": "5b12d1b1d18a55968653ed48115bffa3e5d3452facfc26916d56927fdfbb49e5",
+        "validation_state_sha256": "0f98d1970039f75931611639a91ccfd8781a647cf3e1389765a0cd455dcaa3f6"
+      },
+      "phase": "S1",
+      "global_update": 12000,
+      "stage_update": 2000,
+      "budget": 2000,
+      "journal_verified": {
+        "committed_records": 2023,
+        "uncommitted_tail_bytes": 0,
+        "uncommitted_tail_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "tail_preserved": true,
+        "original_log": "/data/shangguanrz/pic-edit-experiments/one/bilibili-single-spatial-train-20261108-ungated-v1/stages/S1/segments/advance-stage_4ab8cb1507d9468198eb4ff15217e093/metrics.jsonl"
+      },
+      "parent": {
+        "path": "/data/shangguanrz/pic-edit-experiments/bilibili-single-spatial-train-20261108-ungated-v1/stages/S0/checkpoints/update_00010000_02990e531c2b499eb3262d17654043ec.pt",
+        "sha256": "45e00577a1b2e7b03468c0e274a7675504f63970bc2b3ae8f56845eca95483ed"
+      },
+      "gradient_report": {
+        "path": "/data/shangguanrz/pic-edit-experiments/bilibili-single-spatial-train-20261108-ungated-v1/attempts/S1stage_grad_ae625b00a8a64f17843ad157dd5279f1/gradient_preflight.json",
+        "sha256": "22411c42543e231d841ca95138ff860d4ae54922e527e3b7d60ffb1907963f08"
+      }
+    },
+    {
+      "checkpoint": {
+        "path": "/data/shangguanrz/pic-edit-experiments/one/bilibili-single-spatial-train-20261108-ungated-v1/stages/S0/checkpoints/update_00010000_02990e531c2b499eb3262d17654043ec.pt",
+        "sha256": "45e00577a1b2e7b03468c0e274a7675504f63970bc2b3ae8f56845eca95483ed"
+      },
+      "original_commit": {
+        "checkpoint": {
+          "path": "/data/shangguanrz/pic-edit-experiments/bilibili-single-spatial-train-20261108-ungated-v1/stages/S0/checkpoints/update_00010000_02990e531c2b499eb3262d17654043ec.pt",
+          "sha256": "45e00577a1b2e7b03468c0e274a7675504f63970bc2b3ae8f56845eca95483ed"
+        },
+        "frozen_cache_state_sha256": "aa62db9f4569d0d69bb935c640f04f7df62f07ca5c067fbd9d478a76ab2f31f6",
+        "global_update": 10000,
+        "schema": "native_v5_training_commit_v1",
+        "stage_update": 10000,
+        "training_state_sha256": "ed829c1c4fe8009856713961f1f2a6620ef6bd10e495619789aaf519bef5241f",
+        "validation_state_sha256": "10b41f082382c6c21c1704bf2169b91fc9462f315de4ef7db3de07fb75cd2a63"
+      },
+      "phase": "S0",
+      "global_update": 10000,
+      "stage_update": 10000,
+      "budget": 10000,
+      "journal_verified": {
+        "committed_records": 10111,
+        "uncommitted_tail_bytes": 0,
+        "uncommitted_tail_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "tail_preserved": true,
+        "original_log": "/data/shangguanrz/pic-edit-experiments/one/bilibili-single-spatial-train-20261108-ungated-v1/stages/S0/segments/train_d2a1e87a09be40338fdba9b2868486c5/metrics.jsonl"
+      },
+      "parent": null,
+      "gradient_report": {
+        "path": "/data/shangguanrz/pic-edit-experiments/bilibili-single-spatial-train-20261108-ungated-v1/attempts/S0stage_grad_193a5b684b1547f5813a6828f7e15d3d/gradient_preflight.json",
+        "sha256": "e0af1c09b980f8f1531bf85cd87963611a45a4eb060616876d76fceca972ca72"
+      }
+    }
+  ],
+  "relocation": "old Bilibili root -> one/Bilibili; bytes and original commit remain unchanged",
+  "use": "user-selected explicit initialization, not optimizer resume or a V7-trained 20k claim"
+}

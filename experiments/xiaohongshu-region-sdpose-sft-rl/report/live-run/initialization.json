@@ -1,0 +1,65 @@
+{
+  "schema": "xhs_bilibili20k_to_native_v7_v1",
+  "source": {
+    "path": "/data/shangguanrz/pic-edit-experiments/one/bilibili-single-spatial-train-20261108-ungated-v1/stages/S3/checkpoints/update_00020000_f51df6cd2ace4a97b06ab037bd03b939.pt",
+    "sha256": "d1a655a86079194def922b13fdd39888f5c7f6db4ea6734e9c617d364f9db7f3"
+  },
+  "source_audit": {
+    "path": "/data/shangguanrz/pic-edit-experiments/one/xiaohongshu-region-sdpose-sft-rl-20261121-v1/data/initialization-source.json",
+    "sha256": "387005b26fa784d18f23146bc5ba0ad65a8b72bc942d4f7c0b5e592e066b6d72"
+  },
+  "initialization": {
+    "path": "/data/shangguanrz/pic-edit-experiments/one/xiaohongshu-region-sdpose-sft-rl-20261121-v1/initialization/v7.pt",
+    "sha256": "57022f5cdcae2931f30ec93090c6e53626089eb69f8893761d8e9c901448060e"
+  },
+  "migrations": [
+    {
+      "version": "v6",
+      "checkpoint": {
+        "path": "/data/shangguanrz/pic-edit-experiments/one/xiaohongshu-region-sdpose-sft-rl-20261121-v1/initialization/v6.pt",
+        "sha256": "7b6de8af38c338f63d84c884ead67be1fcf25bb86e7427a786fdcc75e6abbc90"
+      },
+      "report": {
+        "path": "/data/shangguanrz/pic-edit-experiments/one/xiaohongshu-region-sdpose-sft-rl-20261121-v1/report/initialization/v6.json",
+        "sha256": "eb4504cec6ca2f1a2a54ad9af0c5846ce77c5a8944cb213d447df772551337ed"
+      }
+    },
+    {
+      "version": "v61",
+      "checkpoint": {
+        "path": "/data/shangguanrz/pic-edit-experiments/one/xiaohongshu-region-sdpose-sft-rl-20261121-v1/initialization/v61.pt",
+        "sha256": "76ddcdf2c2a209e6a66f3a22831cf3978668ef83de50bd10b89d0ada144f7ac7"
+      },
+      "report": {
+        "path": "/data/shangguanrz/pic-edit-experiments/one/xiaohongshu-region-sdpose-sft-rl-20261121-v1/report/initialization/v61.json",
+        "sha256": "5cfe132adeb6c2440d506165dfb907c24800a2a00ed8538a279ab9b64677a9f6"
+      }
+    },
+    {
+      "version": "v62",
+      "checkpoint": {
+        "path": "/data/shangguanrz/pic-edit-experiments/one/xiaohongshu-region-sdpose-sft-rl-20261121-v1/initialization/v62.pt",
+        "sha256": "e6aeee02d9cc0be85d17d1e6c65f939fb4fd2d9c19666f06e723626d5ebf7622"
+      },
+      "report": {
+        "path": "/data/shangguanrz/pic-edit-experiments/one/xiaohongshu-region-sdpose-sft-rl-20261121-v1/report/initialization/v62.json",
+        "sha256": "0d748df4eba07a4b2abc4d22b6ec931d62f0663190e7862f976ee57766f7f2fb"
+      }
+    },
+    {
+      "version": "v7",
+      "checkpoint": {
+        "path": "/data/shangguanrz/pic-edit-experiments/one/xiaohongshu-region-sdpose-sft-rl-20261121-v1/initialization/v7.pt",
+        "sha256": "57022f5cdcae2931f30ec93090c6e53626089eb69f8893761d8e9c901448060e"
+      },
+      "report": {
+        "path": "/data/shangguanrz/pic-edit-experiments/one/xiaohongshu-region-sdpose-sft-rl-20261121-v1/report/initialization/v7.json",
+        "sha256": "0f3d54d29542e3c76c956cf77ad3975ba493c44ba0e425bc8798feeaeee6efa4"
+      }
+    }
+  ],
+  "optimizer_inherited": false,
+  "migration_seed": 42,
+  "source_trained_updates": 20000,
+  "new_architecture_trained_updates": 0
+}

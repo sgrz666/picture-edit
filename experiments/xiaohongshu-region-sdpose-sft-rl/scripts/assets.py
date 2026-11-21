@@ -43,6 +43,8 @@ def build_regions(sd, body, spec, people, rgb_sha, annotation_sha, sam_quality):
     arrays['person'][0] = person; arrays['person_quality'][0] = float(np.clip(sam_quality,0,1))
     points = np.asarray(sd['points134_raw'],float); scores = np.asarray(sd['scores134_raw'],float)
     known = np.asarray(sd['valid_mask134'],bool)&np.isfinite(points).all(1)&np.isfinite(scores)
+    # SDPose exports heatmap maxima, which can exceed 1; only ROI q is bounded.
+    scores = np.clip(scores,0,1)
     canvas_points = spec.pixel_points(np.nan_to_num(points))
     sigma = float(np.clip(.025*(sd['bbox_xyxy'][3]-sd['bbox_xyxy'][1])*spec.scale_xy[1],8,24))
     used = []
@@ -71,6 +73,7 @@ def build_regions(sd, body, spec, people, rgb_sha, annotation_sha, sam_quality):
         'annotation_sha256':annotation_sha,'hand_slot_order':['A-left','A-right','B-left','B-right'],
         'producer':'xiaohongshu_sdpose_sam2_regions_v1','joint_indices':list(BODY_JOINTS),
         'body_source':'SAM2.1 from locked SDPose body points and bbox','hands':hand_status,
+        'quality_policy':'raw SDPose heatmap scores clipped to [0,1]; original annotation unchanged',
         'intersection':'pixel SAM support before area pooling; coverage applied once'}
     return arrays,metadata
 

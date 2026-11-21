@@ -1,0 +1,62 @@
+{
+  "schema": "xhs_bilibili20k_native_v7_acceptance_v1",
+  "passed": true,
+  "source": {
+    "path": "/data/shangguanrz/pic-edit-experiments/one/bilibili-single-spatial-train-20261108-ungated-v1/stages/S3/checkpoints/update_00020000_f51df6cd2ace4a97b06ab037bd03b939.pt",
+    "sha256": "d1a655a86079194def922b13fdd39888f5c7f6db4ea6734e9c617d364f9db7f3"
+  },
+  "initialization": {
+    "path": "/data/shangguanrz/pic-edit-experiments/one/xiaohongshu-region-sdpose-sft-rl-20261121-v1/initialization/v7.pt",
+    "sha256": "57022f5cdcae2931f30ec93090c6e53626089eb69f8893761d8e9c901448060e"
+  },
+  "source_updates": 20000,
+  "architecture": "native_full_v7",
+  "inherited_tensors_exact": 1054,
+  "inherited_tensor_elements_exact": 225955980,
+  "raw_rgb_and_geometry_frames": 176,
+  "minimum_camera_mesh_z": 13.079813957214355,
+  "maximum_raw_sdpose_score": 1.144350290298462,
+  "one_frame_import_fk_passed": true,
+  "expression_basis_sha256": "836fe4c2e362f6ce4fc1b36ea521c3c8353bbff0e36f55367118da149c7fe637",
+  "runtime_pose_config": {
+    "hidden_dim": 4096,
+    "width": 512,
+    "heads": 8,
+    "injection_layers": [
+      5,
+      10,
+      15,
+      21,
+      26,
+      31
+    ],
+    "use_geometry": true,
+    "use_spatial": true,
+    "use_role": true,
+    "use_contact": true,
+    "use_interaction": true,
+    "query_chunk_size": 128,
+    "max_pose_tokens_per_reference": 256,
+    "geometry_key_mask": true,
+    "edit_region_gate": true,
+    "multiscale_tokens": true,
+    "global_token_budget": 128,
+    "joint_token_budget": 64,
+    "local_token_budget": 64,
+    "support_expand_px": 16,
+    "edit_expand_px": 16,
+    "feather_px": 8,
+    "person_routing": true,
+    "body_spatial_gate": true,
+    "interaction_spatial_gate": true,
+    "owner_threshold": 0.75,
+    "routing_epsilon": 1e-06,
+    "mask_pose_fusion": true,
+    "spatial_rope": true,
+    "geometry_contact": true,
+    "identity_modulation": true
+  },
+  "optimizer_inherited": false,
+  "new_architecture_updates": 0,
+  "training_started": false
+}
