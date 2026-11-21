@@ -101,3 +101,7 @@ V4.1增加`--data-profile hybrid_hi4d|full_smplx|auto`，在读取和preflight�
 ### V5 Training Preparation v1
 
 同一入口已简化为`NativeV5Trainer`的CLI，默认`prepare`；仅显式`train/resume/advance-stage`才进入优化器路径。S0–S3人工切换，参数／路由／Loss／数据／LR解耦，支持保留moment的阶段推进、完整RNG／日志恢复和独立无更新梯度门禁。旧`--profile`转换配置，`--preflight-only`映射data检查。默认LR保护继承Encoder，Full原倍率和flat预设仍可选择。用法见`src/pose_control/qwen21_full/native_v5/training/README.md`；本轮只静态核对。
+
+## Native V6.2 在线 RL
+
+`train_qwen21_native_v62_rl.py` 从完整 V6.2 SFT checkpoint 起步。`check-data` 检查奖励资格，`preflight` 用冻结权重验证 Rollout/Replay，`train` 对真实生成图评分并更新 Native 输出头。配置和验收见 [Native RL 使用说明](../../src/pose_control/qwen21_full/native_rl/README.md)。

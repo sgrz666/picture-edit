@@ -6,7 +6,7 @@ is deliberately bypassed, without modifying the installed diffusers package.
 """
 import numpy as np
 import hashlib
-from contextlib import nullcontext
+from contextlib import contextmanager, nullcontext
 import torch
 from torch.nn import functional as F
 from ..qwen_runtime import transformer_inputs
@@ -15,28 +15,15 @@ from .integration import bind_native_full_v62
 from ..native_v6.conditioning import primary_source,validate_pair
 
 
-@torch.no_grad()
-def generate_native(pipe,runtime,batch,pair,*,options,base_options,seed=42,steps=20,enabled=True,observer=None,sampling_report=None,poselink_strength=1.):
-    from diffusers.pipelines.qwenimage21.pipeline_qwenimage21 import calculate_shift,retrieve_timesteps
+@contextmanager
+def native_velocity(pipe,runtime,batch,pair,*,options,base_options,enabled=True,observer=None,sampling_report=None,poselink_strength=1.):
+    """Bind current Native features for sampling or differentiable replay."""
     device=next(pipe.transformer.parameters()).device
     pair={k:v.to(device) if torch.is_tensor(v) else v for k,v in pair.items() if k!='target_latent'}
     validate_pair(pair)
     if pair['target_canvas_id']!=batch['local_condition_v4'].metadata[0]['target_canvas_id']:
         raise ValueError('V6 generation references/geometry Canvas differs')
     th,tw=pair['target_token_hw'];dtype=pair['prompt_embeds'].dtype
-    generator=torch.Generator(device=device).manual_seed(seed)
-    noise=torch.randn((1,1,64,th,tw),device=device,dtype=dtype,generator=generator)
-    latent=pipe._pack_latents(noise,1,64,th,tw)
-    if sampling_report is not None:
-        sampling_report.update(initial_noise_sha256=hashlib.sha256(noise.detach().contiguous().view(torch.uint8).cpu().numpy().tobytes()).hexdigest(),
-            noise_shape=list(noise.shape),noise_dtype=str(noise.dtype),seed=seed)
-    scheduler=type(pipe.scheduler).from_config(pipe.scheduler.config)
-    mu=calculate_shift(th*tw,scheduler.config.get('base_image_seq_len',256),scheduler.config.get('max_image_seq_len',4096),
-        scheduler.config.get('base_shift',.5),scheduler.config.get('max_shift',1.15))
-    timesteps,_=retrieve_timesteps(scheduler,steps,device,sigmas=np.linspace(1.,1/steps,steps),mu=mu)
-    scheduler.set_begin_index(0)
-    if sampling_report is not None:
-        sampling_report.update(timesteps=timesteps.detach().float().cpu().tolist(),scheduler=type(scheduler).__name__)
     prepared=None
     if enabled:
         bank=batch.get('source_bank_v5')
@@ -51,8 +38,8 @@ def generate_native(pipe,runtime,batch,pair,*,options,base_options,seed=42,steps
             prepared=runtime.encode(batch,target_token_hw=(th,tw),identity=identity,source_latent=source,options=options,base_options=base_options)
     coverage=F.avg_pool2d(batch['valid_image_mask'].to(device).float(),16).flatten(1)
 
-    def predict(t):
-        sigma=t.expand(1).to(dtype)/1000
+    def predict(latent,t):
+        sigma=torch.as_tensor(t,device=device).expand(1).to(dtype)/1000
         values=transformer_inputs(pair,latent,sigma)
         if not enabled and hasattr(pipe.transformer,'_native_v62_execution'):
             values['native_enabled']=False
@@ -68,9 +55,39 @@ def generate_native(pipe,runtime,batch,pair,*,options,base_options,seed=42,steps
                 region_valid=prepared.local.region_valid.tolist(),token_valid=prepared.local.token_valid.sum(-1).tolist(),
                 detail_valid=prepared.local.detail_valid.tolist()))
         with bind_native_full_v62(pipe.transformer,prepared,options=options,valid_mask=coverage,reference_roles=pair['reference_roles'],reference_canvas_ids=pair['reference_canvas_ids'],poselink_strength=poselink_strength), (observer.capture() if observer is not None else nullcontext()):
-            for t in timesteps:latent=scheduler.step(predict(t),t,latent,return_dict=False)[0]
+            yield predict
     else:
-        for t in timesteps:latent=scheduler.step(predict(t),t,latent,return_dict=False)[0]
+        yield predict
+
+
+@torch.no_grad()
+def generate_native(pipe,runtime,batch,pair,*,options,base_options,seed=42,steps=20,enabled=True,observer=None,sampling_report=None,poselink_strength=1.,step_override=None):
+    from diffusers.pipelines.qwenimage21.pipeline_qwenimage21 import calculate_shift,retrieve_timesteps
+    device=next(pipe.transformer.parameters()).device
+    th,tw=pair['target_token_hw'];dtype=pair['prompt_embeds'].dtype
+    generator=torch.Generator(device=device).manual_seed(seed)
+    noise=torch.randn((1,1,64,th,tw),device=device,dtype=dtype,generator=generator)
+    latent=pipe._pack_latents(noise,1,64,th,tw)
+    if sampling_report is not None:
+        sampling_report.update(initial_noise_sha256=hashlib.sha256(noise.detach().contiguous().view(torch.uint8).cpu().numpy().tobytes()).hexdigest(),
+            noise_shape=list(noise.shape),noise_dtype=str(noise.dtype),seed=seed)
+    scheduler=type(pipe.scheduler).from_config(pipe.scheduler.config)
+    mu=calculate_shift(th*tw,scheduler.config.get('base_image_seq_len',256),scheduler.config.get('max_image_seq_len',4096),
+        scheduler.config.get('base_shift',.5),scheduler.config.get('max_shift',1.15))
+    timesteps,_=retrieve_timesteps(scheduler,steps,device,sigmas=np.linspace(1.,1/steps,steps),mu=mu)
+    scheduler.set_begin_index(0)
+    if sampling_report is not None:
+        sampling_report.update(timesteps=timesteps.detach().float().cpu().tolist(),scheduler=type(scheduler).__name__)
+    with native_velocity(pipe,runtime,batch,pair,options=options,base_options=base_options,enabled=enabled,
+                         observer=observer,sampling_report=sampling_report,poselink_strength=poselink_strength) as predict:
+        for i,t in enumerate(timesteps):
+            velocity=predict(latent,t)
+            next_latent=scheduler.step(velocity,t,latent,return_dict=False)[0]
+            if step_override is not None:
+                action=step_override(i,t,latent,velocity,scheduler.sigmas[i],scheduler.sigmas[i+1])
+                if action is not None:
+                    next_latent=action
+            latent=next_latent
     old_device=next(pipe.vae.parameters()).device
     try:
         pipe.vae.to(device)

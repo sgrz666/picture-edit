@@ -1,0 +1,171 @@
+import numpy as np
+import pytest
+import torch
+
+from tests.test_native_v62_integration import control_case, installed
+from src.pose_control.qwen21_full.native_rl.objective import advantages, clipped_loss, transition
+from src.pose_control.qwen21_full.native_rl.rewards import ImageRewardBank, PersonPose, RewardTarget, score_candidate
+from src.pose_control.qwen21_full.native_rl.runner import FrozenReference, NativeRollout, Replay, update_policy
+
+
+def test_transition_replays_stored_bf16_action():
+    x = torch.randn(1, 8, 4).bfloat16()
+    velocity = torch.randn(x.shape, requires_grad=True)
+    sample, old, _, _ = transition(x, velocity.detach(), .7, .5, generator=torch.Generator().manual_seed(3))
+    _, new, _, _ = transition(x, velocity, .7, .5, action=sample)
+    torch.testing.assert_close(new, old, rtol=0, atol=0)
+    new.backward()
+    assert velocity.grad.abs().sum() > 0
+    with pytest.raises(ValueError, match='interior'):
+        transition(x, velocity, 1., .5, action=sample)
+
+
+def test_gdpo_masks_eligibility_and_records_low_variance():
+    values, stats = advantages(
+        [{'pose': [.2, .8], 'identity': [.5001, .5002]}, {'pose': [.6, .2]}],
+        {'pose': .5, 'identity': .5}, std_floor=.001,
+    )
+    torch.testing.assert_close(values, torch.tensor([[-.5, .5], [1., -1.]]) / .625**.5)
+    assert stats[0]['identity']['low_variance'] and stats[1]['identity']['applicable'] is False
+    baseline, _ = advantages([{'pose': [.2, .8], 'identity': [.5001, .5002]}, {'pose': [.6, .2]}],
+                             {'pose': .5, 'identity': .5}, mode='gdpo', std_floor=.001)
+    assert baseline[0, 1] > baseline[1, 0]
+    with pytest.raises(ValueError, match='finite'):
+        advantages([{'pose': [.2, float('nan')]}], {'pose': 1.})
+
+
+def test_clipping_and_frozen_reference_penalty():
+    new = torch.tensor([.4, -.4], requires_grad=True)
+    mean = torch.ones(2, 4, requires_grad=True)
+    loss, diagnostics = clipped_loss(new, torch.zeros(2), torch.tensor([1., -1.]), mean, torch.zeros_like(mean), .5, clip=.1, beta=.001)
+    assert diagnostics['clip_fraction'] == 1.
+    loss.backward()
+    assert new.grad.abs().sum() == 0 and mean.grad.abs().sum() > 0
+
+
+def test_dual_identity_swap_and_missing_person_penalty():
+    def pose(x):
+        points = np.column_stack((np.linspace(x - 8, x + 8, 17), np.linspace(20, 80, 17)))
+        return PersonPose(points, np.ones(17, dtype=bool), np.array([x - 10, 15, x + 10, 85]))
+
+    right, left = pose(75), pose(25)
+    a, b = np.eye(2)
+    target = RewardTarget((right, left), (a, b), (100, 100))
+    correct, details = score_candidate(target, (left, right), (b, a))
+    swapped, _ = score_candidate(target, (left, right), (a, b))
+    missing, miss = score_candidate(target, (right,), (None,))
+    assert correct['pose'] == pytest.approx(1)
+    assert correct['binding'] > swapped['binding']
+    assert details['id_swap'] is False
+    assert missing['pose'] == pytest.approx(.35)
+    assert missing['identity'] == 0 and miss['id_missing'] == 2
+
+
+def test_reward_evaluators_see_composited_qwen_rgba():
+    from PIL import Image
+
+    bank = ImageRewardBank.__new__(ImageRewardBank)
+    pose = PersonPose(np.zeros((17, 2)), np.ones(17, dtype=bool), np.array([0, 0, 32, 32]))
+
+    def detect(image, canvas):
+        assert image.mode == 'RGB' and image.getpixel((0, 0)) == (128, 128, 128)
+        return ()
+
+    bank._poses = detect
+    bank._faces = lambda image, boxes: ()
+    reward, _ = bank.score(RewardTarget((pose,), (None,), (32, 32)), None,
+                           Image.new('RGBA', (32, 32), (255, 0, 0, 0)))
+    assert reward['pose'] == 0
+
+
+def test_policy_updates_only_selected_parameter_and_rejects_bad_replay():
+    active = torch.nn.Parameter(torch.tensor(.1))
+    frozen = torch.nn.Parameter(torch.tensor(.4), requires_grad=False)
+    x = torch.ones(1, 4)
+    actions = []
+    for seed in (1, 2):
+        y, old, _, _ = transition(x, x * (active.detach() + frozen), .7, .5, generator=torch.Generator().manual_seed(seed))
+        actions.append(Replay(x, y, old, 700., .7, .5))
+    optimizer = torch.optim.AdamW([active], lr=.001)
+
+    def predict(row):
+        return row.state * (active + frozen)
+
+    before = active.detach().clone()
+    metrics = update_policy(optimizer, [(actions, torch.tensor([1., -1.]), predict)], [active], [frozen], beta=0.)
+    assert active != before and frozen == .4
+    assert metrics['max_ratio_error'] == 0 and metrics['grad_norm'] > 0
+    with pytest.raises(RuntimeError, match='Replay parity'):
+        update_policy(optimizer, [(actions, torch.tensor([1., -1.]), predict)], [active], [frozen], beta=0.)
+
+
+def test_native_scheduler_rollout_replay_with_installed_qwen(installed, monkeypatch):
+    import os
+    from types import SimpleNamespace
+
+    pytest.importorskip('transformers')
+    from diffusers import FlowMatchEulerDiscreteScheduler, QwenImage21Pipeline
+    from PIL import Image
+    from src.pose_control.qwen21_full.native_v62.generation import generate_native
+
+    _, _, model, _, runtime = installed
+    roles = ('source', 'target_pose')
+    _, control, options, inputs = control_case(roles)
+    device = torch.device(os.getenv('NATIVE_RL_TEST_DEVICE', 'cpu'))
+    dtype = torch.bfloat16 if device.type == 'cuda' else torch.float32
+    # Real packed Qwen, V6.2 binding and diffusion scheduler with a lightweight deterministic decoder.
+    class Decoder(torch.nn.Linear):
+        config = SimpleNamespace(latents_mean=[0.] * 64, latents_std=[1.] * 64)
+
+        @property
+        def dtype(self):
+            return self.weight.dtype
+
+        def decode(self, latent, **kwargs):
+            return (latent[:, :3].clamp(-1, 1),)
+
+    def postprocess(value, **kwargs):
+        rgb = ((value[0].permute(1, 2, 0).float().cpu().numpy() + 1) * 127.5).astype(np.uint8)
+        return [Image.fromarray(rgb)]
+
+    model.to(device)
+    if device.type == 'cuda':
+        for p in model.parameters():
+            if id(p) not in {id(q) for q in runtime.parameters()}:
+                p.data = p.data.to(dtype)
+    model.enable_gradient_checkpointing()
+    prepared = control.to(device=device)
+    monkeypatch.setattr(runtime, 'encode', lambda *args, **kwargs: prepared)
+    pipe = SimpleNamespace(transformer=model, scheduler=FlowMatchEulerDiscreteScheduler(use_dynamic_shifting=True),
+                           vae=Decoder(1, 1), image_processor=SimpleNamespace(postprocess=postprocess),
+                           vae_scale_factor=16, _pack_latents=QwenImage21Pipeline._pack_latents,
+                           _unpack_latents=QwenImage21Pipeline._unpack_latents)
+    pair = dict(qwen_condition_profile='single_2ref', reference_latents=inputs['hidden_states'][:, :16].to(dtype),
+                reference_roles=roles, reference_canvas_ids=('canvas', 'canvas'), target_canvas_id='canvas',
+                target_token_hw=(2, 4), source_token_hw=(2, 4), reference_token_hws=((2, 4), (2, 4)),
+                source_latent=inputs['hidden_states'][:, :8].to(dtype), img_mask=inputs['img_mask'],
+                prompt_embeds=inputs['encoder_hidden_states'].to(dtype), prompt_mask=inputs['encoder_hidden_states_mask'])
+    batch = dict(local_condition_v4=SimpleNamespace(metadata=[{'target_canvas_id': 'canvas'}]),
+                 valid_image_mask=control.spatial.valid_pixels)
+    base = SimpleNamespace(identity=False)
+    rollout = NativeRollout(SimpleNamespace(pipe=pipe, runtime=runtime, device=device), batch, pair,
+                            SimpleNamespace(poselink_strength=1.), options, base, steps=3, sde_step=1, noise_level=.7)
+    image, _ = rollout.generate(3)
+    native = generate_native(pipe, runtime, batch, pair, options=options, base_options=base, seed=3, steps=3)
+    assert np.array_equal(np.asarray(image), np.asarray(native))
+    rows = [rollout.generate(seed, stochastic=True)[1] for seed in (3, 4)]
+    active = list(runtime.poselink.output_heads.parameters())
+    for p in model.parameters():
+        p.requires_grad_(any(p is a for a in active))
+    frozen = [p for p in model.parameters() if not p.requires_grad]
+    sft = FrozenReference(active)
+    with torch.no_grad(), sft.use():
+        means = {id(r): transition(r.state, rollout.predict(r), r.sigma, r.next_sigma, action=r.action)[2] for r in rows}
+    optim = torch.optim.AdamW(active, lr=.003)
+    replay = [(rows, torch.tensor([-1., 1.]), rollout.predict)]
+    first = update_policy(optim, replay, active, frozen, reference_means=means)
+    assert first['max_ratio_error'] == 0 and first['grad_norm'] > 0 and first['kl'] == 0
+    second = update_policy(optim, replay, active, frozen, reference_means=means, check_parity=False)
+    assert second['kl'] > 0
+    with torch.no_grad(), sft.use():
+        assert all(torch.equal(p, ref) for p, ref in zip(active, sft.weights))
