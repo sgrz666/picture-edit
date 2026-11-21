@@ -55,6 +55,18 @@ CPU最终评价均exit0。所有图像都检出2人、24/24共同点有效，人
 
 报告：`report/paired12-v1/eval-paired-detected-identity-v1/evaluation.json`（真实SCRFD五点与Source身份）和`eval-paired-sdpose-cpu-v1/evaluation.json`（姿态／背景与4张叠图）。`baseline`／`final`字段分别表示Control192／SourceBG192，两者均有确切权重SHA。原始图在`output/paired12-v1/{control,source-background}/update_000192/{train,observation}/`；本机拉回副本及JSON在`output/local-preview/`。全部实验GPU／CPU进程均已退出，没有增加第三组或更多训练。
 
+复用本轮SourceBG权重推理（GPU需足够空闲，输出和报告换新名字，不改原结果）：
+
+```bash
+$PY "$OLD/scripts/run_training.py" generate \
+  --config "$ROOT/report/paired12-v1/source-background-generation.json" \
+  --checkpoint "$ROOT/output/training/checkpoints/update_00000192_19203500495047c59007c90e347049af.pt" \
+  --output "$ROOT/output/review-sourcebg-new" \
+  --report "$ROOT/report/review-sourcebg-new.json" --memory-fraction 0.8
+```
+
+在其他训练配置启用新目标须同时绑定`preservation={"source_identity":0.2,"background":0.1}`和相应`preservation_index={path,sha256}`；索引必须由该数据的Source真实五点和同一evaluator生成，不能直接套用本实验index到另一张Source。默认None保持旧行为，网络结构与原V7权重格式不变。
+
 复测CPU评价可复用旧实验`$OLD/scripts/evaluate_run.py --action image-metrics --pose-device cpu`，config使用`$ROOT/report/paired12-v1/source-background-generation.json`，generation-report传两组的`control-images.json`与`source-background-images.json`，必须换新的report-dir。环境使用既有SDPose venv，`CUDA_VISIBLE_DEVICES=-1 OMP_NUM_THREADS=4 MKL_NUM_THREADS=4 CUDA_HOME=/home/shangguanrz/nihaochen/envs/qwen21`。身份审计用`$OLD/scripts/audit_detected_identity.py --help`列出的参数，baseline/control与final/SourceBG对应上述两个generation报告，prepared仍是`$OLD/data-v2/prepared.json`，TS与SCRFD路径同旧试验。
 
 代码回归：`python -m pytest tests/test_native_v7_preservation.py tests/test_native_v7_preservation_assets.py tests/test_native_v7_preservation_training.py tests/test_native_v7_preservation_pilot.py tests/test_native_v7_training.py tests/test_native_v62_rl.py -q`，实际**122 passed、1 skipped**；跳过项为需额外资源的CUDA测试。
