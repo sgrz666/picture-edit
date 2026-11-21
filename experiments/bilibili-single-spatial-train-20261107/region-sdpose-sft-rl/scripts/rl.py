@@ -18,7 +18,7 @@ import uuid
 REPO=Path(os.environ.get('PICTUREEDIT_REPO',str(Path(__file__).resolve().parents[4])))
 sys.path.insert(0,str(REPO))
 PY='/home/shangguanrz/nihaochen/envs/qwen21/bin/python'
-SDPY='/data/shangguanrz/pic-edit-experiments/four-skeleton-compair/.venv/bin/python'
+SDPY='/data/shangguanrz/pic-edit-experiments/姿态估计/four-skeleton-compair/.venv/bin/python'
 SCHEMA='native_region_grpo_training_v1'
 ALGORITHM={'name':'native_flow_grpo_v1','group_size':4,'rollout_steps':10,'sde_indices':[1,2,3],
     'noise_level':.7,'ppo_clip':1e-4,'reference_beta':1e-3,

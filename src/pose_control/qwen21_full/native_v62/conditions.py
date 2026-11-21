@@ -153,8 +153,16 @@ def _parts_contacts(batch, geometry, local, spatial):
             raise ValueError('single depth cannot supply an active person B')
         if single.relative.shape[0] != b:
             raise ValueError('single depth and geometry batch differs')
+        canvases = None if batch.get('target_canvas') is None else _rows(batch['target_canvas'], b, 'target_canvas')
         for row, meta in enumerate(single.metadata):
-            if meta['canvas_id'] != geometry.canvas_ids[row] or meta['pose_canvas_id'] != geometry.canvas_ids[row]:
+            expected_depth = geometry.canvas_ids[row]
+            if canvases is not None:
+                from ..depth_condition import canvas_identity
+                spec = CanvasSpec.from_record(canvases[row])
+                if spec.fingerprint() != geometry.canvas_ids[row]:
+                    raise ValueError('single depth target Canvas differs from geometry')
+                expected_depth = canvas_identity(spec.metadata())
+            if meta['canvas_id'] != expected_depth or meta['pose_canvas_id'] != geometry.canvas_ids[row]:
                 raise ValueError('single depth Canvas differs from geometry')
             if meta.get('person_id') is not None and (local is None or meta['person_id'] != local.metadata[row]['target_person_ids'][0]):
                 raise ValueError('single depth person_id differs from local target mapping')

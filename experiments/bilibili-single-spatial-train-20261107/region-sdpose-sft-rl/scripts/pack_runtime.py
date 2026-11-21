@@ -11,12 +11,17 @@ ROOT=Path(__file__).resolve().parents[4]
 
 
 def main():
-    p=argparse.ArgumentParser(description=__doc__);p.add_argument('--output',type=Path,required=True);a=p.parse_args()
+    p=argparse.ArgumentParser(description=__doc__);p.add_argument('--output',type=Path,required=True)
+    p.add_argument('--experiment',type=Path,action='append',default=[]);a=p.parse_args()
     if a.output.exists():raise FileExistsError(a.output)
     selected=[]
     for folder in ('src','third_party','scripts','tests'):
         selected.extend(x for x in (ROOT/folder).rglob('*') if x.is_file() and x.suffix in ('.py','.json','.md','.sh','.yaml') and '__pycache__' not in x.parts)
     selected.extend(x for x in Path(__file__).parents[1].rglob('*') if x.is_file() and x.suffix in ('.py','.json','.md','.sh') and '__pycache__' not in x.parts)
+    for folder in a.experiment:
+        folder=folder.resolve()
+        if ROOT/'experiments' not in folder.parents:raise ValueError('Extra experiment must belong to this repository')
+        selected.extend(x for x in folder.rglob('*') if x.is_file() and x.suffix in ('.py','.json','.md','.sh') and '__pycache__' not in x.parts)
     if (ROOT/'conftest.py').exists():selected.append(ROOT/'conftest.py')
     selected=sorted(set(selected));records=[];a.output.parent.mkdir(parents=True,exist_ok=True)
     with zipfile.ZipFile(a.output,'x',compression=zipfile.ZIP_DEFLATED) as archive:

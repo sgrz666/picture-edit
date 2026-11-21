@@ -44,6 +44,8 @@ def main():
     from src.data.canvas_contract import CanvasSpec
     from PIL import Image,ImageDraw,ImageOps
     complete=read(a.root/'complete.json');pairs={r['pair_id']:r for r in read(a.root/'data/evaluation.json')}
+    prepared=read(a.root/'prepared.json');dataset=prepared.get('dataset_label','Bilibili')
+    ntrain,nval=prepared['train_pairs'],prepared['val_pairs']
     labels=['initial','uniform_S3','regional_S3','continue_sft','grpo'];reports={};images={}
     for label in labels:
         report=read(a.root/f'report/evaluation/{label}/metrics.json');reports[label]=report
@@ -91,13 +93,14 @@ def main():
     with (a.output/'overview.png').open('xb') as f:overview.save(f,format='PNG')
     result={'schema':'bilibili_region_sdpose_rl_comparison_v1','created_at_utc':datetime.now(timezone.utc).isoformat(),
         'paired_sft_traces':alignment,'metrics':table,'checkpoints':complete,
-        'limitations':['78 training pairs, 10 validation pairs, one training seed; integration pilot only',
+        'limitations':[f'{ntrain} training pairs, {nval} validation pairs, one training seed; integration pilot only',
             'SDPose supplies both weak pose annotations and evaluation; manual panels remain necessary',
             'RL and continued SFT match optimizer updates, not rollout compute, wall time or pair exposure',
             'All checkpoints are fixed-budget endpoints; no best-val checkpoint selection']}
     with (a.output/'comparison.json').open('x') as f:json.dump(result,f,indent=2)
-    lines=['# Bilibili Regional FM / SDPose / GRPO pilot','',
-        '78 train pairs / 39 videos; 10 val pairs / 5 videos. One seed; bounded integration pilot.','',
+    unit=prepared.get('group_unit','video')
+    lines=[f'# {dataset} Regional FM / SDPose / GRPO pilot','',
+        f"{ntrain} train pairs / {prepared['train_videos']} {unit}s; {nval} val pairs / {prepared['val_videos']} {unit}s. One seed; bounded integration pilot.",'',
         '| Model | Body PCK@.02 | Hand PCK@.02 | Body L2 incl failures | Hand L2 incl failures | Source ID cosine | BG MSE |',
         '|---|---:|---:|---:|---:|---:|---:|']
     def fmt(x):return 'n/a' if x is None else f'{x:.5f}'

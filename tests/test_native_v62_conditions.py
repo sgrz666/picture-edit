@@ -337,6 +337,28 @@ def test_single_depth_has_only_person_zero_parts():
     assert not record.contact_positive.any()
 
 
+def test_single_depth_checks_distinct_depth_and_pose_canvas_fingerprints():
+    from src.data.canvas_contract import native_pad
+    from src.pose_control.qwen21_full.depth_condition import canvas_identity
+    Config, _, _, build, *_ = api()
+    batch, geometry, _ = fixture((True, False))
+    canvas = native_pad((32, 64))
+    geometry = replace(geometry, canvas_ids=(canvas.fingerprint(),))
+    batch['target_canvas'] = [canvas.metadata()]
+    batch['local_condition_v4'].metadata[0]['target_canvas_id'] = canvas.fingerprint()
+    depth = depth_for('alice', torch.zeros(1, 14, 32, 64))
+    depth.metadata[0].update(canvas_id=canvas_identity(canvas.metadata()), pose_canvas_id=canvas.fingerprint())
+    depth.context.metadata[0]['canvas_id'] = canvas_identity(canvas.metadata())
+    assert depth.metadata[0]['canvas_id'] != depth.metadata[0]['pose_canvas_id']
+    batch['depth_condition_v2'] = depth
+    spatial = build_spatial_condition(batch, geometry, PoseLinkConfigV61())
+    build(batch, geometry, spatial, Config())
+    depth.metadata[0]['canvas_id'] = 'foreign-depth-canvas'
+    depth.context.metadata[0]['canvas_id'] = 'foreign-depth-canvas'
+    with pytest.raises(ValueError, match='Canvas'):
+        build(batch, geometry, spatial, Config())
+
+
 def test_all_new_features_off_do_not_require_new_dual_provenance():
     Config, _, _, build, *_ = api()
     batch, geometry, spatial = fixture()

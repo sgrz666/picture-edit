@@ -33,12 +33,15 @@ def generate(config,root,label,output):
     from src.pose_control.qwen21_full.native_v62.generation import generate_native
     data=DataPlanV7(config);backend=NativeBackendV7(config,data,purpose='train');backend.runtime.eval()
     evaluation={x['pair_id']:x for x in read(root/'data/evaluation.json')}
-    chosen=list(range(len(data.datasets['bilibili_val'])))
+    validation=[s.source_id for s in config.sources if s.role=='validation']
+    if len(validation)!=1:raise ValueError('One explicit held-out validation source required')
+    validation_source=validation[0]
+    chosen=list(range(len(data.datasets[validation_source])))
     records=[];route=RouteSpec('fixed_generation','joint',1.,controls={'interaction':False},
         base_controls={'interaction':False,'raster':False,'part_contact':False})
     with torch.no_grad():
         for index in chosen:
-            sample,batch,pair=backend.pair('bilibili_val',index)
+            sample,batch,pair=backend.pair(validation_source,index)
             options,base=route_options(route,sample['native_scene_kind'])
             path=output/(sample['pair_metadata']['pair_id']+'_seed42.png')
             path.parent.mkdir(parents=True,exist_ok=True)

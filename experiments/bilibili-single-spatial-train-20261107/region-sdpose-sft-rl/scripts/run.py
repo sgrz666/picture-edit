@@ -9,7 +9,7 @@ import sys
 import time
 
 PY='/home/shangguanrz/nihaochen/envs/qwen21/bin/python'
-SDPY='/data/shangguanrz/pic-edit-experiments/four-skeleton-compair/.venv/bin/python'
+SDPY='/data/shangguanrz/pic-edit-experiments/姿态估计/four-skeleton-compair/.venv/bin/python'
 
 
 def read(path):return json.loads(Path(path).read_text())
