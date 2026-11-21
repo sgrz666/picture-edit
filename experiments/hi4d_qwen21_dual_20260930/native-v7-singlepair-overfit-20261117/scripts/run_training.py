@@ -54,10 +54,12 @@ def new_stage_summary(segments, before, config):
     return matches[0]
 
 
-def child_command(root, command, *, resource=None, vae_tiling=False, offload_hidden=False):
+def child_command(root, command, *, resource=None, vae_tiling=False, offload_hidden=False,memory_fraction=.5):
     policy = ['--vae-tiling'] if vae_tiling else []
     if offload_hidden:
         policy.append('--offload-hidden')
+    if memory_fraction!=.5:
+        policy.extend(('--memory-fraction',str(memory_fraction)))
     if resource is not None:
         command = [root / 'scripts/gpu_action.py', *policy, '--resource-report', resource, '--', *command]
     else:
@@ -72,6 +74,7 @@ def generate(argv):
     parser.add_argument('--checkpoint', type=Path)
     parser.add_argument('--vae-tiling', action='store_true')
     parser.add_argument('--offload-hidden', action='store_true')
+    parser.add_argument('--memory-fraction',type=float,default=.5)
     args = parser.parse_args(argv)
     import torch
     from src.pose_control.qwen21_full.native_v7.training import TrainingConfigV7, DataPlanV7, NativeBackendV7
@@ -81,10 +84,11 @@ def generate(argv):
     if args.output.exists() or args.report.exists():
         raise FileExistsError('Generation output/report must be new')
     free, total = torch.cuda.mem_get_info()
-    if total * .5 > free - 2 * 1024 ** 3:
-        raise RuntimeError('Generation cannot fit the fixed 50% allocator cap plus 2GiB free margin')
+    if not 0<args.memory_fraction<=.95:raise ValueError('GPU fraction must leave at least 5% headroom')
+    if total * args.memory_fraction > free - 2 * 1024 ** 3:
+        raise RuntimeError('Generation cannot fit requested allocator cap plus 2GiB free margin')
     torch.set_num_threads(2)
-    torch.cuda.set_per_process_memory_fraction(.5)
+    torch.cuda.set_per_process_memory_fraction(args.memory_fraction)
     cfg = TrainingConfigV7.from_dict(read(args.config))
     saved, update = None, 0
     if args.checkpoint is not None:
@@ -99,7 +103,7 @@ def generate(argv):
     result = generation_probe(backend, cfg, data, update, args.output, baseline=saved is None)
     if len(result['records']) != (4 if saved is None else 2):
         raise RuntimeError('Expected train/observation images for exactly two selected rows')
-    result.update(memory_fraction=.5, peak_allocated_bytes=torch.cuda.max_memory_allocated(),
+    result.update(memory_fraction=args.memory_fraction, peak_allocated_bytes=torch.cuda.max_memory_allocated(),
                   checkpoint=cfg.initialization, generation_quality_claimed=False, vae_tiling=args.vae_tiling,
                   offload_hidden_requested=args.offload_hidden, hidden_offload_applied=False)
     write_json(args.report, result)
@@ -117,7 +121,9 @@ def main(argv=None):
     parser.add_argument('--generate-baseline', action='store_true')
     parser.add_argument('--vae-tiling', action='store_true')
     parser.add_argument('--offload-hidden', action='store_true')
+    parser.add_argument('--memory-fraction',type=float,default=.5)
     args = parser.parse_args(argv)
+    if not 0<args.memory_fraction<=.95:parser.error('GPU fraction must leave at least 5% headroom')
     if not re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9_.-]*', args.name):
         parser.error('--name must be one plain run ID')
     root = args.root.resolve()
@@ -144,7 +150,7 @@ def main(argv=None):
         logfile = root / 'logs' / (args.name + '-' + label + '.log')
         resource = root / 'logs' / (args.name + '-' + label + '-resources.json') if gpu else None
         command = child_command(root, command, resource=resource, vae_tiling=args.vae_tiling,
-                                offload_hidden=args.offload_hidden)
+                                offload_hidden=args.offload_hidden,memory_fraction=args.memory_fraction)
         event(label + '_start', logfile, command=command)
         with logfile.open('x', encoding='utf8') as stream:
             subprocess.run(command, stdout=stream, stderr=subprocess.STDOUT, check=True)
@@ -161,7 +167,7 @@ def main(argv=None):
             raise ValueError('Every stage must retain the same explicit recorded user authorization')
         if any(c.output_root != str(root / 'output/training') or c.generation_every_updates != 0 for c in templates):
             raise ValueError('Templates must bind this experiment output and isolated generation')
-        event('starting', reports, total_updates=300, vae_tiling=args.vae_tiling, offload_hidden=args.offload_hidden)
+        event('starting', reports, total_updates=300, vae_tiling=args.vae_tiling, offload_hidden=args.offload_hidden,memory_fraction=args.memory_fraction)
         segments = root / 'output/training/segments'
         for template, target in zip(templates, targets):
             phase = template.stage.phase

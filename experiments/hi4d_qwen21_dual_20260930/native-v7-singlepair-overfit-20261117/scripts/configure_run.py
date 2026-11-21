@@ -19,6 +19,7 @@ def main(argv=None):
     parser.add_argument('--cache-index',type=Path)
     parser.add_argument('--name',required=True)
     args=parser.parse_args(argv)
+    args.root=args.root.resolve();args.data=args.data.resolve()
     def ref(path):return {'path':str(path.resolve()),'sha256':file_sha(path)}
     prepared=json.loads((args.data/'prepared.json').read_text())['manifests']
     sources=tuple(SourceSpec(role,role=role,manifest=prepared[role],groups=prepared[role+'_groups'],
@@ -27,7 +28,7 @@ def main(argv=None):
     authorization={'source':'direct_user_message','text':'补齐一下训练试试,你觉得我们需要单样本过拟合实验吗🤔'}
     cfg=TrainingConfigV7(stage=stage_preset_v7('S0',budget=30),sources=sources,
         initialization=ref(args.root/'initialization/v7.pt'),model_path='/data/shangguanrz/pic-edit-models/Qwen-Image-2.1',
-        model_manifest=ref(old/'source/qwen_model_files.json'),cache_root=str(args.root/'cache/native-4ref'),
+        model_manifest=ref(old/'source/qwen_model_files.json'),cache_root=str(args.cache_index.resolve().parent if args.cache_index is not None else args.root/'cache/native-4ref'),
         cache_identity=None if args.cache_index is None else ref(args.cache_index),
         evaluators={'identity':ref(PROJECT/'models/face_eval/identity_encoder.ts')},
         output_root=str(args.root/'output/training'),experiment_mode='fixed_pair_overfit',

@@ -1,6 +1,6 @@
 # hi4d_qwen21_dual_20260930 目录说明
 
-2026-11-17 新增 [Native V7 单配对真实训练](native-v7-singlepair-overfit-20261117/README.md)：1 个训练配对与 1 个同人物观察配对；已补齐真实五点资格、Source repair、四图冻结缓存及生产迁移。原生尺寸完整 ID 反向的三种内存方案均触发显存限制，当前 optimizer updates 为 0；不会将预检或 CPU 测试当作过拟合结果。
+新增 [Native V7 单配对真实训练](native-v7-singlepair-overfit-20261117/README.md)：1 个训练配对与 1 个同人物观察配对；已补齐真实五点资格、Source repair、四图冻结缓存及生产迁移。用户暂停 ComfyUI 后，原生 1280×960、完整 ID 的真实梯度预检在 90% 显存预算下通过，峰值分配 54.17GiB；300 步训练与评价进度见实验 README 和服务器 run 报告。
 
 **路径**: `experiments/hi4d_qwen21_dual_20260930`
 

@@ -114,3 +114,17 @@ def test_both_cli_parsers_expose_vae_tiling_without_loading_cuda(action):
     result = subprocess.run([sys.executable, path, *action, '--help'], capture_output=True, text=True, check=True)
     assert '--vae-tiling' in result.stdout
     assert '--offload-hidden' in result.stdout
+
+
+@pytest.mark.parametrize('action',('preflight','train','advance-stage'))
+def test_native_full_gpu_budget_reaches_every_child(tmp_path,action):
+    command=driver().child_command(tmp_path,[action],resource=tmp_path/'resource.json',memory_fraction=.9)
+    boundary=command.index('--')
+    position=command.index('--memory-fraction')
+    assert position<boundary and command[position+1]=='0.9'
+    assert command[boundary+1:]==[action]
+
+
+def test_generation_receives_same_full_gpu_budget(tmp_path):
+    command=driver().child_command(tmp_path,['run_training.py','generate'],memory_fraction=.9)
+    assert command[-2:]==['--memory-fraction','0.9']

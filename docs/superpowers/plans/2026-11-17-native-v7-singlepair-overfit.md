@@ -20,4 +20,4 @@
 - [ ] 比较固定噪声 Loss、两人 ID、SDPose、背景及训练/观察生成；如资源或监督确实受限，明确记录实际已完成步骤与阻碍，不宣称过拟合成功。
 - [ ] 更新实验 README、保存可复现命令、提交本次脚本/文档/必要修复，向用户说明结果与如何使用。
 
-当前状态：真实原生尺寸 preflight 已完成三次尝试，全部在 ID Loss 所需 VAE 解码图上触发显存上限；optimizer updates=0。官方 tiling 与约7GB Hidden 暂存均未让完整图进入41.52GiB预算，保留其他35GiB服务。已向用户询问低分辨率、释放服务或CPU辅助解码的后续选择，不伪造梯度报告、不关闭ID监督冒充通过。阶段CLI丢失已绑定parent SHA的实际缺陷已用失败回归复现并修复。
+当前状态：用户明确继续原生尺寸并已暂停 ComfyUI。三种 50% 预算失败记录均保留；新 `pilot300-native-fullgpu-v2` 使用 90% 预算，S0 完整 ID 真实梯度预检已通过（304.8 秒，peak allocated 54.17GiB、reserved 62.38GiB），开始生成未训练对照，optimizer updates 暂为 0。数据别名失效后，逐项 SHA 校验并仅重绑本实验路径，grounded 条件与缓存 Tensor 保持一致。阶段 CLI 丢失已绑定 parent SHA 的缺陷已用失败回归复现并修复。其余训练与评价以新 run 的实际产物更新。

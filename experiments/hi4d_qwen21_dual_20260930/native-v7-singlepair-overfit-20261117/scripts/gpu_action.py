@@ -36,6 +36,11 @@ def apply_execution_policy(backend,*,vae_tiling,memory_fraction,offload_hidden=F
         'wrapper_sha256':file_sha(__file__),'vae_implementation_sha256':file_sha(inspect.getfile(type(vae)))}
 
 
+def validate_memory_fraction(value):
+    if not 0<value<=.95:raise ValueError('GPU fraction must be positive and leave at least 5% headroom')
+    return value
+
+
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--memory-fraction',type=float,default=.5)
@@ -44,7 +49,8 @@ def main():
     parser.add_argument('--offload-hidden',action='store_true')
     parser.add_argument('arguments',nargs=argparse.REMAINDER)
     args=parser.parse_args()
-    if not 0<args.memory_fraction<=.5:raise ValueError('Pilot is capped at half total GPU memory')
+    validate_memory_fraction(args.memory_fraction)
+    if args.resource_report.exists():raise FileExistsError(args.resource_report)
     import torch
     if not torch.cuda.is_available():raise RuntimeError('CUDA unavailable')
     torch.set_num_threads(2)

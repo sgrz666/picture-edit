@@ -86,3 +86,35 @@ def test_hidden_cpu_roundtrip_preserves_checkpoint_output_and_gradient():
     actual.square().mean().backward()
     assert torch.equal(actual,expected) and torch.equal(original.grad,reference)
     assert telemetry['offloaded_tensors']>0 and telemetry['offloaded_bytes']>=original.numel()*original.element_size()
+
+
+def test_released_gpu_allows_explicit_full_budget_with_headroom():
+    spec=importlib.util.spec_from_file_location('v7_gpu_budget',SCRIPTS/'gpu_action.py')
+    action=importlib.util.module_from_spec(spec);spec.loader.exec_module(action)
+    assert action.validate_memory_fraction(.9)==.9
+    for value in (0.,1.,float('nan')):
+        with pytest.raises(ValueError):action.validate_memory_fraction(value)
+
+
+def test_path_rebind_requires_identical_bytes_and_keeps_semantic_inputs(tmp_path):
+    import hashlib
+    spec=importlib.util.spec_from_file_location('v7_paths',SCRIPTS/'rebind_paths.py')
+    paths=importlib.util.module_from_spec(spec);spec.loader.exec_module(paths)
+    actual=tmp_path/'actual';actual.mkdir();(actual/'image.dat').write_bytes(b'original bytes')
+    reference={'path':str(tmp_path/'removed/image.dat'),'sha256':hashlib.sha256(b'original bytes').hexdigest()}
+    result=paths.rebind_ref(reference,[(str(tmp_path/'removed'),str(actual))])
+    assert result['sha256']==reference['sha256'] and Path(result['path'])==actual/'image.dat'
+    with pytest.raises(ValueError,match='SHA256'):
+        paths.rebind_ref({**reference,'sha256':'0'*64},[(str(tmp_path/'removed'),str(actual))])
+
+
+def test_path_rebind_verifies_old_cache_before_reading_and_rehashing(tmp_path):
+    import hashlib
+    spec=importlib.util.spec_from_file_location('v7_paths_verified',SCRIPTS/'rebind_paths.py')
+    paths=importlib.util.module_from_spec(spec);spec.loader.exec_module(paths)
+    original=tmp_path/'cache.pt';original.write_bytes(b'original latent')
+    reference={'path':str(original),'sha256':hashlib.sha256(original.read_bytes()).hexdigest()}
+    assert paths.verified_path(reference)==original
+    original.write_bytes(b'altered latent')
+    with pytest.raises(ValueError,match='SHA256'):
+        paths.verified_path(reference)
