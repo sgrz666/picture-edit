@@ -77,8 +77,15 @@ def main():
             a.smplest_root/'pretrained_models/smplest_x_h/config_base.py']
     models = [a.smplest_root/'pretrained_models/smplest_x_h/smplest_x_h.pth.tar',
               a.smplest_root/'pretrained_models/yolov8x.pt']
+    model_refs=[ref(x) for x in models]
+    if a.reuse_index is not None:
+        old_index=read(a.reuse_index);old_request=old_index['request']
+        if ref(old_request['path'])!=old_request:raise ValueError('Reused geometry producer request changed')
+        old_models={Path(r['path']).name:r['sha256'] for r in read(old_request['path'])['models']}
+        if old_models!={Path(r['path']).name:r['sha256'] for r in model_refs}:
+            raise ValueError('Cannot mix reused geometry with a different estimator model')
     write(attempt/'request.json', {'command': command, 'input': staged, 'code': [ref(x) for x in code],
-          'models': [ref(x) for x in models], 'selection': ref(a.root/'data/selection.json'),
+          'models': model_refs, 'selection': ref(a.root/'data/selection.json'),
           'camera_retargeting': False, 'crop_backend': 'locked_SDpose_YOLO11x_bbox', 'boxes': ref(boxes_path),
           'change_scope': 'run-local detector bbox assignment only; SMPLest-X model, crop processing and outputs unchanged'})
     env = dict(os.environ, PYTHONPATH=str(sandbox), PYTHONDONTWRITEBYTECODE='1', SMPLESTX_DET_CONF='.1',

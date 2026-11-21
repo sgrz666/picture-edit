@@ -131,7 +131,8 @@ def main():
         'RL 和继续 SFT 使用同一 RN SFT 父权重；仅 optimizer-update 数相同，额外 rollout 成本另计。','',
         '![保存的逐对生成图对比](overview.png)','','单对大图在 `panels/`；全部原始生成图与 RL 候选图保留在 run 的 output 中。']
     with (a.output/'README.md').open('x',encoding='utf-8') as f:f.write('\n'.join(lines)+'\n')
-    print(json.dumps({'output':str(a.output),'models':len(table),'paired_validation_images':len(images['initial']),'sft_trace_alignment':True}))
+    print(json.dumps({'output':str(a.output),'models':len(table),'evaluation_split':a.split,
+                      'paired_images':len(images['initial']),'sft_trace_alignment':True}))
 
 
 if __name__=='__main__':main()
