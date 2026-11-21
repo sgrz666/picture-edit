@@ -22,7 +22,9 @@
 
 迁移后共同初始化为 `<run>/initialization/v7.pt`，SHA256 `57022f5cdcae2931f30ec93090c6e53626089eb69f8893761d8e9c901448060e`。CPU 实权重验收确认 1,054 个继承张量／225,955,980 个元素与源权重逐值相等；176 个 mesh 均为正相机深度，真实一帧 importer／完整 mesh FK 检查通过，表达基绑定一致。小红书新架构训练更新数当前为 0。
 
-真实 SDPose 原始 heatmap score 最大 1.14435，ROI 的 q 显式裁到 `[0,1]`；不改原 SDPose JSON。最新本地回归 87 项通过；服务器初版 86 项通过后，又为此真实分数范围补了失败回归。GPU 当前被其他作业使用，本实验按此前队列选择等待足够空闲，随后自动补齐 SAM／Native 侧车、运行 data／grad 门禁和全部训练对照。尚无小红书训练收益结果。
+真实 SDPose 原始 heatmap score 最大 1.14435，ROI 的 q 显式裁到 `[0,1]`；不改原 SDPose JSON。本地与服务器最新针对性回归各 87 项通过，包含此真实分数范围的失败回归。GPU 当前被其他作业使用，本实验按此前队列选择等待足够空闲，随后自动补齐 SAM／Native 侧车、运行 data／grad 门禁和全部训练对照。尚无小红书训练收益结果。
+
+当前冻结源码 `source/runtime-v2`，包 SHA256 `1fbbaf39346954747524b850d8253ea7fb78aa401b96308103e9af895e93ff15`。等待进程 PID **1967731**，凭据在 `logs/pilot-all-v2.pid.json`，日志 `logs/pilot-all-v2.log`；每 30 秒探测空闲显存，70 GiB 以上才启动 GPU 阶段，不中断其他作业。初版等待器已在 SAM／训练开始前替换，旧源码、迁移权重和日志均保留。代码和权重实际状态应以进程与 SHA 再核对。
 
 查看进度：
 
@@ -35,6 +37,8 @@ ssh sg "tail -n 12 /data/shangguanrz/pic-edit-experiments/one/xiaohongshu-region
 ```powershell
 python -m pytest tests/test_xiaohongshu_region_prepare.py tests/test_native_v62_conditions.py tests/test_region_objective.py tests/test_region_supervision.py tests/test_native_region_backend.py -q
 ```
+
+`scripts/audit_initialization.py --root <run> --repo <冻结源码目录> --output <新的报告路径>` 可在 Qwen21 环境用 CPU 复核继承张量、176 帧原图／几何和真实 importer／FK；第一次审计结果在 `report/initialization-acceptance-v1.json`，本地镜像在 `report/live-run/`。不把该 CPU 验收称为真实 GPU 梯度验收。
 
 最终原图在 `<run>/output/generation/`，RL 候选图在 `output/grpo/rollouts/`，逐图指标在 `report/evaluation/`；`report/comparison-ready.json` 指向指标表和 7 列对比面板。重新出图和复测报告必须使用新名字，旧产物保留。
 

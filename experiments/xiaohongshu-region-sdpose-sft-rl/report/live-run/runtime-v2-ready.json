@@ -1,0 +1,25 @@
+{
+  "git_head": "ab1c8ca76e2aa90b26c628d81063a81bd17d5368",
+  "verified_files": 932,
+  "zip_sha256": "1fbbaf39346954747524b850d8253ea7fb78aa401b96308103e9af895e93ff15",
+  "tests_command": [
+    "/home/shangguanrz/nihaochen/envs/qwen21/bin/python",
+    "-m",
+    "pytest",
+    "/data/shangguanrz/pic-edit-experiments/one/xiaohongshu-region-sdpose-sft-rl-20261121-v1/source/runtime-v2/tests/test_native_v62_conditions.py",
+    "/data/shangguanrz/pic-edit-experiments/one/xiaohongshu-region-sdpose-sft-rl-20261121-v1/source/runtime-v2/tests/test_xiaohongshu_region_prepare.py",
+    "/data/shangguanrz/pic-edit-experiments/one/xiaohongshu-region-sdpose-sft-rl-20261121-v1/source/runtime-v2/tests/test_region_objective.py",
+    "/data/shangguanrz/pic-edit-experiments/one/xiaohongshu-region-sdpose-sft-rl-20261121-v1/source/runtime-v2/tests/test_region_supervision.py",
+    "/data/shangguanrz/pic-edit-experiments/one/xiaohongshu-region-sdpose-sft-rl-20261121-v1/source/runtime-v2/tests/test_region_rewards.py",
+    "/data/shangguanrz/pic-edit-experiments/one/xiaohongshu-region-sdpose-sft-rl-20261121-v1/source/runtime-v2/tests/test_native_region_rl.py",
+    "/data/shangguanrz/pic-edit-experiments/one/xiaohongshu-region-sdpose-sft-rl-20261121-v1/source/runtime-v2/tests/test_sdpose_backend_binding.py",
+    "/data/shangguanrz/pic-edit-experiments/one/xiaohongshu-region-sdpose-sft-rl-20261121-v1/source/runtime-v2/tests/test_bilibili_region_prepare.py",
+    "/data/shangguanrz/pic-edit-experiments/one/xiaohongshu-region-sdpose-sft-rl-20261121-v1/source/runtime-v2/tests/test_bilibili_region_rl_driver.py",
+    "/data/shangguanrz/pic-edit-experiments/one/xiaohongshu-region-sdpose-sft-rl-20261121-v1/source/runtime-v2/tests/test_prompt_bank_formats.py",
+    "/data/shangguanrz/pic-edit-experiments/one/xiaohongshu-region-sdpose-sft-rl-20261121-v1/source/runtime-v2/tests/test_native_v7_training.py",
+    "/data/shangguanrz/pic-edit-experiments/one/xiaohongshu-region-sdpose-sft-rl-20261121-v1/source/runtime-v2/tests/test_native_region_backend.py",
+    "-q"
+  ],
+  "tests_exit_code": 0,
+  "scoped_compile_passed": true
+}
