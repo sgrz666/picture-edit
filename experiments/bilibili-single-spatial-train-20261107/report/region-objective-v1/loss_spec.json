@@ -1,0 +1,20 @@
+{
+  "schema": "region_normalized_fm_design_v1",
+  "status": "cpu_reference_only",
+  "trainer_config_compatible": false,
+  "sidecar_schema": "native_region_supervision_v1",
+  "hand_slot_order": ["A-left", "A-right", "B-left", "B-right"],
+  "person_slots": 2,
+  "joint_person_slots": 2,
+  "mass_floor_tokens": {"person": 4.0, "joint": 1.0, "hands": 0.5, "background": 16.0},
+  "quality_policy": {"qualified_person": 1.0, "qualified_fine_hand": 1.0, "qualified_coarse_hand": 0.5, "invalid": 0.0},
+  "aggregation": "mean_valid_rois_per_image_then_mean_eligible_images_per_window",
+  "renormalize_missing_families": false,
+  "sigma_or_route_schedule": false,
+  "presets": {
+    "uniform": {"global": 1.0, "person": 0.0, "joint": 0.0, "hands": 0.0, "background": 0.0},
+    "region_balanced_v1": {"global": 0.1, "person": 0.3, "joint": 0.15, "hands": 0.35, "background": 0.1}
+  },
+  "forbidden_duplicate_terms": ["legacy_spatial_weighted_velocity", "legacy_face_velocity", "legacy_hand_velocity", "v7_person_fm", "v7_contact_fm"],
+  "common_auxiliary_owned_by_outer_objective": true
+}
