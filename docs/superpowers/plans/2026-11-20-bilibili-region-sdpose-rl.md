@@ -24,6 +24,7 @@ GPU 上已检测到另一项 Hi4D Native V7 作业。先开展独立 CPU 工作�
 - 78 train pairs / 39 train videos；10 val pairs / 5 val videos；88 个独立 GT/Canvas 区域侧车。
 - 真实 S1 数据预检通过：352 条样本×路由，344 条具备手部 ROI。失败的首轮报告保留；JSON/JSONL prompt bank 兼容缺陷经失败回归修复，53 项相关测试通过。
 - 本轮相关 CPU/Native V7 集成回归 94 项通过；后续补充的 ROI 有效系数日志和 RL 参考状态异常恢复也已单独回归。
-- 冻结源码 `source/runtime-v3`，代码包 SHA `285bf72c5491e986eac5c8f767f66443a000d88e27d010019706f49480ab9e47`。
-- 用户明确选择“保持排队，Hi4D 完成后跑 Bilibili”。本实验启动器 PID **2526964** 已验证存活，等待已确认的 Hi4D PID **2370979** 退出，然后串行执行缓存、生成、两臂 SFT、继续 SFT、GRPO 与 SDPose 评价。
-- 观察入口：`logs/pilot-all-v1.log`、`logs/events.jsonl`；终态为 `complete.json`。必须查看进程和产物，不因启动器已经投递就宣称训练完成。
+- V3 尚未开始 GPU 工作时，发现抽取预测接口留下的未定义局部变量，经失败回归复现并修复。V4 预测接口不需要 GT latent；本地和服务器各 50 项针对性回归通过，921 个源码 SHA 校验通过，共享源码/本实验脚本/测试编译通过。
+- 当前冻结源码 `source/runtime-v4`，代码包 SHA `6704dc8b126a7166bd34f68a2b21ec7b87da1ae1cc12b024876faf163e1d215b`，对应提交 `d28bc08b`。
+- 用户明确选择“保持排队，Hi4D 完成后跑 Bilibili”。2026-11-21 04:47 UTC 核对本实验新等待进程 PID **2554458**；原 PID 2526964 在核对无 GPU 子进程后被替换，旧源码和日志均保留。新进程等待 Hi4D PID **2370979** 退出，然后串行执行缓存、生成、两臂 SFT、继续 SFT、GRPO 与 SDPose 评价。
+- 观察入口：`logs/pilot-all-v2.log`、`logs/events.jsonl`；训练终态为 `complete.json`，自动汇总凭据为 `report/comparison-ready.json`。汇总逐阶段验证两臂 route/source/index/sigma/LR 完全一致，保留原图并生成对比面板；已通过合成输入的产物流程冒烟验证。必须查看进程和产物，不因启动器已经投递就宣称训练完成。
