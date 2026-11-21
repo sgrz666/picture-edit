@@ -23,10 +23,11 @@
 
 
 
-> **⚠️ 两侧结构不一致（2026-10-13 实测）**：本地 `experiments/` 已重构成「平铺每个实验目录 + README 索引」；
-> 服务器 `sg:/home/shangguanrz/project/pic-edit/experiments/` 仍是旧的 5 族分组 ——
-> `1.deepgen experiment` / `2.qwen-test` / `3.singel man` / `4.two man ` / `5.workflow`（名字带空格与拼写错误，未清理）。
+> **⚠️ 两侧结构不一致（2026-11-21 实测）**：本地 `experiments/` 是「平铺每个实验目录 + README 索引」；
+> 服务器 `sg:/home/shangguanrz/project/pic-edit/experiments/` 按技术线分 9 族 ——
+> `1.deepgen experiment` / `2.qwen-test` / `3.singel man` / `4.two man ` / `5.workflow` / `6.qwen-controlnet union` / `7.tiktok` / `8.HIA` / `9.hi4d`（部分名字带空格与拼写错误，未清理），族外另有根级 `README.md` 与 `实验中文索引.md` 两个索引文件。
 > **动手前先 `ls` 确认自己在哪一侧**，不要假设结构。族内归类的原则两边一致：按任务目标，不按时间或人名。
+> **2026-11-21 远端清理**：跨族重复残根已删（`7.tiktok`/`9.hi4d` 下的残根；权威落点见各族 README「去重说明」）；`hia_person_pair_v3_20261103` 归入 `8.HIA/`；`code/` 目录撤销（`edit.py` 移入 `scripts/run/qwen21_edit.py`）；`scripts/` 根仅保留 4 个 `data/` 软链目标文件；根目录 README.md 各节标注了远端不落盘的目录。
 
 **命名**：命名遵守易读容易理解,比如中文名称是"tiktok 脸手训练"英文名字就是"tiktok-face-hand-joint-train"`
 
@@ -165,6 +166,7 @@ workflow/
 5. **不覆盖既有产物**。重跑加 `--force` 或换 `--name`，别把上一轮结果冲掉。
 6. **大文件不进 Git**。`.pt` / `.safetensors` / 条件缓存默认忽略，服务器持久盘与归档盘保留。
 7. **不向 `qwen21` 环境塞不兼容的包**。`diffusers 0.41.0.dev0` 是为 Qwen-Image-2.1 专门保留的版本，装包前先想清楚会不会破坏它。
+8. **姿态对齐评测统一用 SDPose（2026-11-15 起）**。所有后续姿态对齐量化评测统一使用 `SDPose-Wholebody + YOLO11x`（共享实现 [`src/evaluation/sdpose.py`](src/evaluation/sdpose.py)，细则与 133→134 眼/耳槽位契约见 [`docs/SDPOSE_POSE_EVAL_SPEC.md`](docs/SDPOSE_POSE_EVAL_SPEC.md)），运行解释器使用 SDPose 环境，不再以旧 DWPose ONNX 作为主评测依据。
 
 ---
 
@@ -178,6 +180,8 @@ workflow/
 | DeepGen 环境 | `miniconda3/envs/deepgen/bin/python` |
 | Qwen21 环境 | `nihaochen/envs/qwen21/bin/python` |
 | SMPLest-X 环境 | `add/envs/smplestx_bw/bin/python`（`pyrender` 需 EGL） |
+| SDPose 评测环境 | `/data/shangguanrz/pic-edit-experiments/four-skeleton-compair/.venv/bin/python` |
+| SDPose 权重与代码 | `/data/shangguanrz/models/SDpose/{SDPose-Wholebody,SDPose-OOD}` |
 | 新产物落盘 | `/data/shangguanrz/` |
 
 **SSH 投递纪律**：向远端送含转义或重格式的脚本/文档，**一律 `scp` 直传**。本机 bash 的 heredoc 经 `ssh` 传送时曾把 `\n` 污染成 `/n`，改过的远端文件必须 `py_compile` 或等价校验。
