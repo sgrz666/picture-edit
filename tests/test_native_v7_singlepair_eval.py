@@ -398,6 +398,45 @@ def test_gt_pose_audit_reads_true_target_and_keeps_failed_case(tmp_path, monkeyp
         audit.run(args, evaluation)
 
 
+@pytest.mark.parametrize('case', ['valid', 'missing', 'ambiguous'])
+def test_detected_identity_keeps_geometry_slots_and_rejects_failed_matches(case, monkeypatch):
+    import torch
+    from src.data.canvas_contract import CanvasSpec
+    evaluation = evaluator()
+    path = Path(evaluation.__file__).with_name('audit_detected_identity.py')
+    spec = importlib.util.spec_from_file_location('detected_identity_audit', path)
+    audit = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(audit)
+    preparer = audit.load_module(Path(evaluation.__file__).with_name('prepare_assets.py'), 'test_face_matcher')
+    boxes = np.array([[160, 30, 200, 90, .85], [40, 30, 80, 90, .9]])
+    if case == 'missing':
+        boxes = boxes[:1]
+    if case == 'ambiguous':
+        boxes = np.concatenate((boxes, boxes[1:]))
+    points = np.array([[[box[0]+5, 45], [box[0]+20, 45], [box[0]+12, 57],
+                        [box[0]+7, 70], [box[0]+18, 70]] for box in boxes])
+    detector = SimpleNamespace(detect=lambda _: (boxes, points))
+    canvas = CanvasSpec((256, 240), (256, 240), (256, 256))
+    expected = np.array([[40, 30, 80, 90], [160, 30, 200, 90]]) / 256
+    calls = []
+    def embed(pixels, landmarks, model):
+        calls.append(landmarks)
+        return torch.eye(2)
+    monkeypatch.setattr(audit, 'embed', embed)
+    result = audit.measure_case(np.zeros((256, 256, 3), np.uint8), canvas, expected,
+        torch.eye(2), detector, None, preparer.match_faces, evaluation)
+    assert result['raw_faces_detected'] == len(boxes)
+    assert result['detections'][0]['confidence'] == .85
+    if case == 'valid':
+        assert result['selected_detections'] == [1, 0]
+        assert np.array_equal(calls[0], points[[1, 0]])
+        assert result['identity']['diagonal'] == [1., 1.]
+        assert result['identity']['swap_suspected'] is False
+    else:
+        assert not calls and result['identity'] is None
+        assert result['reason'] and result['selected_detections'] is None
+
+
 def test_fixed_probe_real_count_and_evaluator_contracts_and_model_release(tmp_path, monkeypatch):
     import torch
     from src.pose_control.qwen21_full.native_v7 import training
