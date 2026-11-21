@@ -8,8 +8,8 @@ import sys
 import time
 from datetime import datetime, timezone
 
-P = Path("/data/shangguanrz/pic-edit-experiments/qwen21_pro_adapter_v1")
-B = Path("/data/shangguanrz/pic-edit-experiments/qwen21_union_dataset_adaptation_v1")
+P = Path("/data/shangguanrz/pic-edit-experiments/one/qwen21_pro_adapter_v1")
+B = Path("/data/shangguanrz/pic-edit-experiments/one/qwen21_union_dataset_adaptation_v1")
 C = P / "code_task7b_20261018T161055"
 PY = B / "env/bin/python"
 MAIN = P / "runs/pilot_main200_v4_20261018T161055"

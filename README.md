@@ -184,7 +184,7 @@ src/
 6. **Qwen 2.1 双人交互** (`qwen21_hi4d_dual`)：双人检出率 100%，零身份互换。
 7. **综合评测与开源对比** (`16-test`)：16 组全场景对照，确立两阶段解耦路线。
 8. **ControlNet Union 官方实测** (`6.qwen-controlnet union`, `workflow/runs/tiktok/union-test`)：TikTok 8 对实测：对齐布局下 PCK@0.2=0.976 打平基线；纯控制模式 ID 降至 0.01~0.08。
-9. **Qwen 2.1 Pro 适配器** (`/data/shangguanrz/pic-edit-experiments/qwen21_pro_adapter_v1/`)：16 块原生控制块 + 14.6M FP32 ProTaskAdapter，零初始化安全，200 步过拟合验证 (Face loss -31.86%, Contact -64.37%, Hand -29.44%)。
+9. **Qwen 2.1 Pro 适配器** (`/data/shangguanrz/pic-edit-experiments/one/qwen21_pro_adapter_v1/`)：16 块原生控制块 + 14.6M FP32 ProTaskAdapter，零初始化安全，200 步过拟合验证 (Face loss -31.86%, Contact -64.37%, Hand -29.44%)。
 10. **Native V5 固定样本训练** (`/data/shangguanrz/pic-edit-experiments/`)：TikTok 单人 300 步与 Hi4D 双人 300 步固定样本训练，配齐 30 步过程记录与无检测器 ROI 监督。
 
 > **远端分组与去重（2026-11-21）**：远端磁盘按技术线分 9 族（`1.deepgen experiment` ~ `9.hi4d`）。跨族重复残根已清理，同名实验以各族 README「去重说明」标注的权威落点为准；`hia_person_pair_v3_20261103` 位于 `8.HIA/`。

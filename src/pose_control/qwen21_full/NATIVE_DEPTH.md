@@ -47,12 +47,12 @@ camera_z记录改为NPY路径、删除polarity。有来源证据后才改units/s
 
 ```bash
 /home/shangguanrz/nihaochen/envs/qwen21/bin/python scripts/train/train_qwen21_native_depth.py \
-  --pairs /data/shangguanrz/pic-edit-experiments/qwen21_full_native_v1/depth_step3_20261023_v1/data/pairs.jsonl \
+  --pairs /data/shangguanrz/pic-edit-experiments/one/qwen21_full_native_v1/depth_step3_20261023_v1/data/pairs.jsonl \
   --geometry-version legacy_v1 --depth-version v1 \
   --depth-mode relative_png \
-  --depth-manifest /data/shangguanrz/pic-edit-experiments/qwen21_full_native_v1/depth_step3_20261023_v1/data/depth.jsonl \
+  --depth-manifest /data/shangguanrz/pic-edit-experiments/one/qwen21_full_native_v1/depth_step3_20261023_v1/data/depth.jsonl \
   --full-checkpoint /home/shangguanrz/nihaochen/qwen21_full/body_512_100/checkpoint_last.pt \
-  --output /data/shangguanrz/pic-edit-experiments/qwen21_full_native_v1/depth_preflight_manual_v1 \
+  --output /data/shangguanrz/pic-edit-experiments/one/qwen21_full_native_v1/depth_preflight_manual_v1 \
   --preflight-only
 ```
 
@@ -65,7 +65,7 @@ camera_z记录改为NPY路径、删除polarity。有来源证据后才改units/s
 ```python
 import torch
 from src.pose_control.qwen21_full.native_depth_runtime import NativeDepthRuntime
-saved = torch.load("/data/shangguanrz/pic-edit-experiments/qwen21_full_native_v1/depth_step3_20261023_v1/training_smoke_v1/checkpoint_last.pt",
+saved = torch.load("/data/shangguanrz/pic-edit-experiments/one/qwen21_full_native_v1/depth_step3_20261023_v1/training_smoke_v1/checkpoint_last.pt",
                    map_location="cpu", weights_only=True, mmap=True)
 system = NativeDepthRuntime.from_native_checkpoint(saved, legacy=True).to("cuda").eval()
 ```

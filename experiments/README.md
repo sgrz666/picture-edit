@@ -11,27 +11,22 @@
 
 | 核心实验族 | 关键代表目录 | 物理落点 (`/data` 或仓库) | 核心架构与模型 | 关键结论与状态 |
 |---|---|---|---|---|
-| **1. 显存与架构压测族** | `review_20260908_v2` | 归档于 `/data/shangguanrz/pic-edit-archive/` | DeepGen-1.0 (2.47B MMDiT) | 111 个运行矩阵 100% PASS；确立 Letterbox 显存安全标准与 80G 并发容量 |
+| **1. 显存与架构压测族** | `review_20260908_v2` | 曾归档于 `/data/shangguanrz/pic-edit-archive/`（2026-11-18 已删除） | DeepGen-1.0 (2.47B MMDiT) | 111 个运行矩阵 100% PASS；确立 Letterbox 显存安全标准与 80G 并发容量 |
 | **2. DeepGen V6 单人长程** | `iper_v6_native_20k_v1` | `experiments/1.deepgen experiment/iper/` | DeepGen-1.0 + V6 Unified Adapter | 4k 步达关键跃迁；16k 步达保真峰值（PSNR 28.20dB, SSIM 0.9361） |
 | **3. DeepGen 定量与消融** | `iper_v6_20k_eval_final` | `experiments/1.deepgen experiment/iper/` | DeepGen-1.0 + V6 系列 | 50 样本评估：受控相比无控制 PSNR 提升 +7.07 dB，误差降低 57.2% |
 | **4. 面部适配器与过拟合** | `tiktok_overfit_sanity_full` | `experiments/1.deepgen experiment/tiktok_*` | DeepGen-1.0 + V6.5 Face | 严格证明 MMDiT 单层特征注入中晚期破坏背景全局流（门禁FAIL），推动解耦路线 |
 | **5. Qwen 2.1 身体控制族** | `qwen21_iper_body` | `experiments/3.singel man/` | Qwen-Image-2.1 (7B DiT) + BodyAdapter | 里程碑：PSNR 25.86dB (+1.33dB)，PCK@0.02 达 98.00%，突破单人身体控制 |
 | **6. Qwen 2.1 双人交互族** | `qwen21_hi4d_dual` | `experiments/4.two man /` | Qwen-Image-2.1 + DualAdapter | 双人检测率 100%，零身份互换；拥抱过拟合 PSNR 达 29.85dB (+17.5dB) |
 | **7. 综合评测与开源对比** | `16-test` | `experiments/2.qwen-test/` | DeepGen vs Qwen vs BFS LoRA | 16 组全场景对照，确立“Stage 1 Adapter 控姿 + Stage 2 局部精修”两阶段架构 |
-| **8. ControlNet Union 控制** | `6.qwen-controlnet union` | `/data/shangguanrz/pic-edit-experiments/qwen21_union_migration_v1` | 官方 Qwen-Image-2.1-Fun-Controlnet-Union (7.1GB) | 180 权重键全部通过审计；TikTok 8 对实测：对齐布局下 PCK@0.2=0.976 打平基线；纯控制模式 ID 降至 0.01~0.08 |
-| **9. Qwen 2.1 Pro 适配器** | `qwen21_pro_adapter_v1` | `/data/shangguanrz/pic-edit-experiments/qwen21_pro_adapter_v1` | 官方 16 个原生控制块 (4096维) + 14.6M FP32 ProTaskAdapter | 零初始化安全相加；独立外观 Bank (`visible_owner`)；200步过拟合门禁：Face loss -31.86%, Contact -64.37%, Hand -29.44% |
+| **8. ControlNet Union 控制** | `6.qwen-controlnet union` | `/data/shangguanrz/pic-edit-experiments/one/qwen21_union_migration_v1` | 官方 Qwen-Image-2.1-Fun-Controlnet-Union (7.1GB) | 180 权重键全部通过审计；TikTok 8 对实测：对齐布局下 PCK@0.2=0.976 打平基线；纯控制模式 ID 降至 0.01~0.08 |
+| **9. Qwen 2.1 Pro 适配器** | `qwen21_pro_adapter_v1` | `/data/shangguanrz/pic-edit-experiments/one/qwen21_pro_adapter_v1` | 官方 16 个原生控制块 (4096维) + 14.6M FP32 ProTaskAdapter | 零初始化安全相加；独立外观 Bank (`visible_owner`)；200步过拟合门禁：Face loss -31.86%, Contact -64.37%, Hand -29.44% |
 | **10. Native V5 固定样本训练** | `native_v5_fixedpair` | `/data/shangguanrz/pic-edit-experiments/` (tiktok & hi4d fixedpair-v5) | Qwen 2.1 Native V5 模块化全量训练架构 | 单人 (TikTok 0374/0126) 与双人 (Hi4D 0082/0112) 300 步训练；全套审计与无检测器 ROI 过程观察 |
-| **11. 跨体型 β 基准** | `smplx_cross_shape_benchmark_20261109` | `/data/shangguanrz/shape` | HBW 10 人真实体型 + SMPLest-X/SHAPY | 单图 SHAPY 不显著（−2.76mm，CI 含 0）；稳定性 ICC 0.539 vs 0.246；P0 G0→G1→G2 v2v 23.6→19.2→17.2mm |
 
 ---
 
 ## 二、最新重点实验物理落点与产物说明
 
-Bilibili 全量数据划分及 Sapiens2 v1 → Native V5 对齐见 [`bilibili-native-v5-training/README.md`](bilibili-native-v5-training/README.md)。2026-11-06 已按原视频划为 39/5/5 个视频、9,520/1,490/1,146 对；未追加质量筛选、未启动训练。缓存落在 `/data/shangguanrz/pic-edit-experiments/bilibili-native-v5-training-20261106-v1/`。
-
-HBW 跨体型 β 基准见 [`smplx_cross_shape_benchmark_20261109/README.md`](smplx_cross_shape_benchmark_20261109/README.md)。单图 SHAPY 相对 SMPLest-X 的 P2P 改善 −2.76mm（CI 含 0），跨图 ICC 0.539 vs 0.246；P0 受控替换 G0→G1→G2 的 v2v 为 23.6→19.2→17.2mm。运行根 `/data/shangguanrz/shape`。
-
-### 1. Qwen 2.1 Pro 适配器实验区 (`/data/shangguanrz/pic-edit-experiments/qwen21_pro_adapter_v1/`)
+### 1. Qwen 2.1 Pro 适配器实验区 (`/data/shangguanrz/pic-edit-experiments/one/qwen21_pro_adapter_v1/`)
 - 源码核心：[`src/pose_control/qwen21_pro/`](../src/pose_control/qwen21_pro/)。
 - 运行入口：[`src/pose_control/qwen21_pro/runner.py`](../src/pose_control/qwen21_pro/runner.py)（支持 `prepare`, `cache`, `audit`, `smoke`, `train`, `infer`, `refine`, `status`）。
 - 关键产物：

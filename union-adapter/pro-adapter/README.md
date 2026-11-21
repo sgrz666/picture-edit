@@ -14,9 +14,9 @@
 
 用户选择效果优先、先在85GB单卡验证。四个任务融合位置是初始消融设置，完整16个Union块保留；新分支关闭应恢复同references的官方Union。不能把冻结网络包进no_grad截断新分支，也不能串联两个全零边界。
 
-现有完整发布模型已通过零分支等价、冻结权重、因果prefix、任务分支梯度及4=2+2精确续跑工程门禁，真实单/双人coarse与768精修已出工程探针图。六对样本的200步主训练已完成：工程门禁通过，全局MSE下降5.67%、未过20%门槛；旧200步LoRA为17.7868%，同样失败。按用户最新要求已停止消融与后续出图队列。详见 [改造与样本训练结果](../../experiments/6.qwen-controlnet%20union/qwen21_pro_adapter_v1/report/RESULTS_20261018.zh-CN.md)；权重、缓存和图像留在服务器`/data/shangguanrz/pic-edit-experiments/qwen21_pro_adapter_v1/`。
+现有完整发布模型已通过零分支等价、冻结权重、因果prefix、任务分支梯度及4=2+2精确续跑工程门禁，真实单/双人coarse与768精修已出工程探针图。六对样本的200步主训练已完成：工程门禁通过，全局MSE下降5.67%、未过20%门槛；旧200步LoRA为17.7868%，同样失败。按用户最新要求已停止消融与后续出图队列。详见 [改造与样本训练结果](../../experiments/6.qwen-controlnet%20union/qwen21_pro_adapter_v1/report/RESULTS_20261018.zh-CN.md)；权重、缓存和图像留在服务器`/data/shangguanrz/pic-edit-experiments/one/qwen21_pro_adapter_v1/`。
 
-使用现有B环境运行 `scripts/run/qwen21_pro.py status --output-root /data/shangguanrz/pic-edit-experiments/qwen21_pro_adapter_v1` 查看记录；训练入口为 `scripts/train/qwen21_pro.py`，本轮不再追加训练或消融。手动测试推理按实验README选择完整冻结代码根、新name与实际checkpoint；当前模型需显式 `--engineering-probe`。每个命令均有 `--help`；正式1536例训练和1024张test门禁尚未实现，不能把六例pilot当作全量训练。
+使用现有B环境运行 `scripts/run/qwen21_pro.py status --output-root /data/shangguanrz/pic-edit-experiments/one/qwen21_pro_adapter_v1` 查看记录；训练入口为 `scripts/train/qwen21_pro.py`，本轮不再追加训练或消融。手动测试推理按实验README选择完整冻结代码根、新name与实际checkpoint；当前模型需显式 `--engineering-probe`。每个命令均有 `--help`；正式1536例训练和1024张test门禁尚未实现，不能把六例pilot当作全量训练。
 
 
-远端pilot复跑使用完整冻结根 `/data/shangguanrz/pic-edit-experiments/qwen21_pro_adapter_v1/code_task7b_20261018T161055/`。远端主仓已有较新的torso几何实现，本次部署保留；不要把主仓不同字节的依赖与冻结checkpoint混用。实验族入口见上面的README，里面记录代码签名与当前运行。
+远端pilot复跑使用完整冻结根 `/data/shangguanrz/pic-edit-experiments/one/qwen21_pro_adapter_v1/code_task7b_20261018T161055/`。远端主仓已有较新的torso几何实现，本次部署保留；不要把主仓不同字节的依赖与冻结checkpoint混用。实验族入口见上面的README，里面记录代码签名与当前运行。

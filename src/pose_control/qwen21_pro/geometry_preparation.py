@@ -36,7 +36,7 @@ from .geometry import (
     vertex_parts_for,
 )
 
-P_ROOT = Path("/data/shangguanrz/pic-edit-experiments/qwen21_pro_adapter_v1")
+P_ROOT = Path("/data/shangguanrz/pic-edit-experiments/one/qwen21_pro_adapter_v1")
 ROI_POLICY = {
     "min_support_pixels": 8,
     "bounds": "source_mesh_parts_native_xyxy",

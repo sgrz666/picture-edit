@@ -67,8 +67,8 @@ Normal必须声明 `view_xright_yup_ztoward`、`camera_cv` 或 `unknown`。原�
 在 `sg:/home/shangguanrz/project/pic-edit`，先用既有SMPLest-X环境导出目标mesh的原始Z；不运行人体估计。输出须为新目录：
 
 ```bash
-BODY_RUN=/data/shangguanrz/pic-edit-experiments/qwen21_full_native_v1/global_pose_step4_20261024_v1
-DEPTH_RUN=/data/shangguanrz/pic-edit-experiments/qwen21_full_native_v1/depth_geometry_step5_20261024_v1
+BODY_RUN=/data/shangguanrz/pic-edit-experiments/one/qwen21_full_native_v1/global_pose_step4_20261024_v1
+DEPTH_RUN=/data/shangguanrz/pic-edit-experiments/one/qwen21_full_native_v1/depth_geometry_step5_20261024_v1
 
 add/envs/smplestx_bw/bin/python scripts/data/export_qwen21_depth_v2.py \
   --pairs "$BODY_RUN/data/tiktok_pairs.jsonl" --pose-manifest "$BODY_RUN/data/fk_v1/records.jsonl" \

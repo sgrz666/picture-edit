@@ -48,7 +48,7 @@ Face的原始ArcFace Identity与DINO／Perceiver Delta分开存储。关闭Face 
 ```bash
 PY=/home/shangguanrz/nihaochen/envs/qwen21/bin/python
 $PY scripts/data/prepare_qwen21_native_full_v5.py promote --job promote.json \
-  --output /data/shangguanrz/pic-edit-experiments/qwen21_hi4d_dual/native_full_v5_data_v1
+  --output /data/shangguanrz/pic-edit-experiments/two/qwen21_hi4d_dual/native_full_v5_data_v1
 ```
 
 `promote`要求真实V4 manifest的路径与SHA，并为**每条pair**声明Detail和Supervision；失败样本不能只保留成功行。Body／Local／Source References原文件不重写，V5 manifest引用原manifest＋pair_id，新产物只有侧车、索引和报告。内部使用`NativeFullDatasetV4(load_target=False)`验证原数据，会读取Source RGB，不打开Target RGB、不渲染或提取学习特征。

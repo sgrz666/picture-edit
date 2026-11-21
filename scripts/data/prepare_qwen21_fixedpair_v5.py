@@ -10,8 +10,8 @@ import sys
 
 ROOT=Path(__file__).resolve().parents[2]
 sys.path.insert(0,str(ROOT))
-TROOT=Path('/data/shangguanrz/pic-edit-experiments/qwen21_full_native_v1/tiktok-fixedpair-v5_20261025_v1')
-HROOT=Path('/data/shangguanrz/pic-edit-experiments/qwen21_hi4d_dual/hi4d-fixedpair-v5_20261025_v1')
+TROOT=Path('/data/shangguanrz/pic-edit-experiments/one/qwen21_full_native_v1/tiktok-fixedpair-v5_20261025_v1')
+HROOT=Path('/data/shangguanrz/pic-edit-experiments/two/qwen21_hi4d_dual/hi4d-fixedpair-v5_20261025_v1')
 DATA_ROOT=Path('/data/shangguanrz')
 HI4D_BANK=ROOT/'experiments/4.two man /hi4d_pe_prompt_rewrite_20261020/v5_grounded_3d_20261030_r4/prompts/hi4d_train_prompts_v2.jsonl'
 HI4D_SCHEMA='hi4d_pei2i_q4_plan_a_v5'

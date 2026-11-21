@@ -16,7 +16,7 @@ import types
 VIDEOX_PIN = "13bb3c625e8b1e457d7124d92207b49e00e4a6fe"
 UNION_REVISION_PIN = "8a4702014d4dabb5f896fcba917e2ee0a961465f"
 UNION_SHA256_PIN = "65d6b66d734da9e7ff5ef04e7db3a133553a52a3f29a7fcb3e9cce8fa21dcfcd"
-ASSET_ROOT = Path("/data/shangguanrz/pic-edit-experiments/qwen21_union_migration_v1")
+ASSET_ROOT = Path("/data/shangguanrz/pic-edit-experiments/one/qwen21_union_migration_v1")
 DEFAULT_SOURCE = ASSET_ROOT / "source/VideoX-Fun"
 DEFAULT_BASE = Path("/data/shangguanrz/pic-edit-models/Qwen-Image-2.1")
 DEFAULT_UNION = ASSET_ROOT / "models/Qwen-Image-2.1-Fun-Controlnet-Union"

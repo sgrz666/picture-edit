@@ -11,8 +11,8 @@ import re
 import subprocess
 
 ROOTS={
-    'tiktok':Path('/data/shangguanrz/pic-edit-experiments/qwen21_full_native_v1/tiktok-fixedpair-v5_20261025_v1'),
-    'hi4d':Path('/data/shangguanrz/pic-edit-experiments/qwen21_hi4d_dual/hi4d-fixedpair-v5_20261025_v1'),
+    'tiktok':Path('/data/shangguanrz/pic-edit-experiments/one/qwen21_full_native_v1/tiktok-fixedpair-v5_20261025_v1'),
+    'hi4d':Path('/data/shangguanrz/pic-edit-experiments/two/qwen21_hi4d_dual/hi4d-fixedpair-v5_20261025_v1'),
 }
 
 

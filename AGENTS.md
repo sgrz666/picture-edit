@@ -183,7 +183,7 @@ workflow/
 | DeepGen 环境 | `miniconda3/envs/deepgen/bin/python` |
 | Qwen21 环境 | `nihaochen/envs/qwen21/bin/python` |
 | SMPLest-X 环境 | `add/envs/smplestx_bw/bin/python`（`pyrender` 需 EGL） |
-| SDPose 评测环境 | `/data/shangguanrz/pic-edit-experiments/four-skeleton-compair/.venv/bin/python` |
+| SDPose 评测环境 | `/data/shangguanrz/pic-edit-experiments/姿态估计/four-skeleton-compair/.venv/bin/python` |
 | SDPose 权重与代码 | `/data/shangguanrz/models/SDpose/{SDPose-Wholebody,SDPose-OOD}` |
 | 新产物落盘 | `/data/shangguanrz/` |
 

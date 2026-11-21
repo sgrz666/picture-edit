@@ -15,7 +15,7 @@
 
 ## 与上下层的关系
 
-- 2026-10-17 从 `/data/shangguanrz/pic-edit-experiments/qwen21_union_migration_v1/models/Qwen-Image-2.1-Fun-Controlnet-Union/` 迁入。原目录改名成 `Qwen-Image-2.1-Fun-Controlnet-Union.pre-move-20261017/`（7.1G，含示例图）保留在同处；原路径现在是**指向本目录的软链接**。
+- 2026-10-17 从 `/data/shangguanrz/pic-edit-experiments/one/qwen21_union_migration_v1/models/Qwen-Image-2.1-Fun-Controlnet-Union/` 迁入。原目录改名成 `Qwen-Image-2.1-Fun-Controlnet-Union.pre-move-20261017/`（7.1G，含示例图）保留在同处；原路径现在是**指向本目录的软链接**。
 - 因此仓库里 40+ 处写死 `/data/.../qwen21_union_migration_v1/models/...` 的脚本与 README（`workflow/experiment/qwen-union{,-hybrid}/scripts/*`、`experiments/6.qwen-controlnet union/*`）继续可用，路径没改也能命中这里的实体文件。
 - 出图还需要基座：`/data/shangguanrz/pic-edit-models/Qwen-Image-2.1`（本目录只有控制分支，不含基座）。
 - 迁移动机：控制分支要拿来改结构/微调，放项目树内便于直接读写，不再依赖 data 盘的实验目录。

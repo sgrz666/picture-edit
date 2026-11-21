@@ -47,7 +47,7 @@ Hybrid局部Camera-Z全部无效；粗SMPL手部深度不能充当手指表面�
 ```bash
 V3=/data/shangguanrz/.../真实V3/pairs.jsonl
 GEN=/home/shangguanrz/project/pic-edit/datasets/Hi4D_pilot_v1/native_interaction_v2/frames_used_with_dwpose_v2.jsonl
-OUT=/data/shangguanrz/pic-edit-experiments/qwen21_hi4d_dual/hybrid_cache_v1
+OUT=/data/shangguanrz/pic-edit-experiments/two/qwen21_hi4d_dual/hybrid_cache_v1
 PY=/home/shangguanrz/nihaochen/envs/qwen21/bin/python
 
 $PY scripts/data/prepare_qwen21_hi4d_hybrid.py import-observations \

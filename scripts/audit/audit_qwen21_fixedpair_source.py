@@ -9,7 +9,7 @@ import json
 import subprocess
 import tarfile
 ROOT=Path(__file__).resolve().parents[2]
-FAMILY=Path('/data/shangguanrz/pic-edit-experiments/qwen21_full_native_v1/tiktok-fixedpair-v5_20261025_v1')
+FAMILY=Path('/data/shangguanrz/pic-edit-experiments/one/qwen21_full_native_v1/tiktok-fixedpair-v5_20261025_v1')
 CORE=('src/data/canvas_contract.py','src/pose_control/qwen21_full/native_body.py',
     'src/pose_control/qwen21_full/native_geometry.py','src/pose_control/qwen21_full/condition_injector.py',
     'src/pose_control/qwen21_full/token_encoders.py','src/pose_control/qwen21_full/reasoning/person_geometry.py',

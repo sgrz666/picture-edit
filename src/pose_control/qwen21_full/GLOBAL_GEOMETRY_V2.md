@@ -70,7 +70,7 @@ v1 runtime 需显式 `from_native_checkpoint(saved_v1, legacy=True)` 重建，�
 项目根目录 `/home/shangguanrz/project/pic-edit`；以下 `POSE_RUN` 指本轮产物，所有新输出应换成不存在的名字。
 
 ```bash
-POSE_RUN=/data/shangguanrz/pic-edit-experiments/qwen21_full_native_v1/global_pose_step4_20261024_v1
+POSE_RUN=/data/shangguanrz/pic-edit-experiments/one/qwen21_full_native_v1/global_pose_step4_20261024_v1
 
 # 从原 SMPL-X 参数建立新 raw FK cache，不覆盖旧 cache。
 add/envs/smplestx_bw/bin/python scripts/data/build_qwen21_body_pose_cache.py \
@@ -78,7 +78,7 @@ add/envs/smplestx_bw/bin/python scripts/data/build_qwen21_body_pose_cache.py \
 
 # 只迁权重/初始化新 Pose，不建 optimizer，不运行训练。
 /home/shangguanrz/nihaochen/envs/qwen21/bin/python scripts/data/migrate_qwen21_geometry_v2.py \
-  --source /data/shangguanrz/pic-edit-experiments/qwen21_full_native_v1/depth_step3_20261023_v1/training_smoke_v1/checkpoint_last.pt \
+  --source /data/shangguanrz/pic-edit-experiments/one/qwen21_full_native_v1/depth_step3_20261023_v1/training_smoke_v1/checkpoint_last.pt \
   --mode upgrade_pose --output "$POSE_RUN/checkpoints/body21_manual_v2.pt"
 
 # 真实 checkpoint＋条件预检；不加载 Qwen、不采样。

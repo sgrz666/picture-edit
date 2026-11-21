@@ -9,8 +9,8 @@ import subprocess
 import tarfile
 
 REPO = Path(__file__).resolve().parents[2]
-TROOT = Path('/data/shangguanrz/pic-edit-experiments/qwen21_full_native_v1/tiktok-fixedpair-v5_20261025_v1')
-HROOT = Path('/data/shangguanrz/pic-edit-experiments/qwen21_hi4d_dual/hi4d-fixedpair-v5_20261025_v1')
+TROOT = Path('/data/shangguanrz/pic-edit-experiments/one/qwen21_full_native_v1/tiktok-fixedpair-v5_20261025_v1')
+HROOT = Path('/data/shangguanrz/pic-edit-experiments/two/qwen21_hi4d_dual/hi4d-fixedpair-v5_20261025_v1')
 
 
 def sha(value):

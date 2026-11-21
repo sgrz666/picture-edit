@@ -4,7 +4,7 @@
 
 ## 范围与基线
 
-在 `src/pose_control/qwen21_full/native_v6/` 建立独立版本，复用 V5 的 Body、Interaction、Face、Hand、Detail 和 Reasoner。V5 源码、入口、checkpoint 和正在运行的 `/data/shangguanrz/pic-edit-experiments/bilibili-single-spatial-train-20261107-v1/source/runtime_repo_v7` 均不修改。
+在 `src/pose_control/qwen21_full/native_v6/` 建立独立版本，复用 V5 的 Body、Interaction、Face、Hand、Detail 和 Reasoner。V5 源码、入口、checkpoint 和正在运行的 `/data/shangguanrz/pic-edit-experiments/one/bilibili-single-spatial-train-20261107-v1/source/runtime_repo_v7` 均不修改。
 
 本地 HEAD 为 d4265fb，服务器主仓 HEAD 为 bbc729d。2026-11-11 只读核对：两侧 V5 顶层 Python 文件逐字规范化换行后相同；服务器 training 有未提交的空间加权 FM 改动。V6 的训练能力必须保留这些空间权重语义，不覆盖现有代码。
 

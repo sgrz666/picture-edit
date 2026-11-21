@@ -52,7 +52,7 @@ Hand45来自模型返回的完整165维full_pose，即PCA解码并加pose mean�
 
 ## 后续资产工具输入
 
-以下工具本轮均未执行。所有输出使用 `/data/shangguanrz/pic-edit-experiments/qwen21_full_native_v1/` 下新的版本目录，拒绝覆盖。
+以下工具本轮均未执行。所有输出使用 `/data/shangguanrz/pic-edit-experiments/one/qwen21_full_native_v1/` 下新的版本目录，拒绝覆盖。
 
 1. `scripts/data/import_qwen21_native_smplx_v4.py --job import.json --output source_asset.npz`
    - job包含 `parameters` NPZ、`original_hw`、`camera_id`、`scale_group_id`、`provenance`（含`rgb_sha256`）、`people`。

@@ -12,8 +12,8 @@ import sys
 import time
 
 CODE_ROOT = Path(__file__).resolve().parents[3]
-P_ROOT = "/data/shangguanrz/pic-edit-experiments/qwen21_pro_adapter_v1"
-B_ROOT = "/data/shangguanrz/pic-edit-experiments/qwen21_union_dataset_adaptation_v1"
+P_ROOT = "/data/shangguanrz/pic-edit-experiments/one/qwen21_pro_adapter_v1"
+B_ROOT = "/data/shangguanrz/pic-edit-experiments/one/qwen21_union_dataset_adaptation_v1"
 
 
 def _sha(path):

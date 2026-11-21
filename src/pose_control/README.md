@@ -11,8 +11,8 @@
 | [`v6/`](v6/README.md) | DeepGen-1.0 (2.47B MMDiT) | Unified SMPL-X Adapter V6 | 循环控制核 + 残差注入（block 0–22）；演进为 V6.4 detail / V6.5 face / V6.6 hand 三分支 | `experiments/1.deepgen experiment/` |
 | [`qwen21/`](qwen21/README.md) | Qwen-Image-2.1 (7B DiT) | 扁平简化适配器 | 独立 body / face / dual 控制头，注入 6 个固定层（3, 8, 13, 18, 23, 28），轻量验证 | `experiments/3.singel man/` |
 | [`qwen21_full/`](qwen21_full/README.md) | Qwen-Image-2.1 (7B DiT) | 32 层全量单流 DiT 控制 | 32 层残差注入、目标面部对齐损失、双人 `PersonTokenBinder`。<br>**包含最新 [`native_v5/`](qwen21_full/native_v5/) 模块化训练包** | `/data/shangguanrz/pic-edit-experiments/` (tiktok & hi4d fixedpair-v5) |
-| [`qwen21_pro/`](qwen21_pro/) | Qwen-Image-2.1 (7B DiT) + 官方 Union | 16 块官方 Union + 零初始化 Adapter | 继承 16 个原生 4096 维控制块；在 stage 0,4,8,12 注入 14.6M FP32 任务分支；`visible_owner` 硬隔离防串脸；两阶段局部精修 | `/data/shangguanrz/pic-edit-experiments/qwen21_pro_adapter_v1/` (`checkpoint_000200`) |
-| [`qwen21_union/`](qwen21_union/) | Qwen-Image-2.1 + 官方 Union | 官方 ControlNet 封装 | 官方 7.1GB 单模型多条件控制权重加载、Pipeline 桥接与 180 键完整性校验 | `/data/shangguanrz/pic-edit-experiments/qwen21_union_migration_v1/` |
+| [`qwen21_pro/`](qwen21_pro/) | Qwen-Image-2.1 (7B DiT) + 官方 Union | 16 块官方 Union + 零初始化 Adapter | 继承 16 个原生 4096 维控制块；在 stage 0,4,8,12 注入 14.6M FP32 任务分支；`visible_owner` 硬隔离防串脸；两阶段局部精修 | `/data/shangguanrz/pic-edit-experiments/one/qwen21_pro_adapter_v1/` (`checkpoint_000200`) |
+| [`qwen21_union/`](qwen21_union/) | Qwen-Image-2.1 + 官方 Union | 官方 ControlNet 封装 | 官方 7.1GB 单模型多条件控制权重加载、Pipeline 桥接与 180 键完整性校验 | `/data/shangguanrz/pic-edit-experiments/one/qwen21_union_migration_v1/` |
 
 ---
 

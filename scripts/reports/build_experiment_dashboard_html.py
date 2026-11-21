@@ -980,7 +980,7 @@ HTML_CONTENT = """<!DOCTYPE html>
           </div>
           <pre class="p-3 rounded-lg bg-gray-900 border border-gray-800 text-xs text-blue-300 font-mono overflow-x-auto custom-scroll">
 export STUDY_PY=/home/shangguanrz/nihaochen/envs/qwen21/bin/python
-export STUDY_RUN=/data/shangguanrz/pic-edit-experiments/pei2i_body_face_8arm_20261009
+export STUDY_RUN=/data/shangguanrz/pic-edit-experiments/one/pei2i_body_face_8arm_20261009
 
 # 1. 锁定数据与重写质检
 $STUDY_PY scripts/run/run_qwen21_pei2i_study.py --run "$STUDY_RUN" --phase lock

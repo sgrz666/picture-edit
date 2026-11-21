@@ -65,7 +65,7 @@ Runtime暴露12组：`geometry_shared/body21/geometry_dual/native_body/champ_cnn
 2. 使用raw frames manifest建立缓存，示例：
 
 ```bash
-RUN=/data/shangguanrz/pic-edit-experiments/qwen21_hi4d_dual/native_dual_v3_20261024_v1
+RUN=/data/shangguanrz/pic-edit-experiments/two/qwen21_hi4d_dual/native_dual_v3_20261024_v1
 GEOPY=/data/shangguanrz/envs/native_dual_v3/bin/python
 QWENPY=/home/shangguanrz/nihaochen/envs/qwen21/bin/python
 
@@ -75,7 +75,7 @@ $GEOPY scripts/data/build_qwen21_native_dual_cache.py \
   --output "$RUN/data/cache_v1" --limit 8
 
 $QWENPY scripts/data/migrate_qwen21_native_dual_v3.py \
-  --source /data/shangguanrz/pic-edit-experiments/qwen21_full_native_v1/depth_geometry_step5_20261024_v1/checkpoints/depth_v2_init.pt \
+  --source /data/shangguanrz/pic-edit-experiments/one/qwen21_full_native_v1/depth_geometry_step5_20261024_v1/checkpoints/depth_v2_init.pt \
   --output "$RUN/checkpoints/dual_v3_init.pt"
 ```
 
