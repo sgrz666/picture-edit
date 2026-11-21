@@ -1,1 +1,0 @@
-run/finalize_qwen21_face_single_sample.py

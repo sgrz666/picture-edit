@@ -410,7 +410,7 @@ def main() -> None:
 
     if args.phase == "rewrite-qa":
         locked_assets(run)
-        pe_script = ROOT / "scripts/precompute_qwen21_pei2i_prompts.py"
+        pe_script = ROOT / "scripts/data/precompute_qwen21_pei2i_prompts.py"
         argv = [
             sys.executable,
             str(pe_script),
@@ -428,7 +428,7 @@ def main() -> None:
         locked_assets(run)
 
     if args.phase == "rewrite":
-        pe_script = ROOT / "scripts/precompute_qwen21_pei2i_prompts.py"
+        pe_script = ROOT / "scripts/data/precompute_qwen21_pei2i_prompts.py"
         argv = [
             sys.executable,
             str(pe_script),
@@ -459,7 +459,7 @@ def main() -> None:
         return
 
     if args.phase == "cache":
-        cache_script = ROOT / "scripts/precompute_qwen21_prompt_study_cache.py"
+        cache_script = ROOT / "scripts/data/precompute_qwen21_prompt_study_cache.py"
         argv = [
             sys.executable,
             str(cache_script),

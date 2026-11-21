@@ -29,7 +29,7 @@
 | `target_camera` | 8 相机 `ids/intrinsics/extrinsics/dist_coeffs` |
 | `target_geometry_npz` | `semantic_A/B`、`depth_A/B`、`contact_A/B`、`normal_scene`、`K_runtime`、`front_owner`、`interperson_overlap`、`A_occluded_by_B`、`B_occluded_by_A`、`occlusion_mask` |
 
-test split 全为 `N2C_SAME_IDENTITY_CAMERA`（同演员同相机），`pair_relation` CROSS_ACTION 276 / SAME_ACTION 330；`source_index_for_target` 取值 0/1/2（234/186/186），只在 `scripts/dataset_notes.py` 有一句"目标视角下的源索引"注释，**无任何代码消费**，不作为人物对应依据。
+test split 全为 `N2C_SAME_IDENTITY_CAMERA`（同演员同相机），`pair_relation` CROSS_ACTION 276 / SAME_ACTION 330；`source_index_for_target` 取值 0/1/2（234/186/186），只在 `scripts/data/dataset_notes.py` 有一句"目标视角下的源索引"注释，**无任何代码消费**，不作为人物对应依据。
 
 ## 磁盘与 GPU
 
