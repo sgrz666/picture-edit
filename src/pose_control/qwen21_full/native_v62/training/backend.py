@@ -165,7 +165,7 @@ class NativeBackend:
         self.last_diagnostics=None
         with (observer.capture() if observer is not None else nullcontext()), bind_native_full_v62(self.pipe.transformer,prepared,options=options,valid_mask=coverage,reference_roles=pair['reference_roles'],reference_canvas_ids=pair['reference_canvas_ids'],poselink_strength=route.poselink_strength):
             with torch.autocast('cuda',dtype=torch.bfloat16):
-                output=self.pipe.transformer(**transformer_inputs(pair,noisy.to(target.dtype),sigma))[0]
+                output=self.pipe.transformer(**transformer_inputs(pair,noisy.to(pair['source_latent'].dtype),sigma))[0]
         if observer is not None:
             self.last_diagnostics={**observer.report(),'routing_conditions':list(prepared.routing.metadata),'branch_gates':list(prepared.gates.metadata)}
         count=pair['target_token_hw'][0]*pair['target_token_hw'][1]

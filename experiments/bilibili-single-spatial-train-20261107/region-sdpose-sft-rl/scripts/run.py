@@ -164,6 +164,15 @@ def main():
     generate(generation,'grpo')
     result={'sft':final,'continue_sft':continued,'grpo':rl_result,'scope':'single-seed bounded integration pilot'}
     if not (root/'complete.json').exists():write(root/'complete.json',result)
+    comparison=root/'report/comparison-ready.json'
+    if not comparison.exists():
+        output=root/('report/comparison_'+datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%S%fZ'))
+        child('comparison',[PY,str(scripts/'summarize.py'),'--root',str(root),'--output',str(output)])
+        write(comparison,{'output':str(output),'metrics':ref(output/'comparison.json'),
+            'overview':ref(output/'overview.png'),'readme':ref(output/'README.md')})
+    for name in ('metrics','overview','readme'):
+        asset=read(comparison)[name]
+        if file_sha(asset['path'])!=asset['sha256']:raise ValueError('Final comparison artifact changed: '+name)
     event('complete',report=str(root/'complete.json'))
 
 
