@@ -43,3 +43,11 @@ def test_cache_binding_checks_exact_condition_set_and_native_provenance(monkeypa
         m.validate_native_bindings(cache,{'x\0p':{**native['x\0p'],'driver_rgb_sha256':'other'}})
     with pytest.raises(ValueError,match='condition'):
         m.validate_native_bindings(cache,{})
+
+
+def test_reuse_verifies_file_bytes_without_rejecting_typed_schema(tmp_path,monkeypatch):
+    m=module('assets',monkeypatch);p=tmp_path/'asset.npz';p.write_bytes(b'frozen')
+    typed={**m.ref(p),'schema':'native_smplx_asset_v4'}
+    m.verify_artifact(typed)
+    p.write_bytes(b'changed')
+    with pytest.raises(ValueError,match='artifact'):m.verify_artifact(typed)

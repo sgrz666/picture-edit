@@ -18,6 +18,10 @@ def load_module(path, name):
     return value
 
 
+def verify_artifact(reference):
+    if sha(reference['path'])!=reference['sha256']:raise ValueError('Frozen frame artifact changed: '+reference['path'])
+
+
 def frame_policy(frame, sd, face):
     valid = sd['valid_mask134']; left = sum(valid[92:113])>=8; right = sum(valid[113:134])>=8
     points = [p if v else [None,None] for p,v in zip(sd['points134_raw'],valid)]
@@ -148,7 +152,7 @@ def main():
         if marker.exists():
             old=read(marker)
             for value in old['artifacts'].values():
-                if ref(value['path'])!=value: raise ValueError('Frozen frame artifact changed')
+                verify_artifact(value)
             built[fid]=old; entries[old['region_key']]=old['region_entry']; continue
         attempt=directory/('build_'+uuid.uuid4().hex[:10]); attempt.mkdir(parents=True)
         sd=read(original['sdpose']['path'])
