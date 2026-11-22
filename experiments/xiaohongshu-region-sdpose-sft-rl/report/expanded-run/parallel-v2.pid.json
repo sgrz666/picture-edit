@@ -1,0 +1,22 @@
+{
+  "pid": 3078223,
+  "command": [
+    "/home/shangguanrz/nihaochen/envs/qwen21/bin/python",
+    "-u",
+    "/data/shangguanrz/pic-edit-experiments/one/xiaohongshu-region-sdpose-sft-rl-20261121-expanded-v1/source/runtime-v3/experiments/xiaohongshu-region-sdpose-sft-rl/scripts/parallel_prepare.py",
+    "--root",
+    "/data/shangguanrz/pic-edit-experiments/one/xiaohongshu-region-sdpose-sft-rl-20261121-expanded-v1",
+    "--repo",
+    "/data/shangguanrz/pic-edit-experiments/one/xiaohongshu-region-sdpose-sft-rl-20261121-expanded-v1/source/runtime-v3",
+    "--overlay",
+    "/data/shangguanrz/pic-edit-experiments/one/xiaohongshu-region-sdpose-sft-rl-20261121-expanded-v1/source/sam-dependencies-v1",
+    "--adopt-cache",
+    "/data/shangguanrz/pic-edit-experiments/one/xiaohongshu-region-sdpose-sft-rl-20261121-expanded-v1/logs/adopted-cache-v1.json"
+  ],
+  "log": "/data/shangguanrz/pic-edit-experiments/one/xiaohongshu-region-sdpose-sft-rl-20261121-expanded-v1/logs/parallel-v2.log",
+  "started_at_utc": "2026-11-22T04:15:52.728764+00:00",
+  "base_snapshot_sha256": "1eace7a3e9d793230bcb51c282b220f7dee969b0ed0dd7a9d1d9df00078bea70",
+  "preparation_delta_sha256": "e14d782698b252c4d69804467f171c19202973dae5021ab244c9012136d5a64f",
+  "files_verified": 945,
+  "tests_exit_code": 0
+}

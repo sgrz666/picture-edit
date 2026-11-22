@@ -16,9 +16,17 @@
 
 已用 `prepare_sam_dependencies.py` 从现有 DeepGen 环境原样复制 5 个纯 Python 包到本实验 `source/sam-dependencies-v1`，276 个文件按 SHA 固定，拒绝二进制模块与 Torch／diffusers／transformers；不修改 Qwen21 环境。依赖 manifest SHA 为 `d0a1424cad02401a07ac76e2d955525d26adc895955277bc859f96b26fa61981`。真实 SAM GPU 单帧通过：score .94922、人体提示点覆盖 1.0、峰值 allocated 1.591 GiB；框架仍为 Torch 2.8.0+cu128／diffusers 0.41.0.dev0。
 
-当前恢复主管 **PID 2939783**，资产子进程 **2939801**，启动凭据为 `logs/recovery-v2.pid.json`，主管日志 `logs/recovery-v2.log`。最近核对 Native 资产 **67／747 帧**，新几何已全部完成，缓存／SFT／test 尚未执行。准备阶段单进程上限为设备 20%、要求 20 GiB 空闲；正式训练仍按原请求使用 75% 上限／64 GiB 门槛。数据集、预算、权重、算法和冻结训练源码均保持原绑定。`recover_assets.py` 在资产完成后自动交回原冻结 pipeline，全部旧失败日志保留。
+Hydra 依赖恢复后，旧主管 PID 2939783／资产子进程 2939801 已退出：第 130 帧为植物遮挡人像，SAM body 提示覆盖 .61538，低于 .65。原始图、三种提示诊断和所有失败日志保留。现在保留 .65 标注资格门槛；未通过分割的样本不丢弃，其分割相关 person／joint／hand／background 空间支持和 q 均置零，背景评价不计入；global FM 保留，缺失权重不重新分配。Source 的非空 SAM 代理只作弱条件，另行记录，不冒充合格 GT。
+
+用户要求不再串行等待后，已拆为独立 Qwen 编码与 Native 装配。当前并行主管 **PID 3078223**，装配子进程 **3079034**，凭据 `logs/parallel-v2.pid.json`。747 帧所用的 616 个最终 Qwen 条件已独立锁定，Native manifest 引用同一条件 SHA；编码无需 SAM／DINO／Native mesh。**616／616 对缓存编码完成**，峰值 allocated 17.49 GiB；缓存索引 SHA `852db52f99065a53b39b870bad5648a47ea73e059be75b3a9313f15095b04620`。最近装配 **153／747 帧**，已通过原先阻塞的第 130 帧，继续运行。
+
+当前准备源码为 `source/runtime-v3`：从已验收 `runtime-v1` 原样保留训练核心，仅叠加准备脚本和回归；准备 delta SHA `e14d782698b252c4d69804467f171c19202973dae5021ab244c9012136d5a64f`，945 个文件校验／编译和服务器 **104 项回归通过**。Qwen 编码进程未因主管交接而重启。装配使用设备 20% 上限，编码使用 35%；正式训练仍按原请求使用 75% 上限／64 GiB 门槛。样本、预算、画布、主线权重、Qwen 和 evaluator 不变。
+
+编码产物已完成，`cache_ready.json` 仍须等 Native manifest 完成后，以真实 DataPlan 逐项核对完整条件集合、Source／GT RGB SHA 和 Canvas ID，再自动发布并继续 SFT／GRPO。不能把编码完成当作训练完成。缓存记录在 `report/independent-cache-complete.json`，新日志为 `logs/parallel-v2.log` 与 `logs/native_assets_parallel_*.log`。
 
 测试源有独立 `test` 角色，不进入 optimizer pools、训练路由、validation loss probe、RL reward、checkpoint 选择或调参。所有优化完成后，initial／uniform_S3／regional_S3／continue_sft／grpo 各生成固定 **64 对 test 图，共 320 张**（seed42、20 steps），然后用 SDPose＋身份／背景评价。val 的阶段图与 test 最终图分别存放；汇总逐图检查 split、pair ID、真实 checkpoint SHA 和图片 SHA，输出各自的 8 列面板（Source、SDPose、GT、五份权重）。
+
+新运行使用共享 Native RL 更新内核，GRPO 的 50 updates 是 50 次 `optimizer.step()`。背景只奖励有像素对应证据的 Source 场景。当前配对清单没有提供这项证据，`background_reward` 为 `null`，`valid_mse` 保留作 Target GT 诊断。训练前固定每组 Body、Hands、ID 和背景的评分资格，生成漏检计零分，评测程序异常时该组停止更新并记录错误。
 
 ## 先前 pilot 的准备证据
 
@@ -50,7 +58,7 @@ python -m pytest tests/test_region_pilot_automation.py tests/test_native_test_sp
 
 `scripts/audit_initialization.py --root <run> --repo <冻结源码目录> --output <新的报告路径>` 可在 Qwen21 环境用 CPU 复核继承张量、176 帧原图／几何和真实 importer／FK；第一次审计结果在 `report/initialization-acceptance-v1.json`，本地镜像在 `report/live-run/`。不把该 CPU 验收称为真实 GPU 梯度验收。
 
-扩大版的 CPU 状态命令为 `Qwen21-python <run>/scripts/status.py --root <run> --launcher recovery-v2`，可检查依赖 PID、当前主管、预算、阶段与终态，不加载 CUDA。SAM 恢复复测为 `python -m pytest tests/test_sam_dependency_overlay.py tests/test_xiaohongshu_region_prepare.py tests/test_region_pilot_automation.py tests/test_native_test_split.py -q`，19 项通过；真实 GPU 记录在 `report/sam-smoke-v1.json`。最终验证图在 `output/generation/<权重>/`，测试原图在 `output/generation/test/<权重>/`，RL 候选图在 `output/grpo/rollouts/`，逐图指标在 `report/evaluation/`；`report/comparison-ready.json` 与 `report/test-comparison-ready.json` 分别指向验证／测试表和面板。重新出图和复测报告必须使用新名字，旧产物保留。
+扩大版的 CPU 状态命令为 `Qwen21-python <run>/scripts/status.py --root <run> --launcher parallel-v2`，可检查当前主管、预算、阶段与终态，不加载 CUDA。并行准备复测为 `python -m pytest tests/test_parallel_preparation.py tests/test_xiaohongshu_region_prepare.py tests/test_region_pilot_automation.py tests/test_native_test_split.py tests/test_sam_dependency_overlay.py -q`，23 项通过；真实 SAM GPU 记录在 `report/sam-smoke-v1.json`。最终验证图在 `output/generation/<权重>/`，测试原图在 `output/generation/test/<权重>/`，RL 候选图在 `output/grpo/rollouts/`，逐图指标在 `report/evaluation/`；`report/comparison-ready.json` 与 `report/test-comparison-ready.json` 分别指向验证／测试表和面板。重新出图和复测报告必须使用新名字，旧产物保留。
 
 ## 与已有实验的关系
 
