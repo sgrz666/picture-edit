@@ -12,8 +12,21 @@ OKS_SIGMAS = np.array([.026, .025, .025, .035, .035, .079, .079, .072, .072,
                        .062, .062, .107, .107, .087, .087, .089, .089])
 PART_POINTS = ((0,), (5, 6, 11, 12), (5, 7), (7, 9), (9,), (6, 8), (8, 10),
                (10,), (11, 13), (13, 15), (15,), (12, 14), (14, 16), (16,))
-EVALUATOR_ASSETS = ('DWPose/yolox_l.onnx', 'DWPose/dw-ll_ucoco_384.onnx',
-                    'antelopev2/scrfd_10g_bnkps.onnx', 'antelopev2/glintr100.onnx')
+
+
+def evaluator_assets(models_root):
+    from pathlib import Path
+    from src.evaluation import sdpose
+
+    path = sdpose.DEFAULT_SDPOSE_CKPT_DIR
+    files = [p for p in path.rglob('*') if p.is_file() and p.suffix in
+             ('.safetensors', '.json', '.txt', '.model', '.bin')]
+    files += [path / sdpose.DEFAULT_YOLO_FILENAME, Path(sdpose.__file__)]
+    files += [sdpose.DEFAULT_SDPOSE_OOD_ROOT / p for p in
+              ('models/ModifiedUNet.py', 'models/HeatmapHead.py', 'pipelines/SDPose_D_Pipeline.py',
+               'configs/_base_/datasets/coco_wholebody.py')]
+    files += [Path(models_root) / 'antelopev2' / name for name in ('scrfd_10g_bnkps.onnx', 'glintr100.onnx')]
+    return sorted(set(files))
 
 
 @dataclass(frozen=True)
@@ -75,6 +88,13 @@ def _cosine(a, b):
     return float(np.clip(cosine, -1, 1))
 
 
+def rendered_rgb(image):
+    if image.mode == 'RGBA':
+        background = Image.new('RGBA', image.size, (128, 128, 128, 255))
+        image = Image.alpha_composite(background, image)
+    return image.convert('RGB')
+
+
 def score_candidate(target, poses, identities):
     if len(poses) != len(identities):
         raise ValueError('Generated face features must follow the detected pose order')
@@ -129,31 +149,40 @@ def score_candidate(target, poses, identities):
 
 
 class ImageRewardBank:
-    def __init__(self, models_root):
-        from src.evaluation.joint_pilot_metrics import IdentityMetric, PoseMetric
+    def __init__(self, models_root, *, pose_device='cpu'):
+        import os
+        from src.evaluation.joint_pilot_metrics import IdentityMetric
+        from src.evaluation.sdpose import load_runtime
 
-        self.pose = PoseMetric(models_root)
+        os.environ.setdefault('CUDA_HOME', '/home/shangguanrz/nihaochen/envs/qwen21')
+        self.pose = load_runtime(device=pose_device)
         self.identity = IdentityMetric(models_root)
 
     def _poses(self, image, canvas):
         import cv2
-        from src.evaluation.dwpose_onnx.onnxdet import inference_detector
-        from src.evaluation.dwpose_onnx.onnxpose import inference_pose
+        import torch
+        from src.evaluation.sdpose import detect_people, DEFAULT_SCORE_THRESHOLD
+        from ..region_rewards import BODY17
 
         if image.size != canvas.canvas_hw[::-1]:
             raise ValueError('Reward image and target Canvas differ')
         x0, y0, x1, y1 = canvas.valid_rect
         bgr = cv2.cvtColor(np.asarray(image.crop(canvas.valid_rect).convert('RGB')), cv2.COLOR_RGB2BGR)
-        boxes = np.asarray(inference_detector(self.pose.det, bgr))[:16]
-        if not len(boxes):
-            return ()
-        points, confidence = inference_pose(self.pose.pose, boxes, bgr)
+        device = self.pose.device
+        devices = [device] if device.type == 'cuda' else []
+        with torch.random.fork_rng(devices=devices):
+            torch.random.default_generator.manual_seed(42)
+            if devices:
+                with torch.cuda.device(device):
+                    torch.cuda.manual_seed(42)
+            people = detect_people(bgr, self.pose, sort_by='area', order='geometry')
         output = []
-        for xy, score, box in zip(points[:, :17], confidence[:, :17], boxes):
-            valid = ((score > .3) & np.isfinite(xy).all(1) & (xy >= 0).all(1)
+        for person in people[:16]:
+            xy, score = person['points'][BODY17], person['scores'][BODY17]
+            valid = ((score >= DEFAULT_SCORE_THRESHOLD) & np.isfinite(score) & np.isfinite(xy).all(1) & (xy >= 0).all(1)
                      & (xy < np.array([x1 - x0, y1 - y0])).all(1))
             if valid.any():
-                box = np.clip(box[:4], 0, [x1 - x0, y1 - y0, x1 - x0, y1 - y0])
+                box = np.clip(person['box_xyxy'], 0, [x1 - x0, y1 - y0, x1 - x0, y1 - y0])
                 output.append(PersonPose(xy + [x0, y0], valid, box + [x0, y0, x0, y0]))
         return tuple(output)
 
@@ -202,7 +231,7 @@ class ImageRewardBank:
                 scores[i, j] = .6 * mask[y, x].mean() + .4 * (_iou(body_box, pose.box) if body_box is not None else 0.)
         match = _assign(scores, .15)
         if any(j is None or detections[j].valid.sum() < 4 for j in match):
-            raise UnscorableTarget('No reliable DWPose match for each Native person slot')
+            raise UnscorableTarget('No reliable SDPose match for each Native person slot')
         poses = tuple(detections[j] for j in match)
         gt_faces = self._faces(target_image, [_head_box(p) for p in poses])
         bank = sample.get('source_bank_v5')
@@ -228,9 +257,7 @@ class ImageRewardBank:
         return RewardTarget(poses, faces, canvas.resized_hw, tuple(contacts)), canvas
 
     def score(self, target, canvas, image):
-        if image.mode == 'RGBA':
-            background = Image.new('RGBA', image.size, (128, 128, 128, 255))
-            image = Image.alpha_composite(background, image).convert('RGB')
+        image = rendered_rgb(image)
         poses = self._poses(image, canvas)
         return score_candidate(target, poses, self._faces(image, [_head_box(p) for p in poses]))
 

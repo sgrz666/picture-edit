@@ -38,10 +38,12 @@ def advantages(groups, weights, *, mode='gdpo-guarded', std_floor=1e-3):
     size = len(next(iter(groups[0].values())))
     if size < 2:
         raise ValueError('At least two candidates per group required')
-    result = torch.zeros(len(groups), size)
+    # Reward normalization is small and runs on CPU. Use Flow-Factory's FP64
+    # statistics so subtracting nearly equal scores does not distort GDPO.
+    result = torch.zeros(len(groups), size, dtype=torch.float64)
     stats = []
     for row, group in zip(result, groups):
-        scores = {name: torch.as_tensor(value, dtype=torch.float32).detach().cpu() for name, value in group.items()}
+        scores = {name: torch.as_tensor(value, dtype=torch.float64).detach().cpu() for name, value in group.items()}
         if any(x.shape != row.shape or not x.isfinite().all() for x in scores.values()):
             raise ValueError('Every applicable reward needs finite scores for all candidates')
         active = sum(weight for name, weight in weights.items() if name in scores)
@@ -56,22 +58,24 @@ def advantages(groups, weights, *, mode='gdpo-guarded', std_floor=1e-3):
             mean, std = value.mean(), value.std(unbiased=False)
             low = float(std) <= max(std_floor, 1e-6)
             trace[name] = {'applicable': True, 'mean': float(mean), 'std': float(std), 'low_variance': low}
-            if mode == 'gdpo':
+            if mode == 'sum':
+                row += weight * value
+            elif mode == 'gdpo':
                 row += weight * (value - mean) / std.clamp_min(1e-6)
             elif weight and not low:
-                row += (weight / active) * (value - mean if mode == 'sum' else (value - mean) / std)
-        if mode == 'sum' and (std := row.std(unbiased=False)) > max(std_floor, 1e-6):
-            row.div_(std)
-        elif mode == 'sum':
-            row.zero_()
+                row += (weight / active) * (value - mean) / std
+        if mode == 'sum':
+            row.sub_(row.mean()).div_(row.std(unbiased=False).clamp_min(1e-6))
         stats.append(trace)
-    if mode.startswith('gdpo'):
+    if mode == 'gdpo':
+        result = (result - result.mean()) / result.std(unbiased=False).clamp_min(1e-6)
+    elif mode == 'gdpo-guarded':
         std = result.std(unbiased=False)
         if std > 1e-6:
             result = (result - result.mean()) / std
         else:
             result.zero_()
-    return result.clamp(-5, 5), stats
+    return result.clamp(-5, 5).float(), stats
 
 
 def clipped_loss(new, old, advantage, mean, reference_mean, variance, *, clip=.001, beta=.001):

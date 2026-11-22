@@ -1,11 +1,33 @@
 """Grouped Native rollout, exact replay and selective policy updates."""
 
 from contextlib import contextmanager
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass
 
 import torch
 
 from .objective import clipped_loss, transition
+
+
+@dataclass
+class RunCounters:
+    optimizer_updates: int = 0
+    rollout_batches: int = 0
+    generated_images: int = 0
+    replayed_transitions: int = 0
+
+    def rollout(self, images):
+        self.rollout_batches += 1
+        self.generated_images += images
+
+    def updated(self, transitions):
+        self.optimizer_updates += 1
+        self.replayed_transitions += transitions
+
+    def epochs(self, optimizer_budget, replay_epochs):
+        return min(replay_epochs, max(0, optimizer_budget - self.optimizer_updates))
+
+    def record(self):
+        return asdict(self)
 
 
 @dataclass(frozen=True)
@@ -62,9 +84,9 @@ class NativeRollout:
 class FrozenReference:
     """Share frozen modules. Swap only selected tensors at no-grad boundaries."""
 
-    def __init__(self, active):
+    def __init__(self, active, *, storage_device=None):
         self.parameters = tuple(active)
-        self.weights = tuple(p.detach().clone() for p in self.parameters)
+        self.weights = tuple(p.detach().to(device=storage_device, copy=True) for p in self.parameters)
         self.versions = tuple(w._version for w in self.weights)
 
     @contextmanager
@@ -81,6 +103,14 @@ class FrozenReference:
         finally:
             for param, value in zip(self.parameters, current):
                 param.copy_(value)
+
+
+@torch.no_grad()
+def fixed_reference_means(reference, groups, *, noise_level):
+    with reference.use():
+        return {id(row): transition(row.state, predict(row), row.sigma, row.next_sigma,
+                                    noise_level=noise_level, action=row.action)[2]
+                for rows, _, predict in groups for row in rows}
 
 
 def audit_replay(groups, *, noise_level=.7, tolerance=1e-4):
@@ -101,8 +131,10 @@ def update_policy(optimizer, groups, active, frozen, *, reference_means=None, no
                   clip=.001, beta=.001, max_grad=1., tolerance=1e-4, check_parity=True):
     if beta and reference_means is None:
         raise ValueError('Nonzero KL beta requires the fixed SFT reference means')
-    if (not active or any(not p.requires_grad for p in active) or
-            {id(p) for group in optimizer.param_groups for p in group['params']} != {id(p) for p in active} or
+    optimizer_ids = {id(p) for group in optimizer.param_groups for p in group['params']}
+    active_ids = {id(p) for p in active}
+    if (not active or any(not p.requires_grad for p in active) or not active_ids <= optimizer_ids or
+            optimizer_ids - active_ids - {id(p) for p in frozen} or
             any(p.requires_grad or p.grad is not None for p in frozen)):
         raise RuntimeError('Optimizer and parameter freeze mask differ')
     frozen_versions = [p._version for p in frozen]

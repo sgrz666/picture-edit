@@ -4,7 +4,6 @@ Separate actions preserve the existing SDPose and Qwen package environments.
 Every generated image remains at its original path and is bound by SHA256.
 """
 import argparse
-from functools import lru_cache
 import json
 import math
 import os
@@ -53,12 +52,17 @@ def aggregate(records):
     for key in ('background_mse','valid_mse','background_reward'):
         values=[x['pixel'][key] for x in records if 'pixel' in x and x['pixel'][key] is not None]
         summary['pixel'][key]=float(np.mean(values)) if values else None
+    pixels = [x['pixel'] for x in records if 'pixel' in x]
+    if pixels:
+        summary['pixel']['background_applicable_images'] = sum(x['background_reward'] is not None for x in pixels)
     return summary
 
 
 def pose_action(args):
     import cv2
     import numpy as np
+    from PIL import Image
+    from src.pose_control.qwen21_full.native_rl.rewards import rendered_rgb
     from src.evaluation.sdpose import load_runtime,detect_people,DEFAULT_SCORE_THRESHOLD
     from src.pose_control.qwen21_full.region_rewards import pose_metrics
     from src.pose_control.qwen21_full.native_v62.training.io import file_sha
@@ -73,8 +77,9 @@ def pose_action(args):
     manifest=read(args.manifest);records=[]
     for i,row in enumerate(manifest['records']):
         if file_sha(row['path'])!=row['sha256']:raise ValueError('Generated image changed')
-        pair=pairs[row['pair_id']];image=cv2.imread(row['path'])
-        if image is None:raise ValueError('Cannot read generated image')
+        pair=pairs[row['pair_id']]
+        with Image.open(row['path']) as image:
+            image = cv2.cvtColor(np.asarray(rendered_rgb(image)), cv2.COLOR_RGB2BGR)
         import torch
         torch.manual_seed(42)
         if torch.cuda.is_available():torch.cuda.manual_seed_all(42)
@@ -93,57 +98,110 @@ def pose_action(args):
         'threshold':DEFAULT_SCORE_THRESHOLD,'model_identity':identity,'label':manifest.get('label'),'records':records,'summary':aggregate(records)})
 
 
-def identity_action(args):
-    import cv2
-    import numpy as np
-    from PIL import Image
-    from insightface import model_zoo
-    from insightface.utils import face_align
-    from src.data.canvas_contract import CanvasSpec
-    models=Path('/home/shangguanrz/project/pic-edit/models/antelopev2')
-    model_identity=bind_models(args.root,'identity',[models/'scrfd_10g_bnkps.onnx',models/'glintr100.onnx'],
-        {'provider':'CPUExecutionProvider','detector_input':[640,640],'identity_applicability_oracle_min':.3})
-    detector=model_zoo.get_model(str(models/'scrfd_10g_bnkps.onnx'),providers=['CPUExecutionProvider'])
-    encoder=model_zoo.get_model(str(models/'glintr100.onnx'),providers=['CPUExecutionProvider'])
-    detector.prepare(ctx_id=-1,input_size=(640,640));encoder.prepare(ctx_id=-1)
-    def face(image):
-        bgr=cv2.cvtColor(np.asarray(image.convert('RGB')),cv2.COLOR_RGB2BGR)
-        boxes,landmarks=detector.detect(bgr)
+class IdentityPixelEvaluator:
+    def __init__(self, root):
+        from insightface import model_zoo
+        from insightface.utils import face_align
+
+        models = Path('/home/shangguanrz/project/pic-edit/models/antelopev2')
+        detector_path, encoder_path = (models / name for name in ('scrfd_10g_bnkps.onnx', 'glintr100.onnx'))
+        self.model_identity = bind_models(root, 'identity', [detector_path, encoder_path],
+            {'provider':'CPUExecutionProvider','detector_input':[640,640],'identity_applicability_oracle_min':.3})
+        self.detector = model_zoo.get_model(str(detector_path), providers=['CPUExecutionProvider'])
+        self.encoder = model_zoo.get_model(str(encoder_path), providers=['CPUExecutionProvider'])
+        self.detector.prepare(ctx_id=-1, input_size=(640, 640))
+        self.encoder.prepare(ctx_id=-1)
+        self.face_align = face_align
+
+    def face(self, image):
+        import cv2
+        import numpy as np
+        from src.pose_control.qwen21_full.native_rl.rewards import rendered_rgb
+
+        bgr=cv2.cvtColor(np.asarray(rendered_rgb(image)),cv2.COLOR_RGB2BGR)
+        boxes,landmarks=self.detector.detect(bgr)
         if len(boxes)==0:return 0,None
         index=int(np.argmax((boxes[:,2]-boxes[:,0])*(boxes[:,3]-boxes[:,1])))
-        feature=encoder.get_feat(face_align.norm_crop(bgr,landmark=landmarks[index])).reshape(-1).astype(np.float32)
-        feature/=max(float(np.linalg.norm(feature)),1e-12)
-        return len(boxes),feature
-    @lru_cache(maxsize=256)
-    def original(path,canvas_json):
-        with Image.open(path) as image:canvas=CanvasSpec.from_record(json.loads(canvas_json)).image(image.convert('RGB'))
-        return face(canvas)
-    pairs={x['pair_id']:x for x in read(args.root/'data/evaluation.json')};report=read(args.input)
-    for i,row in enumerate(report['records']):
-        pair=pairs[row['pair_id']]
-        source_count,source=original(pair['source_rgb']['path'],json.dumps(pair['source_canvas'],sort_keys=True))
-        target_count,target=original(pair['target_rgb']['path'],json.dumps(pair['target_canvas'],sort_keys=True))
-        with Image.open(row['path']) as image:generated_count,generated=face(image)
-        source_target=float(source@target) if source is not None and target is not None else None
-        applicable=source_target is not None and source_target>=.3
+        feature=self.encoder.get_feat(self.face_align.norm_crop(bgr,landmark=landmarks[index])).reshape(-1).astype(np.float32)
+        norm = np.linalg.norm(feature)
+        if not np.isfinite(norm) or norm <= 0:
+            raise ValueError('Invalid glintr100 feature')
+        return len(boxes), feature / norm
+
+    def prepare(self, pair):
+        import numpy as np
+        from PIL import Image
+        from src.data.canvas_contract import CanvasSpec
+        from src.pose_control.qwen21_full.native_rl.background import prepare_background
+        from src.pose_control.qwen21_full.native_v62.training.io import verify
+        from src.pose_control.qwen21_full.region_rewards import pose_metrics
+
+        originals = []
+        canvases = [CanvasSpec.from_record(pair[name + '_canvas']) for name in ('source', 'target')]
+        for name, spec in zip(('source', 'target'), canvases):
+            with Image.open(verify(pair[name + '_rgb'])['path']) as image:
+                originals.append(spec.image(image.convert('RGB')))
+        source_image, target_image = originals
+        source_count, source = self.face(source_image)
+        target_count, target = self.face(target_image)
+        oracle = float(source @ target) if source is not None and target is not None else None
+        with np.load(verify(pair['region'])['path'], allow_pickle=False) as archive:
+            valid = archive['valid'] > 0
+            target_person = (archive['person'] > 0).any(axis=0)
+        background, reason = prepare_background(pair, source_image, target_image, target_person)
+        pose = pose_metrics(pair['target_points134'], pair['target_valid134'], None, None, canvases[1].resized_hw)
+        return {'source_count': source_count, 'source': source, 'target_count': target_count, 'target': target,
+                'oracle': oracle, 'background': background, 'background_reason': reason,
+                'gt_pixels': np.asarray(target_image, np.float32) / 255, 'valid': valid,
+                'eligible': {'identity': oracle is not None and oracle >= .3, 'background': background is not None,
+                             **{name: pose[name]['applicable'] for name in ('body', 'hands')}}}
+
+    def score(self, row, fixed):
+        import numpy as np
+        from PIL import Image
+        from src.pose_control.qwen21_full.native_rl.rewards import rendered_rgb
+        from src.pose_control.qwen21_full.native_v62.training.io import verify
+
+        source, target = fixed['source'], fixed['target']
+        applicable = fixed['eligible']['identity']
+        with Image.open(verify(row)['path']) as image:
+            image = rendered_rgb(image)
+            generated_count, generated = self.face(image)
+            pixels = np.asarray(image, dtype=np.float32)
         cos_src=float(generated@source) if generated is not None and source is not None else None
         cos_tgt=float(generated@target) if generated is not None and target is not None else None
-        row['identity']={'applicable':applicable,'source_faces':source_count,'target_faces':target_count,'generated_faces':generated_count,
-            'source_target_oracle':source_target,'id_cos_src':cos_src,'id_cos_tgt':cos_tgt,
+        row['identity']={'applicable':applicable,'source_faces':fixed['source_count'],
+            'target_faces':fixed['target_count'],'generated_faces':generated_count,
+            'source_target_oracle':fixed['oracle'],'id_cos_src':cos_src,'id_cos_tgt':cos_tgt,
             'identity_reward':max(0.,min(1.,cos_src)) if applicable and cos_src is not None else 0. if applicable else None}
-        spec=CanvasSpec.from_record(pair['target_canvas'])
-        with Image.open(pair['target_rgb']['path']) as image:gt=np.asarray(spec.image(image.convert('RGB')),np.float32)/255
-        with Image.open(row['path']) as image:gen=np.asarray(image.convert('RGB'),np.float32)/255
-        with np.load(pair['region']['path'],allow_pickle=False) as archive:
-            background=archive['background'][0].astype(np.float32);valid=archive['valid'].astype(np.float32)
-        if gen.shape!=gt.shape:raise ValueError('Generation/GT Canvas differs')
-        error=((gen-gt)**2).mean(-1)
-        bg_mse=float((error*background).sum()/background.sum()) if background.sum()>0 else None
-        row['pixel']={'valid_mse':float((error*valid).sum()/valid.sum()),'background_mse':bg_mse,
-            'background_reward':math.exp(-bg_mse/.02) if bg_mse is not None else None}
-        print(json.dumps({'identity_background_evaluated':i+1,'total':len(report['records'])}),flush=True)
-    report['summary']=aggregate(report['records']);report['identity_backend']='antelopev2/glintr100_cpu';report['identity_model_identity']=model_identity
-    write(args.output,report)
+        gt, valid, background = fixed['gt_pixels'], fixed['valid'], fixed['background']
+        if pixels.shape != gt.shape or valid.shape != gt.shape[:2] or not valid.any():
+            raise ValueError('Generation/GT and valid Canvas differ')
+        bg_mse, bg_reward = background.score(pixels) if background is not None else (None, None)
+        row['pixel']={'valid_mse':float(np.square(pixels[valid] / 255 - gt[valid]).mean()),
+                      'valid_mse_reference':'target_gt', 'background_mse':bg_mse,
+                      'background_reference':'source', 'background_status':fixed['background_reason'] or 'aligned',
+                      'background_reward':bg_reward}
+
+    def enrich(self, report, pairs, fixed=None):
+        active_pair = None
+        for i, row in enumerate(report['records']):
+            pair_id = row['pair_id']
+            if fixed is not None:
+                targets = fixed[pair_id]
+            elif active_pair != pair_id:
+                targets = self.prepare(pairs[pair_id])
+                active_pair = pair_id
+            self.score(row, targets)
+            print(json.dumps({'identity_background_evaluated':i+1,'total':len(report['records'])}),flush=True)
+        report['summary']=aggregate(report['records']);report['identity_backend']='antelopev2/glintr100_cpu'
+        report['identity_model_identity']=self.model_identity
+        return report
+
+
+def identity_action(args):
+    pairs = {x['pair_id']: x for x in read(args.root/'data/evaluation.json')}
+    write(args.output, IdentityPixelEvaluator(args.root).enrich(read(args.input), pairs))
 
 
 def main():

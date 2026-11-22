@@ -3,6 +3,7 @@ import pytest
 import torch
 
 from tests.test_native_v62_integration import control_case, installed
+from tests.test_native_v7_integration import installed as installed_v7, installed62
 from src.pose_control.qwen21_full.native_rl.objective import advantages, clipped_loss, transition
 from src.pose_control.qwen21_full.native_rl.rewards import ImageRewardBank, PersonPose, RewardTarget, score_candidate
 from src.pose_control.qwen21_full.native_rl.runner import FrozenReference, NativeRollout, Replay, update_policy
@@ -99,7 +100,8 @@ def test_policy_updates_only_selected_parameter_and_rejects_bad_replay():
         update_policy(optimizer, [(actions, torch.tensor([1., -1.]), predict)], [active], [frozen], beta=0.)
 
 
-def test_native_scheduler_rollout_replay_with_installed_qwen(installed, monkeypatch):
+@pytest.mark.parametrize('architecture', ['installed', 'installed_v7'])
+def test_native_scheduler_rollout_replay_with_installed_qwen(architecture, request, monkeypatch):
     import os
     from types import SimpleNamespace
 
@@ -108,7 +110,7 @@ def test_native_scheduler_rollout_replay_with_installed_qwen(installed, monkeypa
     from PIL import Image
     from src.pose_control.qwen21_full.native_v62.generation import generate_native
 
-    _, _, model, _, runtime = installed
+    _, _, model, _, runtime = request.getfixturevalue(architecture)
     roles = ('source', 'target_pose')
     _, control, options, inputs = control_case(roles)
     device = torch.device(os.getenv('NATIVE_RL_TEST_DEVICE', 'cpu'))
@@ -169,3 +171,34 @@ def test_native_scheduler_rollout_replay_with_installed_qwen(installed, monkeypa
     assert second['kl'] > 0
     with torch.no_grad(), sft.use():
         assert all(torch.equal(p, ref) for p, ref in zip(active, sft.weights))
+def test_sum_keeps_low_variance_components_before_normalization():
+    result, _ = advantages([{'pose': [.0, .1, .2], 'face': [.5002, .5001, .5]}],
+                           {'pose': .01, 'face': 20.}, mode='sum', std_floor=.001)
+    assert result[0, 0] > 1 and result[0, 2] < -1
+
+
+def test_rl_selects_matching_architecture_and_disables_sft_auxiliaries(tmp_path):
+    import json
+    from types import SimpleNamespace
+
+    from src.pose_control.qwen21_full.native_rl.cli import _settings, _backend_for
+    from src.pose_control.qwen21_full.native_v7.training import NativeBackendV7, TrainingConfigV7, stage_preset_v7
+
+    config = TrainingConfigV7(stage=stage_preset_v7('S3'),
+                              initialization={'path': '/data/parent.pt', 'sha256': '0' * 64})
+    path = tmp_path / 'config.json'
+    path.write_text(json.dumps(config.record()))
+    rl, route = _settings(SimpleNamespace(config=path, action='check-data', route=None))
+    assert _backend_for(rl)[1:] == (NativeBackendV7, 'native_full_v7')
+    assert not rl.additional_evaluators and route.loss.identity == 0
+
+
+def test_replay_epochs_stop_on_optimizer_update_budget():
+    from src.pose_control.qwen21_full.native_rl.runner import RunCounters
+
+    counters = RunCounters()
+    counters.rollout(4)
+    assert counters.epochs(optimizer_budget=1, replay_epochs=2) == 1
+    counters.updated(4)
+    assert counters.epochs(optimizer_budget=1, replay_epochs=2) == 0
+    assert counters.record() == dict(optimizer_updates=1, rollout_batches=1, generated_images=4, replayed_transitions=4)

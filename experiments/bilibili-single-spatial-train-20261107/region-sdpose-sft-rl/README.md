@@ -20,7 +20,9 @@
 
 V4 修复了抽出预测接口时遗留的局部变量引用；回归确认预测不需要 GT latent。本地和服务器的 50 项针对性回归通过，服务器 921 个源文件 SHA 校验通过，本实验脚本与共享源码编译通过。V3 尚未开始 GPU 工作，旧等待日志与源码均保留。
 
-`scripts/run.py` 串行运行两臂 SFT、从同一 RN 检查点继续 SFT 10 updates 和 GRPO 10 updates。`scripts/stage.py` 复用共享 Trainer，保存阶段生成及逐图 SHA；`scripts/evaluate.py` 在原 SDPose 环境预测，再在 qwen21 的 CPU 身份环境计算身份/背景。`scripts/rl.py` 存真实随机转移、候选图、组内奖励、重放 gate、固定 SFT reference 和独立 RL 快照，未接入 LoRA 或修改 qwen21 包。
+`scripts/run.py` 串行运行两臂 SFT、从同一 RN 检查点继续 SFT 10 updates 和 GRPO 10 updates。`scripts/stage.py` 复用共享 Trainer，保存阶段生成及逐图 SHA。`scripts/evaluate.py` 用 SDPose 预测姿态，在 qwen21 环境用 CPU 计算身份和像素指标。`scripts/rl.py` 复用共享 Native RL 的采样、Replay、Guarded-GDPO 和更新函数，保存随机转移、候选图、固定 SFT reference 和独立 RL 快照。四个计数器为 `optimizer_updates`、`rollout_batches`、`generated_images`、`replayed_transitions`，历史快照按原脚本和 SHA 复现。
+
+像素背景分数使用 Source。要启用某个配对的背景项，`data/evaluation.json` 中须绑定原始画布的 `source_mask` 文件 SHA，以及 `background_alignment` 的 `method: identity`、`canvas_id`、`source_rgb_sha256` 和 `target_rgb_sha256`。两帧必须共享 Canvas 变换，在排除两个前景并外扩 16 px 后，公共区域至少占有效画布的 10%，背景 MAE 至多 `0.035`。资格缺失时 `background_reward` 写 `null`，其余适用奖励照常计算。`valid_mse` 仍是明确标注的 Target GT 诊断指标。
 
 自动执行完后，原始图保存在 `output/generation/<分组>/`，RL 候选图在 `output/grpo/rollouts/`。`report/evaluation/` 保存逐图指标；`report/comparison-ready.json` 指向最终指标表与逐对 7 列面板（Source、SDPose、GT、uniform、regional、继续 SFT、GRPO）。汇总前会逐阶段核对两臂的 route/source/index/sigma/LR 轨迹，必须全部一致。汇总脚本已用合成图片和真实格式的已提交 checkpoint 做过流程冒烟验证，该验证不代表训练收益。
 

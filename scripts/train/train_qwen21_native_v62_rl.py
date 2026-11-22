@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Native V6.2 rollout/replay entry point."""
+"""Native V6.2 and V7 rollout/replay entry point."""
 
 from pathlib import Path
 import sys

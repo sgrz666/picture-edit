@@ -10,27 +10,59 @@ def driver():
     module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module);return module
 
 
-def test_policy_state_copy_preserves_non_tensor_architecture_headers():
-    module=driver();state={'weight':torch.ones(2),'_extra_state':{'schema':'native_full_v7','config':[1,2]}}
-    copied=module.clone_policy_state(state)
-    copied['weight'][0]=9;copied['_extra_state']['config'][0]=8
-    assert state['weight'][0]==1 and state['_extra_state']['config'][0]==1
-
-
 def test_reference_weight_context_restores_parameter_objects_on_failure():
-    module=driver();net=torch.nn.Linear(2,1);current=module.clone_policy_state(net.state_dict())
-    reference={name:torch.zeros_like(value) for name,value in current.items()}
+    from src.pose_control.qwen21_full.native_rl.runner import FrozenReference
+
+    net = torch.nn.Linear(2, 1)
+    reference = FrozenReference(net.parameters(), storage_device='cpu')
+    with torch.no_grad():
+        net.weight.add_(1.)
+    current = net.weight.detach().clone()
     ids=[id(p) for p in net.parameters()]
-    with pytest.raises(RuntimeError):
-        with module.weights(net,reference,current):
-            assert net.weight.count_nonzero()==0
+    with torch.no_grad(), pytest.raises(RuntimeError, match='controlled'):
+        with reference.use():
+            assert torch.equal(net.weight, reference.weights[0])
             raise RuntimeError('controlled reference-probe failure')
     assert [id(p) for p in net.parameters()]==ids
-    assert torch.equal(net.weight,current['weight']) and torch.equal(net.bias,current['bias'])
+    assert torch.equal(net.weight, current)
 
 
-def test_failed_reference_loading_also_restores_live_weights():
-    module=driver();net=torch.nn.Linear(2,1);current=module.clone_policy_state(net.state_dict())
-    with pytest.raises(RuntimeError):
-        with module.weights(net,{'weight':torch.zeros_like(net.weight)},current):pass
-    assert torch.equal(net.weight,current['weight']) and torch.equal(net.bias,current['bias'])
+def test_regional_reward_columns_keep_generation_misses_and_reject_invalid_measurements():
+    score = driver().score_columns
+    applicable = {'body': True, 'hands': False, 'identity': True, 'background': False}
+    row = {'pose': {'body': {'reward': .5}, 'hands': {'reward': None}},
+           'identity': {'identity_reward': 0.}, 'pixel': {'background_reward': None}}
+    assert score([row], applicable) == {'body': [.5], 'identity': [0.]}
+    row['identity']['identity_reward'] = None
+    with pytest.raises(ValueError, match='fixed target eligibility'):
+        score([row], applicable)
+
+
+def test_background_scores_source_on_verified_support_and_disables_unknown_alignment(tmp_path):
+    import numpy as np
+    from PIL import Image
+    from src.data.canvas_contract import native_pad
+    from src.pose_control.qwen21_full.native_rl.background import prepare_background
+    from src.pose_control.qwen21_full.native_v62.training.io import file_sha
+
+    canvas = native_pad((64, 64))
+    src = np.zeros((64, 64, 3), dtype=np.uint8)
+    gt = np.full_like(src, 4)
+    gt[25:35, 28:35] = 255
+    source_mask = src[:, :, 0].copy()
+    source_mask[25:35, 18:25] = 255
+    refs = {}
+    for name, image in (('source_rgb', src), ('target_rgb', gt), ('source_mask', source_mask)):
+        path = tmp_path / f'{name}.png'
+        Image.fromarray(image).save(path)
+        refs[name] = {'path': str(path), 'sha256': file_sha(path)}
+    pair = {**refs, 'source_canvas': canvas.metadata(), 'target_canvas': canvas.metadata()}
+    target_mask = gt[:, :, 0] > 4
+    assert prepare_background(pair, Image.fromarray(src), Image.fromarray(gt), target_mask)[0] is None
+    pair['background_alignment'] = {'method': 'identity', 'source_rgb_sha256': refs['source_rgb']['sha256'],
+                                    'target_rgb_sha256': refs['target_rgb']['sha256'], 'canvas_id': canvas.fingerprint()}
+    bg, reason = prepare_background(pair, Image.fromarray(src), Image.fromarray(gt), target_mask)
+    assert reason is None and bg.score(src)[1] == pytest.approx(1.)
+    assert bg.score(src)[1] > bg.score(gt)[1]
+    assert bg.score(np.full_like(src, 255))[1] < .001
+    assert prepare_background(pair, Image.fromarray(src), Image.fromarray(255 - gt), target_mask)[0] is None
