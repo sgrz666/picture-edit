@@ -113,7 +113,8 @@ def main():
     from src.pose_control.qwen21_full.native_v62.training.validation import frozen_digest
     from src.pose_control.qwen21_full.native_rl.objective import advantages
     from src.pose_control.qwen21_full.native_rl.runner import (FrozenReference, NativeRollout, RunCounters,
-                                                              audit_replay, fixed_reference_means, update_policy)
+                                                              audit_replay, fixed_reference_means, restrict_optimizer,
+                                                              update_policy)
     from evaluate import IdentityPixelEvaluator
     config=TrainingConfigV7.from_dict(read(args.config))
     parent={'path':str(args.parent.resolve()),'sha256':file_sha(args.parent)}
@@ -127,6 +128,7 @@ def main():
     trainer=NativeV7Trainer(config);ctx=trainer._start('advance-stage',parent)
     backend=ctx['backend'];backend.runtime.eval();optimizer=ctx['optimizer']
     active=[backend.catalog.parameters[n] for n in sorted(backend.active)]
+    restrict_optimizer(optimizer,active)
     active_ids={id(p) for p in active}
     frozen=[p for p in dict.fromkeys([*backend.catalog.parameters.values(), *backend.pipe.transformer.parameters()])
             if id(p) not in active_ids]

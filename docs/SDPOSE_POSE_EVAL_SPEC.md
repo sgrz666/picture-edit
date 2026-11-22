@@ -51,6 +51,8 @@
 
 评分入口调用 `load_scoring_runtime()` 和 `score_people()`。评分随机种子固定为 42，调用退出后恢复训练侧 RNG。RL 用目标侧条件固定关节分母和奖励资格，候选漏点计作失分，模型或评测器异常按失败记录。每次新运行将评分模型和代码的 SHA 固定在清单；从旧评分器切换时使用新的清单和独立结果路径。
 
+通用 Native RL 从 Qwen 训练解释器启动，SDPose 由 `native_rl/pose_worker.py` 在指定 SDPose 解释器中持续运行。`run.json` 记录 worker 环境和版本，`resume` 校验它们与训练、评分资产的身份。
+
 ---
 
 ## 4. 关键契约：133 → 134 关节槽位序约定（必读）

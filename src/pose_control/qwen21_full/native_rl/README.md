@@ -7,15 +7,16 @@
 ## 奖励与对照
 
 - 单人默认 Pose / ID 各 `0.5`。Pose 用 SDPose-Wholebody + YOLO11x，以 `geometry` 序映射 COCO17 计算 OKS，同时记录 PCK@0.02 和关键点召回。预先按置信度 `0.30` 在目标图建立可见点分母，候选漏点计零。ID 用 SCRFD + glintr100，Source 和目标都能绑定人脸时启用，候选漏脸计零。
-- 双人按 Native 槽位和目标几何固定匹配，用 `0.30 / 0.25 / 0.20 / 0.15 / 0.10` 融合 Pose、ID、Binding、Layout、Contact。Pose 给较弱一人额外权重。Binding 比较正确与交叉的 ID 相似度。Contact 只用 V6.2 已确认的 Part14 接触对和可见 COCO 关节代理，采用画布对角线归一化的宽容距离。
+- 双人按 Native 槽位和目标几何固定匹配，用 `0.30 / 0.25 / 0.20 / 0.15 / 0.10` 融合 Pose、ID、Binding、Layout、Contact。Pose 给较弱一人额外权重。Binding 比较正确与交叉的 ID 相似度。Contact 只用已确认的 Part14 接触对和可见 COCO 关节代理。额外报告双人同时检出率及逐槽位 `person0/1_hand_pck_002`，漏人按固定可见手部关节失分。遮挡前后关系需要可靠的生成侧深度证据，当前该指标为 `null`。
+- 可选 `--background-index` 启用 Source 背景评分，权重 `--background-weight` 默认 `0.05`。资格在出图前按同画布、双前景外扩 16 px、剩余区域至少 10%、Source/GT 背景 MAE 至多 `0.035` 固定。适用时只用 Source 评分，不适用时写明 `background_status`。多独立 Source 的任务当前没有统一的背景画布证据。
 - `--pose-only` 跑 Pose GRPO。`--aggregation sum` 先加权聚合全部适用的原始 Reward 再作组内标准化。`--aggregation gdpo` 使用 Flow-Factory v0.5.0 的逐项组归一化、权重和与采集批标准化。默认 `gdpo-guarded` 在标准化前抑制 std ≤ `0.001` 的奖励，并按当前适用的权重归一。整个批次无有效优势时跳过 optimizer。区域实验复用同一个 Flow-SDE、优势和更新内核。 [Flow-Factory v0.5.0](https://github.com/X-GenGroup/Flow-Factory/tree/ced2cd9b0465a2c9d733b9b8aed4d4351f950a22)
 
 ## 运行
 
-从仓库根目录执行，`CFG` 指向 Native V6.2 或 V7 SFT JSON。它要绑定完整 SFT `initialization` 及 SHA256、原视频或序列分组、Qwen model manifest 和冻结 latent cache。一个 run 使用一种条件 profile，可选 `single_2ref`、`dual_4ref` 或 `dual_source_5ref`。多 route 时用 `--route` 指定要继承的条件开关。`--models` 指定 AntelopeV2 的模型父目录。SDPose 走统一权重和环境，`--pose-device` 默认 `cpu`，有独立显存预算时可以选 `cuda:0`。
+从仓库根目录执行，`CFG` 指向 Native V6.2 或 V7 SFT JSON。它要绑定完整 SFT `initialization` 及 SHA256、原视频或序列分组、Qwen model manifest 和冻结 latent cache。一个 run 使用一种条件 profile，可选 `single_2ref`、`dual_4ref` 或 `dual_source_5ref`。多 route 时用 `--route` 指定要继承的条件开关。`--models` 指定 AntelopeV2 的模型父目录。Qwen 用训练解释器，SDPose 通过 `--pose-python` 启动独立持久进程，默认使用项目的 SDPose 环境。每次进程启动加载一次模型，`--pose-device` 默认 `cpu`。Worker 异常会停止该批更新并写失败原因。
 
 ```bash
-PY=/data/shangguanrz/pic-edit-experiments/姿态估计/four-skeleton-compair/.venv/bin/python
+PY="$HOME/nihaochen/envs/qwen21/bin/python"
 CFG=/absolute/path/to/native-v7-sft.json
 RUN=/data/shangguanrz/pic-edit-experiments/native-rl-$(date -u +%Y%m%dT%H%M%SZ)
 
@@ -26,7 +27,22 @@ RUN=/data/shangguanrz/pic-edit-experiments/native-rl-$(date -u +%Y%m%dT%H%M%SZ)
   --groups-per-update 1 --group-size 2 --steps 3 --sde-step 1 --updates 1 --output "$RUN/pilot"
 ```
 
-正式训练需要 `experiment_mode=standard` 和按视频或序列隔离的 validation。启动时打印 SFT 路径、SHA256、阶段和父链。先用固定 seed 生成 SFT 的 ODE 基线，再按 `--validate-every` 个 optimizer updates 和结尾复测。Pose 或 ID 相对基线下降超过默认 `0.02` 时淘汰该候选，连续两次触发会停止。`summary.json` 中的 `selected` 指向门禁内评分最高且超过基线的 RL 权重，或 SFT 基线。`update-*.commit.json` 记录 RL 权重和 SHA256，可用相应架构的 loader 推理。通用入口当前从 SFT 启动新 run，区域入口提供其自身训练状态的断点恢复。
+正式训练需要 `experiment_mode=standard` 和按视频或序列隔离的 validation。启动时打印 SFT 路径、SHA256、阶段和父链。先用固定 seed 生成 SFT 的 ODE 基线，再按 `--validate-every` 个 optimizer updates 和结尾复测。Pose 或 ID 相对基线下降超过默认 `0.02` 时淘汰该候选，连续两次触发会停止。`summary.json` 中的 `selected` 指向门禁内评分最高且超过基线的 RL 权重，或 SFT 基线。
+
+### 断点续训
+
+Checkpoint 默认每 5 个有效更新保存一份，由 `--save-every` 修改。`update-*.commit.json` 绑定权重 SHA 与计数，checkpoint 内保存模型、AdamW 的 moments、采样和 RNG 状态、ODE 门禁状态及尚未回放完成的组。`resume` 使用原有 SFT 配置和相同训练参数，写入新目录。旧的仅权重快照继续用于推理或历史对照。
+
+```bash
+COMMON=(--config "$CFG" --groups-per-update 2 --group-size 2 --steps 3 --sde-step 1 --updates 10)
+"$PY" scripts/train/train_qwen21_native_v62_rl.py train "${COMMON[@]}" \
+  --stop-after-updates 5 --output "$RUN/first"
+CKPT=$("$PY" -c 'import json,sys; print(json.load(open(sys.argv[1]))["checkpoint"]["path"])' "$RUN/first/summary.json")
+"$PY" scripts/train/train_qwen21_native_v62_rl.py resume "${COMMON[@]}" \
+  --checkpoint "$CKPT" --output "$RUN/resumed"
+```
+
+背景索引用 `schema: native_rl_background_index_v1`，`entries` 按 `source_id → pair_id` 存每条记录。记录含 `source_rgb`、`target_rgb` 和 `source_mask` 的绝对路径及 SHA256，以及 `background_alignment` 的 `method: identity`、`canvas_id`、`source_rgb_sha256`、`target_rgb_sha256`。`source_mask` 使用 Source 原图坐标。
 
 `--updates`（也可写 `--optimizer-updates`）按实际 `optimizer.step()` 计数，旧版命令的预算需按新语义重算。`rollout_batches` 包括零优势批，`generated_images` 统计训练候选，`replayed_transitions` 统计参与成功更新的转移。`--max-rollout-batches` 默认是更新预算的 5 倍，用于限制无有效优势时的生成成本。
 
@@ -35,7 +51,7 @@ RUN=/data/shangguanrz/pic-edit-experiments/native-rl-$(date -u +%Y%m%dT%H%M%SZ)
 ## 自动验证
 
 ```bash
-NATIVE_RL_TEST_DEVICE=cuda "$PY" -m pytest -q tests/test_native_v62_rl.py
+NATIVE_RL_TEST_DEVICE=cuda "$PY" -m pytest -q tests/test_native_v62_rl.py tests/test_native_rl_resume.py
 ```
 
-该测试使用小型真实 Qwen21 transformer 和 scheduler、V6.2/V7 注入和轻量 decoder，检查 ODE 一致性、BF16 Replay、冻结参数与 KL。真实 Bilibili 和 Hi4D 的效果对照需要分别使用各自的 SFT 基线和独立的留出集。
+Qwen 集成测试使用小型真实 transformer 和 scheduler，验证 ODE、BF16 Replay、冻结参数和 KL。断点测试使用真实共享训练循环和小型合成策略，比对连续 10 步与第 5 步（Replay 组中间）暂停再恢复后的权重、AdamW、采样顺序和计数。真实任务的效果对照使用对应 SFT 基线及独立留出集。

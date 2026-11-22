@@ -28,6 +28,8 @@ class PersonPose:
     points: np.ndarray
     valid: np.ndarray
     box: np.ndarray
+    wholebody: np.ndarray | None = None
+    wholebody_valid: np.ndarray | None = None
 
 
 @dataclass(frozen=True)
@@ -36,6 +38,8 @@ class RewardTarget:
     identities: tuple
     content_hw: tuple
     contacts: tuple = ()
+    background: object | None = None
+    background_status: str = 'alignment_unverified'
 
 
 class UnscorableTarget(ValueError):
@@ -114,6 +118,18 @@ def score_candidate(target, poses, identities):
     if eligible:
         reward['identity'] = sum((v + 1.) / 2. for v in cosines.values()) / len(eligible)
     if len(target.poses) == 2:
+        from ..region_rewards import pose_metrics
+
+        details['two_person_detected'] = len(poses) == details['matched_people'] == 2
+        details['occlusion_consistency'] = None
+        details['occlusion_status'] = 'generated_depth_order_unavailable'
+        for i, (gt, pred) in enumerate(zip(target.poses, assigned)):
+            hands = None
+            if gt.wholebody is not None:
+                hands = pose_metrics(gt.wholebody, gt.wholebody_valid,
+                                     None if pred is None else pred.wholebody,
+                                     None if pred is None else pred.wholebody_valid, target.content_hw)['hands']['pck_002']
+            details[f'person{i}_hand_pck_002'] = hands
         reward['layout'] = 0.
         if all(p is not None for p in assigned):
             def layout(pair):
@@ -143,29 +159,29 @@ def score_candidate(target, poses, identities):
 
 
 class ImageRewardBank:
-    def __init__(self, models_root, *, pose_device='cpu'):
+    def __init__(self, models_root, *, pose):
         from src.evaluation.joint_pilot_metrics import IdentityMetric
-        from src.evaluation.sdpose import load_scoring_runtime
 
-        self.pose = load_scoring_runtime(device=pose_device)
+        self.pose = pose
         self.identity = IdentityMetric(models_root)
 
     def _poses(self, image, canvas):
-        import cv2
-        from src.evaluation.sdpose import coco17, score_people, valid_joints
+        from src.evaluation.sdpose import coco17, valid_joints
 
         if image.size != canvas.canvas_hw[::-1]:
             raise ValueError('Reward image and target Canvas differ')
         x0, y0, x1, y1 = canvas.valid_rect
-        bgr = cv2.cvtColor(np.asarray(image.crop(canvas.valid_rect).convert('RGB')), cv2.COLOR_RGB2BGR)
-        people = score_people(bgr, self.pose)
+        people = self.pose.detect(image.crop(canvas.valid_rect))['people']
         output = []
         for person in people[:16]:
             xy, score = coco17(person)
             valid = valid_joints(xy, score, x1 - x0, y1 - y0)
             if valid.any():
                 box = np.clip(person['box_xyxy'], 0, [x1 - x0, y1 - y0, x1 - x0, y1 - y0])
-                output.append(PersonPose(xy + [x0, y0], valid, box + [x0, y0, x0, y0]))
+                wholebody, confidence = np.asarray(person['points']), np.asarray(person['scores'])
+                whole_valid = valid_joints(wholebody, confidence, x1 - x0, y1 - y0)
+                output.append(PersonPose(xy + [x0, y0], valid, box + [x0, y0, x0, y0],
+                                         wholebody + [x0, y0], whole_valid))
         return tuple(output)
 
     def _faces(self, image, boxes):
@@ -191,7 +207,7 @@ class ImageRewardBank:
             output.append(embedding)
         return tuple(output)
 
-    def target(self, sample, condition):
+    def target(self, sample, condition, background_entry=None):
         from src.data.canvas_contract import CanvasSpec
         from ..native_v5.conditioning import reference_images
         from ..native_v62.conditions import part_contact_permissions
@@ -217,11 +233,22 @@ class ImageRewardBank:
         poses = tuple(detections[j] for j in match)
         gt_faces = self._faces(target_image, [_head_box(p) for p in poses])
         bank = sample.get('source_bank_v5')
+        background, reason = None, 'alignment_unverified'
         if bank is None:
             source = dataset_image_to_pil(sample['src_image'])
-            masks = sample['source_head_mask']
-            source_faces = self._faces(source, [_mask_box(masks[int(local.source_indices[0, i])]) for i in slots])
+            head_masks = sample['source_head_mask']
+            source_faces = self._faces(source, [_mask_box(head_masks[int(local.source_indices[0, i])]) for i in slots])
+            if background_entry is not None:
+                from .background import prepare_background
+
+                meta = local.metadata[0]
+                if (background_entry['source_rgb']['sha256'] != meta['source_rgb_sha256'] or
+                        background_entry['target_rgb']['sha256'] != meta['driver_rgb_sha256']):
+                    raise ValueError('Background index RGB differs from the bound Native pair')
+                pair = {**background_entry, 'source_canvas': sample['source_canvas'], 'target_canvas': sample['target_canvas']}
+                background, reason = prepare_background(pair, source, target_image, np.logical_or.reduce(masks))
         else:
+            reason = 'multiple_source_canvases'
             images = reference_images(condition)
             source_faces = []
             for i in slots:
@@ -236,12 +263,16 @@ class ImageRewardBank:
                 p0, p1 = _part(poses[0], a), _part(poses[1], b)
                 if p0 is not None and p1 is not None:
                     contacts.append((a, b, float(np.linalg.norm(p0 - p1))))
-        return RewardTarget(poses, faces, canvas.resized_hw, tuple(contacts)), canvas
+        return RewardTarget(poses, faces, canvas.resized_hw, tuple(contacts), background, reason or 'aligned'), canvas
 
     def score(self, target, canvas, image):
         image = rendered_rgb(image)
         poses = self._poses(image, canvas)
-        return score_candidate(target, poses, self._faces(image, [_head_box(p) for p in poses]))
+        reward, details = score_candidate(target, poses, self._faces(image, [_head_box(p) for p in poses]))
+        details['background_status'] = target.background_status
+        if target.background is not None:
+            details['source_background_mse'], reward['background'] = target.background.score(image)
+        return reward, details
 
 
 def _mask_box(mask):

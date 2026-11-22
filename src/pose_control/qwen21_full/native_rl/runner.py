@@ -127,14 +127,34 @@ def _parity_error(new, old, tolerance):
     return error
 
 
+def restrict_optimizer(optimizer, active):
+    """Keep the SFT moments and learning rates of parameters selected for RL."""
+    selected = set(active)
+    groups = []
+    for group in optimizer.param_groups:
+        indices = [i for i, p in enumerate(group['params']) if p in selected]
+        if not indices:
+            continue
+        kept = {**group, 'params': [group['params'][i] for i in indices]}
+        if 'names' in group:
+            kept['names'] = [group['names'][i] for i in indices]
+        groups.append(kept)
+    if {p for group in groups for p in group['params']} != selected or not selected:
+        raise ValueError('SFT optimizer is missing selected Native parameters')
+    optimizer.param_groups[:] = groups
+    for param in tuple(optimizer.state):
+        if param not in selected:
+            del optimizer.state[param]
+    return optimizer
+
+
 def update_policy(optimizer, groups, active, frozen, *, reference_means=None, noise_level=.7,
                   clip=.001, beta=.001, max_grad=1., tolerance=1e-4, check_parity=True):
     if beta and reference_means is None:
         raise ValueError('Nonzero KL beta requires the fixed SFT reference means')
     optimizer_ids = {id(p) for group in optimizer.param_groups for p in group['params']}
     active_ids = {id(p) for p in active}
-    if (not active or any(not p.requires_grad for p in active) or not active_ids <= optimizer_ids or
-            optimizer_ids - active_ids - {id(p) for p in frozen} or
+    if (not active or any(not p.requires_grad for p in active) or optimizer_ids != active_ids or
             any(p.requires_grad or p.grad is not None for p in frozen)):
         raise RuntimeError('Optimizer and parameter freeze mask differ')
     frozen_versions = [p._version for p in frozen]

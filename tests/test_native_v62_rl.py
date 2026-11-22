@@ -79,6 +79,40 @@ def test_reward_evaluators_see_composited_qwen_rgba():
     assert reward['pose'] == 0
 
 
+def test_dual_hands_and_people_are_reported_in_target_slots():
+    def person_at(x):
+        whole = np.tile([x, 40.], (134, 1))
+        return PersonPose(whole[:17], np.ones(17, bool), np.array([x - 9, 20, x + 9, 60]),
+                          whole, np.ones(134, bool))
+
+    left, right = person_at(20.), person_at(80.)
+    target = RewardTarget((left, right), (None, None), (100, 100))
+    _, both = score_candidate(target, (right, left), (None, None))
+    _, missing = score_candidate(target, (right,), (None,))
+    assert both['two_person_detected'] and not missing['two_person_detected']
+    assert both['person0_hand_pck_002'] == both['person1_hand_pck_002'] == 1.
+    assert missing['person0_hand_pck_002'] == 0. and missing['person1_hand_pck_002'] == 1.
+    assert both['occlusion_consistency'] is None
+
+
+def test_native_reward_bank_scores_only_eligible_source_background():
+    from PIL import Image
+    from src.pose_control.qwen21_full.native_rl.background import SourceBackground
+
+    bank = ImageRewardBank.__new__(ImageRewardBank)
+    pose = PersonPose(np.zeros((17, 2)), np.ones(17, bool), np.array([0, 0, 32, 32]))
+    bank._poses = lambda *args: (pose,)
+    bank._faces = lambda *args: (None,)
+    target = RewardTarget((pose,), (None,), (32, 32))
+    black = Image.new('RGB', (32, 32))
+    assert 'background' not in bank.score(target, None, black)[0]
+    source = SourceBackground(np.zeros((32, 32, 3)), np.ones((32, 32), bool))
+    target = RewardTarget((pose,), (None,), (32, 32), background=source, background_status='aligned')
+    assert bank.score(target, None, black)[0]['background'] == 1.
+    scores, details = bank.score(target, None, Image.new('RGB', (32, 32), (255, 255, 255)))
+    assert scores['background'] < 1e-10 and details['source_background_mse'] == 1.
+
+
 def test_policy_updates_only_selected_parameter_and_rejects_bad_replay():
     active = torch.nn.Parameter(torch.tensor(.1))
     frozen = torch.nn.Parameter(torch.tensor(.4), requires_grad=False)
