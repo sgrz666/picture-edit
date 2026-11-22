@@ -49,8 +49,8 @@ def aggregate(records):
     identity=[x['identity'] for x in records if 'identity' in x]
     summary['identity']['applicable_images']=sum(x['applicable'] for x in identity)
     summary['identity']['generated_face_detected_rate']=sum(x['generated_faces']>0 for x in identity)/len(identity) if identity else None
-    for key in ('background_mse','valid_mse','background_reward'):
-        values=[x['pixel'][key] for x in records if 'pixel' in x and x['pixel'][key] is not None]
+    for key in ('background_l1','background_mse','valid_mse','background_reward'):
+        values=[x['pixel'][key] for x in records if 'pixel' in x and x['pixel'].get(key) is not None]
         summary['pixel'][key]=float(np.mean(values)) if values else None
     pixels = [x['pixel'] for x in records if 'pixel' in x]
     if pixels:
@@ -108,6 +108,16 @@ class IdentityPixelEvaluator:
         self.detector.prepare(ctx_id=-1, input_size=(640, 640))
         self.encoder.prepare(ctx_id=-1)
         self.face_align = face_align
+        self.root = Path(root)
+        self.native_data = {}
+        from src.pose_control.qwen21_full.region_supervision import read_region_index
+
+        region_index = self.root / 'data/region_index.json'
+        if region_index.is_file():
+            index, self.background_index = read_region_index({'path': str(region_index.resolve())})
+            self.region_entries = index['entries']
+        else:
+            self.background_index, self.region_entries = None, {}
 
     def face(self, image):
         import cv2
@@ -124,11 +134,37 @@ class IdentityPixelEvaluator:
             raise ValueError('Invalid glintr100 feature')
         return len(boxes), feature / norm
 
-    def prepare(self, pair):
+    def _source_foreground(self, pair, sample):
+        from src.data.canvas_contract import CanvasSpec
+        from src.pose_control.qwen21_full.native_rl.background import source_person_foreground
+        from src.pose_control.qwen21_full.native_v62.data import NativeFullDatasetV62
+
+        if sample is None and pair.get('source_mask') is None:
+            # Older prepared manifests already bind the Native foreground sidecars.
+            split = pair['split']
+            manifest = self.root / 'data' / f'{split}.jsonl'
+            if not manifest.is_file():
+                return None
+            if split not in self.native_data:
+                dataset = NativeFullDatasetV62(manifest, load_target=False)
+                self.native_data[split] = dataset, {row['pair_id']: i for i, row in enumerate(dataset.rows)}
+            dataset, rows = self.native_data[split]
+            sample = dataset[rows[pair['pair_id']]]
+        if sample is None:
+            return None
+        meta = sample['local_condition_v4'].metadata[0]
+        if any(meta[sha] != pair[role + '_rgb']['sha256'] or
+               meta[canvas] != CanvasSpec.from_record(pair[role + '_canvas']).fingerprint()
+               for role, sha, canvas in (('source', 'source_rgb_sha256', 'source_canvas_id'),
+                                          ('target', 'driver_rgb_sha256', 'target_canvas_id'))):
+            raise ValueError('Background evaluator record differs from Native Source/target binding')
+        return source_person_foreground(sample)
+
+    def prepare(self, pair, *, sample=None):
         import numpy as np
         from PIL import Image
         from src.data.canvas_contract import CanvasSpec
-        from src.pose_control.qwen21_full.native_rl.background import prepare_background
+        from src.pose_control.qwen21_full.native_rl.background import prepare_background, regional_mask_failure
         from src.pose_control.qwen21_full.native_v62.training.io import verify
         from src.pose_control.qwen21_full.region_rewards import pose_metrics
 
@@ -144,7 +180,14 @@ class IdentityPixelEvaluator:
         with np.load(verify(pair['region'])['path'], allow_pickle=False) as archive:
             valid = archive['valid'] > 0
             target_person = (archive['person'] > 0).any(axis=0)
-        background, reason = prepare_background(pair, source_image, target_image, target_person)
+        keys = [f"{pair[role + '_rgb']['sha256']}:{spec.fingerprint()}"
+                for role, spec in zip(('source','target'),canvases)]
+        mask_failure = regional_mask_failure(self.region_entries, *keys)
+        if mask_failure:
+            background, reason = None, mask_failure
+        else:
+            background, reason = prepare_background(pair, source_image, target_person,
+                                                    source_foreground=self._source_foreground(pair, sample))
         pose = pose_metrics(pair['target_points134'], pair['target_valid134'], None, None, canvases[1].resized_hw)
         return {'source_count': source_count, 'source': source, 'target_count': target_count, 'target': target,
                 'oracle': oracle, 'background': background, 'background_reason': reason,
@@ -173,11 +216,12 @@ class IdentityPixelEvaluator:
         gt, valid, background = fixed['gt_pixels'], fixed['valid'], fixed['background']
         if pixels.shape != gt.shape or valid.shape != gt.shape[:2] or not valid.any():
             raise ValueError('Generation/GT and valid Canvas differ')
-        bg_mse, bg_reward = background.score(pixels) if background is not None else (None, None)
+        bg_metrics = background.score(pixels) if background is not None else {
+            'background_l1': None, 'background_mse': None, 'background_reward': None}
         row['pixel']={'valid_mse':float(np.square(pixels[valid] / 255 - gt[valid]).mean()),
-                      'valid_mse_reference':'target_gt', 'background_mse':bg_mse,
-                      'background_reference':'source', 'background_status':fixed['background_reason'] or 'aligned',
-                      'background_reward':bg_reward}
+                      'valid_mse_reference':'target_gt', **bg_metrics,
+                      'background_reference':'source_a', 'background_status':fixed['background_reason'] or 'aligned',
+                      'background_mapping':background.mapping if background is not None else None}
 
     def enrich(self, report, pairs, fixed=None):
         active_pair = None

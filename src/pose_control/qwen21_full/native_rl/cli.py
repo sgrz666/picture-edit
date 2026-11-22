@@ -23,8 +23,8 @@ def _arguments(argv):
     parser.add_argument('--max-rollout-batches', type=int, help='Rollout cap including groups without an effective advantage (default: 5 × updates)')
     parser.add_argument('--pose-device', default='cpu', help='SDPose detector/inference device, e.g. cpu or cuda:0')
     parser.add_argument('--pose-python', type=Path, help='SDPose interpreter (default: the project SDPose environment)')
-    parser.add_argument('--background-index', type=Path, help='SHA-bound Source alignment records indexed by source and pair')
-    parser.add_argument('--background-weight', type=float, default=.05)
+    parser.add_argument('--background-index', type=Path, help='Optional SHA-bound Source mask evidence indexed by source and pair')
+    parser.add_argument('--background-weight', type=float, help='Default: .15 single, .10 dual. Use 0 for an ablation')
     parser.add_argument('--group-size', type=int, default=8)
     parser.add_argument('--groups-per-update', type=int, default=4)
     parser.add_argument('--steps', type=int, default=10)
@@ -53,9 +53,10 @@ def _arguments(argv):
             (args.max_rollout_batches is not None and args.max_rollout_batches < 1)):
         parser.error('Positive budgets and one internal SDE step required')
     if (not all(math.isfinite(x) for x in (args.lr, args.clip, args.beta, args.noise_level, args.parity_tolerance,
-                                          args.std_floor, args.pose_drop, args.id_drop, args.background_weight)) or
+                                          args.std_floor, args.pose_drop, args.id_drop)) or
             min(args.lr, args.noise_level, args.parity_tolerance) <= 0 or not 0 < args.clip < 1 or
-            min(args.beta, args.std_floor, args.pose_drop, args.id_drop, args.background_weight) < 0):
+            min(args.beta, args.std_floor, args.pose_drop, args.id_drop) < 0 or
+            (args.background_weight is not None and not 0 <= args.background_weight < 1)):
         parser.error('Invalid optimizer, SDE, variance or regression settings')
     if (args.action == 'resume') != (args.checkpoint is not None):
         parser.error('Supply --checkpoint with resume')
@@ -124,6 +125,7 @@ def _background_records(path, records):
 
 
 def _targets(bank, data, records, background_entries):
+    from .background import regional_mask_failure
     from .rewards import UnscorableTarget
 
     targets, skipped, provenance = {}, [], {}
@@ -136,7 +138,10 @@ def _targets(bank, data, records, background_entries):
                                                         'target_canvas_id', 'target_person_ids', 'source_person_ids')}
         try:
             entry = background_entries.get(info['source_id'], {}).get(info['pair_id'])
-            targets[key] = bank.target(sample, condition, entry)
+            regions = data.regional.get(info['source_id'], {}).get('entries', {})
+            mask_failure = regional_mask_failure(regions, f"{meta['source_rgb_sha256']}:{meta['source_canvas_id']}",
+                                                  f"{meta['driver_rgb_sha256']}:{meta['target_canvas_id']}")
+            targets[key] = bank.target(sample, condition, entry, background_failure=mask_failure)
         except UnscorableTarget as exc:
             skipped.append({'source': info['source_id'], 'pair_id': info['pair_id'], 'reason': str(exc)})
     return targets, skipped, provenance
@@ -165,7 +170,8 @@ def _summarize(rows):
     swaps = [r['id_swap'] for r in rows if r.get('id_swap') is not None]
     if swaps:
         metrics['id_swap_rate'] = sum(swaps) / len(swaps)
-    for key in ('two_person_detected', 'person0_hand_pck_002', 'person1_hand_pck_002', 'source_background_mse'):
+    for key in ('two_person_detected', 'person0_hand_pck_002', 'person1_hand_pck_002',
+                'source_background_l1', 'source_background_mse'):
         values = [row[key] for row in rows if row.get(key) is not None]
         if values:
             metrics['two_person_detection_rate' if key == 'two_person_detected' else key] = sum(values) / len(values)
@@ -190,6 +196,21 @@ def _evaluate(backend, data, route, bank, targets, keys, args, directory):
 
 def _score(metrics, weights):
     return sum(w * metrics[k] for k, w in weights.items() if k in metrics) / sum(w for k, w in weights.items() if k in metrics)
+
+
+def _reward_weights(scene, *, pose_only, background_weight=None):
+    from .rewards import DUAL_WEIGHTS, SINGLE_WEIGHTS
+
+    if pose_only:
+        return {'pose': 1.}
+    weights = dict(SINGLE_WEIGHTS if scene == 'single' else DUAL_WEIGHTS)
+    if background_weight is None:
+        return weights
+    factor = (1 - background_weight) / (1 - weights.pop('background'))
+    scaled = {name: weight * factor for name, weight in weights.items()}
+    if background_weight:
+        scaled['background'] = background_weight
+    return scaled
 
 
 def _collect_batch(backend, data, route, bank, targets, keys, args, selector, weights, directory):
@@ -285,7 +306,8 @@ def _run(args, resources):
     from ..native_v62.training.io import file_sha, verify, write_json
     from .checkpointing import load_checkpoint, restore_checkpoint, save_checkpoint
     from .pose_worker import SDPoseWorker
-    from .rewards import DUAL_WEIGHTS, SINGLE_WEIGHTS, ImageRewardBank, evaluator_assets
+    from .background import BACKGROUND_METRIC, BACKGROUND_SCALE
+    from .rewards import ImageRewardBank, evaluator_assets
     from .runner import FrozenReference, RunCounters, audit_replay, fixed_reference_means, update_policy
 
     config, route = _settings(args)
@@ -330,12 +352,11 @@ def _run(args, resources):
     if len(train_keys) < args.groups_per_update or not val_keys:
         raise ValueError(f'Insufficient scorable Native tasks ({len(train_keys)} train, {len(val_keys)} eval): {skipped[:6]}')
     scene = 'single' if config.qwen_condition_profile == 'single_2ref' else 'dual'
-    weights = {'pose': 1.} if args.pose_only else dict(SINGLE_WEIGHTS if scene == 'single' else DUAL_WEIGHTS)
-    if not args.pose_only and background_ref and args.background_weight:
-        weights['background'] = args.background_weight
+    weights = _reward_weights(scene, pose_only=args.pose_only, background_weight=args.background_weight)
     metadata = {'architecture': architecture, 'initialization': initialization, 'sft_lineage': lineage,
                 'pose_backend': 'sdpose', 'pose_worker': worker.identity,
                 'data_signature': data.signature, 'evaluator_sha256': evaluator_hashes, 'background_index': background_ref,
+                'background_metric': BACKGROUND_METRIC, 'background_scale': BACKGROUND_SCALE,
                 'scene': scene, 'weights': weights, 'train_tasks': len(train_keys), 'eval_tasks': len(val_keys),
                 'evaluation_kind': config.experiment_mode, 'skipped_targets': skipped, 'route': route.name,
                 'eligible': [{'source': k[0], 'index': k[1], 'id_people': sum(x is not None for x in targets[k][0].identities),

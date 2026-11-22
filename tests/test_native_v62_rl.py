@@ -110,7 +110,78 @@ def test_native_reward_bank_scores_only_eligible_source_background():
     target = RewardTarget((pose,), (None,), (32, 32), background=source, background_status='aligned')
     assert bank.score(target, None, black)[0]['background'] == 1.
     scores, details = bank.score(target, None, Image.new('RGB', (32, 32), (255, 255, 255)))
-    assert scores['background'] < 1e-10 and details['source_background_mse'] == 1.
+    assert scores['background'] < 1e-6 and details['source_background_l1'] == details['source_background_mse'] == 1.
+
+
+@pytest.mark.parametrize('scene, expected', [('single', .15), ('dual', .10)])
+def test_masked_l1_default_weights(scene, expected):
+    from src.pose_control.qwen21_full.native_rl.cli import _reward_weights
+
+    weights = _reward_weights(scene, pose_only=False)
+    assert weights['background'] == expected and sum(weights.values()) == pytest.approx(1.)
+    assert 'background' not in _reward_weights(scene, pose_only=False, background_weight=0.)
+
+
+def test_background_source_content_mapping_and_two_person_exclusion():
+    from PIL import Image
+    from src.data.canvas_contract import native_pad
+    from src.pose_control.qwen21_full.native_rl.background import prepare_source_background
+
+    source, output = native_pad((64, 64)), native_pad((128, 128))
+    a = Image.new('RGB', (64, 64), (10, 20, 30))
+    mask_a = np.zeros((64, 64), bool)
+    mask_a[30:34, 30:34] = True
+    target = np.zeros((128, 128), bool)
+    target[35:41, 20:25] = True
+    target[80:86, 95:100] = True
+    reward, reason = prepare_source_background(a, source, output, mask_a, target)
+    assert reason is None and reward.mapping == 'content_resize'
+    generated = np.asarray(a.resize((128, 128))).copy()
+    generated[60:68, 60:68] = 255
+    generated[target] = 255
+    assert reward.score(generated)['background_l1'] == 0
+    generated[0:10, 0:10] = 255
+    assert reward.score(generated)['background_l1'] > 0
+    assert prepare_source_background(a, source, native_pad((128, 64)), mask_a,
+                                     np.ones((128, 64), bool))[0] is None
+
+
+@pytest.mark.parametrize('profile', ['single_2ref', 'dual_4ref', 'dual_source_5ref'])
+def test_native_background_is_bound_to_source_a_for_each_profile(profile):
+    from types import SimpleNamespace as Box
+    from PIL import Image
+    from src.data.canvas_contract import native_pad
+    from src.pose_control.qwen21_full.native_rl.background import native_background
+
+    canvas = native_pad((128, 128))
+    meta = {'source_rgb_sha256': 'a', 'driver_rgb_sha256': 'b', 'source_canvas_id': canvas.fingerprint(),
+            'target_canvas_id': canvas.fingerprint()}
+    dual = profile != 'single_2ref'
+    local = Box(metadata=[meta], person_valid=torch.tensor([[True, dual]]), source_indices=torch.tensor([[1, 0]] if dual else [[0, -1]]))
+    source = torch.zeros(2, 1, 128, 128, dtype=torch.bool)
+    source[0, 0, 20:25, 20:25] = True
+    source[1, 0, 90:96, 90:96] = True
+    targets = [np.zeros((128, 128), bool) for _ in range(1 + dual)]
+    targets[0][20:25, 90:95] = True
+    if dual:
+        targets[1][90:95, 20:25] = True
+    condition = {'primary_source_index': 0, 'target_canvas_id': canvas.fingerprint(),
+                 'images': [{'role': 'source_a' if profile == 'dual_source_5ref' else 'source',
+                             'canvas_id': canvas.fingerprint(), 'file': {'sha256': 'a'}}]}
+    sample = {'source_person_mask': source, 'source_canvas': canvas.metadata(), 'target_canvas': canvas.metadata(),
+              'local_condition_v4': local}
+    if profile == 'dual_source_5ref':
+        sample['source_bank_v5'] = Box(sources=(Box(qwen_image_index=0, rgb_sha256='a', person_mask=source[None, :1]),
+                                                Box(qwen_image_index=1, rgb_sha256='other', person_mask=source[None, 1:])))
+    a = Image.new('RGB', (128, 128), (15, 30, 90))
+    bg, reason = native_background(sample, condition, a, targets)
+    assert reason is None and bg.score(a)['background_reward'] == 1.
+    assert not bg.support[22, 22] and not bg.support[22, 92]
+    assert bool(bg.support[92, 92]) == (profile != 'dual_4ref')
+    if dual:
+        assert not bg.support[92, 22]
+    with pytest.raises(ValueError, match='primary Source A'):
+        native_background(sample, {**condition, 'primary_source_index': 1}, a, targets)
 
 
 def test_policy_updates_only_selected_parameter_and_rejects_bad_replay():

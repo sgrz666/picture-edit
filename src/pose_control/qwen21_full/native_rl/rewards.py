@@ -6,8 +6,8 @@ from PIL import Image
 from scipy.optimize import linear_sum_assignment
 
 
-SINGLE_WEIGHTS = {'pose': .5, 'identity': .5}
-DUAL_WEIGHTS = {'pose': .30, 'identity': .25, 'binding': .20, 'layout': .15, 'contact': .10}
+SINGLE_WEIGHTS = {'pose': .45, 'identity': .40, 'background': .15}
+DUAL_WEIGHTS = {'pose': .27, 'identity': .23, 'binding': .18, 'layout': .13, 'contact': .09, 'background': .10}
 OKS_SIGMAS = np.array([.026, .025, .025, .035, .035, .079, .079, .072, .072,
                        .062, .062, .107, .107, .087, .087, .089, .089])
 PART_POINTS = ((0,), (5, 6, 11, 12), (5, 7), (7, 9), (9,), (6, 8), (8, 10),
@@ -207,11 +207,12 @@ class ImageRewardBank:
             output.append(embedding)
         return tuple(output)
 
-    def target(self, sample, condition, background_entry=None):
+    def target(self, sample, condition, background_entry=None, *, background_failure=None):
         from src.data.canvas_contract import CanvasSpec
         from ..native_v5.conditioning import reference_images
         from ..native_v62.conditions import part_contact_permissions
         from ..qwen_runtime import dataset_image_to_pil
+        from .background import native_background
 
         canvas = CanvasSpec.from_record(sample['target_canvas'])
         local = sample['local_condition_v4']
@@ -233,22 +234,13 @@ class ImageRewardBank:
         poses = tuple(detections[j] for j in match)
         gt_faces = self._faces(target_image, [_head_box(p) for p in poses])
         bank = sample.get('source_bank_v5')
-        background, reason = None, 'alignment_unverified'
+        source_image = dataset_image_to_pil(sample['src_image'])
+        background, reason = ((None, background_failure) if background_failure else
+                              native_background(sample, condition, source_image, masks, background_entry))
         if bank is None:
-            source = dataset_image_to_pil(sample['src_image'])
             head_masks = sample['source_head_mask']
-            source_faces = self._faces(source, [_mask_box(head_masks[int(local.source_indices[0, i])]) for i in slots])
-            if background_entry is not None:
-                from .background import prepare_background
-
-                meta = local.metadata[0]
-                if (background_entry['source_rgb']['sha256'] != meta['source_rgb_sha256'] or
-                        background_entry['target_rgb']['sha256'] != meta['driver_rgb_sha256']):
-                    raise ValueError('Background index RGB differs from the bound Native pair')
-                pair = {**background_entry, 'source_canvas': sample['source_canvas'], 'target_canvas': sample['target_canvas']}
-                background, reason = prepare_background(pair, source, target_image, np.logical_or.reduce(masks))
+            source_faces = self._faces(source_image, [_mask_box(head_masks[int(local.source_indices[0, i])]) for i in slots])
         else:
-            reason = 'multiple_source_canvases'
             images = reference_images(condition)
             source_faces = []
             for i in slots:
@@ -271,7 +263,11 @@ class ImageRewardBank:
         reward, details = score_candidate(target, poses, self._faces(image, [_head_box(p) for p in poses]))
         details['background_status'] = target.background_status
         if target.background is not None:
-            details['source_background_mse'], reward['background'] = target.background.score(image)
+            metrics = target.background.score(image)
+            reward['background'] = metrics['background_reward']
+            details.update(source_background_l1=metrics['background_l1'], source_background_mse=metrics['background_mse'],
+                           background_mapping=target.background.mapping, background_reference='source_a',
+                           background_source_index=0)
         return reward, details
 
 

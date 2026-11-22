@@ -242,6 +242,8 @@ def main():
         points=target_spec.pixel_points(np.nan_to_num(points)); points[~valid]=0
         evaluation.append({'pair_id':pair_id,'split':split,'group':groups[split][pair_id],'frame_id':frame['frame_id'],
             'source_rgb':ref(source['frame']['rgb_path']),'target_rgb':ref(frame['rgb_path']),
+            'source_mask':source['artifacts']['mask'],
+            'source_mask_accepted':source['sam_report']['segmentation_accepted'],
             'source_canvas':source['canvas'],'target_canvas':target['canvas'],'target_points134':points.tolist(),
             'target_scores134':sd['scores134_raw'],'target_valid134':valid.tolist(),'sdpose_keypoints':frame['sdpose'],
             'region':target['artifacts']['region'],'native_hand_condition':bool(local.hand_roi_valid.any())})

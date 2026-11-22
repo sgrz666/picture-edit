@@ -47,7 +47,7 @@ def test_background_scores_source_on_verified_support_and_disables_unknown_align
 
     canvas = native_pad((64, 64))
     src = np.zeros((64, 64, 3), dtype=np.uint8)
-    gt = np.full_like(src, 4)
+    gt = np.full_like(src, 190)
     gt[25:35, 28:35] = 255
     source_mask = src[:, :, 0].copy()
     source_mask[25:35, 18:25] = 255
@@ -57,12 +57,13 @@ def test_background_scores_source_on_verified_support_and_disables_unknown_align
         Image.fromarray(image).save(path)
         refs[name] = {'path': str(path), 'sha256': file_sha(path)}
     pair = {**refs, 'source_canvas': canvas.metadata(), 'target_canvas': canvas.metadata()}
-    target_mask = gt[:, :, 0] > 4
-    assert prepare_background(pair, Image.fromarray(src), Image.fromarray(gt), target_mask)[0] is None
+    target_mask = gt[:, :, 0] > 190
+    assert prepare_background({**pair, 'source_mask': None}, Image.fromarray(src), target_mask)[0] is None
     pair['background_alignment'] = {'method': 'identity', 'source_rgb_sha256': refs['source_rgb']['sha256'],
                                     'target_rgb_sha256': refs['target_rgb']['sha256'], 'canvas_id': canvas.fingerprint()}
-    bg, reason = prepare_background(pair, Image.fromarray(src), Image.fromarray(gt), target_mask)
-    assert reason is None and bg.score(src)[1] == pytest.approx(1.)
-    assert bg.score(src)[1] > bg.score(gt)[1]
-    assert bg.score(np.full_like(src, 255))[1] < .001
-    assert prepare_background(pair, Image.fromarray(src), Image.fromarray(255 - gt), target_mask)[0] is None
+    bg, reason = prepare_background(pair, Image.fromarray(src), target_mask)
+    assert reason is None and bg.score(src)['background_reward'] == pytest.approx(1.)
+    assert bg.score(src)['background_reward'] > bg.score(gt)['background_reward']
+    assert bg.score(np.full_like(src, 255))['background_reward'] < .001
+    assert prepare_background({**pair, 'source_mask_accepted': False}, Image.fromarray(src), target_mask) == (
+        None, 'source_foreground_unqualified')

@@ -36,7 +36,7 @@ Hydra 依赖恢复后，旧主管 PID 2939783／资产子进程 2939801 已退�
 
 测试源有独立 `test` 角色，不进入 optimizer pools、训练路由、validation loss probe、RL reward、checkpoint 选择或调参。所有优化完成后评价 initial／uniform_S3／regional_S3／continue_sft／grpo，均为 20-step 出图。val 与 test 分开存放；汇总逐图检查 split、pair ID、真实 checkpoint SHA 和图片 SHA。seed42 主对照的 8 列面板保持原口径（Source、SDPose、GT、五份权重），其他 seed 单独归档。
 
-新运行使用共享 Native RL 更新内核，GRPO 的 50 updates 是 50 次 `optimizer.step()`。背景只奖励有像素对应证据的 Source 场景。当前配对清单没有提供这项证据，`background_reward` 为 `null`，`valid_mse` 保留作 Target GT 诊断。训练前固定每组 Body、Hands、ID 和背景的评分资格，生成漏检计零分，评测程序异常时该组停止更新并记录错误。
+新运行使用共享 Native RL 更新内核，GRPO 的 50 updates 是 50 次 `optimizer.step()`。背景奖励权重 `0.15`，用 Source A 和输出的前景外 Masked L1。有可靠 Canvas 映射和合格前景时，A/B 跨背景配对也参与评分。已有清单可读绑定的 Native Source mask，新清单直接记录 mask SHA。`valid_mse` 保留作 Target GT 诊断。训练前固定每组 Body、Hands、ID 和背景的资格，生成漏检计零分，评测程序异常时该组停止更新并记录错误。
 
 ## 先前 pilot 的准备证据
 

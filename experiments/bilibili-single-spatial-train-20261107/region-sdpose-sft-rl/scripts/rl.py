@@ -17,9 +17,10 @@ REPO=Path(os.environ.get('PICTUREEDIT_REPO',str(Path(__file__).resolve().parents
 sys.path.insert(0,str(REPO))
 SDPY='/data/shangguanrz/pic-edit-experiments/姿态估计/four-skeleton-compair/.venv/bin/python'
 SCHEMA='native_region_grpo_training_v1'
-ALGORITHM={'name':'native_flow_grpo_v2','group_size':4,'rollout_steps':10,'sde_indices':[1,2,3],
+ALGORITHM={'name':'native_flow_grpo_v3','group_size':4,'rollout_steps':10,'sde_indices':[1,2,3],
     'noise_level':.7,'ppo_clip':1e-4,'reference_beta':1e-3,
-    'reward_weights':{'body':.45,'hands':.35,'identity':.15,'background':.05},
+    'reward_weights':{'body':.45*.85/.95,'hands':.35*.85/.95,'identity':.15*.85/.95,'background':.15},
+    'background_metric':'masked_source_l1_v1',
     'reference':'fixed_RN_SFT_parent','reference_penalty':'same_variance_transition_gaussian_kl',
     'advantage':'gdpo-guarded','std_floor':.001,
     'evaluation':'held-out fixed-seed 20-step ODE; never used as optimization reward'}
@@ -139,6 +140,7 @@ def main():
     policy_identity={'algorithm':ALGORITHM,'config_sha256':config.signature(),'parent':parent,
         'rl_script_sha256':file_sha(__file__),'evaluation_script_sha256':file_sha(Path(__file__).with_name('evaluate.py')),
         'evaluation_manifest_sha256':file_sha(evaluation_manifest),
+        'background_region_index':evaluator.background_index,
         'backend_identity':backend.identity,'catalog_sha256':backend.catalog.signature(),
         'reward_models':{name:file_sha(args.root/f'report/model-identity-{name}.json') for name in ('sdpose','identity')}}
     identity_hash=hashlib.sha256(json.dumps(policy_identity,sort_keys=True).encode()).hexdigest()
@@ -187,7 +189,7 @@ def main():
         if attempts>=args.updates*5:raise RuntimeError('Too many zero-variance or inapplicable reward groups')
         route_name,source,index=ctx['sampler'].draw();route={r.name:r for r in config.stage.routes}[route_name]
         sample,batch,pair=backend.pair(source,index);pair_id=sample['pair_metadata']['pair_id'];attempts+=1
-        targets=evaluator.prepare(train_by_id[pair_id]);eligible=targets['eligible']
+        targets=evaluator.prepare(train_by_id[pair_id],sample=sample);eligible=targets['eligible']
         folder=args.root/f'output/grpo/rollouts/update_{completed:04d}_attempt_{attempts:04d}_{run_id}'
         replays=[];images=[];sde_index=ALGORITHM['sde_indices'][(attempts-1)%len(ALGORITHM['sde_indices'])]
         options,base=route_options(route,sample['native_scene_kind'])

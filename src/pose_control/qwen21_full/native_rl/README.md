@@ -6,9 +6,9 @@
 
 ## 奖励与对照
 
-- 单人默认 Pose / ID 各 `0.5`。Pose 用 SDPose-Wholebody + YOLO11x，以 `geometry` 序映射 COCO17 计算 OKS，同时记录 PCK@0.02 和关键点召回。预先按置信度 `0.30` 在目标图建立可见点分母，候选漏点计零。ID 用 SCRFD + glintr100，Source 和目标都能绑定人脸时启用，候选漏脸计零。
-- 双人按 Native 槽位和目标几何固定匹配，用 `0.30 / 0.25 / 0.20 / 0.15 / 0.10` 融合 Pose、ID、Binding、Layout、Contact。Pose 给较弱一人额外权重。Binding 比较正确与交叉的 ID 相似度。Contact 只用已确认的 Part14 接触对和可见 COCO 关节代理。额外报告双人同时检出率及逐槽位 `person0/1_hand_pck_002`，漏人按固定可见手部关节失分。遮挡前后关系需要可靠的生成侧深度证据，当前该指标为 `null`。
-- 可选 `--background-index` 启用 Source 背景评分，权重 `--background-weight` 默认 `0.05`。资格在出图前按同画布、双前景外扩 16 px、剩余区域至少 10%、Source/GT 背景 MAE 至多 `0.035` 固定。适用时只用 Source 评分，不适用时写明 `background_status`。多独立 Source 的任务当前没有统一的背景画布证据。
+- 单人默认 Pose / ID / Background 为 `0.45 / 0.40 / 0.15`。Pose 用 SDPose-Wholebody + YOLO11x，以 `geometry` 序映射 COCO17 计算 OKS，同时记录 PCK@0.02 和关键点召回。预先按置信度 `0.30` 在目标图建立可见点分母，候选漏点计零。ID 用 SCRFD + glintr100，Source 和目标都能绑定人脸时启用，候选漏脸计零。
+- 双人默认 Pose / ID / Binding / Layout / Contact / Background 为 `0.27 / 0.23 / 0.18 / 0.13 / 0.09 / 0.10`。Pose 给较弱一人额外权重。Binding 比较正确与交叉的 ID 相似度。Contact 只用已确认的 Part14 接触对和可见 COCO 关节代理。额外报告双人同时检出率及逐槽位 `person0/1_hand_pck_002`，漏人按固定可见手部关节失分。遮挡前后关系需要可靠的生成侧深度证据，当前该指标为 `null`。
+- 背景默认用 `exp(-Masked L1 / 0.05)`，L1 归一到 `0..1`。单人、同源双人和独立双源统一以条件列表的第一张参考图 A 为背景源。双源的第二张图提供第二个人的外观，输出侧排除两个人。资格在 rollout 前固定。相同 Canvas 用像素恒等映射，同宽高比的内容框作等比重采样。排除 A 中所有已绑定的前景、目标各人前景和 16 px 边界，保留至少 10% 有效画布。A/B 背景差异不影响资格。无法对齐或缺少 mask 时记录原因。`--background-weight 0` 将该项从训练和 checkpoint 选点权重移除，评分日志继续报告背景指标。
 - `--pose-only` 跑 Pose GRPO。`--aggregation sum` 先加权聚合全部适用的原始 Reward 再作组内标准化。`--aggregation gdpo` 使用 Flow-Factory v0.5.0 的逐项组归一化、权重和与采集批标准化。默认 `gdpo-guarded` 在标准化前抑制 std ≤ `0.001` 的奖励，并按当前适用的权重归一。整个批次无有效优势时跳过 optimizer。区域实验复用同一个 Flow-SDE、优势和更新内核。 [Flow-Factory v0.5.0](https://github.com/X-GenGroup/Flow-Factory/tree/ced2cd9b0465a2c9d733b9b8aed4d4351f950a22)
 
 ## 运行
@@ -42,7 +42,7 @@ CKPT=$("$PY" -c 'import json,sys; print(json.load(open(sys.argv[1]))["checkpoint
   --checkpoint "$CKPT" --output "$RUN/resumed"
 ```
 
-背景索引用 `schema: native_rl_background_index_v1`，`entries` 按 `source_id → pair_id` 存每条记录。记录含 `source_rgb`、`target_rgb` 和 `source_mask` 的绝对路径及 SHA256，以及 `background_alignment` 的 `method: identity`、`canvas_id`、`source_rgb_sha256`、`target_rgb_sha256`。`source_mask` 使用 Source 原图坐标。
+背景默认复用 Native Source A / target 前景和 Canvas 的绑定。可选 `--background-index` 补充 Source A 前景，索引用 `schema: native_rl_background_index_v1`，`entries` 按 `source_id → pair_id` 存每条记录。记录含 `source_rgb`、`target_rgb` 和 `source_mask` 的 SHA256 文件引用，`source_mask` 使用 Source A 原图坐标，并与原 Native mask 取并集。若显式给出 `background_alignment`，`method`（`identity` 或 `content_resize`）、`canvas_id` 及 Source/target SHA 必须与 Native 绑定一致。
 
 `--updates`（也可写 `--optimizer-updates`）按实际 `optimizer.step()` 计数，旧版命令的预算需按新语义重算。`rollout_batches` 包括零优势批，`generated_images` 统计训练候选，`replayed_transitions` 统计参与成功更新的转移。`--max-rollout-batches` 默认是更新预算的 5 倍，用于限制无有效优势时的生成成本。
 
