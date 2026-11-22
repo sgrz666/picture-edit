@@ -4,7 +4,13 @@ from src.pose_control.qwen21_full.prompt_study import measurement
 
 
 @pytest.fixture
-def locked_measurement(tmp_path):
+def locked_measurement(tmp_path, monkeypatch):
+    from src.evaluation import sdpose
+
+    detector = tmp_path / 'yolo11x.pt'
+    detector.write_bytes(b'evaluator')
+    monkeypatch.setattr(sdpose, 'scoring_model_files', lambda: [detector])
+    sdpose.scoring_identity.cache_clear()
     models = tmp_path / 'models'
     for relative in measurement.MODEL_FILES:
         path = models / relative
@@ -17,7 +23,8 @@ def locked_measurement(tmp_path):
         path.write_text('# original\n')
     record = measurement.measurement_artifacts(models, code_root=code,
         versions={'numpy': 'test', 'opencv': 'test', 'onnxruntime': 'test', 'insightface': 'test'})
-    return models, code, record
+    yield models, code, record
+    sdpose.scoring_identity.cache_clear()
 
 
 @pytest.mark.parametrize('relative', measurement.MODEL_FILES)
@@ -32,6 +39,14 @@ def test_scoring_code_change_invalidates_measurement(locked_measurement):
     models, code, record = locked_measurement
     (code / measurement.SCORING_CODE[0]).write_text('# changed\n')
     with pytest.raises(ValueError, match='scoring code'):
+        measurement.validate_measurement_artifacts(record, verify_files=True)
+
+
+def test_sdpose_weight_change_invalidates_measurement(locked_measurement):
+    _, _, record = locked_measurement
+    path = Path(next(iter(record['pose']['files'])))
+    path.write_bytes(b'changed')
+    with pytest.raises(ValueError, match='SDPose artifact'):
         measurement.validate_measurement_artifacts(record, verify_files=True)
 
 

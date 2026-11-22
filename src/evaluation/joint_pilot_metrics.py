@@ -1,12 +1,4 @@
-"""Tracked copies of the established four-arm CPU identity/pose evaluators.
-
-Copied from sg:/home/shangguanrz/project/pic-edit/eval_iper_four_arm.py
-on 2026-10-08 (source SHA256:
-51a7b2d6ae88b94a64e818179fe781a5d117de65d9e7999384b8710fc473feb8).
-Metric algorithms, visibility threshold, 512 coordinate grid and COCO-to-Body25
-mapping are preserved. Model imports are lazy and model paths use repository
-ROOT, allowing report/image helpers to run without ONNX or InsightFace installed.
-"""
+"""SDPose/COCO17 pose scoring and CPU glintr100 identity scoring."""
 from __future__ import annotations
 
 from pathlib import Path
@@ -19,40 +11,42 @@ COCO_TO_BODY25 = (0, 16, 15, 18, 17, 5, 2, 6, 3, 7, 4, 12, 9, 13, 10, 14, 11)
 
 
 class PoseMetric:
-    def __init__(self, models_root: str | Path | None = None) -> None:
-        import onnxruntime as ort
-        paths = Path(models_root) / 'DWPose' if models_root is not None else ROOT / 'models/DWPose'
-        options = ort.SessionOptions()
-        options.intra_op_num_threads = 4
-        self.det = ort.InferenceSession(str(paths / 'yolox_l.onnx'), sess_options=options, providers=['CPUExecutionProvider'])
-        self.pose = ort.InferenceSession(str(paths / 'dw-ll_ucoco_384.onnx'), sess_options=options, providers=['CPUExecutionProvider'])
+    def __init__(self, models_root: str | Path | None = None, *, device: str = 'cpu') -> None:
+        from .sdpose import load_scoring_runtime
+
+        # Keep the common evaluator constructor used by existing callers. SDPose
+        # assets are pinned separately from the AntelopeV2/models_root directory.
+        self.runtime = load_scoring_runtime(device=device)
+
+    def detect_all(self, image: Image.Image):
+        import cv2
+        from .sdpose import score_people
+
+        bgr = cv2.cvtColor(np.asarray(image.convert('RGB')), cv2.COLOR_RGB2BGR)
+        return score_people(bgr, self.runtime)
 
     def detect(self, image: Image.Image) -> tuple[np.ndarray, np.ndarray] | None:
-        import cv2
-        from src.evaluation.dwpose_onnx.onnxdet import inference_detector
-        from src.evaluation.dwpose_onnx.onnxpose import inference_pose
-        bgr = cv2.cvtColor(np.asarray(image.convert('RGB')), cv2.COLOR_RGB2BGR)
-        boxes = inference_detector(self.det, bgr)
-        if len(boxes) == 0:
-            return None
-        areas = (boxes[:, 2] - boxes[:, 0]) * (boxes[:, 3] - boxes[:, 1])
-        points, scores = inference_pose(self.pose, boxes[np.argmax(areas):np.argmax(areas) + 1], bgr)
-        return points[0, :17], scores[0, :17]
+        from .sdpose import coco17
+
+        people = self.detect_all(image)
+        return coco17(people[0]) if people else None
 
     @staticmethod
     def compare(detected: tuple[np.ndarray, np.ndarray] | None, target: np.ndarray,
                 image_size: tuple[int, int] | None = None) -> dict[str, float | bool | None]:
         if detected is None:
             return {'pose_detected': False, 'pose_nme_diagonal': None, 'pose_pck_002': 0.0, 'pose_pck_005': 0.0, 'pose_joint_recall': 0.0, 'pose_matched_joints': 0}
+        from .sdpose import valid_joints
+
         points, scores = detected
         target_coco = target[np.array(COCO_TO_BODY25)]
         target_visible = target_coco[:, 2] > 0.3
-        matched = target_visible & (scores > 0.3)
+        w, h = (512.0, 512.0) if image_size is None else (float(image_size[0]), float(image_size[1]))
+        matched = target_visible & valid_joints(points, scores, w, h)
         count = int(matched.sum())
         denominator = int(target_visible.sum())
         if denominator == 0:
             return {'pose_detected': True, 'pose_nme_diagonal': None, 'pose_pck_002': None, 'pose_pck_005': None, 'pose_joint_recall': None, 'pose_matched_joints': 0}
-        w, h = (512.0, 512.0) if image_size is None else (float(image_size[0]), float(image_size[1]))
         scale = np.array([w, h], dtype=np.float32)
         diag = float(np.hypot(w, h))
         distance = np.linalg.norm(points[matched] - target_coco[matched, :2] * scale, axis=1) / max(diag, 1e-12)

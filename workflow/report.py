@@ -99,7 +99,10 @@ def run_facts(run_dir, live_writer, label=None):
         status = f'{status}(legacy)'
     settings = manifest.get('settings', {})
     generation = read_optional(run_dir / 'generation' / 'generation.json') or {}
-    evaluation = read_optional(run_dir / 'evaluation' / 'eval.json') or {}
+    evaluation = read_optional(run_dir / 'evaluation' / 'eval2_sdpose.json') or {}
+    geometry_diagnostics = read_optional(run_dir / 'evaluation' / 'eval.json')
+    if evaluation:
+        evaluation['summary'] = (evaluation.get('pose_generated_vs_guide') or {}).get('summary') or {}
     verification = manifest.get('verification')
     if isinstance(verification, str):
         verification = {'status': 'asserted', 'note': verification}
@@ -114,6 +117,7 @@ def run_facts(run_dir, live_writer, label=None):
         'total_seconds': (manifest.get('finished_at_unix', 0) - manifest.get('started_at_unix', 0))
             if manifest.get('finished_at_unix') else None,
         'evaluation': evaluation or None,
+        'geometry_diagnostics': geometry_diagnostics,
         'error': manifest.get('error')}
 
 

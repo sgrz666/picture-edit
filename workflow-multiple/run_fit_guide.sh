@@ -8,6 +8,7 @@ set -u
 cd "$(dirname "$0")"
 
 QWEN_PY=/home/shangguanrz/nihaochen/envs/qwen21/bin/python
+SDPOSE_PY="${SDPOSE_PY:-/data/shangguanrz/pic-edit-experiments/姿态估计/four-skeleton-compair/.venv/bin/python}"
 pair=${1:?usage: run_fit_guide.sh <pair-dir-name> [arm] [framing]}
 arm=${2:-skeleton_only}
 framing=${3:-b_canvas}
@@ -44,7 +45,7 @@ wait_for_lock
 echo "$(date -Is) START $name" >> logs_batch/fit.log
 if "$QWEN_PY" run_dual.py --pair "$pair_dir" --name "$name" --framing "$framing" \
      --generator-references "$arm" --keypoints-source fit > "$log" 2>&1; then
-  "$QWEN_PY" evaluate_dual.py --run "$name" >> "$log" 2>&1 \
+  "$SDPOSE_PY" evaluate_dual.py --run "$name" >> "$log" 2>&1 \
     && echo "$(date -Is) OK $name" >> logs_batch/fit.log \
     || echo "$(date -Is) EVALUATE_FAILED $name" >> logs_batch/fit.log
 else

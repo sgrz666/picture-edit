@@ -162,8 +162,8 @@ def arguments(argv=None):
     parser.add_argument('--hand-strength', type=float, default=1.0, help='Set 0 for Hand-off diagnosis')
     parser.add_argument('--hand-mode', default='v66', choices=('v66', 'off'))
     parser.add_argument('--use-kv-cache', action=argparse.BooleanOptionalAction, default=True)
-    parser.add_argument('--score-only', action='store_true', help='CPU trusted IdentityMetric/PoseMetric on saved outputs; no pipeline load')
-    parser.add_argument('--metric-models-root', type=Path, help='Optional directory containing DWPose/ and antelopev2/ for CPU scoring')
+    parser.add_argument('--score-only', action='store_true', help='SDPose and CPU glintr100 scoring on saved outputs; no generation pipeline load')
+    parser.add_argument('--metric-models-root', type=Path, help='Optional directory containing antelopev2/ identity models')
     args = parser.parse_args(argv)
     res_str = str(args.resolution).strip()
     args.resolution = int(res_str) if res_str.isdigit() else res_str
@@ -325,7 +325,7 @@ def score_saved_outputs(output, models_root=None):
             score['score_failure'] = f'{type(exc).__name__}: {exc}'
         scored.append(score)
     write_json(output / 'scores.json', {'metric_resolution': 512, 'identity_definition': 'unique-face ArcFace output versus Source A',
-                                       'pose_definition': 'trusted PoseMetric versus transformed B Body25', 'per_sample': scored})
+                                       'pose_backend': 'sdpose', 'pose_definition': 'SDPose COCO17 versus transformed B Body25', 'per_sample': scored})
     return scored
 
 

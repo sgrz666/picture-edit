@@ -73,7 +73,7 @@ pic-edit/
 │   ├── adapter/            #   早期 CNN 姿态适配器基线 (零卷积初始化)
 │   ├── controls/           #   SMPL-X 渲染器 (骨架、法线、深度、接触图)
 │   ├── data/               #   数据集加载器 (TikTok, iPER, Hi4D, 数据增强)
-│   ├── evaluation/         #   评测工具包 (DWPose ONNX, ArcFace, PSNR/SSIM)
+│   ├── evaluation/         #   评测工具包 (SDPose-Wholebody, ArcFace, PSNR/SSIM)
 │   ├── integration/        #   生成管线挂接与推理 Pipeline Bridge
 │   ├── pose_edit/          #   推理侧共享层：单/双人 workflow 共用（缓存指纹、SMPLest-X、DWPose-134、geometry 定标）
 │   └── pose_control/       #   姿态控制核心演进架构
@@ -141,7 +141,7 @@ src/
 ├── adapter/                # 早期 CNN 姿态适配器基线 (零卷积初始化)
 ├── controls/               # SMPL-X 控制信号生成器 (骨架、法线、深度、接触图)
 ├── data/                   # PyTorch 数据集协议实现 (TikTok, iPER, Hi4D, 数据增强)
-├── evaluation/             # 定量评测模块 (DWPose 133/134 ONNX, ArcFace, PSNR/SSIM)
+├── evaluation/             # 定量评测模块 (SDPose-Wholebody + YOLO11x, ArcFace, PSNR/SSIM)
 ├── integration/            # 扩散模型集成桥接 (DeepGenPipeline)
 ├── pose_edit/              # 推理侧共享层：单/双人 workflow 共用（缓存指纹、SMPLest-X、DWPose、定标）
 └── pose_control/           # 姿态控制演进核心

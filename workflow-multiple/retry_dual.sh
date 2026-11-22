@@ -9,6 +9,7 @@ set -u
 cd "$(dirname "$0")"
 
 QWEN_PY=/home/shangguanrz/nihaochen/envs/qwen21/bin/python
+SDPOSE_PY="${SDPOSE_PY:-/data/shangguanrz/pic-edit-experiments/姿态估计/four-skeleton-compair/.venv/bin/python}"
 LOG_DIR=logs_batch
 INDEX="$LOG_DIR/index.tsv"
 OVERALL="$LOG_DIR/batch.log"
@@ -42,7 +43,7 @@ for sweep in $(seq 1 "$MAX_SWEEPS"); do
     log="$LOG_DIR/retry$sweep.$name.log"
     if "$QWEN_PY" run_dual.py --pair "$pair_dir" --name "$name" \
          --framing "$framing" --generator-references "$arm" >> "$log" 2>&1; then
-      "$QWEN_PY" evaluate_dual.py --run "$name" >> "$log" 2>&1 \
+      "$SDPOSE_PY" evaluate_dual.py --run "$name" >> "$log" 2>&1 \
         && record "$name" ok $((SECONDS - started)) \
         || record "$name" evaluate_failed $((SECONDS - started))
     else

@@ -5,7 +5,7 @@
     python scorecard.py --baseline X --candidate Y
     python scorecard.py --json reports/scorecard.json
 
-It reads only ``runs/*/evaluation/eval2.json`` plus the first-reader ``eval.json`` when
+It reads only ``runs/*/evaluation/eval2_sdpose.json`` plus the first-reader ``eval.json`` when
 present, and flags records whose image changed or disappeared underneath them — the runs
 directory is edited by other sessions while these numbers are produced, so a stale score
 must never look like a fresh one.
@@ -51,7 +51,7 @@ def _summary(record):
 
 def load_runs(runs_dir):
     rows = []
-    for path in sorted(runs_dir.glob('*/evaluation/eval2.json')):
+    for path in sorted(runs_dir.glob('*/evaluation/eval2_sdpose.json')):
         run_name = path.parts[-3]
         try:
             record = read_json(path)
@@ -64,7 +64,7 @@ def load_runs(runs_dir):
         if not final.is_file():
             state = 'stale: image gone'
         else:
-            record_path = path.parent / 'stage2.json'
+            record_path = path.parent / 'stage2_sdpose.json'
             if record_path.is_file():
                 try:
                     stored = ((read_json(record_path).get('identity') or {}).get(
@@ -130,7 +130,7 @@ def main():
     args = parser.parse_args()
     rows = load_runs(Path(args.runs_dir))
     if not rows:
-        print('no evaluation/eval2.json found; run evaluate2.py --all first')
+        print('no evaluation/eval2_sdpose.json found; run evaluate2.py --all first')
         return 1
 
     header = f'{"run":<26} {"state":<26}' + ''.join(f'{column[0]:>10}' for column in COLUMNS)
@@ -138,7 +138,7 @@ def main():
     for row in rows:
         cells = ''.join(f'{format_value(extract(column, row)):>10}' for column in COLUMNS)
         print(f'{row["run"]:<26} {row["state"]:<26}{cells}')
-    print('\nlegend: pck3D evaluate.py/SMPLest-X | pckDW DWPose second reader | pckDW* strict '
+    print('\nlegend: pck3D evaluate.py/SMPLest-X | pckDW SDPose second reader | pckDW* strict '
         '(dropped joints count as miss) | agreement between the two readers | '
         'torsoG generated torso / requested torso (1.0 = right size) | '
         'moved skeleton displacement vs the source frame | idcos ArcFace vs source | '

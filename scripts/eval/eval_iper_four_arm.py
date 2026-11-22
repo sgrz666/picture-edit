@@ -10,20 +10,16 @@ from pathlib import Path
 
 import cv2
 import numpy as np
-import onnxruntime as ort
 import torch
 from PIL import Image, ImageDraw
 from skimage.metrics import structural_similarity
 
-from src.evaluation.dwpose_onnx.onnxdet import inference_detector
-from src.evaluation.dwpose_onnx.onnxpose import inference_pose
+from src.evaluation.joint_pilot_metrics import COCO_TO_BODY25, PoseMetric
 
 
 ROOT = Path(__file__).resolve().parent
 ARMS = ("deepgen_off", "deepgen_on", "qwen21_off", "qwen21_on")
-# DWPose's first 17 outputs follow COCO order; these are the corresponding
-# BODY_25 indices in the iPER asset bundle.
-COCO_TO_BODY25 = (0, 16, 15, 18, 17, 5, 2, 6, 3, 7, 4, 12, 9, 13, 10, 14, 11)
+
 
 
 def arguments() -> argparse.Namespace:
@@ -39,48 +35,6 @@ def arguments() -> argparse.Namespace:
     parser.add_argument("--allow-partial", action="store_true")
     parser.add_argument("--skip-identity", action="store_true", help="For a quick metric smoke run")
     return parser.parse_args()
-
-
-class PoseMetric:
-    def __init__(self) -> None:
-        paths = ROOT / "models/DWPose"
-        options = ort.SessionOptions()
-        options.intra_op_num_threads = 4
-        self.det = ort.InferenceSession(str(paths / "yolox_l.onnx"), sess_options=options, providers=["CPUExecutionProvider"])
-        self.pose = ort.InferenceSession(str(paths / "dw-ll_ucoco_384.onnx"), sess_options=options, providers=["CPUExecutionProvider"])
-
-    def detect(self, image: Image.Image) -> tuple[np.ndarray, np.ndarray] | None:
-        bgr = cv2.cvtColor(np.asarray(image.convert("RGB")), cv2.COLOR_RGB2BGR)
-        boxes = inference_detector(self.det, bgr)
-        if len(boxes) == 0:
-            return None
-        # The fixed benchmark is single-person; the largest detected body is
-        # used if the detector returns several people.
-        areas = (boxes[:, 2] - boxes[:, 0]) * (boxes[:, 3] - boxes[:, 1])
-        points, scores = inference_pose(self.pose, boxes[np.argmax(areas):np.argmax(areas) + 1], bgr)
-        return points[0, :17], scores[0, :17]
-
-    @staticmethod
-    def compare(detected: tuple[np.ndarray, np.ndarray] | None, target: np.ndarray) -> dict[str, float | bool | None]:
-        if detected is None:
-            return {"pose_detected": False, "pose_nme_diagonal": None, "pose_pck_002": 0.0, "pose_pck_005": 0.0, "pose_joint_recall": 0.0, "pose_matched_joints": 0}
-        points, scores = detected
-        target_coco = target[np.array(COCO_TO_BODY25)]
-        target_visible = target_coco[:, 2] > 0.3
-        matched = target_visible & (scores > 0.3)
-        count = int(matched.sum())
-        denominator = int(target_visible.sum())
-        if denominator == 0:
-            return {"pose_detected": True, "pose_nme_diagonal": None, "pose_pck_002": None, "pose_pck_005": None, "pose_joint_recall": None, "pose_matched_joints": 0}
-        distance = np.linalg.norm(points[matched] - target_coco[matched, :2] * 512, axis=1) / np.hypot(512, 512)
-        return {
-            "pose_detected": True,
-            "pose_nme_diagonal": float(distance.mean()) if count else None,
-            "pose_pck_002": float((distance < 0.02).sum() / denominator),
-            "pose_pck_005": float((distance < 0.05).sum() / denominator),
-            "pose_joint_recall": float(count / denominator),
-            "pose_matched_joints": count,
-        }
 
 
 class IdentityMetric:

@@ -24,17 +24,17 @@ from scripts.eval.eval_hi4d_native_binding import DEFAULT, METHODS, MAPPINGS, OP
 from scripts.eval.score_qwen21_native_value import FaceMetric
 from src.data.letterbox import Letterbox
 from src.evaluation.joint_pilot_metrics import PoseMetric
-from src.evaluation.dwpose_onnx.onnxdet import inference_detector
-from src.evaluation.dwpose_onnx.onnxpose import inference_pose
+from src.evaluation.sdpose import coco17, scoring_identity, valid_joints
 
 FONT = '/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc'
 
 
 def cache_file(root, path):
-    return root/'evaluation/detections'/f'{sha(path)}_grey128_v2.json'
+    return root/'evaluation/detections'/f'{sha(path)}_grey128_sdpose_v1.json'
 
 
 def detect(root):
+    scoring = scoring_identity()
     pose, face = PoseMetric(), FaceMetric()
     cases = json.loads((root/'data/cases.json').read_text())
     paths = sorted({c[k]['rgb'] for c in cases for k in ('source','target')} |
@@ -42,18 +42,17 @@ def detect(root):
     for path in paths:
         dest = cache_file(root,path)
         if dest.exists():
-            if json.loads(dest.read_text())['sha256'] != sha(path):raise ValueError('Detection cache changed')
+            saved = json.loads(dest.read_text())
+            if saved['sha256'] != sha(path) or saved.get('pose_model') != scoring:
+                raise ValueError('Detection image or SDPose identity changed; choose a new evaluation root')
             continue
         im=Image.open(path).convert('RGB');small=Letterbox.from_size(im.size,512).image(im,fill=(128,128,128))
-        bgr=cv2.cvtColor(np.asarray(small),cv2.COLOR_RGB2BGR)
-        boxes=inference_detector(pose.det,bgr)
         people=[]
-        if len(boxes):
-            points,scores=inference_pose(pose.pose,boxes,bgr)
-            for i,(box,xy,score) in enumerate(zip(boxes,points,scores)):
-                people.append({'index':i,'box_at_512':box.tolist(),
-                               'coco17_at_512':xy[:17].tolist(),'coco17_scores':score[:17].tolist()})
-        rec={'path':path,'sha256':sha(path),'image_size':list(im.size),'people':people,'faces':face.detect(path)}
+        for i, person in enumerate(pose.detect_all(small)):
+            xy, score = coco17(person)
+            people.append({'index': i, 'box_at_512': person['box_xyxy'],
+                           'coco17_at_512': xy.tolist(), 'coco17_scores': score.tolist()})
+        rec={'path':path,'sha256':sha(path),'image_size':list(im.size),'pose_backend':'sdpose','pose_model':scoring,'people':people,'faces':face.detect(path)}
         write(dest,rec)
         review=small.copy();draw=ImageDraw.Draw(review);font=ImageFont.truetype(FONT,16)
         for person in people:
@@ -64,7 +63,7 @@ def detect(root):
         for f in rec['faces']['detections']:
             b=f['box_at_512'];draw.rectangle(b,outline=(30,230,255),width=2)
             draw.text((b[0],b[3]),f'F{f["index"]}',fill=(30,230,255),font=font)
-        out=root/'evaluation/detection_previews'/f'{sha(path)}_grey128_v2.png';out.parent.mkdir(parents=True,exist_ok=True);review.save(out)
+        out=root/'evaluation/detection_previews'/f'{sha(path)}_grey128_sdpose_v1.png';out.parent.mkdir(parents=True,exist_ok=True);review.save(out)
         print(json.dumps({'detected':path,'people':len(people),'faces':len(rec['faces']['detections'])}),flush=True)
 
 
@@ -85,7 +84,7 @@ def review_sheets(root):
         if not all(cache_file(root,p).exists() for p in paths):continue
         sheet=Image.new('RGB',(5*512,710),'white');draw=ImageDraw.Draw(sheet);font=ImageFont.truetype(FONT,16)
         for col,(label,path) in enumerate(zip(('A','B','RGB','合并骨架','分开骨架'),paths)):
-            rec=records(root,path);prev=root/'evaluation/detection_previews'/f'{sha(path)}_grey128_v2.png'
+            rec=records(root,path);prev=root/'evaluation/detection_previews'/f'{sha(path)}_grey128_sdpose_v1.png'
             sheet.paste(Image.open(prev),(col*512,30));draw.text((col*512+5,5),f'{pid} {res} {mapping} {label}',font=font,fill='black')
             text=[]
             for p in rec['people']:
@@ -93,7 +92,7 @@ def review_sheets(root):
             for f in rec['faces']['detections']:
                 b=f['box_at_512'];text.append(f'F{f["index"]}: x={b[0]:.0f}..{b[2]:.0f}; short={f["short_side_at_512"]:.1f}; q={f["score"]:.2f}')
             draw.multiline_text((col*512+5,545),'\n'.join(text),font=font,fill='black',spacing=4)
-        out=root/'review/sheets'/f'{pid}_{res}_{mapping}.png';out.parent.mkdir(parents=True,exist_ok=True);sheet.save(out)
+        out=root/'review/sheets_sdpose'/f'{pid}_{res}_{mapping}.png';out.parent.mkdir(parents=True,exist_ok=True);sheet.save(out)
 
 
 def pose_compare(person, target_path):
@@ -103,7 +102,8 @@ def pose_compare(person, target_path):
     visible=scores>.3;total=int(visible.sum())
     if person is None:return {'pose_pck_002':None,'pose_nme':None,'pose_joint_recall':0.,'pose_visible':total}
     xy=np.asarray(person['coco17_at_512']);gs=np.asarray(person['coco17_scores'])
-    matched=visible&(gs>.3);x0,y0,x1,y1=transform.rect
+    x0,y0,x1,y1=transform.rect
+    matched=visible&valid_joints(xy-[x0,y0],gs,x1-x0,y1-y0)
     d=np.linalg.norm(xy[matched]-target[matched],axis=-1)/np.hypot(x1-x0,y1-y0)
     return {'pose_pck_002':float((d<.02).sum()/total) if total else None,
             'pose_nme':float(d.mean()) if len(d) else None,
@@ -153,7 +153,7 @@ def checked_review(manual,path,rec):
 
 def score(root):
     cases={c['pair_id']:c for c in json.loads((root/'data/cases.json').read_text())}
-    manual=json.loads((root/'review/manual.json').read_text())
+    manual=json.loads((root/'review/manual_sdpose.json').read_text())
     generations=read_rows(root/'generations.jsonl')
     expected=json.loads((root/'data/jobs.json').read_text())
     keys=lambda r:(r['pair_id'],r['resolution'],r['mapping'],r['method'])
@@ -217,14 +217,14 @@ def score(root):
               'cases_both_assignments_correct':sum(all(v['correspondence']=='correct' for v in rr if v['pair_id']==pid)
                   for pid in {v['pair_id'] for v in rr}),
               'natural_interaction_images':sum(r['interaction']=='natural' for r in rr)})
-    write(root/'evaluation/per_person.json',people_rows);write(root/'evaluation/per_image.json',rows)
-    write(root/'evaluation/summary.json',summaries)
-    write(root/'evaluation/common_subsets.json',{'pose_person_instances':[list(k) for k in sorted(common_pose)],
+    write(root/'evaluation/per_person_sdpose.json',people_rows);write(root/'evaluation/per_image_sdpose.json',rows)
+    write(root/'evaluation/summary_sdpose.json',summaries)
+    write(root/'evaluation/common_subsets_sdpose.json',{'pose_person_instances':[list(k) for k in sorted(common_pose)],
           'face_person_instances':[list(k) for k in sorted(common_face)],'face_minimum_for_ranking':3,
           'pose_assignment':'manual source identity, then intended target; never optimal matching by position',
           'note':'Common subsets consist of person/case/mapping instances, not independent identities.'})
     for name,items in [('per_person',people_rows),('per_image',rows),('summary',summaries)]:
-        with (root/f'evaluation/{name}.csv').open('w',newline='') as f:
+        with (root/f'evaluation/{name}_sdpose.csv').open('w',newline='') as f:
             fields=list(dict.fromkeys(k for item in items for k in item));w=csv.DictWriter(f,fieldnames=fields);w.writeheader()
             for item in items:w.writerow({k:json.dumps(v,ensure_ascii=False) if isinstance(v,(list,dict)) else v for k,v in item.items()})
     print(json.dumps(summaries,ensure_ascii=False,indent=2))

@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 """Ground-truth-free scoring for the workflow, written next to (never on top of) evaluate.py.
 
-Run with the workflow interpreter, e.g.
-    /home/shangguanrz/nihaochen/envs/qwen21/bin/python evaluate2.py --all
-    /home/shangguanrz/nihaochen/envs/qwen21/bin/python evaluate2.py --run hard_05 --fit-source
+Run with the SDPose interpreter, e.g.
+    "$SDPOSE_PY" evaluate2.py --all
+    "$SDPOSE_PY" evaluate2.py --run hard_05
 
 evaluate.py answers "did the body land on the requested skeleton", using SMPLest-X on both
 sides. This adds the four things it cannot answer, without needing an edited reference:
 
-  pose      the same guide-versus-output comparison re-read by DWPose, an architecturally
+  pose      the same guide-versus-output comparison re-read by SDPose, an architecturally
             different estimator, plus the out-of-frame accounting that inflates the existing
             PCK and a strict variant that charges dropped joints as misses;
   shape     limb-length ratios, which a pose change must not alter, source versus generated;
@@ -16,8 +16,8 @@ sides. This adds the four things it cannot answer, without needing an edited ref
   scene     background and person region MAE/PSNR/SSIM against the source image, and what
             happened to the other people in the frame.
 
-Artifacts go to ``evaluation/eval2.json``, ``evaluation/eval2_overlay.png`` and
-``evaluation/stage2.json``. ``eval.json`` and ``stage.json`` belong to evaluate.py; this
+Artifacts go to ``evaluation/eval2_sdpose.json``, ``evaluation/eval2_sdpose_overlay.png`` and
+``evaluation/stage2_sdpose.json``. ``eval.json`` and ``stage.json`` belong to evaluate.py; this
 script only reads them. Runs whose generated image is byte-identical to an already scored
 one are recorded as ``duplicate`` instead of being counted twice.
 """
@@ -35,17 +35,16 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
-from src.evaluation import no_gt_metrics as M
+from src.evaluation import no_gt_metrics as M, sdpose
 from src.pose_edit.common import (atomic_json, finish_stage, make_request, model_signature,
     read_json, sha256_file, stage_reasons)
 from src.pose_edit.geometry import render_poseguide
 
 ROOT = Path(__file__).resolve().parent
 CODE = ['workflow/evaluate2.py', 'src/evaluation/no_gt_metrics.py', 'src/pose_edit/common.py',
-    'src/pose_edit/geometry.py']
-DWPOSE_DIR = REPO_ROOT / 'models' / 'DWPose'
+    'src/pose_edit/geometry.py', 'src/evaluation/sdpose.py']
 ANTELOPE_DIR = REPO_ROOT / 'models' / 'antelopev2'
-STAGE_NAME = 'evaluate2'
+STAGE_NAME = 'evaluate2_sdpose'
 
 
 def source_image(run_dir):
@@ -83,26 +82,6 @@ def guide_in_final_coords(run_dir, final_size):
         'guide_joints_out_of_frame': int((valid_canvas & ~valid).sum())}
 
 
-def open_dwpose():
-    """ONNX sessions for the second reader, pinned to CPU on purpose.
-
-    The CUDA execution provider in this onnxruntime build cannot load (missing
-    ``libcublasLt.so.13``) and floods stderr with retries; the four-arm evaluator this
-    metric is meant to cross-check against also runs on CPUExecutionProvider, so CPU keeps
-    the two readers comparable and the scores reproducible across machines.
-    """
-    import onnxruntime as ort
-
-    options = ort.SessionOptions()
-    options.intra_op_num_threads = 4
-    providers = ['CPUExecutionProvider']
-    detector = ort.InferenceSession(str(DWPOSE_DIR / 'yolox_l.onnx'), sess_options=options,
-        providers=providers)
-    pose = ort.InferenceSession(str(DWPOSE_DIR / 'dw-ll_ucoco_384.onnx'), sess_options=options,
-        providers=providers)
-    return detector, pose
-
-
 def open_identity():
     """ArcFace is optional: the SMPLest-X interpreter has no insightface build."""
     try:
@@ -138,9 +117,19 @@ def ssim_metric():
     return structural_similarity
 
 
-def second_reader(path, sessions):
+def second_reader(path, runtime):
+    import cv2
+
     with Image.open(path) as image:
-        return M.dwpose134_on_image(image, *sessions)
+        size = image.size
+        bgr = cv2.cvtColor(np.asarray(image.convert('RGB')), cv2.COLOR_RGB2BGR)
+    people = sdpose.score_people(bgr, runtime)
+    boxes = np.asarray([person['box_xyxy'] for person in people], dtype=float).reshape(-1, 4)
+    if not people:
+        return None, None, boxes
+    points, scores = people[0]['points'], people[0]['scores']
+    valid = sdpose.valid_joints(points, scores, *size)
+    return np.where(valid[:, None], points, np.nan), scores, boxes
 
 
 def preservation_block(source_path, final_path, points_source, points_generated,
@@ -280,6 +269,7 @@ def evaluate_run(run_dir, sessions, identity, config, fit=False, perceptual=None
     torso_source = M.torso_px(points_source)
     torso_guide = M.torso_px(guide)
     result = {'schema': 'single_person_no_gt_evaluation_v1', 'run': run_dir.name,
+        'pose_backend': sdpose.POSE_BACKEND,
         'final_image': str(final_path), 'final_size': list(size),
         'source_image': str(source_path), 'source_size': list(source_size),
         'source_resample_factor': [M.num(value) for value in factor], 'guide': guide_meta,
@@ -339,7 +329,7 @@ def evaluate_run(run_dir, sessions, identity, config, fit=False, perceptual=None
     overlay = Image.blend(Image.open(final_path).convert('RGB'),
         render_poseguide(np.where(guide_valid[:, None], guide, np.nan), size), 0.4)
     Image.blend(overlay, render_poseguide(points_generated, size), 0.4).save(
-        run_dir / 'evaluation' / 'eval2_overlay.png')
+        run_dir / 'evaluation' / 'eval2_sdpose_overlay.png')
     result['status'] = 'complete'
     result['elapsed_seconds'] = round(time.perf_counter() - started, 2)
     return result
@@ -356,10 +346,10 @@ def request_for(run_dir, config, fit):
     if source:
         paths['source_image'] = sha256_file(source)
     identity = {'settings': {'fit_source': bool(fit),
-            'second_reader': 'dwpose-ll-ucoco-384', 'detector_input': 'original_size'},
+            'second_reader': sdpose.POSE_BACKEND, 'detector_input': 'original_size',
+            'pose_device': config.get('sdpose_device', 'cpu')},
         'inputs_sha256': paths,
-        'model_identity': {'dwpose_detector': model_signature(DWPOSE_DIR / 'yolox_l.onnx'),
-            'dwpose_pose': model_signature(DWPOSE_DIR / 'dw-ll_ucoco_384.onnx'),
+        'model_identity': {'pose': sdpose.scoring_identity(),
             'arcface': model_signature(ANTELOPE_DIR / 'glintr100.onnx'),
             'scrfd': model_signature(ANTELOPE_DIR / 'scrfd_10g_bnkps.onnx')},
         'code': {name: sha256_file(REPO_ROOT / name) for name in CODE}}
@@ -400,6 +390,7 @@ def main():
     parser.add_argument('--run', action='append', default=[], help='run name under runs/')
     parser.add_argument('--all', action='store_true', help='every run holding a generated image')
     parser.add_argument('--force', action='store_true')
+    parser.add_argument('--pose-device', help='SDPose device (default: cpu)')
     parser.add_argument('--fit-source', action='store_true',
         help='also fit A with SMPLest-X (run with the geometry interpreter) for the beta metric')
     parser.add_argument('--no-lpips', action='store_true',
@@ -421,7 +412,9 @@ def main():
             print(f'EVAL2 FIT {name} {note}', flush=True)
         return
 
-    sessions = open_dwpose()
+    if args.pose_device:
+        config['sdpose_device'] = args.pose_device
+    sessions = sdpose.load_scoring_runtime(device=config.get('sdpose_device', 'cpu'))
     identity, identity_reason = open_identity()
     perceptual, perceptual_device = (None, 'cpu') if args.no_lpips else open_lpips()
     seen, scored, cached = {}, 0, 0
@@ -432,7 +425,7 @@ def main():
             print(f'EVAL2 SKIPPED {name} no generation/final_image.png', flush=True)
             continue
         digest = sha256_file(final_path)
-        record = run_dir / 'evaluation' / 'stage2.json'
+        record = run_dir / 'evaluation' / 'stage2_sdpose.json'
         if digest in seen:
             atomic_json(record, {'schema': 'single_person_no_gt_stage_v1', 'status': 'duplicate',
                 'duplicate_of': seen[digest], 'image_sha256': digest})
@@ -454,9 +447,9 @@ def main():
                 print(f'EVAL2 SKIPPED {name} {result.get("status")} '
                     f'{"".join(result.get("missing") or [])}', flush=True)
                 continue
-            atomic_json(run_dir / 'evaluation' / 'eval2.json', result)
-            artifacts = {'eval2': run_dir / 'evaluation' / 'eval2.json'}
-            overlay = run_dir / 'evaluation' / 'eval2_overlay.png'
+            atomic_json(run_dir / 'evaluation' / 'eval2_sdpose.json', result)
+            artifacts = {'eval2': run_dir / 'evaluation' / 'eval2_sdpose.json'}
+            overlay = run_dir / 'evaluation' / 'eval2_sdpose_overlay.png'
             if overlay.is_file():
                 artifacts['overlay'] = overlay
             summary = summary_of(result)

@@ -63,6 +63,6 @@ python3 script/six_picture_create.py ../../runs/<run名> --check
   搬迁后 204/204 通过）。
 - 手工提示词一律走 `--prompt-file`（显式输入，不被 PE 覆盖）；对照实验的检测标准：副本产物
   与对照 SHA256 完全相同 = 实验变量没生效。
-- 评测闭环：`evaluate.py`（几何解释器，身体是否落到请求骨架）+ `evaluate2.py`（qwen21 解释器，
-  DWPose 第二读者 / 身份 / 场景）+ `scorecard.py`（跨 run 汇总）。六图面板与这两份评测一起，
+- 评测闭环：`evaluate.py`（几何解释器，SMPLest-X 几何诊断）+ `evaluate2.py`（SDPose 解释器，
+  SDPose 姿态 / 身份 / 场景，写 `eval2_sdpose.json`）+ `scorecard.py`（跨 run 汇总）。六图面板与这两份评测一起，
   构成一个样本的完整交付。

@@ -11,6 +11,7 @@ set -u
 cd "$(dirname "$0")" || exit 1
 
 QWEN_PY=/home/shangguanrz/nihaochen/envs/qwen21/bin/python
+SDPOSE_PY="${SDPOSE_PY:-/data/shangguanrz/pic-edit-experiments/姿态估计/four-skeleton-compair/.venv/bin/python}"
 LOG=logs_batch/finalize.log
 mkdir -p logs_batch comparisons
 
@@ -37,7 +38,7 @@ PY
 )
 count=0
 for name in $completed; do
-  if "$QWEN_PY" evaluate_dual.py --run "$name" --force >> "$LOG" 2>&1; then
+  if "$SDPOSE_PY" evaluate_dual.py --run "$name" --force >> "$LOG" 2>&1; then
     count=$((count + 1))
   else
     note "EVAL_FAILED $name"

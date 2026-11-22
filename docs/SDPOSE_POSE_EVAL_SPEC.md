@@ -1,6 +1,6 @@
 # SDPose 姿态对齐评测细则（项目统一口径）
 
-> **生效范围**：自 **2026-11-15** 起，本项目（含 `workflow/`、`workflow-multiple/`、`workflow-v2/`、单人/多人训练与消融实验）所有**姿态对齐量化评测**统一采用 **SDPose（`SDPose-Wholebody + YOLO11x`）** 作为标准骨架回归与对齐评测后端；旧 DWPose ONNX 仅作历史结果对照或受限 CPU-only 兜底，不再作为主结论依据。
+> **生效范围**：新运行的 RL Pose/Hand Reward、训练门禁、留出集和 workflow 生成评测统一采用 **SDPose-Wholebody + YOLO11x**。CPU 评测也使用 SDPose。DWPose 用于明确标注的历史对照与已有生成条件资产。
 
 ---
 
@@ -48,6 +48,8 @@
 3. **关键点置信度阈值与画布裁剪**：
    - 姿态对齐主评测默认 **`score_threshold = 0.30`**（`DEFAULT_SCORE_THRESHOLD = 0.30`，与 SDPose 官方渲染/有效点阈值一致；在极端遮挡补充敏感度分析时可额外加报 `0.10` 口径，但需显式标注）。
    - 必须同时校验 `np.isfinite(xy).all()`、坐标落在 `[0, W) × [0, H)` 画布内（`valid_points`），以及 `score >= threshold`。
+
+评分入口调用 `load_scoring_runtime()` 和 `score_people()`。评分随机种子固定为 42，调用退出后恢复训练侧 RNG。RL 用目标侧条件固定关节分母和奖励资格，候选漏点计作失分，模型或评测器异常按失败记录。每次新运行将评分模型和代码的 SHA 固定在清单；从旧评分器切换时使用新的清单和独立结果路径。
 
 ---
 

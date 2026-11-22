@@ -170,7 +170,7 @@ workflow/
 5. **不覆盖既有产物**。重跑加 `--force` 或换 `--name`，别把上一轮结果冲掉。
 6. **大文件不进 Git**。`.pt` / `.safetensors` / 条件缓存默认忽略，服务器持久盘与归档盘保留。
 7. **不向 `qwen21` 环境塞不兼容的包**。`diffusers 0.41.0.dev0` 是为 Qwen-Image-2.1 专门保留的版本，装包前先想清楚会不会破坏它。
-8. **姿态对齐评测统一用 SDPose（2026-11-15 起）**。所有后续姿态对齐量化评测统一使用 `SDPose-Wholebody + YOLO11x`（共享实现 [`src/evaluation/sdpose.py`](src/evaluation/sdpose.py)，细则与 133→134 眼/耳槽位契约见 [`docs/SDPOSE_POSE_EVAL_SPEC.md`](docs/SDPOSE_POSE_EVAL_SPEC.md)），运行解释器使用 SDPose 环境，不再以旧 DWPose ONNX 作为主评测依据。
+8. **姿态评分统一使用 SDPose-Wholebody + YOLO11x**。范围包括在线 RL 的候选图 Pose/Hand Reward、训练门禁、留出集评测、单人/双人 workflow 的生成图评分，以及姿态结果汇总。先沿入口追到实际读图打分的 worker，再确认随数据记录的模型来源。复用 [`src/evaluation/sdpose.py`](src/evaluation/sdpose.py) 的 `load_scoring_runtime()` 和 `score_people()`，按任务选 geometry 134 槽位或由 `coco17()` 映射 Body17。默认关节置信度 `>= 0.30`，检查坐标有限且在有效画布内。RL 的目标可见关节和 Reward 资格在 rollout 前固定，生成漏检计作失分，评测器异常写明失败并停止该批更新。运行用本节下方的 SDPose 环境，保留 `pose_backend=sdpose`、槽位序、阈值、模型或代码 SHA。依赖或权重缺失时直接报错，禁止静默回退到 DWPose。DWPose 可用于明确标注的历史对照及既有生成条件、标注和缓存读取。更换评分器须用新结果名和新实验签名，已锁定实验沿用原快照。槽位、阈值及评测细则见 [SDPose 规范](docs/SDPOSE_POSE_EVAL_SPEC.md)。
 
 ---
 

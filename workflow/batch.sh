@@ -6,6 +6,7 @@ workflow_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 cd "$workflow_dir"
 
 QWEN_PY=/home/shangguanrz/nihaochen/envs/qwen21/bin/python
+SDPOSE_PY="${SDPOSE_PY:-/data/shangguanrz/pic-edit-experiments/姿态估计/four-skeleton-compair/.venv/bin/python}"
 GEOMETRY_PY="$("$QWEN_PY" -c 'import json;print(json.load(open("config.json"))["geometry_python"])')"
 # experiments/ is flat on the Windows mirror and grouped by family on sg (AGENTS.md 2.1), so the
 # default is resolved rather than hardcoded. An explicit argument must exist; no silent fallback.
@@ -42,6 +43,7 @@ for directory in "$PAIRS"/*/; do
         continue
     fi
     "$GEOMETRY_PY" evaluate.py --run "$name" || echo "EVAL_FAILED $name"
+    "$SDPOSE_PY" evaluate2.py --run "$name" || echo "SDPOSE_EVAL_FAILED $name"
     echo "--- $name took $(( $(date +%s) - started ))s"
 done
 

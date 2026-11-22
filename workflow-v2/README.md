@@ -49,7 +49,7 @@ Hi4D 官方模型是 SMPL，目标人物是 SMPL-X，不能直接共用顶点编
 - `geometry/native/`：`geometry_only` 即可构建并校验的现有 Native 条件包，不加载 Qwen 或 Adapter 权重。
 - `prompt/`：用户原文、PE 原始输出、角色编译后的 `generation_prompt.txt`。
 - `generation/qwen_baseline/` 与 `generation/native_v5/`：`final_canvas.png`、裁去 A 画布留边的 `final_image.png` 和 `generation.json`。`qwen_source64.pt` 保存实际 Qwen 编码的两份独立来源张量及数值 SHA，不包含目标 RGB/latent。Native 目录另有双源特征来源记录。
-- `evaluation/<mode>/`：逐人姿态、可见点覆盖、外观相似度、背景变化与叠加预览。纠缠姿态的人数检测可能合并，区域检测也可能重复检到同一个人，报告保留这类不确定性，不自动宣称质量通过。
+- `evaluation_sdpose/<mode>/`：SDPose 逐人姿态、可见点覆盖、外观相似度、背景变化与叠加预览。纠缠姿态的人数检测可能合并，区域检测也可能重复检到同一个人，报告保留这类不确定性，不自动宣称质量通过。
 - `run_<mode>.json`：运行状态；各阶段 `stage.json` 是可复验的证据。
 
 `retarget/` 负责完整参数转换、同体型重建、共享相机放置和有限接触修正；`render/` 使用实际 SMPL-X 三角网格做 Z-buffer 合成。`abc_native_assets.py` 把这些几何适配到已有 V5；`abc_generate_worker.py` 将五张参考图按原生画布编码，依次加载文本编码器/VAE/Transformer，减少同时驻留显存。

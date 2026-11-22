@@ -23,7 +23,8 @@ import onnxruntime as ort
 from PIL import Image, ImageDraw, ImageFont
 import torch
 
-from eval_iper_four_arm import PoseMetric, COCO_TO_BODY25
+from scripts.eval.eval_iper_four_arm import PoseMetric, COCO_TO_BODY25
+from src.evaluation.sdpose import scoring_identity, valid_joints
 from src.data.letterbox import Letterbox
 from scripts.eval.qwen21_condition_combinations import (NEW_METHODS, COMBINATION_METHODS,
     COMBINATION_LABELS, factor_edges, require_protocol_outputs)
@@ -176,9 +177,10 @@ def pose_compare(detected, target, rect):
                 'pose_joint_angle_mae_degrees': None}
     points, scores = detected
     truth = target[np.asarray(COCO_TO_BODY25)]
-    visible, matched = truth[:, 2] > .3, (truth[:, 2] > .3) & (scores > .3)
-    total, count = int(visible.sum()), int(matched.sum())
     x0, y0, x1, y1 = rect
+    visible = truth[:, 2] > .3
+    matched = visible & valid_joints(points - [x0, y0], scores, x1 - x0, y1 - y0)
+    total, count = int(visible.sum()), int(matched.sum())
     distance = np.linalg.norm(points[matched]-truth[matched, :2]*512, axis=1)/np.hypot(x1-x0, y1-y0)
     result = {'pose_detected': True, 'pose_pck_002': float((distance < .02).sum()/total) if total else None,
             'pose_pck_005': float((distance < .05).sum()/total) if total else None,
@@ -487,7 +489,7 @@ def write_tables(root, rows, summary):
         for row in rows:
             writer.writerow({k: row['metrics'].get(k) if k in METRICS else row.get(k) for k in fields})
     save(root/'evaluation/metric_definitions.json', {
-        'pose': 'DWPose COCO17 vs B BODY25; target visibility>0.3, generated confidence>0.3; undetected joints count as PCK failures',
+        'pose': 'SDPose COCO17 vs B BODY25; target visibility>0.3, generated confidence>=0.3; undetected joints count as PCK failures',
         'pose_image_resolution': 512, 'pose_normalization': 'diagonal of letterboxed B effective image rectangle',
         'pose_limit': 'Cross-person shape/proportion differences can change absolute keypoint position. PCK alone does not establish successful retargeting.',
         'pose_torso_aligned': 'Secondary diagnostic only: translate torso center (mean of both shoulders/hips) and apply one positive uniform scale matching shoulder-midpoint to hip-midpoint distance; no rotation or per-bone deformation; requires all four torso joints detected',
@@ -550,7 +552,7 @@ def main():
                 original = row.get(f'{role}_original_rgb')
                 if original is None or Path(original).resolve() != Path(pair[f'{role}_rgb']).resolve():
                     raise ValueError(f'Wrong original {role} image for locked pair: {row_key(row)}')
-            fingerprint = hashlib.sha256(json.dumps({'version': 'native_value_metric_v2',
+            fingerprint = hashlib.sha256(json.dumps({'version': 'native_value_metric_sdpose_v1', 'pose_model': scoring_identity(),
                 'pair': pair, 'image_sha256': sha(row['image']),
                 'source_sha256': sha(pair['source_rgb']), 'target_sha256': sha(pair['target_rgb']),
                 'source_mask_sha256': sha(pair['source_person_mask']) if pair.get('source_person_mask') else None,

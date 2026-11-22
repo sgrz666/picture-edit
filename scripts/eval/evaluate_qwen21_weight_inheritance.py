@@ -21,7 +21,7 @@ import numpy as np
 import onnxruntime as ort
 from PIL import Image
 import torch
-from eval_iper_four_arm import IdentityMetric, PoseMetric, image_metrics, open_rgb
+from scripts.eval.eval_iper_four_arm import IdentityMetric, PoseMetric, image_metrics, open_rgb
 from src.pose_control.qwen21_full.face_supervision import box_iou
 from src.pose_control.qwen21_full.data_runtime import ASSETS
 from scripts.run_qwen21_weight_inheritance import OUT, RUN_ROOT, CHECKPOINTS
@@ -198,7 +198,7 @@ def main():
                              **{k: row['metrics'].get(k) for k in metric_names}})
     (OUT / 'metric_definitions.json').write_text(json.dumps({
         'metric_image_resolution': 512, 'resize_filter': 'BILINEAR (existing eval_iper_four_arm.open_rgb)',
-        'pose': 'existing PoseMetric / DWPose; PCK@0.02 counts missing joints as failures',
+        'pose': 'shared PoseMetric / SDPose; PCK@0.02 counts missing joints as failures',
         'pixels': 'existing image_metrics; background compares A outside union of A/B body masks',
         'identity': 'existing AntelopeV2 SCRFD + glintr100; cosine against A',
         'reliable_common': 'all six variants; detector score>=0.5, short side>=32 at 512, center in B head, IoU>=0.2; same checks for A and same-person B',

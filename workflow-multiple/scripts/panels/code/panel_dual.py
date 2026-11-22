@@ -251,7 +251,7 @@ def header_lines(run_dir, run_name):
 
 def metric_lines(run_dir):
     """尾部指标两行；无评测返回空列表。"""
-    ev = read_json(run_dir / "evaluation" / "eval_dual.json")
+    ev = read_json(run_dir / "evaluation" / "eval_dual_sdpose.json")
     if not ev:
         return []
     s = ev.get("summary", {}) or {}

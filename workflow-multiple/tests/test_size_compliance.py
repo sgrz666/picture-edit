@@ -13,7 +13,7 @@ from size_compliance import compliance_groups, group_of, median, summarise
 def write_eval(runs, name, persons):
     evaluation = runs / name / 'evaluation'
     evaluation.mkdir(parents=True, exist_ok=True)
-    (evaluation / 'eval_dual.json').write_text(json.dumps({'persons': persons}), encoding='utf-8')
+    (evaluation / 'eval_dual_sdpose.json').write_text(json.dumps({'persons': persons}), encoding='utf-8')
 
 
 class Naming(unittest.TestCase):

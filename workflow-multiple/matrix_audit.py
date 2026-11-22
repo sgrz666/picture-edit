@@ -42,7 +42,10 @@ def evidence(run_dir):
     """What this run can actually be read for."""
     item = {'status': run_status(run_dir), 'has_evaluation': False,
             'pose': False, 'identity': False, 'count_ok': None}
-    path = run_dir / 'evaluation' / 'eval_dual.json'
+    stage = run_dir / 'evaluation'
+    path = stage / 'eval_dual_sdpose.json'
+    if not path.is_file():
+        path = stage / 'eval_dual.json'
     if not path.is_file():
         return item
     item['has_evaluation'] = True

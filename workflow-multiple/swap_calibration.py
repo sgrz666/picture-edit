@@ -14,7 +14,7 @@ from pathlib import Path
 import numpy as np
 
 rows = []
-for path in sorted(glob.glob('runs/*/evaluation/eval_dual.json')):
+for path in sorted(glob.glob('runs/*/evaluation/eval_dual_sdpose.json')):
     name = Path(path).parent.parent.name
     parts = name.split('.')
     if len(parts) < 3:

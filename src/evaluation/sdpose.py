@@ -8,6 +8,9 @@ OpenPose-18 order (``14=R_eye, 15=L_eye, 16=R_ear, 17=L_ear``) via ``order="open
 from __future__ import annotations
 
 from dataclasses import dataclass
+from functools import lru_cache
+import hashlib
+import os
 from pathlib import Path
 import sys
 from typing import Any
@@ -20,6 +23,9 @@ from src.pose_edit.geometry import cocowholebody133_to_dwpose134
 DEFAULT_SDPOSE_OOD_ROOT = Path("/data/shangguanrz/models/SDpose/SDPose-OOD")
 DEFAULT_SDPOSE_CKPT_DIR = Path("/data/shangguanrz/models/SDpose/SDPose-Wholebody")
 DEFAULT_YOLO_FILENAME = "yolo11x.pt"
+SDPOSE_PYTHON = '/data/shangguanrz/pic-edit-experiments/姿态估计/four-skeleton-compair/.venv/bin/python'
+POSE_BACKEND = 'sdpose'
+COCO17_FROM_GEOMETRY134 = (0, 16, 14, 17, 15, 5, 2, 6, 3, 7, 4, 11, 8, 12, 9, 13, 10)
 
 DEFAULT_YOLO_CONF = 0.25
 DEFAULT_YOLO_IOU = 0.65
@@ -311,3 +317,55 @@ def detect_people(
     if return_stats:
         return people, raw_count
     return people
+
+
+def scoring_model_files():
+    """Files that identify the shared evaluator's weights, configs and upstream code."""
+    root = DEFAULT_SDPOSE_CKPT_DIR
+    files = [p for p in root.rglob('*') if p.is_file() and p.suffix in
+             ('.safetensors', '.json', '.txt', '.model', '.bin')]
+    files.append(root / DEFAULT_YOLO_FILENAME)
+    files.extend(DEFAULT_SDPOSE_OOD_ROOT / name for name in (
+        'models/ModifiedUNet.py', 'models/HeatmapHead.py', 'pipelines/SDPose_D_Pipeline.py',
+        'configs/_base_/datasets/coco_wholebody.py'))
+    return sorted(set(files))
+
+
+@lru_cache(maxsize=1)
+def scoring_identity():
+    files = {}
+    for path in scoring_model_files():
+        with path.open('rb') as stream:
+            files[str(path.resolve())] = hashlib.file_digest(stream, 'sha256').hexdigest()
+    return {'backend': POSE_BACKEND, 'estimator': 'SDPose-Wholebody', 'detector': 'YOLO11x',
+            'order': 'geometry', 'score_threshold': DEFAULT_SCORE_THRESHOLD, 'seed': 42, 'files': files}
+
+
+def load_scoring_runtime(*, device='cpu'):
+    os.environ.setdefault('CUDA_HOME', '/home/shangguanrz/nihaochen/envs/qwen21')
+    return load_runtime(device=device)
+
+
+def score_people(image_bgr, runtime, *, sort_by='area', min_area=0., return_stats=False):
+    """Use a fixed diffusion seed while leaving all caller RNG streams intact."""
+    import torch
+
+    device = torch.device(runtime.device)
+    devices = [device] if device.type == 'cuda' else []
+    with torch.random.fork_rng(devices=devices):
+        torch.random.default_generator.manual_seed(42)
+        if devices:
+            with torch.cuda.device(device):
+                torch.cuda.manual_seed(42)
+        return detect_people(image_bgr, runtime, sort_by=sort_by, min_area=min_area,
+                             order='geometry', return_stats=return_stats)
+
+
+def coco17(person):
+    slots = list(COCO17_FROM_GEOMETRY134)
+    return np.asarray(person['points'])[slots], np.asarray(person['scores'])[slots]
+
+
+def valid_joints(points, scores, width, height):
+    return (np.isfinite(scores) & (scores >= DEFAULT_SCORE_THRESHOLD) &
+            np.isfinite(points).all(1) & (points >= 0).all(1) & (points < [width, height]).all(1))

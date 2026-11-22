@@ -149,7 +149,7 @@ def main():
     import torch
     from PIL import Image
     from bfs_explore import BFS_HEAD_PROMPT, face_crop, load_trusted_state
-    from eval_iper_four_arm import IdentityMetric, PoseMetric
+    from scripts.eval.eval_iper_four_arm import IdentityMetric, PoseMetric
     from src.data.tiktok_dataset import load_pose_dataset
     from src.pose_control.qwen21.body_adapter import Qwen21BodyAdapter, Qwen21ControlContext
     from src.pose_control.qwen21.runtime import PROMPT, dataset_image_to_pil
@@ -276,6 +276,8 @@ def main():
         gc.collect()
         torch.cuda.empty_cache()
 
+    from src.evaluation.sdpose import scoring_identity
+    pose_model = scoring_identity()
     pose = PoseMetric()
     conditions = {}
     for i, record in enumerate(records):
@@ -296,6 +298,7 @@ def main():
             outside[max(0, int(cy-side/2)):min(body_image.height, math.ceil(cy+side/2)),
                     max(0, int(cx-side/2)):min(body_image.width, math.ceil(cx+side/2))] = False
         record['metrics'] = {}
+        record['pose_model'] = pose_model
         for variant in VARIANTS:
             path = args.output / 'images' / f'{record["stem"]}_{variant}.png'
             if not path.exists():

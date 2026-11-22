@@ -135,7 +135,7 @@ def arguments(out,job):
 def paths(out,job):
     _,group=arguments(out,job);key=generation_key(job['mode'],job['variant'],job['tag'])
     run=out/'runs'/group
-    return run,run/'generation'/key,run/'evaluation'/key
+    return run,run/'generation'/key,run/'evaluation_sdpose'/key
 
 
 def run_job(out,job,frozen,*,verify=False):

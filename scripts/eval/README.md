@@ -77,6 +77,8 @@
 
 ## 注意与坑
 
+- 新姿态评分统一用 SDPose 解释器，权重路径和置信度见 [SDPose 规范](../../docs/SDPOSE_POSE_EVAL_SPEC.md)。重评使用新输出目录。Hi4D 人工对应使用 `review/sheets_sdpose/` 和 `review/manual_sdpose.json`，人物索引按本轮 SDPose 检测生成。
+
 - 评测与生成解耦：大多数 `eval_*` 读取**已保存图像**，不重新训练；但 `eval_iper_qwen21_*`、`eval_qwen21_joint_pilot.py` 等会真正跑推理生成图像，需确认 GPU 空闲。
 - 多套「参考契约」（A-RGB、B-RGB、skeleton、native）由 `qwen21_condition_combinations.py` 集中定义，改对照矩阵前先核对 `COMBINATION_REFERENCES`，避免误用 skeleton 输入契约。
 - B 的 RGB 在整套评测中**只作评测目标，从不当作 adapter 的参考输入**——这是反复在 docstring 里强调的不变量，回归测试（`test_qwen21_dual_inference_boundary.py`）守护它。

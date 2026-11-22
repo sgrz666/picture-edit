@@ -231,11 +231,15 @@ def run(args):
         generation=execute_stage(run_dir,'generation/'+output_key,generation_identity,request,
             subprocess_worker('abc_generate_worker.py',settings),verify=args.verify)
         request['image']=str(run_dir/'generation'/output_key/'final_image.png')
-        evaluation=execute_stage(run_dir,'evaluation/'+output_key,
-            {'generation':generation['fingerprint'],'code':code_identity(['workflow-v2/abc_evaluate.py','workflow-v2/abc_quality.py']),
-             'detector':geometry_identity['models'],'appearance':asset(settings['appearance_dino_model']),
+        from src.evaluation.sdpose import SDPOSE_PYTHON, scoring_identity
+        evaluation_python=settings.get('sdpose_python', SDPOSE_PYTHON)
+        evaluation=execute_stage(run_dir,'evaluation_sdpose/'+output_key,
+            {'generation':generation['fingerprint'],'code':code_identity(['workflow-v2/abc_evaluate.py','workflow-v2/abc_quality.py',
+                                                                        'workflow-multiple/evaluate_dual.py','src/evaluation/sdpose.py']),
+             'pose_model':scoring_identity(),'sdpose_python':evaluation_python,'sdpose_device':settings.get('sdpose_device','cpu'),
+             'appearance':asset(settings['appearance_dino_model']),
              'identity_model':asset(settings['arcface_model'])},
-            request,subprocess_worker('abc_evaluate.py',settings),verify=args.verify)
+            request,subprocess_worker('abc_evaluate.py',{**settings,'qwen_python':evaluation_python}),verify=args.verify)
         return dict(geometry=geom['fingerprint'],prompt=prompt['fingerprint'],
             generation=generation['fingerprint'],evaluation=evaluation['fingerprint'])
     if args.verify:

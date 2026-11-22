@@ -7,9 +7,7 @@ import hashlib
 import json
 from pathlib import Path
 
-import cv2
 import numpy as np
-import onnxruntime as ort
 import torch
 import torch.nn.functional as F
 from diffusers import QwenImage21Pipeline
@@ -17,8 +15,8 @@ from PIL import Image, ImageDraw
 from torchvision.models import vgg16
 
 from src.data.hi4d_qwen21_dataset import Hi4DQwen21Dataset, _rgb, letterbox_points
-from src.evaluation.dwpose_onnx.onnxdet import inference_detector
-from src.evaluation.dwpose_onnx.onnxpose import inference_pose
+from src.evaluation.joint_pilot_metrics import PoseMetric
+from src.evaluation.sdpose import coco17, valid_joints
 from src.pose_control.qwen21.action_prompts import PROMPT_VERSION, build_dual_action_prompts
 from src.pose_control.qwen21.dual_adapter import Qwen21DualAdapter
 from src.pose_control.qwen21.dual_inference import (
@@ -54,20 +52,13 @@ def arguments():
 
 class DualPoseMetric:
     def __init__(self):
-        options = ort.SessionOptions()
-        options.intra_op_num_threads = 4
-        paths = ROOT / "models/DWPose"
-        self.det = ort.InferenceSession(str(paths / "yolox_l.onnx"), sess_options=options,
-                                        providers=["CPUExecutionProvider"])
-        self.pose = ort.InferenceSession(str(paths / "dw-ll_ucoco_384.onnx"), sess_options=options,
-                                         providers=["CPUExecutionProvider"])
+        self.pose = PoseMetric()
 
     def detect(self, image: Image.Image, boxes_target: list[np.ndarray]):
-        bgr = cv2.cvtColor(np.asarray(image.convert("RGB")), cv2.COLOR_RGB2BGR)
-        boxes = inference_detector(self.det, bgr)
-        if len(boxes) == 0:
-            return [None, None], 0
-        points, scores = inference_pose(self.pose, boxes, bgr)
+        people = self.pose.detect_all(image)
+        if not people:
+            return [None] * len(boxes_target), 0
+        boxes = np.asarray([person['box_xyxy'] for person in people])
         available = list(range(len(boxes)))
         assigned = []
         for target in boxes_target:
@@ -77,7 +68,7 @@ class DualPoseMetric:
             center = (target[:2] + target[2:]) * 256
             best = min(available, key=lambda i: np.linalg.norm((boxes[i, :2] + boxes[i, 2:]) / 2 - center))
             available.remove(best)
-            assigned.append((points[best, :17], scores[best, :17]))
+            assigned.append(coco17(people[best]))
         return assigned, len(boxes)
 
 
@@ -119,7 +110,7 @@ def _pose_pck(detected, target):
     valid = target_scores > 0.3
     if not valid.any():
         return None
-    correct = (np.linalg.norm(points - xy, axis=1) / np.hypot(512, 512) < 0.05) & (scores > 0.3) & valid
+    correct = (np.linalg.norm(points - xy, axis=1) / np.hypot(512, 512) < 0.05) & valid_joints(points, scores, 512, 512) & valid
     return float(correct.sum() / valid.sum())
 
 

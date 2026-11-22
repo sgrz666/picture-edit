@@ -54,7 +54,7 @@ def run_facts(run_dir, live_writer):
     if manifest.get('schema') != CURRENT_SCHEMA:
         status = f'{status}(legacy)'
     settings = manifest.get('settings', {})
-    evaluation = read_json(run_dir / 'evaluation' / 'eval_dual.json') or {}
+    evaluation = read_json(run_dir / 'evaluation' / 'eval_dual_sdpose.json') or {}
     summary = evaluation.get('summary') or {}
     interaction = (evaluation.get('interaction') or {}).get('error_relative')
     verification = manifest.get('verification') or {}
@@ -68,7 +68,7 @@ def run_facts(run_dir, live_writer):
         'settings': f"{settings.get('resolution')}/{settings.get('steps')}/{settings.get('seed')}",
         'persons': summary.get('persons_detected'), 'count_ok': summary.get('person_count_ok'),
         'regions_ok': summary.get('person_count_regions_ok'),
-        'basis': evaluation.get('pose_basis'),
+        'basis': evaluation.get('pose_basis'), 'pose_backend': evaluation.get('pose_backend'),
         'pck': summary.get('body_pck@0.2'), 'mpjpe': summary.get('body_mpjpe_norm'),
         'torso_ratio': summary.get('torso_scale_ratio'), 'gap_error': interaction,
         'identity': summary.get('identity_similarity'),

@@ -63,16 +63,15 @@ def pose_action(args):
     import numpy as np
     from PIL import Image
     from src.pose_control.qwen21_full.native_rl.rewards import rendered_rgb
-    from src.evaluation.sdpose import load_runtime,detect_people,DEFAULT_SCORE_THRESHOLD
+    from src.evaluation.sdpose import load_scoring_runtime, score_people, DEFAULT_SCORE_THRESHOLD
     from src.pose_control.qwen21_full.region_rewards import pose_metrics
     from src.pose_control.qwen21_full.native_v62.training.io import file_sha
     os.environ.setdefault('CUDA_HOME','/home/shangguanrz/nihaochen/envs/qwen21')
     from src.evaluation import sdpose as adapter
-    files=list(adapter.DEFAULT_SDPOSE_CKPT_DIR.rglob('*.safetensors'))+[adapter.DEFAULT_SDPOSE_CKPT_DIR/adapter.DEFAULT_YOLO_FILENAME,Path(adapter.__file__)]
-    files.extend(adapter.DEFAULT_SDPOSE_OOD_ROOT/p for p in ('models/ModifiedUNet.py','models/HeatmapHead.py','pipelines/SDPose_D_Pipeline.py','configs/_base_/datasets/coco_wholebody.py'))
+    files=adapter.scoring_model_files()+[Path(adapter.__file__)]
     identity=bind_models(args.root,'sdpose',files,{'order':'geometry','score_threshold':DEFAULT_SCORE_THRESHOLD,
         'yolo_conf':.25,'yolo_iou':.65,'input_size':[768,1024],'bbox_padding':1.25,'timestep':999,'flip_test':True,'per_image_inference_seed':42})
-    runtime=load_runtime(device=args.device)
+    runtime=load_scoring_runtime(device=args.device)
     pairs={x['pair_id']:x for x in read(args.root/'data/evaluation.json')}
     manifest=read(args.manifest);records=[]
     for i,row in enumerate(manifest['records']):
@@ -80,10 +79,7 @@ def pose_action(args):
         pair=pairs[row['pair_id']]
         with Image.open(row['path']) as image:
             image = cv2.cvtColor(np.asarray(rendered_rgb(image)), cv2.COLOR_RGB2BGR)
-        import torch
-        torch.manual_seed(42)
-        if torch.cuda.is_available():torch.cuda.manual_seed_all(42)
-        people=detect_people(image,runtime,sort_by='area',order='geometry')
+        people=score_people(image,runtime)
         points=scores=valid=None
         if people:
             points=np.asarray(people[0]['points'],float);scores=np.asarray(people[0]['scores'],float)

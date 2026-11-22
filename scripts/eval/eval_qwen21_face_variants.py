@@ -12,7 +12,7 @@ import torch
 from PIL import Image
 import cv2
 
-from eval_iper_four_arm import IdentityMetric, PoseMetric, image_metrics, open_rgb
+from scripts.eval.eval_iper_four_arm import IdentityMetric, PoseMetric, image_metrics, open_rgb
 
 
 ROOT = Path(__file__).resolve().parent

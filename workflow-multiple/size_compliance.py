@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Size compliance: does the generator draw each person at the torso the guide asked for?
 
-``eval_dual.json`` already stores, per detected person, the torso it was asked to draw
+``eval_dual_sdpose.json`` already stores, per detected person, the torso it was asked to draw
 (``requested_torso_px``, from the guide geometry) and the torso measured back out of the generated
 image (``detected_torso_px``). Their ratio is the generator's obedience to the requested scale, and
 it is the measurement that decides whether a sizing complaint belongs to the generator or to the
@@ -31,7 +31,7 @@ def group_of(run_name):
 def compliance_groups(runs_root):
     """detected / requested torso per generated person, keyed by arm / framing / guide."""
     groups = defaultdict(list)
-    for path in sorted(Path(runs_root).glob('*/evaluation/eval_dual.json')):
+    for path in sorted(Path(runs_root).glob('*/evaluation/eval_dual_sdpose.json')):
         key = group_of(path.parent.parent.name)
         if key is None:
             continue

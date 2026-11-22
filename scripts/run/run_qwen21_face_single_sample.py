@@ -19,7 +19,7 @@ sys.path.insert(0, str(ROOT))
 import numpy as np
 import torch
 from PIL import Image, ImageDraw
-from eval_iper_four_arm import PoseMetric, image_metrics, open_rgb
+from scripts.eval.eval_iper_four_arm import PoseMetric, image_metrics, open_rgb
 from scripts.evaluate_qwen21_weight_inheritance import cpu_identity_metric, face_detection
 from src.pose_control.qwen21_full.data_runtime import ASSETS, pair_metadata, read_pairs
 from src.pose_control.qwen21_full.execution import RUN_ROOT, json_write

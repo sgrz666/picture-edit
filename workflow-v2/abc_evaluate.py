@@ -18,7 +18,7 @@ def unavailable_report(reason):
 def evaluate(request):
     import cv2
     from PIL import Image,ImageDraw
-    from src.pose_edit import dwpose
+    from src.evaluation import sdpose
     from src.pose_edit.appearance import mask_box,crop_person,load_embedder
     from src.pose_edit.geometry import smplx137_to_dwpose134
     spec=importlib.util.spec_from_file_location('abc_legacy_evaluation',ROOT/'workflow-multiple/evaluate_dual.py')
@@ -31,9 +31,10 @@ def evaluate(request):
     requested=[]
     for joints in arrays['joints_137_cam']:
         uv=joints@K.T;requested.append(smplx137_to_dwpose134(uv[:,:2]/uv[:,2:]))
-    sessions=dwpose.load_sessions(settings)
-    detections=dwpose.detect_people(settings,cv2.cvtColor(np.asarray(image),cv2.COLOR_RGB2BGR),sessions)
-    mapping,assignment=legacy.assign(detections,requested,.5,image.size)
+    runtime=sdpose.load_scoring_runtime(device=settings.get('sdpose_device', 'cpu'))
+    threshold=sdpose.DEFAULT_SCORE_THRESHOLD
+    detections=sdpose.score_people(cv2.cvtColor(np.asarray(image),cv2.COLOR_RGB2BGR),runtime)
+    mapping,assignment=legacy.assign(detections,requested,threshold,image.size)
     basis='whole_image';assigned=[detections[i] for i in mapping] if mapping is not None else [None,None]
     region_counts=[]
     if len(detections)!=2 or mapping is None:
@@ -42,18 +43,18 @@ def evaluate(request):
             box=mask_box(arrays['mask'][p]);x0,y0,x1,y1=box
             dx,dy=(x1-x0)*.2,(y1-y0)*.2
             x0,y0=max(0,int(x0-dx)),max(0,int(y0-dy));x1,y1=min(image.width,int(x1+dx)),min(image.height,int(y1+dy))
-            crop=image.crop((x0,y0,x1,y1));people=dwpose.detect_people(settings,cv2.cvtColor(np.asarray(crop),cv2.COLOR_RGB2BGR),sessions)
+            crop=image.crop((x0,y0,x1,y1));people=sdpose.score_people(cv2.cvtColor(np.asarray(crop),cv2.COLOR_RGB2BGR),runtime)
             region_counts.append(len(people))
             for person in people:
                 person['points']+=np.array([x0,y0]);person['box_xyxy']=(np.asarray(person['box_xyxy'])+[x0,y0,x0,y0]).tolist()
             chosen=min(people,key=lambda q:np.linalg.norm(np.nanmean(q['points'][[8,11]],0)-np.nanmean(requested[p][[8,11]],0))) if people else None
             assigned.append(chosen)
-    pose=[legacy.score_person(target,person,.5,image.size) for target,person in zip(requested,assigned)]
+    pose=[legacy.score_person(target,person,threshold,image.size) for target,person in zip(requested,assigned)]
     # Contacts in generated RGB are 2D observations, never recovered 3D truth.
     def pelvis(points):
         return np.asarray(points)[[8,11]].mean(0)
     relative=None
-    if all(p is not None and (np.asarray(p['scores'])[[8,11]]>=.5).all() for p in assigned):
+    if all(p is not None and (np.asarray(p['scores'])[[8,11]]>=threshold).all() for p in assigned):
         expected=pelvis(requested[1])-pelvis(requested[0]);observed=pelvis(assigned[1]['points'])-pelvis(assigned[0]['points'])
         relative=dict(expected_px=expected.tolist(),observed_px=observed.tolist(),error_px=float(np.linalg.norm(expected-observed)))
     overlay=image.copy();draw=ImageDraw.Draw(overlay)
@@ -94,7 +95,7 @@ def evaluate(request):
     available=sum(v is not None for row in similarities for v in row)
     report['identity']=dict(status='measured' if available==4 else ('partial' if available else 'unavailable'),
         arcface_cosine_matrix=similarities,assigned_cosine=[similarities[i][i] for i in range(2)],
-        alignment='DWPose face68 five-point similarity; CPU ArcFace RGB112',
+        alignment='Source face68 and SDPose generated face68 five-point similarity; CPU ArcFace RGB112',
         unavailable_reason='missing or low-confidence face landmarks' if any(v is None for row in similarities for v in row) else None,
         assignment_uncertain=basis=='regions' or bool(assignment.get('ambiguous',False)))
     # Offline local weights only; no implicit torch.hub downloads.
@@ -154,6 +155,7 @@ def evaluate(request):
         upper_body_handshake_caveat='Estimated lower body is not annotated truth; report target-fit metrics separately from observed driver evidence.')
     from abc_quality import contact_projection_proxy
     report['contact_2d_proxy']=contact_projection_proxy(arrays,requested,assigned)
+    report['pose_backend']=sdpose.POSE_BACKEND
     atomic_json(out/'evaluation.json',report)
     return report
 

@@ -14,7 +14,7 @@
 un.sh / 
 un.py | 双人姿态迁移流水线启动入口与参数编排 |
 | atch_dual.sh | 批量运行脚本（支持 _canvas 与 source_fit 两种定标对照） |
-| evaluate_dual.py | 双人姿态回估评测（DWPose-134、PCK@0.2、MPJPE、髋距误差、换人检测） |
+| evaluate_dual.py | 双人 SDPose 评测（geometry 134 槽位、PCK@0.2、MPJPE、髋距误差、换人检测） |
 | compare_dual.py | 成对对照分析工具（按 arm 比 skeleton_only vs with_b，按 framing 比 _canvas vs source_fit） |
 | bc_estimate_worker.py | A+B+C 双源姿态估计工序（为双人二期准备） |
 | bc_geometry_worker.py | A+B+C 几何对齐与骨架渲染工序 |
@@ -59,7 +59,8 @@ bash run.sh --pair .../pairs/hug_pair00_084_c4_r000 --name hug_fit --framing sou
 bash run.sh --name hug_skeleton_only --pair .../pairs/hug_pair00_084_c4_r000 \
      --generator-references skeleton_only --verify                  # 复验，不推理
 GEOPY=/home/shangguanrz/project/pic-edit/add/envs/smplestx_bw/bin/python
-$GEOPY evaluate_dual.py --run hug_skeleton_only
+SDPOSE_PY=/data/shangguanrz/pic-edit-experiments/姿态估计/four-skeleton-compair/.venv/bin/python
+"$SDPOSE_PY" evaluate_dual.py --run hug_skeleton_only
 $PY report_dual.py
 ```
 
@@ -82,14 +83,14 @@ $PY report_dual.py
 | `prompt/pe_compiled_prompt.txt` | PE 输出经角色编译后的文本（只读） |
 | `prompt/generation_prompt.txt`、`generation_prompt.json` | 实际交给生成器的文本及其来源（PE 或手工） |
 | `prompt/pe_result.json`、`pe_attempts.json`、`pe_raw.txt` | 引用规则、采样、重试留档 |
-| `evaluation/eval_dual.json`、`eval_overlay.png` | 指标与"白圈=请求、彩点=检出"叠加图 |
+| `evaluation/eval_dual_sdpose.json`、`eval_sdpose_overlay.png` | 指标与"白圈=请求、彩点=检出"叠加图 |
 | `run.json`、`outputs.json` | 状态、逐阶段证据、实测校验结论、产物索引 |
 
 缓存判定与单人线一致：`identity`（设置、代码哈希、模型身份、输入内容哈希）进指纹，绝对路径只进 `runtime`，产物按相对 run 目录记录，所以改 run 目录名或搬仓库不会让内容失效；失效时 `stage_reasons` 逐条指名是哪个设置/代码文件/产物变了。收尾会重跑本轮涉及阶段的校验，把结果写进 `run.json` 的 `verification.status`。
 
 ## 评测口径
 
-`evaluate_dual.py` 用 DWPose ONNX（`yolox_l` + `dw-ll_ucoco_384`）在生成图上检出人体，先查**人数**，再按髖心做两种分配的尝试取较者（近tie 时标 `ambiguous`），逐人给 PCK@0.1/0.2/0.5、MPJPE（按请求躯干归一化）、躯干比例，另给两人髖距误差。原始 ONNX 输出是 COCO-WholeBody 133 点，评测经 `cocowholebody133_to_dwpose134` 换算到本仓库渲染用的 134 槽（neck 由两肩中点插入，与 MimicMotion 包装一致）。
+`evaluate_dual.py` 用 SDPose-Wholebody + YOLO11x 在生成图上检出人体，使用仓库指定的 SDPose 解释器，先查**人数**，再按髖心做两种分配的尝试取较者（近tie 时标 `ambiguous`），逐人给 PCK@0.1/0.2/0.5、MPJPE（按请求躯干归一化）、躯干比例，另给两人髖距误差。SDPose 原始输出是 COCO-WholeBody 133 点，评测经 `cocowholebody133_to_dwpose134` 换算到本仓库渲染用的 134 槽（neck 由两肩中点插入，与 MimicMotion 包装一致）。
 
 它只测姿态与人际几何。身份/服装保持由 `src/pose_edit/appearance.py` 补上：把 A 的两人 mask 框与生成图上按姿态分配到的两人检出框各裁一张，过 DINOv2 ViT-S/14 取 CLS 特征算余弦相似，逐人给分数，并把"按外观最优配对"与"按姿态配对"做对比——两者不一致且人均差距超过 0.02 才报 `identity_swap_suspected`。它是外观代理而不是生物身份：重画的脸、被挡的脸都会降分而不证明人被换掉；框内背景变了也动同一个数。检出的点若被生成器藏起来，该点被排除而不算错，所以"藏 limbs"的结果会虚高。
 

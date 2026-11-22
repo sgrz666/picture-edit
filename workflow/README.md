@@ -111,7 +111,8 @@ PE 的产物 `prompt/pe_compiled_prompt.txt` 只读。生成阶段实际读的�
 QWENPY=/home/shangguanrz/nihaochen/envs/qwen21/bin/python
 GEOPY=$($QWENPY -c 'import json;print(json.load(open("config.json"))["geometry_python"])')
 $GEOPY evaluate.py --run hard_05          # 单个 run；已算过则 CACHE_HIT
-$QWENPY evaluate2.py --all                # 无 GT 六轴补测，写 eval2.json，绝不覆写 eval.json
+SDPOSE_PY=/data/shangguanrz/pic-edit-experiments/姿态估计/four-skeleton-compair/.venv/bin/python
+"$SDPOSE_PY" evaluate2.py --all           # SDPose 无 GT 六轴补测
 $QWENPY scorecard.py                      # 汇总 eval2 成横表
 RESOLUTION=768 bash batch.sh              # 全测试集，跑完自动逐对评测
 $QWENPY report.py                         # 全部 run 的索引、状态、逐对指标
@@ -121,7 +122,7 @@ $QWENPY report.py                         # 全部 run 的索引、状态、逐�
 
 它只回答一个问题：生成器有没有把身体摆到骨架要求的位置。身份、服装、场景是否保持，以及多人图里"别人有没有被改动"，都不在指标内。指标两侧用同一个估计器，估计器自身的偏差会同时进入分子分母，没有与人工标注或第二套检测器交叉验证过。
 
-`evaluate2.py` 与 `scorecard.py`（2026-10-14 落盘）补的就是上面这几条：DWPose 作第二读者的一致率、把"画外关节被排除"算成错的 strict PCK、骨长比漂移、ArcFace 身份余弦、背景与人体区域的 MAE/PSNR/SSIM、以及非主体人物的改动。它写 `evaluation/eval2.json` 与 `stage2.json`，不碰 `evaluate.py` 的产物，字节相同的输出图按 `duplicate` 只计一次。指标选择的完整推导见 `docs/workflow_无GT定量评测调研_20261013.md`，方向层的缺口与优先级见 `docs/workflow_大方向优化调研_20261014.md`。**仍然没有任何指标覆盖**：主观合理度、数据质量、双人交互合理性，以及合同验收写的那条"身高高低/体型胖瘦相对估计准确率"。`eval2.json` 目前只覆盖部分 run，`scorecard.py` 的表因此不完整。
+`evaluate2.py` 与 `scorecard.py`（2026-10-14 落盘）补的就是上面这几条：SDPose 作第二读者的一致率、把"画外关节被排除"算成错的 strict PCK、骨长比漂移、ArcFace 身份余弦、背景与人体区域的 MAE/PSNR/SSIM、以及非主体人物的改动。它写 `evaluation/eval2_sdpose.json` 与 `stage2_sdpose.json`，不碰 `evaluate.py` 的产物，字节相同的输出图按 `duplicate` 只计一次。指标选择的完整推导见 `docs/workflow_无GT定量评测调研_20261013.md`，方向层的缺口与优先级见 `docs/workflow_大方向优化调研_20261014.md`。**仍然没有任何指标覆盖**：主观合理度、数据质量、双人交互合理性，以及合同验收写的那条"身高高低/体型胖瘦相对估计准确率"。SDPose 结果目前只覆盖已重评的 run，`scorecard.py` 的表因此不完整。
 
 主观读数（合同验收写的"合理比例"与"优胜率"）不在机器指标里，走 `human_eval/`：
 出题（只出两臂都有图的题、随机左右）→ 单文件离线盲评 → `tally.py` 给 win_rate 与**按题** bootstrap CI95、

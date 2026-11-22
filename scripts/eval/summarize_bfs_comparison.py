@@ -165,12 +165,16 @@ def provenance(records):
     assets = ROOT / 'datasets/iPER/iper_assets_512_nvdiffrast'
     paths = {Path(r[key]) for r in records for key in ('source_path', 'target_path')}
     paths.update(assets / r['appearance'] / 'v6_conditions.pt' for r in records)
-    paths.update(ROOT / name for name in ('eval_iper_four_arm.py', 'src/data/iper_dataset.py',
+    paths.update(ROOT / name for name in ('scripts/eval/eval_iper_four_arm.py', 'src/data/iper_dataset.py',
                  'src/data/tiktok_dataset.py', 'src/pose_control/qwen21/body_adapter.py', 'src/pose_control/qwen21/runtime.py',
                  'models/antelopev2/scrfd_10g_bnkps.onnx', 'models/antelopev2/glintr100.onnx',
-                 'models/DWPose/yolox_l.onnx', 'models/DWPose/dw-ll_ucoco_384.onnx',
                  'scripts/eval/summarize_bfs_comparison.py'))
+    pose_models = [record.get('pose_model') for record in records]
+    pose_model = pose_models[0] if pose_models else None
+    if any(model != pose_model for model in pose_models):
+        raise ValueError('Pose scores from different evaluators cannot be aggregated together')
     return {'sampled_root': str(sampled), 'assets_root': str(assets),
+            'pose_model': pose_model or {'backend': 'legacy-dwpose'},
             'hash_capture_scope': 'postrun read-only hashes of input RGB, target condition bundles and metric/control code; not every backbone shard',
             'sha256': {str(p): file_hash(p) for p in sorted(paths) if p.is_file()}}
 
