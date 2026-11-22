@@ -31,7 +31,7 @@ def frame_policy(frame, sd, face):
         'pose_backend': 'sdpose', 'annotation_source': frame['sdpose']}
 
 
-def build_regions(sd, body, spec, people, rgb_sha, annotation_sha, sam_quality):
+def build_regions(sd, body, spec, people, rgb_sha, annotation_sha, sam_quality,*,segmentation_accepted=True):
     import numpy as np
     from src.pose_control.qwen21_full.native_v5.spatial_masks import (
         BODY_JOINTS, COARSE_HAND_GAIN, _gaussian, _hand_region, _coarse_hand_region, canvas_mask)
@@ -75,6 +75,13 @@ def build_regions(sd, body, spec, people, rgb_sha, annotation_sha, sam_quality):
         'body_source':'SAM2.1 from locked SDPose body points and bbox','hands':hand_status,
         'quality_policy':'raw SDPose heatmap scores clipped to [0,1]; original annotation unchanged',
         'intersection':'pixel SAM support before area pooling; coverage applied once'}
+    metadata['segmentation_accepted']=segmentation_accepted
+    if not segmentation_accepted:
+        for family in ('person','joint','hands','background'):
+            arrays[family].fill(0);arrays[family+'_quality'].fill(0)
+        for status in metadata['hands'].values():
+            status['annotation_quality']=status['quality'];status['quality']=0.;status['enabled']=False
+        metadata['missing_supervision']='SAM coverage below .65; no spatial GT, no background metric, no weight redistribution'
     return arrays,metadata
 
 
@@ -98,6 +105,8 @@ def main():
     from src.pose_control.qwen21_full.region_supervision import write_region_sidecar
     from src.pose_control.qwen21_full.native_v7.training import TrainingConfigV7
     from scripts.data.build_native_spatial_weights import SamForeground
+    from sam_quality import AssessedForeground
+    from cache_preparation import write_once
     fraction=float(os.environ.get('REGION_PILOT_MEMORY_FRACTION','.9'))
     if not 0<fraction<=.95:raise ValueError('GPU memory fraction must be in (0,.95]')
     torch.set_num_threads(4); torch.cuda.set_per_process_memory_fraction(fraction)
@@ -127,8 +136,8 @@ def main():
     sam_args=SimpleNamespace(sam_repo=a.model_repo/'add/tools/sam2',
         sam_checkpoint=Path('/data/shangguanrz/models/home-models/sam2.1/sam2.1_hiera_large.pt'),
         sam_config='configs/sam2.1/sam2.1_hiera_l.yaml',device='cuda')
-    sam=SamForeground(sam_args)
-    write(root/'data/asset-producer.json',{'source':producer,'importer':ref(source_dir/'hia_training.py'),
+    sam=AssessedForeground(SamForeground(sam_args))
+    write_once(root/('data/asset-producer-'+producer['sha256'][:12]+'.json'),{'source':producer,'importer':ref(source_dir/'hia_training.py'),
           'appearance':ref(source_dir/'appearance.py'),'appearance_models':models,
           'sam_checkpoint':ref(sam_args.sam_checkpoint),'smplx_model':ref(model),'detector':ref(face_root/'scrfd_10g_bnkps.onnx'),
           'canvas_long_side':512,'pose_backend':'sdpose','geometry_backend':'SMPLest-X_locked_SDpose_bbox',
@@ -169,14 +178,16 @@ def main():
         with Image.open(frame['skeleton']['path']) as im: guide=spec.image(im.convert('RGB'))
         guide_path=attempt/'sdpose_guide.png'
         with guide_path.open('xb') as f: guide.save(f,format='PNG')
-        arrays,metadata=build_regions(sd,body,spec,[person_id,'__inactive__'],frame['rgb_sha256'],frame['sdpose']['sha256'],sam_report['sam_score'])
+        arrays,metadata=build_regions(sd,body,spec,[person_id,'__inactive__'],frame['rgb_sha256'],frame['sdpose']['sha256'],
+                                     sam_report['sam_score'],segmentation_accepted=sam_report['segmentation_accepted'])
         region=write_region_sidecar(attempt/'regions.npz',arrays,metadata); key=frame['rgb_sha256']+':'+spec.fingerprint()
         item={'frame':frame,'canvas':spec.metadata(),'sam_report':sam_report,'region_key':key,
               'region_entry':{'file':region,'metadata':metadata},'artifacts':{'asset':asset_ref,'mask':ref(mask),
               'references':refs_ref,'detail':detail_ref,'guide':ref(guide_path),'region':region}}
         write(marker,item); built[fid]=item; entries[key]=item['region_entry']
         print(json.dumps({'native_frame':number,'total':len(selection['frames']),'frame_id':fid}),flush=True)
-    region_index=write(root/'data/region_index.json',{'schema':'native_region_index_v1','entries':entries})
+    region_index=write_once(root/'data/region_index.json',{'schema':'native_region_index_v1','entries':entries})
+    canonical=read(root/'data/qwen_condition_index.json') if (root/'data/qwen_condition_index.json').exists() else None
     splits=[s for s in ('train','val','test') if any(p['split']==s for p in selection['pairs'])]
     rows={s:[] for s in splits}; groups={s:{} for s in splits}; evaluation=[]
     for pair in selection['pairs']:
@@ -213,7 +224,12 @@ def main():
             {'role':'source','file':ref(source['frame']['rgb_path']),'canvas':source['canvas'],'canvas_id':source_spec.fingerprint(),'space':'original'},
             {'role':'target_pose','file':target['artifacts']['guide'],'canvas':target['canvas'],'canvas_id':target_spec.fingerprint(),'space':'canvas'}],
             'prompt':{'text':prompt,'sha256':prompt_sha,'field':'compiled_prompt_inference','bank':bank,'schema':'xiaohongshu_native_prompt_v1','pair_id':pair_id}}
-        bound=write(root/f'conditions/{pair_id}.json',condition)
+        if canonical is not None:
+            key='xiaohongshu_'+pair['split']+'\0'+pair_id
+            bound=canonical['entries'][key]['condition']
+            from src.pose_control.qwen21_full.native_v5.conditioning import read_condition
+            read_condition(bound,{**sample,'local_condition_v4':local,'native_scene_kind':'single'})
+        else:bound=write(root/f'conditions/{pair_id}.json',condition)
         row={'schema':'native_full_pair_v5','pair_id':pair_id,'v4_manifest':ref(v4_path),'references':source['artifacts']['references'],
              'detail':source['artifacts']['detail'],'supervision':supervision_ref,'qwen_condition':bound}
         split=pair['split']; rows[split].append(row); groups[split][pair_id]='xiaohongshu:'+pair['note_id']
