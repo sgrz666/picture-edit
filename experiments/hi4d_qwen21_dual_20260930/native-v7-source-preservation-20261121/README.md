@@ -26,13 +26,14 @@ Bilibili完整20000步checkpoint实际位于`/data/shangguanrz/pic-edit-experime
 
 ### Bilibili20k→V7 兼容迁移（2026-11-22 完成）
 
-上节遗留的「须先完成 Bilibili20k→V7 兼容迁移」已落地。产物为**初始化-only 文件**（与 v7.pt 同构，无 training_state / 无 commit 边车）：
+上节遗留的「须先完成 Bilibili20k→V7 兼容迁移」已落地。产物为**初始化-only 文件**（与 v7.pt 同构，无 training_state / 无 commit 边车）。**默认初始化（用户 2026-11-22 指定）**：
 
-- 权重：`/data/shangguanrz/pic-edit-experiments/two/qwen21_hi4d_dual/native-v7-singlepair-overfit-20261117-v1/initialization/bilibili20k-v7.pt`，SHA256 `f53ec4512c7a9b4b9921f868fa58c150c236215026e3fca7277e2f96ac16654e`
-- 迁移报告：同目录 `bilibili20k-v7-migration.json`；脚本：同实验 `scripts/migrate_bilibili20k_to_v7.py`
-- 策略：**v7.pt 骨架提供 V7 架构头与全部新增模块的规范初始化，再用 Bilibili20k 的同名同形张量整体覆盖**。实测 V5 的 1054 个张量在 V7 中全部同名同形（零冲突、零丢弃），V7-only 的 89 个张量（`poselink.*` 81 个随机初始化、`face/hand_controller.identity_modulation.*` 零初始化 + norm weight=1）逐字保留 v7.pt 值；`_extra_state` 6 项保留骨架值。
-- 校验：逐张量回读位级相等（1054+89 全过）；`NativeFullRuntimeV7.from_checkpoint` 在 CPU 上从迁移文件严格重建通过（架构头 + 1143 键 strict load）。
-- 使用：新训练在 config 的 `initialization={path, sha256}` 绑定该文件即可（backend 直接加载，行为等同 20k 增量 + V7 新模块初始态）；它不是 resume 点（无 optimizer / journal），不要对它做 resume。此后训练初始化默认用它（AGENTS.md 2026-11-22 规则）。
+- 权重：`/data/shangguanrz/pic-edit-experiments/two/qwen21_hi4d_dual/native-v7-singlepair-overfit-20261117-v1/initialization/bilibili20k-v7-dual192new.pt`，SHA256 `17b23faec7c39c1c8e0b99f4bd05b82bbfe646eb3695a9336459d44796c72331`
+- 构成：1054 个共享键继承 Bilibili20k（`d1a655a8…`，同名同形零冲突零丢弃）；89 个 V7-only 键（`poselink.*` 81 + `face/hand_controller.identity_modulation.*` 8）取自**双人 192 分支最终权重** `update_00000192_19203500495047c59007c90e347049af.pt`（`eca8f5ec…`，180 步双人 + 12 步 preservation 训练值，实测 89/89 均已离开初始态）；架构头/runtime_config/profile/trainability 逐字取自 v7.pt 骨架
+- 迁移报告：同目录 `bilibili20k-v7-dual192new-migration.json`；脚本：同实验 `scripts/migrate_bilibili20k_to_v7.py`（`--new-modules-source` 可指定训练来源，`--output-name` 区分变体）
+- 校验：逐张量回读位级相等（1054 对 Bilibili20k + 89 对双人 192）；`NativeFullRuntimeV7.from_checkpoint` 在 CPU 上从迁移文件严格重建通过
+- 备选变体：`bilibili20k-v7.pt`（`f53ec451…`，89 键保留 v7.pt 未训练初始态），仅用于明确标注的对照
+- 使用：新训练在 config 的 `initialization={path, sha256}` 绑定该文件（backend 直接加载）；它不是 resume 点（无 optimizer / journal），不要对它做 resume。此后训练初始化默认用它（AGENTS.md 2026-11-22 规则）
 
 ## 内容与使用
 
