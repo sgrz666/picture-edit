@@ -19,7 +19,10 @@ def main():
         'counts':read(root/'data/selection.json')['pilot_counts'],'budgets':request['budgets'],'followup_updates':request['followup_updates'],
         'prepared':(root/'prepared.json').is_file(),'cache_ready':(root/'cache_ready.json').is_file(),
         'test_comparison_ready':(root/'report/test-comparison-ready.json').is_file(),
-        'pipeline_complete':(root/'pipeline-complete.json').is_file()}
+        'optimization_complete':(root/'optimization-complete.json').is_file(),
+        'multi_seed_render_complete':(root/'report/deferred-render-complete.json').is_file(),
+        'pipeline_complete':(root/'pipeline-complete.json').is_file() or all((root/p).is_file() for p in
+            ('complete.json','report/comparison-ready.json','report/test-comparison-ready.json'))}
     events=root/'logs/events.jsonl'
     result['recent_events']=list(map(json.loads,events.read_text().splitlines()[-8:])) if events.exists() else []
     print(json.dumps(result,indent=2,ensure_ascii=False))

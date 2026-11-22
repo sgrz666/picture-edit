@@ -1,0 +1,195 @@
+{
+  "tasks": [
+    {
+      "label": "initial",
+      "split": "val",
+      "seed": 42,
+      "pairs": 40
+    },
+    {
+      "label": "initial",
+      "split": "val",
+      "seed": 123,
+      "pairs": 40
+    },
+    {
+      "label": "initial",
+      "split": "test",
+      "seed": 42,
+      "pairs": 64
+    },
+    {
+      "label": "initial",
+      "split": "test",
+      "seed": 123,
+      "pairs": 64
+    },
+    {
+      "label": "initial",
+      "split": "test",
+      "seed": 2026,
+      "pairs": 64
+    },
+    {
+      "label": "uniform_S3",
+      "split": "val",
+      "seed": 42,
+      "pairs": 40
+    },
+    {
+      "label": "uniform_S3",
+      "split": "val",
+      "seed": 123,
+      "pairs": 40
+    },
+    {
+      "label": "uniform_S3",
+      "split": "test",
+      "seed": 42,
+      "pairs": 64
+    },
+    {
+      "label": "uniform_S3",
+      "split": "test",
+      "seed": 123,
+      "pairs": 64
+    },
+    {
+      "label": "uniform_S3",
+      "split": "test",
+      "seed": 2026,
+      "pairs": 64
+    },
+    {
+      "label": "regional_S3",
+      "split": "val",
+      "seed": 42,
+      "pairs": 40
+    },
+    {
+      "label": "regional_S3",
+      "split": "val",
+      "seed": 123,
+      "pairs": 40
+    },
+    {
+      "label": "regional_S3",
+      "split": "test",
+      "seed": 42,
+      "pairs": 64
+    },
+    {
+      "label": "regional_S3",
+      "split": "test",
+      "seed": 123,
+      "pairs": 64
+    },
+    {
+      "label": "regional_S3",
+      "split": "test",
+      "seed": 2026,
+      "pairs": 64
+    },
+    {
+      "label": "continue_sft",
+      "split": "val",
+      "seed": 42,
+      "pairs": 40
+    },
+    {
+      "label": "continue_sft",
+      "split": "val",
+      "seed": 123,
+      "pairs": 40
+    },
+    {
+      "label": "continue_sft",
+      "split": "test",
+      "seed": 42,
+      "pairs": 64
+    },
+    {
+      "label": "continue_sft",
+      "split": "test",
+      "seed": 123,
+      "pairs": 64
+    },
+    {
+      "label": "continue_sft",
+      "split": "test",
+      "seed": 2026,
+      "pairs": 64
+    },
+    {
+      "label": "grpo",
+      "split": "val",
+      "seed": 42,
+      "pairs": 40
+    },
+    {
+      "label": "grpo",
+      "split": "val",
+      "seed": 123,
+      "pairs": 40
+    },
+    {
+      "label": "grpo",
+      "split": "test",
+      "seed": 42,
+      "pairs": 64
+    },
+    {
+      "label": "grpo",
+      "split": "test",
+      "seed": 123,
+      "pairs": 64
+    },
+    {
+      "label": "grpo",
+      "split": "test",
+      "seed": 2026,
+      "pairs": 64
+    },
+    {
+      "label": "uniform_S0",
+      "split": "val",
+      "seed": 42,
+      "pairs": 40
+    },
+    {
+      "label": "uniform_S1",
+      "split": "val",
+      "seed": 42,
+      "pairs": 40
+    },
+    {
+      "label": "uniform_S2",
+      "split": "val",
+      "seed": 42,
+      "pairs": 40
+    },
+    {
+      "label": "regional_S0",
+      "split": "val",
+      "seed": 42,
+      "pairs": 40
+    },
+    {
+      "label": "regional_S1",
+      "split": "val",
+      "seed": 42,
+      "pairs": 40
+    },
+    {
+      "label": "regional_S2",
+      "split": "val",
+      "seed": 42,
+      "pairs": 40
+    }
+  ],
+  "expected_images": 1600,
+  "training_core": "/data/shangguanrz/pic-edit-experiments/one/xiaohongshu-region-sdpose-sft-rl-20261121-expanded-v1/source/runtime-v3",
+  "training_precision_changed": false,
+  "optimization_budget_changed": false,
+  "test_used_for_optimization": false
+}

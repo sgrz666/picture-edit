@@ -8,6 +8,16 @@
 
 ## 内容与使用
 
+训练已实际开始。最近核对无加权 S0 **133／200 updates**，梯度有限且非零；747 帧 Native 装配、616 对缓存绑定、真实 data／grad 门禁和首轮 40 张初始化验证图均已完成。当前 SGD **PID 3346829** 保留，吞吐主管 **PID 3413941** 已接管原主管等候工作，未重启或重置当前优化器。原主管退场不代表 SGD 退出；查看 `logs/throughput-v1.log`／`logs/throughput-v1.pid.json`。
+
+为减少阶段间等待，完整验证／测试出图与指标统一后置到全部优化完成之后；各阶段 checkpoint 和 generation config 照常锁定，真实梯度门禁保留。训练核心仍使用 `source/runtime-v3`，只更换独立编排脚本，未改精度、学习率、采样、初始化或预算。GPU 原观测 utilization 91%，此优化减少的是阻塞式出图墙钟，不声称单步算子已经提速。
+
+图片已增加到 **1600 张**：五份最终权重的 test 各 64 对×3 seeds（42／123／2026），共 **960 张**；最终 val 各 40 对×2 seeds（42／123），中间六阶段 val 各 40 对×seed42，共 **640 张**。现有 40 张 seed42 初始化图复用不覆盖。每份权重只加载一次 Qwen 连续完成所有 split／seed，SDPose／身份／背景集中批量评价，再按模型／split／seed分组；seed42 主对照路径保留，额外种子在 `output/generation/multi-seed/` 与 `report/evaluation/multi-seed/`。
+
+图片计划凭据为 `report/deferred-image-plan.json`；只有全部优化完成才写 `optimization-complete.json` 并启动完整图片批次。多种子图片／指标完成后记录 `report/deferred-render-complete.json`，再生成原验证／测试主对照报告。原始 source／SDPose／GT／初始化生成图的 6 对预览在 `report/baseline-panel-v1.png`，它不是小红书新训练权重效果。
+
+吞吐／出图代码包 SHA `6f4550181e1848e85044e5cae7760a75387fbc9220058ed11dd3404c673640ff`，本地 36 项相关回归、服务器 4 项真实脚本回归通过，覆盖活动训练接管、多 seed 数量、同模型只加载一次、既有图片复用。当前仍在训练，不把计划图片数当作已生成数。
+
 `scripts/prepare.py --expanded` 锁定笔记级划分、重复 RGB SHA 分组和轮流取样；`geometry.py --reuse-index` 校验后复用已有真实几何并补算新增帧；`assets.py` 构建 Native 数据、新 SDPose 条件及逐手区域侧车。`waiting.py` 以 boot id／start ticks 绑定指定 PID，显存探测只调用 NVML，不创建 CUDA context，瞬时查询失败会重试。
 
 当前扩大版根为 `/data/shangguanrz/pic-edit-experiments/one/xiaohongshu-region-sdpose-sft-rl-20261121-expanded-v1`。`launch_request.json` 固定 PID **1916769**（start ticks `366098433`）、起始权重、样本、预算和资源限制；结束后检查至少 64 GiB 空闲显存再自动接续，Torch 单进程上限为总显存 75%。启动凭据为 `logs/automatic-v1.pid.json`，阶段事件为 `logs/events.jsonl`；文件锁拒绝重复程序。旧 78／10 根 `...-20261121-v1` 原样保留，其旧 CUDA 显存探针曾因 OOM 退出，不再作为有效等待器。
@@ -24,7 +34,7 @@ Hydra 依赖恢复后，旧主管 PID 2939783／资产子进程 2939801 已退�
 
 编码产物已完成，`cache_ready.json` 仍须等 Native manifest 完成后，以真实 DataPlan 逐项核对完整条件集合、Source／GT RGB SHA 和 Canvas ID，再自动发布并继续 SFT／GRPO。不能把编码完成当作训练完成。缓存记录在 `report/independent-cache-complete.json`，新日志为 `logs/parallel-v2.log` 与 `logs/native_assets_parallel_*.log`。
 
-测试源有独立 `test` 角色，不进入 optimizer pools、训练路由、validation loss probe、RL reward、checkpoint 选择或调参。所有优化完成后，initial／uniform_S3／regional_S3／continue_sft／grpo 各生成固定 **64 对 test 图，共 320 张**（seed42、20 steps），然后用 SDPose＋身份／背景评价。val 的阶段图与 test 最终图分别存放；汇总逐图检查 split、pair ID、真实 checkpoint SHA 和图片 SHA，输出各自的 8 列面板（Source、SDPose、GT、五份权重）。
+测试源有独立 `test` 角色，不进入 optimizer pools、训练路由、validation loss probe、RL reward、checkpoint 选择或调参。所有优化完成后评价 initial／uniform_S3／regional_S3／continue_sft／grpo，均为 20-step 出图。val 与 test 分开存放；汇总逐图检查 split、pair ID、真实 checkpoint SHA 和图片 SHA。seed42 主对照的 8 列面板保持原口径（Source、SDPose、GT、五份权重），其他 seed 单独归档。
 
 新运行使用共享 Native RL 更新内核，GRPO 的 50 updates 是 50 次 `optimizer.step()`。背景只奖励有像素对应证据的 Source 场景。当前配对清单没有提供这项证据，`background_reward` 为 `null`，`valid_mse` 保留作 Target GT 诊断。训练前固定每组 Body、Hands、ID 和背景的评分资格，生成漏检计零分，评测程序异常时该组停止更新并记录错误。
 
@@ -58,7 +68,7 @@ python -m pytest tests/test_region_pilot_automation.py tests/test_native_test_sp
 
 `scripts/audit_initialization.py --root <run> --repo <冻结源码目录> --output <新的报告路径>` 可在 Qwen21 环境用 CPU 复核继承张量、176 帧原图／几何和真实 importer／FK；第一次审计结果在 `report/initialization-acceptance-v1.json`，本地镜像在 `report/live-run/`。不把该 CPU 验收称为真实 GPU 梯度验收。
 
-扩大版的 CPU 状态命令为 `Qwen21-python <run>/scripts/status.py --root <run> --launcher parallel-v2`，可检查当前主管、预算、阶段与终态，不加载 CUDA。并行准备复测为 `python -m pytest tests/test_parallel_preparation.py tests/test_xiaohongshu_region_prepare.py tests/test_region_pilot_automation.py tests/test_native_test_split.py tests/test_sam_dependency_overlay.py -q`，23 项通过；真实 SAM GPU 记录在 `report/sam-smoke-v1.json`。最终验证图在 `output/generation/<权重>/`，测试原图在 `output/generation/test/<权重>/`，RL 候选图在 `output/grpo/rollouts/`，逐图指标在 `report/evaluation/`；`report/comparison-ready.json` 与 `report/test-comparison-ready.json` 分别指向验证／测试表和面板。重新出图和复测报告必须使用新名字，旧产物保留。
+扩大版 CPU 状态命令为 `Qwen21-python <run>/scripts/status-throughput-v1.py --root <run> --launcher throughput-v1`，训练日志查看 `logs/throughput-v1.log` 和 `logs/train_*.log`，实际步数以 `output/<臂>/<阶段>/segments/*/metrics.jsonl` 的 committed update 为准，不加载 CUDA。吞吐和多 seed 复测为 `python -m pytest tests/test_deferred_rendering.py -q`（4 passed）。最终验证图在 `output/generation/<权重>/`，测试原图在 `output/generation/test/<权重>/`，额外种子在 `output/generation/multi-seed/`，RL 候选图在 `output/grpo/rollouts/`；主对照索引为 `report/comparison-ready.json`／`report/test-comparison-ready.json`。重新出图和复测报告必须用新名字，旧产物保留。
 
 ## 与已有实验的关系
 

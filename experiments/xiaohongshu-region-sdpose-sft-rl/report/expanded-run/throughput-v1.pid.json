@@ -1,0 +1,26 @@
+{
+  "pid": 3413941,
+  "command": [
+    "/home/shangguanrz/nihaochen/envs/qwen21/bin/python",
+    "-u",
+    "/data/shangguanrz/pic-edit-experiments/one/xiaohongshu-region-sdpose-sft-rl-20261121-expanded-v1/source/throughput-driver-v1/fast_run.py",
+    "--root",
+    "/data/shangguanrz/pic-edit-experiments/one/xiaohongshu-region-sdpose-sft-rl-20261121-expanded-v1",
+    "--repo",
+    "/data/shangguanrz/pic-edit-experiments/one/xiaohongshu-region-sdpose-sft-rl-20261121-expanded-v1/source/runtime-v3",
+    "--common-dir",
+    "/data/shangguanrz/pic-edit-experiments/one/xiaohongshu-region-sdpose-sft-rl-20261121-expanded-v1/source/runtime-v3/experiments/bilibili-single-spatial-train-20261107/region-sdpose-sft-rl/scripts",
+    "--adopt-training",
+    "/data/shangguanrz/pic-edit-experiments/one/xiaohongshu-region-sdpose-sft-rl-20261121-expanded-v1/logs/adopted-training-throughput-v1.json",
+    "--until",
+    "all",
+    "--rl-updates",
+    "50"
+  ],
+  "log": "/data/shangguanrz/pic-edit-experiments/one/xiaohongshu-region-sdpose-sft-rl-20261121-expanded-v1/logs/throughput-v1.log",
+  "started_at_utc": "2026-11-22T06:16:44.441925+00:00",
+  "adopted_training_pid": 3346829,
+  "old_training_core_retained": "/data/shangguanrz/pic-edit-experiments/one/xiaohongshu-region-sdpose-sft-rl-20261121-expanded-v1/source/runtime-v3",
+  "driver_sha256": "6f4550181e1848e85044e5cae7760a75387fbc9220058ed11dd3404c673640ff",
+  "planned_images": 1600
+}
