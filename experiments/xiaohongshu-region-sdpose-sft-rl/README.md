@@ -28,11 +28,11 @@
 
 Hydra 依赖恢复后，旧主管 PID 2939783／资产子进程 2939801 已退出：第 130 帧为植物遮挡人像，SAM body 提示覆盖 .61538，低于 .65。原始图、三种提示诊断和所有失败日志保留。现在保留 .65 标注资格门槛；未通过分割的样本不丢弃，其分割相关 person／joint／hand／background 空间支持和 q 均置零，背景评价不计入；global FM 保留，缺失权重不重新分配。Source 的非空 SAM 代理只作弱条件，另行记录，不冒充合格 GT。
 
-用户要求不再串行等待后，已拆为独立 Qwen 编码与 Native 装配。当前并行主管 **PID 3078223**，装配子进程 **3079034**，凭据 `logs/parallel-v2.pid.json`。747 帧所用的 616 个最终 Qwen 条件已独立锁定，Native manifest 引用同一条件 SHA；编码无需 SAM／DINO／Native mesh。**616／616 对缓存编码完成**，峰值 allocated 17.49 GiB；缓存索引 SHA `852db52f99065a53b39b870bad5648a47ea73e059be75b3a9313f15095b04620`。最近装配 **153／747 帧**，已通过原先阻塞的第 130 帧，继续运行。
+用户要求不再串行等待后，已拆为独立 Qwen 编码与 Native 装配。此前并行主管 PID 3078223、装配 PID 3079034 的凭据 `logs/parallel-v2.pid.json` 只作历史记录。747 帧所用的 616 个最终 Qwen 条件独立锁定，Native manifest 引用同一条件 SHA；编码无需 SAM／DINO／Native mesh。**616／616 对缓存编码完成**，峰值 allocated 17.49 GiB，索引 SHA `852db52f99065a53b39b870bad5648a47ea73e059be75b3a9313f15095b04620`；Native 现已 **747／747 帧完成**。
 
 当前准备源码为 `source/runtime-v3`：从已验收 `runtime-v1` 原样保留训练核心，仅叠加准备脚本和回归；准备 delta SHA `e14d782698b252c4d69804467f171c19202973dae5021ab244c9012136d5a64f`，945 个文件校验／编译和服务器 **104 项回归通过**。Qwen 编码进程未因主管交接而重启。装配使用设备 20% 上限，编码使用 35%；正式训练仍按原请求使用 75% 上限／64 GiB 门槛。样本、预算、画布、主线权重、Qwen 和 evaluator 不变。
 
-编码产物已完成，`cache_ready.json` 仍须等 Native manifest 完成后，以真实 DataPlan 逐项核对完整条件集合、Source／GT RGB SHA 和 Canvas ID，再自动发布并继续 SFT／GRPO。不能把编码完成当作训练完成。缓存记录在 `report/independent-cache-complete.json`，新日志为 `logs/parallel-v2.log` 与 `logs/native_assets_parallel_*.log`。
+`cache_ready.json` 已经通过真实 DataPlan 对完整条件集合、Source／GT RGB SHA 和 Canvas ID 的逐项核对，训练已按上方当前状态启动。缓存记录在 `report/independent-cache-complete.json`，准备日志 `logs/parallel-v2.log`／`logs/native_assets_parallel_*.log` 保留。
 
 测试源有独立 `test` 角色，不进入 optimizer pools、训练路由、validation loss probe、RL reward、checkpoint 选择或调参。所有优化完成后评价 initial／uniform_S3／regional_S3／continue_sft／grpo，均为 20-step 出图。val 与 test 分开存放；汇总逐图检查 split、pair ID、真实 checkpoint SHA 和图片 SHA。seed42 主对照的 8 列面板保持原口径（Source、SDPose、GT、五份权重），其他 seed 单独归档。
 
