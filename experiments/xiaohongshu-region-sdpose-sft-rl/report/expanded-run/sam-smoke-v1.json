@@ -1,0 +1,34 @@
+{
+  "passed": true,
+  "info": {
+    "sam_score": 0.94921875,
+    "body_prompt_coverage": 1.0,
+    "foreground_fraction": 0.1367091049382716,
+    "candidate": 1
+  },
+  "mask": {
+    "path": "/data/shangguanrz/pic-edit-experiments/one/xiaohongshu-region-sdpose-sft-rl-20261121-expanded-v1/report/sam-smoke-v1.png",
+    "sha256": "8e55fae42728b58cada319abb324650008f0565cb58be9fbcf5c2b7404e50714"
+  },
+  "frame": "657451ec000000003c01174e_7",
+  "dependency_manifest": {
+    "path": "/data/shangguanrz/pic-edit-experiments/one/xiaohongshu-region-sdpose-sft-rl-20261121-expanded-v1/source/sam-dependencies-v1/manifest.json",
+    "sha256": "d0a1424cad02401a07ac76e2d955525d26adc895955277bc859f96b26fa61981"
+  },
+  "frameworks": {
+    "torch": {
+      "version": "2.8.0+cu128",
+      "file": "/home/shangguanrz/nihaochen/envs/qwen21/lib/python3.12/site-packages/torch/__init__.py"
+    },
+    "diffusers": {
+      "version": "0.41.0.dev0",
+      "file": "/home/shangguanrz/nihaochen/envs/qwen21/lib/python3.12/site-packages/diffusers/__init__.py"
+    },
+    "transformers": {
+      "version": "5.17.0",
+      "file": "/home/shangguanrz/nihaochen/envs/qwen21/lib/python3.12/site-packages/transformers/__init__.py"
+    }
+  },
+  "peak_allocated": 1707905224,
+  "training_started": false
+}

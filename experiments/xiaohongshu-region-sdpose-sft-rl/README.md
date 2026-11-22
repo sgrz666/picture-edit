@@ -12,7 +12,11 @@
 
 当前扩大版根为 `/data/shangguanrz/pic-edit-experiments/one/xiaohongshu-region-sdpose-sft-rl-20261121-expanded-v1`。`launch_request.json` 固定 PID **1916769**（start ticks `366098433`）、起始权重、样本、预算和资源限制；结束后检查至少 64 GiB 空闲显存再自动接续，Torch 单进程上限为总显存 75%。启动凭据为 `logs/automatic-v1.pid.json`，阶段事件为 `logs/events.jsonl`；文件锁拒绝重复程序。旧 78／10 根 `...-20261121-v1` 原样保留，其旧 CUDA 显存探针曾因 OOM 退出，不再作为有效等待器。
 
-扩大版实际启动器为 **PID 2226038**，已核对 `launcher_alive=true`、`dependency_still_running=true`；尚未执行 GPU 准备或训练。冻结源码 `source/runtime-v1` 包 SHA256 `1eace7a3e9d793230bcb51c282b220f7dee969b0ed0dd7a9d1d9df00078bea70`，938 个文件校验与编译通过，本地／服务器各 **98 项回归通过**。旧等待进程已退出，旧目录的 `report/superseded-expanded-v1.json` 记录新落点。实际状态仍以当前进程和新目录事件为准。
+扩大版首个启动器 PID 2226038 已退出：依赖 PID 1916769 结束后，575 个新增几何完成，随后 SAM2 因 Qwen21 缺少 `hydra` 而在 Native 资产开始前失败；没有启动 SFT 或生成 test 图。部署时缺少真实 SAM 环境检查，不能把之前的排队状态当作训练进展。938 个源码 SHA／编译和 98 项回归已通过，但不替代此 GPU 环境验收。
+
+已用 `prepare_sam_dependencies.py` 从现有 DeepGen 环境原样复制 5 个纯 Python 包到本实验 `source/sam-dependencies-v1`，276 个文件按 SHA 固定，拒绝二进制模块与 Torch／diffusers／transformers；不修改 Qwen21 环境。依赖 manifest SHA 为 `d0a1424cad02401a07ac76e2d955525d26adc895955277bc859f96b26fa61981`。真实 SAM GPU 单帧通过：score .94922、人体提示点覆盖 1.0、峰值 allocated 1.591 GiB；框架仍为 Torch 2.8.0+cu128／diffusers 0.41.0.dev0。
+
+当前恢复主管 **PID 2939783**，资产子进程 **2939801**，启动凭据为 `logs/recovery-v2.pid.json`，主管日志 `logs/recovery-v2.log`。最近核对 Native 资产 **67／747 帧**，新几何已全部完成，缓存／SFT／test 尚未执行。准备阶段单进程上限为设备 20%、要求 20 GiB 空闲；正式训练仍按原请求使用 75% 上限／64 GiB 门槛。数据集、预算、权重、算法和冻结训练源码均保持原绑定。`recover_assets.py` 在资产完成后自动交回原冻结 pipeline，全部旧失败日志保留。
 
 测试源有独立 `test` 角色，不进入 optimizer pools、训练路由、validation loss probe、RL reward、checkpoint 选择或调参。所有优化完成后，initial／uniform_S3／regional_S3／continue_sft／grpo 各生成固定 **64 对 test 图，共 320 张**（seed42、20 steps），然后用 SDPose＋身份／背景评价。val 的阶段图与 test 最终图分别存放；汇总逐图检查 split、pair ID、真实 checkpoint SHA 和图片 SHA，输出各自的 8 列面板（Source、SDPose、GT、五份权重）。
 
@@ -46,7 +50,7 @@ python -m pytest tests/test_region_pilot_automation.py tests/test_native_test_sp
 
 `scripts/audit_initialization.py --root <run> --repo <冻结源码目录> --output <新的报告路径>` 可在 Qwen21 环境用 CPU 复核继承张量、176 帧原图／几何和真实 importer／FK；第一次审计结果在 `report/initialization-acceptance-v1.json`，本地镜像在 `report/live-run/`。不把该 CPU 验收称为真实 GPU 梯度验收。
 
-扩大版的 CPU 状态命令为 `Qwen21-python <run>/scripts/status.py --root <run>`，可检查依赖 PID、启动器、预算、阶段与终态，不加载 CUDA。最终验证图在 `output/generation/<权重>/`，测试原图在 `output/generation/test/<权重>/`，RL 候选图在 `output/grpo/rollouts/`，逐图指标在 `report/evaluation/`；`report/comparison-ready.json` 与 `report/test-comparison-ready.json` 分别指向验证／测试表和面板。重新出图和复测报告必须使用新名字，旧产物保留。
+扩大版的 CPU 状态命令为 `Qwen21-python <run>/scripts/status.py --root <run> --launcher recovery-v2`，可检查依赖 PID、当前主管、预算、阶段与终态，不加载 CUDA。SAM 恢复复测为 `python -m pytest tests/test_sam_dependency_overlay.py tests/test_xiaohongshu_region_prepare.py tests/test_region_pilot_automation.py tests/test_native_test_split.py -q`，19 项通过；真实 GPU 记录在 `report/sam-smoke-v1.json`。最终验证图在 `output/generation/<权重>/`，测试原图在 `output/generation/test/<权重>/`，RL 候选图在 `output/grpo/rollouts/`，逐图指标在 `report/evaluation/`；`report/comparison-ready.json` 与 `report/test-comparison-ready.json` 分别指向验证／测试表和面板。重新出图和复测报告必须使用新名字，旧产物保留。
 
 ## 与已有实验的关系
 
