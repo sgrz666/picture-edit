@@ -22,7 +22,7 @@
 | `Qwen-Image-2.1-PE-MTP-Q4_K_M/` | `/data/shangguanrz/pic-edit-models/Qwen-Image-2.1-PE-MTP-Q4_K_M` | 6.5 GB | PE-I2I 的 Q4_K_M 中精度低显存量化版 | 低显存环境备用 |
 | `Qwen3-VL-4B-Instruct-GGUF/` | `/data/shangguanrz/pic-edit-models/Qwen3-VL-4B-Instruct-GGUF` | 3.2 GB | 4B 多模态视觉-语言模型 GGUF 版本（快速图像理解） | 提示词规划与轻量视觉审计 |
 | `home-models/` | `/data/shangguanrz/models/home-models` | 15.3 GB | 10-25 迁移自 `~/models` 的家目录模型集合 | 离线环境与开发调用 |
-| `face/` | `/data/shangguanrz/models/face` | 3.8 GB | 11-22 下载的人脸身份评测双候选：LVFace-B (Glint360K, ONNX 455MB+PT 455MB, 512D) 与 AdaFace ViT-B KP-RPE (WebFace4M, 460MB+对齐器)，SHA256 见其 `SHA256SUMS.txt` | Native V7 Identity Reward 对照实验 (B0/E1/E2/E3)，见 `face/README.md` |
+| `face/` | `/data/shangguanrz/models/face` | 3.8 GB | 11-22 下载的人脸身份评测双候选：LVFace-B (Glint360K, ONNX 455MB+PT 455MB, 512D) 与 AdaFace ViT-B KP-RPE (WebFace4M, 460MB+对齐器)，SHA256 见其 `SHA256SUMS.txt` | Native V7 Identity Reward 对照实验 (B0/E1/E2/E3)：本地人像 2 948 对上 AdaFace-KPRPE AUC 0.9906 / TAR@1e-3 0.514，优于 glintr100 0.9830 / 0.353；LVFace-B 0.9833 与基线持平，双模型融合无收益。见 `face/README.md` 与 `experiments/face-identity-reward-20261123/` |
 
 ---
 
