@@ -4,6 +4,8 @@
 
 ## 里面有什么
 
+- `eval_native_spatialreward.py` 批量给已保存的 Native RL 候选组打 SpatialReward-8B 分数，保留 IF、CON、NAT、ART 和融合分。输入是带 SHA 的条件及候选清单。RGB、骨架输入和两种融合方式可用相同候选做配对检查。 [清单格式及命令](../../src/pose_control/qwen21_full/native_rl/README.md#spatialreward-8b)
+
 ### iPER 四臂 / V6 / Qwen21 主干评测
 
 | 文件 | 一句话职责 |

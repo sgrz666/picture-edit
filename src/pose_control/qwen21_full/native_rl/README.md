@@ -11,6 +11,25 @@
 - 背景默认用 `exp(-Masked L1 / 0.05)`，L1 归一到 `0..1`。单人、同源双人和独立双源统一以条件列表的第一张参考图 A 为背景源。双源的第二张图提供第二个人的外观，输出侧排除两个人。资格在 rollout 前固定。相同 Canvas 用像素恒等映射，同宽高比的内容框作等比重采样。排除 A 中所有已绑定的前景、目标各人前景和 16 px 边界，保留至少 10% 有效画布。A/B 背景差异不影响资格。无法对齐或缺少 mask 时记录原因。`--background-weight 0` 将该项从训练和 checkpoint 选点权重移除，评分日志继续报告背景指标。
 - `--pose-only` 跑 Pose GRPO。`--aggregation sum` 先加权聚合全部适用的原始 Reward 再作组内标准化。`--aggregation gdpo` 使用 Flow-Factory v0.5.0 的逐项组归一化、权重和与采集批标准化。默认 `gdpo-guarded` 在标准化前抑制 std ≤ `0.001` 的奖励，并按当前适用的权重归一。整个批次无有效优势时跳过 optimizer。区域实验复用同一个 Flow-SDE、优势和更新内核。 [Flow-Factory v0.5.0](https://github.com/X-GenGroup/Flow-Factory/tree/ced2cd9b0465a2c9d733b9b8aed4d4351f950a22)
 
+## SpatialReward-8B
+
+`--spatial-model` 启用隔离的持久评分进程，使用 `sg` 上的 `/data/shangguanrz/models/rl/SpatialReward-8B`。父进程把已落盘的候选图及其 SHA 按 rollout group 交给评分进程，整组评分齐全后才计算 GDPO。每张候选分两路推理，SC 对照有序参考和独立评测指令，PQ 只看该候选。解析失败、超时或候选 ID 异常会写 `evaluation-failed.json` 并终止该批更新。所用模型文件 SHA、评分协议、参考顺序、Prompt SHA 和进程环境写入 run identity，续训时一起核对。 [SpatialReward 论文](https://proceedings.mlr.press/v306/long26a.html) [官方模型](https://huggingface.co/SpatialReward/SpatialReward-8B)
+
+- `--spatial-references rgb` 是默认模式。`guides` 按 Native 顺序加入骨架图。`single_2ref`、`dual_4ref`、`dual_source_5ref` 各自保留原始参考顺序，独立双源的逐人骨架通过 Native `slot → source` 绑定。背景语义固定为 Source A。目标 GT RGB 只给现有几何／身份评分使用。
+- `--spatial-mode official` 按原公式融合四项 0～25 分。`SC=(0.6 IF+0.4 CON)/25`，`PQ=(NAT+ART)/50`，`R=SC^0.8 × PQ^0.2`。`complementary` 用 `CON/25` 替代合成 SC，保留 PQ。两种模式都记录四个子分。默认权重 `0.10`，其余原奖励同比缩放。`--spatial-weight 0` 保留打分用于观察。 [官方评分实现](https://github.com/lorangan-ddup/SpatialReward/blob/0222484b6a30f865525e8dc3a90acf24654e096a/example/reward/server/spatial_reward_scorer.py)
+- ODE 检查在 Pose/ID 之外报告 Background 和 Binding 退化，默认容忍度各 `0.02`，可用 `--background-drop`、`--binding-drop` 调整。`--spatial-device` 默认 `cpu`，`--spatial-python` 可指定独立解释器，`--spatial-batch-size` 默认 `2`，用于限制评分进程的内存峰值。
+
+离线校准使用已有候选图。输入 manifest 的 `schema` 为 `native_rl_spatial_candidates_v1`，包含 `groups` 列表。每组提供 `condition`（Native Qwen 条件 JSON 的 `{path, sha256}`）与 `candidates`（按顺序排列的图像 `{path, sha256}` 列表）。双源 `guides` 组另提供 `slot_sources`，取自 Native 的 `target_qwen_image_indices[0]`。可用同一份 manifest 分别跑 RGB 和骨架配置，输出逐候选子分给独立人工排序对照。
+
+```bash
+PY="$HOME/nihaochen/envs/qwen21/bin/python"
+MODEL=/data/shangguanrz/models/rl/SpatialReward-8B
+"$PY" scripts/eval/eval_native_spatialreward.py --model "$MODEL" --references guides \
+  --manifest "$MANIFEST" --output "$RUN/spatial-guides.json"
+```
+
+在线运行在下节任一预检或训练命令上加 `--spatial-model "$MODEL" --spatial-weight 0.10`。启用后保持 Flow-SDE / Replay / PPO 内核，Guarded-GDPO 逐分量归一化。采用 EditScore 的冻结逐图评测思路和 SpatialReward 的 SC/PQ 协议。MixGRPO 的滑动 SDE 窗口需要另做同预算消融。SpatialFlow-GRPO 的区域优势需要独立区域奖励与对应位置的 log-prob，本版使用整图视觉分数。 [EditScore](https://arxiv.org/abs/2509.23909) [GDPO](https://arxiv.org/abs/2601.05242) [MixGRPO](https://arxiv.org/abs/2507.21802) [SpatialFlow-GRPO](https://arxiv.org/abs/2606.26872)
+
 ## 运行
 
 从仓库根目录执行，`CFG` 指向 Native V6.2 或 V7 SFT JSON。它要绑定完整 SFT `initialization` 及 SHA256、原视频或序列分组、Qwen model manifest 和冻结 latent cache。一个 run 使用一种条件 profile，可选 `single_2ref`、`dual_4ref` 或 `dual_source_5ref`。多 route 时用 `--route` 指定要继承的条件开关。`--models` 指定 AntelopeV2 的模型父目录。Qwen 用训练解释器，SDPose 通过 `--pose-python` 启动独立持久进程，默认使用项目的 SDPose 环境。每次进程启动加载一次模型，`--pose-device` 默认 `cpu`。Worker 异常会停止该批更新并写失败原因。

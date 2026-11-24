@@ -40,6 +40,7 @@ class RewardTarget:
     contacts: tuple = ()
     background: object | None = None
     background_status: str = 'alignment_unverified'
+    spatial: object | None = None
 
 
 class UnscorableTarget(ValueError):
@@ -159,10 +160,11 @@ def score_candidate(target, poses, identities):
 
 
 class ImageRewardBank:
-    def __init__(self, models_root, *, pose):
+    def __init__(self, models_root, *, pose, spatial=None):
         from src.evaluation.joint_pilot_metrics import IdentityMetric
 
         self.pose = pose
+        self.spatial = spatial
         self.identity = IdentityMetric(models_root)
 
     def _poses(self, image, canvas):
@@ -255,7 +257,13 @@ class ImageRewardBank:
                 p0, p1 = _part(poses[0], a), _part(poses[1], b)
                 if p0 is not None and p1 is not None:
                     contacts.append((a, b, float(np.linalg.norm(p0 - p1))))
-        return RewardTarget(poses, faces, canvas.resized_hw, tuple(contacts), background, reason or 'aligned'), canvas
+        spatial = None
+        if self.spatial is not None:
+            from .spatial_reward import spatial_target
+
+            slots = bank.target_qwen_image_indices[0].tolist() if bank is not None else None
+            spatial = spatial_target(condition, self.spatial.references, slot_sources=slots)
+        return RewardTarget(poses, faces, canvas.resized_hw, tuple(contacts), background, reason or 'aligned', spatial), canvas
 
     def score(self, target, canvas, image):
         image = rendered_rgb(image)

@@ -25,6 +25,15 @@ def _arguments(argv):
     parser.add_argument('--pose-python', type=Path, help='SDPose interpreter (default: the project SDPose environment)')
     parser.add_argument('--background-index', type=Path, help='Optional SHA-bound Source mask evidence indexed by source and pair')
     parser.add_argument('--background-weight', type=float, help='Default: .15 single, .10 dual. Use 0 for an ablation')
+    parser.add_argument('--spatial-model', type=Path, help='Enable a local frozen SpatialReward-8B model')
+    parser.add_argument('--spatial-python', type=Path, help='Interpreter for the isolated SpatialReward process')
+    parser.add_argument('--spatial-device', default='cpu')
+    parser.add_argument('--spatial-references', choices=('rgb', 'guides'), default='rgb')
+    parser.add_argument('--spatial-mode', choices=('official', 'complementary'), default='official')
+    parser.add_argument('--spatial-weight', type=float, help='Default when enabled: .10. Use 0 for scoring only')
+    parser.add_argument('--spatial-batch-size', type=int, default=2)
+    parser.add_argument('--spatial-max-pixels', type=int, default=262144)
+    parser.add_argument('--spatial-timeout', type=int, default=900)
     parser.add_argument('--group-size', type=int, default=8)
     parser.add_argument('--groups-per-update', type=int, default=4)
     parser.add_argument('--steps', type=int, default=10)
@@ -44,6 +53,8 @@ def _arguments(argv):
     parser.add_argument('--val-limit', type=int, help='Fixed sample cap for a bounded pilot')
     parser.add_argument('--pose-drop', type=float, default=.02)
     parser.add_argument('--id-drop', type=float, default=.02)
+    parser.add_argument('--background-drop', type=float, default=.02, help='Extra ODE regression bound with SpatialReward')
+    parser.add_argument('--binding-drop', type=float, default=.02, help='Extra ODE regression bound with SpatialReward')
     parser.add_argument('--patience', type=int, default=2)
     parser.add_argument('--keep-replay', action='store_true')
     args = parser.parse_args(argv)
@@ -53,11 +64,15 @@ def _arguments(argv):
             (args.max_rollout_batches is not None and args.max_rollout_batches < 1)):
         parser.error('Positive budgets and one internal SDE step required')
     if (not all(math.isfinite(x) for x in (args.lr, args.clip, args.beta, args.noise_level, args.parity_tolerance,
-                                          args.std_floor, args.pose_drop, args.id_drop)) or
+                                          args.std_floor, args.pose_drop, args.id_drop, args.background_drop, args.binding_drop)) or
             min(args.lr, args.noise_level, args.parity_tolerance) <= 0 or not 0 < args.clip < 1 or
-            min(args.beta, args.std_floor, args.pose_drop, args.id_drop) < 0 or
+            min(args.beta, args.std_floor, args.pose_drop, args.id_drop, args.background_drop, args.binding_drop) < 0 or
             (args.background_weight is not None and not 0 <= args.background_weight < 1)):
         parser.error('Invalid optimizer, SDE, variance or regression settings')
+    if (args.spatial_model is None and args.spatial_weight is not None or args.spatial_model and args.pose_only or
+            args.spatial_weight is not None and not 0 <= args.spatial_weight < 1 or
+            min(args.spatial_batch_size, args.spatial_max_pixels, args.spatial_timeout) < 1):
+        parser.error('Invalid SpatialReward model, weight or worker settings')
     if (args.action == 'resume') != (args.checkpoint is not None):
         parser.error('Supply --checkpoint with resume')
     if args.stop_after_updates is not None and (args.action not in ('train', 'resume') or
@@ -187,10 +202,12 @@ def _evaluate(backend, data, route, bank, targets, keys, args, directory):
     for i, key in enumerate(keys):
         rollout = _generator(backend, route, key, args)
         image, _ = rollout.generate(backend.config.generation_seed + i)
+        path = directory / f'{i:04d}.png'
+        image.save(path)
         reward, detail = bank.score(*targets[key], image)
-        image.save(directory / f'{i:04d}.png')
-        rows.append({'source': key[0], 'pair_id': data.datasets[key[0]].rows[key[1]]['pair_id'],
-                     'reward': reward, **detail})
+        row = {'source': key[0], 'pair_id': data.datasets[key[0]].rows[key[1]]['pair_id'], 'reward': reward, **detail}
+        _add_spatial(bank, targets[key][0], [path], [row], directory, key)
+        rows.append(row)
     return _summarize(rows), rows
 
 
@@ -198,19 +215,45 @@ def _score(metrics, weights):
     return sum(w * metrics[k] for k, w in weights.items() if k in metrics) / sum(w for k, w in weights.items() if k in metrics)
 
 
-def _reward_weights(scene, *, pose_only, background_weight=None):
+def _reward_weights(scene, *, pose_only, background_weight=None, spatial_weight=0.):
     from .rewards import DUAL_WEIGHTS, SINGLE_WEIGHTS
 
     if pose_only:
         return {'pose': 1.}
     weights = dict(SINGLE_WEIGHTS if scene == 'single' else DUAL_WEIGHTS)
-    if background_weight is None:
-        return weights
-    factor = (1 - background_weight) / (1 - weights.pop('background'))
-    scaled = {name: weight * factor for name, weight in weights.items()}
-    if background_weight:
-        scaled['background'] = background_weight
-    return scaled
+    if background_weight is not None:
+        factor = (1 - background_weight) / (1 - weights.pop('background'))
+        weights = {name: weight * factor for name, weight in weights.items()}
+        if background_weight:
+            weights['background'] = background_weight
+    if spatial_weight:
+        weights = {name: weight * (1 - spatial_weight) for name, weight in weights.items()}
+        weights['spatial'] = spatial_weight
+    return weights
+
+
+def _add_spatial(bank, target, paths, candidates, directory, key):
+    spatial = getattr(bank, 'spatial', None)
+    if spatial is None:
+        return
+    from ..native_v62.training.io import write_json
+
+    try:
+        rows = spatial.score_group(target.spatial, paths)
+        for candidate, result in zip(candidates, rows, strict=True):
+            candidate['reward']['spatial'] = result['reward']
+            candidate['spatial'] = {**result, 'prompt_sha256': target.spatial.prompt_sha256}
+    except Exception as exc:
+        write_json(directory / 'evaluation-failed.json', {'status': 'evaluator_error', 'evaluator': 'spatialreward',
+                   'source': key[0], 'index': key[1], 'message': str(exc)})
+        raise
+
+
+def _regressions(metrics, baseline, args):
+    limits = {'pose': args.pose_drop, 'identity': args.id_drop}
+    if args.spatial_model is not None:
+        limits.update(background=args.background_drop, binding=args.binding_drop)
+    return [k for k, tolerance in limits.items() if k in baseline and metrics[k] < baseline[k] - tolerance]
 
 
 def _collect_batch(backend, data, route, bank, targets, keys, args, selector, weights, directory):
@@ -224,7 +267,7 @@ def _collect_batch(backend, data, route, bank, targets, keys, args, selector, we
     replay_groups, reward_groups, details, native_stats = [], [], [], []
     for i, key in enumerate(keys):
         rollout = _generator(backend, route, key, args)
-        replay, scores, candidates = [], [], []
+        replay, scores, candidates, paths = [], [], [], []
         for j in range(args.group_size):
             seed = selector.randrange(2**63)
             observer = DiagnosticsV62() if backend.config.diagnostics and j == 0 else None
@@ -232,7 +275,9 @@ def _collect_batch(backend, data, route, bank, targets, keys, args, selector, we
             image, row = rollout.generate(seed, stochastic=True, observer=observer, report=report)
             if observer is not None:
                 native_stats.append({'group': i, 'native': observer.report(), 'sampling': report})
-            image.save(directory / f'{i:02d}-{j:02d}.png')
+            path = directory / f'{i:02d}-{j:02d}.png'
+            image.save(path)
+            paths.append(path)
             reward_started = time.monotonic()
             try:
                 reward, detail = bank.score(*targets[key], image)
@@ -245,6 +290,9 @@ def _collect_batch(backend, data, route, bank, targets, keys, args, selector, we
             scores.append(reward)
             candidates.append({'seed': seed, 'old_log_prob': float(row.old_log_prob), 'sigma': row.sigma,
                                'next_sigma': row.next_sigma, 'reward': reward, **detail})
+        reward_started = time.monotonic()
+        _add_spatial(bank, targets[key][0], paths, candidates, directory, key)
+        reward_seconds += time.monotonic() - reward_started
         if any(score.keys() != scores[0].keys() for score in scores):
             raise ValueError('Reward eligibility changed within a Native Rollout group')
         replay_groups.append((replay, rollout.predict))
@@ -306,6 +354,7 @@ def _run(args, resources):
     from ..native_v62.training.io import file_sha, verify, write_json
     from .checkpointing import load_checkpoint, restore_checkpoint, save_checkpoint
     from .pose_worker import SDPoseWorker
+    from .spatial_worker import SpatialWorker
     from .background import BACKGROUND_METRIC, BACKGROUND_SCALE
     from .rewards import ImageRewardBank, evaluator_assets
     from .runner import FrozenReference, RunCounters, audit_replay, fixed_reference_means, update_policy
@@ -338,8 +387,14 @@ def _run(args, resources):
         raise ValueError('The committed SFT stage must have successful updates')
     print(json.dumps({'architecture': architecture, 'initialization': initialization, 'lineage': lineage}), flush=True, file=sys.stderr)
     evaluator_hashes = {str(path): file_sha(path) for path in evaluator_assets(args.models)}
+    spatial = None
+    if args.spatial_model is not None:
+        spatial = resources.enter_context(SpatialWorker(
+            args.spatial_model, python=args.spatial_python, device=args.spatial_device,
+            mode=args.spatial_mode, references=args.spatial_references, batch_size=args.spatial_batch_size,
+            max_pixels=args.spatial_max_pixels, timeout=args.spatial_timeout))
     worker = resources.enter_context(SDPoseWorker(args.pose_python, device=args.pose_device))
-    bank = ImageRewardBank(args.models, pose=worker)
+    bank = ImageRewardBank(args.models, pose=worker, spatial=spatial)
     background_ref, background_entries = _background_records(args.background_index, train_rows + val_rows)
     targets, skipped, provenance = _targets(bank, data, train_rows + val_rows, background_entries)
     if config.experiment_mode == 'standard':
@@ -352,15 +407,19 @@ def _run(args, resources):
     if len(train_keys) < args.groups_per_update or not val_keys:
         raise ValueError(f'Insufficient scorable Native tasks ({len(train_keys)} train, {len(val_keys)} eval): {skipped[:6]}')
     scene = 'single' if config.qwen_condition_profile == 'single_2ref' else 'dual'
-    weights = _reward_weights(scene, pose_only=args.pose_only, background_weight=args.background_weight)
+    spatial_weight = (.10 if args.spatial_weight is None else args.spatial_weight) if spatial else 0.
+    weights = _reward_weights(scene, pose_only=args.pose_only, background_weight=args.background_weight,
+                              spatial_weight=spatial_weight)
     metadata = {'architecture': architecture, 'initialization': initialization, 'sft_lineage': lineage,
                 'pose_backend': 'sdpose', 'pose_worker': worker.identity,
                 'data_signature': data.signature, 'evaluator_sha256': evaluator_hashes, 'background_index': background_ref,
                 'background_metric': BACKGROUND_METRIC, 'background_scale': BACKGROUND_SCALE,
+                'spatial_worker': spatial.identity if spatial else None,
                 'scene': scene, 'weights': weights, 'train_tasks': len(train_keys), 'eval_tasks': len(val_keys),
                 'evaluation_kind': config.experiment_mode, 'skipped_targets': skipped, 'route': route.name,
                 'eligible': [{'source': k[0], 'index': k[1], 'id_people': sum(x is not None for x in targets[k][0].identities),
                               'contacts': len(targets[k][0].contacts), 'background': targets[k][0].background_status,
+                              **({'spatial': targets[k][0].spatial.record()} if spatial else {}),
                               **provenance[k]} for k in train_keys + val_keys]}
     if args.action == 'check-data':
         print(json.dumps(metadata, ensure_ascii=False), flush=True)
@@ -443,9 +502,10 @@ def _run(args, resources):
         nonlocal best_score, regressions, last_validated
         update = counters.optimizer_updates
         metrics, rows = _evaluate(backend, data, route, bank, targets, val_keys, args, output / f'ode-{update:06d}')
-        rejected = any(metrics[k] < baseline[k] - tol for k, tol in
-                       (('pose', args.pose_drop), ('identity', args.id_drop)) if k in baseline)
-        report = {**counters.record(), 'metrics': metrics, 'regressed': rejected, 'sft_reference': initialization}
+        regressed = _regressions(metrics, baseline, args)
+        rejected = bool(regressed)
+        report = {**counters.record(), 'metrics': metrics, 'regressed': rejected, 'regressed_metrics': regressed,
+                  'sft_reference': initialization}
         write_json(output / f'ode-{update:06d}.json', {**report, 'rows': rows})
         score = _score(metrics, weights)
         improved = not rejected and score > best_score

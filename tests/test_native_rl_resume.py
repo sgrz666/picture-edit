@@ -68,14 +68,15 @@ def test_optimizer_rejects_frozen_members_and_filter_preserves_moments():
     torch.testing.assert_close(optimizer.state[active]['exp_avg'], moment)
 
 
-def test_cli_resume_mid_batch_matches_ten_continuous_updates(tmp_path, monkeypatch):
+@pytest.mark.parametrize('with_spatial', [False, True])
+def test_cli_resume_mid_batch_matches_ten_continuous_updates(tmp_path, monkeypatch, with_spatial):
     from contextlib import ExitStack
     import json
     from pathlib import Path
     from types import SimpleNamespace as Box
 
     from PIL import Image
-    from src.pose_control.qwen21_full.native_rl import cli, pose_worker, rewards
+    from src.pose_control.qwen21_full.native_rl import cli, pose_worker, rewards, spatial_worker
     from src.pose_control.qwen21_full.native_rl.objective import transition
     from src.pose_control.qwen21_full.native_v62.training import checkpointing, data
 
@@ -119,11 +120,23 @@ def test_cli_resume_mid_batch_matches_ten_continuous_updates(tmp_path, monkeypat
 
     class Bank:
         def __init__(self, *args, **kwargs):
-            pass
+            self.spatial = kwargs.get('spatial')
 
         def score(self, _, image):
             value = image.getpixel((0, 0))[0] / 255.
-            return {'pose': value}, {'pck_002': value, 'id_eligible': 0}
+            return ({'pose': value, 'identity': .8} if with_spatial else {'pose': value}), {
+                'pck_002': value, 'id_eligible': 0}
+
+    calls = []
+
+    class VisualWorker(Worker):
+        def score_group(self, target, paths):
+            calls.append(len(paths))
+            results = []
+            for i, path in enumerate(paths):
+                with Image.open(path) as image:
+                    results.append({'id': i, 'reward': 1 - image.getpixel((0, 0))[0] / 255.})
+            return results
 
     class Rollout:
         def __init__(self, backend, key):
@@ -146,18 +159,22 @@ def test_cli_resume_mid_batch_matches_ten_continuous_updates(tmp_path, monkeypat
     monkeypatch.setattr(cli, '_backend_for', lambda *a: (lambda _: source, Backend, 'native_full_v7'))
     monkeypatch.setattr(cli, '_generator', lambda backend, route, key, args: Rollout(backend, key))
     monkeypatch.setattr(cli, '_targets', lambda *a: (
-        {(r['source_id'], 0): (Box(identities=(), contacts=(), background_status='absent'),) for r in records},
+        {(r['source_id'], 0): (Box(identities=(True,) if with_spatial else (), contacts=(), background_status='absent',
+                                 spatial=Box(prompt_sha256='fixed-prompt', record=lambda: {'prompt_sha256': 'fixed-prompt'})),)
+         for r in records},
         [], {(r['source_id'], 0): {'driver_rgb_sha256': r['source_id']} for r in records}))
     monkeypatch.setattr(rewards, 'evaluator_assets', lambda _: [])
     monkeypatch.setattr(rewards, 'ImageRewardBank', Bank)
     monkeypatch.setattr(pose_worker, 'SDPoseWorker', Worker)
+    monkeypatch.setattr(spatial_worker, 'SpatialWorker', VisualWorker)
     monkeypatch.setattr(checkpointing, 'environment', lambda: {'torch': 'test'})
     monkeypatch.setattr(checkpointing, 'load_committed', lambda *a, **k: (payload, parent, None))
     monkeypatch.setattr(data, 'route_options', lambda *a: (Box(body_strength=1.), Box()))
 
     def run(name, *, pause=None, checkpoint=None):
+        reward_flags = ['--spatial-model', 'simulated-model'] if with_spatial else ['--pose-only']
         args = cli._arguments(['check-data', '--config', 'dummy.json', '--updates', '10', '--group-size', '2',
-                               '--groups-per-update', '2', '--replay-epochs', '2', '--pose-only', '--validate-every', '3'])
+                               '--groups-per-update', '2', '--replay-epochs', '2', '--validate-every', '3', *reward_flags])
         args.output, args.stop_after_updates = tmp_path / name, pause
         args.action = 'resume' if checkpoint else 'train'
         args.checkpoint = Path(checkpoint['path']) if checkpoint else None
@@ -166,6 +183,8 @@ def test_cli_resume_mid_batch_matches_ten_continuous_updates(tmp_path, monkeypat
         return json.loads((args.output / 'summary.json').read_text())
 
     continuous = run('continuous')
+    continuous_calls = calls.copy()
+    calls.clear()
     first = run('paused', pause=5)
     second = run('resumed', checkpoint=first['checkpoint'])
     keys = ['optimizer_updates', 'rollout_batches', 'generated_images', 'replayed_transitions']
@@ -182,3 +201,8 @@ def test_cli_resume_mid_batch_matches_ten_continuous_updates(tmp_path, monkeypat
                 for path in sorted((tmp_path / name).glob('rollout-*/rollout.json'))]
 
     assert rollouts('continuous') == rollouts('paused', 'resumed')
+    assert calls == continuous_calls
+    if with_spatial:
+        assert calls.count(2) == 10
+        group = rollouts('resumed')[0][0]
+        assert all('spatial' in row['reward'] for row in group['candidates'])
