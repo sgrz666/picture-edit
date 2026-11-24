@@ -96,3 +96,7 @@
 - 新归入：`build_iper_v6_conditions.py`、`build_iper_v6_detail_conditions.py`（iPER V6 条件构建）、`precompute_qwen21_pei2i_prompts.py`、`precompute_qwen21_prompt_study_cache.py`（PE-I2I 提示词与 prompt study 缓存预计算；`scripts/run/run_qwen21_pei2i_study.py` 的运行时引用路径已同步改为 `scripts/data/`）、`dataset_notes.py`（数据盘构成说明，供 `scripts/audit/gen_folder_docs.py` 注入）。
 - 去重：根目录旧副本 `precompute_iper_face_features_v65.py`、`precompute_qwen21_face_features.py`、`split_iper_train_val.py` 已删除；子目录版含 `parents[2]` 适配（iper 版另含 `full_image` 参数 fallback），以子目录为准。
 - 根目录仍保留 4 个软链目标（`build_tiktok_v6_conditions.py`、`precompute_tiktok_face_features_v65.py`、`prepare_tiktok_qwen21_face.py`、`prepare_tiktok_qwen21_training.py`），本目录对应软链接继续有效；要改逻辑就改 scripts 根下的原文件。
+
+## 小红书单人数据集几何渲染（2026-11-23）
+
+- `render_xiaohongshu_sdpose_geometry.py`：读取 `SDpose--full/outputs/refined/<fid>.pt`（SDPose 引导优化后的 SMPL-X 参数），用 `nvdiffrast` 按 `bilibili` 口径光栅化渲染 `smplx/sdpose_opt/`（补齐 `mesh_cam`、`joint_proj_model`、`width`、`height`、`render_bbox`）、`depth/sdpose_opt/`（16-bit uint16 毫米深度）、`normal/sdpose_opt/`（24-bit View-Space 紫蓝色法线）、`records/`、`summary.json` 及可选 4 联 QC 条，写入 `/data/shangguanrz/datasets/xiaohongshu(single)/geometry/`。
