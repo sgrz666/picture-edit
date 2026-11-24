@@ -38,6 +38,31 @@ def test_regional_reward_columns_keep_generation_misses_and_reject_invalid_measu
         score([row], applicable)
 
 
+def test_regional_spatial_group_is_committed_in_rollout_order_before_advantage(tmp_path):
+    import json
+    from types import SimpleNamespace
+
+    module = driver()
+    fixed = SimpleNamespace(record=lambda: {'roles': ['source']})
+    records = [{'path': f'{i}.png', 'sha256': str(i), 'pose': {'body': {'reward': .5}, 'hands': {'reward': None}},
+                'identity': {'identity_reward': None}, 'pixel': {'background_reward': None}} for i in range(2)]
+
+    def score(target, items):
+        assert target is fixed
+        assert [item['sha256'] for item in items] == ['0', '1']
+        return [{'id': i, 'reward': score} for i, score in enumerate((.42, .84))]
+
+    module.score_spatial_group(SimpleNamespace(score_group=score), fixed, records, tmp_path)
+    rows = json.loads((tmp_path / 'spatial.json').read_text())['candidates']
+    assert [row['file']['sha256'] for row in rows] == ['0', '1']
+    assert module.score_columns(records, {'body': True, 'spatial': True}) == {'body': [.5, .5], 'spatial': [.42, .84]}
+
+    folder = tmp_path / 'incomplete'
+    with pytest.raises(ValueError):
+        module.score_spatial_group(SimpleNamespace(score_group=lambda *_: rows[:1]), fixed, records, folder)
+    assert (folder / 'evaluation-failed.json').is_file() and not (folder / 'spatial.json').exists()
+
+
 def test_background_scores_source_on_verified_support_and_disables_unknown_alignment(tmp_path):
     import numpy as np
     from PIL import Image

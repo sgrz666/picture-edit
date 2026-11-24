@@ -15,7 +15,7 @@ from PIL import Image
 
 from ..native_v5.conditioning import verified
 from ..native_v62.training.io import file_sha
-from .spatial_reward import PQ_PROMPT, SC_PROMPT, SCORE_VERSION, UPSTREAM, parse_scores, spatial_score
+from .spatial_reward import DEFAULT_MODE, PQ_PROMPT, SC_PROMPT, SCORE_VERSION, UPSTREAM, parse_response, spatial_score
 
 
 def ordered_results(rows, count, mode):
@@ -26,7 +26,8 @@ def ordered_results(rows, count, mode):
         candidate = row.get('id') if isinstance(row, dict) else None
         if type(candidate) is not int or not 0 <= candidate < count or candidate in by_id:
             raise ValueError('SpatialReward returned an invalid or duplicate candidate ID')
-        by_id[candidate] = {'id': candidate, **spatial_score(row.get('sc'), row.get('pq'), mode)}
+        by_id[candidate] = {'id': candidate, **spatial_score(row.get('sc'), row.get('pq'), mode),
+                            'sc_evidence': row.get('sc_evidence', {}), 'pq_evidence': row.get('pq_evidence', {})}
     return [by_id[i] for i in range(count)]
 
 
@@ -44,7 +45,13 @@ def model_identity(model_path):
 
 
 class SpatialWorker:
-    def __init__(self, model, *, python=None, device='cpu', mode='official', references='rgb',
+    @classmethod
+    def from_args(cls, args):
+        return cls(args.spatial_model, python=args.spatial_python, device=args.spatial_device,
+                   mode=args.spatial_mode, references=args.spatial_references, batch_size=args.spatial_batch_size,
+                   max_pixels=args.spatial_max_pixels, timeout=args.spatial_timeout)
+
+    def __init__(self, model, *, python=None, device='cpu', mode=DEFAULT_MODE, references='rgb',
                  batch_size=2, max_pixels=262144, max_new_tokens=512, timeout=900):
         if min(batch_size, max_pixels, max_new_tokens, timeout) < 1:
             raise ValueError('SpatialReward worker limits must be positive')
@@ -89,7 +96,11 @@ class SpatialWorker:
         return result
 
     def score_group(self, target, candidates):
-        files = [{'id': i, 'path': str(Path(path).resolve()), 'sha256': file_sha(path)} for i, path in enumerate(candidates)]
+        files = []
+        for i, candidate in enumerate(candidates):
+            path = Path(candidate['path'] if isinstance(candidate, dict) else candidate).resolve()
+            digest = candidate['sha256'] if isinstance(candidate, dict) else file_sha(path)
+            files.append({'id': i, 'path': str(path), 'sha256': digest, **target.candidate_canvas})
         if not files:
             raise ValueError('SpatialReward requires a nonempty candidate group')
         request = {'instruction': target.instruction, 'references': target.references, 'candidates': files}
@@ -118,6 +129,8 @@ def _image(ref):
     from .rewards import rendered_rgb
 
     with Image.open(verified(ref)) as image:
+        if image.size != tuple(ref['size']):
+            raise ValueError('SpatialReward image differs from its bound Canvas size')
         if ref.get('crop'):
             image = image.crop(ref['crop'])
         return rendered_rgb(image)
@@ -155,7 +168,7 @@ class _Model:
         text = self.processor.batch_decode(generated[:, batch.input_ids.shape[1]:], skip_special_tokens=True)
         if len(text) != len(images):
             raise ValueError('SpatialReward model returned an incomplete batch')
-        return [parse_scores(out, stream=stream) for out in text]
+        return [parse_response(out, stream=stream) for out in text]
 
     def score(self, request):
         refs = [_image(entry) for entry in request['references']]
@@ -166,7 +179,9 @@ class _Model:
             edited = [_image(entry) for entry in chunk]
             sc = self._predict([refs + [image] for image in edited], SC_PROMPT + '\n' + request['instruction'], stream='sc')
             pq = self._predict([[image] for image in edited], PQ_PROMPT, stream='pq')
-            results.extend({'id': row['id'], 'sc': a, 'pq': b} for row, a, b in zip(chunk, sc, pq, strict=True))
+            results.extend({'id': row['id'], 'sc': a['score'], 'pq': b['score'],
+                            'sc_evidence': a['evidence'], 'pq_evidence': b['evidence']}
+                           for row, a, b in zip(chunk, sc, pq, strict=True))
         return results
 
 

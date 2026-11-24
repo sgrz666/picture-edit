@@ -5,6 +5,7 @@ transition is stored at its rollout dtype and replayed, with a fixed SFT referen
 RL snapshots have their own schema and cannot be mistaken for shared SFT resume.
 """
 import argparse
+from contextlib import ExitStack
 import hashlib
 import json
 import os
@@ -61,11 +62,26 @@ def score_columns(records, eligible):
     for row in records:
         values = {name: row['pose'][name]['reward'] for name in ('body', 'hands')}
         values.update(identity=row['identity']['identity_reward'], background=row['pixel']['background_reward'])
+        values['spatial'] = (row.get('spatial') or {}).get('reward')
         if {name for name, score in values.items() if score is not None} != set(columns):
             raise ValueError('Candidate rewards disagree with fixed target eligibility')
         for name in columns:
             columns[name].append(values[name])
     return columns
+
+
+def score_spatial_group(worker, target, records, folder):
+    try:
+        rows = worker.score_group(target, records)
+        report = [{'file': {'path': record['path'], 'sha256': record['sha256']}, **row}
+                  for record, row in zip(records, rows, strict=True)]
+        write(folder / 'spatial.json', {'target': target.record(), 'candidates': report})
+    except Exception as exc:
+        write(folder / 'evaluation-failed.json', {'status': 'evaluator_error', 'evaluator': 'spatialreward',
+                                                 'message': str(exc)})
+        raise
+    for record, row in zip(records, rows, strict=True):
+        record['spatial'] = row
 
 
 def audit_rewards(root,pairs,folder,evaluator):
@@ -97,12 +113,22 @@ def audit_rewards(root,pairs,folder,evaluator):
 
 
 def main():
+    from src.pose_control.qwen21_full.native_rl.spatial_reward import add_spatial_arguments, configure_spatial
+
     p=argparse.ArgumentParser(description=__doc__);p.add_argument('--root',type=Path,required=True)
     p.add_argument('--config',type=Path,required=True);p.add_argument('--parent',type=Path,required=True)
     p.add_argument('--report',type=Path,required=True);p.add_argument('--updates',type=int,default=10)
-    p.add_argument('--resume',type=Path);args=p.parse_args()
+    p.add_argument('--resume',type=Path)
+    add_spatial_arguments(p)
+    args=p.parse_args()
+    configure_spatial(p,args)
     if args.updates < 1:raise ValueError('Positive optimizer update budget required')
     if args.report.exists():raise FileExistsError('A terminal RL report already exists')
+    with ExitStack() as resources:
+        train(args, resources)
+
+
+def train(args, resources):
     import torch
     fraction=float(os.environ.get('REGION_PILOT_MEMORY_FRACTION','.9'))
     if not 0<fraction<=.95:raise ValueError('GPU memory fraction must be in (0,.95]')
@@ -113,6 +139,8 @@ def main():
     from src.pose_control.qwen21_full.native_v62.training.data import route_options
     from src.pose_control.qwen21_full.native_v62.training.validation import frozen_digest
     from src.pose_control.qwen21_full.native_rl.objective import advantages
+    from src.pose_control.qwen21_full.native_rl.spatial_reward import spatial_arguments, spatial_target, with_spatial_weight
+    from src.pose_control.qwen21_full.native_rl.spatial_worker import SpatialWorker
     from src.pose_control.qwen21_full.native_rl.runner import (FrozenReference, NativeRollout, RunCounters,
                                                               audit_replay, fixed_reference_means, restrict_optimizer,
                                                               update_policy)
@@ -136,8 +164,15 @@ def main():
     reference=FrozenReference(active,storage_device='cpu');base_update=ctx['global_update'];counters=RunCounters();replay_verified=False
     if config.stage.optimizer.scheduler!='constant':raise ValueError('This bounded RL pilot requires the explicit constant schedule')
     evaluator=IdentityPixelEvaluator(args.root)
+    algorithm=dict(ALGORITHM)
+    spatial=None
+    if args.spatial_model is not None:
+        spatial=resources.enter_context(SpatialWorker.from_args(args))
+        algorithm.update(reward_weights=with_spatial_weight(ALGORITHM['reward_weights'], args.spatial_weight),
+                         spatial_worker=spatial.identity, spatial_std_floor=args.spatial_std_floor)
+    floors={'spatial':args.spatial_std_floor} if args.spatial_std_floor is not None else None
     evaluation_manifest=args.root/'data/evaluation.json'
-    policy_identity={'algorithm':ALGORITHM,'config_sha256':config.signature(),'parent':parent,
+    policy_identity={'algorithm':algorithm,'config_sha256':config.signature(),'parent':parent,
         'rl_script_sha256':file_sha(__file__),'evaluation_script_sha256':file_sha(Path(__file__).with_name('evaluate.py')),
         'evaluation_manifest_sha256':file_sha(evaluation_manifest),
         'background_region_index':evaluator.background_index,
@@ -190,6 +225,12 @@ def main():
         route_name,source,index=ctx['sampler'].draw();route={r.name:r for r in config.stage.routes}[route_name]
         sample,batch,pair=backend.pair(source,index);pair_id=sample['pair_metadata']['pair_id'];attempts+=1
         targets=evaluator.prepare(train_by_id[pair_id],sample=sample);eligible=targets['eligible']
+        if spatial is not None:
+            condition_ref, condition=backend.data.conditions[source,index]
+            if condition_ref['sha256'] != pair['condition_sha256']:
+                raise ValueError('SpatialReward condition differs from rollout condition')
+            visual_target=spatial_target(condition, spatial.references)
+            eligible={**eligible, 'spatial':True}
         folder=args.root/f'output/grpo/rollouts/update_{completed:04d}_attempt_{attempts:04d}_{run_id}'
         replays=[];images=[];sde_index=ALGORITHM['sde_indices'][(attempts-1)%len(ALGORITHM['sde_indices'])]
         options,base=route_options(route,sample['native_scene_kind'])
@@ -206,8 +247,11 @@ def main():
         measured=evaluate(args.root,manifest,folder,evaluator,{pair_id:targets})
         if [r['sha256'] for r in measured['records']]!=[r['sha256'] for r in images]:
             raise ValueError('Reward output differs from rollout candidate order')
+        if spatial is not None:
+            score_spatial_group(spatial, visual_target, measured['records'], folder)
         components=score_columns(measured['records'],eligible)
-        advantage, reward_stats=advantages([components],ALGORITHM['reward_weights'],mode=ALGORITHM['advantage'],std_floor=ALGORITHM['std_floor'])
+        advantage, reward_stats=advantages([components],algorithm['reward_weights'],mode=algorithm['advantage'],
+                                           std_floor=algorithm['std_floor'],std_floors=floors)
         advantage=advantage[0]
         grouped=[(replays,advantage,policy.predict)]
         if advantage.abs().max()==0:
@@ -236,7 +280,8 @@ def main():
     completed=counters.optimizer_updates
     if last is None or completed%5:last=save()
     write(args.report,{'schema':SCHEMA,'passed':True,'completed_updates':completed,'requested_updates':args.updates,
-        'attempts':counters.rollout_batches,'checkpoint':last,'source_checkpoint':parent,'algorithm':ALGORITHM,
+        'attempts':counters.rollout_batches,'checkpoint':last,'source_checkpoint':parent,'algorithm':algorithm,
+        'spatial_arguments':spatial_arguments(args),
         'reward_audit':str(reward_audit),'replay_verified':replay_verified,'candidate_images':counters.generated_images,**counters.record(),
         'frozen_qwen_unchanged':True,'scope':'bounded Native Adapter RL pilot; extra rollout cost reported separately'})
 

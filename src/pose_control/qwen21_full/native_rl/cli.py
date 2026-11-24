@@ -12,28 +12,26 @@ import time
 
 
 def _arguments(argv):
+    from .spatial_reward import add_spatial_arguments, configure_spatial
+
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('action', choices=('check-data', 'preflight', 'train', 'resume'))
     parser.add_argument('--config', type=Path, required=True, help='Native V6.2 or V7 SFT configuration with bound data/cache/initialization')
     parser.add_argument('--output', type=Path, help='New run directory under /data/shangguanrz/')
     parser.add_argument('--checkpoint', type=Path, help='Committed RL checkpoint for resume')
     parser.add_argument('--models', type=Path, default=Path('/home/shangguanrz/project/pic-edit/models'))
+    parser.add_argument('--adaface-model', type=Path, help='Use local AdaFace-KPRPE for rollout identity reward')
+    parser.add_argument('--adaface-rpe-extension', type=Path, help='Compiled rpe_index_cpp for the current Python/Torch ABI')
     parser.add_argument('--route', help='Route name from the SFT configuration')
     parser.add_argument('--updates', '--optimizer-updates', type=int, default=1, help='Number of successful optimizer.step calls')
     parser.add_argument('--max-rollout-batches', type=int, help='Rollout cap including groups without an effective advantage (default: 5 × updates)')
     parser.add_argument('--pose-device', default='cpu', help='SDPose detector/inference device, e.g. cpu or cuda:0')
     parser.add_argument('--pose-python', type=Path, help='SDPose interpreter (default: the project SDPose environment)')
     parser.add_argument('--background-index', type=Path, help='Optional SHA-bound Source mask evidence indexed by source and pair')
-    parser.add_argument('--background-weight', type=float, help='Default: .15 single, .10 dual. Use 0 for an ablation')
-    parser.add_argument('--spatial-model', type=Path, help='Enable a local frozen SpatialReward-8B model')
-    parser.add_argument('--spatial-python', type=Path, help='Interpreter for the isolated SpatialReward process')
-    parser.add_argument('--spatial-device', default='cpu')
-    parser.add_argument('--spatial-references', choices=('rgb', 'guides'), default='rgb')
-    parser.add_argument('--spatial-mode', choices=('official', 'complementary'), default='official')
-    parser.add_argument('--spatial-weight', type=float, help='Default when enabled: .10. Use 0 for scoring only')
-    parser.add_argument('--spatial-batch-size', type=int, default=2)
-    parser.add_argument('--spatial-max-pixels', type=int, default=262144)
-    parser.add_argument('--spatial-timeout', type=int, default=900)
+    parser.add_argument('--background-weight', type=float, help='Background fraction before applying SpatialReward')
+    parser.add_argument('--reward-profile', choices=('legacy', 'hands42'),
+                        help='Default: hands42 with SpatialReward, legacy otherwise')
+    add_spatial_arguments(parser)
     parser.add_argument('--group-size', type=int, default=8)
     parser.add_argument('--groups-per-update', type=int, default=4)
     parser.add_argument('--steps', type=int, default=10)
@@ -69,10 +67,12 @@ def _arguments(argv):
             min(args.beta, args.std_floor, args.pose_drop, args.id_drop, args.background_drop, args.binding_drop) < 0 or
             (args.background_weight is not None and not 0 <= args.background_weight < 1)):
         parser.error('Invalid optimizer, SDE, variance or regression settings')
-    if (args.spatial_model is None and args.spatial_weight is not None or args.spatial_model and args.pose_only or
-            args.spatial_weight is not None and not 0 <= args.spatial_weight < 1 or
-            min(args.spatial_batch_size, args.spatial_max_pixels, args.spatial_timeout) < 1):
-        parser.error('Invalid SpatialReward model, weight or worker settings')
+    configure_spatial(parser, args)
+    args.reward_profile = args.reward_profile or ('hands42' if args.spatial_model is not None else 'legacy')
+    if args.pose_only and (args.spatial_model is not None or args.reward_profile != 'legacy'):
+        parser.error('--pose-only cannot be combined with SpatialReward or the hands42 profile')
+    if (args.adaface_model is None) != (args.adaface_rpe_extension is None) or args.adaface_model and args.pose_only:
+        parser.error('AdaFace training requires both --adaface-model and --adaface-rpe-extension on a non-pose-only run')
     if (args.action == 'resume') != (args.checkpoint is not None):
         parser.error('Supply --checkpoint with resume')
     if args.stop_after_updates is not None and (args.action not in ('train', 'resume') or
@@ -215,21 +215,22 @@ def _score(metrics, weights):
     return sum(w * metrics[k] for k, w in weights.items() if k in metrics) / sum(w for k, w in weights.items() if k in metrics)
 
 
-def _reward_weights(scene, *, pose_only, background_weight=None, spatial_weight=0.):
-    from .rewards import DUAL_WEIGHTS, SINGLE_WEIGHTS
+def _reward_weights(scene, *, pose_only, background_weight=None, profile='legacy', spatial_weight=0.):
+    from .rewards import DUAL_WEIGHTS, HANDS42_RATIOS, SINGLE_WEIGHTS
+    from .spatial_reward import with_spatial_weight
 
     if pose_only:
         return {'pose': 1.}
     weights = dict(SINGLE_WEIGHTS if scene == 'single' else DUAL_WEIGHTS)
+    if profile == 'hands42':
+        ratios = HANDS42_RATIOS[scene]
+        weights = {name: value / sum(ratios.values()) for name, value in ratios.items()}
     if background_weight is not None:
         factor = (1 - background_weight) / (1 - weights.pop('background'))
         weights = {name: weight * factor for name, weight in weights.items()}
         if background_weight:
             weights['background'] = background_weight
-    if spatial_weight:
-        weights = {name: weight * (1 - spatial_weight) for name, weight in weights.items()}
-        weights['spatial'] = spatial_weight
-    return weights
+    return with_spatial_weight(weights, spatial_weight)
 
 
 def _add_spatial(bank, target, paths, candidates, directory, key):
@@ -299,7 +300,8 @@ def _collect_batch(backend, data, route, bank, targets, keys, args, selector, we
         reward_groups.append({name: [score[name] for score in scores] for name in scores[0]})
         details.append({'source': key[0], 'pair_id': data.datasets[key[0]].rows[key[1]]['pair_id'],
                         'condition_sha256': rollout.pair['condition_sha256'], 'candidates': candidates})
-    adv, stats = advantages(reward_groups, weights, mode=args.aggregation, std_floor=args.std_floor)
+    floors = {'spatial': args.spatial_std_floor} if args.spatial_std_floor is not None else None
+    adv, stats = advantages(reward_groups, weights, mode=args.aggregation, std_floor=args.std_floor, std_floors=floors)
     groups = [(rows, a, predict) for (rows, predict), a in zip(replay_groups, adv)]
     if args.keep_replay:
         torch.save([[{k: v.cpu() if torch.is_tensor(v) else v for k, v in vars(row).items()}
@@ -387,16 +389,27 @@ def _run(args, resources):
         raise ValueError('The committed SFT stage must have successful updates')
     print(json.dumps({'architecture': architecture, 'initialization': initialization, 'lineage': lineage}), flush=True, file=sys.stderr)
     evaluator_hashes = {str(path): file_sha(path) for path in evaluator_assets(args.models)}
+    training_identity = None
+    if args.adaface_model is not None:
+        from src.evaluation.native_kprpe import KPRPEIdentityMetric, recognition_assets
+
+        evaluator_hashes.update({str(path): file_sha(path) for path in
+                                 recognition_assets(args.adaface_model, args.adaface_rpe_extension)})
+        training_identity = KPRPEIdentityMetric(args.models, args.adaface_model, args.adaface_rpe_extension)
     spatial = None
     if args.spatial_model is not None:
-        spatial = resources.enter_context(SpatialWorker(
-            args.spatial_model, python=args.spatial_python, device=args.spatial_device,
-            mode=args.spatial_mode, references=args.spatial_references, batch_size=args.spatial_batch_size,
-            max_pixels=args.spatial_max_pixels, timeout=args.spatial_timeout))
+        spatial = resources.enter_context(SpatialWorker.from_args(args))
     worker = resources.enter_context(SDPoseWorker(args.pose_python, device=args.pose_device))
-    bank = ImageRewardBank(args.models, pose=worker, spatial=spatial)
+    val_bank = ImageRewardBank(args.models, pose=worker, spatial=spatial)
+    bank = (ImageRewardBank(args.models, pose=worker, spatial=spatial, identity=training_identity)
+            if training_identity is not None else val_bank)
     background_ref, background_entries = _background_records(args.background_index, train_rows + val_rows)
-    targets, skipped, provenance = _targets(bank, data, train_rows + val_rows, background_entries)
+    targets, skipped, provenance = _targets(bank, data, train_rows + (val_rows if bank is val_bank else []), background_entries)
+    if bank is not val_bank:
+        val_targets, val_skipped, val_provenance = _targets(val_bank, data, val_rows, background_entries)
+        targets.update(val_targets)
+        skipped.extend(val_skipped)
+        provenance.update(val_provenance)
     if config.experiment_mode == 'standard':
         train_rgb, val_rgb = ({provenance[(r['source_id'], r['index'])]['driver_rgb_sha256'] for r in rows}
                               for rows in (train_rows, val_rows))
@@ -407,15 +420,19 @@ def _run(args, resources):
     if len(train_keys) < args.groups_per_update or not val_keys:
         raise ValueError(f'Insufficient scorable Native tasks ({len(train_keys)} train, {len(val_keys)} eval): {skipped[:6]}')
     scene = 'single' if config.qwen_condition_profile == 'single_2ref' else 'dual'
-    spatial_weight = (.10 if args.spatial_weight is None else args.spatial_weight) if spatial else 0.
+    selection_weights = _reward_weights(scene, pose_only=args.pose_only, background_weight=args.background_weight,
+                                        profile=args.reward_profile)
     weights = _reward_weights(scene, pose_only=args.pose_only, background_weight=args.background_weight,
-                              spatial_weight=spatial_weight)
+                              profile=args.reward_profile, spatial_weight=args.spatial_weight)
     metadata = {'architecture': architecture, 'initialization': initialization, 'sft_lineage': lineage,
                 'pose_backend': 'sdpose', 'pose_worker': worker.identity,
+                'identity_backends': {'rollout': 'adaface_kprpe' if training_identity is not None else 'glintr100',
+                                      'evaluation': 'glintr100'},
                 'data_signature': data.signature, 'evaluator_sha256': evaluator_hashes, 'background_index': background_ref,
                 'background_metric': BACKGROUND_METRIC, 'background_scale': BACKGROUND_SCALE,
                 'spatial_worker': spatial.identity if spatial else None,
-                'scene': scene, 'weights': weights, 'train_tasks': len(train_keys), 'eval_tasks': len(val_keys),
+                'scene': scene, 'weights': weights, 'selection_weights': selection_weights,
+                'train_tasks': len(train_keys), 'eval_tasks': len(val_keys),
                 'evaluation_kind': config.experiment_mode, 'skipped_targets': skipped, 'route': route.name,
                 'eligible': [{'source': k[0], 'index': k[1], 'id_people': sum(x is not None for x in targets[k][0].identities),
                               'contacts': len(targets[k][0].contacts), 'background': targets[k][0].background_status,
@@ -490,9 +507,9 @@ def _run(args, resources):
         random.seed(config.seed)
         np.random.seed(config.seed % (2**32))
         torch.manual_seed(config.seed)
-        baseline, baseline_rows = _evaluate(backend, data, route, bank, targets, val_keys, args, output / 'ode-sft')
+        baseline, baseline_rows = _evaluate(backend, data, route, val_bank, targets, val_keys, args, output / 'ode-sft')
         write_json(output / 'ode-sft.json', {'metrics': baseline, 'rows': baseline_rows})
-        best, best_score, regressions, last_validated = None, _score(baseline, weights), 0, 0
+        best, best_score, regressions, last_validated = None, _score(baseline, selection_weights), 0, 0
 
     if training and not args.pose_only and (
             'identity' not in baseline or not any(any(x is not None for x in targets[k][0].identities) for k in train_keys)):
@@ -501,13 +518,13 @@ def _run(args, resources):
     def validate():
         nonlocal best_score, regressions, last_validated
         update = counters.optimizer_updates
-        metrics, rows = _evaluate(backend, data, route, bank, targets, val_keys, args, output / f'ode-{update:06d}')
+        metrics, rows = _evaluate(backend, data, route, val_bank, targets, val_keys, args, output / f'ode-{update:06d}')
         regressed = _regressions(metrics, baseline, args)
         rejected = bool(regressed)
         report = {**counters.record(), 'metrics': metrics, 'regressed': rejected, 'regressed_metrics': regressed,
                   'sft_reference': initialization}
         write_json(output / f'ode-{update:06d}.json', {**report, 'rows': rows})
-        score = _score(metrics, weights)
+        score = _score(metrics, selection_weights)
         improved = not rejected and score > best_score
         if improved:
             best_score = score

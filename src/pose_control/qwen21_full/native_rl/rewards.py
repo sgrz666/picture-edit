@@ -8,6 +8,10 @@ from scipy.optimize import linear_sum_assignment
 
 SINGLE_WEIGHTS = {'pose': .45, 'identity': .40, 'background': .15}
 DUAL_WEIGHTS = {'pose': .27, 'identity': .23, 'binding': .18, 'layout': .13, 'contact': .09, 'background': .10}
+HANDS42_RATIOS = {
+    'single': {'pose': 30, 'hands': 20, 'identity': 25, 'background': 15},
+    'dual': {'pose': 20, 'hands': 15, 'identity': 20, 'binding': 15, 'layout': 8, 'contact': 7, 'background': 5},
+}
 OKS_SIGMAS = np.array([.026, .025, .025, .035, .035, .079, .079, .072, .072,
                        .062, .062, .107, .107, .087, .087, .089, .089])
 PART_POINTS = ((0,), (5, 6, 11, 12), (5, 7), (7, 9), (9,), (6, 8), (8, 10),
@@ -95,6 +99,8 @@ def rendered_rgb(image):
 
 
 def score_candidate(target, poses, identities):
+    from ..region_rewards import pose_metrics
+
     if len(poses) != len(identities):
         raise ValueError('Generated face features must follow the detected pose order')
     diagonal = float(np.hypot(*target.content_hw))
@@ -118,19 +124,24 @@ def score_candidate(target, poses, identities):
                'id_cosine': [cosines.get(i) for i in range(len(target.poses))]}
     if eligible:
         reward['identity'] = sum((v + 1.) / 2. for v in cosines.values()) / len(eligible)
+    hand_rewards = []
+    for i, (gt, pred) in enumerate(zip(target.poses, assigned)):
+        hand_pck = None
+        if gt.wholebody is not None:
+            regions = pose_metrics(gt.wholebody, gt.wholebody_valid,
+                                   None if pred is None else pred.wholebody,
+                                   None if pred is None else pred.wholebody_valid, target.content_hw)
+            hand_pck = regions['hands']['pck_002']
+            hand_rewards.extend(regions[side]['reward'] for side in ('left_hand', 'right_hand')
+                                if regions[side]['applicable'])
+        details[f'person{i}_hand_pck_002'] = hand_pck
+    details['eligible_hands'] = len(hand_rewards)
+    if hand_rewards:
+        reward['hands'] = float(np.mean(hand_rewards))
     if len(target.poses) == 2:
-        from ..region_rewards import pose_metrics
-
         details['two_person_detected'] = len(poses) == details['matched_people'] == 2
         details['occlusion_consistency'] = None
         details['occlusion_status'] = 'generated_depth_order_unavailable'
-        for i, (gt, pred) in enumerate(zip(target.poses, assigned)):
-            hands = None
-            if gt.wholebody is not None:
-                hands = pose_metrics(gt.wholebody, gt.wholebody_valid,
-                                     None if pred is None else pred.wholebody,
-                                     None if pred is None else pred.wholebody_valid, target.content_hw)['hands']['pck_002']
-            details[f'person{i}_hand_pck_002'] = hands
         reward['layout'] = 0.
         if all(p is not None for p in assigned):
             def layout(pair):
@@ -160,12 +171,12 @@ def score_candidate(target, poses, identities):
 
 
 class ImageRewardBank:
-    def __init__(self, models_root, *, pose, spatial=None):
+    def __init__(self, models_root, *, pose, spatial=None, identity=None):
         from src.evaluation.joint_pilot_metrics import IdentityMetric
 
         self.pose = pose
         self.spatial = spatial
-        self.identity = IdentityMetric(models_root)
+        self.identity = identity if identity is not None else IdentityMetric(models_root)
 
     def _poses(self, image, canvas):
         from src.evaluation.sdpose import coco17, valid_joints
@@ -200,11 +211,14 @@ class ImageRewardBank:
         for i in _assign(scores, .10):
             embedding = None
             if i is not None:
-                crop = self.identity.face_align.norm_crop(bgr, landmark=landmarks[i])
-                feature = self.identity.recognition.get_feat(crop).reshape(-1).astype(np.float32)
+                if hasattr(self.identity, 'encode'):
+                    feature = self.identity.encode(bgr, landmarks[i])
+                else:
+                    crop = self.identity.face_align.norm_crop(bgr, landmark=landmarks[i])
+                    feature = self.identity.recognition.get_feat(crop).reshape(-1).astype(np.float32)
                 norm = np.linalg.norm(feature)
                 if not np.isfinite(norm) or norm <= 0:
-                    raise ValueError('Invalid glintr100 embedding')
+                    raise ValueError('Invalid Native identity embedding')
                 embedding = feature / norm
             output.append(embedding)
         return tuple(output)

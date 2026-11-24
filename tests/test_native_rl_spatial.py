@@ -17,6 +17,61 @@ def test_spatial_score_uses_two_strict_subscores():
             parse_scores(invalid)
 
 
+def test_visual_linear_ignores_if_and_retains_model_evidence():
+    from src.pose_control.qwen21_full.native_rl.spatial_reward import parse_response, spatial_score
+    from src.pose_control.qwen21_full.native_rl.spatial_worker import ordered_results
+
+    sc = parse_response('{"score":[25,25],"reasoning":"Matches source","edit_region":[{"id":0,"bbox_2d":[10,20,40,60]}]}')
+    pq = parse_response('{"naturalness":18,"artifacts":15,"reasoning":"Some blur"}', stream='pq')
+    result, = ordered_results([{'id': 0, 'sc': sc['score'], 'pq': pq['score'],
+                                'sc_evidence': sc['evidence'], 'pq_evidence': pq['evidence']}], 1, 'visual-linear')
+    assert result['reward'] == pytest.approx(.796)
+    assert result['reward'] == spatial_score([0, 25], [18, 15], 'visual-linear')['reward']
+    assert result['instruction_following'] == 25
+    assert result['sc_evidence']['edit_region'][0]['bbox_2d'] == [10, 20, 40, 60]
+    assert result['pq_evidence']['reasoning'] == 'Some blur'
+    assert spatial_score([0, 0], [0, 0], 'visual-linear')['reward'] == 0.
+    assert spatial_score([0, 25], [25, 25], 'visual-linear')['reward'] == pytest.approx(1.)
+
+
+def test_spatial_crop_uses_bound_canvas_at_scoring_time(tmp_path):
+    from PIL import Image
+    from src.pose_control.qwen21_full.native_rl.spatial_worker import _image
+    from src.pose_control.qwen21_full.native_v62.training.io import file_sha
+
+    path = tmp_path / 'padded.png'
+    image = Image.new('RGB', (32, 32))
+    image.paste('red', (3, 5, 27, 29))
+    image.save(path)
+    entry = {'path': str(path), 'sha256': file_sha(path), 'crop': (3, 5, 27, 29), 'size': (32, 32)}
+    observed = _image(entry)
+    assert observed.size == (24, 24)
+    assert observed.getextrema() == ((255, 255), (0, 0), (0, 0))
+    with pytest.raises(ValueError, match='Canvas'):
+        _image({**entry, 'size': (32, 31)})
+
+
+@pytest.mark.parametrize('scene,expected', [
+    ('single', {'pose': .25, 'hands': 1/6, 'identity': 5/24, 'background': .125, 'spatial': .25}),
+    ('dual', {'pose': 1/6, 'hands': .125, 'identity': 1/6, 'binding': .125, 'layout': 1/15,
+              'contact': 7/120, 'background': 1/24, 'spatial': .25}),
+])
+def test_fixed_weight_ablation_keeps_nonvisual_ratios(scene, expected):
+    from src.pose_control.qwen21_full.native_rl.cli import _arguments, _reward_weights
+
+    defaults = _arguments(['check-data', '--config', 'c.json', '--spatial-model', 'model'])
+    assert defaults.spatial_mode == 'visual-linear'
+    assert defaults.spatial_weight == .25
+    assert defaults.reward_profile == 'hands42'
+    assert _reward_weights(scene, pose_only=False, profile='hands42', spatial_weight=.25) == pytest.approx(expected)
+    for weight in (.10, .25, .40):
+        weights = _reward_weights(scene, pose_only=False, profile='hands42', spatial_weight=weight)
+        assert weights['spatial'] == weight
+        assert sum(weights.values()) == pytest.approx(1.)
+        for name in expected.keys() - {'spatial'}:
+            assert weights[name] / (1 - weight) == pytest.approx(expected[name] / .75)
+
+
 @pytest.mark.parametrize('profile,roles', [
     ('single_2ref', ['source', 'target_pose']),
     ('dual_4ref', ['source', 'combined_pose', 'person_0_pose', 'person_1_pose']),
@@ -42,6 +97,7 @@ def test_spatial_references_keep_native_order_and_exclude_target_rgb(profile, ro
     if slots:
         assert 'Slot 0 belongs to Source B' in guided.instruction
     rgb = spatial_target(spec, 'rgb')
+    assert rgb.record()['candidate_canvas'] == {'size': (32, 32), 'crop': (0, 0, 32, 32)}
     assert rgb.roles == (('source_a', 'source_b') if profile == 'dual_source_5ref' else ('source',))
     assert guided.prompt_sha256 != rgb.prompt_sha256
     with pytest.raises(ValueError, match='references'):

@@ -35,6 +35,17 @@ def test_gdpo_masks_eligibility_and_records_low_variance():
         advantages([{'pose': [.2, float('nan')]}], {'pose': 1.})
 
 
+def test_guarded_gdpo_uses_a_per_reward_noise_floor():
+    groups = [{'pose': [.2, .8], 'spatial': [.508, .500]}]
+    weights = {'pose': .5, 'spatial': .5}
+    values, stats = advantages(groups, weights, std_floors={'spatial': .005})
+    torch.testing.assert_close(values, torch.tensor([[-1., 1.]]))
+    assert stats[0]['spatial']['low_variance'] and stats[0]['spatial']['std_floor'] == .005
+    assert not stats[0]['pose']['low_variance']
+    with pytest.raises(ValueError, match='floor'):
+        advantages(groups, weights, std_floors={'spatial': float('nan')})
+
+
 def test_clipping_and_frozen_reference_penalty():
     new = torch.tensor([.4, -.4], requires_grad=True)
     mean = torch.ones(2, 4, requires_grad=True)
@@ -93,6 +104,23 @@ def test_dual_hands_and_people_are_reported_in_target_slots():
     assert both['person0_hand_pck_002'] == both['person1_hand_pck_002'] == 1.
     assert missing['person0_hand_pck_002'] == 0. and missing['person1_hand_pck_002'] == 1.
     assert both['occlusion_consistency'] is None
+
+
+def test_hand_reward_uses_equal_visible_hands_and_penalizes_missing_predictions():
+    body = np.tile([20., 30.], (17, 1))
+    whole = np.tile([20., 30.], (134, 1))
+    valid = np.ones(134, bool)
+    valid[100:113] = False  # eight visible left-hand joints, 21 right-hand joints
+    target = PersonPose(body, np.ones(17, bool), np.array([10, 10, 60, 70]), whole, valid)
+    pred_valid = valid.copy()
+    pred_valid[113:134] = False
+    pred = PersonPose(body, target.valid, target.box, whole, pred_valid)
+    goals = RewardTarget((target,), (None,), (100, 100))
+    reward, details = score_candidate(goals, (pred,), (None,))
+    assert reward['hands'] == .5 and details['eligible_hands'] == 2
+    assert score_candidate(goals, (), ())[0]['hands'] == 0.
+    unscorable = PersonPose(body, target.valid, target.box, whole, np.zeros(134, bool))
+    assert 'hands' not in score_candidate(RewardTarget((unscorable,), (None,), (100, 100)), (pred,), (None,))[0]
 
 
 def test_native_reward_bank_scores_only_eligible_source_background():

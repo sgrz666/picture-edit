@@ -202,5 +202,6 @@ workflow/
 - 两档的身份门一致（`face_sim >= 0.38`；未核到脸时仍锁严格背景，防止错人进对）。
 - 每条 pair 的 manifest 记录所属档位与实际门限参数；看护/挖掘脚本参考 `/data/shangguanrz/bil/scripts/bil_dual_pair_watch.py`（增量、GPU 空闲门、断点续跑）。
 - **RL 背景奖励固定取 Source A**。单人和同源双人用源图 A，独立双源用有序参考的第一张图 A（Qwen index 0）。只比较 A 到输出画布的可靠对应区域，排除 A 的原前景与目标所有人物的前景并集及边界。A/B 背景差异不限制这项奖励的资格；B 的 RGB 不参与背景评分。前景未通过资格门槛或画布无法对齐时记录不适用。已锁定的运行沿用原奖励签名。
+- **新 SpatialReward 消融固定使用同一套评分协议**。默认 `rgb + visual-linear`，权重 `0.25`。线性融合用归一化的 CON / NAT / ART，比例 `0.40 / 0.30 / 0.30`，IF 保留作诊断。候选和 Canvas 参考先裁有效区域，保留子分、模型定位与理由（如有），定位属于输出裁剪后的坐标。在等预算对照中只改变权重 `0.10 / 0.25 / 0.40`，锁定 SFT 父 SHA、评测器、split、seed 和候选上限，用专用奖励的 ODE 门禁及留出图独立盲评检查退化和视觉收益。区域 RL 复用同一 SpatialReward worker。通用 `hands42` 按目标资格对每只可见手等权，候选漏检计零。切换训练身份后端时固定 glintr100 ODE 评测；已启动的运行按其锁定快照续训。 [Native RL 运行说明](src/pose_control/qwen21_full/native_rl/README.md)
 
 ---

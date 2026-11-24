@@ -68,14 +68,15 @@ def test_optimizer_rejects_frozen_members_and_filter_preserves_moments():
     torch.testing.assert_close(optimizer.state[active]['exp_avg'], moment)
 
 
-@pytest.mark.parametrize('with_spatial', [False, True])
-def test_cli_resume_mid_batch_matches_ten_continuous_updates(tmp_path, monkeypatch, with_spatial):
+@pytest.mark.parametrize('with_spatial,with_adaface', [(False, False), (True, False), (True, True)])
+def test_cli_resume_mid_batch_matches_ten_continuous_updates(tmp_path, monkeypatch, with_spatial, with_adaface):
     from contextlib import ExitStack
     import json
     from pathlib import Path
     from types import SimpleNamespace as Box
 
     from PIL import Image
+    from src.evaluation import native_kprpe
     from src.pose_control.qwen21_full.native_rl import cli, pose_worker, rewards, spatial_worker
     from src.pose_control.qwen21_full.native_rl.objective import transition
     from src.pose_control.qwen21_full.native_v62.training import checkpointing, data
@@ -121,21 +122,27 @@ def test_cli_resume_mid_batch_matches_ten_continuous_updates(tmp_path, monkeypat
     class Bank:
         def __init__(self, *args, **kwargs):
             self.spatial = kwargs.get('spatial')
+            self.adaface = kwargs.get('identity') is not None
 
-        def score(self, _, image):
+        def score(self, target, image):
+            assert self.adaface == target.adaface
             value = image.getpixel((0, 0))[0] / 255.
-            return ({'pose': value, 'identity': .8} if with_spatial else {'pose': value}), {
+            return ({'pose': value, 'identity': .8, 'hands': .6} if with_spatial else {'pose': value}), {
                 'pck_002': value, 'id_eligible': 0}
 
     calls = []
 
     class VisualWorker(Worker):
+        @classmethod
+        def from_args(cls, args):
+            return cls()
+
         def score_group(self, target, paths):
             calls.append(len(paths))
             results = []
             for i, path in enumerate(paths):
                 with Image.open(path) as image:
-                    results.append({'id': i, 'reward': 1 - image.getpixel((0, 0))[0] / 255.})
+                    results.append({'id': i, 'reward': (image.getpixel((0, 0))[0] % 37) / 36.})
             return results
 
     class Rollout:
@@ -158,12 +165,15 @@ def test_cli_resume_mid_batch_matches_ten_continuous_updates(tmp_path, monkeypat
     monkeypatch.setattr(cli, '_settings', lambda args: (cfg, route))
     monkeypatch.setattr(cli, '_backend_for', lambda *a: (lambda _: source, Backend, 'native_full_v7'))
     monkeypatch.setattr(cli, '_generator', lambda backend, route, key, args: Rollout(backend, key))
-    monkeypatch.setattr(cli, '_targets', lambda *a: (
-        {(r['source_id'], 0): (Box(identities=(True,) if with_spatial else (), contacts=(), background_status='absent',
+    monkeypatch.setattr(cli, '_targets', lambda bank, data, chosen, background: (
+        {(r['source_id'], 0): (Box(identities=(True,) if with_spatial else (), adaface=with_adaface and r['role'] == 'train',
+                                 contacts=(), background_status='absent',
                                  spatial=Box(prompt_sha256='fixed-prompt', record=lambda: {'prompt_sha256': 'fixed-prompt'})),)
-         for r in records},
-        [], {(r['source_id'], 0): {'driver_rgb_sha256': r['source_id']} for r in records}))
+         for r in chosen},
+        [], {(r['source_id'], 0): {'driver_rgb_sha256': r['source_id']} for r in chosen}))
     monkeypatch.setattr(rewards, 'evaluator_assets', lambda _: [])
+    monkeypatch.setattr(native_kprpe, 'recognition_assets', lambda *_: [])
+    monkeypatch.setattr(native_kprpe, 'KPRPEIdentityMetric', lambda *_: object())
     monkeypatch.setattr(rewards, 'ImageRewardBank', Bank)
     monkeypatch.setattr(pose_worker, 'SDPoseWorker', Worker)
     monkeypatch.setattr(spatial_worker, 'SpatialWorker', VisualWorker)
@@ -173,6 +183,8 @@ def test_cli_resume_mid_batch_matches_ten_continuous_updates(tmp_path, monkeypat
 
     def run(name, *, pause=None, checkpoint=None):
         reward_flags = ['--spatial-model', 'simulated-model'] if with_spatial else ['--pose-only']
+        if with_adaface:
+            reward_flags.extend(('--adaface-model', 'adaface-model', '--adaface-rpe-extension', 'rpe-extension'))
         args = cli._arguments(['check-data', '--config', 'dummy.json', '--updates', '10', '--group-size', '2',
                                '--groups-per-update', '2', '--replay-epochs', '2', '--validate-every', '3', *reward_flags])
         args.output, args.stop_after_updates = tmp_path / name, pause
@@ -189,7 +201,10 @@ def test_cli_resume_mid_batch_matches_ten_continuous_updates(tmp_path, monkeypat
     second = run('resumed', checkpoint=first['checkpoint'])
     keys = ['optimizer_updates', 'rollout_batches', 'generated_images', 'replayed_transitions']
     assert first['stop'] == 'paused' and first['optimizer_updates'] == 5
-    assert [second[k] for k in keys] == [continuous[k] for k in keys] == [10, 5, 20, 40]
+    # The spatial fixture also exercises a zero-advantage batch where the
+    # equally weighted Body and SpatialReward completely cancel.
+    expected = [10, 6, 24, 40] if with_spatial else [10, 5, 20, 40]
+    assert [second[k] for k in keys] == [continuous[k] for k in keys] == expected
     assert second['baseline'] == continuous['baseline']
     clean, restored = [torch.load(r['checkpoint']['path'], weights_only=True) for r in (continuous, second)]
     torch.testing.assert_close(clean['state_dict']['native'], restored['state_dict']['native'], rtol=0, atol=0)
@@ -203,6 +218,10 @@ def test_cli_resume_mid_batch_matches_ten_continuous_updates(tmp_path, monkeypat
     assert rollouts('continuous') == rollouts('paused', 'resumed')
     assert calls == continuous_calls
     if with_spatial:
-        assert calls.count(2) == 10
+        manifest = json.loads((tmp_path / 'continuous' / 'run.json').read_text(encoding='utf8'))
+        assert manifest['weights']['spatial'] == .25 and 'spatial' not in manifest['selection_weights']
+        assert manifest['identity_backends'] == {'rollout': 'adaface_kprpe' if with_adaface else 'glintr100',
+                                                  'evaluation': 'glintr100'}
+        assert calls.count(2) == expected[1] * 2
         group = rollouts('resumed')[0][0]
         assert all('spatial' in row['reward'] for row in group['candidates'])

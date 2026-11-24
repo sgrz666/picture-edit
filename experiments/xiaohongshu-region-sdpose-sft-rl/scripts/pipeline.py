@@ -5,6 +5,7 @@ import json
 import os
 from pathlib import Path
 import subprocess
+import sys
 
 from prepare import read,ref,write
 from waiting import wait_for_dependency,wait_for_gpu
@@ -13,8 +14,14 @@ PY='/home/shangguanrz/nihaochen/envs/qwen21/bin/python'
 
 
 def main():
+    sys.path.insert(0,str(Path(__file__).resolve().parents[3]))
+    from src.pose_control.qwen21_full.native_rl.spatial_reward import add_spatial_arguments, configure_spatial, spatial_arguments
+
     p=argparse.ArgumentParser(description=__doc__);p.add_argument('--root',type=Path,required=True)
-    p.add_argument('--repo',type=Path,required=True);a=p.parse_args();root=a.root.resolve();repo=a.repo.resolve()
+    p.add_argument('--repo',type=Path,required=True)
+    add_spatial_arguments(p)
+    a=p.parse_args();root=a.root.resolve();repo=a.repo.resolve()
+    configure_spatial(p,a)
     import fcntl
     scripts=Path(__file__).resolve().parent;root.joinpath('logs').mkdir(exist_ok=True)
     request=read(root/'launch_request.json') if (root/'launch_request.json').exists() else {}
@@ -58,7 +65,7 @@ def main():
               '--config',str(root/'configs/templates/regional/S3.json'),'--report',str(report)])
     if read(report).get('passed') is not True:raise RuntimeError('Actual dataset preflight did not pass')
     free_gpu();child('paired_sft_rl',[PY,str(common/'run.py'),'--root',str(root),'--repo',str(repo),'--until','all',
-        '--rl-updates',str(request.get('followup_updates',10))])
+        '--rl-updates',str(request.get('followup_updates',10)),*spatial_arguments(a)])
     comparison=read(root/'report/comparison-ready.json')
     write(root/'pipeline-complete.json',{'comparison':comparison,'prepared':ref(root/'prepared.json'),
           'scope':'fixed-budget one-seed Xiaohongshu experiment from Bilibili20k; test excluded from optimization; RL rollout cost separate'})

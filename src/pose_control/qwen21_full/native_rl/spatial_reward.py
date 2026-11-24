@@ -4,13 +4,17 @@ from dataclasses import dataclass
 import hashlib
 import json
 import math
+from pathlib import Path
 
 from src.data.canvas_contract import CanvasSpec
 from ..native_v5.conditioning import ROLES, SOURCE_ROLES, verified
 
 
 UPSTREAM = '0222484b6a30f865525e8dc3a90acf24654e096a'
-SCORE_VERSION = 'spatialreward_native_v1'
+SCORE_VERSION = 'spatialreward_native_v2'
+FUSION_MODES = ('visual-linear', 'official', 'complementary')
+DEFAULT_MODE = 'visual-linear'
+DEFAULT_WEIGHT = .25
 SC_PROMPT = (
     'Evaluate the edit in the last image by comparing it with the earlier references and the instruction. '
     'Locate edited areas in the last image before judging them. Return one JSON object with edit_region '
@@ -27,18 +31,59 @@ PQ_PROMPT = (
 )
 
 
+def add_spatial_arguments(parser):
+    parser.add_argument('--spatial-model', type=Path, help='Enable a local frozen SpatialReward-8B model')
+    parser.add_argument('--spatial-python', type=Path, help='Interpreter for the isolated SpatialReward process')
+    parser.add_argument('--spatial-device', default='cpu')
+    parser.add_argument('--spatial-references', choices=('rgb', 'guides'), default='rgb')
+    parser.add_argument('--spatial-mode', choices=FUSION_MODES, default=DEFAULT_MODE)
+    parser.add_argument('--spatial-weight', type=float, help='Default when enabled: .25. Use 0 for scoring only')
+    parser.add_argument('--spatial-std-floor', type=float, help='Calibrated Guarded-GDPO floor for SpatialReward')
+    parser.add_argument('--spatial-batch-size', type=int, default=2)
+    parser.add_argument('--spatial-max-pixels', type=int, default=262144)
+    parser.add_argument('--spatial-timeout', type=int, default=900)
+
+
+def configure_spatial(parser, args):
+    weight, floor = args.spatial_weight, args.spatial_std_floor
+    if (args.spatial_model is None and (weight is not None or floor is not None) or
+            weight is not None and not 0 <= weight < 1 or floor is not None and not 0 <= floor <= .5 or
+            min(args.spatial_batch_size, args.spatial_max_pixels, args.spatial_timeout) < 1):
+        parser.error('Invalid SpatialReward model, weight, variance floor or worker settings')
+    if weight is None:
+        args.spatial_weight = DEFAULT_WEIGHT if args.spatial_model is not None else 0.
+    if floor is not None and (not args.spatial_weight or getattr(args, 'aggregation', 'gdpo-guarded') != 'gdpo-guarded'):
+        parser.error('--spatial-std-floor requires a positively weighted SpatialReward in Guarded-GDPO')
+
+
+def spatial_arguments(args):
+    if args.spatial_model is None:
+        return []
+    return [part for name, value in vars(args).items() if name.startswith('spatial_') and value is not None
+            for part in ('--' + name.replace('_', '-'), str(value))]
+
+
 @dataclass(frozen=True)
 class SpatialTarget:
     roles: tuple
     references: tuple
     instruction: str
+    candidate_canvas: dict
 
     @property
     def prompt_sha256(self):
         return hashlib.sha256(self.instruction.encode('utf8')).hexdigest()
 
     def record(self):
-        return {'roles': self.roles, 'references': self.references, 'prompt_sha256': self.prompt_sha256}
+        return {'roles': self.roles, 'references': self.references, 'prompt_sha256': self.prompt_sha256,
+                'candidate_canvas': self.candidate_canvas}
+
+
+def with_spatial_weight(weights, weight):
+    if not weight:
+        return dict(weights)
+    total = sum(weights.values())
+    return {**{name: value * (1 - weight) / total for name, value in weights.items()}, 'spatial': weight}
 
 
 def spatial_target(condition, reference_mode, *, slot_sources=None):
@@ -52,13 +97,19 @@ def spatial_target(condition, reference_mode, *, slot_sources=None):
     entries = [entry for entry in images if reference_mode == 'guides' or entry['role'] in SOURCE_ROLES]
     roles = tuple(entry['role'] for entry in entries)
     references = []
-    for entry in entries:
-        path = verified(entry['file'])
+    target_canvas = None
+    for entry in images:
         canvas = CanvasSpec.from_record(entry['canvas'])
         if (canvas.fingerprint() != entry['canvas_id'] or entry['space'] not in ('original', 'canvas')
                 or entry['role'] not in SOURCE_ROLES and entry['canvas_id'] != condition['target_canvas_id']):
             raise ValueError('SpatialReward references differ from their bound Canvases')
-        references.append({**entry['file'], 'path': str(path), 'crop': canvas.valid_rect if entry['space'] == 'canvas' else None})
+        if entry['role'] not in SOURCE_ROLES:
+            target_canvas = canvas
+        if entry['role'] in roles:
+            path = verified(entry['file'])
+            padded = entry['space'] == 'canvas'
+            references.append({**entry['file'], 'path': str(path), 'crop': canvas.valid_rect if padded else None,
+                               'size': (canvas.canvas_hw if padded else canvas.original_hw)[::-1]})
     names = {
         'source': 'Source A', 'source_a': 'Source A', 'source_b': 'Source B', 'target_pose': 'target skeleton',
         'combined_pose': 'combined target skeleton', 'person_0_pose': 'target skeleton for slot 0',
@@ -84,7 +135,8 @@ def spatial_target(condition, reference_mode, *, slot_sources=None):
     instruction = (f'Reference order: {order}. Image {len(roles) + 1} is the edit. '
                    f'Change the pose of {count}. {guidance} Preserve original identities, clothing, hairstyle and '
                    'body proportions. Preserve the scene and background from Source A. Keep natural anatomy and clean details.')
-    return SpatialTarget(roles, tuple(references), instruction)
+    return SpatialTarget(roles, tuple(references), instruction,
+                         {'size': target_canvas.canvas_hw[::-1], 'crop': target_canvas.valid_rect})
 
 
 def _two_scores(values):
@@ -94,19 +146,28 @@ def _two_scores(values):
     return list(values)
 
 
-def parse_scores(text, *, stream='sc'):
+def parse_response(text, *, stream='sc'):
     start, end = text.find('{'), text.rfind('}')
     if start < 0 or end <= start:
         raise ValueError('SpatialReward returned no JSON object')
     try:
         payload = json.loads(text[start:end + 1])
-    except json.JSONDecodeError as exc:
+        # Verify nested metadata as well before forwarding it through JSONL.
+        json.dumps(payload, allow_nan=False)
+    except ValueError as exc:
         raise ValueError('SpatialReward returned malformed JSON') from exc
     # SpatialReward-8B also emits explicit named PQ fields. Preserve their
     # semantics and apply the same numeric checks as for an ordered score list.
     if stream == 'pq' and 'score' not in payload:
-        return _two_scores([payload.get('naturalness'), payload.get('artifacts')])
-    return _two_scores(payload.get('score'))
+        values = [payload.get('naturalness'), payload.get('artifacts')]
+    else:
+        values = payload.get('score')
+    evidence = {key: payload[key] for key in ('edit_region', 'reasoning') if key in payload}
+    return {'score': _two_scores(values), 'evidence': evidence}
+
+
+def parse_scores(text, *, stream='sc'):
+    return parse_response(text, stream=stream)['score']
 
 
 def spatial_score(semantic, quality, mode):
@@ -114,9 +175,13 @@ def spatial_score(semantic, quality, mode):
     naturalness, artifacts = _two_scores(quality)
     sc = (.6 * follow + .4 * consistency) / 25.
     pq = (.5 * naturalness + .5 * artifacts) / 25.
-    if mode not in ('official', 'complementary'):
+    if mode not in FUSION_MODES:
         raise ValueError('Unknown SpatialReward fusion mode')
-    semantic_score = sc if mode == 'official' else consistency / 25.
+    if mode == 'visual-linear':
+        reward = (.4 * consistency + .3 * naturalness + .3 * artifacts) / 25.
+    else:
+        semantic_score = sc if mode == 'official' else consistency / 25.
+        reward = semantic_score**.8 * pq**.2
     return {'instruction_following': follow, 'source_consistency': consistency,
             'naturalness': naturalness, 'artifact_free': artifacts, 'sc': sc, 'pq': pq,
-            'reward': semantic_score**.8 * pq**.2}
+            'reward': reward}

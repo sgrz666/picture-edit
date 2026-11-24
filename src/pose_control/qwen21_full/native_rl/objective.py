@@ -28,11 +28,14 @@ def transition(state, velocity, sigma, next_sigma, *, noise_level=.7, action=Non
     return action, density.flatten(1).mean(1), mean, variance
 
 
-def advantages(groups, weights, *, mode='gdpo-guarded', std_floor=1e-3):
+def advantages(groups, weights, *, mode='gdpo-guarded', std_floor=1e-3, std_floors=None):
     if mode not in ('gdpo', 'gdpo-guarded', 'sum') or not math.isfinite(std_floor) or std_floor < 0:
         raise ValueError('Invalid advantage mode or variance floor')
     if not weights or any(not math.isfinite(w) or w < 0 for w in weights.values()) or not any(weights.values()):
         raise ValueError('Finite nonnegative reward weights with positive sum required')
+    std_floors = std_floors or {}
+    if set(std_floors) - weights.keys() or any(not math.isfinite(v) or v < 0 for v in std_floors.values()):
+        raise ValueError('Invalid per-reward variance floor')
     if not groups or not groups[0]:
         raise ValueError('One or more populated reward groups required')
     size = len(next(iter(groups[0].values())))
@@ -56,8 +59,10 @@ def advantages(groups, weights, *, mode='gdpo-guarded', std_floor=1e-3):
                 continue
             value = scores[name]
             mean, std = value.mean(), value.std(unbiased=False)
-            low = float(std) <= max(std_floor, 1e-6)
-            trace[name] = {'applicable': True, 'mean': float(mean), 'std': float(std), 'low_variance': low}
+            floor = max(std_floors.get(name, std_floor), 1e-6)
+            low = float(std) <= floor
+            trace[name] = {'applicable': True, 'mean': float(mean), 'std': float(std), 'low_variance': low,
+                           'std_floor': floor}
             if mode == 'sum':
                 row += weight * value
             elif mode == 'gdpo':
