@@ -62,6 +62,7 @@ def test_fixed_weight_ablation_keeps_nonvisual_ratios(scene, expected):
     defaults = _arguments(['check-data', '--config', 'c.json', '--spatial-model', 'model'])
     assert defaults.spatial_mode == 'visual-linear'
     assert defaults.spatial_weight == .25
+    assert defaults.spatial_std_floor == .005
     assert defaults.reward_profile == 'hands42'
     assert _reward_weights(scene, pose_only=False, profile='hands42', spatial_weight=.25) == pytest.approx(expected)
     for weight in (.10, .25, .40):
@@ -135,6 +136,10 @@ def test_spatial_failure_disables_the_whole_group(tmp_path):
         _add_spatial(bank, SimpleNamespace(spatial=object()), ['a.png', 'b.png'], group, tmp_path, ('train', 2))
     assert all('spatial' not in row['reward'] for row in group)
     assert json.loads((tmp_path / 'evaluation-failed.json').read_text())['evaluator'] == 'spatialreward'
-    args = SimpleNamespace(spatial_model='model', pose_drop=.02, id_drop=.02, background_drop=.02, binding_drop=.02)
+    args = SimpleNamespace(spatial_model='model', pose_drop=.02, id_drop=.02, background_drop=.02, binding_drop=.02,
+                           hands_drop=.02, two_person_drop=.02)
     assert _regressions({'pose': .8, 'background': .4, 'binding': .5},
                         {'pose': .7, 'background': .6, 'binding': .6}, args) == ['background', 'binding']
+    assert _regressions({'pose': .8, 'hands': .8, 'two_person_detection_rate': .8},
+                        {'pose': .8, 'hands': .8, 'hands_gesture': .7, 'two_person_detection_rate': .9},
+                        args) == ['hands_gesture', 'two_person_detection_rate']

@@ -24,7 +24,7 @@ V4 修复了抽出预测接口时遗留的局部变量引用；回归确认预�
 
 区域 RL 的 Background 权重为 `0.15`，Body、Hands 与 ID 按原比例分享剩余 `0.85`。复用 Native 前景，或读取 `data/evaluation.json` 中带 SHA 的原图 `source_mask`。Source A 到输出使用恒等映射或同宽高比的内容框等比重采样，前景并集外扩 16 px，剩余支持至少占有效画布的 10%。在该区域计算 `exp(-Masked L1 / 0.05)`。前景不合格或画布无法对齐时 `background_reward` 写 `null` 并标注原因。`valid_mse` 保留作 Target GT 诊断指标。
 
-新的 B 站或小红书区域实验可给 `scripts/run.py` 传 `--spatial-model /data/shangguanrz/models/rl/SpatialReward-8B --spatial-weight 0.25`。默认 `rgb + visual-linear`，在组内按同一条件对候选打分，其他区域奖励同比缩放。每组 `spatial.json` 绑定候选 SHA 和评分细节，checkpoint 固定模型、权重及方差配置。离线留出评测继续使用现有 SDPose 与 glintr100。 [SpatialReward 配置和消融](../../../src/pose_control/qwen21_full/native_rl/README.md#spatialreward-8b)
+新的 B 站或小红书区域实验可给 `scripts/run.py` 传 `--spatial-model /data/shangguanrz/models/rl/SpatialReward-8B --spatial-weight 0.25`。默认 `rgb + visual-linear`，区域其他奖励同比缩放。加 `--reward-profile hands42` 可使用通用单人奖励比例。Hands 部分共享全图位置与局部手势评分。新运行可用 `--sde-step` 或 `--sde-cycle` 对照固定与循环 SDE。每组 `spatial.json` 绑定候选 SHA 和评分细节，checkpoint 固定模型、权重、方差和 SDE 配置。可选 AdaFace-KPRPE 用于训练身份，离线留出照常用 SDPose 和 glintr100。 [参数与环境](../../../src/pose_control/qwen21_full/native_rl/README.md#spatialreward-8b)
 
 自动执行完后，原始图保存在 `output/generation/<分组>/`，RL 候选图在 `output/grpo/rollouts/`。`report/evaluation/` 保存逐图指标；`report/comparison-ready.json` 指向最终指标表与逐对 7 列面板（Source、SDPose、GT、uniform、regional、继续 SFT、GRPO）。汇总前会逐阶段核对两臂的 route/source/index/sigma/LR 轨迹，必须全部一致。汇总脚本已用合成图片和真实格式的已提交 checkpoint 做过流程冒烟验证，该验证不代表训练收益。
 

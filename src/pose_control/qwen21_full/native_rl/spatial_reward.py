@@ -15,6 +15,7 @@ SCORE_VERSION = 'spatialreward_native_v2'
 FUSION_MODES = ('visual-linear', 'official', 'complementary')
 DEFAULT_MODE = 'visual-linear'
 DEFAULT_WEIGHT = .25
+PROVISIONAL_STD_FLOOR = .005
 SC_PROMPT = (
     'Evaluate the edit in the last image by comparing it with the earlier references and the instruction. '
     'Locate edited areas in the last image before judging them. Return one JSON object with edit_region '
@@ -38,7 +39,7 @@ def add_spatial_arguments(parser):
     parser.add_argument('--spatial-references', choices=('rgb', 'guides'), default='rgb')
     parser.add_argument('--spatial-mode', choices=FUSION_MODES, default=DEFAULT_MODE)
     parser.add_argument('--spatial-weight', type=float, help='Default when enabled: .25. Use 0 for scoring only')
-    parser.add_argument('--spatial-std-floor', type=float, help='Calibrated Guarded-GDPO floor for SpatialReward')
+    parser.add_argument('--spatial-std-floor', type=float, help='SpatialReward Guarded-GDPO floor (provisional default: .005)')
     parser.add_argument('--spatial-batch-size', type=int, default=2)
     parser.add_argument('--spatial-max-pixels', type=int, default=262144)
     parser.add_argument('--spatial-timeout', type=int, default=900)
@@ -52,15 +53,18 @@ def configure_spatial(parser, args):
         parser.error('Invalid SpatialReward model, weight, variance floor or worker settings')
     if weight is None:
         args.spatial_weight = DEFAULT_WEIGHT if args.spatial_model is not None else 0.
-    if floor is not None and (not args.spatial_weight or getattr(args, 'aggregation', 'gdpo-guarded') != 'gdpo-guarded'):
+    guarded = args.spatial_weight and getattr(args, 'aggregation', 'gdpo-guarded') == 'gdpo-guarded'
+    if floor is not None and not guarded:
         parser.error('--spatial-std-floor requires a positively weighted SpatialReward in Guarded-GDPO')
+    if guarded and floor is None:
+        args.spatial_std_floor = max(PROVISIONAL_STD_FLOOR, getattr(args, 'std_floor', .001))
 
 
 def spatial_arguments(args):
     if args.spatial_model is None:
         return []
     return [part for name, value in vars(args).items() if name.startswith('spatial_') and value is not None
-            for part in ('--' + name.replace('_', '-'), str(value))]
+            for part in ('--' + name.replace('_', '-'), str(value.absolute() if isinstance(value, Path) else value))]
 
 
 @dataclass(frozen=True)

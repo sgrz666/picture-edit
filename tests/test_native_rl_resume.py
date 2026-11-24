@@ -87,7 +87,8 @@ def test_cli_resume_mid_batch_matches_ten_continuous_updates(tmp_path, monkeypat
               qwen_condition_profile='single_2ref', experiment_mode='standard', signature=lambda: 'bound-config')
     records = [dict(source_id=source, index=0, pair_id=source, role=role, eligible=True)
                for source, role in (('a', 'train'), ('b', 'train'), ('c', 'validation'))]
-    source = Box(records=records, signature='bound-data', datasets={r['source_id']: Box(rows=[r]) for r in records})
+    source = Box(records=records, signature='bound-data', datasets={r['source_id']: Box(rows=[r]) for r in records},
+                 conditions={(r['source_id'], 0): ({'sha256': r['source_id']}, {}) for r in records})
     payload = {'architecture': 'native_full_v7', 'training_state': {'stage_update': 8},
                'state_dict': {'native': torch.tensor(.1)}}
 
@@ -141,7 +142,7 @@ def test_cli_resume_mid_batch_matches_ten_continuous_updates(tmp_path, monkeypat
             calls.append(len(paths))
             results = []
             for i, path in enumerate(paths):
-                with Image.open(path) as image:
+                with Image.open(path['path'] if isinstance(path, dict) else path) as image:
                     results.append({'id': i, 'reward': (image.getpixel((0, 0))[0] % 37) / 36.})
             return results
 
@@ -206,6 +207,14 @@ def test_cli_resume_mid_batch_matches_ten_continuous_updates(tmp_path, monkeypat
     expected = [10, 6, 24, 40] if with_spatial else [10, 5, 20, 40]
     assert [second[k] for k in keys] == [continuous[k] for k in keys] == expected
     assert second['baseline'] == continuous['baseline']
+    assert continuous['best_rl'] is None
+    for run_result in (continuous, second):
+        eligible = run_result['visual_review']['eligible']
+        assert len(eligible) == 4
+        for candidate in eligible:
+            marker = Path(candidate['checkpoint']['path']).with_suffix('.commit.json')
+            assert json.loads(marker.read_text(encoding='utf8'))['ode_gate'] == {
+                'passed': True, 'report': candidate['report']}
     clean, restored = [torch.load(r['checkpoint']['path'], weights_only=True) for r in (continuous, second)]
     torch.testing.assert_close(clean['state_dict']['native'], restored['state_dict']['native'], rtol=0, atol=0)
     torch.testing.assert_close(clean['native_rl_state']['optimizer']['state'], restored['native_rl_state']['optimizer']['state'], rtol=0, atol=0)

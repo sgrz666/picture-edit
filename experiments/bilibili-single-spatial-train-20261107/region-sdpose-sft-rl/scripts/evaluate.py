@@ -40,8 +40,9 @@ def aggregate(records):
     for family in ('body','arm','wrist','hands','left_hand','right_hand'):
         rows=[x['pose'][family] for x in records if x['pose'][family]['applicable']]
         summary['pose'][family]={'active_images':len(rows)}
-        for key in ('reward','pck_002','pck_005','recall','l2_px','l2_px_all','nme_all'):
-            vals=[r[key] for r in rows if r[key] is not None]
+        for key in ('reward','pck_002','pck_005','recall','l2_px','l2_px_all','nme_all',
+                    'placement_reward','gesture_reward','training_reward'):
+            vals=[r[key] for r in rows if r.get(key) is not None]
             summary['pose'][family][key]=float(np.mean(vals)) if vals else None
     for key in ('id_cos_src','id_cos_tgt','identity_reward'):
         values=[x['identity'][key] for x in records if 'identity' in x and x['identity'][key] is not None]
@@ -95,19 +96,33 @@ def pose_action(args):
 
 
 class IdentityPixelEvaluator:
-    def __init__(self, root):
+    def __init__(self, root, *, adaface_model=None, adaface_rpe_extension=None):
         from insightface import model_zoo
         from insightface.utils import face_align
 
         models = Path('/home/shangguanrz/project/pic-edit/models/antelopev2')
         detector_path, encoder_path = (models / name for name in ('scrfd_10g_bnkps.onnx', 'glintr100.onnx'))
-        self.model_identity = bind_models(root, 'identity', [detector_path, encoder_path],
-            {'provider':'CPUExecutionProvider','detector_input':[640,640],'identity_applicability_oracle_min':.3})
-        self.detector = model_zoo.get_model(str(detector_path), providers=['CPUExecutionProvider'])
-        self.encoder = model_zoo.get_model(str(encoder_path), providers=['CPUExecutionProvider'])
-        self.detector.prepare(ctx_id=-1, input_size=(640, 640))
-        self.encoder.prepare(ctx_id=-1)
-        self.face_align = face_align
+        self.kprpe = None
+        self.oracle_min = .3
+        if adaface_model is None:
+            self.identity_backend = 'antelopev2/glintr100_cpu'
+            self.model_identity = bind_models(root, 'identity', [detector_path, encoder_path],
+                {'provider':'CPUExecutionProvider','detector_input':[640,640],'identity_applicability_oracle_min':.3})
+            self.detector = model_zoo.get_model(str(detector_path), providers=['CPUExecutionProvider'])
+            self.encoder = model_zoo.get_model(str(encoder_path), providers=['CPUExecutionProvider'])
+            self.detector.prepare(ctx_id=-1, input_size=(640, 640))
+            self.encoder.prepare(ctx_id=-1)
+            self.face_align = face_align
+        else:
+            from src.evaluation.native_kprpe import KPRPEIdentityMetric, recognition_assets
+
+            self.identity_backend = 'adaface_kprpe'
+            self.oracle_min = None
+            self.model_identity = bind_models(root, 'identity-adaface_kprpe',
+                [detector_path, *recognition_assets(adaface_model, adaface_rpe_extension)],
+                {'provider':'CPUExecutionProvider','detector_input':[640,640],'association':'unique_face_single_person'})
+            self.kprpe = KPRPEIdentityMetric(models.parent, adaface_model, adaface_rpe_extension)
+            self.detector = self.kprpe.det
         self.root = Path(root)
         self.native_data = {}
         from src.pose_control.qwen21_full.region_supervision import read_region_index
@@ -123,16 +138,16 @@ class IdentityPixelEvaluator:
         import cv2
         import numpy as np
         from src.pose_control.qwen21_full.native_rl.rewards import rendered_rgb
+        from src.evaluation.native_kprpe import normalized_embedding
 
         bgr=cv2.cvtColor(np.asarray(rendered_rgb(image)),cv2.COLOR_RGB2BGR)
         boxes,landmarks=self.detector.detect(bgr)
         if len(boxes)==0:return 0,None
+        if self.kprpe is not None:
+            return len(boxes), normalized_embedding(self.kprpe.encode(bgr, landmarks[0])) if len(boxes) == 1 else None
         index=int(np.argmax((boxes[:,2]-boxes[:,0])*(boxes[:,3]-boxes[:,1])))
-        feature=self.encoder.get_feat(self.face_align.norm_crop(bgr,landmark=landmarks[index])).reshape(-1).astype(np.float32)
-        norm = np.linalg.norm(feature)
-        if not np.isfinite(norm) or norm <= 0:
-            raise ValueError('Invalid glintr100 feature')
-        return len(boxes), feature / norm
+        feature=self.encoder.get_feat(self.face_align.norm_crop(bgr,landmark=landmarks[index]))
+        return len(boxes), normalized_embedding(feature)
 
     def _source_foreground(self, pair, sample):
         from src.data.canvas_contract import CanvasSpec
@@ -192,7 +207,8 @@ class IdentityPixelEvaluator:
         return {'source_count': source_count, 'source': source, 'target_count': target_count, 'target': target,
                 'oracle': oracle, 'background': background, 'background_reason': reason,
                 'gt_pixels': np.asarray(target_image, np.float32) / 255, 'valid': valid,
-                'eligible': {'identity': oracle is not None and oracle >= .3, 'background': background is not None,
+                'eligible': {'identity': oracle is not None and (self.oracle_min is None or oracle >= self.oracle_min),
+                             'background': background is not None,
                              **{name: pose[name]['applicable'] for name in ('body', 'hands')}}}
 
     def score(self, row, fixed):
@@ -234,7 +250,7 @@ class IdentityPixelEvaluator:
                 active_pair = pair_id
             self.score(row, targets)
             print(json.dumps({'identity_background_evaluated':i+1,'total':len(report['records'])}),flush=True)
-        report['summary']=aggregate(report['records']);report['identity_backend']='antelopev2/glintr100_cpu'
+        report['summary']=aggregate(report['records']);report['identity_backend']=self.identity_backend
         report['identity_model_identity']=self.model_identity
         return report
 

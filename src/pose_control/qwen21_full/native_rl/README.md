@@ -7,7 +7,7 @@
 ## 奖励与对照
 
 - `--reward-profile legacy` 单人 Pose / ID / Background 为 `0.45 / 0.40 / 0.15`，双人 Pose / ID / Binding / Layout / Contact / Background 为 `0.27 / 0.23 / 0.18 / 0.13 / 0.09 / 0.10`。Pose 用 SDPose-Wholebody + YOLO11x，以 `geometry` 序映射 COCO17 计算 OKS，目标按置信度 `0.30` 固定可见点分母，候选漏点计零。双人 Pose 给较弱一人额外权重。Binding 比较正确与交叉的 ID 相似度，Contact 用已确认的 Part14 接触对和可见 COCO 关节代理。遮挡关系仍记为 `null`。
-- `--reward-profile hands42` 把 SDPose 的左右手各 21 点接入独立 Hands Reward。沿用区域评测的逐手规则，每只有至少 8 个有效目标关节的手等权平均，候选漏手、漏点或漏人计零。记录 `eligible_hands` 和逐槽位 `person0/1_hand_pck_002`。通用入口启用 SpatialReward 时默认用此 profile，其余情况默认用 `legacy`。
+- `--reward-profile hands42` 把 SDPose 左右手各 21 点接入独立 Hands Reward。目标至少有 8 个有效手部关节时计入整图位置分。目标腕点有效、至少 7 个手指关节有效且手框对角线 ≥ 8 px 时，再按腕点对齐计算手指相对误差，以目标手框对角线归一化，Gaussian 的 σ 为 0.10。两项各占该手一半，手势不适用时用整图位置分。各只合格手等权，候选漏手、漏点或漏人计零。记录位置、手势和逐槽位 PCK。通用入口启用 SpatialReward 时默认用此 profile，其余情况默认用 `legacy`。
 - ID 默认用 SCRFD + glintr100。Source 和目标都能按人体槽位绑定人脸时启用，候选漏脸计零。通用入口可指定 `--adaface-model` 与 `--adaface-rpe-extension`，仅在 rollout 使用 AdaFace-KPRPE，在固定 ODE 验证继续使用 glintr100。两个后端都按头部框一对一匹配，训练代码、模型、RPE 扩展与参考权重 SHA 进入训练签名。 [KP-RPE 论文](https://arxiv.org/abs/2403.14852) [仓库人脸识别对照](../../../../experiments/face-identity-reward-20261123/README.md)
 - 背景默认用 `exp(-Masked L1 / 0.05)`，L1 归一到 `0..1`。单人、同源双人和独立双源统一以条件列表的第一张参考图 A 为背景源。双源的第二张图提供第二个人的外观，输出侧排除两个人。资格在 rollout 前固定。相同 Canvas 用像素恒等映射，同宽高比的内容框作等比重采样。排除 A 中所有已绑定的前景、目标各人前景和 16 px 边界，保留至少 10% 有效画布。A/B 背景差异不影响资格。无法对齐或缺少 mask 时记录原因。`--background-weight 0` 将该项从训练和 checkpoint 选点权重移除，评分日志继续报告背景指标。
 - `--pose-only` 跑 Pose GRPO。`--aggregation sum` 先加权聚合全部适用的原始 Reward 再作组内标准化。`--aggregation gdpo` 使用 Flow-Factory v0.5.0 的逐项组归一化、权重和与采集批标准化。默认 `gdpo-guarded` 在标准化前抑制 std ≤ `0.001` 的奖励，并按当前适用的权重归一。整个批次无有效优势时跳过 optimizer。区域实验复用同一个 Flow-SDE、优势和更新内核。 [Flow-Factory v0.5.0](https://github.com/X-GenGroup/Flow-Factory/tree/ced2cd9b0465a2c9d733b9b8aed4d4351f950a22)
@@ -18,8 +18,8 @@
 
 - `--spatial-references rgb` 是默认模式。`guides` 按 Native 顺序加入骨架图。`single_2ref`、`dual_4ref`、`dual_source_5ref` 各自保留原始参考顺序，独立双源通过 Native `slot → source` 绑定。候选和各 Canvas 参考都按自己的 `valid_rect` 裁剪，原始 RGB 使用完整内容。背景语义固定为 Source A，目标 GT RGB 只给现有几何及身份评分使用。
 - 默认 `--spatial-mode visual-linear` 计算 `0.40·CON/25 + 0.30·NAT/25 + 0.30·ART/25`，保留 IF 作为诊断。`official` 计算 `SC^0.8 × PQ^0.2`，其中 `SC=(0.6 IF+0.4 CON)/25`、`PQ=(NAT+ART)/50`。`complementary` 将 SC 换成 `CON/25`。三种模式使用相同的 Native Prompt、四个原始子分与 Transformers 推理。输出保留模型给出的 `sc_evidence` / `pq_evidence`，其中框是裁剪后图像的模型坐标，作为诊断。 [官方评分实现](https://github.com/lorangan-ddup/SpatialReward/blob/0222484b6a30f865525e8dc3a90acf24654e096a/example/reward/server/spatial_reward_scorer.py)
-- 启用后的默认权重是 `0.25`，其他奖励同比缩放。通用 `hands42` profile 的单人基础比例为 `30:20:25:15`（Body / Hands / ID / Background），双人为 `20:15:20:15:8:7:5`（Body / Hands / ID / Binding / Layout / Contact / Background）。`--spatial-weight 0` 保留评分用于观察。`--spatial-std-floor` 接受离线校准的单项阈值，缺省继承 `--std-floor`。Guarded-GDPO 的权重在逐奖励组内标准化后应用，日志记录每项的 std 和实际阈值。 [GDPO](https://arxiv.org/abs/2601.05242)
-- 通用入口的 ODE 选点使用 `selection_weights`，保持各个 SpatialReward 权重臂的选点权重一致。Pose / ID 保留独立退化门，启用 SpatialReward 后增加 Background / Binding 门，默认各 `0.02`。ODE 逐图保留 SpatialReward 记录。评分进程默认 CPU、batch 2，可用 `--spatial-python`、`--spatial-device` 和 `--spatial-batch-size` 配置。
+- 启用后的默认权重是 `0.25`，其他奖励同比缩放。通用 `hands42` profile 的单人基础比例为 `30:20:25:15`（Body / Hands / ID / Background），双人为 `20:15:20:15:8:7:5`（Body / Hands / ID / Binding / Layout / Contact / Background）。`--spatial-weight 0` 保留评分用于观察。Guarded-GDPO 默认取 `max(0.005, --std-floor)` 作为 SpatialReward 的临时门槛，可用 `--spatial-std-floor` 固定校准值。日志记录每项的 std 和实际阈值。 [GDPO](https://arxiv.org/abs/2601.05242)
+- 通用入口的 ODE 门禁检查 Pose / ID、适用的 Hands 总分及局部手势分，以及双人任务的双人检出率。启用 SpatialReward 后还检查适用的 Background / Binding。默认相对 SFT 基线可下降 `0.02`，双人检出率要求两个槽位均匹配且恰好检出两人。评分进程默认 CPU、batch 2，可用 `--spatial-python`、`--spatial-device` 和 `--spatial-batch-size` 配置。
 
 离线校准使用已有候选图。输入 manifest 的 `schema` 为 `native_rl_spatial_candidates_v1`，包含 `groups` 列表。每组提供 `condition`（Native Qwen 条件 JSON 的 `{path, sha256}`）与 `candidates`（按顺序排列的图像 `{path, sha256}` 列表）。双源 `guides` 组另提供 `slot_sources`，取自 Native 的 `target_qwen_image_indices[0]`。可用同一份 manifest 分别跑 RGB 和骨架配置，输出逐候选子分给独立人工排序对照。
 
@@ -30,9 +30,9 @@ MODEL=/data/shangguanrz/models/rl/SpatialReward-8B
   --manifest "$MANIFEST" --repeats 3 --output "$RUN/spatial-guides.json"
 ```
 
-离线输出的 `repeat_reward_std` 是相同候选和相同配置下的重复评分标准差。用配对人工排序同时验证 `rgb/guides` 和融合模式，重点看跨输入配置的排序稳定性。先固定 `rgb + visual-linear`，三组只调整 `--spatial-weight 0.10/0.25/0.40`。锁定同一 SFT 父 SHA、奖励模型、阈值、rollout 配置、seed、更新预算、候选上限和留出集，分别使用新输出目录。报告有效更新数、实际生成图数、门禁和固定留出图的独立人工盲评。阶段式及动态权重放在固定权重消融之后。空间级优势需要独立区域奖励和位置级 log-prob 及 Replay 契约。
+离线输出的 `repeat_reward_std` 是相同候选和相同配置下的重复评分标准差。方差门校准还需要用同一批图对照不同 `--batch-size`，并将候选排名与人工配对排序对照。先固定 `rgb + visual-linear`，三组只调整 `--spatial-weight 0.10/0.25/0.40`。锁定同一 SFT 父 SHA、奖励模型、阈值、rollout 配置、seed、更新预算、候选上限和留出集，分别使用新输出目录。报告有效更新数、实际生成图数、门禁和固定留出图的独立人工盲评。阶段式及动态权重放在固定权重消融之后。空间级优势需要独立区域奖励和位置级 log-prob 及 Replay 契约。
 
-小红书区域入口 `experiments/xiaohongshu-region-sdpose-sft-rl/scripts/pipeline.py` 和共用区域 `scripts/run.py`、`scripts/rl.py` 接受同一组 `--spatial-*` 参数。指定模型后，区域训练保留既有 Body、逐手、ID 与 Source A 背景评分，其他权重按现有比例缩放，逐组输出 `spatial.json` 并把模型与配置绑定到 RL checkpoint。已有区域实验按原快照复现，新对照使用新的实验根目录。
+小红书区域入口 `experiments/xiaohongshu-region-sdpose-sft-rl/scripts/pipeline.py` 和共用区域 `scripts/run.py`、`scripts/rl.py` 接受相同的 `--spatial-*`、AdaFace 及 SDE 选项。默认沿用 `regional-legacy` 的权重，显式加 `--reward-profile hands42` 即使用通用单人比例。Body 继续用区域目标关键点评分，Hands 和 SpatialReward 复用共享实现。区域 AdaFace rollout 要求单人源图、目标图各有唯一可绑定人脸，候选漏检或多脸计零，留出评测照常用 glintr100。启动器可用 `--rl-python "$FACE/.venv/bin/python"` 单独指定 RL 解释器。已有区域实验按原快照复现，新对照使用新的实验根目录。
 
 通用入口接入 AdaFace-KPRPE 时，使用已完成对照实验的 Python 环境和本地扩展。下列参数可添加到 `check-data`、`preflight`、`train` 或同配置 `resume`。
 
@@ -62,7 +62,19 @@ RUN=/data/shangguanrz/pic-edit-experiments/native-rl-$(date -u +%Y%m%dT%H%M%SZ)
   --groups-per-update 1 --group-size 4 --steps 3 --sde-step 1 --val-limit 1 --output "$RUN/spatial-preflight"
 ```
 
-正式训练需要 `experiment_mode=standard` 和按视频或序列隔离的 validation。启动时打印 SFT 路径、SHA256、阶段和父链。先用固定 seed 生成 SFT 的 ODE 基线，再按 `--validate-every` 个 optimizer updates 和结尾复测。Pose 或 ID 相对基线下降超过默认 `0.02` 时淘汰该候选，连续两次触发会停止。`summary.json` 中的 `selected` 指向门禁内评分最高且超过基线的 RL 权重，或 SFT 基线。
+正式训练需要 `experiment_mode=standard` 和按视频或序列隔离的 validation。启动时打印 SFT 路径、SHA256、阶段和父链。先用固定 seed 生成 SFT 的 ODE 基线，再按 `--validate-every` 个 optimizer updates 和结尾复测。连续触发门禁达到 `--patience` 次会停止。`--hands-drop` 同时设 Hands 总分和手势分容忍度，`--two-person-drop` 设双人检出率容忍度。`--sde-step 3` 固定单步，`--sde-cycle 1 2 3` 按 rollout 批次循环。通用入口默认固定 `3`，区域入口默认循环 `1 2 3`。
+
+### 独立视觉选点
+
+通用入口把通过 ODE 门禁的 checkpoint 及其逐图报告写入 `summary.json` 的 `visual_review`，续训保留前段候选。即使专用指标综合分未高过 SFT，也可参与独立视觉评审。原有 `selected` 仍提供专用指标的自动选择结果。
+
+```bash
+"$PY" scripts/eval/select_native_rl_checkpoint.py prepare --run "$RUN/pilot" --output "$RUN/visual-review.json"
+"$PY" scripts/eval/select_native_rl_checkpoint.py select --review "$RUN/visual-review.json" \
+  --scores "$SCORES" --output "$RUN/visual-selection.json"
+```
+
+`$SCORES` 使用 `schema: native_rl_visual_scores_v1`，`review` 指向同一份评审清单的 `{path,sha256}`。`evaluator` 填 `{kind,protocol}`，`kind` 可用 `human_blind` 或 `editreward`，后者附带权重清单的 `model_manifest` 文件引用。盲评时只向评审展示固定条件和隐藏了 checkpoint 来源的图像。对 SFT 和所有入围模型，`candidates` 各填一条 `{id,scores}`，`scores` 按清单图像顺序记录 `{image_sha256,score}`，分数在 0～1。命令核对候选和 ODE 报告的 SHA，再比较独立视觉均分。最高分超过 SFT 至少要满足 `gain > --min-gain`，默认 `--min-gain 0`。独立选点写入新文件。
 
 ### 断点续训
 

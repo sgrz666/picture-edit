@@ -16,9 +16,11 @@ import uuid
 
 REPO=Path(os.environ.get('PICTUREEDIT_REPO',str(Path(__file__).resolve().parents[4])))
 sys.path.insert(0,str(REPO))
+from src.pose_control.qwen21_full.native_rl.regional_cli import DEFAULT_SDE_INDICES, ROLLOUT_STEPS
+
 SDPY='/data/shangguanrz/pic-edit-experiments/姿态估计/four-skeleton-compair/.venv/bin/python'
 SCHEMA='native_region_grpo_training_v1'
-ALGORITHM={'name':'native_flow_grpo_v3','group_size':4,'rollout_steps':10,'sde_indices':[1,2,3],
+ALGORITHM={'name':'native_flow_grpo_v4','group_size':4,'rollout_steps':ROLLOUT_STEPS,'sde_indices':list(DEFAULT_SDE_INDICES),
     'noise_level':.7,'ppo_clip':1e-4,'reference_beta':1e-3,
     'reward_weights':{'body':.45*.85/.95,'hands':.35*.85/.95,'identity':.15*.85/.95,'background':.15},
     'background_metric':'masked_source_l1_v1',
@@ -61,6 +63,7 @@ def score_columns(records, eligible):
     columns = {name: [] for name, applicable in eligible.items() if applicable}
     for row in records:
         values = {name: row['pose'][name]['reward'] for name in ('body', 'hands')}
+        values['hands'] = row['pose']['hands'].get('training_reward', values['hands'])
         values.update(identity=row['identity']['identity_reward'], background=row['pixel']['background_reward'])
         values['spatial'] = (row.get('spatial') or {}).get('reward')
         if {name for name, score in values.items() if score is not None} != set(columns):
@@ -113,15 +116,15 @@ def audit_rewards(root,pairs,folder,evaluator):
 
 
 def main():
-    from src.pose_control.qwen21_full.native_rl.spatial_reward import add_spatial_arguments, configure_spatial
+    from src.pose_control.qwen21_full.native_rl.regional_cli import add_arguments, configure_arguments
 
     p=argparse.ArgumentParser(description=__doc__);p.add_argument('--root',type=Path,required=True)
     p.add_argument('--config',type=Path,required=True);p.add_argument('--parent',type=Path,required=True)
     p.add_argument('--report',type=Path,required=True);p.add_argument('--updates',type=int,default=10)
     p.add_argument('--resume',type=Path)
-    add_spatial_arguments(p)
+    add_arguments(p)
     args=p.parse_args()
-    configure_spatial(p,args)
+    args.reward_arguments=configure_arguments(p,args)
     if args.updates < 1:raise ValueError('Positive optimizer update budget required')
     if args.report.exists():raise FileExistsError('A terminal RL report already exists')
     with ExitStack() as resources:
@@ -135,15 +138,17 @@ def train(args, resources):
     torch.set_num_threads(4);torch.cuda.set_per_process_memory_fraction(fraction)
     from src.pose_control.qwen21_full.native_v7.training import TrainingConfigV7,NativeV7Trainer
     from src.pose_control.qwen21_full.native_v62.training.io import file_sha,verify,verify_prefix
-    from src.pose_control.qwen21_full.native_v62.training.checkpointing import capture_rng,restore_rng
+    from src.pose_control.qwen21_full.native_v62.training.checkpointing import capture_rng,environment,restore_rng
     from src.pose_control.qwen21_full.native_v62.training.data import route_options
     from src.pose_control.qwen21_full.native_v62.training.validation import frozen_digest
     from src.pose_control.qwen21_full.native_rl.objective import advantages
+    from src.pose_control.qwen21_full.native_rl.rewards import reward_weights
+    from src.pose_control.qwen21_full.region_rewards import HAND_REWARD
     from src.pose_control.qwen21_full.native_rl.spatial_reward import spatial_arguments, spatial_target, with_spatial_weight
     from src.pose_control.qwen21_full.native_rl.spatial_worker import SpatialWorker
     from src.pose_control.qwen21_full.native_rl.runner import (FrozenReference, NativeRollout, RunCounters,
                                                               audit_replay, fixed_reference_means, restrict_optimizer,
-                                                              update_policy)
+                                                              rollout_sde_step, update_policy)
     from evaluate import IdentityPixelEvaluator
     config=TrainingConfigV7.from_dict(read(args.config))
     parent={'path':str(args.parent.resolve()),'sha256':file_sha(args.parent)}
@@ -163,13 +168,19 @@ def train(args, resources):
             if id(p) not in active_ids]
     reference=FrozenReference(active,storage_device='cpu');base_update=ctx['global_update'];counters=RunCounters();replay_verified=False
     if config.stage.optimizer.scheduler!='constant':raise ValueError('This bounded RL pilot requires the explicit constant schedule')
-    evaluator=IdentityPixelEvaluator(args.root)
-    algorithm=dict(ALGORITHM)
+    evaluator=IdentityPixelEvaluator(args.root, adaface_model=args.adaface_model,
+                                    adaface_rpe_extension=args.adaface_rpe_extension)
+    if args.reward_profile == 'hands42':
+        weights=reward_weights('single', pose_only=False, profile='hands42', spatial_weight=args.spatial_weight)
+        weights={'body' if name=='pose' else name:value for name,value in weights.items()}
+    else:
+        weights=with_spatial_weight(ALGORITHM['reward_weights'], args.spatial_weight)
+    algorithm={**ALGORITHM, 'sde_indices':args.sde_indices, 'reward_profile':args.reward_profile,
+               'reward_weights':weights, 'hand_reward':HAND_REWARD, 'identity_backend':evaluator.identity_backend}
     spatial=None
     if args.spatial_model is not None:
         spatial=resources.enter_context(SpatialWorker.from_args(args))
-        algorithm.update(reward_weights=with_spatial_weight(ALGORITHM['reward_weights'], args.spatial_weight),
-                         spatial_worker=spatial.identity, spatial_std_floor=args.spatial_std_floor)
+        algorithm.update(spatial_worker=spatial.identity, spatial_std_floor=args.spatial_std_floor)
     floors={'spatial':args.spatial_std_floor} if args.spatial_std_floor is not None else None
     evaluation_manifest=args.root/'data/evaluation.json'
     policy_identity={'algorithm':algorithm,'config_sha256':config.signature(),'parent':parent,
@@ -177,7 +188,9 @@ def train(args, resources):
         'evaluation_manifest_sha256':file_sha(evaluation_manifest),
         'background_region_index':evaluator.background_index,
         'backend_identity':backend.identity,'catalog_sha256':backend.catalog.signature(),
-        'reward_models':{name:file_sha(args.root/f'report/model-identity-{name}.json') for name in ('sdpose','identity')}}
+        'training_environment':{**environment(),'python_path':sys.executable,'prefix':sys.prefix},
+        'reward_models':{'sdpose':file_sha(args.root/'report/model-identity-sdpose.json'),
+                         'identity':evaluator.model_identity['sha256']}}
     identity_hash=hashlib.sha256(json.dumps(policy_identity,sort_keys=True).encode()).hexdigest()
     if args.resume:
         marker=read(args.resume.with_suffix('.commit.json'));verify(marker['checkpoint'])
@@ -232,7 +245,7 @@ def train(args, resources):
             visual_target=spatial_target(condition, spatial.references)
             eligible={**eligible, 'spatial':True}
         folder=args.root/f'output/grpo/rollouts/update_{completed:04d}_attempt_{attempts:04d}_{run_id}'
-        replays=[];images=[];sde_index=ALGORITHM['sde_indices'][(attempts-1)%len(ALGORITHM['sde_indices'])]
+        replays=[];images=[];sde_index=rollout_sde_step(algorithm['sde_indices'], counters.rollout_batches)
         options,base=route_options(route,sample['native_scene_kind'])
         policy=NativeRollout(backend,batch,pair,route,options,base,steps=ALGORITHM['rollout_steps'],
                              sde_step=sde_index,noise_level=ALGORITHM['noise_level'])
@@ -282,6 +295,7 @@ def train(args, resources):
     write(args.report,{'schema':SCHEMA,'passed':True,'completed_updates':completed,'requested_updates':args.updates,
         'attempts':counters.rollout_batches,'checkpoint':last,'source_checkpoint':parent,'algorithm':algorithm,
         'spatial_arguments':spatial_arguments(args),
+        'reward_arguments':args.reward_arguments,
         'reward_audit':str(reward_audit),'replay_verified':replay_verified,'candidate_images':counters.generated_images,**counters.record(),
         'frozen_qwen_unchanged':True,'scope':'bounded Native Adapter RL pilot; extra rollout cost reported separately'})
 

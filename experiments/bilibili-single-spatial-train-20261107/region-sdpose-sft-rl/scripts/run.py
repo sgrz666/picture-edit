@@ -29,14 +29,14 @@ def live(pid):
 
 def main():
     sys.path.insert(0,str(Path(__file__).resolve().parents[4]))
-    from src.pose_control.qwen21_full.native_rl.spatial_reward import add_spatial_arguments, configure_spatial, spatial_arguments
+    from src.pose_control.qwen21_full.native_rl.regional_cli import add_arguments, configure_arguments
 
     ap=argparse.ArgumentParser(description=__doc__);ap.add_argument('--root',type=Path,required=True)
     ap.add_argument('--repo',type=Path,required=True);ap.add_argument('--wait-pid',type=int)
     ap.add_argument('--until',choices=['cache','sft','all'],default='all');ap.add_argument('--rl-updates',type=int)
-    add_spatial_arguments(ap)
+    add_arguments(ap,launcher=True)
     args=ap.parse_args();root=args.root.resolve();repo=args.repo.resolve();scripts=Path(__file__).resolve().parent
-    configure_spatial(ap,args)
+    reward_flags=configure_arguments(ap,args)
     prepared=read(root/'prepared.json')
     if args.rl_updates is None:args.rl_updates=prepared.get('followup_updates',10)
     os.environ['PICTUREEDIT_REPO']=str(repo);sys.path.insert(0,str(repo))
@@ -162,12 +162,11 @@ def main():
     ready=root/'configs/run/grpo-ready.json'
     if not ready.exists():write(ready,{**read(rl_path),'gradient_report':ref(gradient)})
     rl_report=root/'report/grpo-training.json'
-    visual_flags=spatial_arguments(args)
-    if rl_report.exists() and read(rl_report).get('spatial_arguments',[])!=visual_flags:
-        raise ValueError('SpatialReward settings differ from the completed run; use a new experiment root')
+    if rl_report.exists() and read(rl_report).get('reward_arguments')!=reward_flags:
+        raise ValueError('RL settings differ from the completed run; use its locked snapshot or a new experiment root')
     if not rl_report.exists():
-        command=[PY,str(scripts/'rl.py'),'--root',str(root),'--config',str(ready),
-            '--parent',final['regional']['path'],'--report',str(rl_report),'--updates',str(args.rl_updates),*visual_flags]
+        command=[str(args.rl_python.absolute()) if args.rl_python else PY,str(scripts/'rl.py'),'--root',str(root),'--config',str(ready),
+            '--parent',final['regional']['path'],'--report',str(rl_report),'--updates',str(args.rl_updates),*reward_flags]
         commits=sorted((root/'output/grpo/checkpoints').glob('*.commit.json'))
         if commits:
             latest=max((read(p) for p in commits),key=lambda x:x['completed_updates'])

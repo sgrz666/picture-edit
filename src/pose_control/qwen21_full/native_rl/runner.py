@@ -8,6 +8,23 @@ import torch
 from .objective import clipped_loss, transition
 
 
+def add_sde_arguments(parser):
+    group = parser.add_mutually_exclusive_group()
+    group.add_argument('--sde-step', type=int, help='Zero-based fixed stochastic step')
+    group.add_argument('--sde-cycle', type=int, nargs='+', help='Cycle through internal stochastic steps by rollout batch')
+
+
+def configure_sde(parser, args, *, steps, default):
+    indices = args.sde_cycle or ([args.sde_step] if args.sde_step is not None else list(default))
+    if len(indices) != len(set(indices)) or any(not 0 < index < steps - 1 for index in indices):
+        parser.error('SDE schedule must contain distinct internal denoising steps')
+    return indices
+
+
+def rollout_sde_step(indices, completed_batches):
+    return indices[completed_batches % len(indices)]
+
+
 @dataclass
 class RunCounters:
     optimizer_updates: int = 0

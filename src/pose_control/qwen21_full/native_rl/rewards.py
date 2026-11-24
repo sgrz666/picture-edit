@@ -18,11 +18,30 @@ PART_POINTS = ((0,), (5, 6, 11, 12), (5, 7), (7, 9), (9,), (6, 8), (8, 10),
                (10,), (11, 13), (13, 15), (15,), (12, 14), (14, 16), (16,))
 
 
+def reward_weights(scene, *, pose_only, background_weight=None, profile='legacy', spatial_weight=0.):
+    from .spatial_reward import with_spatial_weight
+
+    if pose_only:
+        return {'pose': 1.}
+    if profile == 'hands42':
+        ratios = HANDS42_RATIOS[scene]
+        total = sum(ratios.values())
+        weights = {name: value / total for name, value in ratios.items()}
+    else:
+        weights = dict(SINGLE_WEIGHTS if scene == 'single' else DUAL_WEIGHTS)
+    if background_weight is not None:
+        factor = (1 - background_weight) / (1 - weights.pop('background'))
+        weights = {name: weight * factor for name, weight in weights.items()}
+        if background_weight:
+            weights['background'] = background_weight
+    return with_spatial_weight(weights, spatial_weight)
+
+
 def evaluator_assets(models_root):
     from pathlib import Path
-    from src.evaluation import sdpose
+    from src.evaluation import native_kprpe, sdpose
 
-    files = sdpose.scoring_model_files() + [Path(sdpose.__file__)]
+    files = sdpose.scoring_model_files() + [Path(sdpose.__file__), Path(native_kprpe.__file__)]
     files += [Path(models_root) / 'antelopev2' / name for name in ('scrfd_10g_bnkps.onnx', 'glintr100.onnx')]
     return sorted(set(files))
 
@@ -124,7 +143,7 @@ def score_candidate(target, poses, identities):
                'id_cosine': [cosines.get(i) for i in range(len(target.poses))]}
     if eligible:
         reward['identity'] = sum((v + 1.) / 2. for v in cosines.values()) / len(eligible)
-    hand_rewards = []
+    eligible_hands = []
     for i, (gt, pred) in enumerate(zip(target.poses, assigned)):
         hand_pck = None
         if gt.wholebody is not None:
@@ -132,12 +151,16 @@ def score_candidate(target, poses, identities):
                                    None if pred is None else pred.wholebody,
                                    None if pred is None else pred.wholebody_valid, target.content_hw)
             hand_pck = regions['hands']['pck_002']
-            hand_rewards.extend(regions[side]['reward'] for side in ('left_hand', 'right_hand')
+            eligible_hands.extend(regions[side] for side in ('left_hand', 'right_hand')
                                 if regions[side]['applicable'])
         details[f'person{i}_hand_pck_002'] = hand_pck
-    details['eligible_hands'] = len(hand_rewards)
-    if hand_rewards:
-        reward['hands'] = float(np.mean(hand_rewards))
+    details['eligible_hands'] = len(eligible_hands)
+    if eligible_hands:
+        reward['hands'] = float(np.mean([hand['training_reward'] for hand in eligible_hands]))
+        details['hands_placement'] = float(np.mean([hand['placement_reward'] for hand in eligible_hands]))
+        gesture = [hand['gesture_reward'] for hand in eligible_hands if hand['gesture_reward'] is not None]
+        details['hands_gesture'] = float(np.mean(gesture)) if gesture else None
+        details['eligible_gestures'] = len(gesture)
     if len(target.poses) == 2:
         details['two_person_detected'] = len(poses) == details['matched_people'] == 2
         details['occlusion_consistency'] = None
@@ -199,6 +222,7 @@ class ImageRewardBank:
 
     def _faces(self, image, boxes):
         import cv2
+        from src.evaluation.native_kprpe import normalized_embedding
 
         if not boxes:
             return ()
@@ -216,10 +240,7 @@ class ImageRewardBank:
                 else:
                     crop = self.identity.face_align.norm_crop(bgr, landmark=landmarks[i])
                     feature = self.identity.recognition.get_feat(crop).reshape(-1).astype(np.float32)
-                norm = np.linalg.norm(feature)
-                if not np.isfinite(norm) or norm <= 0:
-                    raise ValueError('Invalid Native identity embedding')
-                embedding = feature / norm
+                embedding = normalized_embedding(feature)
             output.append(embedding)
         return tuple(output)
 

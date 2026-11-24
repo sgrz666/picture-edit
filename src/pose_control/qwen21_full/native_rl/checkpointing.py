@@ -31,9 +31,13 @@ def save_checkpoint(directory, payload, optimizer, selector, counters, *, identi
 
 
 def _marker(ref, architecture, state):
-    return {'schema': SCHEMA, 'checkpoint': ref, 'architecture': architecture,
-            'identity_sha256': digest(state['identity']), 'counters': state['counters'],
-            'resumable': state['resumable']}
+    marker = {'schema': SCHEMA, 'checkpoint': ref, 'architecture': architecture,
+              'identity_sha256': digest(state['identity']), 'counters': state['counters'],
+              'resumable': state['resumable']}
+    gate = state['selection'].get('ode_gate')
+    if gate is not None:
+        marker['ode_gate'] = gate
+    return marker
 
 
 def load_checkpoint(reference):

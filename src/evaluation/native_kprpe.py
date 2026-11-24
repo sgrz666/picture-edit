@@ -8,6 +8,20 @@ import sys
 import numpy as np
 
 
+def add_adaface_arguments(parser):
+    parser.add_argument('--adaface-model', type=Path, help='Use local AdaFace-KPRPE for rollout identity reward')
+    parser.add_argument('--adaface-rpe-extension', type=Path, help='Compiled rpe_index_cpp for the current Python/Torch ABI')
+
+
+def adaface_arguments(parser, args):
+    if (args.adaface_model is None) != (args.adaface_rpe_extension is None):
+        parser.error('Supply both --adaface-model and --adaface-rpe-extension for AdaFace-KPRPE')
+    if args.adaface_model is None:
+        return []
+    return ['--adaface-model', str(args.adaface_model.resolve()),
+            '--adaface-rpe-extension', str(args.adaface_rpe_extension.resolve())]
+
+
 def recognition_assets(model_root, rpe_extension):
     root = Path(model_root).resolve()
     code = list((root / 'models').rglob('*.py'))
@@ -80,3 +94,11 @@ def align_kprpe_face(bgr, landmarks, matrix):
     crop = cv2.warpAffine(bgr, matrix, (112, 112), flags=cv2.INTER_LINEAR, borderMode=cv2.BORDER_REPLICATE)
     points = np.asarray(landmarks) @ matrix[:, :2].T + matrix[:, 2]
     return crop, (points / 112.).astype(np.float32)
+
+
+def normalized_embedding(feature):
+    feature = np.asarray(feature, dtype=np.float32).reshape(-1)
+    norm = np.linalg.norm(feature)
+    if not np.isfinite(norm) or norm <= 0:
+        raise ValueError('Invalid Native identity embedding')
+    return feature / norm

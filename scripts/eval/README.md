@@ -5,6 +5,7 @@
 ## 里面有什么
 
 - `eval_native_spatialreward.py` 按绑定 Canvas 的有效区域评估已保存的 Native RL 候选组，保留 IF、CON、NAT、ART、融合分及模型返回的定位和理由。输入是带 SHA 的条件及候选清单。可用同一批候选对照 RGB、骨架和三种融合模式，`--repeats` 记录重复评分标准差。 [清单格式及命令](../../src/pose_control/qwen21_full/native_rl/README.md#spatialreward-8b)
+- `select_native_rl_checkpoint.py` 从通用 Native RL 的 ODE 门禁导出 SFT 与合格的 checkpoint。读取独立视觉评分后，核对 checkpoint、图像、条件和报告 SHA，在同一留出集上选点。 [独立视觉选点](../../src/pose_control/qwen21_full/native_rl/README.md#独立视觉选点)
 
 ### iPER 四臂 / V6 / Qwen21 主干评测
 

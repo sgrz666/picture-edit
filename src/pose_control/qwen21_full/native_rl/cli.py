@@ -10,8 +10,12 @@ import random
 import sys
 import time
 
+from .rewards import reward_weights as _reward_weights
+
 
 def _arguments(argv):
+    from src.evaluation.native_kprpe import add_adaface_arguments, adaface_arguments
+    from .runner import add_sde_arguments, configure_sde
     from .spatial_reward import add_spatial_arguments, configure_spatial
 
     parser = argparse.ArgumentParser(description=__doc__)
@@ -20,8 +24,7 @@ def _arguments(argv):
     parser.add_argument('--output', type=Path, help='New run directory under /data/shangguanrz/')
     parser.add_argument('--checkpoint', type=Path, help='Committed RL checkpoint for resume')
     parser.add_argument('--models', type=Path, default=Path('/home/shangguanrz/project/pic-edit/models'))
-    parser.add_argument('--adaface-model', type=Path, help='Use local AdaFace-KPRPE for rollout identity reward')
-    parser.add_argument('--adaface-rpe-extension', type=Path, help='Compiled rpe_index_cpp for the current Python/Torch ABI')
+    add_adaface_arguments(parser)
     parser.add_argument('--route', help='Route name from the SFT configuration')
     parser.add_argument('--updates', '--optimizer-updates', type=int, default=1, help='Number of successful optimizer.step calls')
     parser.add_argument('--max-rollout-batches', type=int, help='Rollout cap including groups without an effective advantage (default: 5 × updates)')
@@ -35,7 +38,7 @@ def _arguments(argv):
     parser.add_argument('--group-size', type=int, default=8)
     parser.add_argument('--groups-per-update', type=int, default=4)
     parser.add_argument('--steps', type=int, default=10)
-    parser.add_argument('--sde-step', type=int, default=3, help='Zero-based index of the single stochastic step')
+    add_sde_arguments(parser)
     parser.add_argument('--noise-level', type=float, default=.7)
     parser.add_argument('--aggregation', choices=('gdpo', 'gdpo-guarded', 'sum'), default='gdpo-guarded')
     parser.add_argument('--pose-only', action='store_true')
@@ -51,17 +54,22 @@ def _arguments(argv):
     parser.add_argument('--val-limit', type=int, help='Fixed sample cap for a bounded pilot')
     parser.add_argument('--pose-drop', type=float, default=.02)
     parser.add_argument('--id-drop', type=float, default=.02)
+    parser.add_argument('--hands-drop', type=float, default=.02, help='Max held-out Hands or gesture reward drop')
+    parser.add_argument('--two-person-drop', type=float, default=.02, help='Max held-out two-person detection rate drop')
     parser.add_argument('--background-drop', type=float, default=.02, help='Extra ODE regression bound with SpatialReward')
     parser.add_argument('--binding-drop', type=float, default=.02, help='Extra ODE regression bound with SpatialReward')
     parser.add_argument('--patience', type=int, default=2)
     parser.add_argument('--keep-replay', action='store_true')
     args = parser.parse_args(argv)
-    if (not 0 < args.sde_step < args.steps - 1 or args.group_size < 2 or
+    args.sde_indices = configure_sde(parser, args, steps=args.steps, default=(3,))
+    args.sde_step = args.sde_indices[0]
+    if (args.group_size < 2 or
             min(args.updates, args.groups_per_update, args.replay_epochs, args.validate_every, args.save_every, args.patience) < 1 or
             (args.val_limit is not None and args.val_limit < 1) or
             (args.max_rollout_batches is not None and args.max_rollout_batches < 1)):
         parser.error('Positive budgets and one internal SDE step required')
-    if (not all(math.isfinite(x) for x in (args.lr, args.clip, args.beta, args.noise_level, args.parity_tolerance,
+    if (not all(0 <= x <= 1 for x in (args.hands_drop, args.two_person_drop)) or
+            not all(math.isfinite(x) for x in (args.lr, args.clip, args.beta, args.noise_level, args.parity_tolerance,
                                           args.std_floor, args.pose_drop, args.id_drop, args.background_drop, args.binding_drop)) or
             min(args.lr, args.noise_level, args.parity_tolerance) <= 0 or not 0 < args.clip < 1 or
             min(args.beta, args.std_floor, args.pose_drop, args.id_drop, args.background_drop, args.binding_drop) < 0 or
@@ -71,8 +79,8 @@ def _arguments(argv):
     args.reward_profile = args.reward_profile or ('hands42' if args.spatial_model is not None else 'legacy')
     if args.pose_only and (args.spatial_model is not None or args.reward_profile != 'legacy'):
         parser.error('--pose-only cannot be combined with SpatialReward or the hands42 profile')
-    if (args.adaface_model is None) != (args.adaface_rpe_extension is None) or args.adaface_model and args.pose_only:
-        parser.error('AdaFace training requires both --adaface-model and --adaface-rpe-extension on a non-pose-only run')
+    if adaface_arguments(parser, args) and args.pose_only:
+        parser.error('AdaFace training requires a non-pose-only run')
     if (args.action == 'resume') != (args.checkpoint is not None):
         parser.error('Supply --checkpoint with resume')
     if args.stop_after_updates is not None and (args.action not in ('train', 'resume') or
@@ -185,7 +193,7 @@ def _summarize(rows):
     swaps = [r['id_swap'] for r in rows if r.get('id_swap') is not None]
     if swaps:
         metrics['id_swap_rate'] = sum(swaps) / len(swaps)
-    for key in ('two_person_detected', 'person0_hand_pck_002', 'person1_hand_pck_002',
+    for key in ('two_person_detected', 'person0_hand_pck_002', 'person1_hand_pck_002', 'hands_placement', 'hands_gesture',
                 'source_background_l1', 'source_background_mse'):
         values = [row[key] for row in rows if row.get(key) is not None]
         if values:
@@ -197,40 +205,30 @@ def _summarize(rows):
 
 
 def _evaluate(backend, data, route, bank, targets, keys, args, directory):
+    from ..native_v62.training.io import file_sha
+
     directory.mkdir()
     rows = []
     for i, key in enumerate(keys):
         rollout = _generator(backend, route, key, args)
-        image, _ = rollout.generate(backend.config.generation_seed + i)
+        condition, _ = data.conditions[key]
+        if condition['sha256'] != rollout.pair['condition_sha256']:
+            raise ValueError('ODE image is not bound to the validation condition')
+        seed = backend.config.generation_seed + i
+        image, _ = rollout.generate(seed)
         path = directory / f'{i:04d}.png'
         image.save(path)
         reward, detail = bank.score(*targets[key], image)
-        row = {'source': key[0], 'pair_id': data.datasets[key[0]].rows[key[1]]['pair_id'], 'reward': reward, **detail}
-        _add_spatial(bank, targets[key][0], [path], [row], directory, key)
+        asset = {'path': str(path.resolve()), 'sha256': file_sha(path)}
+        row = {'source': key[0], 'pair_id': data.datasets[key[0]].rows[key[1]]['pair_id'],
+               'seed': seed, 'image': asset, 'condition': condition, 'reward': reward, **detail}
+        _add_spatial(bank, targets[key][0], [asset], [row], directory, key)
         rows.append(row)
     return _summarize(rows), rows
 
 
 def _score(metrics, weights):
     return sum(w * metrics[k] for k, w in weights.items() if k in metrics) / sum(w for k, w in weights.items() if k in metrics)
-
-
-def _reward_weights(scene, *, pose_only, background_weight=None, profile='legacy', spatial_weight=0.):
-    from .rewards import DUAL_WEIGHTS, HANDS42_RATIOS, SINGLE_WEIGHTS
-    from .spatial_reward import with_spatial_weight
-
-    if pose_only:
-        return {'pose': 1.}
-    weights = dict(SINGLE_WEIGHTS if scene == 'single' else DUAL_WEIGHTS)
-    if profile == 'hands42':
-        ratios = HANDS42_RATIOS[scene]
-        weights = {name: value / sum(ratios.values()) for name, value in ratios.items()}
-    if background_weight is not None:
-        factor = (1 - background_weight) / (1 - weights.pop('background'))
-        weights = {name: weight * factor for name, weight in weights.items()}
-        if background_weight:
-            weights['background'] = background_weight
-    return with_spatial_weight(weights, spatial_weight)
 
 
 def _add_spatial(bank, target, paths, candidates, directory, key):
@@ -251,10 +249,13 @@ def _add_spatial(bank, target, paths, candidates, directory, key):
 
 
 def _regressions(metrics, baseline, args):
-    limits = {'pose': args.pose_drop, 'identity': args.id_drop}
+    limits = {'pose': args.pose_drop, 'identity': args.id_drop,
+              'hands': args.hands_drop, 'hands_gesture': args.hands_drop,
+              'two_person_detection_rate': args.two_person_drop}
     if args.spatial_model is not None:
         limits.update(background=args.background_drop, binding=args.binding_drop)
-    return [k for k, tolerance in limits.items() if k in baseline and metrics[k] < baseline[k] - tolerance]
+    return [k for k, tolerance in limits.items() if k in baseline and
+            (k not in metrics or not math.isfinite(metrics[k]) or metrics[k] < baseline[k] - tolerance)]
 
 
 def _collect_batch(backend, data, route, bank, targets, keys, args, selector, weights, directory):
@@ -307,6 +308,7 @@ def _collect_batch(backend, data, route, bank, targets, keys, args, selector, we
         torch.save([[{k: v.cpu() if torch.is_tensor(v) else v for k, v in vars(row).items()}
                      for row in rows] for rows, _, _ in groups], directory / 'replay.pt')
     event = {'groups': details, 'advantage_stats': stats, 'advantages': adv.tolist(),
+             'sde_step': args.sde_step,
              'reward_summary': _summarize([c for g in details for c in g['candidates']]),
              'rollout_seconds': time.monotonic() - started - reward_seconds, 'reward_seconds': reward_seconds,
              'native_diagnostics': native_stats}
@@ -359,7 +361,8 @@ def _run(args, resources):
     from .spatial_worker import SpatialWorker
     from .background import BACKGROUND_METRIC, BACKGROUND_SCALE
     from .rewards import ImageRewardBank, evaluator_assets
-    from .runner import FrozenReference, RunCounters, audit_replay, fixed_reference_means, update_policy
+    from .runner import FrozenReference, RunCounters, audit_replay, fixed_reference_means, rollout_sde_step, update_policy
+    from ..region_rewards import HAND_REWARD
 
     config, route = _settings(args)
     training = args.action in ('train', 'resume')
@@ -430,6 +433,7 @@ def _run(args, resources):
                                       'evaluation': 'glintr100'},
                 'data_signature': data.signature, 'evaluator_sha256': evaluator_hashes, 'background_index': background_ref,
                 'background_metric': BACKGROUND_METRIC, 'background_scale': BACKGROUND_SCALE,
+                'hand_reward': HAND_REWARD,
                 'spatial_worker': spatial.identity if spatial else None,
                 'scene': scene, 'weights': weights, 'selection_weights': selection_weights,
                 'train_tasks': len(train_keys), 'eval_tasks': len(val_keys),
@@ -487,6 +491,7 @@ def _run(args, resources):
     pending = None
     last_checkpoint = resume_ref
     last_saved = None
+    visual_candidates = []
 
     if resumed is not None:
         if resumed['architecture'] != architecture:
@@ -494,6 +499,11 @@ def _run(args, resources):
         counters, pending = restore_checkpoint(resumed, backend.runtime, optimizer, selector, identity)
         selection = resumed['native_rl_state']['selection']
         baseline = selection['baseline']
+        baseline_report = verify(selection['baseline_report'])
+        visual_candidates = list(selection['visual_candidates'])
+        gate = selection.get('ode_gate')
+        if gate is not None and gate['passed']:
+            visual_candidates.append({'checkpoint': resume_ref, 'report': gate['report']})
         best = resume_ref if selection['best_is_current'] else selection['best']
         if best is not None:
             verify(best)
@@ -508,7 +518,8 @@ def _run(args, resources):
         np.random.seed(config.seed % (2**32))
         torch.manual_seed(config.seed)
         baseline, baseline_rows = _evaluate(backend, data, route, val_bank, targets, val_keys, args, output / 'ode-sft')
-        write_json(output / 'ode-sft.json', {'metrics': baseline, 'rows': baseline_rows})
+        baseline_report = write_json(output / 'ode-sft.json',
+                                     {'sft_reference': initialization, 'metrics': baseline, 'rows': baseline_rows})
         best, best_score, regressions, last_validated = None, _score(baseline, selection_weights), 0, 0
 
     if training and not args.pose_only and (
@@ -523,23 +534,26 @@ def _run(args, resources):
         rejected = bool(regressed)
         report = {**counters.record(), 'metrics': metrics, 'regressed': rejected, 'regressed_metrics': regressed,
                   'sft_reference': initialization}
-        write_json(output / f'ode-{update:06d}.json', {**report, 'rows': rows})
+        report_ref = write_json(output / f'ode-{update:06d}.json', {**report, 'rows': rows})
         score = _score(metrics, selection_weights)
         improved = not rejected and score > best_score
         if improved:
             best_score = score
         regressions = regressions + 1 if rejected else 0
         last_validated = update
-        return improved, regressions >= args.patience
+        return improved, regressions >= args.patience, {'passed': not rejected, 'report': report_ref}
 
-    def save(pending_replay, *, improved=False, resumable=True):
+    def save(pending_replay, *, improved=False, resumable=True, ode_gate=None):
         nonlocal best, last_checkpoint, last_saved
         selection = {'baseline': baseline, 'best': best, 'best_is_current': improved,
-                     'best_score': best_score, 'regressions': regressions, 'last_validated': last_validated}
+                     'best_score': best_score, 'regressions': regressions, 'last_validated': last_validated,
+                     'baseline_report': baseline_report, 'visual_candidates': visual_candidates, 'ode_gate': ode_gate}
         payload = backend.runtime.checkpoint_payload(metadata={'native_rl': counters.record()})
         last_checkpoint = save_checkpoint(output, payload, optimizer, selector, counters, identity=identity,
                                           selection=selection, pending=pending_replay, resumable=resumable)
         last_saved = counters.record()
+        if ode_gate is not None and ode_gate['passed']:
+            visual_candidates.append({'checkpoint': last_checkpoint, 'report': ode_gate['report']})
         if improved:
             best = last_checkpoint
 
@@ -558,7 +572,10 @@ def _run(args, resources):
         else:
             keys = selector.sample(train_keys, args.groups_per_update)
             backend.pipe.vae.to(backend.device)
-            groups, adv, rollout_event = _collect_batch(backend, data, route, bank, targets, keys, args, selector, weights, directory)
+            sde_step = rollout_sde_step(args.sde_indices, counters.rollout_batches)
+            rollout_args = argparse.Namespace(**{**vars(args), 'sde_step': sde_step})
+            groups, adv, rollout_event = _collect_batch(
+                backend, data, route, bank, targets, keys, rollout_args, selector, weights, directory)
             counters.rollout(sum(len(rows) for rows, _, _ in groups))
             conditions = [g['condition_sha256'] for g in rollout_event['groups']]
             write_json(directory / 'rollout.json', {**event, **counters.record(), **rollout_event})
@@ -585,16 +602,16 @@ def _run(args, resources):
             event['replay'].append({'epoch': epoch, 'optimizer_update': update, **stats})
             exhausted = counters.rollout_batches == attempt_limit and epoch + 1 == epochs
             due = update % args.validate_every == 0 or update == args.updates or exhausted
-            improved, regression_stop = False, False
+            improved, regression_stop, ode_gate = False, False, None
             if due:
                 started = time.monotonic()
-                improved, regression_stop = validate()
+                improved, regression_stop, ode_gate = validate()
                 validation_seconds += time.monotonic() - started
             paused = update == args.stop_after_updates
             if due or paused or update % args.save_every == 0:
                 can_resume = not regression_stop and update < args.updates and not exhausted
                 remainder = _pending_batch(keys, conditions, groups, means, epoch + 1, epochs) if can_resume and epoch + 1 < epochs else None
-                save(remainder, improved=improved, resumable=can_resume)
+                save(remainder, improved=improved, resumable=can_resume, ode_gate=ode_gate)
             if regression_stop or paused or update == args.updates:
                 stop = 'ode_regression' if regression_stop else 'paused' if paused else 'budget'
                 break
@@ -609,11 +626,14 @@ def _run(args, resources):
     if training and not counters.optimizer_updates:
         stop = 'no_reward_signal'
     elif stop == 'rollout_budget' and counters.record() != last_saved:
-        improved, regression_stop = validate() if counters.optimizer_updates > last_validated else (False, False)
+        improved, regression_stop, ode_gate = (validate() if counters.optimizer_updates > last_validated
+                                               else (False, False, None))
         if regression_stop:
             stop = 'ode_regression'
-        save(None, improved=improved, resumable=False)
+        save(None, improved=improved, resumable=False, ode_gate=ode_gate)
     result = {'stop': stop, **counters.record(), 'requested_updates': args.updates, 'best_rl': best,
-              'checkpoint': last_checkpoint, 'selected': initialization if best is None else best, 'baseline': baseline}
+              'checkpoint': last_checkpoint, 'selected': initialization if best is None else best, 'baseline': baseline,
+              'visual_review': {'baseline_checkpoint': initialization, 'baseline_report': baseline_report,
+                                'eligible': visual_candidates}}
     write_json(output / 'summary.json', result)
     print(json.dumps(result), flush=True)

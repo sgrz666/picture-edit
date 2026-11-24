@@ -7,11 +7,18 @@ def test_sdpose_reward_prefers_aligned_pose_and_counts_missing_points():
     valid=np.ones(134,bool)
     perfect=pose_metrics(gt,valid,gt,valid,(512,288))
     shifted=pose_metrics(gt,valid,gt+80,valid,(512,288))
+    wrong_finger=gt.copy()
+    wrong_finger[96,1]+=12
+    distorted=pose_metrics(gt,valid,wrong_finger,valid,(512,288))
     missing=pose_metrics(gt,valid,None,None,(512,288))
     assert perfect['body']['reward']==1 and perfect['hands']['reward']==1
     assert shifted['body']['reward']<perfect['body']['reward']
     assert missing['body']['reward']==0 and missing['body']['pck_002']==0
     assert missing['hands']['gt_points']==42 and missing['hands']['recall']==0
+    assert shifted['hands']['gesture_reward'] == perfect['hands']['gesture_reward'] == 1.
+    assert shifted['hands']['placement_reward'] < perfect['hands']['placement_reward']
+    assert distorted['left_hand']['gesture_reward'] < distorted['right_hand']['gesture_reward'] == 1.
+    assert missing['hands']['training_reward'] == missing['hands']['gesture_reward'] == 0.
 
 
 def test_unavailable_gt_hands_are_not_fabricated_rewards():
