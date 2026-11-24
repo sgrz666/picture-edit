@@ -8,13 +8,13 @@
 
 ## 内容与使用
 
-训练已实际开始。最近核对无加权 S0 **133／200 updates**，梯度有限且非零；747 帧 Native 装配、616 对缓存绑定、真实 data／grad 门禁和首轮 40 张初始化验证图均已完成。当前 SGD **PID 3346829** 保留，吞吐主管 **PID 3413941** 已接管原主管等候工作，未重启或重置当前优化器。原主管退场不代表 SGD 退出；查看 `logs/throughput-v1.log`／`logs/throughput-v1.pid.json`。
+训练已实际开始。2026-11-22 17:35 核对：无加权臂 S0 **200／200**、S1 **150／150**、S2 **400／400** 已完成（global 750／1000，S2 final checkpoint `update_00000750_127e2167…`，sha256 `a9d0c17f…`；同目录另有 `9fbba205…` 别名 commit，逐字节同权重，S3 配置绑定前者），S3 梯度预检 17:21:59 启动（PID 105161，显存门禁 52.93 GiB 通过）。节奏实测 ~15.0s／update；梯度范数全程有限非零（S0 末值 0.232，S1 0.0022，S2 0.036）。regional 臂与 continue／GRPO 未开始，1600 张出图全部后置。原 SGD PID 3346829 随 S0 完成正常退场，后续阶段由主管 **PID 3413941** 按 `--parent` 链式拉起。登录 shell 裸跑 `nvidia-smi` 报 NVML 驱动／库版本不匹配（内核 580.173.02 vs 系统库 580.178.04），但训练与主管进程经 `LD_LIBRARY_PATH=/data/shangguanrz/仪表盘/compat` 使用匹配库，NVML 显存门禁实测正常，训练不受影响；人工查卡需带同一路径。747 帧 Native 装配、616 对缓存绑定、真实 data／grad 门禁和首轮 40 张初始化验证图均已完成；查看 `logs/throughput-v1.log`／`logs/throughput-v1.pid.json`。
 
 为减少阶段间等待，完整验证／测试出图与指标统一后置到全部优化完成之后；各阶段 checkpoint 和 generation config 照常锁定，真实梯度门禁保留。训练核心仍使用 `source/runtime-v3`，只更换独立编排脚本，未改精度、学习率、采样、初始化或预算。GPU 原观测 utilization 91%，此优化减少的是阻塞式出图墙钟，不声称单步算子已经提速。
 
 图片已增加到 **1600 张**：五份最终权重的 test 各 64 对×3 seeds（42／123／2026），共 **960 张**；最终 val 各 40 对×2 seeds（42／123），中间六阶段 val 各 40 对×seed42，共 **640 张**。现有 40 张 seed42 初始化图复用不覆盖。每份权重只加载一次 Qwen 连续完成所有 split／seed，SDPose／身份／背景集中批量评价，再按模型／split／seed分组；seed42 主对照路径保留，额外种子在 `output/generation/multi-seed/` 与 `report/evaluation/multi-seed/`。
 
-图片计划凭据为 `report/deferred-image-plan.json`；只有全部优化完成才写 `optimization-complete.json` 并启动完整图片批次。多种子图片／指标完成后记录 `report/deferred-render-complete.json`，再生成原验证／测试主对照报告。原始 source／SDPose／GT／初始化生成图的 6 对预览在 `report/baseline-panel-v1.png`，它不是小红书新训练权重效果。
+图片计划凭据为 `report/deferred-image-plan.json`；只有全部优化完成才写 `optimization-complete.json` 并启动完整图片批次。多种子图片／指标完成后记录 `report/deferred-render-complete.json`，再生成原验证／测试主对照报告。原始 source／SDPose／GT／初始化生成图的 6 对预览在 `report/baseline-panel-v1.png`，它不是小红书新训练权重效果。40 张初始化验证图的整表接触表在 `report/expanded-run/initial-40-contact-v1.png`（5×8 网格，带 pair ID 与 RGB SHA 短标签，2026-11-22 生成，服务器与本地镜像同路径）。四列全量对照（Source｜SDPose｜GT｜Output init，口径与 6 对面板一致，40 对全部）拆为 `report/expanded-run/initial-4col-40pairs-v1-part1..4.png`，每张 10 对；构建脚本复用 `conditions/<pair_id>.json` 的 SDPose 条件图与 `data/evaluation.json` 的 canvas 契约。
 
 吞吐／出图代码包 SHA `6f4550181e1848e85044e5cae7760a75387fbc9220058ed11dd3404c673640ff`，本地 36 项相关回归、服务器 4 项真实脚本回归通过，覆盖活动训练接管、多 seed 数量、同模型只加载一次、既有图片复用。当前仍在训练，不把计划图片数当作已生成数。
 
