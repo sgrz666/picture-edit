@@ -50,13 +50,19 @@ def worker(remainder):
     if total * .90 > free - 2 * 1024**3:
         raise RuntimeError("Training GPU does not have the required 90% allocator budget and 2 GiB margin")
     torch.cuda.set_per_process_memory_fraction(.90)
+    data_report = None
+    if remainder[:1] == ["--record-data-report"]:
+        data_report = Path(remainder[1])
+        remainder = remainder[2:]
+        if remainder[:3] != ["preflight", "--level", "grad"]:
+            raise ValueError("Combined data report is only available for the real gradient gate")
     print(json.dumps({"event": "ordered_preflight_prefetch", "workers": 8,
                       "implementation": ref(preflight_io.__file__)}), flush=True)
     main(remainder, config_type=TrainingConfigV7, stage_factory=stage_preset_v7,
-         trainer_type=preflight_io.trainer_with_prefetch(8))
+         trainer_type=preflight_io.trainer_with_prefetch(8, data_report=data_report))
 
 
-def train(root, smoke):
+def train(root, smoke, report_directory):
     import fcntl
     from src.pose_control.qwen21_full.native_v7.training import TrainingConfigV7, stage_preset_v7
     from src.pose_control.qwen21_full.native_v62.training.checkpointing import load_committed
@@ -68,7 +74,7 @@ def train(root, smoke):
     if smoke:
         smoke_bindings(root)
     prefix = "smoke-" if smoke else ""
-    reports = root / "sft"
+    reports = root / report_directory
     reports.mkdir()
     splits = ("train", "validation") if smoke else ("train", "validation", "test")
     if not smoke and any(native["splits"].get(role, 0) == 0 for role in splits):
@@ -111,10 +117,10 @@ def train(root, smoke):
         data_path = reports / f"{phase}-data.json"
         gradient_path = reports / f"{phase}-gradient.json"
         write(config_path, current.record())
-        run(f"{phase}-data", ["preflight", "--level", "data", "--config", config_path, "--report", data_path])
+        run(f"{phase}-grad", ["--record-data-report", data_path, "preflight", "--level", "grad",
+                              "--config", config_path, "--report", gradient_path])
         if read(data_path).get("passed") is not True:
             raise RuntimeError(f"{phase} data preflight rejected")
-        run(f"{phase}-grad", ["preflight", "--level", "grad", "--config", config_path, "--report", gradient_path])
         gradient = read(gradient_path)
         if not (gradient.get("production_passed") and gradient.get("config_sha256") == current.signature()
                 and gradient.get("initialization_sha256") == current.initialization["sha256"]):
@@ -158,5 +164,6 @@ if __name__ == "__main__":
         parser = argparse.ArgumentParser(description=__doc__)
         parser.add_argument("--root", type=Path, required=True)
         parser.add_argument("--smoke", action="store_true")
+        parser.add_argument("--report-directory", choices=("sft", "sft-prefetch-v1"), default="sft")
         args = parser.parse_args()
-        train(args.root.resolve(), args.smoke)
+        train(args.root.resolve(), args.smoke, args.report_directory)

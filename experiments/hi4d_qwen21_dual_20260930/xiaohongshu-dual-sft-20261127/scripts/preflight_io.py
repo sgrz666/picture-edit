@@ -31,14 +31,21 @@ def prefetch_dataset(dataset_type, workers):
                     pending.cancel()
 
 
-def trainer_with_prefetch(worker_count):
+def trainer_with_prefetch(worker_count, data_report=None):
     from src.pose_control.qwen21_full.native_v62.data import NativeFullDatasetV62
+    from src.pose_control.qwen21_full.native_v62.training.io import write_json
     from src.pose_control.qwen21_full.native_v7.training import NativeV7Trainer
 
     class PrefetchedTrainer(NativeV7Trainer):
         def _data(self):
             with prefetch_dataset(NativeFullDatasetV62, worker_count):
-                return super()._data()
+                plan = super()._data()
+            if data_report is not None:
+                report = plan.report()
+                if report.get("passed") is not True:
+                    raise RuntimeError("Data preflight rejected")
+                write_json(data_report, report)
+            return plan
 
         def _backend(self, data, **options):
             with prefetch_dataset(NativeFullDatasetV62, worker_count):
