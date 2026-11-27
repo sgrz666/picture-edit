@@ -62,7 +62,7 @@ def test_hierarchy_and_three_state_contact_preserve_both_right_hands():
                                             roi_size=32, surface_tokens=64))
     sample = condition()
     memory = model.prepare(sample)
-    assert memory.hierarchy_counts == (1, 6, 21, 64, 16)
+    assert memory.hierarchy_counts == (1, 6, 21, 64, 16, 1)
     assert memory.tokens.shape == (56, 32)
     assert memory.slots.unique().tolist() == [1, 3]
     assert memory.graph.part_state[1, 3, 1, 4] == 1

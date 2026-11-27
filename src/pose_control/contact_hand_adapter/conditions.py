@@ -10,6 +10,7 @@ from src.data.canvas_contract import CANVAS_MULTIPLE, VAE_STRIDE, CanvasSpec
 HAND_SLOTS = ("A-L", "A-R", "B-L", "B-R")
 UNKNOWN, SEPARATE, TOUCHING = -1, 0, 1
 JOINT_PARTS = (0, 1, 1, 2, 3, 4, 4, 5, 6, 7, 7, 8, 9, 10, 10, 11, 12, 13, 13, 14, 15)
+JOINT_PARENTS = (0, *(0 if i % 4 == 1 else i - 1 for i in range(1, 21)))
 
 
 @dataclass(frozen=True)
@@ -23,6 +24,7 @@ class HandPair:
     relative_pose: torch.Tensor | None = None  # translation and axis-angle, both in first hand frame
     surface_indices: torch.Tensor | None = None  # [E, 2] canonical 64-anchor indices
     surface_features: torch.Tensor | None = None  # [E, 4]: distance (m), normal dot, state, confidence
+    surface_quality: torch.Tensor | None = None  # [E,4]: fit, normal, cross-view and penetration quality
 
 
 @dataclass(frozen=True)
@@ -52,15 +54,51 @@ class HandCondition:
     appearance_valid: torch.Tensor | None = None  # [4], matched by source actor and anatomical side
     appearance_sources: tuple[str | None, ...] = (None, None, None, None)  # SHA256 of each crop's source image
     shared_appearance_source: bool = False  # both actors appear in the first source reference
+    joints_3d: torch.Tensor | None = None  # [4,21,3], camera coordinates in meters
+    joint_3d_valid: torch.Tensor | None = None  # [4,21] bool
+    joint_2d_valid: torch.Tensor | None = None  # [4,21] bool, calibrated projection, including out of canvas
+    joint_occluded: torch.Tensor | None = None  # [4,21] bool, known physical occlusion
+    hand_present: torch.Tensor | None = None  # [4] bool
+    joint_rotation_6d: torch.Tensor | None = None  # [4,21,6], first two rotation columns, flattened per column
+    joint_rotation_valid: torch.Tensor | None = None  # [4,21] bool, fingertips remain invalid
+    mano_shape: torch.Tensor | None = None  # [4,10]
+    mano_wrist_rotation_6d: torch.Tensor | None = None  # [4,6]
+    mano_palm_scale: torch.Tensor | None = None  # [4], meters
+    mano_valid: torch.Tensor | None = None  # [4] bool
 
     def to(self, device: torch.device | str) -> "HandCondition":
         return _move(self, device)
 
-    def active_joints(self) -> torch.Tensor:
-        x0, y0, x1, y1 = self.canvas.valid_rect
+    def project_validity(self) -> torch.Tensor:
         x, y, confidence = self.joints.unbind(-1)
-        return (self.visible & torch.isfinite(self.joints).all(-1) & (confidence > 0) & (confidence <= 1)
-                & (x >= x0) & (x < x1) & (y >= y0) & (y < y1))
+        declared = self.visible if self.joint_2d_valid is None else self.joint_2d_valid
+        return declared & torch.isfinite(self.joints).all(-1) & (confidence > 0) & (confidence <= 1)
+
+    def projected_joints(self) -> torch.Tensor:
+        x0, y0, x1, y1 = self.canvas.valid_rect
+        x, y = self.joints[..., :2].unbind(-1)
+        return self.project_validity() & (x >= x0) & (x < x1) & (y >= y0) & (y < y1)
+
+    def active_joints(self) -> torch.Tensor:
+        return self.visible & self.projected_joints()
+
+    def anatomy_joints(self) -> torch.Tensor:
+        points = self.projected_joints()
+        return points if self.joint_3d_valid is None else points | self.joint_3d_valid
+
+    def present_hands(self) -> torch.Tensor:
+        if self.hand_present is not None:
+            return self.hand_present
+        inferred = self.project_validity()
+        if self.joint_3d_valid is not None:
+            inferred = inferred | self.joint_3d_valid
+        return inferred.any(1)
+
+    def spatial_joint_confidence(self) -> torch.Tensor:
+        weight = torch.where(self.visible, 1., .55)
+        if self.joint_occluded is not None:
+            weight = torch.where(self.joint_occluded, .20, weight)
+        return torch.where(self.projected_joints(), self.joints[..., 2].float() * weight, 0.)
 
     def validate(self) -> "HandCondition":
         h, w = self.canvas.canvas_hw
@@ -68,16 +106,17 @@ class HandCondition:
             raise ValueError("Hand canvas must use the native Qwen 16-pixel grid and 32-pixel alignment")
         _tensor(self.joints, (4, 21, 3), floating=True)
         _tensor(self.visible, (4, 21), dtype=torch.bool)
+        self._validate_anatomy()
         if (len(self.person_ids) != 2 or any(pid is not None and (not isinstance(pid, str) or not pid)
                                              for pid in self.person_ids)
                 or (self.person_ids[0] is not None and self.person_ids[0] == self.person_ids[1])):
             raise ValueError("An ordered pair of distinct person IDs is required")
-        active = self.active_joints()
-        if not torch.equal(self.visible, active):
+        if not torch.equal(self.visible, self.active_joints()):
             raise ValueError("Visible target joints must be finite, in the valid canvas, and have confidence in (0,1]")
+        hands = self.present_hands()
         for actor, person_id in enumerate(self.person_ids):
-            if person_id is None and active[actor * 2: actor * 2 + 2].any():
-                raise ValueError("Visible hand slots require an explicit person ID")
+            if person_id is None and hands[actor * 2: actor * 2 + 2].any():
+                raise ValueError("Present hand slots require an explicit person ID")
         if self.support is not None:
             _tensor(self.support, (4, h, w), floating=True)
             _unit(self.support)
@@ -111,6 +150,8 @@ class HandCondition:
             _indices(mesh.anchors, 64, 778, rows=True)
             _finite(mesh.vertices[mesh.valid])
             _finite(mesh.anchor_xy[mesh.valid])
+            if self.hand_present is not None and (mesh.valid & ~hands).any():
+                raise ValueError("A valid MANO mesh must belong to a present hand")
             if len(mesh.camera_ids) != 4:
                 raise ValueError("MANO camera IDs must align with the four hand slots")
         seen = set()
@@ -129,6 +170,11 @@ class HandCondition:
                 _states(pair.occlusion)
             if (pair.surface_indices is None) != (pair.surface_features is None):
                 raise ValueError("Surface relations require indices and features")
+            if pair.surface_quality is not None:
+                if pair.surface_indices is None:
+                    raise ValueError("Surface quality requires a surface relation")
+                _tensor(pair.surface_quality, (len(pair.surface_indices), 4), floating=True)
+                _unit(pair.surface_quality)
             if pair.relative_pose is not None or pair.surface_indices is not None:
                 mesh = self.mesh
                 same_camera = (mesh is not None and mesh.valid[first] and mesh.valid[second]
@@ -150,6 +196,53 @@ class HandCondition:
                 if pair.surface_indices.unique(dim=0).shape[0] != pair.surface_indices.shape[0]:
                     raise ValueError("Surface contact indices must be unique")
         return self
+
+    def _validate_anatomy(self):
+        for mask in (self.joint_2d_valid, self.joint_3d_valid, self.joint_occluded, self.joint_rotation_valid):
+            if mask is not None:
+                _tensor(mask, (4, 21), dtype=torch.bool)
+        if self.joint_2d_valid is not None and not torch.equal(self.joint_2d_valid, self.project_validity()):
+            raise ValueError("Valid 2D projections must have finite coordinates and confidence in (0,1]")
+        if self.joint_occluded is not None and (self.joint_occluded & (self.visible | ~self.projected_joints())).any():
+            raise ValueError("An occluded joint needs an in-frame projection and cannot also be visible")
+        if self.hand_present is not None:
+            _tensor(self.hand_present, (4,), dtype=torch.bool)
+            if ((self.project_validity() | self.anatomy_joints()).any(1) & ~self.hand_present).any():
+                raise ValueError("Valid joints must belong to a present hand")
+        for value, valid, width in ((self.joints_3d, self.joint_3d_valid, 3),
+                                    (self.joint_rotation_6d, self.joint_rotation_valid, 6)):
+            if (value is None) != (valid is None):
+                raise ValueError("3D coordinates and rotations each require their independent validity mask")
+            if value is not None:
+                _tensor(value, (4, 21, width), floating=True)
+                _finite(value[valid])
+                if (valid.any(1) & ~self.present_hands()).any():
+                    raise ValueError("Valid 3D features must belong to a present hand")
+        if self.joint_rotation_valid is not None and self.joint_rotation_valid[:, 4::4].any():
+            raise ValueError("MANO fingertips have no independent joint rotation")
+        fields = (self.mano_shape, self.mano_wrist_rotation_6d, self.mano_palm_scale, self.mano_valid)
+        if any(value is not None for value in fields):
+            if any(value is None for value in fields):
+                raise ValueError("Global MANO needs shape, wrist rotation, palm size and validity")
+            _tensor(self.mano_valid, (4,), dtype=torch.bool)
+            if (self.mano_valid & ~self.present_hands()).any():
+                raise ValueError("Valid MANO parameters must belong to a present hand")
+            for value, shape in zip(fields, ((4, 10), (4, 6), (4,))):
+                _tensor(value, shape, floating=True)
+                _finite(value[self.mano_valid])
+            if (self.mano_palm_scale[self.mano_valid] <= 0).any():
+                raise ValueError("Valid MANO palm scales must be positive")
+
+
+def invert_relative_pose(pose):
+    """Invert translation and axis-angle expressed in the first hand's reference frame."""
+    rotation = pose[3:]
+    angle = rotation.norm()
+    axis = rotation / angle.clamp_min(1e-8)
+    xyz = pose[:3]
+    inverse_xyz = -(xyz * angle.cos() - torch.linalg.cross(axis, xyz) * angle.sin()
+                    + axis * axis.dot(xyz) * (1 - angle.cos()))
+    return torch.cat((inverse_xyz, -rotation))
 
 
 def verify_appearance_sources(condition, source_hashes):

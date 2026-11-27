@@ -17,7 +17,10 @@ def main(argv=None):
     parser.add_argument("--out", type=Path, required=True)
     parser.add_argument("--mode", choices=("global", "local", "global-local"), default="global")
     parser.add_argument("--context", type=Path, help="Target-canvas RGB for local-only refinement")
+    parser.add_argument("--current-support", type=Path,
+                        help="Torch-saved boolean or float [4,H,W] current-hand masks in full target canvas coordinates")
     parser.add_argument("--local-size", type=int, default=512)
+    parser.add_argument("--local-dilation", type=int, help="Local edit mask dilation in full-canvas pixels (default: 8)")
     parser.add_argument("--slot", action="append", choices=("A-L", "A-R", "B-L", "B-R"))
     parser.add_argument("--local-prompt", help="Select an explicit instruction for the local pass")
     parser.add_argument("--strength", type=float, default=1.)
@@ -27,6 +30,10 @@ def main(argv=None):
     args = parser.parse_args(argv)
     if (args.mode == "local") != (args.context is not None):
         parser.error("--context is required for local-only mode")
+    if args.mode == "global" and (args.current_support is not None or args.local_dilation is not None):
+        parser.error("--current-support and --local-dilation require a local pass")
+    if args.local_dilation is not None and args.local_dilation < 0:
+        parser.error("--local-dilation must be nonnegative")
     if args.out.exists():
         raise FileExistsError(args.out)
 
@@ -39,6 +46,11 @@ def main(argv=None):
     from src.pose_edit.common import sha256_file
 
     condition = load_condition(args.condition)
+    local_options = {}
+    if args.current_support is not None:
+        local_options["current_support"] = torch.load(args.current_support, map_location="cpu", weights_only=True)
+    if args.local_dilation is not None:
+        local_options["local_dilation"] = args.local_dilation
     base_sha = base_fingerprint(args.model)
     adapter, checkpoint = load_adapter(args.adapter, base_sha=base_sha)
     print(f"Qwen {args.model.resolve()} SHA256={base_sha}")
@@ -56,7 +68,7 @@ def main(argv=None):
     if args.mode in ("local", "global-local"):
         slots = None if args.slot is None else tuple(HAND_SLOTS.index(slot) for slot in args.slot)
         context = generate(pipe, condition, prompt=args.local_prompt or args.prompt, local_context=context,
-                           local_size=args.local_size, local_slots=slots, **common)
+                           local_size=args.local_size, local_slots=slots, **local_options, **common)
     args.out.parent.mkdir(parents=True, exist_ok=True)
     with args.out.open("xb") as output:
         context.save(output, format="PNG")

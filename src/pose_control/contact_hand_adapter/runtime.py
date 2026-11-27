@@ -9,7 +9,8 @@ import os
 import tempfile
 
 import torch
-from PIL import Image, ImageFilter
+import torch.nn.functional as F
+from PIL import Image
 
 from src.data.canvas_contract import CanvasSpec, LETTERBOX
 from src.pose_edit.common import sha256_file
@@ -20,8 +21,11 @@ from .integration import bind_hand_condition
 from .model import AdapterConfig, ContactHandAdapter
 
 
-CONDITION_SCHEMA = "contact_hand_condition_v2"
-CHECKPOINT_SCHEMA = "contact_hand_adapter_v2"
+CONDITION_SCHEMA = "contact_hand_condition_v2_1"
+CHECKPOINT_SCHEMA = "contact_hand_adapter_v2_1"
+_LEGACY_CONDITION_SCHEMA = "contact_hand_condition_v2"
+_LEGACY_CHECKPOINT_SCHEMA = "contact_hand_adapter_v2"
+DEFAULT_LOCAL_DILATION = 8
 
 
 def condition_record(condition):
@@ -33,14 +37,14 @@ def condition_record(condition):
 
 def load_condition(path):
     record = torch.load(path, map_location="cpu", weights_only=True)
-    if not isinstance(record, dict) or record.pop("schema", None) != CONDITION_SCHEMA:
+    if not isinstance(record, dict) or record.pop("schema", None) not in (CONDITION_SCHEMA, _LEGACY_CONDITION_SCHEMA):
         raise ValueError("Unsupported Contact Hand condition schema")
     record["canvas"] = CanvasSpec.from_record(record["canvas"])
     record["person_ids"] = tuple(record["person_ids"])
     if "appearance_sources" in record:
         record["appearance_sources"] = tuple(record["appearance_sources"])
-    record["pairs"] = tuple(HandPair(**{**pair, "slots": tuple(pair["slots"])}) for pair in record["pairs"])
-    if record["mesh"] is not None:
+    record["pairs"] = tuple(HandPair(**{**pair, "slots": tuple(pair["slots"])}) for pair in record.get("pairs", ()))
+    if record.get("mesh") is not None:
         mesh = record["mesh"]
         record["mesh"] = HandMesh(**{**mesh, "camera_ids": tuple(mesh["camera_ids"])})
     return HandCondition(**record).validate()
@@ -78,7 +82,12 @@ def save_adapter(path, adapter, *, base_sha, step, training=None):
     if path.exists():
         raise FileExistsError(path)
     path.parent.mkdir(parents=True, exist_ok=True)
-    record = dict(schema=CHECKPOINT_SCHEMA, base_sha=base_sha, config=asdict(adapter.config),
+    config = asdict(adapter.config)
+    schema = CHECKPOINT_SCHEMA
+    if adapter.config.architecture_version == 2:
+        schema = _LEGACY_CHECKPOINT_SCHEMA
+        config.pop("architecture_version")
+    record = dict(schema=schema, base_sha=base_sha, config=config,
                   step=step, adapter=adapter.state_dict(), training=training)
     with tempfile.NamedTemporaryFile(dir=path.parent, prefix=".hand-checkpoint-", delete=False) as handle:
         temporary = Path(handle.name)
@@ -100,11 +109,16 @@ def save_adapter(path, adapter, *, base_sha, step, training=None):
 def load_adapter(path, *, base_sha):
     _check_sha(base_sha)
     record = torch.load(path, map_location="cpu", weights_only=True)
-    if not isinstance(record, dict) or record.get("schema") != CHECKPOINT_SCHEMA:
+    if not isinstance(record, dict) or record.get("schema") not in (CHECKPOINT_SCHEMA, _LEGACY_CHECKPOINT_SCHEMA):
         raise ValueError("Unsupported Contact Hand Adapter checkpoint schema")
     if record.get("base_sha") != base_sha:
         raise ValueError("Contact Hand Adapter checkpoint belongs to a different Qwen base")
     config = {**record["config"], "layers": tuple(record["config"]["layers"])}
+    version = 21 if record["schema"] == CHECKPOINT_SCHEMA else 2
+    if version == 2:
+        config.setdefault("architecture_version", 2)
+    if config.get("architecture_version") != version:
+        raise ValueError("Contact Hand Adapter checkpoint architecture does not match its schema")
     adapter = ContactHandAdapter(AdapterConfig(**config))
     adapter.load_state_dict(record["adapter"], strict=True)
     return adapter, {key: record[key] for key in ("step", "base_sha", "training")}
@@ -151,31 +165,80 @@ class LocalPlan:
             raise ValueError("Local context image must be on the declared full target canvas")
 
 
-def make_local_plan(condition, *, size=512, slots=None, margin=.25):
-    """Select a connected hand group, remap conditions, and make a real high-resolution canvas."""
+def _local_plans(condition, *, size, slots, margin, current_support, dilation, single):
     condition = condition.to("cpu").validate()
     if type(size) is not int or size < 32 or size % 32 or not math.isfinite(margin) or not 0 <= margin <= 1:
         raise ValueError("Local canvas size must be a multiple of 32 and margin must be in [0,1]")
+    if type(dilation) is not int or dilation < 0:
+        raise ValueError("Local mask dilation must be a nonnegative integer")
     _, support = pixel_geometry(condition)
+    valid = condition.canvas.valid_mask(dtype=torch.bool)
+    edit = support > 0
+    if current_support is not None:
+        if (not torch.is_tensor(current_support) or current_support.shape != support.shape
+                or (current_support.dtype != torch.bool and not current_support.is_floating_point())):
+            raise ValueError("Current hand support must be a boolean or float [4,H,W] full-canvas tensor")
+        current_support = current_support.detach().cpu()
+        if not torch.isfinite(current_support).all() or ((current_support < 0) | (current_support > 1)).any():
+            raise ValueError("Current hand support must be finite coverage in [0,1]")
+        edit |= (current_support > 0) & valid
+    if dilation:
+        height, width = condition.canvas.canvas_hw
+        radius_y, radius_x = min(dilation, height - 1), min(dilation, width - 1)
+        expanded = F.max_pool2d(edit.float(), (1, 2 * radius_x + 1), stride=1, padding=(0, radius_x))
+        edit = F.max_pool2d(expanded, (2 * radius_y + 1, 1), stride=1, padding=(radius_y, 0)).bool()
+    edit &= valid
     graph = build_contact_graph(condition, support)
     components = [set(members) for members, _ in roi_boxes(support, graph)]
-    if not components:
+    target_slots = {slot for group in components for slot in group}
+    active = set(edit.flatten(1).any(-1).nonzero().flatten().tolist())
+    components.extend({slot} for slot in sorted(active - target_slots))
+    if not active:
         raise ValueError("No eligible hand pixels for local generation")
-    if slots is None:
+
+    # Distinct target components can share an edit region when a hand moves across another hand.
+    # Merge those masks before denoising so each editable pixel is composited at most once.
+    merged = []
+    for group in components:
+        mask = edit[sorted(group)].any(0)
+        disjoint = []
+        for previous, previous_mask in merged:
+            if (mask & previous_mask).any():
+                group |= previous
+                mask |= previous_mask
+            else:
+                disjoint.append((previous, previous_mask))
+        merged = [*disjoint, (group, mask)]
+    groups = sorted((group for group, _ in merged), key=min)
+    if slots is not None:
+        requested = set(slots)
+        if not requested or not requested <= active:
+            raise ValueError("Requested local hand slots must have current or target support")
+        groups = [group for group in groups if group & requested]
+        if single:
+            groups = [set.union(*groups)]
+    elif single:
         def priority(group):
             members = sorted(group)
             contacts = graph.part_state[members][:, members].eq(1).sum().item()
             return contacts, len(members), support[members].sum().item()
 
-        selected = max(components, key=priority)
-    else:
-        requested = set(slots)
-        active = set.union(*components)
-        if not requested or not requested <= active:
-            raise ValueError("Requested local hand slots must be visible in the target")
-        selected = set.union(*(group for group in components if group & requested))
+        groups = [max(groups, key=priority)]
+    for group in groups:
+        yield _crop_local_plan(condition, support, edit, group, size, margin)
+
+
+def make_local_plan(condition, *, size=512, slots=None, margin=.25, current_support=None,
+                    dilation=DEFAULT_LOCAL_DILATION):
+    """Return one training ROI for an explicit slot selection or the highest-priority group."""
+    return next(_local_plans(condition, size=size, slots=slots, margin=margin,
+                             current_support=current_support, dilation=dilation, single=True))
+
+
+def _crop_local_plan(condition, support, edit, selected, size, margin):
     slots = tuple(sorted(selected))
-    x0, y0, x1, y1 = support_box(support[list(slots)].amax(0))
+    edit_mask = edit[list(slots)].any(0)
+    x0, y0, x1, y1 = support_box(edit_mask)
     radius = math.ceil(max(x1 - x0, y1 - y0) * margin)
     min_x, min_y, max_x, max_y = condition.canvas.valid_rect
     box = (max(min_x, x0 - radius), max(min_y, y0 - radius),
@@ -195,6 +258,12 @@ def make_local_plan(condition, *, size=512, slots=None, margin=.25):
     def xy(value):
         return (value - value.new_tensor([x0, y0])) * value.new_tensor(canvas.scale_xy) + value.new_tensor(offset)
 
+    def keep_slots(value):
+        if value is None:
+            return None
+        selected_axes = mask_slots.reshape(4, *([1] * (value.ndim - 1)))
+        return value.masked_fill(~selected_axes, 0)
+
     temp = condition.joints.clone()
     temp[..., :2] = xy(temp[..., :2])
     dense, dense_valid = None, None
@@ -206,36 +275,50 @@ def make_local_plan(condition, *, size=512, slots=None, margin=.25):
     if mesh is not None:
         mesh = replace(mesh, anchor_xy=xy(mesh.anchor_xy), valid=mesh.valid & mask_slots)
     crop_support = support * mask_slots[:, None, None]
-    local = replace(condition, canvas=canvas, joints=temp, visible=condition.visible & mask_slots[:, None],
-                    support=spatial(crop_support), pairs=tuple(pair for pair in condition.pairs
-                                                             if set(pair.slots) <= selected),
-                    geometry_maps=dense, map_valid=dense_valid, mesh=mesh)
-    local = replace(local, visible=local.active_joints()).validate()
-    support_mask = crop_support.amax(0)[y0:y1, x0:x1]
-    hard = Image.fromarray((support_mask * 255).round().byte().numpy())
-    soft = hard.filter(ImageFilter.GaussianBlur(radius=min(4., max(original) * .025)))
-    from PIL import ImageChops
-
-    mask = ImageChops.lighter(hard, soft)
+    local = replace(
+        condition, canvas=canvas, joints=keep_slots(temp), visible=keep_slots(condition.visible),
+        support=spatial(crop_support), pairs=tuple(pair for pair in condition.pairs if set(pair.slots) <= selected),
+        geometry_maps=dense, map_valid=dense_valid, mesh=mesh, appearance_valid=keep_slots(condition.appearance_valid),
+        joints_3d=keep_slots(condition.joints_3d), joint_3d_valid=keep_slots(condition.joint_3d_valid),
+        joint_2d_valid=keep_slots(condition.joint_2d_valid), joint_occluded=keep_slots(condition.joint_occluded),
+        hand_present=keep_slots(condition.hand_present), joint_rotation_6d=keep_slots(condition.joint_rotation_6d),
+        joint_rotation_valid=keep_slots(condition.joint_rotation_valid), mano_shape=keep_slots(condition.mano_shape),
+        mano_wrist_rotation_6d=keep_slots(condition.mano_wrist_rotation_6d),
+        mano_palm_scale=keep_slots(condition.mano_palm_scale), mano_valid=keep_slots(condition.mano_valid),
+    )
+    projected = local.projected_joints()
+    occluded = local.joint_occluded
+    local = replace(local, visible=local.visible & projected,
+                    joint_occluded=None if occluded is None else occluded & projected).validate()
+    mask = Image.fromarray(edit_mask[y0:y1, x0:x1].byte().mul(255).numpy())
     return LocalPlan(box, slots, local, mask, condition.canvas.canvas_hw)
 
 
 @torch.no_grad()
 def generate(pipe, condition, *, prompt, references, seed, steps=40, strength=1., source_hashes=None,
-             local_context=None, local_size=512, local_slots=None):
-    """Generate on the specified canvas; with context, denoise a larger joint ROI and composite."""
+             local_context=None, local_size=512, local_slots=None, current_support=None,
+             local_dilation=DEFAULT_LOCAL_DILATION):
+    """Generate globally or denoise and composite each selected local hand component."""
     condition.validate()
-    plan = None
     images = list(references)
-    if local_context is not None:
-        plan = make_local_plan(condition, size=local_size, slots=local_slots)
-        condition = plan.condition
-        images.append(plan.image(local_context))
-    if not 1 <= len(images) <= 10:
+    if not 1 <= len(images) + (local_context is not None) <= 10:
         raise ValueError("Contact Hand editing requires 1 to 10 ordered source/context references")
-    h, w = condition.canvas.canvas_hw
-    generator = torch.Generator(device=pipe._execution_device).manual_seed(seed)
-    with bind_hand_condition(pipe.transformer, condition, strength=strength, source_hashes=source_hashes):
-        result = pipe(prompt=prompt, image=images, width=w, height=h, output_resolution=max(h, w),
-                      generator=generator, num_inference_steps=steps, true_cfg_scale=1., use_kv_cache=False).images[0]
-    return result.convert("RGB") if plan is None else plan.composite(local_context, result)
+
+    def render(target, inputs):
+        height, width = target.canvas.canvas_hw
+        generator = torch.Generator(device=pipe._execution_device).manual_seed(seed)
+        with bind_hand_condition(pipe.transformer, target, strength=strength, source_hashes=source_hashes):
+            return pipe(prompt=prompt, image=inputs, width=width, height=height, output_resolution=max(height, width),
+                        generator=generator, num_inference_steps=steps, true_cfg_scale=1., use_kv_cache=False).images[0]
+
+    if local_context is None:
+        if current_support is not None:
+            raise ValueError("Current hand support requires a local context image")
+        return render(condition, images).convert("RGB")
+
+    plans = _local_plans(condition, size=local_size, slots=local_slots, margin=.25,
+                         current_support=current_support, dilation=local_dilation, single=False)
+    for plan in plans:
+        generated = render(plan.condition, [*images, plan.image(local_context)])
+        local_context = plan.composite(local_context, generated)
+    return local_context

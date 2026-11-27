@@ -25,6 +25,10 @@ def main(argv=None):
     parser.add_argument("--lr", type=float, default=1e-4)
     parser.add_argument("--local-size", type=int, default=512)
     parser.add_argument("--local-fraction", type=float, help="Fraction of samples drawn from local rows")
+    parser.add_argument("--local-context-weights", type=float, nargs=3, metavar=("SOURCE", "COARSE", "SYNTHETIC"),
+                        help="Relative weights for the three context kinds when sampling local training rows")
+    parser.add_argument("--person-swap-probability", type=float, default=.5,
+                        help="Probability of exchanging whole A/B actors on an eligible training row (default: 0.5)")
     parser.add_argument("--surface-tokens", type=int, choices=(32, 64), default=64)
     parser.add_argument("--injection-layers", type=int, choices=(8, 16), default=8)
     parser.add_argument("--contact-level", choices=("hand", "part", "surface"), default="surface")
@@ -38,27 +42,44 @@ def main(argv=None):
     args = parser.parse_args(argv)
     if (min(args.updates, args.accumulate, args.save_every) < 1 or not math.isfinite(args.lr) or args.lr <= 0
             or not 0 < args.rgb_sigma_max <= 1 or not math.isfinite(args.rgb_weight) or args.rgb_weight < 0
-            or (args.local_fraction is not None and not 0 <= args.local_fraction <= 1)):
-        parser.error("Invalid training updates, learning rate, local fraction or RGB settings")
+            or (args.local_fraction is not None and not 0 <= args.local_fraction <= 1)
+            or not 0 <= args.person_swap_probability <= 1):
+        parser.error("Invalid training updates, learning rate, local fraction, person swap probability or RGB settings")
     if not args.check_data and (args.model is None or args.out is None):
         parser.error("Training requires --model and --out")
 
-    from src.pose_control.contact_hand_adapter.training import eligible_output_labels, load_manifest, load_training_pair
+    import torch
+    from src.pose_control.contact_hand_adapter.training import (
+        LocalContextMixture, eligible_output_labels, load_manifest, load_training_pair,
+    )
 
     records = load_manifest(args.manifest)
+    train_rows = [row for row in records if row["split"] == "train"]
+    local_rows = [row for row in train_rows if row["mode"] == "local"]
+    try:
+        mixture = LocalContextMixture(local_rows, args.local_context_weights) if args.local_context_weights else None
+    except ValueError as error:
+        parser.error(str(error))
+    check_rng = torch.Generator().manual_seed(args.seed)
+    swap_counts = Counter()
     for record in records:
-        pair = load_training_pair(record, local_size=args.local_size)
+        swap_people = record["split"] == "train" and args.person_swap_probability > 0
+        pair = load_training_pair(record, local_size=args.local_size, swap_people=swap_people, rng=check_rng)
         record["rgb_eligible"] = eligible_output_labels(pair.rgb_labels or {})
+        if swap_people:
+            swap_counts[pair.person_swap_status] += 1
     counts = Counter((row["split"], row["mode"]) for row in records)
     print(json.dumps({f"{split}/{mode}": count for (split, mode), count in sorted(counts.items())}), flush=True)
+    context_counts = Counter(row["context_kind"] for row in local_rows)
+    print(f"local_context_rows={dict(context_counts)} person_swap_rows={dict(swap_counts)}", file=sys.stderr, flush=True)
     if args.check_data:
         return
     if args.out.exists():
         raise FileExistsError(args.out)
-    _train(args, [row for row in records if row["split"] == "train"])
+    _train(args, train_rows, mixture)
 
 
-def _train(args, records):
+def _train(args, records, mixture):
     import torch
     from diffusers import QwenImage21Pipeline
     from diffusers.models.transformers import transformer_qwenimage21
@@ -86,6 +107,7 @@ def _train(args, records):
     base_sha = base_fingerprint(args.model)
     signature = dict(manifest_sha=sha256_file(args.manifest), seed=args.seed, accumulate=args.accumulate,
                      local_size=args.local_size, local_fraction=args.local_fraction, lr=args.lr,
+                     local_context_weights=args.local_context_weights, person_swap_probability=args.person_swap_probability,
                      rgb_evaluator_sha=sha256_file(args.rgb_evaluator) if args.rgb_evaluator else None,
                      rgb_weight=args.rgb_weight, rgb_sigma_max=args.rgb_sigma_max, dtype=str(dtype),
                      qwen_transformer_sha=sha256_file(transformer_qwenimage21.__file__),
@@ -144,13 +166,19 @@ def _train(args, records):
                 local = math.floor((index + 1) * ratio) > math.floor(index * ratio)
                 pool = pools["local" if local else "global"]
             row = pool[int(torch.randint(len(pool), (), generator=rng))]
-            pair = load_training_pair(row, local_size=args.local_size)
+            if mixture is not None and row["mode"] == "local":
+                row = mixture.sample(rng)
+            swap_people = (args.person_swap_probability > 0
+                           and torch.rand((), generator=rng).item() < args.person_swap_probability)
+            pair = load_training_pair(row, local_size=args.local_size, swap_people=swap_people, rng=rng)
             sigma = torch.rand(1, generator=rng).clamp(.001, .999)
             rgb = row["rgb_eligible"] if evaluator is not None and sigma.item() <= args.rgb_sigma_max else ()
             masks = token_regions(pair.condition.canvas, pair.regions, "cpu")
             window.append((pair, sigma, rgb, masks))
         counts = {name: sum(bool(masks[name].any()) for _, _, _, masks in window) for name in REGION_WEIGHTS}
         rgb_counts = Counter(name for _, _, active, _ in window for name in active)
+        context_counts = Counter(pair.context_kind for pair, _, _, _ in window if pair.context_kind is not None)
+        swap_counts = Counter(pair.person_swap_status for pair, _, _, _ in window)
         total = 0.
         for pair, sigma, rgb, _ in window:
             batch = encode_pair(pipe, condition=pair.condition, references=pair.references,
@@ -175,7 +203,8 @@ def _train(args, records):
         if not norm.item():
             raise RuntimeError("No Adapter gradient on this training update")
         optimizer.step()
-        print(f"update={update} loss={total:.6f} grad={norm.item():.6f} rgb_eligible={dict(rgb_counts)}", flush=True)
+        print(f"update={update} loss={total:.6f} grad={norm.item():.6f} rgb_eligible={dict(rgb_counts)} "
+              f"contexts={dict(context_counts)} person_swap={dict(swap_counts)}", flush=True)
         if update < args.updates and update % args.save_every == 0:
             save(args.out.with_name(f"{args.out.stem}.step-{update:06d}{args.out.suffix}"), update)
     save(args.out, args.updates)

@@ -1,6 +1,6 @@
 """Standalone rectified-flow training and optional differentiable RGB supervision."""
 
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 import json
 from pathlib import Path
 
@@ -10,6 +10,7 @@ from torch.nn import functional as F
 
 from src.pose_edit.common import sha256_file
 
+from .augmentation import distort_source_context, swap_condition_people, swap_hand_slots
 from .conditions import HandCondition, verify_appearance_sources
 from .geometry import pixel_geometry
 from .integration import bind_hand_condition
@@ -18,6 +19,7 @@ from .runtime import load_condition, make_local_plan
 
 REGION_WEIGHTS = {"contact": 4., "hand": 3., "wrist": 1.5, "other": .5}
 RGB_OBJECTIVES = ("joint", "part", "contact", "anatomy")
+LOCAL_CONTEXT_KINDS = ("source", "coarse", "synthetic")
 
 
 @dataclass(frozen=True)
@@ -48,6 +50,60 @@ class TrainingPair:
     regions: RegionSupervision
     rgb_labels: dict | None
     source_hashes: tuple[str, ...]
+    context_kind: str | None = None
+    person_swap_status: str = "not_requested"
+
+
+def swap_training_pair(pair, *, prompt_safe=None, swapped_prompt=None):
+    """Swap actor slots and ordered identities, keeping uncertain supervision intact."""
+    if pair.rgb_labels:
+        return replace(pair, person_swap_status="rgb_labels")
+    if prompt_safe is False:
+        return replace(pair, person_swap_status="ordered_prompt")
+    condition = pair.condition
+    people = sum(actor is not None for actor in condition.person_ids)
+    if not people:
+        return replace(pair, person_swap_status="no_actor")
+    independent = not condition.shared_appearance_source and len(pair.source_hashes) >= 2
+    # An existing B-only pack can explicitly bind its crop to reference two.
+    sole_b_uses_second = (people == 1 and condition.person_ids[0] is None
+                          and condition.appearance_valid is not None and condition.appearance_valid[2:].any())
+    reorder = independent and (people == 2 or sole_b_uses_second)
+    if reorder and prompt_safe is not True and swapped_prompt is None:
+        return replace(pair, person_swap_status="ordered_prompt")
+    if any(value is not None and value.shape[0] != 4 for value in (pair.regions.hands, pair.regions.wrists)):
+        return replace(pair, person_swap_status="region_layout")
+    references, source_hashes = pair.references, pair.source_hashes
+    if reorder:
+        references = (references[1], references[0], *references[2:])
+        source_hashes = (source_hashes[1], source_hashes[0], *source_hashes[2:])
+    condition = swap_condition_people(condition, shared_appearance_source=people == 1 or not independent)
+    verify_appearance_sources(condition, source_hashes)
+    regions = replace(pair.regions, hands=swap_hand_slots(pair.regions.hands),
+                      wrists=swap_hand_slots(pair.regions.wrists))
+    return replace(pair, condition=condition, references=references, source_hashes=source_hashes,
+                   prompt=pair.prompt if swapped_prompt is None else swapped_prompt, regions=regions,
+                   person_swap_status="swapped")
+
+
+class LocalContextMixture:
+    """Draw an explicit context kind, then a uniform row of that kind."""
+
+    def __init__(self, local_rows, weights):
+        self.weights = torch.as_tensor(weights, dtype=torch.float64)
+        if (self.weights.shape != (len(LOCAL_CONTEXT_KINDS),) or not torch.isfinite(self.weights).all()
+                or (self.weights < 0).any() or not (self.weights > 0).any()):
+            raise ValueError("Local context mixing requires three nonnegative weights with a positive total")
+        self.weights = self.weights / self.weights.max()
+        self.pools = tuple(tuple(row for row in local_rows if row["context_kind"] == kind)
+                           for kind in LOCAL_CONTEXT_KINDS)
+        for kind, weight, pool in zip(LOCAL_CONTEXT_KINDS, self.weights, self.pools):
+            if weight and not pool:
+                raise ValueError(f"Local context mix has positive weight but no {kind} rows")
+
+    def sample(self, rng):
+        pool = self.pools[int(torch.multinomial(self.weights, 1, generator=rng))]
+        return pool[int(torch.randint(len(pool), (), generator=rng))]
 
 
 def load_manifest(path):
@@ -80,6 +136,24 @@ def load_manifest(path):
             raise ValueError("Expected 1 to 10 ordered Qwen source/context references")
         if (row.get("context") is not None) != (mode == "local"):
             raise ValueError("Local training requires target-canvas context; global training omits context")
+        context_kind = row.get("context_kind")
+        support = row.get("current_support")
+        legacy_local_crop = mode == "local" and context_kind is None and support is None
+        if ((context_kind is not None and context_kind not in LOCAL_CONTEXT_KINDS)
+                or (mode == "global" and (context_kind is not None or support is not None))):
+            raise ValueError("Local context_kind must be source, coarse or synthetic and applies only to local rows")
+        source_hashes = tuple(entry["sha256"] for entry in refs)
+        if mode == "local":
+            source_context = row["context"]["sha256"] in source_hashes
+            if context_kind == "synthetic" and (support is None or not source_context):
+                raise ValueError("Synthetic local context requires current_support and context bound to a source reference")
+            if context_kind is None:
+                context_kind = "source" if source_context else "unspecified"
+        prompt_safe, swapped_prompt = row.get("person_swap_safe"), row.get("prompt_on_person_swap")
+        if ((prompt_safe is not None and type(prompt_safe) is not bool)
+                or (swapped_prompt is not None and
+                    (not isinstance(swapped_prompt, str) or not swapped_prompt.strip() or prompt_safe is False))):
+            raise ValueError("Invalid person_swap_safe or prompt_on_person_swap in hand manifest")
         inputs = [*refs] if row.get("context") is None else [*refs, row["context"]]
         target_sha = row["target"]["sha256"]
         if any(entry["sha256"] == target_sha for entry in inputs):
@@ -88,8 +162,8 @@ def load_manifest(path):
             if images.setdefault(entry["sha256"], split) != split:
                 raise ValueError("A source or target image crosses training splits")
         record = {**row, "source_refs": tuple(asset(entry) for entry in refs),
-                  "source_hashes": tuple(entry["sha256"] for entry in refs)}
-        for key in ("target", "condition", "context", "regions", "rgb_labels"):
+                  "source_hashes": source_hashes, "context_kind": context_kind, "legacy_local_crop": legacy_local_crop}
+        for key in ("target", "condition", "context", "current_support", "regions", "rgb_labels"):
             record[key] = asset(row[key]) if row.get(key) is not None else None
         if record["condition"] is None:
             raise ValueError("Every hand pair requires a target geometry pack")
@@ -104,7 +178,7 @@ def open_rgb(path):
         return image.convert("RGB")
 
 
-def load_training_pair(record, *, local_size=512):
+def load_training_pair(record, *, local_size=512, swap_people=False, rng=None):
     condition = load_condition(record["condition"])
     verify_appearance_sources(condition, record["source_hashes"])
     references = tuple(open_rgb(path) for path in record["source_refs"])
@@ -112,11 +186,31 @@ def load_training_pair(record, *, local_size=512):
     canvas = condition.canvas
     if target.size != tuple(reversed(canvas.canvas_hw)):
         target = canvas.image(target)
+    context_kind = record.get("context_kind")
     if record["mode"] == "local":
-        plan = make_local_plan(condition, size=local_size, slots=record.get("slots"))
+        current_support = None
+        if record.get("current_support") is not None:
+            support_record = torch.load(record["current_support"], map_location="cpu", weights_only=True)
+            if (not isinstance(support_record, dict) or support_record.get("canvas_sha") != canvas.fingerprint()
+                    or not torch.is_tensor(support_record.get("support"))):
+                raise ValueError("Current hand support must be authored in the full target canvas")
+            current_support = support_record["support"]
+        # Legacy authored masks were fingerprinted before edit-mask dilation changed the crop.
+        crop_options = {"dilation": 0} if record.get("legacy_local_crop") else {}
+        plan = make_local_plan(condition, size=local_size, slots=record.get("slots"),
+                               current_support=current_support, **crop_options)
         condition, target = plan.condition, plan.image(target)
         if record["context"] is not None:
-            references += (plan.image(open_rgb(record["context"])),)
+            context = open_rgb(record["context"])
+            if context_kind == "synthetic" and context.size != tuple(reversed(canvas.canvas_hw)):
+                context = canvas.image(context)
+            context = plan.image(context)
+            if context_kind == "synthetic":
+                if current_support is None:
+                    raise ValueError("Synthetic local context requires declared current hand support")
+                context = distort_source_context(context, plan, current_support,
+                                                 rng if rng is not None else torch.Generator().manual_seed(0))
+            references += (context,)
     heatmaps, hands = pixel_geometry(condition)
     if not hands.any():
         raise ValueError("A hand training row requires usable target hand geometry")
@@ -137,7 +231,12 @@ def load_training_pair(record, *, local_size=512):
         if labels.pop("canvas_sha", None) != condition.canvas.fingerprint():
             raise ValueError("RGB supervision must be authored in the final target canvas")
         eligible_output_labels(labels)
-    return TrainingPair(condition, references, target, record["prompt"], regions, labels, record["source_hashes"])
+    pair = TrainingPair(condition, references, target, record["prompt"], regions, labels, record["source_hashes"],
+                        context_kind=context_kind)
+    if swap_people:
+        pair = swap_training_pair(pair, prompt_safe=record.get("person_swap_safe"),
+                                  swapped_prompt=record.get("prompt_on_person_swap"))
+    return pair
 
 
 def predict_flow(transformer, batch, sigma, noise):

@@ -6,7 +6,7 @@ import torch
 from torch import nn
 from torch.nn import functional as F
 
-from .conditions import JOINT_PARTS, UNKNOWN
+from .conditions import JOINT_PARENTS, JOINT_PARTS, UNKNOWN
 from .geometry import ContactGraph, SpatialEncoder, build_contact_graph, pixel_geometry
 
 
@@ -25,6 +25,7 @@ class AdapterConfig:
     image_feedback: bool = True
     contact_level: str = "surface"
     hand_lora_rank: int = 0
+    architecture_version: int = 21
 
     def __post_init__(self):
         if (min(self.width, self.heads, self.base_width, self.base_heads, self.rank) < 1
@@ -37,6 +38,8 @@ class AdapterConfig:
             raise ValueError("Expected 32/64 surface tokens and a stride-aligned geometry ROI")
         if self.contact_level not in ("hand", "part", "surface") or not 0 <= self.hand_lora_rank <= self.base_width:
             raise ValueError("Invalid contact level or native hand LoRA rank")
+        if self.architecture_version not in (2, 21):
+            raise ValueError("Unsupported Contact Hand Adapter architecture version")
 
 
 @dataclass(frozen=True)
@@ -50,6 +53,7 @@ class HandMemory:
     graph: ContactGraph
     hierarchy_counts: tuple[int, ...]
     token_hw: tuple[int, int]
+    anchor_strength: torch.Tensor | None = None
 
 
 class GraphEncoder(nn.Module):
@@ -104,12 +108,19 @@ class HierarchyBlock(nn.Module):
 
 
 class GeometryFeedback(nn.Module):
-    def __init__(self, width, heads, base_width):
+    def __init__(self, width, heads, base_width, *, legacy=False):
         super().__init__()
         self.image_projection = nn.Linear(base_width, width, bias=False)
         self.image_attention = Attention(width, heads)
         self.image_query = nn.Linear(width, width)
         self.geometry_attention = Attention(width, heads)
+        if not legacy:
+            peer_width = max(heads, width // (4 * heads) * heads)
+            self.peer_input = nn.Linear(width, peer_width, bias=False)
+            self.peer_attention = Attention(peer_width, heads)
+            self.peer_output = nn.Linear(peer_width, width, bias=False)
+        else:
+            self.peer_attention = None
         self.state_norm = nn.LayerNorm(width)
         self.context = nn.Sequential(nn.Linear(2, width), nn.SiLU(), nn.Linear(width, width))
         self.update = nn.Sequential(nn.LayerNorm(width), nn.Linear(width, width * 2),
@@ -120,7 +131,17 @@ class GeometryFeedback(nn.Module):
         state = state + self.image_attention(self.image_query(self.state_norm(state)), image, routing.T)
         query = self.state_norm(state) + self.context(sigma_and_layer)
         slots = memory.slots
-        anchors = (slots[:, None] == slots[None, :]) | memory.graph.neighbors[slots[:, None], slots[None, :]]
+        peers = memory.graph.neighbors[slots[:, None], slots[None, :]]
+        if self.peer_attention is not None:
+            active = torch.where(peers.any(1))[0]
+            if active.numel():
+                exchanged = self.peer_input(query)
+                strength = memory.graph.peer_strength[slots[active, None], slots[None, :]]
+                weights = strength.clamp_min(1e-6).log().masked_fill(~peers[active], -torch.inf)
+                delta = self.peer_attention(exchanged[active], exchanged, weights)
+                state = state.index_add(0, active, self.peer_output(delta) * strength.amax(1, keepdim=True))
+                query = self.state_norm(state) + self.context(sigma_and_layer)
+        anchors = (slots[:, None] == slots[None, :]) | peers
         state = state + self.geometry_attention(query, memory.tokens, anchors)
         return state + self.update(state)
 
@@ -162,15 +183,21 @@ class ContactHandAdapter(nn.Module):
         self.config = config or AdapterConfig()
         cfg = self.config
         width, heads = cfg.width, cfg.heads
-        self.joint_graph = GraphEncoder(5, width)
+        legacy = cfg.architecture_version == 2
+        self.joint_graph = GraphEncoder(5 if legacy else 19, width)
         self.mesh_graph = GraphEncoder(3, width)
-        joint_edges = [(0 if i % 4 == 1 else i - 1, i) for i in range(1, 21)]
-        self.register_buffer("joint_edges", torch.tensor(joint_edges).T, persistent=False)
-        self.slot_embedding = nn.Embedding(4, width)
+        self.register_buffer("joint_edges", torch.tensor([JOINT_PARENTS[1:], tuple(range(1, 21))]), persistent=False)
+        if legacy:
+            self.slot_embedding = nn.Embedding(4, width)
+        else:
+            self.person_embedding = nn.Embedding(2, width)
+            self.side_embedding = nn.Embedding(2, width)
+            self.joint_validity = nn.Linear(5, width, bias=False)
+            self.mano_encoder = nn.Sequential(nn.Linear(17, width), nn.SiLU(), nn.LayerNorm(width))
         self.part_embedding = nn.Embedding(16, width)
-        self.kind_embedding = nn.Embedding(5, width)
+        self.kind_embedding = nn.Embedding(5 if legacy else 6, width)
         self.position = nn.Linear(2, width)
-        self.spatial_encoder = SpatialEncoder(width, cfg.roi_size)
+        self.spatial_encoder = SpatialEncoder(width, cfg.roi_size, legacy=legacy)
         self.appearance = nn.Sequential(nn.Conv2d(3, 64, 5, stride=2, padding=2), nn.SiLU(),
                                         nn.Conv2d(64, 128, 3, stride=2, padding=1), nn.SiLU(),
                                         nn.Conv2d(128, width, 3, stride=2, padding=1), nn.SiLU(),
@@ -180,8 +207,8 @@ class ContactHandAdapter(nn.Module):
         self.inter = nn.ModuleList(HierarchyBlock(width, heads) for _ in range(cfg.inter_layers))
         self.hand_bias = nn.Linear(13, heads, bias=False)
         self.part_bias = nn.Linear(4, heads, bias=False)
-        self.surface_bias = nn.Linear(5, heads, bias=False)
-        self.feedback = GeometryFeedback(width, heads, cfg.base_width)
+        self.surface_bias = nn.Linear(5 if legacy else 6, heads, bias=False)
+        self.feedback = GeometryFeedback(width, heads, cfg.base_width, legacy=legacy)
         self.native_keys = nn.Linear(width, cfg.base_width, bias=False)
         self.native_values = nn.Linear(width, cfg.base_width, bias=False)
         self.key_norm = nn.RMSNorm(cfg.base_width // cfg.base_heads)
@@ -193,31 +220,44 @@ class ContactHandAdapter(nn.Module):
 
     def prepare(self, condition):
         condition.validate()
-        heatmaps, support_pixels = pixel_geometry(condition)
-        graph = build_contact_graph(condition, support_pixels)
+        legacy = self.config.architecture_version == 2
+        heatmaps, support_pixels = pixel_geometry(condition, legacy=legacy)
+        graph = build_contact_graph(condition, support_pixels, legacy=legacy)
         if self.config.contact_level == "hand":
             graph = replace(graph, part_state=torch.full_like(graph.part_state, UNKNOWN),
                             part_confidence=torch.zeros_like(graph.part_confidence),
                             occlusion=torch.zeros_like(graph.occlusion))
         if self.config.contact_level != "surface":
-            graph = replace(graph, surface_edges=graph.surface_edges[:0], surface_features=graph.surface_features[:0])
+            graph = replace(graph, surface_edges=graph.surface_edges[:0], surface_features=graph.surface_features[:0],
+                            surface_probability=graph.surface_probability[:0])
         stride = condition.canvas.stride
         support = F.avg_pool2d(support_pixels, stride).flatten(1)
         support = support / support.sum(0, keepdim=True).clamp_min(1)
         roi = torch.where(support.any(0))[0]
-        spatial = self.spatial_encoder(condition, heatmaps, support_pixels, graph) if roi.numel() else None
-        valid = condition.active_joints() & support.any(1)[:, None]
+        projected = condition.active_joints() & support.any(1)[:, None] if legacy else condition.projected_joints()
+        valid = projected if legacy else condition.anatomy_joints()
         th, tw = condition.canvas.token_hw
         dimensions = support.new_tensor([tw, th])
-        xy = torch.where(valid[..., None], condition.joints[..., :2].float() / stride, 0)
-        origin = torch.where(valid[:, :1], xy[:, 0], masked_mean(xy, valid))
-        local = (xy - origin[:, None]) / ((xy - origin[:, None]).norm(dim=-1) * valid).amax(1).clamp_min(1)[:, None, None]
-        confidence = torch.where(valid, condition.joints[..., 2].float(), 0)
-        joint = self.joint_graph(torch.cat((local, xy / dimensions, confidence[..., None]), -1), valid, self.joint_edges)
+        xy = torch.where(projected[..., None], condition.joints[..., :2].float() / stride, 0)
+        origin = torch.where(projected[:, :1], xy[:, 0], masked_mean(xy, projected))
+        if not legacy:
+            y, x = torch.meshgrid(torch.arange(th, device=xy.device), torch.arange(tw, device=xy.device), indexing="ij")
+            center = support @ (torch.stack((x, y), -1).reshape(-1, 2).float() + .5)
+            center = center / support.sum(1).clamp_min(1e-6)[:, None]
+            origin = torch.where(projected.any(1)[:, None], origin, center)
+        local = xy - origin[:, None]
+        local = local / (local.norm(dim=-1) * projected).amax(1).clamp_min(1)[:, None, None]
+        confidence = torch.where(projected, condition.joints[..., 2].float(), 0)
+        if legacy:
+            features = torch.cat((local, xy / dimensions, confidence[..., None]), -1)
+            joint = self.joint_graph(features, valid, self.joint_edges)
+        else:
+            features, validity = self.joint_features(condition, xy, local, dimensions, projected, confidence)
+            joint = self.joint_graph(features, valid, self.joint_edges) + self.joint_validity(validity)
         hand = masked_mean(joint, valid)[:, None]
         part_ranges = (slice(0, 1), *(slice(i, i + 4) for i in range(1, 21, 4)))
         fingers = torch.stack([masked_mean(joint[:, part], valid[:, part]) for part in part_ranges], 1)
-        finger_xy = torch.stack([masked_mean(xy[:, part], valid[:, part]) for part in part_ranges], 1)
+        finger_xy = torch.stack([masked_mean(xy[:, part], projected[:, part]) for part in part_ranges], 1)
         finger_valid = torch.stack([valid[:, part].any(1) for part in part_ranges], 1)
         mesh = condition.mesh
         surf_count = self.config.surface_tokens
@@ -227,13 +267,13 @@ class ContactHandAdapter(nn.Module):
         surface_xy = xy.new_zeros(4, surf_count, 2)
         surface_valid = valid.new_zeros(4, surf_count)
         if mesh is not None:
-            mesh_active = mesh.valid & valid.any(1)
+            mesh_active = mesh.valid & (valid.any(1) if legacy else condition.present_hands())
             vertices = torch.where(mesh_active[:, None, None], mesh.vertices.float(), 0)
             vertices = (vertices - vertices.mean(1, keepdim=True)) / .10
             mesh_tokens = self.mesh_graph(vertices, mesh_active[:, None].expand(-1, 778), mesh.edges)
             surface = mesh_tokens[:, mesh.anchors].mean(2).unflatten(1, (surf_count, anchor_group)).mean(2)
-            projected = mesh.anchor_xy.float().unflatten(1, (surf_count, anchor_group)).mean(2)
-            surface_xy = torch.where(mesh_active[:, None, None], projected / stride, 0)
+            anchor_pixels = mesh.anchor_xy.float().unflatten(1, (surf_count, anchor_group)).mean(2)
+            surface_xy = torch.where(mesh_active[:, None, None], anchor_pixels / stride, 0)
             surface_valid = mesh_active[:, None].expand(-1, surf_count)
         appearance = joint.new_zeros(4, 16, self.config.width)
         appearance_valid = valid.new_zeros(4, 16)
@@ -243,37 +283,104 @@ class ContactHandAdapter(nn.Module):
                 appearance[slots] = self.appearance(condition.appearance[slots].float()).flatten(2).transpose(1, 2)
                 appearance_valid = slots[:, None].expand(-1, 16)
         lengths = (1, 6, 21, surf_count, 16)
-        values = torch.cat((hand, fingers, joint, surface, appearance + self.appearance_patch), 1)
-        present = torch.cat((valid.any(1)[:, None], finger_valid, valid, surface_valid, appearance_valid), 1)
-        positions = torch.cat((origin[:, None], finger_xy, xy, surface_xy, origin[:, None].expand(-1, 16, -1)), 1)
-        kinds = torch.repeat_interleave(torch.arange(5, device=support.device), torch.tensor(lengths, device=support.device))
+        values = (hand, fingers, joint, surface, appearance + self.appearance_patch)
+        geometry_hands = valid.any(1) if legacy else valid.any(1) | surface_valid.any(1) | support.any(1)
+        present = (geometry_hands[:, None], finger_valid, valid, surface_valid, appearance_valid)
+        positions = (origin[:, None], finger_xy, xy, surface_xy, origin[:, None].expand(-1, 16, -1))
+        anchor_strength = None
+        if not legacy:
+            mano_valid = valid.new_zeros(4) if condition.mano_valid is None else condition.mano_valid
+            mano = joint.new_zeros(4, self.config.width)
+            if mano_valid.any():
+                params = torch.cat((condition.mano_shape[mano_valid], condition.mano_wrist_rotation_6d[mano_valid],
+                                    condition.mano_palm_scale[mano_valid, None] / .10), -1).float()
+                mano[mano_valid] = self.mano_encoder(params)
+            values += (mano[:, None],)
+            present += (mano_valid[:, None],)
+            lengths += (1,)
+            strengths = condition.spatial_joint_confidence()
+            finger_strength = torch.stack([strengths[:, part].amax(1) for part in part_ranges], 1)
+            surface_strength = self.surface_strength(surface_xy, surface_valid, support, condition)
+            global_strength = support.any(1).float()[:, None]
+            anchor_strength = torch.cat((global_strength, finger_strength, strengths,
+                                         surface_strength, global_strength.expand(-1, 16), global_strength), 1)
+            positions = (origin[:, None], torch.where(finger_strength[..., None] > 0, finger_xy, origin[:, None]),
+                         torch.where(projected[..., None], xy, origin[:, None]), surface_xy,
+                         origin[:, None].expand(-1, 16, -1), origin[:, None])
+        values, present, positions = (torch.cat(items, 1) for items in (values, present, positions))
+        kinds = torch.repeat_interleave(torch.arange(len(lengths), device=support.device),
+                                        torch.tensor(lengths, device=support.device))
         parts = torch.cat((kinds.new_zeros(1), kinds.new_tensor([0, 1, 4, 7, 10, 13]),
-                           kinds.new_tensor(JOINT_PARTS), anchor_ids // 4, kinds.new_zeros(16)))
-        anchors = torch.cat((kinds.new_full((28,), -1), anchor_ids, kinds.new_full((16,), -1)))
+                           kinds.new_tensor(JOINT_PARTS), anchor_ids // 4, kinds.new_zeros(sum(lengths[4:]))))
+        anchors = torch.cat((kinds.new_full((28,), -1), anchor_ids, kinds.new_full((sum(lengths[4:]),), -1)))
         slots, token = torch.where(present)
         kinds, parts, anchors = kinds[token], parts[token], anchors[token]
         positions = positions[present]
-        values = (values[present] + self.slot_embedding(slots) + self.kind_embedding(kinds) + self.part_embedding(parts)
+        identity = self.slot_embedding(slots) if legacy else self.person_embedding(slots // 2) + self.side_embedding(slots % 2)
+        values = (values[present] + identity + self.kind_embedding(kinds) + self.part_embedding(parts)
                   + self.position(positions / dimensions))
+        anchor_strength = None if legacy else anchor_strength[present]
         if roi.numel():
+            spatial, token_context = self.spatial_encoder(
+                condition, heatmaps, support_pixels, graph, tokens=None if legacy else values,
+                token_slots=slots, token_xy=positions, anchor_strength=anchor_strength)
             spatial = (spatial[:, roi] * support[:, roi, None]).sum(0) / support[:, roi].sum(0)[:, None]
-            values = self.encode_hierarchy(values, slots, kinds, parts, anchors, positions, graph, spatial, support, roi)
+            if legacy:
+                route = support[slots][:, roi]
+                values = values + (route @ spatial) / route.sum(1).clamp_min(1e-6)[:, None]
+            else:
+                values = values + token_context
+            values = self.encode_hierarchy(values, slots, kinds, parts, anchors, graph)
         else:
             spatial = values.new_empty(0, self.config.width)
-        return HandMemory(values, slots, positions, support, roi, spatial, graph, lengths, (th, tw))
+        return HandMemory(values, slots, positions, support, roi, spatial, graph, lengths, (th, tw), anchor_strength)
 
-    def encode_hierarchy(self, values, slots, kinds, parts, anchors, positions, graph, spatial, support, roi):
+    def joint_features(self, condition, xy, local, dimensions, projected, confidence):
+        valid_3d = condition.joint_3d_valid
+        xyz = xy.new_zeros(4, 21, 3) if valid_3d is None else torch.where(valid_3d[..., None], condition.joints_3d.float(), 0)
+        if valid_3d is None:
+            valid_3d = torch.zeros_like(projected)
+        relative_valid = valid_3d & valid_3d[:, :1]
+        relative = torch.where(relative_valid[..., None], (xyz - xyz[:, :1]) / .10, 0.)
+        parents = torch.cat((self.joint_edges.new_zeros(1), self.joint_edges[0]))
+        bone = xyz - xyz[:, parents]
+        length = bone.norm(dim=-1)
+        bone_valid = valid_3d & valid_3d[:, parents] & (length > 1e-6)
+        direction = torch.where(bone_valid[..., None], bone / length.clamp_min(1e-6)[..., None], 0.)
+        length = torch.where(bone_valid, length / .10, 0.)
+        rotation_valid = condition.joint_rotation_valid
+        rotation = xy.new_zeros(4, 21, 6) if rotation_valid is None else torch.where(
+            rotation_valid[..., None], condition.joint_rotation_6d.float(), 0.)
+        if rotation_valid is None:
+            rotation_valid = torch.zeros_like(projected)
+        occlusion = torch.zeros_like(projected) if condition.joint_occluded is None else condition.joint_occluded
+        features = torch.cat((torch.where(projected[..., None], local, 0.), xy / dimensions,
+                              relative, direction, length[..., None], rotation, condition.visible[..., None],
+                              confidence[..., None]), -1)
+        validity = torch.stack((projected, relative_valid, bone_valid, rotation_valid, occlusion), -1).float()
+        return features, validity
+
+    @staticmethod
+    def surface_strength(xy, valid, support, condition):
+        height, width = condition.canvas.token_hw
+        x0, y0, x1, y1 = (edge / condition.canvas.stride for edge in condition.canvas.valid_rect)
+        x, y = xy.unbind(-1)
+        in_frame = valid & (x >= x0) & (x < x1) & (y >= y0) & (y < y1)
+        flat = y.long().clamp(0, height - 1) * width + x.long().clamp(0, width - 1)
+        observed = support.gather(1, flat) > 0
+        return in_frame.float() * torch.where(observed, 1., .20)
+
+    def encode_hierarchy(self, values, slots, kinds, parts, anchors, graph):
         first, second = slots[:, None], slots[None, :]
         a, b = parts[:, None], parts[None, :]
         type_a, type_b = kinds[:, None], kinds[None, :]
         same = first == second
-        global_token = (type_a == 0) | (type_b == 0)
+        global_a = (type_a == 0) | (type_a == 5)
+        global_b = (type_b == 0) | (type_b == 5)
+        global_token = global_a | global_b
         same_digit = ((a == 0) & (b == 0)) | ((a > 0) & (b > 0) & ((a - 1) // 3 == (b - 1) // 3))
         allowed = same & (global_token | same_digit | (type_a == 4) | (type_b == 4))
         intra_bias = torch.zeros_like(allowed, dtype=values.dtype).masked_fill(~allowed, -torch.inf)
-        # Link the static token and raster paths before the first DiT layer.
-        route = support[slots][:, roi]
-        values = values + (route @ spatial) / route.sum(1).clamp_min(1e-6)[:, None]
         for block in self.intra:
             values = block(values, intra_bias)
         hand = self.hand_bias(graph.hand_features[first, second])
@@ -286,7 +393,10 @@ class ContactHandAdapter(nn.Module):
         if graph.surface_edges.numel():
             hand = self.add_surface_bias(hand, slots, anchors, graph)
         peers = graph.neighbors[first, second]
-        compatible = ((type_a == 0) & (type_b == 0)) | ((type_a == 1) & (type_b == 1))
+        if self.config.architecture_version != 2:
+            penalty = graph.peer_strength[first, second].clamp_min(1e-6).log()
+            hand = hand + (penalty * peers)[..., None]
+        compatible = (global_a & global_b) | ((type_a == 1) & (type_b == 1))
         compatible |= (type_a >= 2) & (type_a <= 3) & (type_b >= 2) & (type_b <= 3)
         inter_allowed = allowed | (peers & compatible)
         inter_bias = hand.masked_fill(~inter_allowed[..., None], -torch.inf).permute(2, 0, 1)
@@ -303,8 +413,12 @@ class ContactHandAdapter(nn.Module):
         a, b = lookup[hand_a, anchor_a // group * group], lookup[hand_b, anchor_b // group * group]
         keep = (a >= 0) & (b >= 0)
         distance, normal, state, confidence = graph.surface_features[keep].T
+        if self.config.architecture_version != 2:
+            distance, normal = distance * confidence, normal * confidence
         features = torch.stack((distance / .10, normal, (state == 1) * confidence,
                                 (state == 0) * confidence, (state != UNKNOWN) * confidence), -1)
+        if self.config.architecture_version != 2:
+            features = torch.cat((features, graph.surface_probability[keep, None]), -1)
         linear = a[keep] * bias.shape[1] + b[keep]
         update = torch.zeros_like(bias.flatten(0, 1)).index_add(0, linear, self.surface_bias(features))
         count = update.new_zeros(len(update)).index_add(0, linear, torch.ones_like(linear, dtype=update.dtype))
@@ -317,6 +431,9 @@ class ContactHandAdapter(nn.Module):
         distances = (roi_xy[:, None] - memory.xy[None]).square().sum(-1)
         coverage = memory.support[memory.slots][:, memory.roi].T
         routing = (coverage.clamp_min(1e-6).log() - .05 * distances).masked_fill(coverage == 0, -torch.inf)
+        if memory.anchor_strength is not None:
+            strength = memory.anchor_strength[None]
+            routing = routing + (.35 + .65 * strength).log() - .20 * strength * distances
         level = roi_hidden.new_tensor(layer / max(1, len(self.config.layers) - 1))
         step = torch.stack((sigma.reshape(()).float(), level.float()))
         if self.config.image_feedback:
