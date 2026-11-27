@@ -36,4 +36,4 @@ CUDA_VISIBLE_DEVICES=2 "$PY" "$SRC/scripts/run/run_qwen21_native_full_v7.py" \
 
 ## 起步证据和已有实验关系
 
-双人 192 步贡献 V7 新模块，见上一轮 `native-v7-source-preservation-20261121`。720/1080 像素原图缩到训练 Canvas 时，曾触发双人 Relation Raster 的深度有效掩码不一致。修复后两对真实照片通过 Native 资产和 4Ref 缓存装配、训练数据门禁，相关本地回归 21 项通过。两对图仅用于小规模 S0 验证，正式结果以生产 `*.commit.json` 和验证出图为准。
+双人 192 步贡献 V7 新模块，见上一轮 `native-v7-source-preservation-20261121`。原图缩到训练 Canvas 时，曾触发双人 Relation Raster 的深度有效掩码不一致。修复后两对真实照片通过 Native 资产和 4Ref 缓存装配、真实数据和 GPU 梯度门禁，相关本地回归 21 项通过。小规模 S0 完成并提交第 1 个 optimizer update，梯度范数 0.17551，权重 SHA256 `2e3956a4280fb59268de230af0a89093232b239f5ba08d4c7b99f4efee700c96`，凭据在 `smoke-v2/sft/complete.json`。正式训练从相同迁移初始化独立起跑，效果以生产 checkpoint 的验证出图为准。
