@@ -176,7 +176,8 @@ def main():
             '--parent',final['regional']['path'],'--report',str(rl_report),'--updates',str(args.rl_updates)]
         commits=sorted((root/'output/grpo/checkpoints').glob('*.commit.json'))
         if commits:
-            latest=max((read(p) for p in commits),key=lambda x:x['completed_updates'])
+            latest=max((read(p) for p in commits),key=lambda x:(x['completed_updates'],x.get('rollout_batches',0),
+                                                              bool(x.get('stop'))))
             command.extend(('--resume',latest['checkpoint']['path']))
         child('grpo',command)
     rl_result=read(rl_report);generation=root/'configs/generation/grpo.json'

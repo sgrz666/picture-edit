@@ -29,7 +29,7 @@ def live(pid):
 
 def main():
     sys.path.insert(0,str(Path(__file__).resolve().parents[4]))
-    from src.pose_control.qwen21_full.native_rl.regional_cli import add_arguments, configure_arguments
+    from src.pose_control.qwen21_full.native_rl.regional_cli import add_arguments, configure_arguments, latest_regional_commit
 
     ap=argparse.ArgumentParser(description=__doc__);ap.add_argument('--root',type=Path,required=True)
     ap.add_argument('--repo',type=Path,required=True);ap.add_argument('--wait-pid',type=int)
@@ -167,9 +167,8 @@ def main():
     if not rl_report.exists():
         command=[str(args.rl_python.absolute()) if args.rl_python else PY,str(scripts/'rl.py'),'--root',str(root),'--config',str(ready),
             '--parent',final['regional']['path'],'--report',str(rl_report),'--updates',str(args.rl_updates),*reward_flags]
-        commits=sorted((root/'output/grpo/checkpoints').glob('*.commit.json'))
-        if commits:
-            latest=max((read(p) for p in commits),key=lambda x:x['completed_updates'])
+        latest=latest_regional_commit(root/'output/grpo/checkpoints')
+        if latest is not None:
             command.extend(('--resume',latest['checkpoint']['path']))
         child('grpo',command)
     rl_result=read(rl_report);generation=root/'configs/generation/grpo.json'

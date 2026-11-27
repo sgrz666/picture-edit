@@ -26,6 +26,8 @@ V4 修复了抽出预测接口时遗留的局部变量引用；回归确认预�
 
 新的 B 站或小红书区域实验可给 `scripts/run.py` 传 `--spatial-model /data/shangguanrz/models/rl/SpatialReward-8B --spatial-weight 0.25`。默认 `rgb + visual-linear`，区域其他奖励同比缩放。加 `--reward-profile hands42` 可使用通用单人奖励比例。Hands 部分共享全图位置与局部手势评分。新运行可用 `--sde-step` 或 `--sde-cycle` 对照固定与循环 SDE。每组 `spatial.json` 绑定候选 SHA 和评分细节，checkpoint 固定模型、权重、方差和 SDE 配置。可选 AdaFace-KPRPE 用于训练身份，离线留出照常用 SDPose 和 glintr100。 [参数与环境](../../../src/pose_control/qwen21_full/native_rl/README.md#spatialreward-8b)
 
+区域 RL 从原 SFT 权重生成 ODE 基线，默认绑定前 8 个合格 validation 对的条件 SHA、seed 和配置中的 ODE 步数。每 10 个更新和训练结束时复测 Pose、ID、Hands、局部手势及适用的 Source A 背景分。默认容忍每项下降 0.02，连续两次退化时停止。保存在 `report/grpo/ode_*/` 的门禁、连续退化计数和已通过选点随 checkpoint 恢复。终态 `checkpoint` 指最近通过门禁的 RL 权重，若没有通过则指向 SFT。末次优化产物单列为 `last_checkpoint`。可用 `--validate-every`、`--val-limit`、`--patience` 和各项 `--*-drop` 配置新运行。门禁中的 SDPose 进程默认走 CPU，`--ode-pose-device` 可显式选择。已锁定的实验用原快照恢复。
+
 自动执行完后，原始图保存在 `output/generation/<分组>/`，RL 候选图在 `output/grpo/rollouts/`。`report/evaluation/` 保存逐图指标；`report/comparison-ready.json` 指向最终指标表与逐对 7 列面板（Source、SDPose、GT、uniform、regional、继续 SFT、GRPO）。汇总前会逐阶段核对两臂的 route/source/index/sigma/LR 轨迹，必须全部一致。汇总脚本已用合成图片和真实格式的已提交 checkpoint 做过流程冒烟验证，该验证不代表训练收益。
 
 查看实际进度（PowerShell）：

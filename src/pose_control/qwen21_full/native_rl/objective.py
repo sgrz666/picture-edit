@@ -4,6 +4,7 @@ Flow-SDE equations and latent-mean likelihood follow Flow-Factory v0.5.0
 (ced2cd9b0465a2c9d733b9b8aed4d4351f950a22, Apache-2.0).
 """
 
+from itertools import combinations
 import math
 
 import torch
@@ -28,7 +29,28 @@ def transition(state, velocity, sigma, next_sigma, *, noise_level=.7, action=Non
     return action, density.flatten(1).mean(1), mean, variance
 
 
-def advantages(groups, weights, *, mode='gdpo-guarded', std_floor=1e-3, std_floors=None):
+def _conflict(scores, contributions, fused):
+    centered = {name: value - value.mean() for name, value in scores.items()}
+    norms = {name: float(value.norm()) for name, value in centered.items()}
+    pairs = []
+    for left, right in combinations(sorted(centered), 2):
+        correlation = None
+        if min(norms[left], norms[right]) > 1e-12:
+            cosine = float(centered[left] @ centered[right]) / (norms[left] * norms[right])
+            correlation = max(-1., min(1., cosine))
+        pairs.append({'left': left, 'right': right, 'pearson': correlation})
+    scale = math.sqrt(fused.numel())
+    components = [value - value.mean() for value in contributions]
+    merged = fused - fused.mean()
+    absolute_sum = sum(float(value.abs().sum()) for value in components)
+    cancellation = None if absolute_sum <= 1e-12 else max(0., min(1., 1 - float(merged.abs().sum()) / absolute_sum))
+    component_rms_sum = sum(float(value.norm()) for value in components) / scale
+    fused_rms = float(merged.norm()) / scale
+    return {'correlations': pairs, 'cancellation': cancellation, 'fused_rms': fused_rms,
+            'component_rms_sum': component_rms_sum}
+
+
+def advantages(groups, weights, *, mode='gdpo-guarded', std_floor=1e-3, std_floors=None, diagnostics=None):
     if mode not in ('gdpo', 'gdpo-guarded', 'sum') or not math.isfinite(std_floor) or std_floor < 0:
         raise ValueError('Invalid advantage mode or variance floor')
     if not weights or any(not math.isfinite(w) or w < 0 for w in weights.values()) or not any(weights.values()):
@@ -44,7 +66,7 @@ def advantages(groups, weights, *, mode='gdpo-guarded', std_floor=1e-3, std_floo
     # Reward normalization is small and runs on CPU. Use Flow-Factory's FP64
     # statistics so subtracting nearly equal scores does not distort GDPO.
     result = torch.zeros(len(groups), size, dtype=torch.float64)
-    stats = []
+    stats, conflicts, counts = [], [], {}
     for row, group in zip(result, groups):
         scores = {name: torch.as_tensor(value, dtype=torch.float64).detach().cpu() for name, value in group.items()}
         if any(x.shape != row.shape or not x.isfinite().all() for x in scores.values()):
@@ -52,7 +74,7 @@ def advantages(groups, weights, *, mode='gdpo-guarded', std_floor=1e-3, std_floo
         active = sum(weight for name, weight in weights.items() if name in scores)
         if not active:
             raise ValueError('Each group needs a positively weighted applicable reward')
-        trace = {}
+        trace, contributions = {}, []
         for name, weight in weights.items():
             if name not in scores:
                 trace[name] = {'applicable': False}
@@ -64,14 +86,30 @@ def advantages(groups, weights, *, mode='gdpo-guarded', std_floor=1e-3, std_floo
             trace[name] = {'applicable': True, 'mean': float(mean), 'std': float(std), 'low_variance': low,
                            'std_floor': floor}
             if mode == 'sum':
-                row += weight * value
+                contribution = weight * value
             elif mode == 'gdpo':
-                row += weight * (value - mean) / std.clamp_min(1e-6)
+                contribution = weight * (value - mean) / std.clamp_min(1e-6)
             elif weight and not low:
-                row += (weight / active) * (value - mean) / std
+                contribution = (weight / active) * (value - mean) / std
+            else:
+                continue
+            row += contribution
+            if diagnostics is not None:
+                contributions.append(contribution)
+        if diagnostics is not None:
+            conflicts.append(_conflict(scores, contributions, row))
+            for name, value in scores.items():
+                count = counts.setdefault(name, {'applicable': 0, 'below_floor': 0})
+                floor = max(std_floors.get(name, std_floor), 1e-6)
+                count['applicable'] += 1
+                count['below_floor'] += int(float(value.std(unbiased=False)) <= floor)
         if mode == 'sum':
             row.sub_(row.mean()).div_(row.std(unbiased=False).clamp_min(1e-6))
         stats.append(trace)
+    if diagnostics is not None:
+        diagnostics.update(groups=conflicts, low_variance={
+            name: {**count, 'rate': count['below_floor'] / count['applicable']} for name, count in counts.items()
+        })
     if mode == 'gdpo':
         result = (result - result.mean()) / result.std(unbiased=False).clamp_min(1e-6)
     elif mode == 'gdpo-guarded':

@@ -64,6 +64,8 @@ class RewardTarget:
     background: object | None = None
     background_status: str = 'alignment_unverified'
     spatial: object | None = None
+    contact_status: str = 'no_contact_evidence'
+    contact_label_count: int = 0
 
 
 class UnscorableTarget(ValueError):
@@ -165,6 +167,10 @@ def score_candidate(target, poses, identities):
         details['two_person_detected'] = len(poses) == details['matched_people'] == 2
         details['occlusion_consistency'] = None
         details['occlusion_status'] = 'generated_depth_order_unavailable'
+        details['mesh_intersection_status'] = 'generated_mesh_unavailable'
+        details['contact_status'] = 'eligible_2d_proxy' if target.contacts else target.contact_status
+        details['contact_label_count'] = target.contact_label_count
+        details['contact_scored_pairs'] = len(target.contacts)
         reward['layout'] = 0.
         if all(p is not None for p in assigned):
             def layout(pair):
@@ -286,19 +292,26 @@ class ImageRewardBank:
                 source_faces.append(self._faces(images[source.qwen_image_index], [_mask_box(source.head_mask[0, physical])])[0])
         faces = tuple(src if gt is not None else None for src, gt in zip(source_faces, gt_faces))
         contacts = []
+        contact_status, contact_label_count = 'no_contact_evidence', 0
         if len(slots) == 2 and 'dual_depth' in sample:
             positive, _ = part_contact_permissions(sample['dual_depth'].part_contact[0])
-            for a, b in positive.nonzero().tolist():
+            labeled = positive.nonzero().tolist()
+            contact_label_count = len(labeled)
+            contact_status = 'target_contact_parts_not_visible' if labeled else 'no_positive_contact_labels'
+            for a, b in labeled:
                 p0, p1 = _part(poses[0], a), _part(poses[1], b)
                 if p0 is not None and p1 is not None:
                     contacts.append((a, b, float(np.linalg.norm(p0 - p1))))
+            if contacts:
+                contact_status = 'eligible_2d_proxy'
         spatial = None
         if self.spatial is not None:
             from .spatial_reward import spatial_target
 
             slots = bank.target_qwen_image_indices[0].tolist() if bank is not None else None
             spatial = spatial_target(condition, self.spatial.references, slot_sources=slots)
-        return RewardTarget(poses, faces, canvas.resized_hw, tuple(contacts), background, reason or 'aligned', spatial), canvas
+        return RewardTarget(poses, faces, canvas.resized_hw, tuple(contacts), background, reason or 'aligned', spatial,
+                            contact_status, contact_label_count), canvas
 
     def score(self, target, canvas, image):
         image = rendered_rgb(image)

@@ -204,5 +204,6 @@ workflow/
 - **RL 背景奖励固定取 Source A**。单人和同源双人用源图 A，独立双源用有序参考的第一张图 A（Qwen index 0）。只比较 A 到输出画布的可靠对应区域，排除 A 的原前景与目标所有人物的前景并集及边界。A/B 背景差异不限制这项奖励的资格；B 的 RGB 不参与背景评分。前景未通过资格门槛或画布无法对齐时记录不适用。已锁定的运行沿用原奖励签名。
 - **新 SpatialReward 消融固定使用同一套评分协议**。默认 `rgb + visual-linear`，权重 `0.25`。线性融合用归一化的 CON / NAT / ART，比例 `0.40 / 0.30 / 0.30`，IF 保留作诊断。候选和 Canvas 参考先裁有效区域，保留子分、模型定位与理由（如有），定位属于输出裁剪后的坐标。在等预算对照中只改变权重 `0.10 / 0.25 / 0.40`，锁定 SFT 父 SHA、评测器、split、seed 和候选上限，用专用奖励的 ODE 门禁及留出图独立盲评检查退化和视觉收益。区域 RL 复用同一 SpatialReward worker。通用 `hands42` 按目标资格对每只可见手等权，候选漏检计零。切换训练身份后端时固定 glintr100 ODE 评测；已启动的运行按其锁定快照续训。 [Native RL 运行说明](src/pose_control/qwen21_full/native_rl/README.md)
 - **RL 手部与视觉选点按同一留出协议**。Hands42 先固定目标侧的可见关节、腕点和手框尺度，报告整图位置分与相对腕点的局部手势分。通用 RL 的 ODE 门禁检查适用的 Hands 总分、手势分和双人检出率。通过专用门禁的 checkpoint 与 SFT 用同一条件、seed 和图像 SHA 做独立视觉选点，训练用 SpatialReward 只作为诊断。SpatialReward 在 Guarded-GDPO 的默认临时方差门为 `max(0.005, --std-floor)`，正式校准要同时检查不同 batch size 和人工排序。 [独立视觉选点](src/pose_control/qwen21_full/native_rl/README.md#独立视觉选点)
+- **新区域 RL 必须跑固定 validation ODE 门禁**。训练前锁定 SFT 基线、留出条件与 seed，独立使用 SDPose 和 glintr100。连续退化后停止，出图使用门禁批准的 `checkpoint`，末次优化权重以 `last_checkpoint` 单列。通用与区域 RL 都记录组内奖励相关性、优势抵消比例和低方差率，固定权重消融时这些统计仅用于观测。双人缺少接触证据时按不适用处理并报告覆盖率。
 
 ---

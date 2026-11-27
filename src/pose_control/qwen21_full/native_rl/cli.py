@@ -2,6 +2,7 @@
 
 import argparse
 from contextlib import ExitStack
+from collections import Counter
 from dataclasses import replace
 import json
 import math
@@ -11,6 +12,7 @@ import sys
 import time
 
 from .rewards import reward_weights as _reward_weights
+from .validation import add_regression_arguments, regression_limits, regressions
 
 
 def _arguments(argv):
@@ -52,13 +54,7 @@ def _arguments(argv):
     parser.add_argument('--save-every', type=int, default=5, help='Checkpoint cadence in optimizer updates')
     parser.add_argument('--stop-after-updates', type=int, help='Pause after this absolute update; keep the full --updates budget')
     parser.add_argument('--val-limit', type=int, help='Fixed sample cap for a bounded pilot')
-    parser.add_argument('--pose-drop', type=float, default=.02)
-    parser.add_argument('--id-drop', type=float, default=.02)
-    parser.add_argument('--hands-drop', type=float, default=.02, help='Max held-out Hands or gesture reward drop')
-    parser.add_argument('--two-person-drop', type=float, default=.02, help='Max held-out two-person detection rate drop')
-    parser.add_argument('--background-drop', type=float, default=.02, help='Extra ODE regression bound with SpatialReward')
-    parser.add_argument('--binding-drop', type=float, default=.02, help='Extra ODE regression bound with SpatialReward')
-    parser.add_argument('--patience', type=int, default=2)
+    add_regression_arguments(parser)
     parser.add_argument('--keep-replay', action='store_true')
     args = parser.parse_args(argv)
     args.sde_indices = configure_sde(parser, args, steps=args.steps, default=(3,))
@@ -187,6 +183,9 @@ def _summarize(rows):
                for name in sorted(set().union(*rewards))}
     metrics['pck_002'] = sum(r['pck_002'] for r in rows) / len(rows)
     metrics['contact_applicable_rate'] = sum('contact' in r for r in rewards) / len(rows)
+    contact_status = Counter(row['contact_status'] for row in rows if 'contact_status' in row)
+    if contact_status:
+        metrics['contact_status_counts'] = dict(contact_status)
     eligible_people = sum(r['id_eligible'] for r in rows)
     if eligible_people:
         metrics['id_missing_rate'] = sum(r['id_missing'] for r in rows) / eligible_people
@@ -249,13 +248,7 @@ def _add_spatial(bank, target, paths, candidates, directory, key):
 
 
 def _regressions(metrics, baseline, args):
-    limits = {'pose': args.pose_drop, 'identity': args.id_drop,
-              'hands': args.hands_drop, 'hands_gesture': args.hands_drop,
-              'two_person_detection_rate': args.two_person_drop}
-    if args.spatial_model is not None:
-        limits.update(background=args.background_drop, binding=args.binding_drop)
-    return [k for k, tolerance in limits.items() if k in baseline and
-            (k not in metrics or not math.isfinite(metrics[k]) or metrics[k] < baseline[k] - tolerance)]
+    return regressions(metrics, baseline, regression_limits(args))
 
 
 def _collect_batch(backend, data, route, bank, targets, keys, args, selector, weights, directory):
@@ -302,12 +295,14 @@ def _collect_batch(backend, data, route, bank, targets, keys, args, selector, we
         details.append({'source': key[0], 'pair_id': data.datasets[key[0]].rows[key[1]]['pair_id'],
                         'condition_sha256': rollout.pair['condition_sha256'], 'candidates': candidates})
     floors = {'spatial': args.spatial_std_floor} if args.spatial_std_floor is not None else None
-    adv, stats = advantages(reward_groups, weights, mode=args.aggregation, std_floor=args.std_floor, std_floors=floors)
+    diagnostics = {}
+    adv, stats = advantages(reward_groups, weights, mode=args.aggregation, std_floor=args.std_floor, std_floors=floors,
+                            diagnostics=diagnostics)
     groups = [(rows, a, predict) for (rows, predict), a in zip(replay_groups, adv)]
     if args.keep_replay:
         torch.save([[{k: v.cpu() if torch.is_tensor(v) else v for k, v in vars(row).items()}
                      for row in rows] for rows, _, _ in groups], directory / 'replay.pt')
-    event = {'groups': details, 'advantage_stats': stats, 'advantages': adv.tolist(),
+    event = {'groups': details, 'advantage_stats': stats, 'advantages': adv.tolist(), 'reward_diagnostics': diagnostics,
              'sde_step': args.sde_step,
              'reward_summary': _summarize([c for g in details for c in g['candidates']]),
              'rollout_seconds': time.monotonic() - started - reward_seconds, 'reward_seconds': reward_seconds,
@@ -440,6 +435,8 @@ def _run(args, resources):
                 'evaluation_kind': config.experiment_mode, 'skipped_targets': skipped, 'route': route.name,
                 'eligible': [{'source': k[0], 'index': k[1], 'id_people': sum(x is not None for x in targets[k][0].identities),
                               'contacts': len(targets[k][0].contacts), 'background': targets[k][0].background_status,
+                              **({'contact_status': targets[k][0].contact_status,
+                                  'contact_label_count': targets[k][0].contact_label_count} if scene == 'dual' else {}),
                               **({'spatial': targets[k][0].spatial.record()} if spatial else {}),
                               **provenance[k]} for k in train_keys + val_keys]}
     if args.action == 'check-data':

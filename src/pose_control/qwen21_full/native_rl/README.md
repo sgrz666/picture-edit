@@ -7,6 +7,7 @@
 ## 奖励与对照
 
 - `--reward-profile legacy` 单人 Pose / ID / Background 为 `0.45 / 0.40 / 0.15`，双人 Pose / ID / Binding / Layout / Contact / Background 为 `0.27 / 0.23 / 0.18 / 0.13 / 0.09 / 0.10`。Pose 用 SDPose-Wholebody + YOLO11x，以 `geometry` 序映射 COCO17 计算 OKS，目标按置信度 `0.30` 固定可见点分母，候选漏点计零。双人 Pose 给较弱一人额外权重。Binding 比较正确与交叉的 ID 相似度，Contact 用已确认的 Part14 接触对和可见 COCO 关节代理。遮挡关系仍记为 `null`。
+- 双人 `contact_status` 区分缺少证据、没有正接触标签、目标部位不可见和可评分的二维代理。未获资格的任务省略 Contact，该组优势融合按其余适用项计算。可在 `check-data` 核对每对的标签数和可评分数，rollout 与 ODE 汇总记录覆盖率。缺少生成侧深度或网格时只记录对应状态。
 - `--reward-profile hands42` 把 SDPose 左右手各 21 点接入独立 Hands Reward。目标至少有 8 个有效手部关节时计入整图位置分。目标腕点有效、至少 7 个手指关节有效且手框对角线 ≥ 8 px 时，再按腕点对齐计算手指相对误差，以目标手框对角线归一化，Gaussian 的 σ 为 0.10。两项各占该手一半，手势不适用时用整图位置分。各只合格手等权，候选漏手、漏点或漏人计零。记录位置、手势和逐槽位 PCK。通用入口启用 SpatialReward 时默认用此 profile，其余情况默认用 `legacy`。
 - ID 默认用 SCRFD + glintr100。Source 和目标都能按人体槽位绑定人脸时启用，候选漏脸计零。通用入口可指定 `--adaface-model` 与 `--adaface-rpe-extension`，仅在 rollout 使用 AdaFace-KPRPE，在固定 ODE 验证继续使用 glintr100。两个后端都按头部框一对一匹配，训练代码、模型、RPE 扩展与参考权重 SHA 进入训练签名。 [KP-RPE 论文](https://arxiv.org/abs/2403.14852) [仓库人脸识别对照](../../../../experiments/face-identity-reward-20261123/README.md)
 - 背景默认用 `exp(-Masked L1 / 0.05)`，L1 归一到 `0..1`。单人、同源双人和独立双源统一以条件列表的第一张参考图 A 为背景源。双源的第二张图提供第二个人的外观，输出侧排除两个人。资格在 rollout 前固定。相同 Canvas 用像素恒等映射，同宽高比的内容框作等比重采样。排除 A 中所有已绑定的前景、目标各人前景和 16 px 边界，保留至少 10% 有效画布。A/B 背景差异不影响资格。无法对齐或缺少 mask 时记录原因。`--background-weight 0` 将该项从训练和 checkpoint 选点权重移除，评分日志继续报告背景指标。
@@ -62,7 +63,9 @@ RUN=/data/shangguanrz/pic-edit-experiments/native-rl-$(date -u +%Y%m%dT%H%M%SZ)
   --groups-per-update 1 --group-size 4 --steps 3 --sde-step 1 --val-limit 1 --output "$RUN/spatial-preflight"
 ```
 
-正式训练需要 `experiment_mode=standard` 和按视频或序列隔离的 validation。启动时打印 SFT 路径、SHA256、阶段和父链。先用固定 seed 生成 SFT 的 ODE 基线，再按 `--validate-every` 个 optimizer updates 和结尾复测。连续触发门禁达到 `--patience` 次会停止。`--hands-drop` 同时设 Hands 总分和手势分容忍度，`--two-person-drop` 设双人检出率容忍度。`--sde-step 3` 固定单步，`--sde-cycle 1 2 3` 按 rollout 批次循环。通用入口默认固定 `3`，区域入口默认循环 `1 2 3`。
+正式训练需要 `experiment_mode=standard` 和按视频或序列隔离的 validation。启动时打印 SFT 路径、SHA256、阶段和父链。先用固定 seed 生成 SFT 的 ODE 基线，再按 `--validate-every` 个 optimizer updates 和结尾复测。连续触发门禁达到 `--patience` 次会停止。`--hands-drop` 同时设 Hands 总分和手势分容忍度，`--two-person-drop` 设双人检出率容忍度。`--sde-step 3` 固定单步，`--sde-cycle 1 2 3` 按 rollout 批次循环，每个候选仍只保存一个随机转移。通用入口默认固定 `3`，区域入口默认循环 `1 2 3`。首轮 Global GRPO 可用 `--steps 10 --sde-cycle 1 2 3 --group-size 8 --groups-per-update 2 --validate-every 10`。
+
+以后做真实链路冒烟时，先核对验收过的 SFT 父权重与实验签名，按同配置完成 `preflight`，再用新输出目录运行 `train --updates 1` 到 `5`。检查实际 optimizer 更新、梯度、非零 Advantage、门禁、显存和续训。仅 `preflight` 时检查评分和 Replay 一致性。
 
 ### 独立视觉选点
 
@@ -94,6 +97,8 @@ CKPT=$("$PY" -c 'import json,sys; print(json.load(open(sys.argv[1]))["checkpoint
 `--updates`（也可写 `--optimizer-updates`）按实际 `optimizer.step()` 计数，旧版命令的预算需按新语义重算。`rollout_batches` 包括零优势批，`generated_images` 统计训练候选，`replayed_transitions` 统计参与成功更新的转移。`--max-rollout-batches` 默认是更新预算的 5 倍，用于限制无有效优势时的生成成本。
 
 `run.json` 记录模型、数据、人物、评估器 SHA 和固定资格。`rollout-*/rollout.json` 记录候选分数、PCK、ID 缺失、Swap、接触适用率、优势和样本图。`rollout-*/replay.json` 有 ratio、clip fraction、KL、梯度范数和显存。需要离线审计单步状态时加 `--keep-replay`。固定 ODE 图和逐样本指标在 `ode-*/` 与对应 JSON。
+
+两条入口都记录 `reward_diagnostics`。组内 `correlations` 是原始分的 Pearson 系数，常数项记为 `null`。`cancellation` 在最终标准化前按候选计算，用 1 减去融合向量的 L1 除以各加权分量 L1 之和，向量都先减去组内均值。没有有效分量时记为 `null`。`fused_rms` 和 `component_rms_sum` 同时报告信号大小。`low_variance` 按分项记录适用组数、低于或等于门槛的组数和比率。区域入口把同一结构写进逐批 `reward-diagnostics.json`，包括零优势批。诊断只观测当前融合，权重保持固定。
 
 ## 自动验证
 

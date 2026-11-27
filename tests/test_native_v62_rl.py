@@ -46,6 +46,29 @@ def test_guarded_gdpo_uses_a_per_reward_noise_floor():
         advantages(groups, weights, std_floors={'spatial': float('nan')})
 
 
+def test_reward_conflict_diagnostics_do_not_change_advantages():
+    groups = [
+        {'pose': [0., 1.], 'spatial': [1., 0.], 'hands': [.5, .5], 'background': [0., 1.]},
+        {'pose': [0., 1.], 'spatial': [.800, .808]},
+    ]
+    weights = {'pose': .4, 'spatial': .4, 'hands': .2}
+    diagnostics = {}
+    values, stats = advantages(groups, weights, std_floors={'spatial': .005}, diagnostics=diagnostics)
+    original, original_stats = advantages(groups, weights, std_floors={'spatial': .005})
+    torch.testing.assert_close(values, original, rtol=0, atol=0)
+    assert stats == original_stats
+    first, second = diagnostics['groups']
+    assert first['cancellation'] == pytest.approx(1.)
+    assert second['cancellation'] == pytest.approx(0.)
+    assert {'left': 'pose', 'right': 'spatial', 'pearson': pytest.approx(-1.)} in first['correlations']
+    assert {'left': 'background', 'right': 'pose', 'pearson': pytest.approx(1.)} in first['correlations']
+    assert diagnostics['low_variance']['spatial'] == {'applicable': 2, 'below_floor': 1, 'rate': .5}
+    assert diagnostics['low_variance']['hands'] == {'applicable': 1, 'below_floor': 1, 'rate': 1.}
+    advantages([{'pose': [1., 0., .5, .5], 'spatial': [.5, .5, 1., 0.]}],
+               {'pose': .5, 'spatial': .5}, diagnostics=diagnostics)
+    assert diagnostics['groups'][0]['cancellation'] == 0.
+
+
 def test_clipping_and_frozen_reference_penalty():
     new = torch.tensor([.4, -.4], requires_grad=True)
     mean = torch.ones(2, 4, requires_grad=True)
@@ -69,6 +92,7 @@ def test_dual_identity_swap_and_missing_person_penalty():
     assert correct['pose'] == pytest.approx(1)
     assert correct['binding'] > swapped['binding']
     assert details['id_swap'] is False
+    assert 'contact' not in correct and details['contact_status'] == 'no_contact_evidence'
     assert missing['pose'] == pytest.approx(.35)
     assert missing['identity'] == 0 and miss['id_missing'] == 2
 

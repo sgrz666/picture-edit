@@ -68,6 +68,9 @@ def main():
     prepared=read(a.root/'prepared.json');dataset=prepared.get('dataset_label','Bilibili')
     ntrain,nval=prepared['train_pairs'],prepared['val_pairs']
     labels=LABELS
+    rl=complete['grpo']
+    guarded='ode_validation' in rl
+    rl_caption='GRPO (SFT fallback)' if guarded and rl['selected_update']==0 else 'grpo'
     expected_shas={'initial':prepared['initialization']['sha256'],'uniform_S3':complete['sft']['uniform']['sha256'],
         'regional_S3':complete['sft']['regional']['sha256'],'continue_sft':complete['continue_sft']['sha256'],
         'grpo':complete['grpo']['checkpoint']['sha256']}
@@ -100,7 +103,7 @@ def main():
         strip=Image.new('RGB',(256*len(cells),560),'#171c22');draw=ImageDraw.Draw(strip)
         for col,(title,img) in enumerate(cells):
             tile=ImageOps.contain(img,(252,512));strip.paste(tile,(256*col+(256-tile.width)//2,25))
-            draw.text((256*col+5,5),title,fill='white')
+            draw.text((256*col+5,5),rl_caption if title=='grpo' else title,fill='white')
             if title in images:
                 metrics=images[title][pair_id]['pose'];body=metrics['body']['pck_002'];hand=metrics['hands']['pck_002']
                 draw.text((256*col+5,540),f'B@.02={body:.3f} H@.02={hand:.3f}' if hand is not None else f'B@.02={body:.3f} H=n/a',fill='white')
@@ -114,8 +117,8 @@ def main():
         'paired_sft_traces':alignment,'metrics':table,'checkpoints':complete,
         'limitations':[f"{ntrain} training pairs, {nval} validation pairs, {prepared.get('test_pairs',0)} test pairs; one training seed",
             'SDPose supplies both weak pose annotations and evaluation; manual panels remain necessary',
-            'RL and continued SFT match optimizer updates, not rollout compute, wall time or pair exposure',
-            'All checkpoints are fixed-budget endpoints; no best-val checkpoint selection']}
+            'RL rollout compute, wall time and pair exposure are tracked separately from continued SFT',
+            'GRPO checkpoint follows the held-out ODE gate' if guarded else 'All checkpoints are fixed-budget endpoints']}
     with (a.output/'comparison.json').open('x') as f:json.dump(result,f,indent=2)
     unit=prepared.get('group_unit','video')
     lines=[f'# {dataset} 区域 FM / SDPose / GRPO：{a.split}','',
@@ -127,8 +130,11 @@ def main():
     for row in table:lines.append('| '+row['label']+' | '+' | '.join(fmt(row[k]) for k in
         ('body_pck002','hand_pck002','body_l2_all','hand_l2_all','id_cos_src','background_mse'))+' |')
     updates=sum(x['updates'] for x in alignment.values());microsteps=sum(x['microsteps'] for x in alignment.values())
+    budget = (f"RL 请求 {rl['requested_updates']} 个更新，实际完成 {rl['completed_updates']} 个，"
+              f"出图使用门禁批准的第 {rl['selected_update']} 个更新权重（0 为 SFT），停止原因为 `{rl['stop']}`。"
+              if guarded else 'RL 和继续 SFT 使用相同的 optimizer-update 预算，RL 额外 rollout 成本另计。')
     lines+=['',f'两个 SFT 臂四阶段的 route/source/index/sigma/LR 轨迹完全一致（各 {updates} updates／{microsteps} microsteps）。',
-        'RL 和继续 SFT 使用同一 RN SFT 父权重；仅 optimizer-update 数相同，额外 rollout 成本另计。','',
+        'RL 和继续 SFT 使用同一 RN SFT 父权重。'+budget,'',
         '![保存的逐对生成图对比](overview.png)','','单对大图在 `panels/`；全部原始生成图与 RL 候选图保留在 run 的 output 中。']
     with (a.output/'README.md').open('x',encoding='utf-8') as f:f.write('\n'.join(lines)+'\n')
     print(json.dumps({'output':str(a.output),'models':len(table),'evaluation_split':a.split,
