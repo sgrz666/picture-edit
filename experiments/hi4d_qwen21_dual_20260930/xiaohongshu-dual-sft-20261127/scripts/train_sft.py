@@ -41,14 +41,19 @@ def smoke_bindings(root):
 
 def worker(remainder):
     import torch
-    from src.pose_control.qwen21_full.native_v7.training import main
+    import preflight_io
+    from src.pose_control.qwen21_full.native_v62.training.cli import main
+    from src.pose_control.qwen21_full.native_v7.training import TrainingConfigV7, stage_preset_v7
 
     torch.set_num_threads(4)
     free, total = torch.cuda.mem_get_info()
     if total * .90 > free - 2 * 1024**3:
         raise RuntimeError("Training GPU does not have the required 90% allocator budget and 2 GiB margin")
     torch.cuda.set_per_process_memory_fraction(.90)
-    main(remainder)
+    print(json.dumps({"event": "ordered_preflight_prefetch", "workers": 8,
+                      "implementation": ref(preflight_io.__file__)}), flush=True)
+    main(remainder, config_type=TrainingConfigV7, stage_factory=stage_preset_v7,
+         trainer_type=preflight_io.trainer_with_prefetch(8))
 
 
 def train(root, smoke):

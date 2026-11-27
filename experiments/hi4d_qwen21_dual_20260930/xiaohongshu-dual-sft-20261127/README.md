@@ -28,6 +28,8 @@ find "$RUN/output/checkpoints" -name '*.commit.json' | sort | tail -n 5
 
 生产数据和梯度报告在 `production-parallel-v3/sft/`，每阶段的 `S0-committed.json` 等记录权重路径和 SHA。拿到 commit 后，可在一张空闲卡上用同一份验证清单和相同种子对照初始化与训练后权重。替换 `CHECKPOINT` 为实际已提交文件路径，每次出图使用新输出目录。
 
+`preflight_io.py` 只在 Trainer 的全量数据扫描和后端初始化期间用 8 线程预读，训练按采样器原有顺序读取。使用实际 worker 的 4 个 PyTorch CPU 线程复测 17 对，耗时由 13.96 秒降至 4.75 秒，返回样本顺序一致。worker 日志中的 `ordered_preflight_prefetch` 记录实现的 SHA。
+
 ```bash
 PY=/home/shangguanrz/nihaochen/envs/qwen21/bin/python
 SRC="$ROOT/source/main-c18924f4-dual-canvas-v1"
