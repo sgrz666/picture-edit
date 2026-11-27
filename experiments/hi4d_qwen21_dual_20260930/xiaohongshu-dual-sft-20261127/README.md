@@ -30,6 +30,8 @@ find "$RUN/output/checkpoints" -name '*.commit.json' | sort | tail -n 5
 
 `preflight_io.py` 只在 Trainer 的全量数据扫描和后端初始化期间用 8 线程预读，训练按采样器原有顺序读取。使用实际 worker 的 4 个 PyTorch CPU 线程复测 17 对，耗时由 13.96 秒降至 4.75 秒，返回样本顺序一致。梯度 worker 用同一个通过检查的 DataPlan 先写数据报告，再加载模型执行梯度门禁。worker 日志中的 `ordered_preflight_prefetch` 记录实现的 SHA。旧串行验收进程已结束，日志留在 `logs/production-start-v3.log`。
 
+正式 S0 数据与两类真实 GPU 梯度用例已通过。1,074 对训练样本有双人身份对比资格，其中 669 对有背景保持资格。训练 worker PID 2025820 已启动，最初核验时正在初始化。用 `output/segments/*/metrics.jsonl` 中的 `optimizer_updated: true` 统计实际更新，完整 checkpoint 以 `output/checkpoints/*.commit.json` 为准。
+
 ```bash
 PY=/home/shangguanrz/nihaochen/envs/qwen21/bin/python
 SRC="$ROOT/source/main-c18924f4-dual-canvas-v1"
