@@ -10,6 +10,7 @@
 | `2026-09-12-deepgen-no-control-ablation-design.md` | DeepGen **无动作约束消融实验设计**：去除姿态控制后基座能力的对照基线设定 | 9-12 |
 | `2026-10-08-bfs-body-face-joint-pilot-design.md` | TikTok Body+Face 联合训练与 BFS 小规模对照**方案设计**：两阶段（Adapter 控姿 + BFS 768 ROI 精修面部）的接口与对照设置 | 10-08 |
 | [`2026-11-03-hia-full-geometry-repair-design.md`](2026-11-03-hia-full-geometry-repair-design.md) | HIA 全量几何修复方案：合并几何输入清单、局部修复与质量选择、unknown/裁切分流、分层验收、断点续跑及疑难帧补修 | 11-03 |
+| [`2026-11-27-contact-hand-adapter-design.md`](2026-11-27-contact-hand-adapter-design.md) | 独立 Contact Hand Adapter 的双路径架构、接触条件、手部专项 SFT 与验收 | 11-27 |
 
 
 ## 与上下层的关系
