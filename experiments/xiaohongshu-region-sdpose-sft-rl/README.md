@@ -8,7 +8,20 @@
 
 ## 内容与使用
 
-训练已实际开始。2026-11-22 17:35 核对：无加权臂 S0 **200／200**、S1 **150／150**、S2 **400／400** 已完成（global 750／1000，S2 final checkpoint `update_00000750_127e2167…`，sha256 `a9d0c17f…`；同目录另有 `9fbba205…` 别名 commit，逐字节同权重，S3 配置绑定前者），S3 梯度预检 17:21:59 启动（PID 105161，显存门禁 52.93 GiB 通过）。节奏实测 ~15.0s／update；梯度范数全程有限非零（S0 末值 0.232，S1 0.0022，S2 0.036）。regional 臂与 continue／GRPO 未开始，1600 张出图全部后置。原 SGD PID 3346829 随 S0 完成正常退场，后续阶段由主管 **PID 3413941** 按 `--parent` 链式拉起。登录 shell 裸跑 `nvidia-smi` 报 NVML 驱动／库版本不匹配（内核 580.173.02 vs 系统库 580.178.04），但训练与主管进程经 `LD_LIBRARY_PATH=/data/shangguanrz/仪表盘/compat` 使用匹配库，NVML 显存门禁实测正常，训练不受影响；人工查卡需带同一路径。747 帧 Native 装配、616 对缓存绑定、真实 data／grad 门禁和首轮 40 张初始化验证图均已完成；查看 `logs/throughput-v1.log`／`logs/throughput-v1.pid.json`。
+2026-11-24 21:39 磁盘实测核对：`uniform`（S0→S3，1,000 updates）、`regional`（S0→S3，1,000 updates）与 `continue_sft`（+50 updates，从 `regional_S3` 续训）均已完整提交，对应终态权重如下：
+- `uniform_S3`：`output/uniform/S3/checkpoints/update_00001000_55ead9c20897418d9f2cd541d9c1a1b4.pt`（SHA256 `e0270bd4c82e50bde0ebd409fd016caed20a055dfed0ef773599ee308af86b80`）
+- `regional_S3`：`output/regional/S3/checkpoints/update_00001000_1ea764fba60b41228883035b566a137a.pt`（SHA256 `630b71f8a217a97c32cc602d8c2a149efeea41708d6490cbcb25f80013bd1667`）
+- `continue_sft`：`output/continue_sft/checkpoints/update_00001050_1366ecdea5d840c196bcc93992ffdfbf.pt`（SHA256 `e80ab51f842b47c58b9df8f89aa9da745919fdf9dce96f372bf5498a0794ecf9`）
+
+四臂 Val 40 对（seed42，20-step ODE，SDPose-Wholebody + YOLO11x 阈值 0.30）已完成出图与评测，汇总在 `review/metrics-summary-v2.md` / `review/metrics-bars-v2.png`（面板图在 `review/panel-v1-part01..05-val40.png`）：
+- `initial`：Body 0.8114（PCK@0.02 83.61%）、Hands 0.7901、ID cos 0.2274、BG reward 0.1157
+- `uniform_S3`：Body 0.8487（PCK@0.02 86.84%）、Hands 0.8313、ID cos 0.2306、BG reward 0.1055
+- `regional_S3`：Body **0.8643**（PCK@0.02 **89.19%**）、Hands **0.8330**、ID cos **0.2347**、BG reward 0.1060（全面优于 `uniform_S3`）
+- `continue_sft`：Body 0.8599（PCK@0.02 88.62%）、Hands 0.8289、ID cos 0.2307、BG reward 0.1079（较 `regional_S3` 轻微回退）
+
+原编排在 `grad_grpo` 通过后进入 `rl.py` 的 `audit_rewards()` 时因跨尺寸 pair 误用 target `CanvasSpec` 报错中断（`ValueError: image size (1080, 1464) (W, H) does not match original_hw (1458, 1080) (H, W)`）。已保留 `source/runtime-v3` 原样，新建最小单行修复副本 `source/runtime-v4`（`rl.py` SHA256 `0b32c5f0c88381183c79ccce3cb4dcdccfc49e74ff361b2b6965aca2c3940dfa`，使用 `source_canvas` 并 resize 到 `gt.size`），经 `py_compile` 与真实前 5 对 train 样本验证通过。已于 2026-11-24 21:38 拉起续跑主管 **PID 1824074**（凭据 `logs/throughput-v2-grpo-resume.pid.json`，日志 `logs/throughput-v2-grpo-resume.log`），携带 `LD_LIBRARY_PATH=/data/shangguanrz/仪表盘/compat` 与 `REGION_PILOT_MEMORY_FRACTION=0.75`，排队等待当前 GPU 作业 **PID 1787663**（`beach14` 链式任务）结束后自动续跑：`grpo` 50 updates（父权重锁定 `regional_S3`）→ `deferred_render.py`（复用已校验通过的 4×40=160 张 val 图，补齐剩余 1,440 张含 `test` 64×3 seeds 与 multi-seed val）→ `summarize.py` 生成最终 val / test 主对照报告。
+
+登录 shell 裸跑 `nvidia-smi` 报 NVML 驱动／库版本不匹配（内核 580.173.02 vs 系统库 580.178.04），人工查卡与训练进程均需带 `LD_LIBRARY_PATH=/data/shangguanrz/仪表盘/compat`。747 帧 Native 装配、616 对缓存绑定、真实 data／grad 门禁和首轮 40 张初始化验证图均已完成。
 
 为减少阶段间等待，完整验证／测试出图与指标统一后置到全部优化完成之后；各阶段 checkpoint 和 generation config 照常锁定，真实梯度门禁保留。训练核心仍使用 `source/runtime-v3`，只更换独立编排脚本，未改精度、学习率、采样、初始化或预算。GPU 原观测 utilization 91%，此优化减少的是阻塞式出图墙钟，不声称单步算子已经提速。
 

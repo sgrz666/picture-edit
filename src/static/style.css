@@ -1259,6 +1259,133 @@ body.view-gpu .memory-scope {
   color: #fbbf24 !important;
 }
 
+/* Multi-GPU Devices Ribbon */
+.gpu-devices-ribbon {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+
+.gpu-devices-ribbon::-webkit-scrollbar {
+  height: 4px;
+}
+
+.gpu-devices-ribbon::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 2px;
+}
+
+.gpu-devices-ribbon::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 2px;
+}
+
+.gpu-device-chip {
+  flex: 1;
+  min-width: 210px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 10px 14px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  user-select: none;
+}
+
+.gpu-device-chip:hover {
+  border-color: var(--accent-cyan);
+  background: var(--bg-hover);
+}
+
+.gpu-device-chip.active {
+  border-color: var(--accent-cyan);
+  background: rgba(6, 182, 212, 0.08);
+  box-shadow: 0 0 12px rgba(6, 182, 212, 0.2);
+}
+
+.gpu-chip-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.gpu-chip-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-bright);
+}
+
+.gpu-chip-body {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+  color: var(--text-dim);
+}
+
+.gpu-chip-vram {
+  font-family: var(--font-mono);
+  font-weight: 600;
+  color: var(--text-normal);
+}
+
+.gpu-chip-track {
+  height: 4px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.gpu-chip-bar {
+  height: 100%;
+  border-radius: 2px;
+  transition: width var(--transition-normal);
+}
+
+.badge-gpu {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: 4px;
+  display: inline-block;
+  font-family: var(--font-mono);
+}
+
+.badge-gpu-all {
+  background: rgba(148, 163, 184, 0.15);
+  color: #cbd5e1;
+  border: 1px solid rgba(148, 163, 184, 0.3);
+}
+
+.badge-gpu-0 {
+  background: rgba(6, 182, 212, 0.15);
+  color: #38bdf8;
+  border: 1px solid rgba(6, 182, 212, 0.3);
+}
+
+.badge-gpu-1 {
+  background: rgba(34, 197, 94, 0.15);
+  color: #4ade80;
+  border: 1px solid rgba(34, 197, 94, 0.3);
+}
+
+.badge-gpu-2 {
+  background: rgba(249, 115, 22, 0.15);
+  color: #fb923c;
+  border: 1px solid rgba(249, 115, 22, 0.3);
+}
+
+.cell-gpu {
+  width: 90px;
+  white-space: nowrap;
+}
+
 /* Extra Responsive Rules */
 @media (max-width: 700px) {
   .view-nav-bar {

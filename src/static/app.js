@@ -21,6 +21,9 @@
     // 视图模式: 'all' | 'memory' | 'gpu'
     viewMode: 'all',
 
+    // 多 GPU 筛选状态: 'all' | '0' | '1' | '2'
+    selectedGpu: 'all',
+
     // GPU 进程表格状态
     searchQuery: '',
     sortColumn: 'vram_used_mb',
@@ -60,6 +63,13 @@
     btnPause: document.getElementById('btn-pause'),
     btnPauseText: document.getElementById('btn-pause-text'),
     btnRefresh: document.getElementById('btn-refresh'),
+
+    // 多 GPU 设备选择栏与筛选
+    gpuDevicesRibbon: document.getElementById('gpu-devices-ribbon'),
+    gpuQuickFilters: document.getElementById('gpu-quick-filters'),
+    cardVramTitle: document.getElementById('card-vram-title'),
+    cardUtilTitle: document.getElementById('card-util-title'),
+    cardTempTitle: document.getElementById('card-temp-title'),
 
     // 顶部 4 张核心概览卡片
     cardVram: document.getElementById('card-vram'),
@@ -368,6 +378,7 @@
     if (!data) return;
 
     renderHeader(data);
+    renderGpuRibbon(data.gpu);
     renderVramCard(data.gpu);
     renderRamCard(data.memory, data.swap);
     renderGpuUtilCard(data.gpu, data.system);
@@ -384,9 +395,18 @@
       el.hostName.textContent = data.system.hostname;
     }
 
-    if (data.gpu?.model && el.gpuModelHeader) {
-      const vramTotalGb = data.gpu.vram?.total_gb ? Math.round(data.gpu.vram.total_gb) : 84;
-      el.gpuModelHeader.textContent = `${data.gpu.model} ${vramTotalGb}GB`;
+    if (el.gpuModelHeader) {
+      const gpu = data.gpu || {};
+      const devCount = gpu.device_count || gpu.count || (gpu.devices ? gpu.devices.length : 1);
+      if (devCount > 1) {
+        const totalCapGb = gpu.all_vram?.total_gb ? Math.round(gpu.all_vram.total_gb) : Math.round(devCount * 83.64);
+        const cardCapGb = gpu.vram?.total_gb ? Math.round(gpu.vram.total_gb) : 84;
+        const modelName = gpu.model || 'NVIDIA RTX 6000D';
+        el.gpuModelHeader.textContent = `${devCount}x ${modelName} ${cardCapGb}GB (${totalCapGb}GB)`;
+      } else if (gpu.model) {
+        const vramTotalGb = gpu.vram?.total_gb ? Math.round(gpu.vram.total_gb) : 84;
+        el.gpuModelHeader.textContent = `${gpu.model} ${vramTotalGb}GB`;
+      }
     }
 
     if (el.lastUpdated) {
@@ -414,9 +434,126 @@
     }
   }
 
+  /**
+   * 渲染多 GPU 状态切换栏及过滤按钮 (Multi-GPU Devices Ribbon)
+   */
+  function renderGpuRibbon(gpu) {
+    if (!el.gpuDevicesRibbon) return;
+    const devices = gpu?.devices || [];
+    if (devices.length <= 1) {
+      el.gpuDevicesRibbon.classList.add('hidden');
+      if (el.gpuQuickFilters) el.gpuQuickFilters.classList.add('hidden');
+      return;
+    }
+
+    el.gpuDevicesRibbon.classList.remove('hidden');
+    if (el.gpuQuickFilters) el.gpuQuickFilters.classList.remove('hidden');
+
+    const allVram = gpu.all_vram || {
+      used_gb: devices.reduce((acc, d) => acc + (d.vram?.used_gb || 0), 0),
+      total_gb: devices.reduce((acc, d) => acc + (d.vram?.total_gb || 83.64), 0),
+      used_pct: 0,
+    };
+    if (allVram.total_gb > 0 && allVram.used_pct === 0) {
+      allVram.used_pct = (allVram.used_gb / allVram.total_gb) * 100;
+    }
+
+    const maxUtil = Math.max(...devices.map(d => d.utilization_pct || 0));
+    const activeCards = devices.filter(d => (d.utilization_pct || 0) > 0 || (d.processes || []).length > 0).length;
+
+    // 1. Ribbon 选项: 全部 GPU (3卡池) + 每张卡
+    const isAllActive = state.selectedGpu === 'all';
+    let ribbonHtml = `
+      <div class="gpu-device-chip ${isAllActive ? 'active' : ''}" data-gpu="all" role="tab" aria-selected="${isAllActive}">
+        <div class="gpu-chip-header">
+          <span class="gpu-chip-title">全部 GPU (3卡池)</span>
+          <span class="badge badge-gpu-all">${activeCards}/${devices.length} 卡活跃</span>
+        </div>
+        <div class="gpu-chip-body">
+          <span class="gpu-chip-vram">${allVram.used_gb.toFixed(1)} / ${allVram.total_gb.toFixed(1)} GB</span>
+          <span>峰值负载 ${maxUtil}%</span>
+        </div>
+        <div class="gpu-chip-track">
+          <div class="gpu-chip-bar ${getStatusFillClass(allVram.used_pct)}" style="width: ${Math.min(100, Math.max(0, allVram.used_pct))}%"></div>
+        </div>
+      </div>
+    `;
+
+    devices.forEach(dev => {
+      const isDevActive = state.selectedGpu === String(dev.index);
+      const devVram = dev.vram || {};
+      const usedGb = devVram.used_gb != null ? devVram.used_gb.toFixed(1) : '--';
+      const totalGb = devVram.total_gb != null ? devVram.total_gb.toFixed(1) : '83.6';
+      const devPct = devVram.used_pct != null ? devVram.used_pct : 0;
+      const utilPct = dev.utilization_pct != null ? dev.utilization_pct : 0;
+      const tempC = dev.temperature_c != null ? dev.temperature_c : '--';
+      const procCount = (dev.processes || []).length;
+
+      let badgeClass = 'badge-safe';
+      let badgeLabel = '空闲';
+      if (utilPct >= 90) { badgeClass = 'badge-crit'; badgeLabel = `${utilPct}% 满载`; }
+      else if (utilPct >= 50) { badgeClass = 'badge-warn'; badgeLabel = `${utilPct}% 负载`; }
+      else if (utilPct > 0 || procCount > 0) { badgeClass = 'badge-info'; badgeLabel = `${utilPct}% (${procCount}进程)`; }
+
+      ribbonHtml += `
+        <div class="gpu-device-chip ${isDevActive ? 'active' : ''}" data-gpu="${dev.index}" role="tab" aria-selected="${isDevActive}">
+          <div class="gpu-chip-header">
+            <span class="gpu-chip-title">GPU ${dev.index}: RTX 6000D</span>
+            <span class="badge ${badgeClass}">${badgeLabel}</span>
+          </div>
+          <div class="gpu-chip-body">
+            <span class="gpu-chip-vram">${usedGb} / ${totalGb} GB</span>
+            <span>${tempC}℃</span>
+          </div>
+          <div class="gpu-chip-track">
+            <div class="gpu-chip-bar ${getStatusFillClass(devPct)}" style="width: ${Math.min(100, Math.max(0, devPct))}%"></div>
+          </div>
+        </div>
+      `;
+    });
+
+    el.gpuDevicesRibbon.innerHTML = ribbonHtml;
+
+    // 2. 进程表格快捷卡槽过滤按钮
+    if (el.gpuQuickFilters) {
+      let filterBtnsHtml = `
+        <button type="button" class="filter-chip ${isAllActive ? 'active' : ''}" data-gpu="all">全部卡槽</button>
+      `;
+      devices.forEach(dev => {
+        const isDevActive = state.selectedGpu === String(dev.index);
+        const procCount = (dev.processes || []).length;
+        filterBtnsHtml += `
+          <button type="button" class="filter-chip ${isDevActive ? 'active' : ''}" data-gpu="${dev.index}">GPU ${dev.index} (${procCount})</button>
+        `;
+      });
+      el.gpuQuickFilters.innerHTML = filterBtnsHtml;
+    }
+  }
+
   function renderVramCard(gpu) {
-    if (!gpu || !gpu.vram) return;
-    const v = gpu.vram;
+    if (!gpu) return;
+    const isAll = state.selectedGpu === 'all';
+    let v;
+    let cardTitle = 'GPU 显存 (VRAM)';
+
+    if (isAll) {
+      v = gpu.all_vram || gpu.vram;
+      if (gpu.devices && gpu.devices.length > 1) {
+        cardTitle = `GPU 显存池 (共 ${gpu.devices.length} 张卡)`;
+      }
+    } else {
+      const targetDev = (gpu.devices || []).find(d => String(d.index) === String(state.selectedGpu));
+      if (targetDev && targetDev.vram) {
+        v = targetDev.vram;
+        cardTitle = `GPU ${state.selectedGpu} 显存 (VRAM)`;
+      } else {
+        v = gpu.vram;
+      }
+    }
+
+    if (!v) return;
+
+    if (el.cardVramTitle) el.cardVramTitle.textContent = cardTitle;
 
     if (el.vramUsedGb) el.vramUsedGb.textContent = v.used_gb != null ? v.used_gb.toFixed(1) : '--';
     if (el.vramTotalGb) el.vramTotalGb.textContent = v.total_gb != null ? v.total_gb.toFixed(1) : '85.6';
@@ -472,7 +609,25 @@
   }
 
   function renderGpuUtilCard(gpu, system) {
-    const utilPct = gpu?.utilization_pct != null ? gpu.utilization_pct : 0;
+    const isAll = state.selectedGpu === 'all';
+    let utilPct = 0;
+    let cardTitle = 'GPU 核心利用率';
+
+    if (isAll) {
+      const devices = gpu?.devices || [];
+      if (devices.length > 1) {
+        cardTitle = 'GPU 核心利用率 (多卡)';
+        utilPct = Math.max(...devices.map(d => d.utilization_pct || 0));
+      } else {
+        utilPct = gpu?.utilization_pct != null ? gpu.utilization_pct : 0;
+      }
+    } else {
+      const targetDev = (gpu?.devices || []).find(d => String(d.index) === String(state.selectedGpu));
+      cardTitle = `GPU ${state.selectedGpu} 核心利用率`;
+      utilPct = targetDev?.utilization_pct != null ? targetDev.utilization_pct : 0;
+    }
+
+    if (el.cardUtilTitle) el.cardUtilTitle.textContent = cardTitle;
     if (el.gpuUtilPct) el.gpuUtilPct.textContent = utilPct;
 
     if (el.utilProgressBar) {
@@ -493,7 +648,13 @@
         badgeText = '计算中';
         badgeClass = 'badge-info';
       }
-      el.gpuUtilBadge.textContent = `${utilPct}% ${badgeText}`;
+
+      if (isAll && gpu?.devices && gpu.devices.length > 1) {
+        const activeCards = gpu.devices.filter(d => (d.utilization_pct || 0) > 0).length;
+        el.gpuUtilBadge.textContent = `峰值 ${utilPct}% (${activeCards}/${gpu.devices.length}卡活跃)`;
+      } else {
+        el.gpuUtilBadge.textContent = `${utilPct}% ${badgeText}`;
+      }
       el.gpuUtilBadge.className = 'badge ' + badgeClass;
     }
 
@@ -509,7 +670,25 @@
   }
 
   function renderGpuTempCard(gpu, system) {
-    const tempC = gpu?.temperature_c != null ? gpu.temperature_c : null;
+    const isAll = state.selectedGpu === 'all';
+    let tempC = null;
+    let cardTitle = 'GPU 核心温度';
+
+    if (isAll) {
+      const devices = gpu?.devices || [];
+      if (devices.length > 1) {
+        cardTitle = 'GPU 核心温度 (最高)';
+        tempC = Math.max(...devices.map(d => d.temperature_c || 0));
+      } else {
+        tempC = gpu?.temperature_c != null ? gpu.temperature_c : null;
+      }
+    } else {
+      const targetDev = (gpu?.devices || []).find(d => String(d.index) === String(state.selectedGpu));
+      cardTitle = `GPU ${state.selectedGpu} 核心温度`;
+      tempC = targetDev?.temperature_c != null ? targetDev.temperature_c : null;
+    }
+
+    if (el.cardTempTitle) el.cardTempTitle.textContent = cardTitle;
     if (el.gpuTempC) el.gpuTempC.textContent = tempC != null ? tempC : '--';
 
     if (el.tempProgressBar) {
@@ -777,33 +956,55 @@
   }
 
   /**
-   * 渲染 GPU 进程表格及汇总信息
+   * 渲染 GPU 进程表格及汇总信息 (支持多卡槽筛选与聚合)
    */
   function renderProcessTable(gpu) {
-    const allProcesses = gpu?.processes || [];
-    const totalGpuMb = gpu?.vram?.total_mb || 85651;
+    let allProcesses = gpu?.processes || [];
+    const isAll = state.selectedGpu === 'all';
 
+    // 1. 卡槽过滤
+    if (!isAll) {
+      allProcesses = allProcesses.filter(p => String(p.gpu_index ?? 0) === String(state.selectedGpu));
+    }
+
+    // 2. 计算卡槽基准显存
+    let totalGpuMb = 85651;
+    if (isAll) {
+      totalGpuMb = gpu?.all_vram?.total_mb || (gpu?.vram?.total_mb ? gpu.vram.total_mb * (gpu?.device_count || 3) : 256953);
+    } else {
+      const targetDev = (gpu?.devices || []).find(d => String(d.index) === String(state.selectedGpu));
+      totalGpuMb = targetDev?.vram?.total_mb || gpu?.vram?.total_mb || 85651;
+    }
+
+    // 3. 关键词过滤与排序
     const filtered = filterByTokens(allProcesses, state.searchQuery);
-    const gpuNumCols = new Set(['pid', 'vram_used_mb', 'vram_pct']);
+    const gpuNumCols = new Set(['pid', 'vram_used_mb', 'vram_pct', 'gpu_index']);
     const sorted = sortProcessList(filtered, state.sortColumn, state.sortDirection, gpuNumCols);
 
     let sumVramMb = 0;
-    allProcesses.forEach(p => {
+    filtered.forEach(p => {
       sumVramMb += (p.vram_used_mb || 0);
     });
 
     if (el.totalTrackedVram) el.totalTrackedVram.textContent = formatMemMb(sumVramMb);
 
     if (el.totalGpuCapacity) {
-      const totalGb = gpu?.vram?.total_gb ? gpu.vram.total_gb.toFixed(2) : '83.64';
-      el.totalGpuCapacity.textContent = `${totalGb} GB`;
+      if (isAll) {
+        const totalGb = gpu?.all_vram?.total_gb ? gpu.all_vram.total_gb.toFixed(2) : '250.93';
+        el.totalGpuCapacity.textContent = `${totalGb} GB (3卡池)`;
+      } else {
+        const targetDev = (gpu?.devices || []).find(d => String(d.index) === String(state.selectedGpu));
+        const totalGb = targetDev?.vram?.total_gb ? targetDev.vram.total_gb.toFixed(2) : '83.64';
+        el.totalGpuCapacity.textContent = `${totalGb} GB (GPU ${state.selectedGpu})`;
+      }
     }
 
     if (el.processCountBadge) {
+      const scopeLabel = isAll ? '全机' : `GPU ${state.selectedGpu}`;
       if (state.searchQuery.trim()) {
-        el.processCountBadge.textContent = `${sorted.length} / ${allProcesses.length} 个匹配进程`;
+        el.processCountBadge.textContent = `${scopeLabel} 匹配 ${sorted.length} / ${allProcesses.length} 个进程`;
       } else {
-        el.processCountBadge.textContent = `${allProcesses.length} 个活跃进程`;
+        el.processCountBadge.textContent = `${scopeLabel} ${allProcesses.length} 个活跃进程`;
       }
     }
 
@@ -812,10 +1013,11 @@
       if (el.emptyState) el.emptyState.classList.remove('hidden');
 
       if (allProcesses.length === 0) {
-        if (el.emptyStateMessage) el.emptyStateMessage.textContent = '当前无活跃 GPU 计算进程';
-        if (el.emptyStateSubmessage) el.emptyStateSubmessage.textContent = '显卡处于空闲待命状态，所有显存均可用于新计算任务';
+        const cardDesc = isAll ? '全机 3 张显卡' : `GPU ${state.selectedGpu}`;
+        if (el.emptyStateMessage) el.emptyStateMessage.textContent = `当前 ${cardDesc} 无活跃计算进程`;
+        if (el.emptyStateSubmessage) el.emptyStateSubmessage.textContent = `${cardDesc} 处于空闲待命状态，显存均可用于新计算任务`;
       } else {
-        if (el.emptyStateMessage) el.emptyStateMessage.textContent = `无匹配进程 (共 ${allProcesses.length} 个活跃进程)`;
+        if (el.emptyStateMessage) el.emptyStateMessage.textContent = `无匹配进程 (当前范围共 ${allProcesses.length} 个进程)`;
         if (el.emptyStateSubmessage) el.emptyStateSubmessage.textContent = `未找到包含关键词 "${escapeHtml(state.searchQuery)}" 的计算进程，请尝试其他关键词`;
       }
       return;
@@ -826,6 +1028,7 @@
 
     const rowsHtml = sorted.map(proc => {
       const pid = proc.pid != null ? proc.pid : '--';
+      const gpuIdx = proc.gpu_index != null ? proc.gpu_index : 0;
       const user = proc.user || 'unknown';
       const name = proc.name || 'unknown';
       const cmdline = proc.cmdline || name;
@@ -833,7 +1036,7 @@
       const vramText = formatMemMb(vramMb);
       const vramPct = proc.vram_pct != null
         ? proc.vram_pct
-        : (totalGpuMb > 0 ? (vramMb / totalGpuMb) * 100 : 0);
+        : (85651 > 0 ? (vramMb / 85651) * 100 : 0);
       const vramPctFormatted = vramPct.toFixed(1);
 
       const isSelf = user === 'shangguanrz';
@@ -842,6 +1045,9 @@
       return `
         <tr>
           <td class="cell-pid">${escapeHtml(pid)}</td>
+          <td class="cell-gpu">
+            <span class="badge-gpu badge-gpu-${gpuIdx}">GPU ${gpuIdx}</span>
+          </td>
           <td class="cell-user">
             <span class="${userTagClass}">${escapeHtml(user)}</span>
           </td>
@@ -850,7 +1056,7 @@
           <td class="cell-vram font-mono">${escapeHtml(vramText)}</td>
           <td class="cell-bar">
             <div class="micro-bar-wrapper">
-              <div class="micro-bar-track" title="显存占比 ${vramPctFormatted}%">
+              <div class="micro-bar-track" title="占单卡显存比例 ${vramPctFormatted}%">
                 <div class="micro-bar-fill" style="width: ${Math.min(100, Math.max(0, vramPct))}%"></div>
               </div>
               <span class="micro-bar-text">${vramPctFormatted}%</span>
@@ -960,6 +1166,39 @@
       });
     });
 
+    // GPU 多卡槽切换 (Ribbon 与 快速筛选按钮)
+    if (el.gpuDevicesRibbon) {
+      el.gpuDevicesRibbon.addEventListener('click', (e) => {
+        const chip = e.target.closest('.gpu-device-chip');
+        if (!chip) return;
+        const gpuIdx = chip.getAttribute('data-gpu') || 'all';
+        state.selectedGpu = (state.selectedGpu === gpuIdx && gpuIdx !== 'all') ? 'all' : gpuIdx;
+        if (state.currentData) {
+          renderGpuRibbon(state.currentData.gpu);
+          renderVramCard(state.currentData.gpu);
+          renderGpuUtilCard(state.currentData.gpu, state.currentData.system);
+          renderGpuTempCard(state.currentData.gpu, state.currentData.system);
+          renderProcessTable(state.currentData.gpu);
+        }
+      });
+    }
+
+    if (el.gpuQuickFilters) {
+      el.gpuQuickFilters.addEventListener('click', (e) => {
+        const btn = e.target.closest('.filter-chip');
+        if (!btn) return;
+        const gpuIdx = btn.getAttribute('data-gpu') || 'all';
+        state.selectedGpu = gpuIdx;
+        if (state.currentData) {
+          renderGpuRibbon(state.currentData.gpu);
+          renderVramCard(state.currentData.gpu);
+          renderGpuUtilCard(state.currentData.gpu, state.currentData.system);
+          renderGpuTempCard(state.currentData.gpu, state.currentData.system);
+          renderProcessTable(state.currentData.gpu);
+        }
+      });
+    }
+
     // GPU 搜索与排序
     if (el.processSearch) {
       el.processSearch.addEventListener('input', (e) => {
@@ -987,7 +1226,7 @@
       th.addEventListener('click', () => {
         const col = th.getAttribute('data-sort');
         if (!col) return;
-        const numCols = new Set(['vram_used_mb', 'vram_pct', 'pid']);
+        const numCols = new Set(['vram_used_mb', 'vram_pct', 'pid', 'gpu_index']);
         if (state.sortColumn === col) {
           state.sortDirection = state.sortDirection === 'asc' ? 'desc' : 'asc';
         } else {

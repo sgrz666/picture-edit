@@ -101,6 +101,10 @@ class MetricsCollector:
         self._nvml_available: bool = False
         self._device_model: Optional[str] = None
         self._driver_version: Optional[str] = None
+        self._device_count: int = 1
+        self._device_handles: List[ctypes.c_void_p] = []
+        self._device_models: List[str] = []
+        self._device_uuids: List[str] = []
 
         self._last_snapshot: Optional[Dict[str, Any]] = None
         self._last_snapshot_time: float = 0.0
@@ -143,7 +147,7 @@ class MetricsCollector:
         return unique_candidates
 
     def _init_nvml(self) -> bool:
-        """Attempt in-process NVML loading via ctypes."""
+        """Attempt in-process NVML loading via ctypes, discovering all available GPU handles."""
         for lib_path in self._find_library_candidates():
             try:
                 lib = ctypes.CDLL(lib_path)
@@ -152,13 +156,6 @@ class MetricsCollector:
 
                 ret = lib.nvmlInit_v2()
                 if ret != self.NVML_SUCCESS:
-                    continue
-
-                # Set up device handle (GPU 0)
-                handle = ctypes.c_void_p()
-                ret = lib.nvmlDeviceGetHandleByIndex_v2(0, ctypes.byref(handle))
-                if ret != self.NVML_SUCCESS:
-                    lib.nvmlShutdown()
                     continue
 
                 # Set function signatures
@@ -181,20 +178,55 @@ class MetricsCollector:
                 ]
                 lib.nvmlDeviceGetTemperature.restype = ctypes.c_int
 
-                # Retrieve device model name
-                name_buf = ctypes.create_string_buffer(96)
-                if hasattr(lib, "nvmlDeviceGetName"):
-                    lib.nvmlDeviceGetName(handle, name_buf, 96)
-                    self._device_model = name_buf.value.decode("utf-8", errors="ignore").strip()
-
                 # Retrieve driver version
                 drv_buf = ctypes.create_string_buffer(96)
                 if hasattr(lib, "nvmlSystemGetDriverVersion"):
                     lib.nvmlSystemGetDriverVersion(drv_buf, 96)
                     self._driver_version = drv_buf.value.decode("utf-8", errors="ignore").strip()
 
+                # Discover device count
+                dev_count = ctypes.c_uint(0)
+                ret_count = -1
+                if hasattr(lib, "nvmlDeviceGetCount_v2"):
+                    ret_count = lib.nvmlDeviceGetCount_v2(ctypes.byref(dev_count))
+                if ret_count != self.NVML_SUCCESS and hasattr(lib, "nvmlDeviceGetCount"):
+                    ret_count = lib.nvmlDeviceGetCount(ctypes.byref(dev_count))
+
+                count = dev_count.value if ret_count == self.NVML_SUCCESS and dev_count.value > 0 else 1
+                self._device_count = count
+                self._device_handles = []
+                self._device_models = []
+                self._device_uuids = []
+
+                for i in range(count):
+                    h = ctypes.c_void_p()
+                    r = -1
+                    if hasattr(lib, "nvmlDeviceGetHandleByIndex_v2"):
+                        r = lib.nvmlDeviceGetHandleByIndex_v2(i, ctypes.byref(h))
+                    if r != self.NVML_SUCCESS and hasattr(lib, "nvmlDeviceGetHandleByIndex"):
+                        r = lib.nvmlDeviceGetHandleByIndex(i, ctypes.byref(h))
+                    if r == self.NVML_SUCCESS:
+                        self._device_handles.append(h)
+                        name_buf = ctypes.create_string_buffer(96)
+                        if hasattr(lib, "nvmlDeviceGetName"):
+                            lib.nvmlDeviceGetName(h, name_buf, 96)
+                            self._device_models.append(name_buf.value.decode("utf-8", errors="ignore").strip())
+                        else:
+                            self._device_models.append("NVIDIA GPU")
+                        uuid_buf = ctypes.create_string_buffer(96)
+                        if hasattr(lib, "nvmlDeviceGetUUID"):
+                            lib.nvmlDeviceGetUUID(h, uuid_buf, 96)
+                            self._device_uuids.append(uuid_buf.value.decode("utf-8", errors="ignore").strip())
+                        else:
+                            self._device_uuids.append(f"GPU-{i}")
+
+                if not self._device_handles:
+                    lib.nvmlShutdown()
+                    continue
+
                 self._nvml_lib = lib
-                self._nvml_handle = handle
+                self._nvml_handle = self._device_handles[0]
+                self._device_model = self._device_models[0] if self._device_models else "NVIDIA GPU"
                 self._nvml_available = True
                 return True
             except Exception:
@@ -204,130 +236,168 @@ class MetricsCollector:
         return False
 
     def _collect_gpu_via_nvml(self) -> Dict[str, Any]:
-        """Collect real-time GPU telemetry using direct in-process NVML calls."""
-        if not self._nvml_lib or not self._nvml_handle:
+        """Collect real-time GPU telemetry for all devices using direct in-process NVML calls."""
+        if not self._nvml_lib or not self._device_handles:
             raise RuntimeError("NVML not initialized")
 
         lib = self._nvml_lib
-        handle = self._nvml_handle
+        devices: List[Dict[str, Any]] = []
+        all_processes: List[Dict[str, Any]] = []
 
-        # Memory Info
-        total_mb = 0
-        used_mb = 0
-        free_mb = 0
+        for idx, handle in enumerate(self._device_handles):
+            # Memory Info
+            total_mb = 0
+            used_mb = 0
+            free_mb = 0
 
-        if hasattr(lib, "nvmlDeviceGetMemoryInfo_v2"):
-            try:
-                mem_v2 = _NVMLMemoryV2()
-                mem_v2.version = (2 << 24) | ctypes.sizeof(_NVMLMemoryV2)
-                ret = lib.nvmlDeviceGetMemoryInfo_v2(handle, ctypes.byref(mem_v2))
-                if ret == self.NVML_SUCCESS:
-                    total_mb = int(mem_v2.total // (1024 * 1024))
-                    used_mb = int(mem_v2.used // (1024 * 1024))
-                    free_mb = max(0, total_mb - used_mb)
-            except Exception:
-                pass
+            if hasattr(lib, "nvmlDeviceGetMemoryInfo_v2"):
+                try:
+                    mem_v2 = _NVMLMemoryV2()
+                    mem_v2.version = (2 << 24) | ctypes.sizeof(_NVMLMemoryV2)
+                    ret = lib.nvmlDeviceGetMemoryInfo_v2(handle, ctypes.byref(mem_v2))
+                    if ret == self.NVML_SUCCESS:
+                        total_mb = int(mem_v2.total // (1024 * 1024))
+                        used_mb = int(mem_v2.used // (1024 * 1024))
+                        free_mb = max(0, total_mb - used_mb)
+                except Exception:
+                    pass
 
-        if total_mb == 0:
-            mem = _NVMLMemory()
-            ret = lib.nvmlDeviceGetMemoryInfo(handle, ctypes.byref(mem))
-            if ret != self.NVML_SUCCESS:
-                raise RuntimeError(f"nvmlDeviceGetMemoryInfo failed with code {ret}")
+            if total_mb == 0:
+                mem = _NVMLMemory()
+                ret = lib.nvmlDeviceGetMemoryInfo(handle, ctypes.byref(mem))
+                if ret != self.NVML_SUCCESS:
+                    raise RuntimeError(f"nvmlDeviceGetMemoryInfo failed with code {ret}")
+                total_mb = int(mem.total // (1024 * 1024))
+                used_mb = int(mem.used // (1024 * 1024))
+                free_mb = max(0, total_mb - used_mb)
 
-            total_mb = int(mem.total // (1024 * 1024))
-            used_mb = int(mem.used // (1024 * 1024))
-            free_mb = max(0, total_mb - used_mb)
+            used_pct = round((used_mb / total_mb) * 100, 1) if total_mb > 0 else 0.0
+            total_gb = round(total_mb / 1024.0, 2)
+            used_gb = round(used_mb / 1024.0, 2)
+            free_gb = round(free_mb / 1024.0, 2)
 
-        used_pct = round((used_mb / total_mb) * 100, 1) if total_mb > 0 else 0.0
+            # Utilization Rates
+            util = _NVMLUtilization()
+            ret = lib.nvmlDeviceGetUtilizationRates(handle, ctypes.byref(util))
+            util_pct = int(util.gpu) if ret == self.NVML_SUCCESS else 0
 
-        total_gb = round(total_mb / 1024.0, 2)
-        used_gb = round(used_mb / 1024.0, 2)
-        free_gb = round(free_mb / 1024.0, 2)
+            # Temperature (Sensor 0 = GPU core)
+            temp = ctypes.c_uint()
+            ret = lib.nvmlDeviceGetTemperature(handle, 0, ctypes.byref(temp))
+            temp_c = int(temp.value) if ret == self.NVML_SUCCESS else 0
 
-        # Utilization Rates
-        util = _NVMLUtilization()
-        ret = lib.nvmlDeviceGetUtilizationRates(handle, ctypes.byref(util))
-        util_pct = int(util.gpu) if ret == self.NVML_SUCCESS else 0
+            # Compute Running Processes
+            raw_processes: List[Tuple[int, int, str]] = []  # (pid, used_bytes, name)
+            processes_collected = False
 
-        # Temperature (Sensor 0 = GPU core)
-        temp = ctypes.c_uint()
-        ret = lib.nvmlDeviceGetTemperature(handle, 0, ctypes.byref(temp))
-        temp_c = int(temp.value) if ret == self.NVML_SUCCESS else 0
-
-        # Compute Running Processes
-        raw_processes: List[Tuple[int, int, str]] = []  # (pid, used_bytes, name)
-        processes_collected = False
-
-        # Attempt v3 first
-        if hasattr(lib, "nvmlDeviceGetComputeRunningProcesses_v3"):
-            try:
-                count = ctypes.c_uint(64)
-                arr = (_NVMLProcessInfoV3 * 64)()
-                ret = lib.nvmlDeviceGetComputeRunningProcesses_v3(
-                    handle, ctypes.byref(count), arr
-                )
-                if ret == self.NVML_ERROR_INSUFFICIENT_SIZE and count.value > 64:
-                    arr = (_NVMLProcessInfoV3 * count.value)()
+            if hasattr(lib, "nvmlDeviceGetComputeRunningProcesses_v3"):
+                try:
+                    count = ctypes.c_uint(64)
+                    arr = (_NVMLProcessInfoV3 * 64)()
                     ret = lib.nvmlDeviceGetComputeRunningProcesses_v3(
                         handle, ctypes.byref(count), arr
                     )
-                if ret == self.NVML_SUCCESS:
-                    for i in range(count.value):
-                        raw_processes.append((arr[i].pid, arr[i].usedGpuMemory, ""))
-                    processes_collected = True
-            except Exception:
-                pass
+                    if ret == self.NVML_ERROR_INSUFFICIENT_SIZE and count.value > 64:
+                        arr = (_NVMLProcessInfoV3 * count.value)()
+                        ret = lib.nvmlDeviceGetComputeRunningProcesses_v3(
+                            handle, ctypes.byref(count), arr
+                        )
+                    if ret == self.NVML_SUCCESS:
+                        for i in range(count.value):
+                            raw_processes.append((arr[i].pid, arr[i].usedGpuMemory, ""))
+                        processes_collected = True
+                except Exception:
+                    pass
 
-        # Fallback to v1 if v3 unavailable
-        if not processes_collected and hasattr(lib, "nvmlDeviceGetComputeRunningProcesses"):
-            try:
-                count = ctypes.c_uint(64)
-                arr = (_NVMLProcessInfoV1 * 64)()
-                ret = lib.nvmlDeviceGetComputeRunningProcesses(
-                    handle, ctypes.byref(count), arr
-                )
-                if ret == self.NVML_ERROR_INSUFFICIENT_SIZE and count.value > 64:
-                    arr = (_NVMLProcessInfoV1 * count.value)()
+            if not processes_collected and hasattr(lib, "nvmlDeviceGetComputeRunningProcesses"):
+                try:
+                    count = ctypes.c_uint(64)
+                    arr = (_NVMLProcessInfoV1 * 64)()
                     ret = lib.nvmlDeviceGetComputeRunningProcesses(
                         handle, ctypes.byref(count), arr
                     )
-                if ret == self.NVML_SUCCESS:
-                    for i in range(count.value):
-                        raw_processes.append((arr[i].pid, arr[i].usedGpuMemory, ""))
-                    processes_collected = True
-            except Exception:
-                pass
+                    if ret == self.NVML_ERROR_INSUFFICIENT_SIZE and count.value > 64:
+                        arr = (_NVMLProcessInfoV1 * count.value)()
+                        ret = lib.nvmlDeviceGetComputeRunningProcesses(
+                            handle, ctypes.byref(count), arr
+                        )
+                    if ret == self.NVML_SUCCESS:
+                        for i in range(count.value):
+                            raw_processes.append((arr[i].pid, arr[i].usedGpuMemory, ""))
+                        processes_collected = True
+                except Exception:
+                    pass
 
-        # Enrich process details
-        enriched_processes = []
-        for pid, used_bytes, default_name in raw_processes:
-            # Guard against NVML_VALUE_NOT_AVAILABLE sentinel (0xFFFFFFFFFFFFFFFF)
-            safe_bytes = 0 if used_bytes >= (1 << 50) else used_bytes
-            vram_mb = int(safe_bytes // (1024 * 1024))
-            proc_dict = self._enrich_process(pid, default_name, vram_mb, total_mb)
-            enriched_processes.append(proc_dict)
+            dev_processes = []
+            for pid, used_bytes, default_name in raw_processes:
+                safe_bytes = 0 if used_bytes >= (1 << 50) else used_bytes
+                vram_mb = int(safe_bytes // (1024 * 1024))
+                proc_dict = self._enrich_process(pid, default_name, vram_mb, total_mb, gpu_index=idx)
+                dev_processes.append(proc_dict)
+                all_processes.append(proc_dict)
+
+            model_name = self._device_models[idx] if idx < len(self._device_models) else self._device_model
+            uuid_str = self._device_uuids[idx] if idx < len(self._device_uuids) else f"GPU-{idx}"
+            devices.append(
+                {
+                    "index": idx,
+                    "model": model_name or "NVIDIA GPU",
+                    "uuid": uuid_str,
+                    "driver_version": self._driver_version or "Unknown",
+                    "utilization_pct": util_pct,
+                    "temperature_c": temp_c,
+                    "vram": {
+                        "total_mb": total_mb,
+                        "used_mb": used_mb,
+                        "free_mb": free_mb,
+                        "used_pct": used_pct,
+                        "total_gb": total_gb,
+                        "used_gb": used_gb,
+                        "free_gb": free_gb,
+                    },
+                    "processes": dev_processes,
+                }
+            )
+
+        d0 = devices[0] if devices else {
+            "model": "NVIDIA GPU",
+            "utilization_pct": 0,
+            "temperature_c": 0,
+            "vram": {"total_mb": 0, "used_mb": 0, "free_mb": 0, "used_pct": 0.0, "total_gb": 0.0, "used_gb": 0.0, "free_gb": 0.0},
+        }
+
+        all_total_mb = sum(d["vram"]["total_mb"] for d in devices)
+        all_used_mb = sum(d["vram"]["used_mb"] for d in devices)
+        all_free_mb = max(0, all_total_mb - all_used_mb)
+        all_used_pct = round((all_used_mb / all_total_mb) * 100, 1) if all_total_mb > 0 else 0.0
+
+        model_label = f"{len(devices)}x {d0['model']}" if len(devices) > 1 else (d0.get("model") or "NVIDIA GPU")
 
         return {
             "available": True,
             "status": "ok",
-            "model": self._device_model or "NVIDIA GPU",
+            "count": len(devices),
+            "device_count": len(devices),
+            "model": model_label,
             "driver_version": self._driver_version or "Unknown",
-            "utilization_pct": util_pct,
-            "temperature_c": temp_c,
-            "vram": {
-                "total_mb": total_mb,
-                "used_mb": used_mb,
-                "free_mb": free_mb,
-                "used_pct": used_pct,
-                "total_gb": total_gb,
-                "used_gb": used_gb,
-                "free_gb": free_gb,
+            "utilization_pct": d0["utilization_pct"],
+            "temperature_c": d0["temperature_c"],
+            "vram": d0["vram"],
+            "all_vram": {
+                "total_mb": all_total_mb,
+                "used_mb": all_used_mb,
+                "free_mb": all_free_mb,
+                "used_pct": all_used_pct,
+                "total_gb": round(all_total_mb / 1024.0, 2),
+                "used_gb": round(all_used_mb / 1024.0, 2),
+                "free_gb": round(all_free_mb / 1024.0, 2),
             },
-            "processes": enriched_processes,
+            "devices": devices,
+            "processes": all_processes,
         }
 
     def _collect_gpu_via_smi(self) -> Dict[str, Any]:
-        """Fallback GPU telemetry collection via nvidia-smi CLI."""
+        """Fallback GPU telemetry collection via nvidia-smi CLI supporting multiple GPUs."""
         env = os.environ.copy()
         if self.compat_dir and os.path.isdir(self.compat_dir):
             existing_ld = env.get("LD_LIBRARY_PATH", "")
@@ -337,7 +407,7 @@ class MetricsCollector:
 
         cmd_gpu = [
             "nvidia-smi",
-            "--query-gpu=name,driver_version,utilization.gpu,temperature.gpu,memory.total,memory.used,memory.free",
+            "--query-gpu=index,uuid,name,driver_version,utilization.gpu,temperature.gpu,memory.total,memory.used,memory.free",
             "--format=csv,noheader,nounits",
         ]
         res_gpu = subprocess.run(
@@ -345,34 +415,62 @@ class MetricsCollector:
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             text=True,
-            timeout=3,
+            timeout=4,
             env=env,
         )
         if res_gpu.returncode != 0 or not res_gpu.stdout.strip():
             raise RuntimeError(f"nvidia-smi query-gpu failed: {res_gpu.stderr.strip()}")
 
-        first_line = res_gpu.stdout.strip().splitlines()[0]
-        parts = [p.strip() for p in first_line.split(",")]
-        if len(parts) < 7:
-            raise ValueError(f"Unexpected nvidia-smi output format: {first_line}")
+        devices: List[Dict[str, Any]] = []
+        uuid_to_idx: Dict[str, int] = {}
+        idx_to_total_mb: Dict[int, int] = {}
 
-        model_name = parts[0]
-        driver_version = parts[1]
-        util_pct = int(float(parts[2]))
-        temp_c = int(float(parts[3]))
-        total_mb = int(float(parts[4]))
-        used_mb = int(float(parts[5]))
-        free_mb = max(0, total_mb - used_mb)
+        for line in res_gpu.stdout.strip().splitlines():
+            parts = [p.strip() for p in line.split(",")]
+            if len(parts) < 9:
+                continue
+            idx = int(parts[0])
+            uuid_str = parts[1]
+            model_name = parts[2]
+            driver_version = parts[3]
+            util_pct = int(float(parts[4]))
+            temp_c = int(float(parts[5]))
+            total_mb = int(float(parts[6]))
+            used_mb = int(float(parts[7]))
+            free_mb = max(0, total_mb - used_mb)
+            used_pct = round((used_mb / total_mb) * 100, 1) if total_mb > 0 else 0.0
 
-        used_pct = round((used_mb / total_mb) * 100, 1) if total_mb > 0 else 0.0
-        total_gb = round(total_mb / 1024.0, 2)
-        used_gb = round(used_mb / 1024.0, 2)
-        free_gb = round(free_mb / 1024.0, 2)
+            uuid_to_idx[uuid_str] = idx
+            idx_to_total_mb[idx] = total_mb
+
+            devices.append(
+                {
+                    "index": idx,
+                    "model": model_name,
+                    "uuid": uuid_str,
+                    "driver_version": driver_version,
+                    "utilization_pct": util_pct,
+                    "temperature_c": temp_c,
+                    "vram": {
+                        "total_mb": total_mb,
+                        "used_mb": used_mb,
+                        "free_mb": free_mb,
+                        "used_pct": used_pct,
+                        "total_gb": round(total_mb / 1024.0, 2),
+                        "used_gb": round(used_mb / 1024.0, 2),
+                        "free_gb": round(free_mb / 1024.0, 2),
+                    },
+                    "processes": [],
+                }
+            )
+
+        if not devices:
+            raise ValueError("No GPU devices parsed from nvidia-smi")
 
         # Query compute apps
         cmd_apps = [
             "nvidia-smi",
-            "--query-compute-apps=pid,process_name,used_memory",
+            "--query-compute-apps=gpu_uuid,pid,process_name,used_memory",
             "--format=csv,noheader,nounits",
         ]
         res_apps = subprocess.run(
@@ -380,46 +478,62 @@ class MetricsCollector:
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             text=True,
-            timeout=3,
+            timeout=4,
             env=env,
         )
 
-        processes = []
+        all_processes = []
         if res_apps.returncode == 0 and res_apps.stdout.strip():
             for line in res_apps.stdout.strip().splitlines():
                 app_parts = [p.strip() for p in line.split(",")]
-                if len(app_parts) >= 3:
+                if len(app_parts) >= 4:
                     try:
-                        pid = int(app_parts[0])
-                        proc_name = app_parts[1]
-                        vram_used = int(float(app_parts[2]))
-                        processes.append(
-                            self._enrich_process(pid, proc_name, vram_used, total_mb)
-                        )
+                        g_uuid = app_parts[0]
+                        pid = int(app_parts[1])
+                        proc_name = app_parts[2]
+                        vram_used = int(float(app_parts[3]))
+                        g_idx = uuid_to_idx.get(g_uuid, 0)
+                        tot_mb = idx_to_total_mb.get(g_idx, 85651)
+                        p_dict = self._enrich_process(pid, proc_name, vram_used, tot_mb, gpu_index=g_idx)
+                        all_processes.append(p_dict)
+                        if g_idx < len(devices):
+                            devices[g_idx]["processes"].append(p_dict)
                     except (ValueError, IndexError):
                         continue
+
+        d0 = devices[0]
+        all_total_mb = sum(d["vram"]["total_mb"] for d in devices)
+        all_used_mb = sum(d["vram"]["used_mb"] for d in devices)
+        all_free_mb = max(0, all_total_mb - all_used_mb)
+        all_used_pct = round((all_used_mb / all_total_mb) * 100, 1) if all_total_mb > 0 else 0.0
+
+        model_label = f"{len(devices)}x {d0['model']}" if len(devices) > 1 else d0["model"]
 
         return {
             "available": True,
             "status": "ok",
-            "model": model_name,
-            "driver_version": driver_version,
-            "utilization_pct": util_pct,
-            "temperature_c": temp_c,
-            "vram": {
-                "total_mb": total_mb,
-                "used_mb": used_mb,
-                "free_mb": free_mb,
-                "used_pct": used_pct,
-                "total_gb": total_gb,
-                "used_gb": used_gb,
-                "free_gb": free_gb,
+            "count": len(devices),
+            "device_count": len(devices),
+            "model": model_label,
+            "driver_version": d0["driver_version"],
+            "utilization_pct": d0["utilization_pct"],
+            "temperature_c": d0["temperature_c"],
+            "vram": d0["vram"],
+            "all_vram": {
+                "total_mb": all_total_mb,
+                "used_mb": all_used_mb,
+                "free_mb": all_free_mb,
+                "used_pct": all_used_pct,
+                "total_gb": round(all_total_mb / 1024.0, 2),
+                "used_gb": round(all_used_mb / 1024.0, 2),
+                "free_gb": round(all_free_mb / 1024.0, 2),
             },
-            "processes": processes,
+            "devices": devices,
+            "processes": all_processes,
         }
 
     def _enrich_process(
-        self, pid: int, default_name: str, used_mb: int, total_vram_mb: int
+        self, pid: int, default_name: str, used_mb: int, total_vram_mb: int, gpu_index: int = 0
     ) -> Dict[str, Any]:
         """Map PID to Linux username via pwd.getpwuid and commandline preview."""
         user = "unknown"
@@ -481,6 +595,7 @@ class MetricsCollector:
 
         return {
             "pid": pid,
+            "gpu_index": gpu_index,
             "user": user,
             "name": name,
             "cmdline": cmdline,
@@ -509,6 +624,8 @@ class MetricsCollector:
         return {
             "available": False,
             "status": "error",
+            "count": 0,
+            "device_count": 0,
             "model": None,
             "driver_version": None,
             "utilization_pct": None,
@@ -522,6 +639,16 @@ class MetricsCollector:
                 "used_gb": 0.0,
                 "free_gb": 0.0,
             },
+            "all_vram": {
+                "total_mb": 0,
+                "used_mb": 0,
+                "free_mb": 0,
+                "used_pct": 0.0,
+                "total_gb": 0.0,
+                "used_gb": 0.0,
+                "free_gb": 0.0,
+            },
+            "devices": [],
             "processes": [],
         }
 
@@ -1299,6 +1426,7 @@ class MetricsCollector:
             "formatted_time": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
             "status": status,
             "gpu": gpu_metrics,
+            "gpus": gpu_metrics.get("devices", []),
             "memory": memory_metrics,
             "swap": swap_metrics,
             "system": system_metrics,

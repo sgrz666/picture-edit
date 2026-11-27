@@ -68,7 +68,8 @@ def get_live_nvidia_smi_memory():
             env=env,
         )
         if res.returncode == 0 and res.stdout.strip():
-            parts = [int(p.strip()) for p in res.stdout.strip().split(",")]
+            first_line = res.stdout.strip().splitlines()[0]
+            parts = [int(p.strip()) for p in first_line.split(",")]
             if len(parts) == 3:
                 return {"total": parts[0], "used": parts[1], "free": parts[2]}
     except Exception:
@@ -354,7 +355,7 @@ class TestFeature4ComputeProcesses(BaseCollectorTestCase):
         gpu = self.snapshot.get("gpu", {})
         if not gpu.get("available", False):
             self.skipTest("GPU not available")
-        total_mb = gpu.get("vram", {}).get("total_mb", 85651)
+        total_mb = gpu.get("all_vram", gpu.get("vram", {})).get("total_mb", 85651)
         processes = gpu.get("processes", [])
         total_proc_vram = sum(p.get("vram_used_mb", 0) for p in processes)
         self.assertLessEqual(total_proc_vram, total_mb)

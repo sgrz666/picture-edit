@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>SpatialReward-8B 实验整理</title>
+<style>
+  body { margin:0; background:#eef1f5; font-family:"Microsoft YaHei","Segoe UI",system-ui,sans-serif; color:#1b2430; }
+  .wrap { max-width:1680px; margin:0 auto; padding:28px 32px 60px; }
+  h1 { font-size:26px; margin:0 0 6px; }
+  h1 span { color:#0f766e; }
+  .meta { font-size:13px; color:#5b6675; margin-bottom:22px; line-height:1.6; }
+  .card { background:#fff; border:1px solid #dde3ea; border-radius:14px; padding:14px; margin-bottom:22px; box-shadow:0 1px 3px #0f172a0a; }
+  .card h2 { font-size:15px; margin:2px 0 10px; color:#334155; }
+  .card img { width:100%; display:block; border-radius:8px; }
+  .note { font-size:12.5px; color:#5b6675; line-height:1.7; background:#fff; border:1px solid #dde3ea; border-radius:14px; padding:16px 18px; }
+  .note b { color:#0f172a; }
+  .note code { background:#eef2f6; padding:1px 4px; border-radius:4px; font-size:11.5px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>SpatialReward-8B 实验整理 · <span>评分说明与收益</span></h1>
+  <div class="meta">2026-11-24 · 小红书 expanded run（val 40 对 / seed42）· SpatialReward-8B（上游 0222484b）</div>
+
+  <div class="card"><h2>图 1 · 评分说明：显式编辑区域定位 vs 无定位整体打分</h2><img src="fig1-scoring.png" alt="评分说明图"></div>
+  <div class="card"><h2>图 2 · 实验收益：区域目标 SFT 实测增量 + SpatialReward 冒烟结果</h2><img src="fig2-gains.png" alt="收益整理图"></div>
+
+  <div class="note">
+    <b>读图要点：</b>图 1 右侧的 bbox、reasoning 与子分是 SpatialReward-8B 在 pair_039 上的真实输出；左侧“无定位整体打分”是结构性对照，不是本仓库跑出的分数。
+    图 2 的 KPI 与柱图来自<b>区域目标 SFT</b>（uniform vs regional），衡量空间加权监督的收益，<b>不是</b> SpatialReward 作为 RL 奖励的收益。
+    SpatialReward 目前只有 n=1 对的冒烟校准：rgb 可用（0.9203 vs 0.8429），guides 失效（0/0），batch 敏感（0.897/0.843）。正式消融（权重 0.10 / 0.25 / 0.40）尚未开跑。
+    详见 <code>README.md</code>。
+  </div>
+</div>
+</body>
+</html>

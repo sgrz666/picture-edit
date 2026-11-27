@@ -121,6 +121,11 @@
       </div>
     </nav>
 
+    <!-- Multi-GPU Device Selector Ribbon (Dynamically rendered if GPU count > 1) -->
+    <div class="gpu-devices-ribbon hidden" id="gpu-devices-ribbon" role="tablist" aria-label="GPU 设备卡槽切换">
+      <!-- Injected dynamically via app.js -->
+    </div>
+
     <!-- Overview Metrics Cards Section -->
     <section class="metrics-grid" id="overview-metrics-grid" aria-label="核心硬件资源概览">
       <!-- Card 1: GPU VRAM -->
@@ -140,7 +145,7 @@
               <line x1="1" y1="9" x2="4" y2="9"></line>
               <line x1="1" y1="14" x2="4" y2="14"></line>
             </svg>
-            <span class="card-title">GPU 显存 (VRAM)</span>
+            <span class="card-title" id="card-vram-title">GPU 显存 (VRAM)</span>
           </div>
           <span id="vram-pct-badge" class="badge badge-safe">--% 正常</span>
         </div>
@@ -233,7 +238,7 @@
               <path d="M4.93 19.07l2.83-2.83"></path>
               <path d="M16.24 7.76l2.83-2.83"></path>
             </svg>
-            <span class="card-title">GPU 核心利用率</span>
+            <span class="card-title" id="card-util-title">GPU 核心利用率</span>
           </div>
           <span id="gpu-util-badge" class="badge badge-safe">空闲</span>
         </div>
@@ -271,7 +276,7 @@
             <svg class="icon card-icon icon-temp" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"></path>
             </svg>
-            <span class="card-title">GPU 核心温度</span>
+            <span class="card-title" id="card-temp-title">GPU 核心温度</span>
           </div>
           <span id="gpu-temp-badge" class="badge badge-safe">优良 (&lt;60℃)</span>
         </div>
@@ -406,13 +411,18 @@
           <span class="process-count-badge" id="process-count-badge">0 个活跃进程</span>
         </div>
 
-        <div class="search-filter-wrapper">
-          <svg class="icon search-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="11" cy="11" r="8"></circle>
-            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-          </svg>
-          <input type="text" id="process-search" class="search-input" placeholder="搜索 PID / 用户名 / 进程名 / 命令行..." autocomplete="off" spellcheck="false">
-          <button id="search-clear-btn" class="search-clear-btn hidden" title="清空搜索" aria-label="清空搜索">&times;</button>
+        <div class="table-controls-right">
+          <div class="quick-filter-group hidden" id="gpu-quick-filters" role="group" aria-label="GPU卡槽快速筛选">
+            <!-- Injected dynamically via app.js -->
+          </div>
+          <div class="search-filter-wrapper">
+            <svg class="icon search-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            <input type="text" id="process-search" class="search-input" placeholder="搜索 PID / 用户名 / 进程名 / 命令行..." autocomplete="off" spellcheck="false">
+            <button id="search-clear-btn" class="search-clear-btn hidden" title="清空搜索" aria-label="清空搜索">&times;</button>
+          </div>
         </div>
       </div>
 
@@ -422,6 +432,9 @@
             <tr>
               <th class="th-sortable" data-sort="pid" title="点击按 PID 排序">
                 <span class="th-content">PID <span class="sort-indicator"></span></span>
+              </th>
+              <th class="th-sortable" data-sort="gpu_index" title="点击按 GPU 卡槽排序">
+                <span class="th-content">卡槽 <span class="sort-indicator"></span></span>
               </th>
               <th class="th-sortable" data-sort="user" title="点击按 用户名 排序">
                 <span class="th-content">用户 <span class="sort-indicator"></span></span>
@@ -472,6 +485,6 @@
     </section>
   </div>
 
-  <script src="/static/app.js?v=2.2.0"></script>
+  <script src="/static/app.js?v=2.3.0"></script>
 </body>
 </html>

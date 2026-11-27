@@ -274,6 +274,28 @@ Committed_AS:   282957148 kB
         self.assertEqual(fallback["total_mb"], 0)
         collector.close()
 
+    def test_multi_gpu_metrics_schema(self):
+        """Verify multi-GPU metrics expose devices, all_vram, and per-process gpu_index."""
+        collector = MetricsCollector()
+        snap = collector.get_metrics_snapshot(force=True)
+        gpu = snap.get("gpu", {})
+        self.assertIn("devices", gpu)
+        self.assertIsInstance(gpu["devices"], list)
+        self.assertIn("all_vram", gpu)
+        self.assertIn("gpus", snap)
+        self.assertEqual(snap["gpus"], gpu["devices"])
+        if gpu.get("available", False):
+            self.assertGreaterEqual(gpu.get("count", 0), 1)
+            for dev in gpu["devices"]:
+                self.assertIn("index", dev)
+                self.assertIn("model", dev)
+                self.assertIn("vram", dev)
+                self.assertIn("utilization_pct", dev)
+                self.assertIn("temperature_c", dev)
+            for p in gpu.get("processes", []):
+                self.assertIn("gpu_index", p)
+        collector.close()
+
 
 class TestMemoryDashboardServerHistory(unittest.TestCase):
     """HTTP /api/history and extended /api/metrics integration checks."""

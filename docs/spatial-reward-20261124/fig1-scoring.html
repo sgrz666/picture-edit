@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    width:1600px; background:#f4f6f8;
+    font-family:"Microsoft YaHei","Segoe UI",system-ui,sans-serif;
+    color:#1b2430; -webkit-font-smoothing:antialiased;
+  }
+  .fig { width:1600px; padding:20px 24px 18px; }
+  .hdr { display:flex; align-items:flex-end; justify-content:space-between; padding:2px 4px 14px; border-bottom:2px solid #d8dee6; }
+  .hdr h1 { font-size:27px; letter-spacing:.3px; font-weight:800; }
+  .hdr h1 span { color:#0f766e; }
+  .hdr .sub { font-size:12.5px; color:#5b6675; text-align:right; line-height:1.6; }
+  .hdr .sub b { color:#0f766e; }
+
+  .main { display:flex; gap:14px; padding-top:14px; }
+  .col { background:#fff; border:1px solid #dde3ea; border-radius:14px; padding:14px; position:relative; min-width:0; }
+  .col1 { width:336px; }
+  .col2 { width:392px; }
+  .col3 { width:762px; }
+  .ct { font-size:16.5px; font-weight:800; letter-spacing:.2px; display:flex; align-items:center; gap:7px; }
+  .ct .dot { width:9px; height:9px; border-radius:3px; display:inline-block; }
+  .c1 .dot{background:#334155;} .c2 .dot{background:#c2410c;} .c3 .dot{background:#0f766e;}
+  .c3 { border:2px solid #0f766e; box-shadow:0 0 0 3px #0f766e14; }
+  .ctag { font-size:11px; font-weight:700; padding:2px 7px; border-radius:6px; margin-left:auto; }
+  .c2 .ctag{background:#fff1e8;color:#c2410c;border:1px solid #f3c9b0;}
+  .c3 .ctag{background:#e6f5f2;color:#0f766e;border:1px solid #a9d8cf;}
+
+  .lbl { font-size:11px; font-weight:800; letter-spacing:.9px; color:#7c8798; text-transform:uppercase; margin:12px 0 6px; }
+  .instr { font-size:11.6px; line-height:1.55; color:#3b4655; background:#f8fafc; border:1px solid #e2e8f0; border-left:3px solid #94a3b8; border-radius:7px; padding:8px 9px; }
+  .instr b { color:#0f172a; }
+  .pics { display:flex; gap:10px; }
+  .pic { flex:1; min-width:0; }
+  .pic .ph { height:250px; border-radius:8px; overflow:hidden; background:#eef2f6; border:1px solid #dbe2ea; display:flex; align-items:center; justify-content:center; }
+  .pic img { max-width:100%; max-height:100%; object-fit:contain; display:block; }
+  .pic .cap { font-size:10.5px; color:#6b7686; text-align:center; margin-top:5px; font-weight:600; }
+
+  .reason { font-size:11.8px; line-height:1.62; color:#3b4655; background:#fbfcfd; border:1px solid #e5eaf0; border-radius:8px; padding:9px 10px; }
+  .reason b { color:#0f172a; }
+  .reason .hl { background:#fde8e0; border-radius:3px; padding:0 2px; }
+  .warn { margin-top:8px; font-size:11px; line-height:1.5; color:#9a3412; background:#fff7ed; border:1px dashed #fdba74; border-radius:7px; padding:7px 9px; }
+  .warn b { color:#c2410c; }
+
+  .scorebox { margin-top:10px; border-radius:9px; padding:9px 11px; }
+  .scorebox.bad { background:#fff5f4; border:1px solid #f5c2bd; }
+  .scorebox.good { background:#f1faf7; border:1px solid #b6e3d8; }
+  .scorebox .st { font-size:10.5px; font-weight:800; letter-spacing:.8px; margin-bottom:6px; }
+  .scorebox.bad .st { color:#b91c1c; }
+  .scorebox.good .st { color:#0f766e; }
+  .srow { display:flex; justify-content:space-between; font-size:11.5px; padding:2.5px 0; color:#334155; }
+  .srow b { font-variant-numeric:tabular-nums; }
+  .srow .up { color:#b91c1c; font-weight:800; }
+  .srow .dn { color:#15803d; font-weight:800; }
+  .badge { display:inline-flex; align-items:center; gap:5px; font-size:11px; font-weight:800; padding:3px 8px; border-radius:6px; margin-top:7px; }
+  .badge.x { background:#fee2e2; color:#b91c1c; }
+  .badge.v { background:#d1fae5; color:#047857; }
+
+  .regionwrap { display:flex; gap:12px; }
+  .region { flex:1; min-width:0; }
+  .rimg { position:relative; border-radius:9px; overflow:hidden; border:1px solid #d7dee7; background:#eef2f6; }
+  .rimg img { width:100%; display:block; }
+  .box { position:absolute; border:2.5px solid #0f766e; border-radius:4px; box-shadow:0 0 0 2px #0f766e33, inset 0 0 22px #0f766e22; }
+  .boxtag { position:absolute; top:-20px; left:-2px; background:#0f766e; color:#fff; font-size:10px; font-weight:800; padding:1.5px 6px; border-radius:4px 4px 0 0; white-space:nowrap; }
+  .rcap { font-size:10.5px; color:#5b6675; margin-top:5px; line-height:1.45; }
+  .rcap b { color:#0f172a; }
+  .arrowrow { display:flex; align-items:center; justify-content:center; gap:8px; margin:9px 0 2px; font-size:10.5px; color:#64748b; font-weight:700; }
+  .arrowrow .ln { flex:1; height:1px; background:#cbd5e1; position:relative; }
+  .arrowrow .ln:after { content:""; position:absolute; right:-1px; top:-3.5px; border-left:7px solid #cbd5e1; border-top:4px solid transparent; border-bottom:4px solid transparent; }
+
+  .flow { display:flex; gap:8px; margin-top:10px; }
+  .fstep { flex:1; min-width:0; background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:7px 9px; }
+  .fstep .ft { font-size:10.5px; font-weight:800; color:#0f766e; letter-spacing:.4px; margin-bottom:3px; }
+  .fstep .fd { font-size:10.3px; line-height:1.45; color:#475569; }
+  .fstep .fd code { background:#eef2f6; border-radius:3px; padding:0 3px; font-size:9.8px; }
+
+  .bottom { margin-top:14px; background:#fff; border:1px solid #dde3ea; border-radius:14px; padding:12px 16px; display:flex; gap:18px; align-items:center; }
+  .bt { font-size:12.5px; font-weight:800; color:#0f172a; white-space:nowrap; flex:0 0 auto; }
+  .bgrid { display:flex; gap:14px; flex:1; min-width:0; }
+  .bitem { flex:1; min-width:0; border-left:3px solid #0f766e; padding-left:9px; }
+  .bitem .bk { font-size:10px; font-weight:800; letter-spacing:.6px; color:#0f766e; }
+  .bitem .bv { font-size:11.2px; color:#3b4655; line-height:1.5; margin-top:2px; }
+  .bitem .bv b { color:#0f172a; }
+  .foot { font-size:10px; color:#8a94a3; margin-top:8px; padding:0 4px; line-height:1.5; }
+</style>
+</head>
+<body>
+<div class="fig">
+  <div class="hdr">
+    <h1>SpatialReward-8B 评分说明：<span>显式编辑区域定位</span> vs 无定位整体打分</h1>
+    <div class="sub">实测样本：小红书 pair_039（6a61e37b）· seed42 · 参考顺序 rgb<br>
+      模型 <b>SpatialReward-8B</b> · 上游 0222484b · 评分版本 spatialreward_native_v1/v2 · CPU bfloat16</div>
+  </div>
+
+  <div class="main">
+    <!-- 输入 -->
+    <div class="col col1 c1">
+      <div class="ct"><span class="dot"></span>输入</div>
+      <div class="lbl">Edit Instruction</div>
+      <div class="instr">Reference order: <b>1 = Source A</b>. Image 2 is the edit. <b>Change the pose of one person.</b> Judge the visible change of pose. The exact target skeleton is not provided. Preserve original identities, clothing, hairstyle and body proportions. Preserve the scene and background from Source A. Keep natural anatomy and clean details.</div>
+      <div class="lbl">Source Image（Source A）</div>
+      <div class="pic"><div class="ph"><img src="assets/source_a.jpg"></div><div class="cap">靠在链条栏杆上 · 侧身回望</div></div>
+      <div class="lbl">Edited Image（候选 0 · initial）</div>
+      <div class="pic"><div class="ph"><img src="assets/cand_initial.png"></div><div class="cap">正面站立 · 手叉腰</div></div>
+      <div class="lbl">参考构成（本样本）</div>
+      <div class="reason" style="font-size:10.9px; line-height:1.6">
+        · 参考图：<b>Source A RGB</b>（rgb 模式，不附骨架）<br>
+        · 候选：<b>352×512</b>，按 Canvas 有效区裁切后送入<br>
+        · 指令：56 词，含“保留身份/服饰/背景”约束<br>
+        · 同组两候选共享同一条件与 SHA
+      </div>
+    </div>
+
+    <!-- 无定位 -->
+    <div class="col col2 c2">
+      <div class="ct"><span class="dot"></span>无定位整体打分<span class="ctag">对照 · EditScore 类</span></div>
+      <div class="lbl">Reasoning</div>
+      <div class="reason">
+        直接看整张图给印象分：姿态确实变了、人物和背景看起来还在，于是给高分。<br><br>
+        但没有<span class="hl">先定位“改哪了”</span>，就无法回答：
+        <b>变化区域是否只落在人身上？</b><b>没让改的背景/服饰有没有被动？</b>
+        发饰的细微变化、链条位置偏移这类<span class="hl">局部证据</span>会被整体印象淹没。
+      </div>
+      <div class="warn"><b>结构性缺陷：</b>分数无法回溯到具体区域，错判时无法定位原因；对“姿态改对但细节被改坏”这类样本天然不敏感。</div>
+      <div class="scorebox bad">
+        <div class="st">SCORES（无法给出区域级证据）</div>
+        <div class="srow"><span>Instruct Following</span><b>?</b></div>
+        <div class="srow"><span>Source Consistency</span><b>?</b></div>
+        <div class="badge x">✕ 不可核查 · 易失准</div>
+      </div>
+      <div class="lbl">为什么需要区域定位</div>
+      <div class="reason" style="font-size:11.2px">
+        姿态编辑的“对”与“错”都发生在局部：躯干/四肢要变，脸、衣服、背景不该变。
+        只有先把<span class="hl">编辑区域</span>框出来，再分别判断“改动是否符合指令”“未改动是否被保住”，分数才可解释。
+      </div>
+      <div class="lbl">会被整体分掩盖的三类局部问题</div>
+      <div class="reason" style="font-size:11px; line-height:1.7">
+        <b>1. 改动越界</b>：姿态改了，但发饰/配饰跟着变，整图看仍“很像”。<br>
+        <b>2. 保留区漂移</b>：背景链条位置、机位轻微偏移，和主体改动混成一个分。<br>
+        <b>3. 无法归因</b>：扣分说不清落在哪个区域，RL 里无法转成可靠优势。
+      </div>
+      <div class="lbl">定位后的判定标准</div>
+      <div class="reason" style="font-size:11px; line-height:1.7">
+        <b>① 改动区</b>：bbox 内的变化是否完整实现指令 → IF<br>
+        <b>② 保留区</b>：bbox 外的身份/服饰/背景是否未被改动 → CON<br>
+        <b>③ 画质</b>：解剖、光影、伪影 → NAT / ART
+      </div>
+    </div>
+
+    <!-- Ours -->
+    <div class="col col3 c3">
+      <div class="ct"><span class="dot"></span>SpatialReward-8B + 编辑区域定位（我们的实现）<span class="ctag">Ours</span></div>
+      <div class="lbl">Edit Region · Explicit Grounding（模型真实输出 bbox_2d，0–1000 坐标）</div>
+      <div class="regionwrap">
+        <div class="region">
+          <div class="rimg">
+            <img src="assets/cand_initial.png">
+            <div class="box" style="left:35.6%; top:30.8%; width:43.2%; height:69.0%;"><span class="boxtag">&lt;|bbox_1|&gt; person</span></div>
+          </div>
+          <div class="rcap">候选 0 · initial ｜ bbox <b>[356, 308, 788, 998]</b></div>
+        </div>
+        <div class="region">
+          <div class="rimg">
+            <img src="assets/cand_regional.png">
+            <div class="box" style="left:33.3%; top:30.8%; width:44.4%; height:69.0%;"><span class="boxtag">&lt;|bbox_1|&gt; person</span></div>
+          </div>
+          <div class="rcap">候选 1 · regional_S3 ｜ bbox <b>[333, 308, 777, 998]</b></div>
+        </div>
+      </div>
+      <div class="arrowrow"><span>两路独立推理</span><span class="ln"></span><span>SC：参考 + 指令 + 候选 → IF / CON</span><span class="ln"></span><span>PQ：只看候选 → NAT / ART</span></div>
+
+      <div class="lbl">Reasoning（模型原文 · 引用 &lt;|bbox_1|&gt; 定位后判断）</div>
+      <div class="reason" style="font-size:11.3px">
+        <b>候选 0：</b>The edit changes the <span class="hl">&lt;|bbox_1|&gt;person</span>’s pose: she is no longer leaning on the chain and is now standing upright with arms down. Clothing, identity, and background remain consistent. <span class="hl">&lt;|global|&gt;</span> The instruction to change the pose is fully satisfied. The background and the person's identity are well-preserved, with only a minor unintended change in the hair accessory.<br>
+        <b>候选 1：</b>The edit changes the <span class="hl">&lt;|bbox_1|&gt;person</span>’s pose: she is now centered, facing more forward, with arms down and one hand in the pocket, versus leaning on the chain with crossed arm in the source. <span class="hl">&lt;|global|&gt;</span> Clothing, identity, and body proportions are preserved. Background and scene remain consistent, with only minor framing/chain placement differences.
+      </div>
+
+      <div class="scorebox good">
+        <div class="st">SCORES（0–25 · 归档 smoke 结果，official 融合）</div>
+        <div class="srow"><span>候选 0 · initial</span><b>IF 25 ｜ CON 25 ｜ NAT 18 ｜ ART 15 → <span style="color:#0f766e">reward 0.9203</span></b></div>
+        <div class="srow"><span>候选 1 · regional_S3</span><b>IF 22 ｜ CON 23 ｜ NAT 18 ｜ ART 15 → <span style="color:#0f766e">reward 0.8429</span></b></div>
+        <div class="badge v">✓ 区域证据可回溯 · 可解释</div>
+      </div>
+
+      <div class="flow">
+        <div class="fstep"><div class="ft">SC 语义一致性</div><div class="fd">有序参考 + 指令 + 候选；<b>先输出 edit_region 再打分</b>，返回 IF / CON</div></div>
+        <div class="fstep"><div class="ft">PQ 画质</div><div class="fd">只看候选图；返回 naturalness / artifacts</div></div>
+        <div class="fstep"><div class="ft">融合模式</div><div class="fd"><code>official</code> SC<sup>.8</sup>×PQ<sup>.2</sup>；<code>visual-linear</code> .40CON+.30NAT+.30ART；<code>complementary</code> CON/25</div></div>
+        <div class="fstep"><div class="ft">训练接入</div><div class="fd">默认权重 <b>0.25</b>；整组评分齐全才进 GDPO；失败即停该批</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="bottom">
+    <div class="bt">已实测结论</div>
+    <div class="bgrid">
+      <div class="bitem"><div class="bk">RGB 参考可用</div><div class="bv">同一对图给出 <b>0.9203 vs 0.8429</b>，方向与“初始更贴源图”一致</div></div>
+      <div class="bitem"><div class="bk">骨架参考不可用</div><div class="bv">guides 模式下两候选 <b>IF=CON=0</b>，SC 全零，reward 全 0</div></div>
+      <div class="bitem"><div class="bk">Batch 敏感</div><div class="bv">batch=1 复跑 CON 变 <b>23/23</b>（reward 0.897/0.843），需方差校准</div></div>
+      <div class="bitem"><div class="bk">PQ 字段已修</div><div class="bv">模型返回 <b>naturalness/artifacts</b> 无 score 字段，旧解析报错，dd28549 修复</div></div>
+    </div>
+  </div>
+  <div class="foot">说明：左二列为“无定位整体打分”的结构性对照（非本仓库跑出的具体分数，仅说明为何需要区域定位）；右侧 bbox、reasoning 与子分为 SpatialReward-8B 在本项目 pair_039 上的真实输出。候选图为小红书 expanded run 的 seed42 生成图，源图为数据集原图。</div>
+</div>
+</body>
+</html>

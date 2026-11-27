@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { width:1600px; background:#f4f6f8; font-family:"Microsoft YaHei","Segoe UI",system-ui,sans-serif; color:#1b2430; -webkit-font-smoothing:antialiased; }
+  .fig { width:1600px; padding:20px 24px 16px; }
+  .hdr { display:flex; align-items:flex-end; justify-content:space-between; padding:2px 4px 12px; border-bottom:2px solid #d8dee6; }
+  .hdr h1 { font-size:27px; font-weight:800; letter-spacing:.3px; }
+  .hdr h1 span { color:#0f766e; }
+  .hdr .sub { font-size:12.5px; color:#5b6675; text-align:right; line-height:1.6; }
+  .hdr .sub b { color:#0f766e; }
+
+  .kpis { display:flex; gap:12px; padding-top:14px; }
+  .kpi { flex:1; min-width:0; background:#fff; border:1px solid #dde3ea; border-radius:12px; padding:11px 14px; position:relative; overflow:hidden; }
+  .kpi:after { content:""; position:absolute; left:0; top:0; bottom:0; width:4px; background:#0f766e; }
+  .kpi .k { font-size:11px; font-weight:800; letter-spacing:.7px; color:#7c8798; }
+  .kpi .v { font-size:26px; font-weight:800; color:#0f766e; margin-top:3px; font-variant-numeric:tabular-nums; }
+  .kpi .v small { font-size:13px; font-weight:700; color:#0f766e; }
+  .kpi .d { font-size:11px; color:#64748b; margin-top:3px; }
+  .kpi .d b { color:#0f172a; }
+
+  .main { display:flex; gap:14px; padding-top:14px; }
+  .panel { background:#fff; border:1px solid #dde3ea; border-radius:14px; padding:14px 16px; min-width:0; }
+  .p-left { width:930px; }
+  .p-right { width:608px; }
+  .pt { font-size:16px; font-weight:800; display:flex; align-items:center; gap:8px; }
+  .pt .tag { font-size:10.5px; font-weight:800; padding:2px 7px; border-radius:6px; margin-left:auto; }
+  .tag.ref { background:#eef2ff; color:#4338ca; border:1px solid #c7d2fe; }
+  .tag.live { background:#e6f5f2; color:#0f766e; border:1px solid #a9d8cf; }
+  .pnote { font-size:10.8px; color:#7c8798; margin-top:4px; line-height:1.5; }
+
+  .charts { display:flex; gap:22px; margin-top:12px; }
+  .chart { flex:1; min-width:0; }
+  .chart .ct { font-size:12px; font-weight:800; color:#334155; }
+  .chart .cu { font-size:10px; color:#94a3b8; font-weight:600; margin-bottom:6px; }
+  .bars { display:flex; align-items:flex-end; gap:16px; height:186px; border-bottom:1.5px solid #cbd5e1; padding:0 6px; }
+  .bar { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:flex-end; height:100%; position:relative; }
+  .bar .bv { font-size:11.5px; font-weight:800; color:#0f766e; margin-bottom:4px; font-variant-numeric:tabular-nums; }
+  .bar .bd { width:100%; max-width:56px; background:linear-gradient(180deg,#14b8a6,#0f766e); border-radius:5px 5px 0 0; }
+  .bar.base .bd { background:#cbd5e1; }
+  .bar.base .bv { color:#64748b; }
+  .blabels { display:flex; gap:16px; padding:5px 6px 0; }
+  .blabels div { flex:1; text-align:center; font-size:10.3px; color:#475569; line-height:1.35; }
+  .blabels div b { color:#0f172a; display:block; font-size:10.6px; }
+
+  .srrow { display:flex; gap:10px; margin-top:10px; }
+  .srbox { flex:1; min-width:0; border-radius:10px; padding:10px 12px; }
+  .srbox.ok { background:#f1faf7; border:1px solid #b6e3d8; }
+  .srbox.no { background:#fff5f4; border:1px solid #f5c2bd; }
+  .srbox .st { font-size:10.5px; font-weight:800; letter-spacing:.6px; }
+  .srbox.ok .st { color:#0f766e; } .srbox.no .st { color:#b91c1c; }
+  .srbox .sv { font-size:21px; font-weight:800; margin-top:4px; font-variant-numeric:tabular-nums; }
+  .srbox.ok .sv { color:#0f766e; } .srbox.no .sv { color:#b91c1c; }
+  .srbox .sd { font-size:10.5px; color:#64748b; line-height:1.45; margin-top:3px; }
+  .srbox .sd b { color:#0f172a; }
+
+  .verdict { margin-top:11px; background:#fffbeb; border:1px solid #fde68a; border-radius:9px; padding:9px 11px; font-size:11.2px; line-height:1.6; color:#78350f; }
+  .verdict b { color:#92400e; }
+
+  table { width:100%; border-collapse:collapse; margin-top:12px; font-size:11px; }
+  th { text-align:left; font-size:10px; letter-spacing:.6px; color:#7c8798; font-weight:800; padding:6px 8px; border-bottom:1.5px solid #d8dee6; background:#f8fafc; }
+  td { padding:6px 8px; border-bottom:1px solid #eef2f6; color:#334155; vertical-align:top; line-height:1.4; }
+  td b { color:#0f172a; }
+  .pill { display:inline-block; font-size:9.8px; font-weight:800; padding:1.5px 6px; border-radius:5px; white-space:nowrap; }
+  .pill.done { background:#d1fae5; color:#047857; }
+  .pill.run { background:#fef3c7; color:#b45309; }
+  .pill.plan { background:#e2e8f0; color:#475569; }
+  .pill.fail { background:#fee2e2; color:#b91c1c; }
+  .foot { font-size:10px; color:#8a94a3; margin-top:9px; padding:0 4px; line-height:1.55; }
+</style>
+</head>
+<body>
+<div class="fig">
+  <div class="hdr">
+    <h1>实验收益整理：<span>SpatialReward-8B</span> 与相关空间监督线</h1>
+    <div class="sub">小红书 expanded run · val 40 对 · seed42 · 20-step ODE · SDPose-Wholebody + YOLO11x（阈值 0.30）<br>
+      收益口径：<b>Body OKS / PCK@0.02</b> 为区域目标 SFT 实测；SpatialReward 自身尚无训练收益</div>
+  </div>
+
+  <div class="kpis">
+    <div class="kpi"><div class="k">Body OKS · initial → regional_S3</div><div class="v">+0.0529</div><div class="d"><b>0.8114 → 0.8643</b>（uniform_S3 0.8487）</div></div>
+    <div class="kpi"><div class="k">PCK@0.02 · initial → regional_S3</div><div class="v">+5.58<small> pp</small></div><div class="d"><b>83.61% → 89.19%</b>（uniform_S3 86.84%）</div></div>
+    <div class="kpi"><div class="k">Hands · initial → regional_S3</div><div class="v">+0.0429</div><div class="d"><b>0.7901 → 0.8330</b>（uniform_S3 0.8313）</div></div>
+    <div class="kpi"><div class="k">Identity cos · initial → regional_S3</div><div class="v">+0.0073</div><div class="d"><b>0.2274 → 0.2347</b>（背景奖励 0.1157→0.1060）</div></div>
+  </div>
+
+  <div class="main">
+    <div class="panel p-left">
+      <div class="pt">区域目标 SFT 的实测增量<span class="tag ref">旁证 · 非 SpatialReward 训练</span></div>
+      <div class="pnote">四臂同一 SFT 预算（各 1,000 updates）、同一 val40、同一 seed；只有目标函数不同（uniform 无空间加权 vs regional 区域加权）。continue_sft 为 regional_S3 再 +50 updates。</div>
+      <div class="charts">
+        <div class="chart">
+          <div class="ct">Body OKS 增量（相对 initial）</div><div class="cu">绝对值 0.8114 → 0.8643，纵轴为 Δ</div>
+          <div class="bars">
+            <div class="bar base"><div class="bv">0</div><div class="bd" style="height:2px"></div></div>
+            <div class="bar"><div class="bv">+0.0373</div><div class="bd" style="height:116px"></div></div>
+            <div class="bar"><div class="bv">+0.0529</div><div class="bd" style="height:164px"></div></div>
+            <div class="bar"><div class="bv">+0.0485</div><div class="bd" style="height:150px"></div></div>
+          </div>
+          <div class="blabels"><div><b>initial</b>基线</div><div><b>uniform_S3</b>0.8487</div><div><b>regional_S3</b>0.8643</div><div><b>continue_sft</b>0.8599</div></div>
+        </div>
+        <div class="chart">
+          <div class="ct">PCK@0.02 增量（百分点）</div><div class="cu">绝对值 83.61% → 89.19%，纵轴为 Δpp</div>
+          <div class="bars">
+            <div class="bar base"><div class="bv">0</div><div class="bd" style="height:2px"></div></div>
+            <div class="bar"><div class="bv">+3.23</div><div class="bd" style="height:101px"></div></div>
+            <div class="bar"><div class="bv">+5.58</div><div class="bd" style="height:174px"></div></div>
+            <div class="bar"><div class="bv">+5.01</div><div class="bd" style="height:156px"></div></div>
+          </div>
+          <div class="blabels"><div><b>initial</b>83.61%</div><div><b>uniform_S3</b>86.84%</div><div><b>regional_S3</b>89.19%</div><div><b>continue_sft</b>88.62%</div></div>
+        </div>
+      </div>
+      <div class="pnote" style="margin-top:10px">读法：regional 在 Body / PCK / Hands / ID 四项全面优于 uniform；continue_sft 相对 regional_S3 轻微回退（Body −0.0044、PCK −0.57pp），说明 +50 updates 的继续 SFT 未带来额外收益。</div>
+    </div>
+
+    <div class="panel p-right">
+      <div class="pt">SpatialReward-8B 已实测结果<span class="tag live">n=1 对 · 冒烟</span></div>
+      <div class="pnote">pair_039 同条件两候选（initial / regional_S3），rgb 参考，official 融合；这是目前唯一的真实评分数据，不构成训练收益。</div>
+      <div class="srrow">
+        <div class="srbox ok"><div class="st">REWARD · INITIAL</div><div class="sv">0.9203</div><div class="sd">IF 25 ｜ CON 25<br>NAT 18 ｜ ART 15</div></div>
+        <div class="srbox ok"><div class="st">REWARD · REGIONAL_S3</div><div class="sv">0.8429</div><div class="sd">IF 22 ｜ CON 23<br>NAT 18 ｜ ART 15</div></div>
+        <div class="srbox no"><div class="st">GUIDES 参考</div><div class="sv">0.0 / 0.0</div><div class="sd">IF=CON=0<br>骨架参考<b>不可用</b></div></div>
+      </div>
+      <div class="verdict"><b>当前结论：</b>SpatialReward 能给出方向合理的排序（初始图更贴源图 → 分更高），但 <b>guides 参考失效</b>、<b>batch 敏感</b>（batch=1 复跑 CON 23/23，reward 0.897/0.843），且只有 1 对样本。<b>正式训练收益尚不存在</b>——固定权重消融（0.10 / 0.25 / 0.40）因 GPU 被 beach 任务占用、GRPO 启动 OOM 而尚未开跑。</div>
+      <div class="pnote" style="margin-top:9px">下一步：等 beach arms 7/8/9 结束、显存释放后，按 <b>rgb + visual-linear</b> 跑三组权重；锁定同一 SFT 父 SHA（regional_S3 <b>630b71f8…</b>）、同 seed 与预算，输出到新目录。</div>
+    </div>
+  </div>
+
+  <table>
+    <tr><th style="width:22%">实验 / 工作项</th><th style="width:30%">内容</th><th style="width:11%">状态</th><th>关键数字 / 证据</th></tr>
+    <tr><td><b>SpatialReward 接入</b><br>05dca81 · dd28549</td><td>隔离子进程评分；SC（参考+指令）/ PQ（仅候选）两路；三种融合；Guarded-GDPO 默认权重 0.25</td><td><span class="pill done">已完成</span></td><td>模型 16 个文件 SHA 锁定；上游 <b>0222484b</b>；score_version v1→v2；PQ 命名字段解析修复</td></tr>
+    <tr><td><b>离线冒烟校准</b></td><td>同一对图跑 rgb / guides、batch 2 / 1；记录子分与 evidence</td><td><span class="pill done">已实测</span></td><td>rgb <b>0.9203 vs 0.8429</b>；guides <b>0/0</b>；batch=1 <b>0.897/0.843</b></td></tr>
+    <tr><td><b>固定权重消融</b></td><td>rgb + visual-linear；spatial-weight <b>0.10 / 0.25 / 0.40</b>；锁定同父 SFT、seed、预算、留出集</td><td><span class="pill plan">未开跑</span></td><td>计划；需先解决 GPU 占用与 OOM</td></tr>
+    <tr><td><b>区域目标 SFT</b><br>（旁证）</td><td>uniform vs regional 四臂，1,000 updates/臂</td><td><span class="pill done">已完成</span></td><td>Body <b>0.8487→0.8643</b>；PCK <b>86.84→89.19%</b>；Hands 0.8313→0.8330</td></tr>
+    <tr><td><b>Identity Reward 后端</b><br>（旁证）</td><td>glintr100 / w600k_r50 / LVFace-B / AdaFace-KPRPE 对照</td><td><span class="pill done">已完成</span></td><td>AdaFace-KPRPE AUC <b>0.9906</b> vs glintr100 0.9830（+0.0076）</td></tr>
+    <tr><td><b>复合 RL 打分基线</b><br>（旁证）</td><td>beach14 四臂 × 14 模板，SDPose + antelopev2 五项加权</td><td><span class="pill done">已完成</span></td><td>#4 with_b+skel+Depth <b>0.7014</b> 居首（12/14 可打分）</td></tr>
+  </table>
+  <div class="foot">口径提醒：KPI 与左图来自区域目标 SFT（uniform vs regional），衡量的是“空间加权监督”的收益，<b>不是</b> SpatialReward-8B 作为 RL 奖励的收益；右列冒烟结果只证明模型可运行与失效边界。两者不可合并宣称。SpatialReward 正式收益需等固定权重消融在留出集上完成。</div>
+</div>
+</body>
+</html>
