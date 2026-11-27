@@ -77,6 +77,7 @@ def write_rows(path, rows):
 
 
 def publish_native(work, selection, pairs, inputs, roots, statuses):
+    from src.pose_control.qwen21_full.native_v5.contracts import DETAIL_SCHEMA, SUPERVISION_SCHEMA
     from src.pose_control.qwen21_full.native_v7.preservation_assets import INDEX_SCHEMA
 
     if len(roots) != len(pairs) or len({pair_key(pair) for pair in pairs}) != len(pairs):
@@ -94,8 +95,9 @@ def publish_native(work, selection, pairs, inputs, roots, statuses):
         if row["pair_id"] != pid or row["source_rgb"] != pair["source"]["rgb"] or row["target_rgb"] != pair["target"]["rgb"]:
             raise ValueError(f"Native V4 pairing differs for {pid}")
         manifests[split].append({"schema": "native_full_pair_v5", "pair_id": pid,
-                                 "v4_manifest": ref(v4), "detail": ref(directory / "detail.npz"),
-                                 "supervision": ref(directory / "supervision.npz"),
+                                 "v4_manifest": ref(v4),
+                                 "detail": {**ref(directory / "detail.npz"), "schema": DETAIL_SCHEMA},
+                                 "supervision": {**ref(directory / "supervision.npz"), "schema": SUPERVISION_SCHEMA},
                                  "qwen_condition": inputs[key]["condition"]})
         groups[split][pid] = pair["group"]
         preserved[key] = ref(directory / "source-preservation.pt")
@@ -117,19 +119,58 @@ def handoff(root, original, work):
     if (original / "native-ready.json").is_file() or (original / "sft").exists():
         return False
     if start_ticks(old["pid"]) == old["start_ticks"] and start_ticks(prepare["pid"]) == prepare["start_ticks"]:
-        process = os.pidfd_open(prepare["pid"])
-        try:
-            if start_ticks(prepare["pid"]) != prepare["start_ticks"]:
-                raise RuntimeError("Original Native worker changed during verification")
-            signal.pidfd_send_signal(process, signal.SIGTERM)
-        finally:
-            os.close(process)
+        pid = prepare["pid"]
+        command = Path(f"/proc/{pid}/cmdline").read_bytes().split(b"\0")
+        if os.fsencode(root / "scripts/native_assets.py") not in command or os.fsencode(original) not in command:
+            raise RuntimeError("Original process command line is not Native preparation for this run")
+        if start_ticks(pid) != prepare["start_ticks"]:
+            raise RuntimeError("Original Native worker changed during verification")
+        if hasattr(os, "pidfd_open") and hasattr(signal, "pidfd_send_signal"):
+            process = os.pidfd_open(pid)
+            try:
+                if start_ticks(pid) != prepare["start_ticks"]:
+                    raise RuntimeError("Original Native worker changed during verification")
+                signal.pidfd_send_signal(process, signal.SIGTERM)
+            finally:
+                os.close(process)
+        else:
+            os.kill(pid, signal.SIGTERM)
     else:
         if start_ticks(old["pid"]) == old["start_ticks"]:
             raise RuntimeError("Original supervisor is live without the expected Native worker")
     write(work / "handoff.json", {"old_supervisor": old["pid"], "old_native": prepare["pid"],
           "old_root": str(original), "selection": ref(root / "data/selection.json")})
     return True
+
+
+def start_training(root, original, work, env):
+    if not (work / "handoff.json").is_file() and not handoff(root, original, work):
+        print("Original production run already ready; continuing it with the original supervisor", flush=True)
+        return
+    wait_gpu(1, 79500)
+    subprocess.run([sys.executable, "-u", str(root / "scripts/train_sft.py"), "--root", str(work)],
+                   env={**env, "CUDA_VISIBLE_DEVICES": "1"}, check=True)
+
+
+def finished_roots(prepared, original, selection, pairs):
+    plan = read(prepared / "plan.json")
+    if plan["selection"] != ref(selection):
+        raise ValueError("Finished assembly plan belongs to another selection")
+    roots = {pair_key(pair): original for pair in pairs[:plan["borrowed_pairs"]]}
+    statuses = []
+    for shard in plan["shards"]:
+        directory = Path(shard["directory"])
+        shard_selection = directory / "selection.json"
+        ready = read(directory / "native-ready.json")
+        if ready["selection"] != ref(shard_selection):
+            raise ValueError(f"Finished shard selection changed: {directory}")
+        for pair in read(shard_selection)["pairs"]:
+            key = pair_key(pair)
+            if key in roots:
+                raise ValueError(f"Duplicate completed shard pair: {key!r}")
+            roots[key] = directory
+        statuses.append(ready)
+    return roots, statuses
 
 
 def main(args):
@@ -142,6 +183,30 @@ def main(args):
     qwen = read(original / "qwen-inputs.json")
     if qwen["selection"] != ref(selection) or set(qwen["entries"]) != {pair_key(pair) for pair in pairs}:
         raise ValueError("Original Qwen inputs differ from the locked selection")
+    env = {**os.environ, "PYTHONPATH": str(repo), "OMP_NUM_THREADS": "4", "MKL_NUM_THREADS": "4",
+           "OPENBLAS_NUM_THREADS": "4", "NUMEXPR_NUM_THREADS": "4"}
+    if args.start_prepared:
+        lock = (work / "pipeline.lock").open("a")
+        fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        native = read(work / "native-ready.json")
+        cache = read(work / "cache/index.json")
+        bindings = {key: value["condition"]["sha256"] for key, value in qwen["entries"].items()}
+        if (native["selection"] != ref(selection) or cache["condition_bindings"] != bindings
+                or set(cache["entries"]) != set(bindings)):
+            raise ValueError("Prepared recovery artifacts differ from the locked selection")
+        start_training(root, original, work, env)
+        return
+    if args.reuse_assembled is not None:
+        prepared = root / f"production-parallel-v{args.reuse_assembled}"
+        roots, statuses = finished_roots(prepared, original, selection, pairs)
+        work.mkdir()
+        lock = (work / "pipeline.lock").open("a")
+        fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        publish_cache(original, work, qwen["entries"])
+        publish_native(work, selection, pairs, qwen["entries"], roots, statuses)
+        write(work / "assembly-reused.json", {"source_plan": ref(prepared / "plan.json"), "pairs": len(roots)})
+        start_training(root, original, work, env)
+        return
     if (original / "native-ready.json").exists() or (original / "sft").exists():
         raise RuntimeError("Original production supervisor has finished Native preparation")
     if not all(available(gpu, 56000) for gpu in (1, 2)):
@@ -158,8 +223,6 @@ def main(args):
     roots = {pair_key(pair): original for pair in pairs[:prefix]}
     shards = partition_by_note(pairs[prefix:], args.workers)
     scripts = root / "scripts"
-    env = {**os.environ, "PYTHONPATH": str(repo), "OMP_NUM_THREADS": "4", "MKL_NUM_THREADS": "4",
-           "OPENBLAS_NUM_THREADS": "4", "NUMEXPR_NUM_THREADS": "4"}
     children = []
     for i, shard in enumerate(shards):
         gpu = 1 + i % 2
@@ -192,12 +255,7 @@ def main(args):
         raise RuntimeError("Failed Native shards; original process is independent: " + ", ".join(failures))
     statuses = [read(directory / "native-ready.json") for directory, _, _, _ in children]
     publish_native(work, selection, pairs, qwen["entries"], roots, statuses)
-    if not handoff(root, original, work):
-        print("Original production run already ready; continuing it with the original supervisor", flush=True)
-        return
-    wait_gpu(1, 79500)
-    subprocess.run([sys.executable, "-u", str(scripts / "train_sft.py"), "--root", str(work)],
-                   env={**env, "CUDA_VISIBLE_DEVICES": "1"}, check=True)
+    start_training(root, original, work, env)
 
 
 if __name__ == "__main__":
@@ -206,4 +264,7 @@ if __name__ == "__main__":
     parser.add_argument("--repo", type=Path, required=True)
     parser.add_argument("--workers", type=int, choices=(4, 6, 8), default=8)
     parser.add_argument("--attempt", type=int, required=True)
+    recovery = parser.add_mutually_exclusive_group()
+    recovery.add_argument("--start-prepared", action="store_true")
+    recovery.add_argument("--reuse-assembled", type=int)
     main(parser.parse_args())

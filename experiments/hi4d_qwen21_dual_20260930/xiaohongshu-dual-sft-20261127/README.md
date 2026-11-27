@@ -15,18 +15,18 @@
 
 `scripts/select_pairs.py` 生成 `data/selection.json`。 `scripts/qwen_cache.py` 准备 4Ref 提示词、骨架与冻结编码， `scripts/native_assets.py` 构建训练格式及监督。 `scripts/run_pipeline.py` 监管准备、 `scripts/train_sft.py` 调用现有 V7 Trainer。源码快照在 `source/main-c18924f4-dual-canvas-v1`，DINO 提取复用 Bilibili 实验的 `scripts/appearance.py`。验证这轮新增的 Canvas 修复可运行 `python -m pytest tests/test_qwen21_native_dual_v3.py tests/test_native_v7_runtime.py tests/test_native_v7_training.py -q`。
 
-正式筛选锁定 1,261 对，train/validation/test 为 1,074/101/86。Qwen 缓存已全部完成。为缩短 Native 装配时间，`scripts/parallel_native.py` 在 GPU 1 和 2 上使用 8 个 worker，复用原目录的 272 对已装配产物，将剩余 989 对按 note 分派。合并时恢复原样本顺序，复用同一份冻结 Qwen 缓存。分片计划在 `production-parallel-v2/plan.json`。装配完成后，`handoff.json` 记载从原作业到并行作业的交接。首个并行尝试的源码搜索路径缺少冻结快照，失败日志保留在 `logs/production-parallel-v1.log`。
+正式筛选锁定 1,261 对，train/validation/test 为 1,074/101/86。Qwen 缓存及 Native 资产均已完成。`scripts/parallel_native.py` 在 GPU 1 和 2 上使用 8 个 worker，复用原目录的 272 对已装配产物，将剩余 989 对按 note 分派。分片计划和退役原装配进程的记录在 `production-parallel-v2/plan.json` 和 `production-parallel-v2/handoff.json`。首次合并的监督侧车引用缺少 schema，数据门禁拦截。使用 `--attempt 3 --reuse-assembled 2` 写出修正清单，沿用原样本顺序、1,261 对 Native 资产和相同 SHA 的 Qwen 缓存。
 
 ```bash
 # 登录 sg 后执行
 ROOT=/data/shangguanrz/pic-edit-experiments/two/qwen21_hi4d_dual/xiaohongshu-dual-sft-20261127-v1
-RUN="$ROOT/production-parallel-v2"
-tail -n 8 "$ROOT/logs/production-parallel-v2.log"
-tail -n 1 "$RUN"/shard-*/native.log
+RUN="$ROOT/production-parallel-v3"
+tail -n 8 "$ROOT/logs/production-start-v3.log"
+tail -n 1 "$ROOT"/production-parallel-v2/shard-*/native.log
 find "$RUN/output/checkpoints" -name '*.commit.json' | sort | tail -n 5
 ```
 
-交接后生产数据和梯度报告在 `production-parallel-v2/sft/`，每阶段的 `S0-committed.json` 等记录权重路径和 SHA。如果原作业率先完成资产装配，监督进程会沿用 `production/`。拿到 commit 后，可在一张空闲卡上用同一份验证清单和相同种子对照初始化与训练后权重。替换 `CHECKPOINT` 为实际已提交文件路径，每次出图使用新输出目录。
+生产数据和梯度报告在 `production-parallel-v3/sft/`，每阶段的 `S0-committed.json` 等记录权重路径和 SHA。拿到 commit 后，可在一张空闲卡上用同一份验证清单和相同种子对照初始化与训练后权重。替换 `CHECKPOINT` 为实际已提交文件路径，每次出图使用新输出目录。
 
 ```bash
 PY=/home/shangguanrz/nihaochen/envs/qwen21/bin/python
