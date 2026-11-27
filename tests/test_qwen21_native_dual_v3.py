@@ -5,10 +5,40 @@ import pytest
 import torch
 
 from src.pose_control.qwen21_full.dual_hi4d_geometry import decode_contact
-from src.pose_control.qwen21_full.dual_depth_geometry import ownership, relative11
+from src.data.canvas_contract import CanvasSpec
+from src.pose_control.qwen21_full.dual_depth_geometry import build_dual_condition, ownership, relative11
 from src.pose_control.qwen21_full.dual_depth_condition import NativeDualIdentityCondition, IDENTITY_SCHEMA
 from src.pose_control.qwen21_full.native_dual_identity import NativeDualIdentityBinder
-from src.pose_control.qwen21_full.native_dual_depth import GatedNativeResidual, DualControlOptions
+from src.pose_control.qwen21_full.native_dual_depth import GatedNativeResidual, DualControlOptions, NativeDualConfig
+
+
+def test_downscaled_relation_raster_matches_typed_camera_z_support():
+    spec = CanvasSpec((128, 128), (32, 32), (32, 32), (0, 0), policy='aspect_preserving')
+    valid = np.zeros((2, 128, 128), dtype=bool)
+    valid[0, :64, :64] = True
+    valid[0, 96, 96] = True   # Nearest hits it, the bilinear support footprint misses it.
+    valid[1, 32:96, 32:96] = True
+    z = valid.astype(np.float32) * np.array([2., 3.], np.float32)[:, None, None]
+    joints = np.zeros((2, 22, 3), dtype=np.float32)
+    joints[..., 2] = np.array([2., 3.])[:, None]
+    normal = np.zeros((2, 128, 128, 3), dtype=np.float32)
+    normal[..., 2] = valid
+    flags = np.zeros((14, 14), dtype=bool)
+    cache = dict(z=z, valid=valid, normal=normal, part=valid.astype(np.uint8),
+                 K=np.array([[128., 0., 64.], [0., 128., 64.], [0., 0., 1.]], dtype=np.float32),
+                 joints_cam=joints, body_height=np.array([1.7, 1.8], dtype=np.float32),
+                 part_distance=np.zeros((14, 14), np.float32), part_distance_valid=flags,
+                 closest_points=np.zeros((14, 14, 2, 3), np.float32), closest_points_valid=flags,
+                 part_contact=np.zeros((14, 14, 4), np.float32),
+                 contact_indices=np.empty((0, 4), np.int64), contact_distance=np.empty(0, np.float32))
+    metadata = dict(person_ids=['a', 'b'], record_id='scene', pair_id='example', record_sha256='0'*64,
+                    camera_id='camera', scale_group_id='scale', units='model_unit', scale_status='model_scale',
+                    model_family_indices=[0, 0])
+    result = build_dual_condition(cache, metadata, spec, NativeDualConfig())
+    assert result.projected[0, 0, 0, 24, 24]
+    assert not result.person_depth_valid[0, 0, 0, 24, 24]
+    assert torch.equal(result.relation_raster[:, 2:4].bool(), result.person_depth_valid.squeeze(2))
+    assert result.relation_raster[0, 0, 24, 24] == 0
 
 
 def test_contact_preserves_official_direction_and_one_based_indices():

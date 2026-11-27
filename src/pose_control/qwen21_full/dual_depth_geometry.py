@@ -100,11 +100,6 @@ def build_dual_condition(cache, metadata, spec, config, *, mode='full_geometry',
     roots = torch.from_numpy(cache['joints_cam'][:, 0, 2].copy()).float()[None]
     scene, valid, overlap, tie, front, visible, weights = ownership(z_native, v_native, heights, config.owner_tolerance)
     center, scale = roots.mean(1)[:, None, None, None], heights.mean(1)[:, None, None, None]
-    raster = torch.cat((torch.where(v_native[:, 0], torch.asinh((z_native[:, 0]-center)/scale), 0.),
-                        torch.where(v_native[:, 1], torch.asinh((z_native[:, 1]-center)/scale), 0.),
-                        v_native[:, 0].float(), v_native[:, 1].float(), overlap.float(),
-                        torch.where(overlap, torch.asinh((z_native[:, 1]-z_native[:, 0])/scale), 0.),
-                        front[:, 0].float(), front[:, 1].float()), 1)
     project = torch.stack([p.context.smpl_mask for p in people], 1)
     def warp_person(value):
         return torch.stack([onto_canvas(value[:, p].float(), spec) for p in range(2)], 1)
@@ -116,9 +111,18 @@ def build_dual_condition(cache, metadata, spec, config, *, mode='full_geometry',
     if physical:
         rel = relative_depth(scene, valid)
         scene_depth = torch.where(scene_valid, onto_canvas(rel, spec, valid=valid), 0.)
+        a, b = people
+        va, vb = a.camera_z_valid, b.camera_z_valid
+        both = va & vb
+        raster = torch.cat((torch.where(va, torch.asinh((a.camera_z-center)/scale), 0.),
+                            torch.where(vb, torch.asinh((b.camera_z-center)/scale), 0.),
+                            va.float(), vb.float(), both.float(),
+                            torch.where(both, torch.asinh((b.camera_z-a.camera_z)/scale), 0.),
+                            (front_c[:, 0] & va).float(), (front_c[:, 1] & vb).float()), 1)
     else:
         scene_valid = (onto_canvas(scene_png_valid.float(), spec) > .5) & project.any(1)
         scene_depth = torch.where(scene_valid, onto_canvas(scene_png, spec, valid=scene_png_valid), 0.).clamp(0, 1)
+        raster = scene_depth.new_zeros(scene_depth.shape[0], 8, *spec.canvas_hw)
         visible_c &= scene_valid[:, None]
         front_c &= scene_valid[:, None]
         tie_c &= scene_valid
@@ -133,13 +137,13 @@ def build_dual_condition(cache, metadata, spec, config, *, mode='full_geometry',
     cd = torch.from_numpy(cache['contact_distance'].copy()).float()[None]
     cv = torch.ones(cd.shape, dtype=torch.bool)
     if not physical:
-        raster.zero_(); distance.zero_(); dv.zero_(); witness.zero_(); wv.zero_(); contact.zero_(); cv.zero_(); cd.zero_()
+        distance.zero_(); dv.zero_(); witness.zero_(); wv.zero_(); contact.zero_(); cv.zero_(); cd.zero_()
     contacts = DualContactRelations(indices, torch.zeros(cd.shape, dtype=torch.long), cd, cv,
         ({'source': 'official_hi4d_correspondence', 'index_base': 1, 'zero': 'no_record'},))
     meta = {**metadata, 'schema': CONDITION_SCHEMA, 'mode': mode, 'canvas_id': spec.fingerprint(),
             'geometry_config': asdict(config), 'normal_basis': 'camera_cv'}
     return DualDepthConditionV3(*people, scene_depth, scene_valid, project, visible_c, weights_c,
-        onto_canvas(raster, spec), onto_canvas(overlap.float(), spec) > .5, front_c,
+        raster, onto_canvas(overlap.float(), spec) > .5, front_c,
         tie_c, distance, dv, witness, wv, contact, contacts,
         torch.tensor([metadata['model_family_indices']], dtype=torch.long), (meta,)).validate(target_token_hw=spec.token_hw)
 
