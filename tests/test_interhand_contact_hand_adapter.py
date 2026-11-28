@@ -65,6 +65,12 @@ def test_pairs_never_cross_identity_or_view_and_use_different_frames(tmp_path):
     assert [(a.index, b.index) for a, b in pairs] == [(0, 6), (6, 12)]
 
 
+def test_intervention_can_pair_one_source_to_two_real_targets():
+    pairs = select_pairs([frame(i) for i in (0, 6, 12, 18)], min_gap=6, max_gap=12,
+                         targets_per_source=2)
+    assert [(a.index, b.index) for a, b in pairs] == [(0, 6), (0, 12), (6, 12), (6, 18), (12, 18)]
+
+
 def test_streaming_annotation_and_split_tar_member_reads(tmp_path):
     data = tmp_path / "data.json"
     data.write_text(json.dumps({"info": {"description": "x"}, "images": [{"id": 0}, {"id": 1}],

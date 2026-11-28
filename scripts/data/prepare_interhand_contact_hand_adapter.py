@@ -30,6 +30,7 @@ def main(argv=None):
     parser.add_argument("--max-gap", type=int, default=180, help="Maximum native frame index gap")
     parser.add_argument("--min-motion", type=float, default=8., help="Minimum RMS displacement in source pixels")
     parser.add_argument("--max-pairs", type=int, help="Maximum emitted pairs per requested split")
+    parser.add_argument("--targets-per-source", type=int, default=1, help="Maximum eligible targets per source RGB")
     parser.add_argument("--mano-model-dir", type=Path, help="Optional directory with MANO_LEFT.pkl and MANO_RIGHT.pkl")
     parser.add_argument("--mano-joint-regressor", type=Path, help="Optional official J_regressor_mano_ih26m.npy")
     parser.add_argument("--max-fit-mm", type=float, default=15.)
@@ -38,7 +39,8 @@ def main(argv=None):
     args = parser.parse_args(argv)
 
     if (args.min_gap < 1 or args.max_gap < args.min_gap or not math.isfinite(args.min_motion)
-            or args.min_motion < 0 or args.cpu_threads < 1 or (args.max_pairs is not None and args.max_pairs < 1)
+            or args.min_motion < 0 or args.cpu_threads < 1 or args.targets_per_source < 1
+            or (args.max_pairs is not None and args.max_pairs < 1)
             or (args.archive_max_images is not None and args.archive_max_images < 2)
             or not math.isfinite(args.max_fit_mm) or args.max_fit_mm <= 0
             or not math.isfinite(args.occlusion_gap_mm) or args.occlusion_gap_mm <= 0
@@ -107,7 +109,7 @@ def main(argv=None):
             converted, stats[split] = convert_split(
                 annotation_root, source, out, split, owners, excluded, min_gap=args.min_gap,
                 max_gap=args.max_gap, min_motion=args.min_motion, limit=args.max_pairs, filters=filters,
-                mano=mano, used_splits=used_splits,
+                mano=mano, used_splits=used_splits, targets_per_source=args.targets_per_source,
             )
             rows.extend(converted)
 
@@ -120,7 +122,8 @@ def main(argv=None):
         "excluded_capture_subjects": excluded,
         "filters": filters,
         "pair_policy": {"minimum_frame_gap": args.min_gap, "maximum_frame_gap": args.max_gap,
-                        "minimum_rms_motion_pixels": args.min_motion, "max_pairs_per_split": args.max_pairs},
+                        "minimum_rms_motion_pixels": args.min_motion, "max_pairs_per_split": args.max_pairs,
+                        "targets_per_source": args.targets_per_source},
         "mano": mano.provenance if mano is not None else None,
         "visibility": "Cross-hand occlusion is mesh-derived when both MANO fits pass; other visibility is unknown.",
         "contact_supervision": "unknown",

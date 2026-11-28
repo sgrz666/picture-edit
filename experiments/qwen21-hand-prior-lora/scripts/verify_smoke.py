@@ -53,6 +53,37 @@ def check_held_out(train_path, comparison_path):
         raise ValueError("Comparison RGB SHA256 overlaps the training images")
 
 
+SWAP_COLUMNS = ("source_sha256", "caption", "group", "hand_type", "pose_sha256", "pose_joints")
+
+
+def select_pose_swap(rows, index, alternate=None):
+    first = rows[index]
+    original = json.loads(first["pose_joints"])
+    candidates = range(len(rows)) if alternate is None else (alternate,)
+    best = None
+    for candidate in candidates:
+        second = rows[candidate]
+        if (second["pose_sha256"] == first["pose_sha256"]
+                or any(second[key] != first[key] for key in SWAP_COLUMNS[:4])):
+            continue
+        other = json.loads(second["pose_joints"])
+        shared = [(a, b) for h0, h1 in zip(original, other) for a, b in zip(h0, h1)
+                  if a is not None and b is not None]
+        if shared:
+            pairs = np.asarray(shared)
+            rms = float(np.sqrt(np.square(pairs[:, 0] - pairs[:, 1]).sum(axis=1).mean()))
+            if rms > 0 and (best is None or rms > best[1]):
+                best = (candidate, rms, len(shared))
+    if best is None:
+        raise ValueError("Pose swap requires two distinct target skeletons for the same source and prompt")
+    return best
+
+
+def image_delta(first, second):
+    a, b = (np.asarray(image.convert("RGB"), dtype=np.float32) for image in (first, second))
+    return float(np.abs(a - b).mean())
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--run", required=True, type=Path, help="Training directory created by train.sh")
@@ -60,6 +91,7 @@ def main():
     parser.add_argument("--dataset", required=True, type=Path)
     parser.add_argument("--split", required=True, choices=("train", "validation", "test"))
     parser.add_argument("--index", type=int, default=0)
+    parser.add_argument("--swap-index", type=int, help="Explicit alternate paired target for dual-image inference")
     parser.add_argument("--out", required=True, type=Path, help="New comparison directory")
     parser.add_argument("--steps", type=int, default=8)
     args = parser.parse_args()
@@ -78,6 +110,12 @@ def main():
         raise ValueError("Training base checksum manifest changed")
     export_path = args.dataset.with_name(args.dataset.name + ".json")
     export = json.loads(export_path.read_text(encoding="utf-8"))
+    columns = settings.get("condition_columns", "source").split(",")
+    dual = columns == ["source", "pose"]
+    if columns != export.get("condition_columns", ["source"]):
+        raise ValueError("Comparison condition schema must match the training run")
+    if args.swap_index is not None and (not dual or args.swap_index < 0):
+        parser.error("swap index requires dual-image inference and a nonnegative index")
     comparison_path = args.dataset / export["parquet"]
     if export["split"] != args.split or file_sha256(comparison_path) != export["parquet_sha256"]:
         raise ValueError("Comparison dataset split or SHA256 differs from its export")
@@ -89,40 +127,69 @@ def main():
             raise ValueError("Training dataset changed since the run")
         check_held_out(train_path, comparison_path)
 
-    weights = args.run / "weights" / "pytorch_lora_weights.safetensors"
-    checkpoint = weights.parent / f"checkpoint-{args.checkpoint_step}"
+    checkpoint = args.run / "weights" / f"checkpoint-{args.checkpoint_step}"
+    weights = checkpoint / "pytorch_lora_weights.safetensors"
     state_files = ["optimizer.bin", "scheduler.bin", "random_states_0.pkl", weights.name]
     if not all((checkpoint / name).stat().st_size for name in state_files):
         raise ValueError(f"Incomplete training checkpoint: {checkpoint}")
     torch.set_num_threads(1)
+    checkpoint_audit = audit_weights(weights)
     audits = {
-        "adapter": audit_weights(weights),
-        "checkpoint_adapter": audit_weights(checkpoint / weights.name),
+        "adapter": audit_weights(checkpoint.parent / weights.name),
+        "checkpoint_adapter": checkpoint_audit,
+        "comparison_adapter_sha256": checkpoint_audit["sha256"],
         "checkpoint_step": args.checkpoint_step,
         "base_manifest_sha256": settings["base_manifest_sha256"],
         "dataset_sha256": export["parquet_sha256"],
         "split": args.split,
+        "condition_columns": columns,
     }
     args.out.mkdir()
     with (args.out / "base-verify.log").open("x", encoding="utf-8") as handle:
         subprocess.run(["sha256sum", "--strict", "--check", str((args.run / "base.sha256").resolve())],
                        cwd=settings["base"], stdout=handle, check=True)
-    row = load_dataset(str(args.dataset.resolve()), split=args.split, cache_dir=str(args.out / "hf-cache"))[args.index]
+    dataset = load_dataset(str(args.dataset.resolve()), split=args.split, cache_dir=str(args.out / "hf-cache"))
+    row = dataset[args.index]
     images = {}
-    for role in ("source", "target"):
-        images[role] = ImageOps.fit(row[role].convert("RGBA"), (512, 512), Image.Resampling.BILINEAR)
+    if dual:
+        candidate, rms, common = select_pose_swap(dataset.select_columns(list(SWAP_COLUMNS)),
+                                                  args.index, args.swap_index)
+        alternate = dataset[candidate]
+        images.update({role: row[role] for role in ("source", "target", "pose")})
+        images.update(target_swap=alternate["target"], pose_swap=alternate["pose"])
+        if any(image.size != (512, 512) for image in images.values()):
+            raise ValueError("Expected pre-aligned 512x512 dual-image canvases")
+        audits["pose_swap"] = {
+            "id": alternate["id"], "index": candidate, "target_sha256": alternate["target_sha256"],
+            "pose_sha256": alternate["pose_sha256"], "pose_rms_px": rms, "common_joints": common,
+        }
+        audits["pose_sha256"] = row["pose_sha256"]
+    else:
+        for role in ("source", "target"):
+            images[role] = ImageOps.fit(row[role].convert("RGBA"), (512, 512), Image.Resampling.BILINEAR)
 
     pipe = QwenImage21Pipeline.from_pretrained(settings["base"], torch_dtype=torch.bfloat16, local_files_only=True)
     pipe.to("cuda")
     seed = 42
-    options = dict(image=images["source"], prompt=row["caption"], width=512, height=512,
+    options = dict(prompt=row["caption"], width=512, height=512,
                    output_resolution=512, true_cfg_scale=1.0, num_inference_steps=args.steps)
-    images["baseline"] = pipe(**options, generator=torch.Generator("cuda").manual_seed(seed)).images[0]
+
+    def generate(arm):
+        if dual:
+            for suffix in ("", "_swap"):
+                refs = [images["source"], images[f"pose{suffix}"]]
+                images[f"{arm}{suffix}"] = pipe(image=refs, **options,
+                                                generator=torch.Generator("cuda").manual_seed(seed)).images[0]
+        else:
+            images[arm] = pipe(image=images["source"], **options,
+                               generator=torch.Generator("cuda").manual_seed(seed)).images[0]
+
+    generate("baseline")
     pipe.load_lora_weights(str(weights.parent), weight_name=weights.name, adapter_name="hand_prior")
     adapter = pipe.transformer.peft_config["hand_prior"]
     if adapter.r != 16 or adapter.lora_alpha != 16:
         raise ValueError(f"Reloaded rank/alpha mismatch: {adapter.r}/{adapter.lora_alpha}")
-    images["lora"] = pipe(**options, generator=torch.Generator("cuda").manual_seed(seed)).images[0]
+    generate("lora")
 
     png_sha = {}
     for name, image in images.items():
@@ -130,13 +197,17 @@ def main():
         with path.open("xb") as handle:
             image.save(handle, format="PNG")
         png_sha[name] = file_sha256(path)
-    baseline, lora = (np.asarray(images[name].convert("RGB"), dtype=np.float32) for name in ("baseline", "lora"))
-    pixel_mae = float(np.abs(baseline - lora).mean())
+    pixel_mae = image_delta(images["baseline"], images["lora"])
     if pixel_mae == 0:
         raise ValueError("Same-seed baseline and LoRA produced identical RGB")
     audits.update(id=row["id"], group=row["group"], caption=row["caption"], source_sha256=row["source_sha256"],
                   target_sha256=row["target_sha256"], seed=seed, inference_steps=args.steps, resolution=512,
                   png_sha256=png_sha, rgb_mae_0_255=pixel_mae)
+    if dual:
+        for arm in ("baseline", "lora"):
+            audits["pose_swap"][f"{arm}_rgb_mae_0_255"] = image_delta(images[arm], images[f"{arm}_swap"])
+        if audits["pose_swap"]["lora_rgb_mae_0_255"] == 0:
+            raise ValueError("The loaded LoRA produced identical RGB after the pose swap")
     with (args.out / "verification.json").open("x", encoding="utf-8") as handle:
         json.dump(audits, handle, indent=2)
         handle.write("\n")

@@ -1,0 +1,578 @@
+--- train_dreambooth_lora_qwenimage21_img2img.py
++++ train_dreambooth_lora_qwenimage21_multiimg.py
+@@ -95,0 +96,2 @@
++from qwen21_multiimg import CONDITION_COLUMNS, RESOLUTION, cache_dataset, pack_inputs, single_cached_pair
++
+@@ -336,6 +338,3 @@
+-    parser.add_argument(
+-        "--cond_image_column",
+-        type=str,
+-        default=None,
+-        help="Column in the dataset containing the condition image the edit is applied to. Required here.",
+-    )
++    parser.add_argument("--cond_image_columns", required=True, help="Ordered columns: source,pose")
++    parser.add_argument("--condition_cache_dir", required=True, help="New directory for the encoded pair shards")
++
+@@ -758,6 +757,10 @@
+-    if args.dataset_name is None or args.cond_image_column is None:
+-        raise ValueError(
+-            "Image-to-image training pairs each target image with a condition image, so it needs a dataset that "
+-            "holds both: pass `--dataset_name` together with `--cond_image_column`. For text-to-image training use "
+-            "train_dreambooth_lora_qwenimage21.py."
+-        )
++    if args.dataset_name is None or tuple(args.cond_image_columns.split(",")) != CONDITION_COLUMNS:
++        raise ValueError("Dual I2I training requires --dataset_name and --cond_image_columns source,pose")
++    if (args.image_column != "target" or args.caption_column != "caption"
++            or args.train_batch_size != 1 or args.resolution != RESOLUTION or not args.cache_latents):
++        raise ValueError("Use target/caption columns, batch size 1, 512x512 canvases, and --cache_latents")
++    if (args.repeats != 1 or args.random_flip or args.use_aspect_ratio_buckets
++            or args.aspect_ratio_buckets or args.resume_from_checkpoint or args.checkpoints_total_limit is not None):
++        raise ValueError("Dual I2I uses pre-aligned canvases, one pass per pair, and a fresh run directory")
++    if args.validation_prompt or args.final_validation_prompt or args.validation_image:
++        raise ValueError("Use verify_smoke.py for dual-image validation")
+@@ -803,293 +805,0 @@
+-class DreamBoothDataset(Dataset):
+-    """
+-    A dataset to prepare the instance and class images with the prompts for fine-tuning the model.
+-    It pre-processes the images.
+-    """
+-
+-    def __init__(
+-        self,
+-        instance_data_root,
+-        instance_prompt,
+-        class_prompt,
+-        class_data_root=None,
+-        class_num=None,
+-        size=1024,
+-        repeats=1,
+-        center_crop=False,
+-        buckets=None,
+-        use_aspect_ratio_buckets=False,
+-        # 32, not the usual 16: both latent dimensions have to be even to fill 2x2 slots.
+-        bucket_divisibility=SIZE_MULTIPLE_OF,
+-        bucket_base_resolutions=None,
+-    ):
+-        self.size = size
+-        self.resolution = size
+-        self.center_crop = center_crop
+-
+-        self.instance_prompt = instance_prompt
+-        self.custom_instance_prompts = None
+-        self.class_prompt = class_prompt
+-
+-        # Explicit user-provided bucket list (or None). The concrete list of buckets actually used is
+-        # built from the data in `self.buckets` during preprocessing below.
+-        self._explicit_buckets = buckets
+-        self.use_aspect_ratio_buckets = use_aspect_ratio_buckets
+-        self.bucket_divisibility = bucket_divisibility
+-        self.bucket_base_resolutions = bucket_base_resolutions
+-
+-        # if --dataset_name is provided or a metadata jsonl file is provided in the local --instance_data directory,
+-        # we load the training data using load_dataset
+-        if args.dataset_name is not None:
+-            try:
+-                from datasets import load_dataset
+-            except ImportError:
+-                raise ImportError(
+-                    "You are trying to load your data using the datasets library. If you wish to train using custom "
+-                    "captions please install the datasets library: `pip install datasets`. If you wish to load a "
+-                    "local folder containing images only, specify --instance_data_dir instead."
+-                )
+-            # Downloading and loading a dataset from the hub.
+-            # See more about loading custom images at
+-            # https://huggingface.co/docs/datasets/v2.0.0/en/dataset_script
+-            dataset = load_dataset(
+-                args.dataset_name,
+-                args.dataset_config_name,
+-                cache_dir=args.cache_dir,
+-            )
+-            # Preprocessing the datasets.
+-            column_names = dataset["train"].column_names
+-
+-            # 6. Get the column names for input/target.
+-            if args.image_column is None:
+-                image_column = column_names[0]
+-                logger.info(f"image column defaulting to {image_column}")
+-            else:
+-                image_column = args.image_column
+-                if image_column not in column_names:
+-                    raise ValueError(
+-                        f"`--image_column` value '{args.image_column}' not found in dataset columns. Dataset columns are: {', '.join(column_names)}"
+-                    )
+-            instance_images = dataset["train"][image_column]
+-
+-            if args.cond_image_column not in column_names:
+-                raise ValueError(
+-                    f"`--cond_image_column` value '{args.cond_image_column}' not found in dataset columns. Dataset "
+-                    f"columns are: {', '.join(column_names)}"
+-                )
+-            cond_images = dataset["train"][args.cond_image_column]
+-            if len(cond_images) != len(instance_images):
+-                raise ValueError(
+-                    f"The dataset has {len(instance_images)} target images but {len(cond_images)} condition images."
+-                )
+-
+-            if args.caption_column is None:
+-                logger.info(
+-                    "No caption column provided, defaulting to instance_prompt for all images. If your dataset "
+-                    "contains captions/prompts for the images, make sure to specify the "
+-                    "column as --caption_column"
+-                )
+-                self.custom_instance_prompts = None
+-            else:
+-                if args.caption_column not in column_names:
+-                    raise ValueError(
+-                        f"`--caption_column` value '{args.caption_column}' not found in dataset columns. Dataset columns are: {', '.join(column_names)}"
+-                    )
+-                custom_instance_prompts = dataset["train"][args.caption_column]
+-                # create final list of captions according to --repeats
+-                self.custom_instance_prompts = []
+-                for caption in custom_instance_prompts:
+-                    self.custom_instance_prompts.extend(itertools.repeat(caption, repeats))
+-        else:
+-            self.instance_data_root = Path(instance_data_root)
+-            if not self.instance_data_root.exists():
+-                raise ValueError("Instance images root doesn't exists.")
+-
+-            instance_images = [Image.open(path) for path in list(Path(instance_data_root).iterdir())]
+-            self.custom_instance_prompts = None
+-
+-        self.instance_images = []
+-        self.cond_images = []
+-        for img, cond_img in zip(instance_images, cond_images):
+-            self.instance_images.extend(itertools.repeat(img, repeats))
+-            self.cond_images.extend(itertools.repeat(cond_img, repeats))
+-
+-        self.pixel_values = []
+-        self.cond_pixel_values = []
+-        self.cond_pil_images = []
+-        self.buckets = []
+-        bucket_to_idx = {}
+-        for image, cond_image in zip(self.instance_images, self.cond_images):
+-            image = exif_transpose(image)
+-            cond_image = exif_transpose(cond_image)
+-            # RGBA, not RGB: this VAE takes and returns four channels.
+-            if not image.mode == "RGBA":
+-                image = image.convert("RGBA")
+-            if not cond_image.mode == "RGBA":
+-                cond_image = cond_image.convert("RGBA")
+-
+-            width, height = image.size
+-
+-            # Assign the image to a bucket.
+-            target = self._bucket_for_image(height, width)
+-            if target not in bucket_to_idx:
+-                bucket_to_idx[target] = len(self.buckets)
+-                self.buckets.append(target)
+-            bucket_idx = bucket_to_idx[target]
+-
+-            # based on the bucket assignment, define the transformations
+-            image, cond_tensor, cond_pil = self.train_transform_pair(
+-                image,
+-                cond_image,
+-                size=target,
+-                center_crop=args.center_crop,
+-                random_flip=args.random_flip,
+-            )
+-            self.pixel_values.append((image, bucket_idx))
+-            self.cond_pixel_values.append((cond_tensor, bucket_idx))
+-            # The vision-language model reads the condition image as pixels, so the cropped frame is kept as well.
+-            self.cond_pil_images.append(cond_pil)
+-
+-        self.num_instance_images = len(self.instance_images)
+-        self._length = self.num_instance_images
+-
+-        if class_data_root is not None:
+-            self.class_data_root = Path(class_data_root)
+-            self.class_data_root.mkdir(parents=True, exist_ok=True)
+-            self.class_images_path = list(self.class_data_root.iterdir())
+-            if class_num is not None:
+-                self.num_class_images = min(len(self.class_images_path), class_num)
+-            else:
+-                self.num_class_images = len(self.class_images_path)
+-            self._length = max(self.num_class_images, self.num_instance_images)
+-        else:
+-            self.class_data_root = None
+-
+-    def __len__(self):
+-        return self._length
+-
+-    def __getitem__(self, index):
+-        example = {}
+-        instance_image, bucket_idx = self.pixel_values[index % self.num_instance_images]
+-        example["index"] = index
+-        example["instance_images"] = instance_image
+-        example["cond_images"] = self.cond_pixel_values[index % self.num_instance_images][0]
+-        example["cond_pil_images"] = self.cond_pil_images[index % self.num_instance_images]
+-        example["bucket_idx"] = bucket_idx
+-        if self.custom_instance_prompts:
+-            caption = self.custom_instance_prompts[index % self.num_instance_images]
+-            if caption:
+-                example["instance_prompt"] = caption
+-            else:
+-                example["instance_prompt"] = self.instance_prompt
+-
+-        else:  # custom prompts were provided, but length does not match size of image dataset
+-            example["instance_prompt"] = self.instance_prompt
+-
+-        if self.class_data_root:
+-            class_image = Image.open(self.class_images_path[index % self.num_class_images])
+-            class_image = exif_transpose(class_image)
+-
+-            if not class_image.mode == "RGBA":
+-                class_image = class_image.convert("RGBA")
+-            # Match the class image to the paired instance image's bucket so they can be stacked into one batch.
+-            example["class_images"] = self.train_transform(
+-                class_image, size=self.buckets[bucket_idx], center_crop=self.center_crop
+-            )
+-            example["class_prompt"] = self.class_prompt
+-
+-        return example
+-
+-    def _bucket_for_image(self, height, width):
+-        # An explicit bucket list takes priority: pick the nearest, upscaling smaller images to cover it.
+-        if self._explicit_buckets is not None:
+-            return self._explicit_buckets[find_nearest_bucket(height, width, self._explicit_buckets)]
+-        # On-the-fly bucketing: cap the ladder to the image's own resolution so smaller images are
+-        # assigned to a smaller bucket rather than being upscaled (mirrors ostris' bucketing).
+-        if self.use_aspect_ratio_buckets:
+-            resolution = min(self.resolution, round((height * width) ** 0.5))
+-            ladder = generate_aspect_ratio_buckets(
+-                resolution,
+-                divisibility=self.bucket_divisibility,
+-                base_resolutions=self.bucket_base_resolutions,
+-            )
+-            return ladder[find_nearest_bucket(height, width, ladder)]
+-        # No bucketing: a single square bucket reproduces the fixed-size resize + crop.
+-        return (self.resolution, self.resolution)
+-
+-    def train_transform_pair(self, image, cond_image, size, center_crop=False, random_flip=False):
+-        """Resize and crop a target image and its condition image through one geometry, so an aligned pair stays
+-        aligned. Returns both tensors and the cropped condition image, which the prompt encoder needs."""
+-        target_height, target_width = size
+-        width, height = image.size
+-        scale = max(target_height / height, target_width / width)
+-        new_height, new_width = round(height * scale), round(width * scale)
+-        resize = lambda img: TF.resize(  # noqa: E731
+-            img, [new_height, new_width], interpolation=transforms.InterpolationMode.BILINEAR
+-        )
+-        image, cond_image = resize(image), resize(cond_image)
+-        if center_crop:
+-            image, cond_image = TF.center_crop(image, size), TF.center_crop(cond_image, size)
+-        else:
+-            i, j, h, w = transforms.RandomCrop.get_params(image, output_size=size)
+-            image, cond_image = TF.crop(image, i, j, h, w), TF.crop(cond_image, i, j, h, w)
+-        if random_flip and random.random() < 0.5:
+-            image, cond_image = TF.hflip(image), TF.hflip(cond_image)
+-        return (
+-            TF.normalize(TF.to_tensor(image), [0.5], [0.5]),
+-            TF.normalize(TF.to_tensor(cond_image), [0.5], [0.5]),
+-            cond_image,
+-        )
+-
+-    def train_transform(self, image, size, center_crop=False, random_flip=False):
+-        # Resize preserving aspect ratio so the image covers the bucket, then crop to the bucket size.
+-        target_height, target_width = size
+-        width, height = image.size
+-        scale = max(target_height / height, target_width / width)
+-        new_height, new_width = round(height * scale), round(width * scale)
+-        image = TF.resize(image, [new_height, new_width], interpolation=transforms.InterpolationMode.BILINEAR)
+-        if center_crop:
+-            image = TF.center_crop(image, size)
+-        else:
+-            i, j, h, w = transforms.RandomCrop.get_params(image, output_size=size)
+-            image = TF.crop(image, i, j, h, w)
+-        if random_flip and random.random() < 0.5:
+-            image = TF.hflip(image)
+-        return TF.normalize(TF.to_tensor(image), [0.5], [0.5])
+-
+-
+-def collate_fn(examples, with_prior_preservation=False):
+-    indices = [example["index"] for example in examples]
+-    pixel_values = [example["instance_images"] for example in examples]
+-    # Keep instance_prompts unchanged for prompt cache precompute; prompts may be extended with class prompts below.
+-    instance_prompts = [example["instance_prompt"] for example in examples]
+-    prompts = [example["instance_prompt"] for example in examples]
+-
+-    # Concat class and instance examples for prior preservation.
+-    # We do this to avoid doing two forward passes.
+-    if with_prior_preservation:
+-        pixel_values += [example["class_images"] for example in examples]
+-        prompts += [example["class_prompt"] for example in examples]
+-
+-    pixel_values = torch.stack(pixel_values)
+-    # Qwen expects a `num_frames` dimension too.
+-    if pixel_values.ndim == 4:
+-        pixel_values = pixel_values.unsqueeze(2)
+-    pixel_values = pixel_values.to(memory_format=torch.contiguous_format).float()
+-
+-    cond_pixel_values = torch.stack([example["cond_images"] for example in examples])
+-    if cond_pixel_values.ndim == 4:
+-        cond_pixel_values = cond_pixel_values.unsqueeze(2)
+-    cond_pixel_values = cond_pixel_values.to(memory_format=torch.contiguous_format).float()
+-
+-    batch = {
+-        "indices": indices,
+-        "pixel_values": pixel_values,
+-        "cond_pixel_values": cond_pixel_values,
+-        # Images rather than tensors: the prompt encoder feeds the condition image to the vision-language model.
+-        "cond_pil_images": [example["cond_pil_images"] for example in examples],
+-        "instance_prompts": instance_prompts,
+-        "prompts": prompts,
+-    }
+-    return batch
+-
+-
+@@ -1097 +807 @@
+-    def __init__(self, dataset: DreamBoothDataset, batch_size: int, drop_last: bool = False, seed: int = None):
++    def __init__(self, dataset: torch.utils.data.Dataset, batch_size: int, drop_last: bool = False, seed: int = None):
+@@ -1108,4 +818 @@
+-        # Group indices by bucket
+-        self.bucket_indices = [[] for _ in range(len(self.dataset.buckets))]
+-        for idx, (_, bucket_idx) in enumerate(self.dataset.pixel_values):
+-            self.bucket_indices[bucket_idx].append(idx)
++        self.bucket_indices = [list(range(len(dataset)))]
+@@ -1583,36 +1290,6 @@
+-    # Resolve the bucketing mode. Bucketing must be enabled explicitly with --use_aspect_ratio_buckets;
+-    # a bucket list without that flag is an error. With the flag, an explicit --aspect_ratio_buckets list
+-    # drives assignment, otherwise buckets are computed on the fly inside the dataset. Without the flag a
+-    # single square bucket reproduces the fixed-size resize + crop.
+-    if args.aspect_ratio_buckets is not None and not args.use_aspect_ratio_buckets:
+-        raise ValueError("--aspect_ratio_buckets requires --use_aspect_ratio_buckets to be set.")
+-    if args.aspect_ratio_buckets is not None:
+-        buckets = parse_buckets_string(args.aspect_ratio_buckets)
+-        use_aspect_ratio_buckets = False
+-        logger.info(f"Using explicit aspect ratio buckets: {buckets}")
+-    elif args.use_aspect_ratio_buckets:
+-        buckets = None
+-        use_aspect_ratio_buckets = True
+-        logger.info(
+-            "No --aspect_ratio_buckets provided; auto-computing aspect ratio buckets on the fly from --resolution."
+-        )
+-    else:
+-        buckets = [(args.resolution, args.resolution)]
+-        use_aspect_ratio_buckets = False
+-
+-    # Dataset and DataLoaders creation:
+-    train_dataset = DreamBoothDataset(
+-        instance_data_root=args.instance_data_dir,
+-        instance_prompt=args.instance_prompt,
+-        class_prompt=args.class_prompt,
+-        class_data_root=args.class_data_dir if args.with_prior_preservation else None,
+-        class_num=args.num_class_images,
+-        size=args.resolution,
+-        repeats=args.repeats,
+-        center_crop=args.center_crop,
+-        buckets=buckets,
+-        use_aspect_ratio_buckets=use_aspect_ratio_buckets,
+-    )
+-    # Prompt embeddings depend on the sample's condition image, so they are always precomputed per sample.
+-    precompute_latents = True
+-    batch_sampler = BucketBatchSampler(train_dataset, batch_size=args.train_batch_size, drop_last=True, seed=args.seed)
++    if accelerator.num_processes != 1:
++        raise ValueError("Dual-image disk cache requires a single training process")
++    with (offload_models(vae, device=accelerator.device, offload=args.offload),
++          offload_models(text_encoding_pipeline, device=accelerator.device, offload=args.offload)):
++        train_dataset = cache_dataset(args, text_encoding_pipeline, vae, accelerator.device)
++    batch_sampler = BucketBatchSampler(train_dataset, batch_size=1, drop_last=True, seed=args.seed)
+@@ -1620,3 +1297 @@
+-        train_dataset,
+-        batch_sampler=batch_sampler,
+-        collate_fn=lambda examples: collate_fn(examples, args.with_prior_preservation),
++        train_dataset, batch_sampler=batch_sampler, collate_fn=single_cached_pair,
+@@ -1625,22 +1299,0 @@
+-
+-    def compute_text_embeddings(prompt, text_encoding_pipeline, cond_image=None):
+-        with torch.no_grad():
+-            # One sample at a time: a list of images applies to every prompt in the call, not pairwise.
+-            prompt_embeds, prompt_embeds_mask, image_pad_mask = text_encoding_pipeline.encode_prompt(
+-                prompt=prompt, image=None if cond_image is None else [cond_image]
+-            )
+-        return prompt_embeds, prompt_embeds_mask, image_pad_mask
+-
+-    # Handle class prompt for prior-preservation.
+-    if args.with_prior_preservation:
+-        with offload_models(text_encoding_pipeline, device=accelerator.device, offload=args.offload):
+-            class_prompt_embeds, class_prompt_embeds_mask, _ = compute_text_embeddings(
+-                args.class_prompt, text_encoding_pipeline
+-            )
+-
+-    # When caption dropout is enabled, we precompute the empty ("") prompt embedding once and swap it in
+-    # for randomly selected instance samples at training time (see the training loop below).
+-    if args.caption_dropout > 0:
+-        with offload_models(text_encoding_pipeline, device=accelerator.device, offload=args.offload):
+-            empty_prompt_embeds, empty_prompt_embeds_mask, _ = compute_text_embeddings("", text_encoding_pipeline)
+-
+@@ -1649,79 +1301,0 @@
+-    # The final pass runs on `--final_validation_prompt` when `--validation_prompt` is absent, so the embeddings
+-    # have to be built for whichever one is set - the text encoder is freed before that pass reaches the pipeline.
+-    effective_validation_prompt = args.validation_prompt or args.final_validation_prompt
+-    if effective_validation_prompt is not None:
+-        if args.validation_image is None:
+-            raise ValueError(
+-                "A validation prompt needs `--validation_image`, the image the edit is applied to. Pass it "
+-                "alongside `--validation_prompt` or `--final_validation_prompt`."
+-            )
+-        validation_image = load_image(args.validation_image)
+-        # Encoded at the size the pipeline will resize to, so vision tokens and latents line up.
+-        width, height, _ = calculate_dimensions(
+-            args.resolution * args.resolution, validation_image.size[0] / validation_image.size[1]
+-        )
+-        resized_validation_image = validation_image.resize((width, height))
+-        with offload_models(text_encoding_pipeline, device=accelerator.device, offload=args.offload):
+-            embeds, embeds_mask, image_pad_mask = compute_text_embeddings(
+-                effective_validation_prompt, text_encoding_pipeline, resized_validation_image
+-            )
+-        validation_pipeline_args = {
+-            "prompt_embeds": embeds,
+-            "prompt_embeds_mask": embeds_mask,
+-            "image": validation_image,
+-        }
+-        validation_image_pad_mask = image_pad_mask
+-
+-    # if cache_latents is set to True, we encode images to latents and store them.
+-    # Similar to pre-encoding in the case of a single instance prompt, if custom prompts are provided
+-    # we encode them in advance as well. Caches are keyed by dataset index so they stay correct under
+-    # aspect-ratio bucketing, where the batch composition differs between the caching pass and training.
+-    if args.cache_latents:
+-        instance_latents_cache = [None] * train_dataset.num_instance_images
+-        cond_latents_cache = [None] * train_dataset.num_instance_images
+-    prompt_embeds_cache = [None] * train_dataset.num_instance_images
+-    prompt_embeds_mask_cache = [None] * train_dataset.num_instance_images
+-    image_pad_mask_cache = [None] * train_dataset.num_instance_images
+-    if precompute_latents:
+-        cache_batch_sampler = BucketBatchSampler(
+-            train_dataset, batch_size=args.train_batch_size, drop_last=False, seed=args.seed
+-        )
+-        cache_dataloader = torch.utils.data.DataLoader(
+-            train_dataset,
+-            batch_sampler=cache_batch_sampler,
+-            collate_fn=lambda examples: collate_fn(examples, args.with_prior_preservation),
+-            num_workers=args.dataloader_num_workers,
+-        )
+-        for batch in tqdm(cache_dataloader, desc="Caching latents"):
+-            with torch.no_grad():
+-                sample_indices = batch["indices"]
+-                if args.cache_latents:
+-                    with offload_models(vae, device=accelerator.device, offload=args.offload):
+-                        batch["pixel_values"] = batch["pixel_values"].to(
+-                            accelerator.device, non_blocking=True, dtype=vae.dtype
+-                        )
+-                        instance_latents = vae.encode(batch["pixel_values"]).latent_dist.sample()
+-                        # Taken at the mode, not sampled: the condition image is not noised.
+-                        cond_latents = vae.encode(
+-                            batch["cond_pixel_values"].to(accelerator.device, non_blocking=True, dtype=vae.dtype)
+-                        ).latent_dist.mode()
+-                    for i, idx in enumerate(sample_indices):
+-                        instance_latents_cache[idx] = instance_latents[i : i + 1]
+-                        cond_latents_cache[idx] = cond_latents[i : i + 1]
+-                with offload_models(text_encoding_pipeline, device=accelerator.device, offload=args.offload):
+-                    for i, idx in enumerate(sample_indices):
+-                        prompt_embeds, prompt_embeds_mask, image_pad_mask = compute_text_embeddings(
+-                            batch["instance_prompts"][i], text_encoding_pipeline, batch["cond_pil_images"][i]
+-                        )
+-                        prompt_embeds_cache[idx] = prompt_embeds
+-                        prompt_embeds_mask_cache[idx] = prompt_embeds_mask
+-                        image_pad_mask_cache[idx] = image_pad_mask
+-
+-        if args.cache_latents:
+-            assert all(latents is not None for latents in instance_latents_cache), "Latent cache has unfilled entries."
+-            assert all(latents is not None for latents in cond_latents_cache), (
+-                "Condition latent cache has unfilled entries."
+-            )
+-        assert all(embeds is not None for embeds in prompt_embeds_cache), (
+-            "Prompt embedding cache has unfilled entries."
+-        )
+@@ -1834,0 +1409,3 @@
++    def normalize_latents(latents):
++        return ((latents - latents_mean) * latents_std).to(dtype=weight_dtype)
++
+@@ -1840,2 +1416,0 @@
+-            sample_indices = batch["indices"]
+-
+@@ -1843,29 +1418,5 @@
+-                # Each sample's embeddings were encoded with its own condition image, gathered by dataset index.
+-                prompt_pairs = [(prompt_embeds_cache[idx], prompt_embeds_mask_cache[idx]) for idx in sample_indices]
+-                prompt_embeds, prompt_embeds_mask = concat_prompt_embedding_batches(*prompt_pairs)
+-
+-                # The transformer reads one image-pad layout for the whole batch, so the samples have to agree.
+-                batch_image_pad_masks = [image_pad_mask_cache[idx] for idx in sample_indices]
+-                if any(not torch.equal(mask, batch_image_pad_masks[0]) for mask in batch_image_pad_masks[1:]):
+-                    raise ValueError(
+-                        "The samples in this batch place the condition image's tokens differently, which happens "
+-                        "when their prompts differ in length. Train with `--train_batch_size 1`, or give the "
+-                        "samples in a batch the same prompt."
+-                    )
+-                image_pad_mask = batch_image_pad_masks[0].repeat(len(sample_indices), 1).to(accelerator.device)
+-
+-                # Convert images to latent space
+-                if args.cache_latents:
+-                    model_input = torch.cat([instance_latents_cache[idx] for idx in sample_indices], dim=0)
+-                    cond_model_input = torch.cat([cond_latents_cache[idx] for idx in sample_indices], dim=0)
+-                else:
+-                    with offload_models(vae, device=accelerator.device, offload=args.offload):
+-                        pixel_values = batch["pixel_values"].to(dtype=vae.dtype)
+-                        cond_pixel_values = batch["cond_pixel_values"].to(device=accelerator.device, dtype=vae.dtype)
+-                        model_input = vae.encode(pixel_values).latent_dist.sample()
+-                        cond_model_input = vae.encode(cond_pixel_values).latent_dist.mode()
+-
+-                model_input = (model_input - latents_mean) * latents_std
+-                model_input = model_input.to(dtype=weight_dtype)
+-                # Clean, at the same normalisation as the target.
+-                cond_model_input = ((cond_model_input - latents_mean) * latents_std).to(dtype=weight_dtype)
++                prompt_embeds = batch["prompt_embeds"]
++                prompt_embeds_mask = batch["prompt_mask"]
++                image_pad_mask = batch["image_pad_mask"]
++                model_input = normalize_latents(batch["target"])
++                conditions = tuple(normalize_latents(batch[column]) for column in CONDITION_COLUMNS)
+@@ -1894,40 +1445,3 @@
+-                # Predict the noise residual. A batch is single-bucket, so the latent height/width are shared
+-                # across the batch; derive them from the latents to support aspect-ratio buckets.
+-                latent_height, latent_width = model_input.shape[3], model_input.shape[4]
+-                cond_latent_height, cond_latent_width = cond_model_input.shape[3], cond_model_input.shape[4]
+-                # One shape per image in the sequence, ordered [condition, target].
+-                img_shapes = [[(1, cond_latent_height, cond_latent_width), (1, latent_height, latent_width)]] * bsz
+-                # Latents are consumed unpatched, so packing is a plain spatial flatten.
+-                packed_noisy_model_input = QwenImage21Pipeline._pack_latents(
+-                    noisy_model_input,
+-                    batch_size=model_input.shape[0],
+-                    num_channels_latents=model_input.shape[1],
+-                    height=latent_height,
+-                    width=latent_width,
+-                )
+-                packed_cond_model_input = QwenImage21Pipeline._pack_latents(
+-                    cond_model_input,
+-                    batch_size=cond_model_input.shape[0],
+-                    num_channels_latents=cond_model_input.shape[1],
+-                    height=cond_latent_height,
+-                    width=cond_latent_width,
+-                )
+-                # Condition latents lead, noisy target follows, the order `img_shapes` declares.
+-                packed_input = torch.cat([packed_cond_model_input, packed_noisy_model_input], dim=1)
+-                # `img_mask` marks which positions over [prompt tokens, target slots] stand for image latents, one
+-                # slot per 2x2 group. The prompt half comes from the encoder, where the vision tokens sit.
+-                target_slots = (latent_height * latent_width) // 4
+-                cond_slots = (cond_latent_height * cond_latent_width) // 4
+-                if int(image_pad_mask[0].sum()) != cond_slots:
+-                    raise ValueError(
+-                        f"The prompt carries {int(image_pad_mask[0].sum())} condition-image slots but the condition "
+-                        f"latents need {cond_slots}. The vision-language processor resizes images below its minimum "
+-                        f"pixel count, so a condition image this small ({cond_latent_height * 16}x"
+-                        f"{cond_latent_width * 16}) does not line up. Train at a larger resolution."
+-                    )
+-                img_mask = torch.cat(
+-                    [
+-                        image_pad_mask,
+-                        torch.ones(bsz, target_slots, dtype=image_pad_mask.dtype, device=accelerator.device),
+-                    ],
+-                    dim=1,
++                latent_height, latent_width = model_input.shape[-2:]
++                packed_input, img_shapes, img_mask, target_tokens = pack_inputs(
++                    QwenImage21Pipeline._pack_latents, conditions, noisy_model_input, image_pad_mask,
+@@ -1945 +1459 @@
+-                model_pred = model_pred[:, -packed_noisy_model_input.shape[1] :]
++                model_pred = model_pred[:, -target_tokens:]
+@@ -1980,0 +1495,2 @@
++                if not torch.isfinite(loss):
++                    raise FloatingPointError(f"Non-finite Flow Matching loss at optimizer step {global_step}")

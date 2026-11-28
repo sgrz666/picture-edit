@@ -354,7 +354,9 @@ def annotation_frames(path, split, owners, excluded, exists, *, capture=None, ca
             return
 
 
-def select_pairs(frames, *, min_gap, max_gap, accepts=lambda _a, _b: True):
+def select_pairs(frames, *, min_gap, max_gap, accepts=lambda _a, _b: True, targets_per_source=1):
+    if targets_per_source < 1:
+        raise ValueError("targets_per_source must be positive")
     groups = defaultdict(list)
     for frame in frames:
         key = (frame.split, frame.subject, frame.capture, frame.sequence, frame.camera, frame.hand_type, frame.hw)
@@ -365,10 +367,13 @@ def select_pairs(frames, *, min_gap, max_gap, accepts=lambda _a, _b: True):
         for offset, source in enumerate(sequence):
             lo = bisect_left(indexes, source.index + min_gap, lo=offset + 1)
             hi = bisect_right(indexes, source.index + max_gap, lo=lo)
+            remaining = targets_per_source
             for target in sequence[lo:hi]:
                 if source.index != target.index and accepts(source, target):
                     yield source, target
-                    break
+                    remaining -= 1
+                    if remaining == 0:
+                        break
 
 
 def frame_condition(frame, camera, world_mm, world_valid, canvas):
@@ -448,7 +453,8 @@ def _asset(path, out, digest=None):
 
 
 def convert_split(annotation_root, image_source, out, split, owners, excluded, *,
-                  min_gap, max_gap, min_motion, limit, filters, mano=None, used_splits=None):
+                  min_gap, max_gap, min_motion, limit, filters, mano=None, used_splits=None,
+                  targets_per_source=1):
     paths = {kind: annotation_root / split / f"InterHand2.6M_{split}_{kind}.json"
              for kind in ("data", "camera", "joint_3d", "MANO_NeuralAnnot")}
     exists = (image_source.index.__contains__ if isinstance(image_source, TarImages)
@@ -497,7 +503,8 @@ def convert_split(annotation_root, image_source, out, split, owners, excluded, *
         return True
 
     rows = []
-    for source, target in select_pairs(frames, min_gap=min_gap, max_gap=max_gap, accepts=accepts):
+    for source, target in select_pairs(frames, min_gap=min_gap, max_gap=max_gap, accepts=accepts,
+                                       targets_per_source=targets_per_source):
         hashes = []
         for frame in (source, target):
             if frame.path in image_assets:
@@ -552,6 +559,7 @@ def convert_split(annotation_root, image_source, out, split, owners, excluded, *
             "condition": _asset(pack, out),
             "interhand": {"capture": target.capture, "sequence": target.sequence, "camera": target.camera,
                           "source_frame": source.index, "target_frame": target.index, "hand_type": target.hand_type,
+                          "target_view_joint_valid": target.view_joints[JOINT_ORDER].tolist(),
                           "mano_fit": fit},
         })
         if limit is not None and len(rows) >= limit:
