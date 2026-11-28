@@ -194,7 +194,8 @@ class NativeBackendV7(NativeBackend):
         self.preservation_context = None
         if self.config.preservation is not None:
             record = batch['source_preservation_v7']
-            if self.config.preservation.background and pair['source_latent'].shape != pair['target_latent'].shape:
+            has_background = not bool((record['background_support'] == 0).all())
+            if self.config.preservation.background and has_background and pair['source_latent'].shape != pair['target_latent'].shape:
                 raise ValueError('Source background requires exactly the target latent grid')
             self.preservation_context = {name:record[name].to(self.device).detach()
                 for name in ('source_features','source_valid','background_support')}
@@ -271,7 +272,11 @@ class NativeBackendV7(NativeBackend):
             if preservation.background:
                 from .preservation import source_background_loss
                 context=self.preservation_context
-                value,area=source_background_loss(prediction,noisy,sigma,context['source_latent'],context['background_support'],coverage)
+                support=context['background_support']
+                source_latent=context['source_latent']
+                if bool((support == 0).all()) and source_latent.shape != prediction.shape:
+                    source_latent=prediction.detach()
+                value,area=source_background_loss(prediction,noisy,sigma,source_latent,support,coverage)
                 parts.update(source_background=value,source_background_area=area)
                 if area>0:
                     if not counts.get('source_background',0):

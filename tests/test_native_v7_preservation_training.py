@@ -149,3 +149,67 @@ def test_data_plan_binds_index_to_identity_and_qualifies_source_intersection(tmp
     index['evaluator']={**model_ref,'sha256':'d'*64}
     with pytest.raises(ValueError,match='evaluator'):
         DataPlanV7(cfg)
+
+
+def test_cross_canvas_zero_background_support_skips_grid_mismatch_in_forward_and_loss(monkeypatch):
+    from src.pose_control.qwen21_full.native_v62.training.backend import NativeBackend
+    from src.pose_control.qwen21_full.native_v62.training.config import LossSpec
+    from src.pose_control.qwen21_full.native_v7.losses import PaperLossConfig
+    from src.pose_control.qwen21_full.native_v7.training import NativeBackendV7
+
+    backend = object.__new__(NativeBackendV7)
+    backend.config = replace(config(background=.1), paper_loss=PaperLossConfig(0., 0., 0.))
+    backend.device = torch.device('cpu')
+    backend.pipe = object()
+    pred = torch.zeros(1, 4, 64, requires_grad=True)
+    target = torch.ones(1, 4, 64)
+    coverage = torch.ones(1, 4)
+    noisy = torch.ones(1, 4, 64)
+    monkeypatch.setattr(NativeBackend, 'forward', lambda self, *a, **kw: (pred, target, coverage, noisy))
+
+    record = {'source_features': torch.zeros(2, 512), 'source_valid': torch.zeros(2, dtype=torch.bool),
+              'background_support': torch.zeros(1, 4)}
+    pair = {'source_latent': torch.zeros(1, 6, 64), 'target_latent': torch.zeros(1, 4, 64)}
+    out = backend.forward({'source_preservation_v7': record}, pair, None, torch.tensor([.5]), None, None, None)
+    assert out[0] is pred
+
+    sup = SimpleNamespace(auxiliary_valid=torch.zeros(1, 2, dtype=torch.bool), paired=torch.ones(1, dtype=torch.bool),
+        weights=torch.ones(1, 6, 32, 32), validate=lambda: None)
+    counts = dict(velocity=1, face=0, hand=0, identity=0, perceptual=0, paper_identity=0,
+                  source_identity=0, source_background=0)
+    loss, parts = backend.compute_loss(pred, target, coverage, sup, noisy, torch.tensor([.5]),
+        torch.zeros(1, 3, 32, 32), LossSpec(), counts, 1, (None, None))
+    assert parts['source_background'].item() == 0.
+    assert parts['source_background_area'].item() == 0.
+    loss.backward()
+    assert pred.grad is not None and pred.grad.abs().sum() > 0
+
+
+def test_cross_canvas_nonzero_background_support_still_rejected(monkeypatch):
+    from src.pose_control.qwen21_full.native_v62.training.backend import NativeBackend
+    from src.pose_control.qwen21_full.native_v62.training.config import LossSpec
+    from src.pose_control.qwen21_full.native_v7.losses import PaperLossConfig
+    from src.pose_control.qwen21_full.native_v7.training import NativeBackendV7
+
+    backend = object.__new__(NativeBackendV7)
+    backend.config = replace(config(background=.1), paper_loss=PaperLossConfig(0., 0., 0.))
+    backend.device = torch.device('cpu')
+    backend.pipe = object()
+    pred = torch.zeros(1, 4, 64)
+    monkeypatch.setattr(NativeBackend, 'forward', lambda self, *a, **kw: (pred, pred, torch.ones(1, 4), pred))
+
+    record = {'source_features': torch.zeros(2, 512), 'source_valid': torch.zeros(2, dtype=torch.bool),
+              'background_support': torch.tensor([[1., 0., 0., 0.]])}
+    pair = {'source_latent': torch.zeros(1, 6, 64), 'target_latent': torch.zeros(1, 4, 64)}
+    with pytest.raises(ValueError, match='target latent grid'):
+        backend.forward({'source_preservation_v7': record}, pair, None, torch.tensor([.5]), None, None, None)
+
+    backend.preservation_context = {'source_latent': torch.zeros(1, 6, 64),
+                                    'background_support': torch.tensor([[1., 0., 0., 0.]])}
+    sup = SimpleNamespace(auxiliary_valid=torch.zeros(1, 2, dtype=torch.bool), paired=torch.ones(1, dtype=torch.bool),
+        weights=torch.ones(1, 6, 32, 32), validate=lambda: None)
+    counts = dict(velocity=1, face=0, hand=0, identity=0, perceptual=0, paper_identity=0,
+                  source_identity=0, source_background=1)
+    with pytest.raises(ValueError, match='source_latent'):
+        backend.compute_loss(pred, pred, torch.ones(1, 4), sup, pred, torch.tensor([.5]),
+            torch.zeros(1, 3, 32, 32), LossSpec(), counts, 1, (None, None))
