@@ -1,6 +1,7 @@
 """Target-only geometry and ordered source appearance for Contact Hand Adapter."""
 
 from dataclasses import dataclass, fields, replace
+import hashlib
 
 import torch
 
@@ -11,6 +12,7 @@ HAND_SLOTS = ("A-L", "A-R", "B-L", "B-R")
 UNKNOWN, SEPARATE, TOUCHING = -1, 0, 1
 JOINT_PARTS = (0, 1, 1, 2, 3, 4, 4, 5, 6, 7, 7, 8, 9, 10, 10, 11, 12, 13, 13, 14, 15)
 JOINT_PARENTS = (0, *(0 if i % 4 == 1 else i - 1 for i in range(1, 21)))
+APPEARANCE_DINO_DIM = 256
 
 
 @dataclass(frozen=True)
@@ -65,6 +67,12 @@ class HandCondition:
     mano_wrist_rotation_6d: torch.Tensor | None = None  # [4,6]
     mano_palm_scale: torch.Tensor | None = None  # [4], meters
     mano_valid: torch.Tensor | None = None  # [4] bool
+    appearance_parts: torch.Tensor | None = None  # [4,H_src,W_src], 0..15 or -1 unknown
+    appearance_mask: torch.Tensor | None = None  # [4,H_src,W_src], source-only foreground eligibility
+    appearance_dino: torch.Tensor | None = None  # [4,2,256], frozen DINOv3 CLS and pooled patches
+    appearance_dino_valid: torch.Tensor | None = None  # [4] bool
+    appearance_dino_model_sha: str | None = None
+    appearance_dino_crop_sha: tuple[str | None, ...] = (None, None, None, None)
 
     def to(self, device: torch.device | str) -> "HandCondition":
         return _move(self, device)
@@ -126,21 +134,7 @@ class HandCondition:
             _tensor(self.geometry_maps, (4, 5, h, w), floating=True)
             _tensor(self.map_valid, (4, 5, h, w), dtype=torch.bool)
             _finite(self.geometry_maps[self.map_valid])
-        if (self.appearance is None) != (self.appearance_valid is None):
-            raise ValueError("Source appearance and validity must be supplied together")
-        if len(self.appearance_sources) != 4 or any(
-            sha is not None and (not isinstance(sha, str) or len(sha) != 64
-                                 or any(c not in "0123456789abcdef" for c in sha))
-            for sha in self.appearance_sources
-        ):
-            raise ValueError("Invalid source appearance SHA256")
-        if self.appearance is not None:
-            if self.appearance.ndim != 4 or self.appearance.shape[:2] != (4, 3):
-                raise ValueError("Source appearance must be [4,3,H,W]")
-            _tensor(self.appearance_valid, (4,), dtype=torch.bool)
-            _unit(self.appearance[self.appearance_valid])
-            if any(self.appearance_sources[slot] is None for slot in self.appearance_valid.nonzero().flatten().tolist()):
-                raise ValueError("Valid source appearance requires per-slot source image SHA256")
+        self._validate_appearance()
         if self.mesh is not None:
             mesh = self.mesh
             _tensor(mesh.vertices, (4, 778, 3), floating=True)
@@ -196,6 +190,48 @@ class HandCondition:
                 if pair.surface_indices.unique(dim=0).shape[0] != pair.surface_indices.shape[0]:
                     raise ValueError("Surface contact indices must be unique")
         return self
+
+    def _validate_appearance(self):
+        if (self.appearance is None) != (self.appearance_valid is None):
+            raise ValueError("Source appearance and validity must be supplied together")
+        for digests in (self.appearance_sources, self.appearance_dino_crop_sha):
+            if len(digests) != 4 or any(sha is not None and not _is_sha256(sha) for sha in digests):
+                raise ValueError("Invalid source appearance SHA256")
+        if self.appearance is None:
+            if any(value is not None for value in (self.appearance_parts, self.appearance_mask, self.appearance_dino)):
+                raise ValueError("Source appearance maps and features require their RGB crop")
+        else:
+            if (self.appearance.ndim != 4 or self.appearance.shape[:2] != (4, 3)
+                    or min(self.appearance.shape[2:]) < 1 or not self.appearance.is_floating_point()):
+                raise ValueError("Source appearance must be floating [4,3,H,W]")
+            _tensor(self.appearance_valid, (4,), dtype=torch.bool)
+            _unit(self.appearance[self.appearance_valid])
+            if any(self.appearance_sources[slot] is None for slot in self.appearance_valid.nonzero().flatten().tolist()):
+                raise ValueError("Valid source appearance requires per-slot source image SHA256")
+            shape = (4, *self.appearance.shape[-2:])
+            if self.appearance_parts is not None:
+                _tensor(self.appearance_parts, shape, dtype=torch.long)
+                if ((self.appearance_parts < UNKNOWN) | (self.appearance_parts >= 16)).any():
+                    raise ValueError("Source anatomical part labels must be unknown or in [0,15]")
+            if self.appearance_mask is not None:
+                _tensor(self.appearance_mask, shape, dtype=torch.bool)
+                if (self.appearance_valid & ~self.appearance_mask.flatten(1).any(1)).any():
+                    raise ValueError("Valid masked source crops require foreground pixels")
+                if self.appearance_parts is not None and ((self.appearance_parts >= 0) & ~self.appearance_mask).any():
+                    raise ValueError("Source anatomical labels must be inside the source foreground mask")
+        if self.appearance_dino is None:
+            if self.appearance_dino_valid is not None or self.appearance_dino_model_sha is not None or any(self.appearance_dino_crop_sha):
+                raise ValueError("DINOv3 provenance requires cached source descriptors")
+        else:
+            _tensor(self.appearance_dino, (4, 2, APPEARANCE_DINO_DIM), floating=True)
+            _tensor(self.appearance_dino_valid, (4,), dtype=torch.bool)
+            if (self.appearance_mask is None or not _is_sha256(self.appearance_dino_model_sha)
+                    or (self.appearance_dino_valid & ~self.appearance_valid).any()):
+                raise ValueError("Cached DINOv3 descriptors require valid masked source crops and a model SHA256")
+            _finite(self.appearance_dino[self.appearance_dino_valid])
+            if any(self.appearance_dino_crop_sha[slot] is None
+                   for slot in self.appearance_dino_valid.nonzero().flatten().tolist()):
+                raise ValueError("Valid DINOv3 descriptors require per-slot source crop SHA256")
 
     def _validate_anatomy(self):
         for mask in (self.joint_2d_valid, self.joint_3d_valid, self.joint_occluded, self.joint_rotation_valid):
@@ -254,6 +290,26 @@ def verify_appearance_sources(condition, source_hashes):
         source = 0 if condition.shared_appearance_source else slot // 2
         if source >= len(source_hashes) or source_hashes[source] != condition.appearance_sources[slot]:
             raise ValueError(f"Source appearance for {HAND_SLOTS[slot]} does not match the ordered source reference")
+        if condition.appearance_dino_valid is not None and condition.appearance_dino_valid[slot]:
+            expected = dino_crop_fingerprint(source_hashes[source], condition.appearance_dino_model_sha,
+                                             condition.appearance[slot], condition.appearance_mask[slot],
+                                             condition.appearance_dino[slot])
+            if expected != condition.appearance_dino_crop_sha[slot]:
+                raise ValueError(f"Cached DINOv3 for {HAND_SLOTS[slot]} does not match the source crop")
+
+
+def _is_sha256(value):
+    return (isinstance(value, str) and len(value) == 64
+            and all(char in "0123456789abcdef" for char in value))
+
+
+def dino_crop_fingerprint(source_sha, model_sha, crop, mask, features):
+    digest = hashlib.sha256(f"contact-hand-source-dinov3-v1\0{source_sha}\0{model_sha}".encode("utf-8"))
+    for value in (crop.float(), mask.byte(), features.float()):
+        array = value.detach().cpu().contiguous().numpy()
+        digest.update(str(array.shape).encode("ascii"))
+        digest.update(array.tobytes())
+    return digest.hexdigest()
 
 
 def _move(value, device):

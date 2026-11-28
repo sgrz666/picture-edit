@@ -16,6 +16,7 @@ def small_cpu_threads():
 
 
 def adapter(**kwargs):
+    kwargs.setdefault("architecture_version", 21)
     return ContactHandAdapter(AdapterConfig(width=32, heads=4, intra_layers=1, inter_layers=1,
                                             roi_size=32, **kwargs))
 

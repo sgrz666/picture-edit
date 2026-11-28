@@ -44,7 +44,7 @@ def fixture_model():
     base = QwenImage21Transformer2DModel(num_layers=3, attention_head_dim=16, num_attention_heads=2,
                                          context_in_dim=32, axes_dims_rope=(2, 6, 8)).eval()
     config = AdapterConfig(width=32, heads=4, base_width=32, base_heads=2, layers=(0, 2),
-                           intra_layers=1, inter_layers=1, roi_size=32, rank=4)
+                           intra_layers=1, inter_layers=1, roi_size=32, rank=4, architecture_version=21)
     adapter = ContactHandAdapter(config)
     latents = torch.randn(1, 4 + 24, 64)
     image_mask = torch.tensor([[False, True, False, True, True, True, True, True, True]])
@@ -59,7 +59,7 @@ def test_hierarchy_and_three_state_contact_preserve_both_right_hands():
     from src.pose_control.contact_hand_adapter import AdapterConfig, ContactHandAdapter
 
     model = ContactHandAdapter(AdapterConfig(width=32, heads=4, intra_layers=1, inter_layers=1,
-                                            roi_size=32, surface_tokens=64))
+                                            roi_size=32, surface_tokens=64, architecture_version=21))
     sample = condition()
     memory = model.prepare(sample)
     assert memory.hierarchy_counts == (1, 6, 21, 64, 16, 1)
@@ -171,7 +171,8 @@ def test_mesh_appearance_and_sparse_contact_require_a_shared_camera():
                    surface_features=torch.tensor([[.002, -.9, 1., .9], [.024, -.4, 0., 1.]]))
     sample = replace(sample, mesh=mesh, pairs=(pair,), appearance=torch.rand(4, 3, 16, 16),
                      appearance_valid=mesh.valid, appearance_sources=(None, "a" * 64, None, "b" * 64))
-    cfg = AdapterConfig(width=32, heads=4, intra_layers=1, inter_layers=1, roi_size=32, surface_tokens=32)
+    cfg = AdapterConfig(width=32, heads=4, intra_layers=1, inter_layers=1, roi_size=32, surface_tokens=32,
+                        architecture_version=21)
     memory = ContactHandAdapter(cfg).prepare(sample)
     assert memory.tokens.shape == (2 * 76, 32)
     assert memory.graph.surface_edges.shape == (4, 4)

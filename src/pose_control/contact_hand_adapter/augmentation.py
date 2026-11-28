@@ -13,6 +13,7 @@ SLOT_FIELDS = (
     "joints", "visible", "support", "geometry_maps", "map_valid", "appearance", "appearance_valid",
     "appearance_sources", "joints_3d", "joint_3d_valid", "joint_2d_valid", "joint_occluded", "hand_present",
     "joint_rotation_6d", "joint_rotation_valid", "mano_shape", "mano_wrist_rotation_6d", "mano_palm_scale", "mano_valid",
+    "appearance_parts", "appearance_mask", "appearance_dino", "appearance_dino_valid", "appearance_dino_crop_sha",
 )
 
 

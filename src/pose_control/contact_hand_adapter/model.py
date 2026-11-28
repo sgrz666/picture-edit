@@ -8,6 +8,8 @@ from torch.nn import functional as F
 
 from .conditions import JOINT_PARENTS, JOINT_PARTS, UNKNOWN
 from .geometry import ContactGraph, SpatialEncoder, build_contact_graph, pixel_geometry
+from .routing import (APPEARANCE, CONTACT, HAND, JOINT, SURFACE, InstanceSpatialAttention,
+                      TypedDenoiseGate, contact_evidence, enhance_support, spatial_evidence)
 
 
 @dataclass(frozen=True)
@@ -25,7 +27,12 @@ class AdapterConfig:
     image_feedback: bool = True
     contact_level: str = "surface"
     hand_lora_rank: int = 0
-    architecture_version: int = 21
+    architecture_version: int = 3
+    spatial_mode: str = "instance"
+    gate_mode: str = "typed"
+    residual_mode: str = "compressed"
+    appearance_mode: str = "part"
+    appearance_dino: bool = True
 
     def __post_init__(self):
         if (min(self.width, self.heads, self.base_width, self.base_heads, self.rank) < 1
@@ -38,8 +45,14 @@ class AdapterConfig:
             raise ValueError("Expected 32/64 surface tokens and a stride-aligned geometry ROI")
         if self.contact_level not in ("hand", "part", "surface") or not 0 <= self.hand_lora_rank <= self.base_width:
             raise ValueError("Invalid contact level or native hand LoRA rank")
-        if self.architecture_version not in (2, 21):
+        if self.architecture_version not in (2, 21, 3):
             raise ValueError("Unsupported Contact Hand Adapter architecture version")
+        if self.spatial_mode not in ("instance", "average") or self.gate_mode not in ("typed", "uniform"):
+            raise ValueError("Unsupported hand spatial or gate mode")
+        if self.residual_mode not in ("compressed", "low_rank", "direct"):
+            raise ValueError("Unsupported hand residual projection")
+        if self.appearance_mode not in ("part", "global", "off") or type(self.appearance_dino) is not bool:
+            raise ValueError("Unsupported source appearance mode")
 
 
 @dataclass(frozen=True)
@@ -49,11 +62,13 @@ class HandMemory:
     xy: torch.Tensor  # token anchors in Qwen target-grid coordinates
     support: torch.Tensor  # [4, N] pixel support pooled to the target grid
     roi: torch.Tensor  # [R] target-grid raster indices used to read and write Qwen
-    spatial: torch.Tensor  # [R, D] aligned features in the target ROI
+    spatial: torch.Tensor  # [R, 4, D] per-instance, or [R, D] in the average ablation
     graph: ContactGraph
     hierarchy_counts: tuple[int, ...]
     token_hw: tuple[int, int]
     anchor_strength: torch.Tensor | None = None
+    spatial_metadata: torch.Tensor | None = None  # [R,4,5] renderer and graph evidence
+    token_types: torch.Tensor | None = None
 
 
 class GraphEncoder(nn.Module):
@@ -126,8 +141,8 @@ class GeometryFeedback(nn.Module):
         self.update = nn.Sequential(nn.LayerNorm(width), nn.Linear(width, width * 2),
                                     nn.SiLU(), nn.Linear(width * 2, width))
 
-    def forward(self, state, memory, roi_hidden, sigma_and_layer, routing):
-        image = self.image_projection(roi_hidden) + memory.spatial
+    def forward(self, state, memory, roi_hidden, sigma_and_layer, routing, spatial=None):
+        image = self.image_projection(roi_hidden) + (memory.spatial if spatial is None else spatial)
         state = state + self.image_attention(self.image_query(self.state_norm(state)), image, routing.T)
         query = self.state_norm(state) + self.context(sigma_and_layer)
         slots = memory.slots
@@ -173,6 +188,25 @@ class NativeOutputLoRA(nn.Module):
         return self.up(self.down(value))
 
 
+class NativeWidthOutput(nn.Module):
+    """Project the native-width attention result directly, or via an explicit low rank."""
+
+    def __init__(self, config):
+        super().__init__()
+        width = config.base_width
+        if config.residual_mode == "direct":
+            self.first = nn.Identity()
+            self.last = nn.Linear(width, width, bias=False)
+        else:
+            self.first = nn.Linear(width, config.rank, bias=False)
+            self.last = nn.Linear(config.rank, width, bias=False)
+        nn.init.zeros_(self.last.weight)
+        self.layer_scale = nn.Parameter(torch.ones(len(config.layers)))
+
+    def forward(self, value, layer):
+        return self.last(self.first(value)) * self.layer_scale[layer]
+
+
 def masked_mean(value, mask):
     return (value * mask[..., None]).sum(1) / mask.sum(1).clamp_min(1)[..., None]
 
@@ -184,6 +218,7 @@ class ContactHandAdapter(nn.Module):
         cfg = self.config
         width, heads = cfg.width, cfg.heads
         legacy = cfg.architecture_version == 2
+        v3 = cfg.architecture_version == 3
         self.joint_graph = GraphEncoder(5 if legacy else 19, width)
         self.mesh_graph = GraphEncoder(3, width)
         self.register_buffer("joint_edges", torch.tensor([JOINT_PARENTS[1:], tuple(range(1, 21))]), persistent=False)
@@ -195,39 +230,52 @@ class ContactHandAdapter(nn.Module):
             self.joint_validity = nn.Linear(5, width, bias=False)
             self.mano_encoder = nn.Sequential(nn.Linear(17, width), nn.SiLU(), nn.LayerNorm(width))
         self.part_embedding = nn.Embedding(16, width)
-        self.kind_embedding = nn.Embedding(5 if legacy else 6, width)
+        self.kind_embedding = nn.Embedding(5 if legacy else 7 if v3 else 6, width)
         self.position = nn.Linear(2, width)
         self.spatial_encoder = SpatialEncoder(width, cfg.roi_size, legacy=legacy)
-        self.appearance = nn.Sequential(nn.Conv2d(3, 64, 5, stride=2, padding=2), nn.SiLU(),
-                                        nn.Conv2d(64, 128, 3, stride=2, padding=1), nn.SiLU(),
-                                        nn.Conv2d(128, width, 3, stride=2, padding=1), nn.SiLU(),
-                                        nn.AdaptiveAvgPool2d((4, 4)))
-        self.appearance_patch = nn.Parameter(torch.zeros(16, width))
+        if v3:
+            from .appearance import AppearanceEncoder
+
+            self.appearance = AppearanceEncoder(width)
+        else:
+            self.appearance = nn.Sequential(nn.Conv2d(3, 64, 5, stride=2, padding=2), nn.SiLU(),
+                                            nn.Conv2d(64, 128, 3, stride=2, padding=1), nn.SiLU(),
+                                            nn.Conv2d(128, width, 3, stride=2, padding=1), nn.SiLU(),
+                                            nn.AdaptiveAvgPool2d((4, 4)))
+            self.appearance_patch = nn.Parameter(torch.zeros(16, width))
         self.intra = nn.ModuleList(HierarchyBlock(width, heads) for _ in range(cfg.intra_layers))
         self.inter = nn.ModuleList(HierarchyBlock(width, heads) for _ in range(cfg.inter_layers))
         self.hand_bias = nn.Linear(13, heads, bias=False)
         self.part_bias = nn.Linear(4, heads, bias=False)
         self.surface_bias = nn.Linear(5 if legacy else 6, heads, bias=False)
         self.feedback = GeometryFeedback(width, heads, cfg.base_width, legacy=legacy)
+        self.instance_router = (InstanceSpatialAttention(cfg.base_width, width)
+                                if v3 and cfg.spatial_mode == "instance" else None)
+        self.typed_gate = TypedDenoiseGate(width, len(cfg.layers)) if v3 and cfg.gate_mode == "typed" else None
+        self.contact_token = nn.Linear(6, width) if v3 else None
         self.native_keys = nn.Linear(width, cfg.base_width, bias=False)
         self.native_values = nn.Linear(width, cfg.base_width, bias=False)
         self.key_norm = nn.RMSNorm(cfg.base_width // cfg.base_heads)
         self.compress = nn.Linear(cfg.base_width, width, bias=False)
         self.gate = nn.Sequential(nn.Linear(width * 2 + 3, width), nn.SiLU(), nn.Linear(width, 1))
-        self.output = SharedOutput(cfg)
+        self.output = (NativeWidthOutput(cfg) if v3 and cfg.residual_mode != "compressed" else SharedOutput(cfg))
         self.native_lora = nn.ModuleList(NativeOutputLoRA(cfg.base_width, cfg.hand_lora_rank)
                                          for _ in cfg.layers) if cfg.hand_lora_rank else nn.ModuleList()
 
     def prepare(self, condition):
         condition.validate()
         legacy = self.config.architecture_version == 2
-        heatmaps, support_pixels = pixel_geometry(condition, legacy=legacy)
-        graph = build_contact_graph(condition, support_pixels, legacy=legacy)
-        if self.config.contact_level == "hand":
+        v3 = self.config.architecture_version == 3
+        heatmaps, support_pixels = pixel_geometry(condition, legacy=legacy, renderer_support=v3)
+        if v3:
+            support_pixels = enhance_support(condition, heatmaps, support_pixels)
+        graph = build_contact_graph(condition, support_pixels, legacy=legacy,
+                                    contact_level=self.config.contact_level if v3 else "surface")
+        if not v3 and self.config.contact_level == "hand":
             graph = replace(graph, part_state=torch.full_like(graph.part_state, UNKNOWN),
                             part_confidence=torch.zeros_like(graph.part_confidence),
                             occlusion=torch.zeros_like(graph.occlusion))
-        if self.config.contact_level != "surface":
+        if not v3 and self.config.contact_level != "surface":
             graph = replace(graph, surface_edges=graph.surface_edges[:0], surface_features=graph.surface_features[:0],
                             surface_probability=graph.surface_probability[:0])
         stride = condition.canvas.stride
@@ -277,13 +325,30 @@ class ContactHandAdapter(nn.Module):
             surface_valid = mesh_active[:, None].expand(-1, surf_count)
         appearance = joint.new_zeros(4, 16, self.config.width)
         appearance_valid = valid.new_zeros(4, 16)
-        if condition.appearance is not None:
+        appearance_semantic = torch.zeros_like(appearance_valid)
+        if condition.appearance is not None and (not v3 or self.config.appearance_mode != "off"):
             slots = condition.appearance_valid & valid.any(1)
             if slots.any():
-                appearance[slots] = self.appearance(condition.appearance[slots].float()).flatten(2).transpose(1, 2)
-                appearance_valid = slots[:, None].expand(-1, 16)
+                if v3:
+                    def available(value):
+                        return None if value is None else value[slots]
+
+                    part_map = available(condition.appearance_parts) if self.config.appearance_mode == "part" else None
+                    descriptors = available(condition.appearance_dino) if self.config.appearance_dino else None
+                    source = self.appearance(condition.appearance[slots].float(), part_map, descriptors,
+                                             mask=available(condition.appearance_mask),
+                                             global_valid=available(condition.appearance_dino_valid))
+                    appearance[slots] = source.tokens
+                    appearance_semantic[slots] = source.part_valid
+                    appearance_valid = appearance_semantic.clone()
+                    appearance_valid[:, 0] |= slots & ~appearance_semantic.any(1)
+                else:
+                    appearance[slots] = self.appearance(condition.appearance[slots].float()).flatten(2).transpose(1, 2)
+                    appearance_valid = slots[:, None].expand(-1, 16)
+        if not v3:
+            appearance = appearance + self.appearance_patch
         lengths = (1, 6, 21, surf_count, 16)
-        values = (hand, fingers, joint, surface, appearance + self.appearance_patch)
+        values = (hand, fingers, joint, surface, appearance)
         geometry_hands = valid.any(1) if legacy else valid.any(1) | surface_valid.any(1) | support.any(1)
         present = (geometry_hands[:, None], finger_valid, valid, surface_valid, appearance_valid)
         positions = (origin[:, None], finger_xy, xy, surface_xy, origin[:, None].expand(-1, 16, -1))
@@ -302,16 +367,38 @@ class ContactHandAdapter(nn.Module):
             finger_strength = torch.stack([strengths[:, part].amax(1) for part in part_ranges], 1)
             surface_strength = self.surface_strength(surface_xy, surface_valid, support, condition)
             global_strength = support.any(1).float()[:, None]
+            appearance_xy = origin[:, None].expand(-1, 16, -1)
+            appearance_strength = global_strength.expand(-1, 16)
+            if v3 and appearance_semantic.any():
+                anchors_xy = torch.cat((xy, surface_xy), 1)
+                strength = torch.cat((strengths, surface_strength), 1)
+                part_ids = torch.cat((anchor_ids.new_tensor(JOINT_PARTS), anchor_ids // 4))
+                weights = strength[:, :, None] * F.one_hot(part_ids, 16)
+                mass = weights.sum(1)
+                aligned = weights.transpose(1, 2) @ anchors_xy / mass.clamp_min(1e-6)[..., None]
+                known = appearance_semantic & (mass > 0)
+                appearance_xy = torch.where(known[..., None], aligned, appearance_xy)
+                appearance_strength = torch.where(known, weights.amax(1), appearance_strength * .35)
             anchor_strength = torch.cat((global_strength, finger_strength, strengths,
-                                         surface_strength, global_strength.expand(-1, 16), global_strength), 1)
+                                         surface_strength, appearance_strength, global_strength), 1)
             positions = (origin[:, None], torch.where(finger_strength[..., None] > 0, finger_xy, origin[:, None]),
-                         torch.where(projected[..., None], xy, origin[:, None]), surface_xy,
-                         origin[:, None].expand(-1, 16, -1), origin[:, None])
+                         torch.where(projected[..., None], xy, origin[:, None]), surface_xy, appearance_xy, origin[:, None])
+            if v3:
+                contacts = contact_evidence(graph)
+                valid_contact = graph.neighbors & ((contacts[..., 2] > 0) | (contacts[..., 4] > 0)
+                                                    | (contacts[..., 5] > 0))
+                values += (self.contact_token(contacts),)
+                present += (valid_contact,)
+                lengths += (4,)
+                positions += (origin[:, None].expand(-1, 4, -1),)
+                anchor_strength = torch.cat((anchor_strength, graph.peer_strength * global_strength), 1)
         values, present, positions = (torch.cat(items, 1) for items in (values, present, positions))
         kinds = torch.repeat_interleave(torch.arange(len(lengths), device=support.device),
                                         torch.tensor(lengths, device=support.device))
         parts = torch.cat((kinds.new_zeros(1), kinds.new_tensor([0, 1, 4, 7, 10, 13]),
-                           kinds.new_tensor(JOINT_PARTS), anchor_ids // 4, kinds.new_zeros(sum(lengths[4:]))))
+                           kinds.new_tensor(JOINT_PARTS), anchor_ids // 4,
+                           torch.arange(16, device=kinds.device) if v3 else kinds.new_zeros(16),
+                           kinds.new_zeros(sum(lengths[5:]))))
         anchors = torch.cat((kinds.new_full((28,), -1), anchor_ids, kinds.new_full((sum(lengths[4:]),), -1)))
         slots, token = torch.where(present)
         kinds, parts, anchors = kinds[token], parts[token], anchors[token]
@@ -320,11 +407,16 @@ class ContactHandAdapter(nn.Module):
         values = (values[present] + identity + self.kind_embedding(kinds) + self.part_embedding(parts)
                   + self.position(positions / dimensions))
         anchor_strength = None if legacy else anchor_strength[present]
+        metadata = spatial_evidence(condition, graph, roi) if self.instance_router is not None else None
         if roi.numel():
             spatial, token_context = self.spatial_encoder(
                 condition, heatmaps, support_pixels, graph, tokens=None if legacy else values,
                 token_slots=slots, token_xy=positions, anchor_strength=anchor_strength)
-            spatial = (spatial[:, roi] * support[:, roi, None]).sum(0) / support[:, roi].sum(0)[:, None]
+            spatial = spatial[:, roi]
+            if self.instance_router is None:
+                spatial = (spatial * support[:, roi, None]).sum(0) / support[:, roi].sum(0)[:, None]
+            else:
+                spatial = spatial.transpose(0, 1)
             if legacy:
                 route = support[slots][:, roi]
                 values = values + (route @ spatial) / route.sum(1).clamp_min(1e-6)[:, None]
@@ -332,8 +424,11 @@ class ContactHandAdapter(nn.Module):
                 values = values + token_context
             values = self.encode_hierarchy(values, slots, kinds, parts, anchors, graph)
         else:
-            spatial = values.new_empty(0, self.config.width)
-        return HandMemory(values, slots, positions, support, roi, spatial, graph, lengths, (th, tw), anchor_strength)
+            empty_shape = (0, 4, self.config.width) if self.instance_router is not None else (0, self.config.width)
+            spatial = values.new_empty(empty_shape)
+        types = kinds.new_tensor([HAND, JOINT, JOINT, SURFACE, APPEARANCE, HAND, CONTACT])[kinds] if v3 else None
+        return HandMemory(values, slots, positions, support, roi, spatial, graph, lengths, (th, tw),
+                          anchor_strength, metadata, types)
 
     def joint_features(self, condition, xy, local, dimensions, projected, confidence):
         valid_3d = condition.joint_3d_valid
@@ -375,8 +470,8 @@ class ContactHandAdapter(nn.Module):
         a, b = parts[:, None], parts[None, :]
         type_a, type_b = kinds[:, None], kinds[None, :]
         same = first == second
-        global_a = (type_a == 0) | (type_a == 5)
-        global_b = (type_b == 0) | (type_b == 5)
+        global_a = (type_a == 0) | (type_a >= 5)
+        global_b = (type_b == 0) | (type_b >= 5)
         global_token = global_a | global_b
         same_digit = ((a == 0) & (b == 0)) | ((a > 0) & (b > 0) & ((a - 1) // 3 == (b - 1) // 3))
         allowed = same & (global_token | same_digit | (type_a == 4) | (type_b == 4))
@@ -430,14 +525,28 @@ class ContactHandAdapter(nn.Module):
         roi_xy = torch.stack((memory.roi % width, memory.roi // width), -1).float() + .5
         distances = (roi_xy[:, None] - memory.xy[None]).square().sum(-1)
         coverage = memory.support[memory.slots][:, memory.roi].T
-        routing = (coverage.clamp_min(1e-6).log() - .05 * distances).masked_fill(coverage == 0, -torch.inf)
+        routing = (-.05 * distances).masked_fill(coverage == 0, -torch.inf)
         if memory.anchor_strength is not None:
             strength = memory.anchor_strength[None]
             routing = routing + (.35 + .65 * strength).log() - .20 * strength * distances
         level = roi_hidden.new_tensor(layer / max(1, len(self.config.layers) - 1))
         step = torch.stack((sigma.reshape(()).float(), level.float()))
+        spatial = memory.spatial
+        slot_support = memory.support[:, memory.roi].T
+        if self.instance_router is not None:
+            spatial, instance_weights = self.instance_router(roi_hidden, spatial, slot_support, memory.spatial_metadata)
+            # The same target query's slot selection also gates its access to structured keys.
+            routing = routing + instance_weights[:, memory.slots].clamp_min(1e-6).log()
+        else:
+            routing = routing + coverage.clamp_min(1e-6).log()
         if self.config.image_feedback:
-            state = self.feedback(state, memory, roi_hidden, step, routing)
+            state = self.feedback(state, memory, roi_hidden, step, routing, spatial)
+        magnitude = None
+        if self.typed_gate is not None:
+            typed = self.typed_gate(self.feedback.image_projection(roi_hidden), spatial, slot_support, sigma, layer)
+            token_gate = typed[:, memory.token_types]
+            magnitude = (routing.softmax(-1) * token_gate).sum(-1, keepdim=True)
+            routing = routing + token_gate.clamp_min(1e-6).log()
         shape = (self.config.base_heads, -1)
         keys = self.key_norm(self.native_keys(state).unflatten(-1, shape))
         if rope is not None:
@@ -445,7 +554,10 @@ class ContactHandAdapter(nn.Module):
         values = self.native_values(state).unflatten(-1, shape)
         attended = F.scaled_dot_product_attention(query.transpose(0, 1), keys.transpose(0, 1),
                                                   values.transpose(0, 1), attn_mask=routing)
-        feature = self.compress(attended.transpose(0, 1).flatten(1))
-        support = memory.support[:, memory.roi].sum(0)[:, None]
-        gate_input = torch.cat((feature, memory.spatial, step.expand(len(feature), -1), support), -1)
-        return self.output(feature, layer) * self.gate(gate_input).sigmoid() * support, state
+        native = attended.transpose(0, 1).flatten(1)
+        feature = self.compress(native)
+        support = slot_support.sum(1, keepdim=True)
+        gate_input = torch.cat((feature, spatial, step.expand(len(feature), -1), support), -1)
+        residual = native if isinstance(self.output, NativeWidthOutput) else feature
+        update = self.output(residual, layer) * self.gate(gate_input).sigmoid() * support
+        return (update if magnitude is None else update * magnitude), state

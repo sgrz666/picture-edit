@@ -1,6 +1,6 @@
 # Contact Hand Adapter V1 设计规格
 
-当前代码采用 V2.1 架构。本文保留 V1 的选型背景、数据盘点和评测方法。 [V2.1 实现说明](../../../src/pose_control/contact_hand_adapter/README.md)
+当前代码采用 V3 架构。本文保留 V1 的选型背景、数据盘点和评测方法。 [V3 实现与使用](../../../src/pose_control/contact_hand_adapter/README.md)
 
 独立训练一个 Qwen-Image 2.1 Hand Adapter，依次解决手指解剖、精细手势、双手接触与遮挡。首版覆盖单人单手、同人双手以及双人握手、牵手和有标注的十指相扣。冻结 Qwen DiT、Qwen3-VL 和 VAE。Adapter 从随机初始化开始，只有残差输出头置零。Native 权重、旧 Hand Branch 和 PoseLink 均在本项目的依赖边界之外。
 

@@ -22,7 +22,7 @@ class ContactGraph:
     peer_strength: torch.Tensor
 
 
-def pixel_geometry(condition, *, legacy=False):
+def pixel_geometry(condition, *, legacy=False, renderer_support=True):
     """Rasterize wrist and five digit chains, with support even for keypoints-only input."""
     h, w = condition.canvas.canvas_hw
     valid = condition.active_joints() if legacy else condition.projected_joints()
@@ -53,6 +53,9 @@ def pixel_geometry(condition, *, legacy=False):
     coverage = condition.canvas.valid_mask(device=joints.device)
     peak = joints[..., 2].amax(1)[:, None, None]
     support = ((heatmaps.amax(1) > .12 * peak) * peak if condition.support is None else condition.support.float())
+    if renderer_support and not legacy and condition.map_valid is not None:
+        owned = condition.map_valid[:, [0, 4]].any(1)
+        support = torch.maximum(support, owned.to(support.dtype))
     has_hand = valid.any(1) if legacy else condition.present_hands()
     support = support * coverage * has_hand[:, None, None]
     return heatmaps * coverage, support
@@ -65,7 +68,7 @@ def joint_spread(xy, valid):
     return (size * .085).clamp(2, 12)
 
 
-def build_contact_graph(condition, support, *, legacy=False):
+def build_contact_graph(condition, support, *, legacy=False, contact_level="surface"):
     device = support.device
     active = support.flatten(1).any(-1)
     present = active if legacy else condition.present_hands()
@@ -99,12 +102,13 @@ def build_contact_graph(condition, support, *, legacy=False):
         separate = (confidence * (state == 0)).amax()
         summary = torch.stack((touched, separate, torch.maximum(touched, separate)))
         hand_features[first, second, 10:] = hand_features[second, first, 10:] = summary
-        part_state[first, second], part_state[second, first] = state, state.T
-        part_confidence[first, second] = confidence * (state != UNKNOWN)
-        part_confidence[second, first] = part_confidence[first, second].T
+        if contact_level != "hand":
+            part_state[first, second], part_state[second, first] = state, state.T
+            part_confidence[first, second] = confidence * (state != UNKNOWN)
+            part_confidence[second, first] = part_confidence[first, second].T
         nearby = bool(neighbors[first, second]) or bool(touched > 0 if legacy else touched >= .5)
         strength = torch.maximum(peer_strength[first, second], touched * (touched >= .5))
-        if pair.occlusion is not None:
+        if pair.occlusion is not None and contact_level != "hand":
             occlusion[first, second], occlusion[second, first] = pair.occlusion, -pair.occlusion.T
             nearby |= bool(pair.occlusion.any())
             strength = torch.maximum(strength, pair.occlusion.any().float() * .75)
@@ -116,7 +120,7 @@ def build_contact_graph(condition, support, *, legacy=False):
             near_pose = pose[:3].norm() < .25
             nearby |= bool(near_pose)
             strength = torch.maximum(strength, near_pose.float() * .6)
-        if pair.surface_indices is not None:
+        if pair.surface_indices is not None and contact_level == "surface":
             indices = pair.surface_indices
             prefix = indices.new_tensor([first, second]).expand(len(indices), 2)
             edge = torch.cat((prefix, indices), -1)

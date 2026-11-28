@@ -18,7 +18,8 @@ import torch
 from src.data.canvas_contract import native_pad
 from src.pose_edit.common import sha256_file
 
-from .conditions import HandCondition
+from .appearance import APPEARANCE_SIZE
+from .conditions import HandCondition, JOINT_PARENTS, JOINT_PARTS, UNKNOWN
 from .runtime import condition_record
 
 
@@ -417,20 +418,59 @@ def _verify_image(data, frame):
         image.load()
 
 
-def source_appearance(condition, frame, source_data, source_sha, *, size=96):
+def _source_part_distances(xy, valid, size):
+    """Projected source bone/point distances, in the source crop pixel grid."""
+    distances = np.full((16, size, size), np.inf, dtype=np.float32)
+    y, x = np.ogrid[:size, :size]
+    x, y = x.astype(np.float32), y.astype(np.float32)
+    for joint in np.flatnonzero(valid):
+        parent = JOINT_PARENTS[joint]
+        point = xy[joint]
+        start = xy[parent] if valid[parent] else point
+        dx, dy = point - start
+        offset_x, offset_y = x - start[0], y - start[1]
+        length = dx * dx + dy * dy
+        progress = np.clip((offset_x * dx + offset_y * dy) / length, 0, 1) if length > 1e-6 else 0
+        distance = (offset_x - dx * progress) ** 2 + (offset_y - dy * progress) ** 2
+        part = JOINT_PARTS[joint]
+        np.minimum(distances[part], distance, out=distances[part])
+    return distances
+
+
+def _source_semantics(xy, projected, slot, size):
+    valid = projected[slot]
+    distances = _source_part_distances(xy[slot], valid, size)
+    radius = np.clip(np.ptp(xy[slot, valid], axis=0).max() * .055, 2., size * .08)
+    parts = distances.argmin(0).astype(np.int64)
+    closest = distances.min(0)
+    second = np.partition(distances, 1, axis=0)[1]
+    foreground = closest <= radius ** 2
+    certain = foreground & (second > closest + (.35 * radius) ** 2)
+    other = 1 - slot
+    if projected[other].any():
+        peer = _source_part_distances(xy[other], projected[other], size).min(0)
+        # Remove ambiguous cross-hand pixels from semantic routing. The foreground
+        # still supports pooling color where a source hand is expected in the crop.
+        certain &= peer > radius ** 2
+    return np.where(certain, parts, UNKNOWN), foreground
+
+
+def source_appearance(condition, frame, source_data, source_sha, *, size=APPEARANCE_SIZE):
     """Crop real source RGB at the source projection and bind it to its actual digest."""
     crops = torch.zeros(4, 3, size, size)
     eligible = torch.zeros(4, dtype=torch.bool)
+    parts = torch.full((4, size, size), UNKNOWN, dtype=torch.long)
+    masks = torch.zeros(4, size, size, dtype=torch.bool)
     identity = [None] * 4
     with Image.open(io.BytesIO(source_data)) as image:
         image = image.convert("RGB")
         h, w = frame.hw
-        offset = torch.tensor(condition.canvas.offset_xy)
         projected = condition.projected_joints()[:2].numpy() & frame.view_joints[JOINT_ORDER]
+        source_xy = (condition.joints[:2, :, :2].numpy() - condition.canvas.offset_xy) / condition.canvas.scale_xy
         for slot, valid in enumerate(projected):
             if valid.sum() < 4:
                 continue
-            xy = (condition.joints[slot, valid, :2] - offset).numpy() / condition.canvas.scale_xy
+            xy = source_xy[slot, valid]
             low, high = xy.min(0), xy.max(0)
             side = min(int(np.ceil((high - low).max() * 1.5)), h, w)
             if side < 8:
@@ -438,10 +478,17 @@ def source_appearance(condition, frame, source_data, source_sha, *, size=96):
             origin = np.clip(np.floor((low + high - side) / 2), (0, 0), (w - side, h - side)).astype(int)
             left, top = origin.tolist()
             crop = image.crop((left, top, left + side, top + side)).resize((size, size), Image.Resampling.BILINEAR)
+            crop_xy = ((source_xy - origin + .5) * (size / side) - .5).astype(np.float32)
+            labels, mask = _source_semantics(crop_xy, projected, slot, size)
+            if not mask.any():
+                continue
             crops[slot] = torch.from_numpy(np.array(crop)).permute(2, 0, 1).float() / 255
+            parts[slot] = torch.from_numpy(labels)
+            masks[slot] = torch.from_numpy(mask)
             eligible[slot] = True
             identity[slot] = source_sha
-    return dict(appearance=crops, appearance_valid=eligible, appearance_sources=tuple(identity))
+    return dict(appearance=crops, appearance_valid=eligible, appearance_sources=tuple(identity),
+                appearance_parts=parts, appearance_mask=masks)
 
 
 def _asset(path, out, digest=None):

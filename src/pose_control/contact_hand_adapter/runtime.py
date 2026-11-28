@@ -22,9 +22,9 @@ from .model import AdapterConfig, ContactHandAdapter
 
 
 CONDITION_SCHEMA = "contact_hand_condition_v2_1"
-CHECKPOINT_SCHEMA = "contact_hand_adapter_v2_1"
+CHECKPOINT_SCHEMA = "contact_hand_adapter_v3"
 _LEGACY_CONDITION_SCHEMA = "contact_hand_condition_v2"
-_LEGACY_CHECKPOINT_SCHEMA = "contact_hand_adapter_v2"
+_CHECKPOINT_SCHEMAS = {2: "contact_hand_adapter_v2", 21: "contact_hand_adapter_v2_1", 3: CHECKPOINT_SCHEMA}
 DEFAULT_LOCAL_DILATION = 8
 
 
@@ -43,6 +43,8 @@ def load_condition(path):
     record["person_ids"] = tuple(record["person_ids"])
     if "appearance_sources" in record:
         record["appearance_sources"] = tuple(record["appearance_sources"])
+    if "appearance_dino_crop_sha" in record:
+        record["appearance_dino_crop_sha"] = tuple(record["appearance_dino_crop_sha"])
     record["pairs"] = tuple(HandPair(**{**pair, "slots": tuple(pair["slots"])}) for pair in record.get("pairs", ()))
     if record.get("mesh") is not None:
         mesh = record["mesh"]
@@ -83,9 +85,9 @@ def save_adapter(path, adapter, *, base_sha, step, training=None):
         raise FileExistsError(path)
     path.parent.mkdir(parents=True, exist_ok=True)
     config = asdict(adapter.config)
-    schema = CHECKPOINT_SCHEMA
-    if adapter.config.architecture_version == 2:
-        schema = _LEGACY_CHECKPOINT_SCHEMA
+    version = adapter.config.architecture_version
+    schema = _CHECKPOINT_SCHEMAS[version]
+    if version == 2:
         config.pop("architecture_version")
     record = dict(schema=schema, base_sha=base_sha, config=config,
                   step=step, adapter=adapter.state_dict(), training=training)
@@ -109,12 +111,12 @@ def save_adapter(path, adapter, *, base_sha, step, training=None):
 def load_adapter(path, *, base_sha):
     _check_sha(base_sha)
     record = torch.load(path, map_location="cpu", weights_only=True)
-    if not isinstance(record, dict) or record.get("schema") not in (CHECKPOINT_SCHEMA, _LEGACY_CHECKPOINT_SCHEMA):
+    if not isinstance(record, dict) or record.get("schema") not in _CHECKPOINT_SCHEMAS.values():
         raise ValueError("Unsupported Contact Hand Adapter checkpoint schema")
     if record.get("base_sha") != base_sha:
         raise ValueError("Contact Hand Adapter checkpoint belongs to a different Qwen base")
     config = {**record["config"], "layers": tuple(record["config"]["layers"])}
-    version = 21 if record["schema"] == CHECKPOINT_SCHEMA else 2
+    version = next(version for version, schema in _CHECKPOINT_SCHEMAS.items() if schema == record["schema"])
     if version == 2:
         config.setdefault("architecture_version", 2)
     if config.get("architecture_version") != version:
@@ -279,6 +281,9 @@ def _crop_local_plan(condition, support, edit, selected, size, margin):
         condition, canvas=canvas, joints=keep_slots(temp), visible=keep_slots(condition.visible),
         support=spatial(crop_support), pairs=tuple(pair for pair in condition.pairs if set(pair.slots) <= selected),
         geometry_maps=dense, map_valid=dense_valid, mesh=mesh, appearance_valid=keep_slots(condition.appearance_valid),
+        appearance_dino_valid=keep_slots(condition.appearance_dino_valid),
+        appearance_dino_crop_sha=tuple(sha if slot in selected else None
+                                       for slot, sha in enumerate(condition.appearance_dino_crop_sha)),
         joints_3d=keep_slots(condition.joints_3d), joint_3d_valid=keep_slots(condition.joint_3d_valid),
         joint_2d_valid=keep_slots(condition.joint_2d_valid), joint_occluded=keep_slots(condition.joint_occluded),
         hand_present=keep_slots(condition.hand_present), joint_rotation_6d=keep_slots(condition.joint_rotation_6d),
@@ -294,10 +299,38 @@ def _crop_local_plan(condition, support, edit, selected, size, margin):
     return LocalPlan(box, slots, local, mask, condition.canvas.canvas_hw)
 
 
+def qwen_reference_size(image, resolution):
+    """The aspect-ratio and 32-pixel rounding of QwenImage21Pipeline.calculate_dimensions."""
+    ratio = image.width / image.height
+    width = math.sqrt(resolution**2 * ratio)
+    return round(width / 32) * 32, round((width / ratio) / 32) * 32
+
+
+def qwen_reference_resolution(pipe, references, target_hw):
+    """Choose an area that the VLM will keep unchanged after Qwen's per-image rounding."""
+    processor = getattr(getattr(pipe, "processor", None), "image_processor", None)
+    size = getattr(processor, "size", None)
+
+    def limit(edge, pixels):
+        configured = size.get(edge) if isinstance(size, dict) else getattr(size, edge, None)
+        return configured or getattr(processor, pixels, None)
+
+    minimum = limit("shortest_edge", "min_pixels") or 0
+    maximum = limit("longest_edge", "max_pixels")
+    resolution = max(max(target_hw), 32 * math.ceil(math.sqrt(minimum) / 32))
+    while True:
+        shapes = [qwen_reference_size(image, resolution) for image in references]
+        if maximum and any(width * height > maximum for width, height in shapes):
+            raise ValueError("Rounded Qwen reference exceeds the configured VLM pixel budget")
+        if all(width and height and width * height >= minimum for width, height in shapes):
+            return resolution
+        resolution += 32
+
+
 @torch.no_grad()
 def generate(pipe, condition, *, prompt, references, seed, steps=40, strength=1., source_hashes=None,
              local_context=None, local_size=512, local_slots=None, current_support=None,
-             local_dilation=DEFAULT_LOCAL_DILATION):
+             local_dilation=DEFAULT_LOCAL_DILATION, prior_strength=0.):
     """Generate globally or denoise and composite each selected local hand component."""
     condition.validate()
     images = list(references)
@@ -306,9 +339,11 @@ def generate(pipe, condition, *, prompt, references, seed, steps=40, strength=1.
 
     def render(target, inputs):
         height, width = target.canvas.canvas_hw
+        reference_resolution = qwen_reference_resolution(pipe, inputs, (height, width))
         generator = torch.Generator(device=pipe._execution_device).manual_seed(seed)
-        with bind_hand_condition(pipe.transformer, target, strength=strength, source_hashes=source_hashes):
-            return pipe(prompt=prompt, image=inputs, width=width, height=height, output_resolution=max(height, width),
+        with bind_hand_condition(pipe.transformer, target, strength=strength, source_hashes=source_hashes,
+                                 prior_strength=prior_strength):
+            return pipe(prompt=prompt, image=inputs, width=width, height=height, output_resolution=reference_resolution,
                         generator=generator, num_inference_steps=steps, true_cfg_scale=1., use_kv_cache=False).images[0]
 
     if local_context is None:
