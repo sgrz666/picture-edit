@@ -71,6 +71,23 @@ def test_intervention_can_pair_one_source_to_two_real_targets():
     assert [(a.index, b.index) for a, b in pairs] == [(0, 6), (0, 12), (6, 12), (6, 18), (12, 18)]
 
 
+def test_quality_rejects_rigid_translation_and_detects_finger_articulation():
+    from src.pose_control.contact_hand_adapter.interhand_quality import movement
+
+    points = np.zeros((2, 21, 3))
+    for finger in range(5):
+        points[0, 1 + finger * 4:5 + finger * 4, :2] = np.c_[
+            np.full(4, (finger - 2) * .012), np.arange(1, 5) * .018,
+        ]
+    valid = np.zeros((2, 21), bool)
+    valid[0] = True
+    translated = points + [1.2, -2.3, 4.0]
+    pure = movement(points, translated, valid)
+    assert pure["wrist_relative"] < 1e-10 and pure["finger_degrees"] < 1e-4
+    translated[0, 3:5, 2] += [.04, .06]
+    assert movement(points, translated, valid)["wrist_relative"] > .16
+
+
 def test_streaming_annotation_and_split_tar_member_reads(tmp_path):
     data = tmp_path / "data.json"
     data.write_text(json.dumps({"info": {"description": "x"}, "images": [{"id": 0}, {"id": 1}],

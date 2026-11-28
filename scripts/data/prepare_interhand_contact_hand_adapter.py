@@ -31,12 +31,20 @@ def main(argv=None):
     parser.add_argument("--min-motion", type=float, default=8., help="Minimum RMS displacement in source pixels")
     parser.add_argument("--max-pairs", type=int, help="Maximum emitted pairs per requested split")
     parser.add_argument("--targets-per-source", type=int, default=1, help="Maximum eligible targets per source RGB")
+    parser.add_argument("--hand-prior-quality", action="store_true", help="Screen articulation, sharpness and hand area")
+    parser.add_argument("--quality-seed", type=int, default=42)
+    parser.add_argument("--quality-max-candidates", type=int, help="Optional bounded screening pilot")
+    parser.add_argument("--geometry-only", action="store_true", help="Keep target geometry without Adapter crops")
     parser.add_argument("--mano-model-dir", type=Path, help="Optional directory with MANO_LEFT.pkl and MANO_RIGHT.pkl")
     parser.add_argument("--mano-joint-regressor", type=Path, help="Optional official J_regressor_mano_ih26m.npy")
     parser.add_argument("--max-fit-mm", type=float, default=15.)
     parser.add_argument("--occlusion-gap-mm", type=float, default=10.)
     parser.add_argument("--cpu-threads", type=int, default=1)
     args = parser.parse_args(argv)
+    if args.hand_prior_quality and args.max_pairs is None:
+        parser.error("--hand-prior-quality requires --max-pairs for its stratified quota")
+    if args.quality_max_candidates is not None and (not args.hand_prior_quality or args.quality_max_candidates < 1):
+        parser.error("--quality-max-candidates requires --hand-prior-quality and a positive limit")
 
     if (args.min_gap < 1 or args.max_gap < args.min_gap or not math.isfinite(args.min_motion)
             or args.min_motion < 0 or args.cpu_threads < 1 or args.targets_per_source < 1
@@ -106,10 +114,16 @@ def main(argv=None):
                     break
             archive_report["indexed_images"] = indexed
         for split in splits:
+            quality = None
+            if args.hand_prior_quality:
+                from src.pose_control.contact_hand_adapter.interhand_quality import HandPriorScreen
+
+                quality = HandPriorScreen(args.max_pairs, seed=args.quality_seed, max_candidates=args.quality_max_candidates)
             converted, stats[split] = convert_split(
                 annotation_root, source, out, split, owners, excluded, min_gap=args.min_gap,
                 max_gap=args.max_gap, min_motion=args.min_motion, limit=args.max_pairs, filters=filters,
-                mano=mano, used_splits=used_splits, targets_per_source=args.targets_per_source,
+                mano=mano, used_splits=used_splits, targets_per_source=args.targets_per_source, quality=quality,
+                geometry_only=args.geometry_only,
             )
             rows.extend(converted)
 
@@ -122,9 +136,11 @@ def main(argv=None):
         "excluded_capture_subjects": excluded,
         "filters": filters,
         "pair_policy": {"minimum_frame_gap": args.min_gap, "maximum_frame_gap": args.max_gap,
-                        "minimum_rms_motion_pixels": args.min_motion, "max_pairs_per_split": args.max_pairs,
+                        "minimum_rms_motion_pixels": None if args.hand_prior_quality else args.min_motion,
+                        "max_pairs_per_split": args.max_pairs, "hand_prior_quality": args.hand_prior_quality,
                         "targets_per_source": args.targets_per_source},
         "mano": mano.provenance if mano is not None else None,
+        "geometry_only": args.geometry_only,
         "visibility": "Cross-hand occlusion is mesh-derived when both MANO fits pass; other visibility is unknown.",
         "contact_supervision": "unknown",
     }

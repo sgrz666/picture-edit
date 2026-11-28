@@ -161,3 +161,82 @@ def test_pose_dataset_keeps_source_supervision_and_provenance(tmp_path, pair):
     pair["condition"]["sha256"] = "0" * 64
     with pytest.raises(ValueError, match="condition SHA256"):
         list(pair_rows(manifest(tmp_path, pair), "train", with_pose=True))
+
+
+def test_resume_sampler_replays_exact_suffix_across_epoch_and_rank():
+    from qwen21_multiimg import UpdateSampler
+
+    for rank in range(2):
+        continuous = list(UpdateSampler(7, 42, rank, 2, 3, 0, 6))
+        resumed = list(UpdateSampler(7, 42, rank, 2, 3, 2, 6))
+        assert len(continuous) == 18 and resumed == continuous[6:]
+    assert len({tuple(index) for index in UpdateSampler(7, 42, 0, 1, 1, 0, 7)}) == 7
+
+
+def test_shard_manifest_keeps_order_and_rejects_modified_bytes(tmp_path):
+    from dataset_contract import read_export
+
+    dataset = tmp_path / "train"
+    dataset.mkdir()
+    shards = []
+    for name in ("b.parquet", "a.parquet"):
+        payload = name.encode()
+        (dataset / name).write_bytes(payload)
+        shards.append({"file": name, "rows": 1, "sha256": hashlib.sha256(payload).hexdigest()})
+    dataset.with_suffix(".json").write_text(json.dumps({"split": "train", "pairs": 2, "shards": shards}))
+    summary, paths = read_export(dataset, "train")
+    assert [p.name for p in paths] == ["b.parquet", "a.parquet"]
+    assert len(summary["dataset_sha256"]) == 64
+    paths[1].write_bytes(b"changed")
+    with pytest.raises(ValueError, match="SHA256"):
+        read_export(dataset, "train")
+
+
+def test_optional_pose_occlusion_does_not_mark_hidden_points_as_evaluation_targets():
+    import torch
+    from hand_pose import render_pose
+    from src.data.canvas_contract import letterbox, native_pad
+    from src.pose_control.contact_hand_adapter.conditions import HandCondition
+
+    canvas = native_pad((128, 256))
+    joints = torch.zeros((4, 21, 3))
+    joints[0, :4] = torch.tensor([[20., 30., 1.], [45., 30., 1.], [75., 30., 1.], [103., 40., 1.]])
+    projected = joints[..., 2].bool()
+    hidden = torch.zeros_like(projected)
+    hidden[0, 2] = True
+    view = projected[:2] & ~hidden[:2]
+    view[0, 3] = False
+    condition = HandCondition(canvas, ("subject", None), joints, torch.zeros_like(projected),
+                              joints_3d=joints, joint_3d_valid=projected, joint_2d_valid=projected,
+                              joint_occluded=hidden)
+    opts = condition, view, letterbox(canvas.original_hw, 512), "left"
+    visible, labels = render_pose(*opts)
+    dashed, alternate = render_pose(*opts, pose_mode="occlusion-dashed")
+    assert visible.tobytes() != dashed.tobytes() and labels == alternate
+    assert labels[0][2] is None and labels[0][3] is None
+    assert dashed.getpixel((202, 204)) == (0, 0, 0)
+
+
+def test_sdpose_missed_hand_stays_in_denominator():
+    import numpy as np
+    from evaluate_hands import hand_score, reference_joints
+
+    gt, visible = reference_joints([[[30 + i, 100 + i] for i in range(21)], [None] * 21])
+    missing = hand_score(gt, visible, None, None)
+    assert missing["left"]["points"] == 21
+    assert missing["left"]["hand_pck_010"] == missing["left"]["wrist_relative"] == 0
+    assert missing["left"]["hand_detected"] is False
+    assert hand_score(gt, visible, gt, np.copy(visible))["left"]["hand_pck_010"] == 1.
+
+
+def test_blind_rates_exclude_uncertain_and_unrated_images_from_denominators():
+    from evaluate_hands import aggregate_blind
+
+    key = {"1.png": {"arm": "baseline"}, "2.png": {"arm": "baseline"}, "3.png": {"arm": "lora"}}
+    first = {"image": "1.png", "extra_finger": True, "missing_finger": False, "finger_fusion": None,
+             "occlusion_uncertain": False}
+    results = aggregate_blind(key, [first, dict(first, image="2.png", occlusion_uncertain=True)])
+    assert results["baseline"]["extra_finger"] == {"rated": 1, "failures": 1, "rate": 1.}
+    assert results["baseline"]["missing_finger"]["rate"] == 0.
+    assert results["baseline"]["finger_fusion"]["rate"] is None
+    assert results["lora"]["extra_finger"]["rated"] == 0

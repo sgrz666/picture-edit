@@ -1,9 +1,12 @@
 --- train_dreambooth_lora_qwenimage21_img2img.py
 +++ train_dreambooth_lora_qwenimage21_multiimg.py
-@@ -95,0 +96,2 @@
-+from qwen21_multiimg import CONDITION_COLUMNS, RESOLUTION, cache_dataset, pack_inputs, single_cached_pair
+@@ -95,0 +96,5 @@
++from qwen21_multiimg import (
++    CONDITION_COLUMNS, RESOLUTION, UpdateSampler, open_condition_cache, pack_inputs,
++    resume_training_state, run_signature, save_training_state, single_cached_pair,
++)
 +
-@@ -336,6 +338,3 @@
+@@ -336,6 +341,4 @@
 -    parser.add_argument(
 -        "--cond_image_column",
 -        type=str,
@@ -11,9 +14,10 @@
 -        help="Column in the dataset containing the condition image the edit is applied to. Required here.",
 -    )
 +    parser.add_argument("--cond_image_columns", required=True, help="Ordered columns: source,pose")
-+    parser.add_argument("--condition_cache_dir", required=True, help="New directory for the encoded pair shards")
++    parser.add_argument("--condition_cache_dir", required=True, help="Completed offline condition cache")
++    parser.add_argument("--init_lora", help="Pinned standard LoRA weights for a fresh continuation")
 +
-@@ -758,6 +757,10 @@
+@@ -758,6 +761,12 @@
 -    if args.dataset_name is None or args.cond_image_column is None:
 -        raise ValueError(
 -            "Image-to-image training pairs each target image with a condition image, so it needs a dataset that "
@@ -26,11 +30,13 @@
 +            or args.train_batch_size != 1 or args.resolution != RESOLUTION or not args.cache_latents):
 +        raise ValueError("Use target/caption columns, batch size 1, 512x512 canvases, and --cache_latents")
 +    if (args.repeats != 1 or args.random_flip or args.use_aspect_ratio_buckets
-+            or args.aspect_ratio_buckets or args.resume_from_checkpoint or args.checkpoints_total_limit is not None):
++            or args.aspect_ratio_buckets or args.checkpoints_total_limit is not None):
 +        raise ValueError("Dual I2I uses pre-aligned canvases, one pass per pair, and a fresh run directory")
++    if args.max_train_steps is None or args.lr_scheduler != "constant" or args.lr_warmup_steps != 0:
++        raise ValueError("Dual replay requires explicit max steps and constant LR without warmup")
 +    if args.validation_prompt or args.final_validation_prompt or args.validation_image:
 +        raise ValueError("Use verify_smoke.py for dual-image validation")
-@@ -803,293 +805,0 @@
+@@ -803,293 +811,0 @@
 -class DreamBoothDataset(Dataset):
 -    """
 -    A dataset to prepare the instance and class images with the prompts for fine-tuning the model.
@@ -324,16 +330,90 @@
 -    return batch
 -
 -
-@@ -1097 +807 @@
+@@ -1097 +813 @@
 -    def __init__(self, dataset: DreamBoothDataset, batch_size: int, drop_last: bool = False, seed: int = None):
 +    def __init__(self, dataset: torch.utils.data.Dataset, batch_size: int, drop_last: bool = False, seed: int = None):
-@@ -1108,4 +818 @@
+@@ -1108,4 +824 @@
 -        # Group indices by bucket
 -        self.bucket_indices = [[] for _ in range(len(self.dataset.buckets))]
 -        for idx, (_, bucket_idx) in enumerate(self.dataset.pixel_values):
 -            self.bucket_indices[bucket_idx].append(idx)
 +        self.bucket_indices = [list(range(len(dataset)))]
-@@ -1583,36 +1290,6 @@
+@@ -1218,0 +932 @@
++    torch.use_deterministic_algorithms(os.environ.get("HAND_LORA_DETERMINISTIC") == "1")
+@@ -1320,7 +1033,0 @@
+-    # A Qwen3-VL processor rather than a tokenizer: it also expands condition images into vision tokens.
+-    processor = Qwen3VLProcessor.from_pretrained(
+-        args.pretrained_model_name_or_path,
+-        subfolder="processor",
+-        revision=args.revision,
+-    )
+-
+@@ -1341,8 +1048,2 @@
+-    vae = AutoencoderKLQwenImage21.from_pretrained(
+-        args.pretrained_model_name_or_path,
+-        subfolder="vae",
+-        revision=args.revision,
+-        variant=args.variant,
+-    )
+-    # 16 here, so one latent token covers a 16x16 pixel tile.
+-    vae_scale_factor = 2 ** len(vae.temperal_downsample)
++    vae_config = AutoencoderKLQwenImage21.load_config(args.pretrained_model_name_or_path, subfolder="vae")
++    vae_scale_factor = 2 ** len(vae_config["temperal_downsample"])
+@@ -1350,9 +1051,4 @@
+-        raise ValueError(
+-            f"This checkpoint's VAE scales by {vae_scale_factor}, so sizes must be multiples of "
+-            f"{vae_scale_factor * 2}, but the resolution checks used {SIZE_MULTIPLE_OF}."
+-        )
+-    latents_mean = (torch.tensor(vae.config.latents_mean).view(1, vae.config.z_dim, 1, 1, 1)).to(accelerator.device)
+-    latents_std = 1.0 / torch.tensor(vae.config.latents_std).view(1, vae.config.z_dim, 1, 1, 1).to(accelerator.device)
+-    text_encoder = Qwen3VLForConditionalGeneration.from_pretrained(
+-        args.pretrained_model_name_or_path, subfolder="text_encoder", revision=args.revision, torch_dtype=weight_dtype
+-    )
++        raise ValueError("Unexpected Qwen VAE spatial stride")
++    latent_shape = (1, vae_config["z_dim"], 1, 1, 1)
++    latents_mean = torch.tensor(vae_config["latents_mean"], device=accelerator.device).view(latent_shape)
++    latents_std = torch.tensor(vae_config["latents_std"], device=accelerator.device).view(latent_shape).reciprocal()
+@@ -1380,2 +1075,0 @@
+-    vae.requires_grad_(False)
+-    text_encoder.requires_grad_(False)
+@@ -1389,4 +1082,0 @@
+-    to_kwargs = {"dtype": weight_dtype, "device": accelerator.device} if not args.offload else {"dtype": weight_dtype}
+-    # The VAE is stable in bf16, so load it in weight_dtype to reduce memory.
+-    vae.to(**to_kwargs)
+-    text_encoder.to(**to_kwargs)
+@@ -1400,10 +1089,0 @@
+-
+-    # Initialize a text encoding pipeline and keep it to CPU for now.
+-    text_encoding_pipeline = QwenImage21Pipeline.from_pretrained(
+-        args.pretrained_model_name_or_path,
+-        vae=None,
+-        transformer=None,
+-        processor=processor,
+-        text_encoder=text_encoder,
+-        scheduler=None,
+-    )
+@@ -1427,0 +1108,12 @@
++    if args.init_lora and not args.resume_from_checkpoint:
++        from safetensors.torch import load_file
++
++        state = load_file(args.init_lora)
++        expected = get_peft_model_state_dict(transformer)
++        if set(state) != {f"transformer.{name}" for name in expected}:
++            raise ValueError("Initial LoRA keys do not match the locked Q/K/V/O adapter")
++        initial = {name: state[f"transformer.{name}"] for name in expected}
++        set_peft_model_state_dict(transformer, initial, adapter_name="default")
++        for name, value in get_peft_model_state_dict(transformer).items():
++            if not torch.equal(value.detach().cpu(), initial[name].to(value.dtype)):
++                raise ValueError(f"Initial LoRA tensor did not load exactly: {name}")
+@@ -1482,0 +1175,6 @@
++        loaded = get_peft_model_state_dict(transformer_)
++        if set(loaded) != set(transformer_state_dict):
++            raise ValueError("Restored LoRA keys differ from the checkpoint")
++        for name, value in loaded.items():
++            if not torch.equal(value.detach().cpu(), transformer_state_dict[name].cpu().to(value.dtype)):
++                raise ValueError(f"Restored LoRA tensor did not load exactly: {name}")
+@@ -1583,184 +1281,4 @@
 -    # Resolve the bucketing mode. Bucketing must be enabled explicitly with --use_aspect_ratio_buckets;
 -    # a bucket list without that flag is an error. With the flag, an explicit --aspect_ratio_buckets list
 -    # drives assignment, otherwise buckets are computed on the fly inside the dataset. Without the flag a
@@ -370,18 +450,12 @@
 -    # Prompt embeddings depend on the sample's condition image, so they are always precomputed per sample.
 -    precompute_latents = True
 -    batch_sampler = BucketBatchSampler(train_dataset, batch_size=args.train_batch_size, drop_last=True, seed=args.seed)
-+    if accelerator.num_processes != 1:
-+        raise ValueError("Dual-image disk cache requires a single training process")
-+    with (offload_models(vae, device=accelerator.device, offload=args.offload),
-+          offload_models(text_encoding_pipeline, device=accelerator.device, offload=args.offload)):
-+        train_dataset = cache_dataset(args, text_encoding_pipeline, vae, accelerator.device)
-+    batch_sampler = BucketBatchSampler(train_dataset, batch_size=1, drop_last=True, seed=args.seed)
-@@ -1620,3 +1297 @@
+-    train_dataloader = torch.utils.data.DataLoader(
 -        train_dataset,
 -        batch_sampler=batch_sampler,
 -        collate_fn=lambda examples: collate_fn(examples, args.with_prior_preservation),
-+        train_dataset, batch_sampler=batch_sampler, collate_fn=single_cached_pair,
-@@ -1625,22 +1299,0 @@
+-        num_workers=args.dataloader_num_workers,
+-    )
 -
 -    def compute_text_embeddings(prompt, text_encoding_pipeline, cond_image=None):
 -        with torch.no_grad():
@@ -404,7 +478,8 @@
 -        with offload_models(text_encoding_pipeline, device=accelerator.device, offload=args.offload):
 -            empty_prompt_embeds, empty_prompt_embeds_mask, _ = compute_text_embeddings("", text_encoding_pipeline)
 -
-@@ -1649,79 +1301,0 @@
+-    validation_pipeline_args = {}
+-    validation_image_pad_mask = None
 -    # The final pass runs on `--final_validation_prompt` when `--validation_prompt` is absent, so the embeddings
 -    # have to be built for whichever one is set - the text encoder is freed before that pass reaches the pipeline.
 -    effective_validation_prompt = args.validation_prompt or args.final_validation_prompt
@@ -484,14 +559,109 @@
 -        assert all(embeds is not None for embeds in prompt_embeds_cache), (
 -            "Prompt embedding cache has unfilled entries."
 -        )
-@@ -1834,0 +1409,3 @@
-+    def normalize_latents(latents):
-+        return ((latents - latents_mean) * latents_std).to(dtype=weight_dtype)
-+
-@@ -1840,2 +1416,0 @@
+-
+-    # move back to cpu before deleting to ensure memory is freed see: https://github.com/huggingface/diffusers/issues/11376#issue-3008144624
+-    if args.cache_latents:
+-        vae = vae.to("cpu")
+-        del vae
+-
+-    # move back to cpu before deleting to ensure memory is freed see: https://github.com/huggingface/diffusers/issues/11376#issue-3008144624
+-    text_encoding_pipeline = text_encoding_pipeline.to("cpu")
+-    # The processor stays: it holds no weights, and the pipeline cannot be constructed without one.
+-    del text_encoder
+-    free_memory()
+-
+-    # Scheduler and math around the number of training steps.
+-    overrode_max_train_steps = False
+-    num_update_steps_per_epoch = math.ceil(len(train_dataloader) / args.gradient_accumulation_steps)
+-    if args.max_train_steps is None:
+-        args.max_train_steps = args.num_train_epochs * num_update_steps_per_epoch
+-        overrode_max_train_steps = True
+-
+-    lr_scheduler = get_scheduler(
+-        args.lr_scheduler,
+-        optimizer=optimizer,
+-        num_warmup_steps=args.lr_warmup_steps * accelerator.num_processes,
+-        num_training_steps=args.max_train_steps * accelerator.num_processes,
+-        num_cycles=args.lr_num_cycles,
+-        power=args.lr_power,
+-    )
+-
+-    # Prepare everything with our `accelerator`.
+-    transformer, optimizer, train_dataloader, lr_scheduler = accelerator.prepare(
+-        transformer, optimizer, train_dataloader, lr_scheduler
+-    )
+-
+-    # We need to recalculate our total training steps as the size of the training dataloader may have changed.
+-    num_update_steps_per_epoch = math.ceil(len(train_dataloader) / args.gradient_accumulation_steps)
+-    if overrode_max_train_steps:
+-        args.max_train_steps = args.num_train_epochs * num_update_steps_per_epoch
+-    # Afterwards we recalculate our number of training epochs
+-    args.num_train_epochs = math.ceil(args.max_train_steps / num_update_steps_per_epoch)
++    train_dataset, provenance = open_condition_cache(args, Path(args.output_dir).parent)
++    signature = run_signature(args, provenance, accelerator)
++    lr_scheduler = get_scheduler("constant", optimizer=optimizer)
++    transformer, optimizer, lr_scheduler = accelerator.prepare(transformer, optimizer, lr_scheduler)
+@@ -1779,5 +1297 @@
+-    logger.info(f"  Num batches each epoch = {len(train_dataloader)}")
+-    logger.info(f"  Num Epochs = {args.num_train_epochs}")
+-    logger.info(f"  Instantaneous batch size per device = {args.train_batch_size}")
+-    logger.info(f"  Total train batch size (w. parallel, distributed & accumulation) = {total_batch_size}")
+-    logger.info(f"  Gradient Accumulation steps = {args.gradient_accumulation_steps}")
++    logger.info(f"  Total train batch size = {total_batch_size}")
+@@ -1785,30 +1299,13 @@
+-    global_step = 0
+-    first_epoch = 0
+-
+-    # Potentially load in the weights and states from a previous save
+-    if args.resume_from_checkpoint:
+-        if args.resume_from_checkpoint != "latest":
+-            path = os.path.basename(args.resume_from_checkpoint)
+-        else:
+-            # Get the mos recent checkpoint
+-            dirs = os.listdir(args.output_dir)
+-            dirs = [d for d in dirs if d.startswith("checkpoint")]
+-            dirs = sorted(dirs, key=lambda x: int(x.split("-")[1]))
+-            path = dirs[-1] if len(dirs) > 0 else None
+-
+-        if path is None:
+-            accelerator.print(
+-                f"Checkpoint '{args.resume_from_checkpoint}' does not exist. Starting a new training run."
+-            )
+-            args.resume_from_checkpoint = None
+-            initial_global_step = 0
+-        else:
+-            accelerator.print(f"Resuming from checkpoint {path}")
+-            accelerator.load_state(os.path.join(args.output_dir, path))
+-            global_step = int(path.split("-")[1])
+-
+-            initial_global_step = global_step
+-            first_epoch = global_step // num_update_steps_per_epoch
+-
+-    else:
+-        initial_global_step = 0
++    global_step = (resume_training_state(accelerator, args.resume_from_checkpoint, signature, args.max_train_steps)
++                   if args.resume_from_checkpoint else 0)
++    initial_global_step = global_step
++    logger.info(f"  Starting optimizer step = {global_step}")
++    sampler = UpdateSampler(len(train_dataset), args.seed, accelerator.process_index, accelerator.num_processes,
++                            args.gradient_accumulation_steps, global_step, args.max_train_steps)
++    train_dataloader = torch.utils.data.DataLoader(
++        train_dataset, batch_sampler=sampler, collate_fn=single_cached_pair,
++        num_workers=args.dataloader_num_workers, generator=torch.Generator().manual_seed(args.seed),
++    )
++    # Separate training RNG streams across ranks on a fresh run; restored streams remain untouched.
++    if not args.resume_from_checkpoint:
++        set_seed(args.seed, device_specific=True)
+@@ -1835,138 +1332,69 @@
+-    for epoch in range(first_epoch, args.num_train_epochs):
+-        transformer.train()
+-
+-        for batch in train_dataloader:
+-            models_to_accumulate = [transformer]
 -            sample_indices = batch["indices"]
 -
-@@ -1843,29 +1418,5 @@
+-            with accelerator.accumulate(models_to_accumulate):
 -                # Each sample's embeddings were encoded with its own condition image, gathered by dataset index.
 -                prompt_pairs = [(prompt_embeds_cache[idx], prompt_embeds_mask_cache[idx]) for idx in sample_indices]
 -                prompt_embeds, prompt_embeds_mask = concat_prompt_embedding_batches(*prompt_pairs)
@@ -521,12 +691,28 @@
 -                model_input = model_input.to(dtype=weight_dtype)
 -                # Clean, at the same normalisation as the target.
 -                cond_model_input = ((cond_model_input - latents_mean) * latents_std).to(dtype=weight_dtype)
-+                prompt_embeds = batch["prompt_embeds"]
-+                prompt_embeds_mask = batch["prompt_mask"]
-+                image_pad_mask = batch["image_pad_mask"]
-+                model_input = normalize_latents(batch["target"])
-+                conditions = tuple(normalize_latents(batch[column]) for column in CONDITION_COLUMNS)
-@@ -1894,40 +1445,3 @@
+-
+-                # Sample noise that we'll add to the latents
+-                noise = torch.randn_like(model_input)
+-                bsz = model_input.shape[0]
+-
+-                # Sample a random timestep for each image
+-                # for weighting schemes where we sample timesteps non-uniformly
+-                u = compute_density_for_timestep_sampling(
+-                    weighting_scheme=args.weighting_scheme,
+-                    batch_size=bsz,
+-                    logit_mean=args.logit_mean,
+-                    logit_std=args.logit_std,
+-                    mode_scale=args.mode_scale,
+-                )
+-                indices = (u * noise_scheduler_copy.config.num_train_timesteps).long()
+-                timesteps = noise_scheduler_copy.timesteps[indices].to(device=model_input.device)
+-
+-                # Add noise according to flow matching.
+-                # zt = (1 - texp) * x + texp * z1
+-                sigmas = get_sigmas(timesteps, n_dim=model_input.ndim, dtype=model_input.dtype)
+-                noisy_model_input = (1.0 - sigmas) * model_input + sigmas * noise
+-
 -                # Predict the noise residual. A batch is single-bucket, so the latent height/width are shared
 -                # across the batch; derive them from the latents to support aspect-ratio buckets.
 -                latent_height, latent_width = model_input.shape[3], model_input.shape[4]
@@ -567,12 +753,260 @@
 -                        torch.ones(bsz, target_slots, dtype=image_pad_mask.dtype, device=accelerator.device),
 -                    ],
 -                    dim=1,
-+                latent_height, latent_width = model_input.shape[-2:]
-+                packed_input, img_shapes, img_mask, target_tokens = pack_inputs(
-+                    QwenImage21Pipeline._pack_latents, conditions, noisy_model_input, image_pad_mask,
-@@ -1945 +1459 @@
+-                )
+-                model_pred = transformer(
+-                    hidden_states=packed_input,
+-                    encoder_hidden_states=prompt_embeds,
+-                    encoder_hidden_states_mask=prompt_embeds_mask,
+-                    timestep=timesteps / 1000,
+-                    img_shapes=img_shapes,
+-                    img_mask=img_mask,
+-                    return_dict=False,
+-                )[0]
+-                # The prediction spans the joint sequence, so keep the target's tail, as `__call__` does.
 -                model_pred = model_pred[:, -packed_noisy_model_input.shape[1] :]
-+                model_pred = model_pred[:, -target_tokens:]
-@@ -1980,0 +1495,2 @@
-+                if not torch.isfinite(loss):
-+                    raise FloatingPointError(f"Non-finite Flow Matching loss at optimizer step {global_step}")
+-                model_pred = QwenImage21Pipeline._unpack_latents(
+-                    model_pred, latent_height * vae_scale_factor, latent_width * vae_scale_factor, vae_scale_factor
+-                )
+-
+-                # these weighting schemes use a uniform timestep sampling
+-                # and instead post-weight the loss
+-                weighting = compute_loss_weighting_for_sd3(weighting_scheme=args.weighting_scheme, sigmas=sigmas)
+-
+-                target = noise - model_input
+-                if args.with_prior_preservation:
+-                    # Chunk the noise and model_pred into two parts and compute the loss on each part separately.
+-                    model_pred, model_pred_prior = torch.chunk(model_pred, 2, dim=0)
+-                    target, target_prior = torch.chunk(target, 2, dim=0)
+-                    weighting, weighting_prior = torch.chunk(weighting, 2, dim=0)
+-
+-                    # Compute prior loss
+-                    prior_loss = torch.mean(
+-                        (weighting_prior.float() * (model_pred_prior.float() - target_prior.float()) ** 2).reshape(
+-                            target_prior.shape[0], -1
+-                        ),
+-                        1,
+-                    )
+-                    prior_loss = prior_loss.mean()
+-
+-                # Compute regular loss.
+-                loss = torch.mean(
+-                    (weighting.float() * (model_pred.float() - target.float()) ** 2).reshape(target.shape[0], -1),
++    def normalize_latents(latents):
++        return ((latents - latents_mean) * latents_std).to(dtype=weight_dtype)
++
++    transformer.train()
++    for batch in train_dataloader:
++        batch = {key: value.to(accelerator.device) for key, value in batch.items()}
++        with accelerator.accumulate(transformer):
++            prompt_embeds = batch["prompt_embeds"]
++            prompt_embeds_mask = batch["prompt_mask"]
++            image_pad_mask = batch["image_pad_mask"]
++            model_input = normalize_latents(batch["target"])
++            conditions = tuple(normalize_latents(batch[column]) for column in CONDITION_COLUMNS)
++
++            # Sample noise that we'll add to the latents
++            noise = torch.randn_like(model_input)
++            bsz = model_input.shape[0]
++
++            # Sample a random timestep for each image
++            # for weighting schemes where we sample timesteps non-uniformly
++            u = compute_density_for_timestep_sampling(
++                weighting_scheme=args.weighting_scheme,
++                batch_size=bsz,
++                logit_mean=args.logit_mean,
++                logit_std=args.logit_std,
++                mode_scale=args.mode_scale,
++            )
++            indices = (u * noise_scheduler_copy.config.num_train_timesteps).long()
++            timesteps = noise_scheduler_copy.timesteps[indices].to(device=model_input.device)
++
++            # Add noise according to flow matching.
++            # zt = (1 - texp) * x + texp * z1
++            sigmas = get_sigmas(timesteps, n_dim=model_input.ndim, dtype=model_input.dtype)
++            noisy_model_input = (1.0 - sigmas) * model_input + sigmas * noise
++
++            latent_height, latent_width = model_input.shape[-2:]
++            packed_input, img_shapes, img_mask, target_tokens = pack_inputs(
++                QwenImage21Pipeline._pack_latents, conditions, noisy_model_input, image_pad_mask,
++            )
++            model_pred = transformer(
++                hidden_states=packed_input,
++                encoder_hidden_states=prompt_embeds,
++                encoder_hidden_states_mask=prompt_embeds_mask,
++                timestep=timesteps / 1000,
++                img_shapes=img_shapes,
++                img_mask=img_mask,
++                return_dict=False,
++            )[0]
++            # The prediction spans the joint sequence, so keep the target's tail, as `__call__` does.
++            model_pred = model_pred[:, -target_tokens:]
++            model_pred = QwenImage21Pipeline._unpack_latents(
++                model_pred, latent_height * vae_scale_factor, latent_width * vae_scale_factor, vae_scale_factor
++            )
++
++            # these weighting schemes use a uniform timestep sampling
++            # and instead post-weight the loss
++            weighting = compute_loss_weighting_for_sd3(weighting_scheme=args.weighting_scheme, sigmas=sigmas)
++
++            target = noise - model_input
++            if args.with_prior_preservation:
++                # Chunk the noise and model_pred into two parts and compute the loss on each part separately.
++                model_pred, model_pred_prior = torch.chunk(model_pred, 2, dim=0)
++                target, target_prior = torch.chunk(target, 2, dim=0)
++                weighting, weighting_prior = torch.chunk(weighting, 2, dim=0)
++
++                # Compute prior loss
++                prior_loss = torch.mean(
++                    (weighting_prior.float() * (model_pred_prior.float() - target_prior.float()) ** 2).reshape(
++                        target_prior.shape[0], -1
++                    ),
+@@ -1975,16 +1403,16 @@
+-                loss = loss.mean()
+-
+-                if args.with_prior_preservation:
+-                    # Add the prior loss to the instance loss.
+-                    loss = loss + args.prior_loss_weight * prior_loss
+-
+-                accelerator.backward(loss)
+-                if accelerator.sync_gradients:
+-                    params_to_clip = transformer.parameters()
+-                    accelerator.clip_grad_norm_(params_to_clip, args.max_grad_norm)
+-
+-                optimizer.step()
+-                lr_scheduler.step()
+-                optimizer.zero_grad()
+-
+-            # Checks if the accelerator has performed an optimization step behind the scenes
++                prior_loss = prior_loss.mean()
++
++            # Compute regular loss.
++            loss = torch.mean(
++                (weighting.float() * (model_pred.float() - target.float()) ** 2).reshape(target.shape[0], -1),
++                1,
++            )
++            loss = loss.mean()
++
++            if args.with_prior_preservation:
++                # Add the prior loss to the instance loss.
++                loss = loss + args.prior_loss_weight * prior_loss
++
++            if not torch.isfinite(loss):
++                raise FloatingPointError(f"Non-finite Flow Matching loss at optimizer step {global_step}")
++            accelerator.backward(loss)
+@@ -1992,60 +1420,23 @@
+-                progress_bar.update(1)
+-                global_step += 1
+-
+-                if accelerator.is_main_process or accelerator.distributed_type == DistributedType.DEEPSPEED:
+-                    if global_step % args.checkpointing_steps == 0:
+-                        # _before_ saving state, check if this save would set us over the `checkpoints_total_limit`
+-                        if args.checkpoints_total_limit is not None:
+-                            checkpoints = os.listdir(args.output_dir)
+-                            checkpoints = [d for d in checkpoints if d.startswith("checkpoint")]
+-                            checkpoints = sorted(checkpoints, key=lambda x: int(x.split("-")[1]))
+-
+-                            # before we save the new checkpoint, we need to have at _most_ `checkpoints_total_limit - 1` checkpoints
+-                            if len(checkpoints) >= args.checkpoints_total_limit:
+-                                num_to_remove = len(checkpoints) - args.checkpoints_total_limit + 1
+-                                removing_checkpoints = checkpoints[0:num_to_remove]
+-
+-                                logger.info(
+-                                    f"{len(checkpoints)} checkpoints already exist, removing {len(removing_checkpoints)} checkpoints"
+-                                )
+-                                logger.info(f"removing checkpoints: {', '.join(removing_checkpoints)}")
+-
+-                                for removing_checkpoint in removing_checkpoints:
+-                                    removing_checkpoint = os.path.join(args.output_dir, removing_checkpoint)
+-                                    shutil.rmtree(removing_checkpoint)
+-
+-                        save_path = os.path.join(args.output_dir, f"checkpoint-{global_step}")
+-                        accelerator.save_state(save_path)
+-                        logger.info(f"Saved state to {save_path}")
+-
+-            logs = {"loss": loss.detach().item(), "lr": lr_scheduler.get_last_lr()[0]}
+-            progress_bar.set_postfix(**logs)
+-            accelerator.log(logs, step=global_step)
+-
+-            if global_step >= args.max_train_steps:
+-                break
+-
+-        if accelerator.is_main_process:
+-            if args.validation_prompt is not None and epoch % args.validation_epochs == 0:
+-                # create pipeline. The prompt is supplied as embeddings, so no text encoder is loaded.
+-                pipeline = QwenImage21ValidationPipeline.from_pretrained(
+-                    args.pretrained_model_name_or_path,
+-                    text_encoder=None,
+-                    processor=processor,
+-                    transformer=accelerator.unwrap_model(transformer),
+-                    revision=args.revision,
+-                    variant=args.variant,
+-                    torch_dtype=weight_dtype,
+-                )
+-                pipeline.cached_image_pad_mask = validation_image_pad_mask
+-                images = log_validation(
+-                    pipeline=pipeline,
+-                    args=args,
+-                    accelerator=accelerator,
+-                    pipeline_args=validation_pipeline_args,
+-                    torch_dtype=weight_dtype,
+-                    epoch=epoch,
+-                )
+-                del pipeline
+-                images = None
+-                free_memory()
++                params_to_clip = transformer.parameters()
++                accelerator.clip_grad_norm_(params_to_clip, args.max_grad_norm)
++
++            optimizer.step()
++            lr_scheduler.step()
++            optimizer.zero_grad()
++
++        # Checks if the accelerator has performed an optimization step behind the scenes
++        if accelerator.sync_gradients:
++            progress_bar.update(1)
++            global_step += 1
++
++            if global_step % args.checkpointing_steps == 0 or global_step == args.max_train_steps:
++                save_path = os.path.join(args.output_dir, f"checkpoint-{global_step}")
++                save_training_state(accelerator, save_path, global_step, signature)
++                logger.info(f"Saved state to {save_path}")
++
++        logs = {"loss": loss.detach().item(), "lr": lr_scheduler.get_last_lr()[0]}
++        progress_bar.set_postfix(**logs)
++        accelerator.log(logs, step=global_step)
++
++        if global_step >= args.max_train_steps:
++            break
+@@ -2073,31 +1463,0 @@
+-        run_validation = (args.validation_prompt and args.num_validation_images > 0) or (args.final_validation_prompt)
+-        should_run_final_inference = not args.skip_final_inference and run_validation
+-        if should_run_final_inference:
+-            # Final inference
+-            # Load previous pipeline
+-            # The transformer is reloaded, so this exercises the adapter that was written to disk.
+-            pipeline = QwenImage21ValidationPipeline.from_pretrained(
+-                args.pretrained_model_name_or_path,
+-                text_encoder=None,
+-                processor=processor,
+-                revision=args.revision,
+-                variant=args.variant,
+-                torch_dtype=weight_dtype,
+-            )
+-            # load attention processors
+-            pipeline.load_lora_weights(args.output_dir)
+-            pipeline.cached_image_pad_mask = validation_image_pad_mask
+-
+-            # run inference
+-            images = log_validation(
+-                pipeline=pipeline,
+-                args=args,
+-                accelerator=accelerator,
+-                pipeline_args=validation_pipeline_args,
+-                epoch=epoch,
+-                is_final_validation=True,
+-                torch_dtype=weight_dtype,
+-            )
+-            del pipeline
+-            free_memory()
+-

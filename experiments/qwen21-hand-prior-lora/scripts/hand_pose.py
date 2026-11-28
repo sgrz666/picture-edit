@@ -1,10 +1,11 @@
 """Render only trusted InterHand joints on the shared RGB canvas."""
 
 import io
+import math
 import sys
 from pathlib import Path
 
-from PIL import Image, ImageDraw
+from PIL import Image, ImageColor, ImageDraw
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 if (REPO_ROOT / "src").is_dir():
@@ -32,15 +33,34 @@ class UnrenderablePose(ValueError):
     """An expected hand has too little trusted geometry to supervise the edit."""
 
 
-def render_pose(condition, view_valid, output_canvas, hand_type):
+def dashed_bone(draw, a, b, color, width):
+    length = math.dist(a, b)
+    if not length:
+        return
+    color = tuple(round(channel * .42) for channel in ImageColor.getrgb(color))
+    for start in range(0, math.ceil(length), width * 4):
+        start_t, end_t = start / length, min(start + width * 2, length) / length
+        endpoints = [tuple(x + (y - x) * t for x, y in zip(a, b)) for t in (start_t, end_t)]
+        draw.line(endpoints, fill=color, width=max(1, width - 1))
+
+
+def render_pose(condition, view_valid, output_canvas, hand_type, *, pose_mode="visible"):
     import torch
 
     if (view_valid.shape != (2, 21) or view_valid.dtype != torch.bool
             or condition.canvas.original_hw != output_canvas.original_hw):
         raise ValueError("Pose visibility and target RGB must share the official InterHand frame")
-    valid = condition.projected_joints()[:2] & view_valid
+    if pose_mode not in ("visible", "occlusion-dashed"):
+        raise ValueError(f"Unknown pose mode: {pose_mode}")
+    projected = condition.projected_joints()[:2]
+    valid = projected & view_valid
+    hidden = torch.zeros_like(valid)
     if condition.joint_occluded is not None:
         valid &= ~condition.joint_occluded[:2]
+        if pose_mode == "occlusion-dashed" and condition.joint_3d_valid is not None:
+            depth = condition.joints_3d[:2, :, 2]
+            hidden = (projected & condition.joint_3d_valid[:2] & condition.joint_occluded[:2]
+                      & torch.isfinite(depth) & (depth > 0))
     joints = condition.joints[:2, :, :2]
     original = (joints - joints.new_tensor(condition.canvas.offset_xy)) / joints.new_tensor(condition.canvas.scale_xy)
     points = output_canvas.pixel_points(original)
@@ -48,23 +68,37 @@ def render_pose(condition, view_valid, output_canvas, hand_type):
     image = Image.new("RGB", (w, h))
     draw = ImageDraw.Draw(image)
     keypoints = [[None] * 21 for _ in PALETTES]
+    solid = []
+    widths = {}
     for side in HAND_SLOTS[hand_type]:
         eligible = valid[side].tolist()
         coordinates = points[side].tolist()
+        trusted = (valid[side] | hidden[side]).tolist()
         bones = [(parent, child) for child, parent in enumerate(JOINT_PARENTS)
-                 if child and eligible[parent] and eligible[child]]
-        if not eligible[0] or not bones:
+                 if child and trusted[parent] and trusted[child]]
+        if not trusted[0] or not bones or not any(eligible):
             raise UnrenderablePose(f"InterHand target {hand_type} lacks a trusted wrist and bone in slot {side}")
-        trusted_points = points[side, valid[side]]
+        trusted_points = points[side, valid[side] | hidden[side]]
         span = float((trusted_points.amax(0) - trusted_points.amin(0)).max())
         width = max(2, min(6, round(span / 64)))
+        widths[side] = width
         for parent, child in bones:
             color = PALETTES[side][(child - 1) // 4]
-            draw.line((tuple(coordinates[parent]), tuple(coordinates[child])), fill=color, width=width)
-        for idx, (xy, good) in enumerate(zip(coordinates, eligible)):
+            a, b = coordinates[parent], coordinates[child]
+            if eligible[parent] and eligible[child]:
+                solid.append(((tuple(a), tuple(b)), color, width))
+            else:
+                dashed_bone(draw, a, b, color, width)
+        for idx, good in enumerate(eligible):
             if good:
+                keypoints[side][idx] = coordinates[idx]
+    for endpoints, color, width in solid:
+        draw.line(endpoints, fill=color, width=width)
+    for side in HAND_SLOTS[hand_type]:
+        width = widths[side]
+        for idx, xy in enumerate(keypoints[side]):
+            if xy is not None:
                 x, y = xy
-                keypoints[side][idx] = xy
                 color = ("#FFFFFF", "#83BAFF")[side] if idx == 0 else PALETTES[side][(idx - 1) // 4]
                 draw.ellipse((x - width, y - width, x + width, y + width), fill=color)
     return image, keypoints
@@ -76,7 +110,7 @@ def png_asset(image, name):
     return {"path": f"{name}.png", "bytes": handle.getvalue()}
 
 
-def aligned_triplet(root, row, source, target, size, digest_file):
+def aligned_triplet(root, row, source, target, size, digest_file, *, pose_mode="visible"):
     import torch
 
     condition_asset = row["condition"]
@@ -91,7 +125,7 @@ def aligned_triplet(root, row, source, target, size, digest_file):
         raise ValueError(f"Target projection subject differs from RGB for {row['id']}")
     output = letterbox((size[1], size[0]), 512)
     kind = row["interhand"]["hand_type"]
-    pose, keypoints = render_pose(condition, torch.as_tensor(view_valid), output, kind)
+    pose, keypoints = render_pose(condition, torch.as_tensor(view_valid), output, kind, pose_mode=pose_mode)
     with Image.open(io.BytesIO(source["bytes"])) as a, Image.open(io.BytesIO(target["bytes"])) as b:
         return (
             png_asset(output.image(a.convert("RGB")), "source"),

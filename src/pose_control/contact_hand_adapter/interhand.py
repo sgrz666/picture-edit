@@ -1,13 +1,15 @@
 """Read the official InterHand2.6M release and export immutable training rows."""
 
 from bisect import bisect_left, bisect_right
-from collections import Counter, defaultdict
+from collections import Counter, defaultdict, deque
 from dataclasses import dataclass, replace
 from functools import lru_cache
 import hashlib
 import io
+from itertools import chain
 import json
 import os
+import random
 from pathlib import Path, PurePosixPath
 import tarfile
 
@@ -355,26 +357,48 @@ def annotation_frames(path, split, owners, excluded, exists, *, capture=None, ca
             return
 
 
-def select_pairs(frames, *, min_gap, max_gap, accepts=lambda _a, _b: True, targets_per_source=1):
+def select_pairs(frames, *, min_gap, max_gap, accepts=lambda _a, _b: True, targets_per_source=1,
+                 stop=lambda: False, mix_views_seed=None):
     if targets_per_source < 1:
         raise ValueError("targets_per_source must be positive")
     groups = defaultdict(list)
     for frame in frames:
         key = (frame.split, frame.subject, frame.capture, frame.sequence, frame.camera, frame.hand_type, frame.hw)
         groups[key].append(frame)
-    for key in sorted(groups):
+    def sources(key):
         sequence = sorted(groups[key], key=lambda frame: (frame.index, frame.path))
         indexes = [frame.index for frame in sequence]
         for offset, source in enumerate(sequence):
             lo = bisect_left(indexes, source.index + min_gap, lo=offset + 1)
             hi = bisect_right(indexes, source.index + max_gap, lo=lo)
-            remaining = targets_per_source
-            for target in sequence[lo:hi]:
-                if source.index != target.index and accepts(source, target):
-                    yield source, target
-                    remaining -= 1
-                    if remaining == 0:
-                        break
+            if lo < hi:
+                yield source, sequence[lo:hi]
+
+    keys = sorted(groups)
+    if mix_views_seed is not None:
+        random.Random(mix_views_seed).shuffle(keys)
+
+    def interleave(iterators):
+        pending = deque(iterators)
+        while pending:
+            iterator = pending.popleft()
+            item = next(iterator, None)
+            if item is not None:
+                yield item
+                pending.append(iterator)
+
+    streams = map(sources, keys)
+    stream = chain.from_iterable(streams) if mix_views_seed is None else interleave(streams)
+    for source, targets in stream:
+        remaining = targets_per_source
+        for target in targets:
+            if stop():
+                return
+            if source.index != target.index and accepts(source, target):
+                yield source, target
+                remaining -= 1
+                if remaining == 0:
+                    break
 
 
 def frame_condition(frame, camera, world_mm, world_valid, canvas):
@@ -501,7 +525,7 @@ def _asset(path, out, digest=None):
 
 def convert_split(annotation_root, image_source, out, split, owners, excluded, *,
                   min_gap, max_gap, min_motion, limit, filters, mano=None, used_splits=None,
-                  targets_per_source=1):
+                  targets_per_source=1, quality=None, geometry_only=False):
     paths = {kind: annotation_root / split / f"InterHand2.6M_{split}_{kind}.json"
              for kind in ("data", "camera", "joint_3d", "MANO_NeuralAnnot")}
     exists = (image_source.index.__contains__ if isinstance(image_source, TarImages)
@@ -530,7 +554,13 @@ def convert_split(annotation_root, image_source, out, split, owners, excluded, *
     def projected(frame):
         return project(frame.capture, frame.camera, frame.index, frame.hw, frame.hand_type, frame.subject)
 
+    def read_rgb(path):
+        return _image_bytes(image_source, path)
+
+    last_quality = None
+
     def accepts(source, target):
+        nonlocal last_quality
         if str(source.index) not in joints.get(source.capture, {}) or str(target.index) not in joints.get(target.capture, {}):
             counters["missing_joint_annotations"] += 1
             return False
@@ -544,14 +574,24 @@ def convert_split(annotation_root, image_source, out, split, owners, excluded, *
             counters["insufficient_projected_joints"] += 1
             return False
         motion = (xy_second[common] - xy_first[common]).square().sum(-1).mean().sqrt()
-        if motion < min_motion:
+        if quality is None and motion < min_motion:
             counters["insufficient_motion"] += 1
             return False
+        if quality is not None:
+            last_quality = quality.measure(source, target, first, second, JOINT_ORDER, read_rgb)
+            if last_quality is None:
+                return False
+            last_quality["image_rms_px"] = float(motion)
         return True
 
+    pairs = select_pairs(frames, min_gap=min_gap, max_gap=max_gap, accepts=accepts,
+                         targets_per_source=targets_per_source, stop=lambda: quality is not None and quality.exhausted,
+                         mix_views_seed=None if quality is None else quality.seed)
+    proposals = ((source, target, last_quality) for source, target in pairs)
+    if quality is not None:
+        proposals = quality.sample(proposals)
     rows = []
-    for source, target in select_pairs(frames, min_gap=min_gap, max_gap=max_gap, accepts=accepts,
-                                       targets_per_source=targets_per_source):
+    for source, target, measurements in proposals:
         hashes = []
         for frame in (source, target):
             if frame.path in image_assets:
@@ -567,14 +607,15 @@ def convert_split(annotation_root, image_source, out, split, owners, excluded, *
             counters["cross_split_image_sha"] += 1
             continue
         condition = projected(target)
-        source_sha, source_data = hashes[0]
-        if source_data is None:
-            source_data = _image_bytes(image_source, source.path)
-            if hashlib.sha256(source_data).hexdigest() != source_sha:
-                raise ValueError(f"Source RGB changed during export: {source.path}")
-        appearance = source_appearance(projected(source), source, source_data, source_sha)
-        condition = replace(condition, **appearance)
-        counters["source_appearance_hands"] += int(condition.appearance_valid.sum())
+        if not geometry_only:
+            source_sha, source_data = hashes[0]
+            if source_data is None:
+                source_data = _image_bytes(image_source, source.path)
+                if hashlib.sha256(source_data).hexdigest() != source_sha:
+                    raise ValueError(f"Source RGB changed during export: {source.path}")
+            appearance = source_appearance(projected(source), source, source_data, source_sha)
+            condition = replace(condition, **appearance)
+            counters["source_appearance_hands"] += int(condition.appearance_valid.sum())
         fit = {}
         if mano is not None:
             params = mano_annotations.get(target.capture, {}).get(str(target.index), {})
@@ -609,7 +650,12 @@ def convert_split(annotation_root, image_source, out, split, owners, excluded, *
                           "target_view_joint_valid": target.view_joints[JOINT_ORDER].tolist(),
                           "mano_fit": fit},
         })
+        if measurements is not None:
+            rows[-1]["interhand"]["quality"] = measurements
         if limit is not None and len(rows) >= limit:
             break
     counters["emitted_pairs"] = len(rows)
-    return rows, dict(counters)
+    stats = dict(counters)
+    if quality is not None:
+        stats["quality"] = quality.audit
+    return rows, stats
