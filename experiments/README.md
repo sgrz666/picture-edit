@@ -26,6 +26,8 @@
 
 ## 二、最新重点实验物理落点与产物说明
 
+- [Qwen 2.1 手部生成先验 LoRA](qwen21-hand-prior-lora/README.md) 使用官方 I2I 训练入口和 InterHand2.6M 真实帧对，独立验证 Attention LoRA 的训练、保存与加载。
+
 ### 1. Qwen 2.1 Pro 适配器实验区 (`/data/shangguanrz/pic-edit-experiments/one/qwen21_pro_adapter_v1/`)
 - 源码核心：[`src/pose_control/qwen21_pro/`](../src/pose_control/qwen21_pro/)。
 - 运行入口：[`src/pose_control/qwen21_pro/runner.py`](../src/pose_control/qwen21_pro/runner.py)（支持 `prepare`, `cache`, `audit`, `smoke`, `train`, `infer`, `refine`, `status`）。
